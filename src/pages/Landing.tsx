@@ -2,43 +2,52 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Heart, ListChecks, Share2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import goTwoLogo from "@/assets/GoTwoTransparent.png";
 
 const Landing = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
-      <nav className="flex items-center justify-between px-6 md:px-12 py-4 border-b border-border/50">
-        <div className="flex items-center gap-1">
-          <span className="text-2xl font-bold text-accent" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}>Go</span>
-          <span className="text-2xl font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>Two</span>
-        </div>
+      <nav className="flex items-center justify-between px-6 md:px-12 py-4">
+        <img src={goTwoLogo} alt="Go Two" className="h-10" />
         <div className="flex items-center gap-3">
           <Link to="/login">
             <Button variant="ghost" size="sm">Log in</Button>
           </Link>
           <Link to="/signup">
-            <Button size="sm">Get Started Free</Button>
+            <Button size="sm" className="rounded-full">Get Started Free</Button>
           </Link>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="max-w-5xl mx-auto px-6 md:px-12 pt-20 pb-16 text-center">
+      <section className="max-w-5xl mx-auto px-6 md:px-12 pt-12 pb-16 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
+          <img src={goTwoLogo} alt="Go Two" className="h-24 md:h-32 mx-auto mb-6" />
           <h1 className="text-4xl md:text-6xl font-bold text-primary leading-tight mb-6">
-            The Shortcut to{" "}
-            <span className="text-accent italic">Thoughtful.</span>
+            The Shortcut to Thoughtful.
             <br />
             Never forget again.
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-            Create personal Go Two lists for the details that matter — coffee orders, 
-            clothing sizes, date ideas and much more. Share them with your partner so 
-            they always know exactly what you love.
+
+          {/* Video placeholder */}
+          <div className="w-64 h-80 mx-auto rounded-3xl bg-secondary/50 border border-border/30 flex items-center justify-center mb-8 shadow-lg">
+            <span className="text-muted-foreground tracking-[0.3em] uppercase text-sm">Video</span>
+          </div>
+
+          <p className="text-base text-muted-foreground max-w-xl mx-auto mb-2">
+            Create personal <span className="font-semibold">Go Two</span> lists for the details that matter
+            <br />coffee orders, clothing sizes, date ideas and much more.
+          </p>
+          <p className="text-sm text-muted-foreground font-medium mb-4">Because Light isn't Ultra.</p>
+          <p className="text-sm text-muted-foreground mb-8">
+            Share it once.<br />
+            Update anytime.<br />
+            Stop the arguments before they start
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/signup">
