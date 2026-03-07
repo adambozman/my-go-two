@@ -92,11 +92,15 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
     font-family: 'Quicksand', sans-serif;
-    background-image: url('/images/linen-overlay.png');
-    background-repeat: repeat;
-    background-blend-mode: overlay;
+    background-image:
+      url('/images/linen-overlay.png'),
+      radial-gradient(54rem 26rem at 10% -4%, rgba(240,197,170,0.52) 0%, transparent 70%),
+      radial-gradient(44rem 24rem at 95% 7%, rgba(175,199,218,0.08) 0%, transparent 74%),
+      linear-gradient(145deg, #f6e2d4 0%, #edd0bc 56%, #dfb69b 100%);
+    background-blend-mode: overlay, normal, normal, normal;
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
