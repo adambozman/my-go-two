@@ -100,6 +100,8 @@
       radial-gradient(44rem 24rem at 95% 7%, rgba(175,199,218,0.08) 0%, transparent 74%),
       linear-gradient(145deg, #f6e2d4 0%, #edd0bc 56%, #dfb69b 100%);
     background-blend-mode: overlay, normal, normal, normal;
+    background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+    background-size: 512px 512px, 100% 100%, 100% 100%, 100% 100%;
     background-attachment: fixed;
   }
 
