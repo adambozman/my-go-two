@@ -13,7 +13,6 @@ const DashboardHome = () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
-
         const [{ count: listCount }, { count: cardCount }, { count: coupleCount }, { data: profile }] = await Promise.all([
           supabase.from("lists").select("*", { count: "exact", head: true }).eq("user_id", user.id),
           supabase.from("cards").select("*", { count: "exact", head: true }).eq("user_id", user.id),
@@ -30,8 +29,8 @@ const DashboardHome = () => {
   return (
     <div className="max-w-4xl">
       {/* Hero card */}
-      <div className="bg-card/40 backdrop-blur-sm rounded-3xl border border-border/30 p-8 mb-8">
-        <h1 className="text-3xl font-bold text-primary mb-2">
+      <div className="card-neu panel-polish p-8 mb-8">
+        <h1 className="text-3xl font-bold mb-2">
           Hey, {displayName || "there"} 👋
         </h1>
         <p className="text-muted-foreground">Your GoTwo dashboard — everything in one place.</p>
@@ -44,13 +43,13 @@ const DashboardHome = () => {
           { label: "Total Cards", value: stats.cards, icon: Share2 },
           { label: "Active Collaborations", value: stats.collaborations, icon: Users },
         ].map((s) => (
-          <div key={s.label} className="bg-card/40 backdrop-blur-sm rounded-2xl border border-border/30 p-5">
+          <div key={s.label} className="card-neu p-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-                <s.icon className="w-5 h-5 text-accent" />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(232,198,174,0.4)' }}>
+                <s.icon className="w-5 h-5" style={{ color: '#D9654F' }} />
               </div>
               <div>
-                <p className="text-2xl font-bold text-primary">{s.value}</p>
+                <p className="text-2xl font-bold" style={{ color: '#2F5F6D' }}>{s.value}</p>
                 <p className="text-sm text-muted-foreground">{s.label}</p>
               </div>
             </div>
