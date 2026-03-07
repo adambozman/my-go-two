@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 30 30% 92%;
+    --background: 20 30% 88%;
     --foreground: 72 5% 40%;
 
     --card: 24 40% 95%;
@@ -94,6 +94,9 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Quicksand', sans-serif;
+    background-image: url('/images/linen-overlay.png');
+    background-repeat: repeat;
+    background-blend-mode: overlay;
   }
 
   h1, h2, h3, h4, h5, h6 {
