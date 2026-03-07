@@ -37,10 +37,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>
             {!collapsed && (
-              <div className="flex items-center gap-1 py-2">
-                <span className="text-lg font-bold text-accent" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}>Go</span>
-                <span className="text-lg font-bold text-sidebar-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>Two</span>
-              </div>
+              <img src={goTwoLogo} alt="Go Two" className="h-7 py-1" />
             )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
