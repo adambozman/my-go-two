@@ -149,10 +149,7 @@ const Landing = () => {
 
       {/* Footer */}
       <footer className="border-t border-border/50 py-8 text-center text-sm text-muted-foreground">
-        <div className="flex items-center justify-center gap-1 mb-2">
-          <span className="font-bold text-accent" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}>Go</span>
-          <span className="font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>Two</span>
-        </div>
+        <img src={goTwoLogo} alt="Go Two" className="h-8 mx-auto mb-2" />
         <p>© {new Date().getFullYear()} GoTwo. Made with love.</p>
       </footer>
     </div>

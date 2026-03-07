@@ -1,5 +1,6 @@
 import { Home, ListChecks, Share2, LayoutTemplate, Settings, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import goTwoLogo from "@/assets/GoTwoTransparent.png";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
