@@ -94,6 +94,9 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Quicksand', sans-serif;
+    background-image: url('/images/linen-overlay.png');
+    background-repeat: repeat;
+    background-blend-mode: overlay;
   }
 
   h1, h2, h3, h4, h5, h6 {
