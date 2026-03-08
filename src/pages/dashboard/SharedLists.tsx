@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -62,7 +61,7 @@ const SharedLists = () => {
           <h1 className="text-3xl font-bold text-primary mb-1">Shared</h1>
           <p className="text-muted-foreground">Lists shared with you by your partner.</p>
         </div>
-        <Button onClick={() => setInviteOpen(true)}>
+        <Button className="rounded-full" onClick={() => setInviteOpen(true)}>
           <UserPlus className="mr-2 h-4 w-4" /> Invite Partner
         </Button>
       </div>
@@ -72,52 +71,42 @@ const SharedLists = () => {
           <h2 className="text-lg font-semibold text-primary mb-3">Pending Invitations</h2>
           <div className="space-y-3">
             {pendingInvites.map((inv) => (
-              <Card key={inv.id} className="border-accent/30 bg-accent/5">
-                <CardContent className="flex items-center justify-between py-4">
-                  <p className="text-sm">Someone invited you to connect as partners</p>
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => respondInvite(inv.id, true)}>
-                      <Check className="mr-1 h-3.5 w-3.5" /> Accept
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => respondInvite(inv.id, false)}>
-                      <X className="mr-1 h-3.5 w-3.5" /> Decline
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <div key={inv.id} className="card-design-neumorph p-4 flex items-center justify-between">
+                <p className="text-sm">Someone invited you to connect as partners</p>
+                <div className="flex gap-2">
+                  <Button size="sm" className="rounded-full" onClick={() => respondInvite(inv.id, true)}>
+                    <Check className="mr-1 h-3.5 w-3.5" /> Accept
+                  </Button>
+                  <Button size="sm" variant="outline" className="rounded-full" onClick={() => respondInvite(inv.id, false)}>
+                    <X className="mr-1 h-3.5 w-3.5" /> Decline
+                  </Button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       )}
 
       {sharedLists.length === 0 ? (
-        <Card className="border-border/50 border-dashed">
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-4">
-              {couples.length === 0
-                ? "No partner connected yet. Invite someone to start sharing!"
-                : "Your partner hasn't shared any lists yet."}
-            </p>
-            {couples.length === 0 && (
-              <Button onClick={() => setInviteOpen(true)}>
-                <UserPlus className="mr-2 h-4 w-4" /> Invite Partner
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+        <div className="card-design-neumorph p-12 text-center">
+          <p className="text-muted-foreground mb-4">
+            {couples.length === 0
+              ? "No partner connected yet. Invite someone to start sharing!"
+              : "Your partner hasn't shared any lists yet."}
+          </p>
+          {couples.length === 0 && (
+            <Button className="rounded-full" onClick={() => setInviteOpen(true)}>
+              <UserPlus className="mr-2 h-4 w-4" /> Invite Partner
+            </Button>
+          )}
+        </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {sharedLists.map((list) => (
-            <Card key={list.id} className="border-border/50">
-              <CardHeader>
-                <CardTitle className="text-lg">{list.title}</CardTitle>
-              </CardHeader>
-              {list.description && (
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{list.description}</p>
-                </CardContent>
-              )}
-            </Card>
+            <div key={list.id} className="card-design-neumorph p-6">
+              <h3 className="text-lg font-bold text-primary mb-2">{list.title}</h3>
+              {list.description && <p className="text-sm text-muted-foreground">{list.description}</p>}
+            </div>
           ))}
         </div>
       )}
@@ -130,11 +119,11 @@ const SharedLists = () => {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Partner's email</Label>
-              <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="partner@example.com" type="email" />
+              <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="partner@example.com" type="email" className="rounded-xl" />
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={sendInvite} disabled={!email.trim()}>Send Invitation</Button>
+            <Button className="rounded-full" onClick={sendInvite} disabled={!email.trim()}>Send Invitation</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

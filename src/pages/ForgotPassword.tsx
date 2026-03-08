@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import GoTwoText from "@/components/GoTwoText";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -28,41 +28,40 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="landing-page min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-1">
-            <span className="text-3xl font-bold text-accent" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}>Go</span>
-            <span className="text-3xl font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>Two</span>
+          <Link to="/">
+            <GoTwoText className="text-4xl" />
           </Link>
         </div>
-        <Card className="border-border/50 shadow-lg">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Reset Password</CardTitle>
-            <CardDescription>{sent ? "Check your email for a reset link" : "Enter your email to reset your password"}</CardDescription>
-          </CardHeader>
+        <div className="card-design-neumorph panel-polish p-8">
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-bold mb-1">Reset Password</h1>
+            <p className="text-sm text-muted-foreground">
+              {sent ? "Check your email for a reset link" : "Enter your email to reset your password"}
+            </p>
+          </div>
           {!sent && (
-            <form onSubmit={handleSubmit}>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" />
-                </div>
-              </CardContent>
-              <CardFooter className="flex flex-col gap-4">
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Sending..." : "Send Reset Link"}
-                </Button>
-                <Link to="/login" className="text-sm text-accent hover:underline">Back to login</Link>
-              </CardFooter>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="rounded-xl" />
+              </div>
+              <Button type="submit" className="w-full rounded-full" disabled={loading}>
+                {loading ? "Sending..." : "Send Reset Link"}
+              </Button>
+              <p className="text-sm text-center">
+                <Link to="/login" className="hover:underline" style={{ color: 'var(--swatch-cedar-grove)' }}>Back to login</Link>
+              </p>
             </form>
           )}
           {sent && (
-            <CardFooter className="justify-center">
-              <Link to="/login" className="text-sm text-accent hover:underline">Back to login</Link>
-            </CardFooter>
+            <div className="text-center">
+              <Link to="/login" className="text-sm hover:underline" style={{ color: 'var(--swatch-cedar-grove)' }}>Back to login</Link>
+            </div>
           )}
-        </Card>
+        </div>
       </div>
     </div>
   );

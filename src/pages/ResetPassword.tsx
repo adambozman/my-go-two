@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import GoTwoText from "@/components/GoTwoText";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -36,26 +36,27 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="landing-page min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <Card className="border-border/50 shadow-lg">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Set New Password</CardTitle>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="password">New Password</Label>
-                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" minLength={6} />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Updating..." : "Update Password"}
-              </Button>
-            </CardFooter>
+        <div className="text-center mb-8">
+          <Link to="/">
+            <GoTwoText className="text-4xl" />
+          </Link>
+        </div>
+        <div className="card-design-neumorph panel-polish p-8">
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-bold mb-1">Set New Password</h1>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="password">New Password</Label>
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" minLength={6} className="rounded-xl" />
+            </div>
+            <Button type="submit" className="w-full rounded-full" disabled={loading}>
+              {loading ? "Updating..." : "Update Password"}
+            </Button>
           </form>
-        </Card>
+        </div>
       </div>
     </div>
   );
