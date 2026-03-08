@@ -15,7 +15,7 @@ export function AppSidebar() {
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-[72px] flex flex-col items-center py-6 z-50">
-      <div className="card-neu p-3 flex flex-col gap-2 mt-20">
+      <div className="card-design-neumorph p-3 flex flex-col gap-2 mt-20">
         {navItems.map((item) => {
           const isActive = item.end
             ? location.pathname === item.url
@@ -40,7 +40,7 @@ export function AppSidebar() {
       </div>
 
       <div className="mt-auto mb-4">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold card-neu" style={{ color: '#2F5F6D' }}>
+        <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold card-design-neumorph" style={{ color: '#2F5F6D' }}>
           AT
         </div>
       </div>

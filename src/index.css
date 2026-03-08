@@ -105,7 +105,7 @@
 }
 
 /* Neumorphic card style */
-.card-neu {
+.card-design-neumorph {
   background: linear-gradient(
     158deg,
     rgb(var(--swatch-gypsum-rose-rgb) / 0.38) 0%,

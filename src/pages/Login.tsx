@@ -29,14 +29,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="landing-page min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/">
             <img src={goTwoLogo} alt="Go Two" className="h-12 mx-auto" />
           </Link>
         </div>
-        <div className="card-neu panel-polish p-8">
+        <div className="card-design-neumorph panel-polish p-8">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold mb-1">Welcome back</h1>
             <p className="text-sm text-muted-foreground">Sign in to your account</p>

@@ -5,7 +5,7 @@ import goTwoLogo from "@/assets/GoTwoTransparent.png";
 export function DashboardTopBar() {
   return (
     <header className="flex items-center justify-between px-8 py-4">
-      <div className="card-neu px-4 py-2 flex items-center gap-2">
+      <div className="card-design-neumorph px-4 py-2 flex items-center gap-2">
         <img src={goTwoLogo} alt="Go Two" className="h-8" />
       </div>
 
@@ -18,7 +18,7 @@ export function DashboardTopBar() {
             style={{ background: 'rgba(232,198,174,0.2)' }}
           />
         </div>
-        <button className="relative w-10 h-10 rounded-full card-neu flex items-center justify-center">
+        <button className="relative w-10 h-10 rounded-full card-design-neumorph flex items-center justify-center">
           <Bell className="h-4 w-4 text-muted-foreground" />
           <span className="absolute -top-1 -right-1 w-5 h-5 text-[10px] font-bold rounded-full flex items-center justify-center" style={{ background: '#2F5F6D', color: '#f6e2d4' }}>
             3

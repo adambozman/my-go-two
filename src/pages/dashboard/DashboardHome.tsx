@@ -29,7 +29,7 @@ const DashboardHome = () => {
   return (
     <div className="max-w-4xl">
       {/* Hero card */}
-      <div className="card-neu panel-polish p-8 mb-8">
+      <div className="card-design-neumorph panel-polish p-8 mb-8">
         <h1 className="text-3xl font-bold mb-2">
           Hey, {displayName || "there"} 👋
         </h1>
@@ -43,7 +43,7 @@ const DashboardHome = () => {
           { label: "Total Cards", value: stats.cards, icon: Share2 },
           { label: "Active Collaborations", value: stats.collaborations, icon: Users },
         ].map((s) => (
-          <div key={s.label} className="card-neu p-5">
+          <div key={s.label} className="card-design-neumorph p-5">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(232,198,174,0.4)' }}>
                 <s.icon className="w-5 h-5" style={{ color: '#D9654F' }} />

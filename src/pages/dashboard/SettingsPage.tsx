@@ -47,7 +47,7 @@ const SettingsPage = () => {
   return (
     <div className="max-w-4xl">
       {/* Hero */}
-      <div className="card-neu panel-polish p-8 mb-8">
+      <div className="card-design-neumorph panel-polish p-8 mb-8">
         <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider mb-4" style={{ border: '1px solid rgba(174,176,161,0.62)', background: 'rgba(181,184,168,0.3)', color: '#2F5F6D' }}>
           <SettingsIcon className="h-3 w-3" />
           Settings
@@ -59,7 +59,7 @@ const SettingsPage = () => {
       </div>
 
       {/* Settings Menu */}
-      <div className="card-neu p-8">
+      <div className="card-design-neumorph p-8">
         <h2 className="text-lg font-semibold mb-1" style={{ color: '#2F5F6D' }}>Settings Menu</h2>
         <p className="text-sm text-muted-foreground mb-6">Choose a section to manage your workspace preferences.</p>
 

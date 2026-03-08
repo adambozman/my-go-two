@@ -4,7 +4,7 @@ import { DashboardTopBar } from "@/components/DashboardTopBar";
 
 const DashboardLayout = () => {
   return (
-    <div className="min-h-screen flex">
+    <div className="app-page min-h-screen flex">
       <AppSidebar />
       <div className="flex-1 flex flex-col ml-[72px]">
         <DashboardTopBar />
