@@ -81,6 +81,24 @@
     inset -1px -1px 0 rgba(107,109,98,0.28);
 }
 
+/* Logo text */
+.logo-text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.15em;
+}
+.logo-text .go {
+  font-family: 'Benedict', cursive;
+  color: hsl(10 61% 50%);
+  font-size: 1.15em;
+}
+.logo-text .two {
+  font-family: 'Pierson', serif;
+  color: hsl(196 40% 31%);
+  font-size: 1em;
+  letter-spacing: 0.02em;
+}
+
 /* Sheen effect */
 .panel-polish {
   position: relative;
