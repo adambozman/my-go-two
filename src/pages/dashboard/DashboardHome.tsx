@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ListChecks, Share2, Users, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import GoTwoText from "@/components/GoTwoText";
 
 const DashboardHome = () => {
   const [stats, setStats] = useState({ lists: 0, cards: 0, collaborations: 0 });
