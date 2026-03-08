@@ -29,7 +29,7 @@ const Templates = () => {
     <div className="max-w-4xl">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-primary mb-1">Templates</h1>
-        <p className="text-muted-foreground">Quick-start with our ready-made GoTwo card templates.</p>
+        <p className="text-muted-foreground">Quick-start with our ready-made <GoTwoText className="text-base" /> card templates.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
