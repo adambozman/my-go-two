@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Coffee, Shirt, Heart, Gift, Salad, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import GoTwoText from "@/components/GoTwoText";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee,
@@ -28,7 +29,7 @@ const Templates = () => {
     <div className="max-w-4xl">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-primary mb-1">Templates</h1>
-        <p className="text-muted-foreground">Quick-start with our ready-made GoTwo card templates.</p>
+        <p className="text-muted-foreground">Quick-start with our ready-made <GoTwoText className="text-base" /> card templates.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
