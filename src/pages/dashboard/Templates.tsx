@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Coffee, Shirt, Heart, Gift, Salad, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import GoTwoText from "@/components/GoTwoText";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee,
