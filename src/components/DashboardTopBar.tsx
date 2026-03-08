@@ -5,7 +5,7 @@ import goTwoLogo from "@/assets/GoTwoTransparent.png";
 export function DashboardTopBar() {
   return (
     <header className="flex items-center justify-between px-8 py-4">
-      <div className="card-neu px-4 py-2 flex items-center gap-2">
+      <div className="card-design-neumorph px-4 py-2 flex items-center gap-2">
         <img src={goTwoLogo} alt="Go Two" className="h-8" />
       </div>
 
