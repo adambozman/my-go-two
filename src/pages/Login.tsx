@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import goTwoLogo from "@/assets/GoTwoTransparent.png";
+import GoTwoText from "@/components/GoTwoText";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -33,7 +33,7 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/">
-            <img src={goTwoLogo} alt="Go Two" className="h-12 mx-auto" />
+            <GoTwoText className="text-4xl" />
           </Link>
         </div>
         <div className="card-design-neumorph panel-polish p-8">
@@ -50,7 +50,7 @@ const Login = () => {
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" className="rounded-xl" />
             </div>
-            <Link to="/forgot-password" className="text-sm hover:underline block text-right" style={{ color: '#D9654F' }}>
+            <Link to="/forgot-password" className="text-sm hover:underline block text-right" style={{ color: 'var(--swatch-cedar-grove)' }}>
               Forgot password?
             </Link>
             <Button type="submit" className="w-full rounded-full" disabled={loading}>
@@ -58,7 +58,7 @@ const Login = () => {
             </Button>
             <p className="text-sm text-muted-foreground text-center">
               Don't have an account?{" "}
-              <Link to="/signup" className="hover:underline font-medium" style={{ color: '#D9654F' }}>Sign up</Link>
+              <Link to="/signup" className="hover:underline font-medium" style={{ color: 'var(--swatch-cedar-grove)' }}>Sign up</Link>
             </p>
           </form>
         </div>
