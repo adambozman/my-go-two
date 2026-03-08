@@ -59,7 +59,7 @@ const SettingsPage = () => {
       </div>
 
       {/* Settings Menu */}
-      <div className="card-neu p-8">
+      <div className="card-design-neumorph p-8">
         <h2 className="text-lg font-semibold mb-1" style={{ color: '#2F5F6D' }}>Settings Menu</h2>
         <p className="text-sm text-muted-foreground mb-6">Choose a section to manage your workspace preferences.</p>
 
