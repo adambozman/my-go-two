@@ -33,7 +33,7 @@ const DashboardHome = () => {
         <h1 className="text-3xl font-bold mb-2">
           Hey, {displayName || "there"} 👋
         </h1>
-        <p className="text-muted-foreground">Your GoTwo dashboard — everything in one place.</p>
+        <p className="text-muted-foreground">Your <GoTwoText className="text-base" /> dashboard — everything in one place.</p>
       </div>
 
       {/* Stats */}
