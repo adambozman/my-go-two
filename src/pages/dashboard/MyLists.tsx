@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -77,7 +76,7 @@ const MyLists = () => {
           <h1 className="text-3xl font-bold text-primary mb-1">My Lists</h1>
           <p className="text-muted-foreground">My lists, organized and ready to use.</p>
         </div>
-        <Button onClick={() => { setEditingList(null); setTitle(""); setDescription(""); setDialogOpen(true); }}>
+        <Button className="rounded-full" onClick={() => { setEditingList(null); setTitle(""); setDescription(""); setDialogOpen(true); }}>
           <Plus className="mr-2 h-4 w-4" /> New List
         </Button>
       </div>
@@ -85,21 +84,19 @@ const MyLists = () => {
       {loading ? (
         <p className="text-muted-foreground">Loading...</p>
       ) : lists.length === 0 ? (
-        <Card className="border-border/50 border-dashed">
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-4">No lists yet. Create your first one!</p>
-            <Button onClick={() => setDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" /> Create List
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="card-design-neumorph p-12 text-center">
+          <p className="text-muted-foreground mb-4">No lists yet. Create your first one!</p>
+          <Button className="rounded-full" onClick={() => setDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" /> Create List
+          </Button>
+        </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {lists.map((list) => (
-            <Card key={list.id} className="border-border/50 hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-row items-start justify-between pb-2">
+            <div key={list.id} className="card-design-neumorph p-6">
+              <div className="flex items-start justify-between mb-2">
                 <Link to={`/dashboard/lists/${list.id}`} className="flex-1">
-                  <CardTitle className="text-lg hover:text-accent transition-colors cursor-pointer">{list.title}</CardTitle>
+                  <h3 className="text-lg font-bold text-primary hover:underline cursor-pointer">{list.title}</h3>
                 </Link>
                 <div className="flex gap-1">
                   <Button variant="ghost" size="icon" onClick={() => openEdit(list)}>
@@ -109,16 +106,14 @@ const MyLists = () => {
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
-              </CardHeader>
-              <CardContent>
-                {list.description && <p className="text-sm text-muted-foreground mb-3">{list.description}</p>}
-                <div className="flex items-center gap-2 text-sm">
-                  <Share2 className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-muted-foreground">Shared</span>
-                  <Switch checked={list.is_shared ?? false} onCheckedChange={() => toggleShared(list)} />
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+              {list.description && <p className="text-sm text-muted-foreground mb-3">{list.description}</p>}
+              <div className="flex items-center gap-2 text-sm">
+                <Share2 className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-muted-foreground">Shared</span>
+                <Switch checked={list.is_shared ?? false} onCheckedChange={() => toggleShared(list)} />
+              </div>
+            </div>
           ))}
         </div>
       )}
@@ -131,15 +126,15 @@ const MyLists = () => {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Title</Label>
-              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Food & Drinks" />
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Food & Drinks" className="rounded-xl" />
             </div>
             <div className="space-y-2">
               <Label>Description (optional)</Label>
-              <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What's this list about?" />
+              <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What's this list about?" className="rounded-xl" />
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleSave} disabled={!title.trim()}>
+            <Button className="rounded-full" onClick={handleSave} disabled={!title.trim()}>
               {editingList ? "Save Changes" : "Create List"}
             </Button>
           </DialogFooter>
