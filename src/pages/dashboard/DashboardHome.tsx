@@ -29,7 +29,7 @@ const DashboardHome = () => {
   return (
     <div className="max-w-4xl">
       {/* Hero card */}
-      <div className="card-neu panel-polish p-8 mb-8">
+      <div className="card-design-neumorph panel-polish p-8 mb-8">
         <h1 className="text-3xl font-bold mb-2">
           Hey, {displayName || "there"} 👋
         </h1>
