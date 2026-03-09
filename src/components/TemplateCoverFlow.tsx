@@ -105,8 +105,8 @@ interface TemplateCoverFlowProps {
 const TemplateCoverFlow = ({ templateName, subtypes, onBack, onSelect, creating }: TemplateCoverFlowProps) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(subtypes.length / 2));
 
-  const goLeft = () => setActiveIndex((i) => Math.max(0, i - 1));
-  const goRight = () => setActiveIndex((i) => Math.min(subtypes.length - 1, i + 1));
+  const goLeft = () => setActiveIndex((i) => (i - 1 + subtypes.length) % subtypes.length);
+  const goRight = () => setActiveIndex((i) => (i + 1) % subtypes.length);
 
   return (
     <motion.div
@@ -134,7 +134,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, onBack, onSelect, creating 
           variant="ghost"
           size="icon"
           onClick={goLeft}
-          disabled={activeIndex === 0}
+          
           className="absolute left-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
         >
           <ChevronLeft className="h-5 w-5" />
@@ -144,7 +144,11 @@ const TemplateCoverFlow = ({ templateName, subtypes, onBack, onSelect, creating 
         <div className="relative w-full h-[340px] overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
             {subtypes.map((subtype, index) => {
-              const offset = index - activeIndex;
+              // Calculate shortest circular offset
+              let offset = index - activeIndex;
+              const half = subtypes.length / 2;
+              if (offset > half) offset -= subtypes.length;
+              if (offset < -half) offset += subtypes.length;
               const isActive = offset === 0;
               const absOffset = Math.abs(offset);
 
@@ -216,7 +220,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, onBack, onSelect, creating 
           variant="ghost"
           size="icon"
           onClick={goRight}
-          disabled={activeIndex === subtypes.length - 1}
+          
           className="absolute right-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
         >
           <ChevronRight className="h-5 w-5" />
