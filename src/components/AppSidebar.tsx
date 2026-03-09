@@ -1,15 +1,14 @@
-import { Home, Heart, Users, Sparkles, ClipboardList, Settings, SlidersHorizontal } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { icon: Home, url: "/dashboard", end: true, label: "Home" },
-  { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
-  { icon: Users, url: "/dashboard/collaborations", label: "Collaborations" },
-  { icon: Sparkles, url: "/dashboard/recommendations", label: "Recommendations" },
-  { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Questionnaires" },
-  { icon: SlidersHorizontal, url: "/onboarding?edit=true", label: "Preferences" },
-  { icon: Settings, url: "/dashboard/settings", label: "Settings" },
+  { label: "Home", short: "H", url: "/dashboard", end: true },
+  { label: "My Go Two", short: "G", url: "/dashboard/my-go-two" },
+  { label: "Collabs", short: "C", url: "/dashboard/collaborations" },
+  { label: "Recs", short: "R", url: "/dashboard/recommendations" },
+  { label: "Q&A", short: "Q", url: "/dashboard/questionnaires" },
+  { label: "Prefs", short: "P", url: "/onboarding?edit=true" },
+  { label: "Settings", short: "S", url: "/dashboard/settings" },
 ];
 
 export function AppSidebar() {
@@ -27,15 +26,16 @@ export function AppSidebar() {
             <NavLink
               key={item.url}
               to={item.url}
+              title={item.label}
               className={cn(
-                "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                "w-10 h-10 rounded-xl flex items-center justify-center transition-all font-semibold text-sm tracking-tight",
                 isActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
               style={isActive ? { background: 'rgba(232,198,174,0.4)' } : undefined}
             >
-              <item.icon className="h-5 w-5" />
+              {item.short}
             </NavLink>
           );
         })}
