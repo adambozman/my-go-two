@@ -159,69 +159,8 @@ const MyGoTwo = () => {
         My <GoTwoText className="text-2xl" />
       </h1>
 
-      {/* My Lists Section */}
-      <div className="mb-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-primary">My Lists</h2>
-          <Button className="rounded-full" size="sm" onClick={openCreate}>
-            <Plus className="mr-2 h-4 w-4" /> New List
-          </Button>
-        </div>
-
-        {loading ? (
-          <p className="text-muted-foreground">Loading...</p>
-        ) : lists.length === 0 ? (
-          <div className="card-design-neumorph p-8 text-center">
-            <p className="text-muted-foreground">No lists yet. Create your first one or start from a template below!</p>
-          </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {lists.map((list) => (
-              <div key={list.id} className="card-design-neumorph p-5">
-                <div className="flex items-start justify-between mb-2">
-                  <Link to={`/dashboard/lists/${list.id}`} className="flex-1">
-                    <h3 className="text-base font-bold text-primary hover:underline cursor-pointer">{list.title}</h3>
-                  </Link>
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(list)}>
-                      <Edit2 className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(list.id)}>
-                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                    </Button>
-                  </div>
-                </div>
-                {list.description && <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{list.description}</p>}
-                <div className="flex items-center gap-2 text-sm">
-                  <Share2 className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-muted-foreground text-xs">Shared</span>
-                  <Switch checked={list.is_shared ?? false} onCheckedChange={() => toggleShared(list)} className="scale-75" />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Create Your Own */}
-      <div className="mb-10">
-        <h2 className="text-xl font-bold text-primary mb-4">Create Your Own</h2>
-        <button
-          onClick={openCreate}
-          className="card-design-neumorph p-6 w-full text-left hover:scale-[1.01] transition-transform group flex items-center gap-4"
-        >
-          <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
-            <Sparkles className="w-6 h-6" style={{ color: 'var(--swatch-viridian-odyssey)' }} />
-          </div>
-          <div>
-            <h3 className="font-semibold text-primary group-hover:underline text-lg">Start from Scratch</h3>
-            <p className="text-sm text-muted-foreground">Create a custom list with your own fields</p>
-          </div>
-        </button>
-      </div>
-
       {/* Templates by Category */}
-      <div>
+      <div className="mb-10">
         <h2 className="text-xl font-bold text-primary mb-6">Start from a Template</h2>
         {grouped.map((group) => (
           <div key={group.key} className="mb-8">
@@ -247,6 +186,23 @@ const MyGoTwo = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Create Your Own */}
+      <div className="mb-10">
+        <h2 className="text-xl font-bold text-primary mb-4">Create Your Own</h2>
+        <button
+          onClick={openCreate}
+          className="card-design-neumorph p-6 w-full text-left hover:scale-[1.01] transition-transform group flex items-center gap-4"
+        >
+          <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
+            <Sparkles className="w-6 h-6" style={{ color: 'var(--swatch-viridian-odyssey)' }} />
+          </div>
+          <div>
+            <h3 className="font-semibold text-primary group-hover:underline text-lg">Start from Scratch</h3>
+            <p className="text-sm text-muted-foreground">Create a custom list with your own fields</p>
+          </div>
+        </button>
       </div>
 
       {/* Dialog */}
