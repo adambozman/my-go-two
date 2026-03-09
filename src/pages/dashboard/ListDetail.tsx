@@ -201,6 +201,7 @@ const ListDetail = () => {
       setAutofillingCardId(null);
     }
   };
+  const hasSections = (fields: CardField[]) => fields.some((f) => f.section);
 
 
 
