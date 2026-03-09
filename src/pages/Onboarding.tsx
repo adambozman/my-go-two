@@ -238,13 +238,6 @@ const Onboarding = () => {
   }
 
   // ══════════════════════════════════════════
-  // RENDER: CATEGORY PICKER (cover flow)
-  // ══════════════════════════════════════════
-  if (phase === "category-picker") {
-    const cats = onboardingCategories;
-    const goLeftCat = () => setCategoryIndex((i) => (i - 1 + cats.length) % cats.length);
-    const goRightCat = () => setCategoryIndex((i) => (i + 1) % cats.length);
-  // ══════════════════════════════════════════
   // RENDER: PERSONALIZING (AI loading screen)
   // ══════════════════════════════════════════
   if (phase === "personalizing") {
@@ -277,7 +270,13 @@ const Onboarding = () => {
     );
   }
 
-
+  // ══════════════════════════════════════════
+  // RENDER: CATEGORY PICKER (cover flow)
+  // ══════════════════════════════════════════
+  if (phase === "category-picker") {
+    const cats = onboardingCategories;
+    const goLeftCat = () => setCategoryIndex((i) => (i - 1 + cats.length) % cats.length);
+    const goRightCat = () => setCategoryIndex((i) => (i + 1) % cats.length);
     return (
       <div className="landing-page min-h-screen flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-8 pt-6 pb-2 relative z-10">
