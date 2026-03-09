@@ -22,12 +22,12 @@ export interface OnboardingQuestion {
 }
 
 export const onboardingCategories = [
-  { id: "shopping", name: "Shopping Behavior", icon: "🛍️" },
-  { id: "style", name: "Style Identity", icon: "👗" },
-  { id: "food", name: "Food Preferences", icon: "🍽️" },
-  { id: "gifts", name: "Gift Psychology", icon: "🎁" },
-  { id: "lifestyle", name: "Activities & Lifestyle", icon: "✨" },
-  { id: "fit", name: "Fit & Sizing", icon: "📐" },
+  { id: "shopping", name: "Shopping Behavior" },
+  { id: "style", name: "Style Identity" },
+  { id: "food", name: "Food Preferences" },
+  { id: "gifts", name: "Gift Psychology" },
+  { id: "lifestyle", name: "Activities & Lifestyle" },
+  { id: "fit", name: "Fit & Sizing" },
 ];
 
 export const onboardingQuestions: OnboardingQuestion[] = [
