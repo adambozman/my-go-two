@@ -32,7 +32,7 @@ const Collaborations = () => {
   const [sending, setSending] = useState(false);
 
   const inviteLink = user
-    ? `${window.location.origin}/signup?invite=${user.id}`
+    ? `${window.location.origin}/connect?invite=${user.id}`
     : "";
 
   const callEdgeFunction = async (action: string, extra: Record<string, string> = {}) => {
