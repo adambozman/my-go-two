@@ -194,6 +194,17 @@ const MyGoTwo = () => {
     .filter((g) => g.items.length > 0);
 
   return (
+    <AnimatePresence mode="wait">
+    {coverFlowTemplate ? (
+      <TemplateCoverFlow
+        key="coverflow"
+        templateName={coverFlowTemplate.name}
+        subtypes={coverFlowTemplate.subtypes}
+        onBack={() => setCoverFlowTemplate(null)}
+        onSelect={handleSubtypeSelect}
+        creating={creating !== null}
+      />
+    ) : (
     <div className="max-w-5xl">
       <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
         My <GoTwoText className="text-2xl" />
