@@ -1,4 +1,4 @@
-import { Home, Heart, Users, Sparkles, ClipboardList, Settings } from "lucide-react";
+import { Home, Heart, Users, Sparkles, ClipboardList, Settings, SlidersHorizontal } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +8,7 @@ const navItems = [
   { icon: Users, url: "/dashboard/collaborations", label: "Collaborations" },
   { icon: Sparkles, url: "/dashboard/recommendations", label: "Recommendations" },
   { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Questionnaires" },
+  { icon: SlidersHorizontal, url: "/onboarding?edit=true", label: "Preferences" },
   { icon: Settings, url: "/dashboard/settings", label: "Settings" },
 ];
 

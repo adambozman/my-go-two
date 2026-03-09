@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -42,11 +42,13 @@ const useSelectedGender = (answers: Record<string, string | string[]>) => {
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isEditMode = searchParams.get("edit") === "true";
   const { user } = useAuth();
   const { refetch: refetchPersonalization } = usePersonalization();
   const { toast } = useToast();
 
-  const [phase, setPhase] = useState<Phase>("intro");
+  const [phase, setPhase] = useState<Phase>(isEditMode ? "category-picker" : "intro");
   const [profileIndex, setProfileIndex] = useState(0);
   const [categoryIndex, setCategoryIndex] = useState(0); // for cover-flow
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
