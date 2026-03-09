@@ -17,7 +17,7 @@ import {
 } from "@/data/onboardingQuestions";
 import { profileQuestions } from "@/data/profileQuestions";
 
-type Phase = "intro" | "profile" | "category-picker" | "category-questions";
+type Phase = "intro" | "profile" | "personalizing" | "category-picker" | "category-questions";
 
 const INTRO_IMAGES = [
   { id: "1542291026-7eec264c27ff", label: "Fashion" },
