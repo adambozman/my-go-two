@@ -134,6 +134,8 @@ const Onboarding = () => {
     if (currentIndex > 0) {
       setSlideDir(-1);
       setCurrentIndex((i) => i - 1);
+    } else {
+      setShowIntro(true);
     }
   };
 
@@ -450,7 +452,7 @@ const Onboarding = () => {
       {/* Bottom nav */}
       <div className="px-6 pb-6 pt-2">
         <div className="flex items-center gap-3 max-w-3xl mx-auto">
-          <Button variant="outline" size="lg" className="rounded-full px-6" onClick={goBack} disabled={currentIndex === 0}>
+          <Button variant="outline" size="lg" className="rounded-full px-6" onClick={goBack}>
             <ChevronLeft className="h-5 w-5 mr-1" /> Back
           </Button>
           <Button size="lg" className="rounded-full flex-1 h-12" onClick={goNext}>
