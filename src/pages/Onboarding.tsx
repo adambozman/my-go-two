@@ -368,7 +368,7 @@ const Onboarding = () => {
                       )}
                     </div>
                     <div className="p-3 text-center">
-                      <p className="text-lg mb-0.5">{cat.icon}</p>
+                      
                       <h3 className={`font-semibold text-sm ${isActive ? "text-primary" : "text-muted-foreground"}`}>
                         {cat.name}
                       </h3>
