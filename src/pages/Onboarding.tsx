@@ -160,14 +160,14 @@ const Onboarding = () => {
             </p>
             <div className="flex gap-3 justify-center mb-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                  <X className="h-5 w-5 text-red-500" />
+                <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center">
+                  <X className="h-5 w-5 text-destructive" />
                 </div>
                 <span>Nope</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <Heart className="h-5 w-5 text-green-500" />
+                <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                  <Heart className="h-5 w-5 text-accent" />
                 </div>
                 <span>Love it!</span>
               </div>
