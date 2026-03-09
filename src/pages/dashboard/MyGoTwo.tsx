@@ -143,7 +143,7 @@ const MyGoTwo = () => {
     }
     
     // Check if this template has subtypes (cover flow)
-    const subtypes = templateSubtypes[template.name];
+    const subtypes = allTemplateSubtypes[template.name];
     if (subtypes) {
       setCoverFlowTemplate({ name: template.name, subtypes });
       return;
