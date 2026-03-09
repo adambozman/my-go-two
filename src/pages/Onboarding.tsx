@@ -676,45 +676,6 @@ const Onboarding = () => {
               </div>
             )}
 
-            {/* ── SINGLE SELECT ── */}
-            {currentQuestion.type === "single-select" && currentQuestion.options && (
-              <div className="flex flex-col gap-3 max-w-md mx-auto w-full flex-1 content-start overflow-y-auto pb-4">
-                {currentQuestion.options.map((opt, i) => {
-                  const isSelected = selected.includes(opt.id);
-                  return (
-                    <motion.button
-                      key={opt.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      onClick={() => setSingle(currentQuestion.id, opt.id)}
-                      className={`card-design-neumorph px-6 py-4 text-left flex items-center gap-4 transition-all duration-200 ${
-                        isSelected ? "scale-[1.02] shadow-xl" : "hover:scale-[1.01] hover:shadow-lg"
-                      }`}
-                      style={{
-                        borderRadius: "1rem",
-                        borderColor: isSelected ? "hsl(196 40% 31%)" : undefined,
-                        borderWidth: isSelected ? "2px" : undefined,
-                      }}
-                    >
-                      <span className="text-2xl">{opt.emoji}</span>
-                      <span className="text-sm font-semibold text-primary flex-1">{opt.label}</span>
-                      {isSelected && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="w-6 h-6 rounded-full flex items-center justify-center"
-                          style={{ background: "hsl(196 40% 31%)" }}
-                        >
-                          <Check className="w-3.5 h-3.5 text-white" />
-                        </motion.div>
-                      )}
-                    </motion.button>
-                  );
-                })}
-              </div>
-            )}
-
             {/* ── FREE INPUT ── */}
             {currentQuestion.type === "free-input" && (
               <div className="max-w-md mx-auto w-full flex-1 flex flex-col justify-start pt-4">
