@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Coffee, Shirt, Heart, Gift, Salad, FileText, Footprints, Sparkles, UtensilsCrossed, ShoppingBasket, Flower2, Gem, ListChecks, Cake, Plane, Store, Calendar, ThumbsDown, HeartHandshake, Tag, Package } from "lucide-react";
+import { 
+  Coffee, Shirt, Heart, Gift, Salad, FileText, 
+  Footprints, Sparkles, Scissors, Ruler,
+  UtensilsCrossed, Apple, ShoppingBasket,
+  Flower2, Gem, ListChecks, CalendarHeart, Cake,
+  Plane, Store, Calendar,
+  ThumbsDown, HeartHandshake, Tag, Package
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import GoTwoText from "@/components/GoTwoText";
 
@@ -11,6 +18,25 @@ const iconMap: Record<string, any> = {
   heart: Heart,
   gift: Gift,
   file: FileText,
+  footprints: Footprints,
+  sparkles: Sparkles,
+  scissors: Scissors,
+  ruler: Ruler,
+  utensils: UtensilsCrossed,
+  apple: Apple,
+  "shopping-basket": ShoppingBasket,
+  "flower-2": Flower2,
+  gem: Gem,
+  "list-checks": ListChecks,
+  "calendar-heart": CalendarHeart,
+  cake: Cake,
+  plane: Plane,
+  store: Store,
+  calendar: Calendar,
+  "thumbs-down": ThumbsDown,
+  "heart-handshake": HeartHandshake,
+  tag: Tag,
+  package: Package,
 };
 
 const categoryLabels: Record<string, string> = {
