@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { DashboardTopBar } from "@/components/DashboardTopBar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const DashboardLayout = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { toast } = useToast();
 
   // Process stored invite link (from QR code signup flow)
@@ -27,6 +27,18 @@ const DashboardLayout = () => {
       }
     });
   }, [user]);
+
+  if (loading) {
+    return (
+      <div className="app-page min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <div className="app-page min-h-screen flex">
