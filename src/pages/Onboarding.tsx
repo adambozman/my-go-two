@@ -43,6 +43,7 @@ const CATEGORY_IMAGES: Record<string, string> = {
 const Onboarding = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { refetch: refetchPersonalization } = usePersonalization();
   const { toast } = useToast();
 
   const [phase, setPhase] = useState<Phase>("intro");
