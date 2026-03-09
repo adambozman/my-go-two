@@ -1,5 +1,44 @@
 import { OnboardingQuestion } from "./onboardingQuestions";
 
+// Local style images
+import minimalImg from "@/assets/styles/minimal.jpg";
+import classicImg from "@/assets/styles/classic.jpg";
+import sportyImg from "@/assets/styles/sporty.jpg";
+import trendyImg from "@/assets/styles/trendy.jpg";
+import edgyImg from "@/assets/styles/edgy.jpg";
+import bohoImg from "@/assets/styles/boho.jpg";
+import luxuryImg from "@/assets/styles/luxury.jpg";
+import laidBackImg from "@/assets/styles/laid-back.jpg";
+import hippyImg from "@/assets/styles/hippy.jpg";
+import preppyImg from "@/assets/styles/preppy.jpg";
+import streetImg from "@/assets/styles/street.jpg";
+import elegantImg from "@/assets/styles/elegant.jpg";
+import bougieImg from "@/assets/styles/bougie.jpg";
+import polishedImg from "@/assets/styles/polished.jpg";
+import casualImg from "@/assets/styles/casual.jpg";
+import creativeImg from "@/assets/styles/creative.jpg";
+import professionalImg from "@/assets/styles/professional.jpg";
+import chillImg from "@/assets/styles/chill.jpg";
+import budgetImg from "@/assets/styles/budget.jpg";
+import balancedImg from "@/assets/styles/balanced.jpg";
+import qualityImg from "@/assets/styles/quality.jpg";
+import comfortImg from "@/assets/styles/comfort.jpg";
+import fitImg from "@/assets/styles/fit.jpg";
+import brandImg from "@/assets/styles/brand.jpg";
+import priceImg from "@/assets/styles/price.jpg";
+import timelessImg from "@/assets/styles/timeless.jpg";
+import diningImg from "@/assets/styles/dining.jpg";
+import travelingImg from "@/assets/styles/traveling.jpg";
+import outdoorsImg from "@/assets/styles/outdoors.jpg";
+import eventsImg from "@/assets/styles/events.jpg";
+import stayingInImg from "@/assets/styles/staying-in.jpg";
+import fitnessImg from "@/assets/styles/fitness.jpg";
+import practicalGiftImg from "@/assets/styles/practical-gift.jpg";
+import thoughtfulGiftImg from "@/assets/styles/thoughtful-gift.jpg";
+import luxuriousGiftImg from "@/assets/styles/luxurious-gift.jpg";
+import experienceGiftImg from "@/assets/styles/experience-gift.jpg";
+import surpriseGiftImg from "@/assets/styles/surprise-gift.jpg";
+
 export const profileQuestions: OnboardingQuestion[] = [
   {
     id: "identity",
@@ -10,10 +49,10 @@ export const profileQuestions: OnboardingQuestion[] = [
     funnySubtext: "",
     multiSelect: false,
     options: [
-      { id: "male", label: "Male", image: "1506794778202-cad84cf45f1d" },
-      { id: "female", label: "Female", image: "1524504388940-b1c1722653e1" },
-      { id: "non-binary", label: "Non-binary", image: "1517841905240-472988babdf9" },
-      { id: "prefer-not", label: "Prefer not to say", image: "1494790108377-be9c29b29330" },
+      { id: "male", label: "Male", localImage: classicImg },
+      { id: "female", label: "Female", localImage: polishedImg },
+      { id: "non-binary", label: "Non-binary", localImage: creativeImg },
+      { id: "prefer-not", label: "Prefer not to say", localImage: minimalImg },
     ],
   },
   {
@@ -24,14 +63,14 @@ export const profileQuestions: OnboardingQuestion[] = [
     subtitle: "Pick all that resonate with you",
     funnySubtext: "",
     options: [
-      { id: "minimal", label: "Minimal", image: "1490481651871-ab68de25d43d" },
-      { id: "classic", label: "Classic", image: "1617137968427-85924c800a22" },
-      { id: "sporty", label: "Sporty", image: "1552674605-db6ffd4facb5" },
-      { id: "trendy", label: "Trendy", image: "1509631179647-0177331693ae" },
-      { id: "edgy", label: "Edgy", image: "1548624313-0396c75e4b1a" },
-      { id: "boho", label: "Boho", image: "1518622358385-8ea7d0794bf6" },
-      { id: "luxury", label: "Luxury", image: "1558618666-fcd25c85f82e" },
-      { id: "laid-back", label: "Laid-back", image: "1525507119028-ed4c629a60a3" },
+      { id: "minimal", label: "Minimal", localImage: minimalImg },
+      { id: "classic", label: "Classic", localImage: classicImg },
+      { id: "sporty", label: "Sporty", localImage: sportyImg },
+      { id: "trendy", label: "Trendy", localImage: trendyImg },
+      { id: "edgy", label: "Edgy", localImage: edgyImg },
+      { id: "boho", label: "Boho", localImage: bohoImg },
+      { id: "luxury", label: "Luxury", localImage: luxuryImg },
+      { id: "laid-back", label: "Laid-back", localImage: laidBackImg },
     ],
   },
   {
@@ -42,12 +81,12 @@ export const profileQuestions: OnboardingQuestion[] = [
     subtitle: "How do you show up to the world?",
     funnySubtext: "",
     options: [
-      { id: "polished", label: "Polished", image: "1507003211169-0a1dd7228f2d" },
-      { id: "casual", label: "Casual", image: "1525507119028-ed4c629a60a3" },
-      { id: "athletic", label: "Athletic", image: "1552674605-db6ffd4facb5" },
-      { id: "creative", label: "Creative", image: "1460661419201-fd4cecdf8a8b" },
-      { id: "professional", label: "Professional", image: "1617137968427-85924c800a22" },
-      { id: "chill", label: "Chill", image: "1506795660198-e95c77602c1e" },
+      { id: "polished", label: "Polished", localImage: polishedImg },
+      { id: "casual", label: "Casual", localImage: casualImg },
+      { id: "athletic", label: "Athletic", localImage: sportyImg },
+      { id: "creative", label: "Creative", localImage: creativeImg },
+      { id: "professional", label: "Professional", localImage: professionalImg },
+      { id: "chill", label: "Chill", localImage: chillImg },
     ],
   },
   {
@@ -59,10 +98,10 @@ export const profileQuestions: OnboardingQuestion[] = [
     funnySubtext: "",
     multiSelect: false,
     options: [
-      { id: "budget", label: "Budget-conscious", image: "1556742049-0cfed4f6a45d" },
-      { id: "balanced", label: "Balanced", image: "1472851294608-062f824d29cc" },
-      { id: "quality", label: "Quality-focused", image: "1556906781-9a412132f9be" },
-      { id: "luxury-first", label: "Luxury-first", image: "1441986300917-64674bd600d8" },
+      { id: "budget", label: "Budget-conscious", localImage: budgetImg },
+      { id: "balanced", label: "Balanced", localImage: balancedImg },
+      { id: "quality", label: "Quality-focused", localImage: qualityImg },
+      { id: "luxury-first", label: "Luxury-first", localImage: luxuryImg },
     ],
   },
   {
@@ -73,12 +112,12 @@ export const profileQuestions: OnboardingQuestion[] = [
     subtitle: "Pick what matters to you",
     funnySubtext: "",
     options: [
-      { id: "comfort", label: "Comfort", image: "1540518614846-7eded433c457" },
-      { id: "fit", label: "Fit", image: "1490481651871-ab68de25d43d" },
-      { id: "brand", label: "Brand name", image: "1542291026-7eec264c27ff" },
-      { id: "price", label: "Price", image: "1556742049-0cfed4f6a45d" },
-      { id: "trend", label: "Trend", image: "1509631179647-0177331693ae" },
-      { id: "timeless", label: "Timeless quality", image: "1617137968427-85924c800a22" },
+      { id: "comfort", label: "Comfort", localImage: comfortImg },
+      { id: "fit", label: "Fit", localImage: fitImg },
+      { id: "brand", label: "Brand name", localImage: brandImg },
+      { id: "price", label: "Price", localImage: priceImg },
+      { id: "trend", label: "Trend", localImage: trendyImg },
+      { id: "timeless", label: "Timeless quality", localImage: timelessImg },
     ],
   },
   {
@@ -89,12 +128,12 @@ export const profileQuestions: OnboardingQuestion[] = [
     subtitle: "Pick everything that applies",
     funnySubtext: "",
     options: [
-      { id: "dining", label: "Dining out", image: "1517248135467-4c7edcad34c4" },
-      { id: "traveling", label: "Traveling", image: "1488646953014-85cb44e25828" },
-      { id: "outdoors", label: "Outdoors", image: "1551632811-561732d1e306" },
-      { id: "events", label: "Events", image: "1459749411175-04bf5292ceea" },
-      { id: "staying-in", label: "Staying in", image: "1540518614846-7eded433c457" },
-      { id: "fitness", label: "Fitness", image: "1552674605-db6ffd4facb5" },
+      { id: "dining", label: "Dining out", localImage: diningImg },
+      { id: "traveling", label: "Traveling", localImage: travelingImg },
+      { id: "outdoors", label: "Outdoors", localImage: outdoorsImg },
+      { id: "events", label: "Events", localImage: eventsImg },
+      { id: "staying-in", label: "Staying in", localImage: stayingInImg },
+      { id: "fitness", label: "Fitness", localImage: fitnessImg },
     ],
   },
   {
@@ -106,11 +145,11 @@ export const profileQuestions: OnboardingQuestion[] = [
     funnySubtext: "",
     multiSelect: false,
     options: [
-      { id: "practical", label: "Something practical", image: "1491553895911-0055eca6402d" },
-      { id: "thoughtful", label: "Something thoughtful", image: "1513885535751-8b9238bd345a" },
-      { id: "luxurious", label: "Something luxurious", image: "1441986300917-64674bd600d8" },
-      { id: "experience", label: "An experience", image: "1459749411175-04bf5292ceea" },
-      { id: "surprise", label: "A surprise", image: "1549465220-1a8b9238cd48" },
+      { id: "practical", label: "Something practical", localImage: practicalGiftImg },
+      { id: "thoughtful", label: "Something thoughtful", localImage: thoughtfulGiftImg },
+      { id: "luxurious", label: "Something luxurious", localImage: luxuriousGiftImg },
+      { id: "experience", label: "An experience", localImage: experienceGiftImg },
+      { id: "surprise", label: "A surprise", localImage: surpriseGiftImg },
     ],
   },
   {
@@ -121,12 +160,12 @@ export const profileQuestions: OnboardingQuestion[] = [
     subtitle: "Pick what fits your energy",
     funnySubtext: "",
     options: [
-      { id: "hippy", label: "Hippy", image: "1518622358385-8ea7d0794bf6" },
-      { id: "preppy", label: "Preppy", image: "1617137968427-85924c800a22" },
-      { id: "street", label: "Street", image: "1548624313-0396c75e4b1a" },
-      { id: "elegant", label: "Elegant", image: "1558618666-fcd25c85f82e" },
-      { id: "bougie", label: "Bougie", image: "1441986300917-64674bd600d8" },
-      { id: "minimal", label: "Minimal", image: "1490481651871-ab68de25d43d" },
+      { id: "hippy", label: "Hippy", localImage: hippyImg },
+      { id: "preppy", label: "Preppy", localImage: preppyImg },
+      { id: "street", label: "Street", localImage: streetImg },
+      { id: "elegant", label: "Elegant", localImage: elegantImg },
+      { id: "bougie", label: "Bougie", localImage: bougieImg },
+      { id: "minimal", label: "Minimal", localImage: minimalImg },
     ],
   },
 ];
