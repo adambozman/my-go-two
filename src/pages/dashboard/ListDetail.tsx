@@ -248,6 +248,19 @@ const ListDetail = () => {
                 <div className="flex items-start justify-between mb-4">
                   <h3 className="text-lg font-bold text-primary">{card.title}</h3>
                   <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleAiAutofill(card)}
+                      disabled={autofillingCardId === card.id}
+                      title="AI Autofill"
+                    >
+                      {autofillingCardId === card.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                      ) : (
+                        <Sparkles className="h-4 w-4 text-primary" />
+                      )}
+                    </Button>
                     <Button variant="ghost" size="icon" onClick={() => openEdit(card)}>
                       <Edit2 className="h-4 w-4" />
                     </Button>
