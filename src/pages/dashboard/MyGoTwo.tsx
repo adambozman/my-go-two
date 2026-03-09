@@ -9,7 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
-import TemplateCoverFlow, { templateSubtypes, type SubtypeItem } from "@/components/TemplateCoverFlow";
+import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
+import { allTemplateSubtypes } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
 import { AnimatePresence } from "framer-motion";
 
@@ -100,8 +101,8 @@ const MyGoTwo = () => {
   // Reopen cover flow if navigating back from list detail
   useEffect(() => {
     const state = location.state as { openTemplate?: string } | null;
-    if (state?.openTemplate && templateSubtypes[state.openTemplate]) {
-      setCoverFlowTemplate({ name: state.openTemplate, subtypes: templateSubtypes[state.openTemplate] });
+    if (state?.openTemplate && allTemplateSubtypes[state.openTemplate]) {
+      setCoverFlowTemplate({ name: state.openTemplate, subtypes: allTemplateSubtypes[state.openTemplate] });
       // Clear state so refresh doesn't reopen
       window.history.replaceState({}, document.title);
     }
@@ -142,7 +143,7 @@ const MyGoTwo = () => {
     }
     
     // Check if this template has subtypes (cover flow)
-    const subtypes = templateSubtypes[template.name];
+    const subtypes = allTemplateSubtypes[template.name];
     if (subtypes) {
       setCoverFlowTemplate({ name: template.name, subtypes });
       return;
