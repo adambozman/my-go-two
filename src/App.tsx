@@ -19,6 +19,7 @@ import Recommendations from "./pages/dashboard/Recommendations";
 import Questionnaires from "./pages/dashboard/Questionnaires";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import NotFound from "./pages/NotFound";
+import Onboarding from "./pages/Onboarding";
 
 const queryClient = new QueryClient();
 

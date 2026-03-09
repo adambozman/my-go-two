@@ -21,11 +21,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const applySignupData = async (userId: string) => {
+    const raw = localStorage.getItem("gotwo_signup_data");
+    if (!raw) return;
+    try {
+      const { age, gender } = JSON.parse(raw);
+      await supabase
+        .from("profiles")
+        .update({ age, gender })
+        .eq("user_id", userId);
+      localStorage.removeItem("gotwo_signup_data");
+    } catch {}
+  };
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      if (_event === "SIGNED_IN" && session?.user) {
+        applySignupData(session.user.id);
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
