@@ -160,6 +160,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age: number | null
           avatar_url: string | null
           created_at: string
           display_name: string | null
@@ -169,6 +170,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          age?: number | null
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
@@ -178,11 +180,51 @@ export type Database = {
           user_id: string
         }
         Update: {
+          age?: number | null
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
           gender?: string | null
           id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          brands: Json | null
+          created_at: string
+          dislikes: Json | null
+          favorites: Json | null
+          id: string
+          onboarding_complete: boolean | null
+          places: Json | null
+          style_preferences: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brands?: Json | null
+          created_at?: string
+          dislikes?: Json | null
+          favorites?: Json | null
+          id?: string
+          onboarding_complete?: boolean | null
+          places?: Json | null
+          style_preferences?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brands?: Json | null
+          created_at?: string
+          dislikes?: Json | null
+          favorites?: Json | null
+          id?: string
+          onboarding_complete?: boolean | null
+          places?: Json | null
+          style_preferences?: Json | null
           updated_at?: string
           user_id?: string
         }
