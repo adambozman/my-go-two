@@ -94,7 +94,7 @@ const Landing = () => {
               viewport={{ once: true }}
               className="card-design-neumorph p-8 text-center"
             >
-              <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5" style={{ background: 'rgba(232,198,174,0.4)' }}>
+              <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.4)' }}>
                 <step.icon className="w-7 h-7" style={{ color: 'var(--swatch-cedar-grove)' }} />
               </div>
               <h3 className="text-xl font-semibold text-primary mb-3">{step.title}</h3>
