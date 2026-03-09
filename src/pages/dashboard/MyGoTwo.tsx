@@ -128,11 +128,32 @@ const MyGoTwo = () => {
       toast({ title: "Please log in first", variant: "destructive" });
       return;
     }
-    setCreating(template.id);
+    
+    // Check if this template has subtypes (cover flow)
+    const subtypes = templateSubtypes[template.name];
+    if (subtypes) {
+      setCoverFlowTemplate({ name: template.name, subtypes });
+      return;
+    }
+
+    // No subtypes — create list directly
+    await createListFromTemplate(template.name, template.default_fields, template.id);
+  };
+
+  const handleSubtypeSelect = async (subtype: SubtypeItem) => {
+    if (!user) return;
+    const templateName = coverFlowTemplate?.name;
+    const cardTitle = `${templateName} - ${subtype.name}`;
+    await createListFromTemplate(cardTitle, subtype.fields as any, undefined);
+  };
+
+  const createListFromTemplate = async (name: string, fields: any, templateId?: string) => {
+    if (!user) return;
+    setCreating(name);
     try {
       const { data: newList, error: listError } = await supabase
         .from("lists")
-        .insert({ title: template.name, description: `Created from ${template.name} template`, user_id: user.id })
+        .insert({ title: name, description: `Created from template`, user_id: user.id })
         .select()
         .single();
 
@@ -144,17 +165,18 @@ const MyGoTwo = () => {
 
       if (newList) {
         const { error: cardError } = await supabase.from("cards").insert({
-          title: template.name,
-          fields: template.default_fields,
+          title: name,
+          fields,
           list_id: newList.id,
           user_id: user.id,
-          template_id: template.id,
+          ...(templateId ? { template_id: templateId } : {}),
         });
 
         if (cardError) {
           toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
         }
 
+        setCoverFlowTemplate(null);
         navigate(`/dashboard/lists/${newList.id}`);
       }
     } catch (e: any) {
