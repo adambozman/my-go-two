@@ -355,7 +355,7 @@ const Onboarding = () => {
                   >
                     <div className="h-[175px] overflow-hidden relative">
                       <img
-                        src={`https://images.unsplash.com/photo-${CATEGORY_IMAGES[cat.id] || "1542291026-7eec264c27ff"}?w=400&h=300&fit=crop&q=80`}
+                        src={getCategoryImage(cat.id, selectedGender)}
                         alt={cat.name}
                         className="w-full h-full object-cover"
                       />
