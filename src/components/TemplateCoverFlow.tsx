@@ -105,8 +105,8 @@ interface TemplateCoverFlowProps {
 const TemplateCoverFlow = ({ templateName, subtypes, onBack, onSelect, creating }: TemplateCoverFlowProps) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(subtypes.length / 2));
 
-  const goLeft = () => setActiveIndex((i) => Math.max(0, i - 1));
-  const goRight = () => setActiveIndex((i) => Math.min(subtypes.length - 1, i + 1));
+  const goLeft = () => setActiveIndex((i) => (i - 1 + subtypes.length) % subtypes.length);
+  const goRight = () => setActiveIndex((i) => (i + 1) % subtypes.length);
 
   return (
     <motion.div
