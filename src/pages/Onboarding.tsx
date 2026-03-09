@@ -16,6 +16,7 @@ import {
   OnboardingQuestion,
 } from "@/data/onboardingQuestions";
 import { profileQuestions } from "@/data/profileQuestions";
+import { getStyleImage, getCategoryImage } from "@/data/genderImages";
 
 type Phase = "intro" | "profile" | "personalizing" | "category-picker" | "category-questions";
 
@@ -31,13 +32,12 @@ const INTRO_IMAGES = [
   { id: "1518611012118-696072aa579a", label: "Style" },
 ];
 
-const CATEGORY_IMAGES: Record<string, string> = {
-  shopping: "1441986300917-64674bd600d8",
-  style: "1558171813-4c2ab4ef9793",
-  food: "1498579150354-977475b7ea0b",
-  gifts: "1515562141207-7a88fb7ce338",
-  lifestyle: "1502602898657-3e91760cbb34",
-  fit: "1489987707025-afc232f7ea0f",
+// Gender helper — reads the identity answer from state
+const useSelectedGender = (answers: Record<string, string | string[]>) => {
+  const identity = answers["identity"];
+  if (!identity) return undefined;
+  const val = Array.isArray(identity) ? identity[0] : identity;
+  return val as "male" | "female" | "non-binary" | "prefer-not" | undefined;
 };
 
 const Onboarding = () => {
@@ -55,6 +55,7 @@ const Onboarding = () => {
   const [slideDir, setSlideDir] = useState<1 | -1>(1);
   const [introCenter, setIntroCenter] = useState(4);
   const [completedCategories, setCompletedCategories] = useState<string[]>([]);
+  const selectedGender = useSelectedGender(answers);
 
   // Browser back button
   useEffect(() => {
@@ -354,7 +355,7 @@ const Onboarding = () => {
                   >
                     <div className="h-[175px] overflow-hidden relative">
                       <img
-                        src={`https://images.unsplash.com/photo-${CATEGORY_IMAGES[cat.id] || "1542291026-7eec264c27ff"}?w=400&h=300&fit=crop&q=80`}
+                        src={getCategoryImage(cat.id, selectedGender)}
                         alt={cat.name}
                         className="w-full h-full object-cover"
                       />
@@ -367,12 +368,12 @@ const Onboarding = () => {
                       )}
                     </div>
                     <div className="p-3 text-center">
-                      <p className="text-lg mb-0.5">{cat.icon}</p>
+                      
                       <h3 className={`font-semibold text-sm ${isActive ? "text-primary" : "text-muted-foreground"}`}>
                         {cat.name}
                       </h3>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        {isDone ? "✅ Done" : `${catQCount} questions`}
+                        {isDone ? "Done" : `${catQCount} questions`}
                       </p>
                     </div>
                   </div>
@@ -417,7 +418,7 @@ const Onboarding = () => {
   const progress = totalQ > 0 ? ((qIndex + 1) / totalQ) * 100 : 0;
   const selected = currentQuestion ? getSelected(currentQuestion.id) : [];
   const currentCategory = isProfilePhase
-    ? { icon: "🧠", name: "About You" }
+    ? { name: "About You" }
     : onboardingCategories.find((c) => c.id === selectedCategory);
 
   const goNext = () => {
@@ -509,7 +510,7 @@ const Onboarding = () => {
       <div className="px-6 mb-1">
         <div className="flex items-center justify-between text-sm mb-1.5">
           <span className="font-semibold text-primary text-base">
-            {currentCategory?.icon} {currentCategory?.name}
+            {currentCategory?.name}
           </span>
           <span className="text-muted-foreground text-xs">
             {qIndex + 1} of {totalQ}
@@ -567,7 +568,7 @@ const Onboarding = () => {
                       >
                         <div className="aspect-[4/3] overflow-hidden relative">
                           <img
-                            src={opt.localImage || `https://images.unsplash.com/photo-${opt.image}?w=350&h=260&fit=crop&q=80`}
+                            src={getStyleImage(opt.id, selectedGender) || opt.localImage || `https://images.unsplash.com/photo-${opt.image}?w=350&h=260&fit=crop&q=80`}
                             alt={opt.label}
                             className={`w-full h-full object-cover transition-transform duration-300 ${
                               isSelected ? "scale-105" : "group-hover:scale-105"
