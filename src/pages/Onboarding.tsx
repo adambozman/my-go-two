@@ -552,7 +552,7 @@ const Onboarding = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03 }}
-                      onClick={() => isMulti ? toggleMulti(currentQuestion.id, opt.id) : setSingle(currentQuestion.id, opt.id)}
+                      onClick={() => currentQuestion.multiSelect === false ? setSingle(currentQuestion.id, opt.id) : toggleMulti(currentQuestion.id, opt.id)}
                       className="text-left group"
                     >
                       <div
