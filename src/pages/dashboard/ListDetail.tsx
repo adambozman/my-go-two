@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Trash2, Edit2, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, Edit2, ArrowLeft, Save } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -17,6 +17,8 @@ interface CardField {
   type: "text" | "select";
   value: string;
   options?: string[];
+  section?: string;
+  gender?: string[];
 }
 
 interface GoTwoCard {
@@ -39,15 +41,19 @@ const ListDetail = () => {
   const [cardTitle, setCardTitle] = useState("");
   const [fields, setFields] = useState<CardField[]>([{ label: "", type: "text", value: "" }]);
   const [templates, setTemplates] = useState<any[]>([]);
+  const [userGender, setUserGender] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const fetchData = async () => {
     if (!user || !listId) return;
-    const [{ data: list }, { data: cardsData }, { data: templatesData }] = await Promise.all([
+    const [{ data: list }, { data: cardsData }, { data: templatesData }, { data: profile }] = await Promise.all([
       supabase.from("lists").select("title").eq("id", listId).single(),
       supabase.from("cards").select("*").eq("list_id", listId).order("created_at", { ascending: false }),
       supabase.from("card_templates").select("*"),
+      supabase.from("profiles").select("gender").eq("user_id", user.id).single(),
     ]);
     setListTitle(list?.title ?? "");
+    setUserGender((profile as any)?.gender ?? null);
     setCards(
       (cardsData ?? []).map((c) => ({
         ...c,
@@ -59,6 +65,14 @@ const ListDetail = () => {
   };
 
   useEffect(() => { fetchData(); }, [user, listId]);
+
+  const filterFieldsByGender = (fields: CardField[]): CardField[] => {
+    return fields.filter((f) => {
+      if (!f.gender || f.gender.length === 0) return true;
+      if (!userGender) return true; // show all if no gender set
+      return f.gender.includes(userGender);
+    });
+  };
 
   const applyTemplate = (templateId: string) => {
     const t = templates.find((t) => t.id === templateId);
@@ -73,6 +87,26 @@ const ListDetail = () => {
     const updated = [...fields];
     (updated[i] as any)[key] = val;
     setFields(updated);
+  };
+
+  // For inline editing on the card detail view
+  const updateCardFieldValue = (cardId: string, fieldIndex: number, val: string) => {
+    setCards((prev) =>
+      prev.map((c) => {
+        if (c.id !== cardId) return c;
+        const updated = [...c.fields];
+        updated[fieldIndex] = { ...updated[fieldIndex], value: val };
+        return { ...c, fields: updated };
+      })
+    );
+  };
+
+  const saveCardInline = async (card: GoTwoCard) => {
+    setSaving(true);
+    const fieldsJson = card.fields as unknown as Json;
+    await supabase.from("cards").update({ fields: fieldsJson }).eq("id", card.id);
+    setSaving(false);
+    toast({ title: "Saved!" });
   };
 
   const handleSave = async () => {
@@ -107,6 +141,31 @@ const ListDetail = () => {
     setFields([{ label: "", type: "text", value: "" }]);
   };
 
+  // Group fields by section for display
+  const groupFieldsBySection = (fields: CardField[]) => {
+    const filtered = filterFieldsByGender(fields);
+    const sections: { name: string; fields: { field: CardField; originalIndex: number }[] }[] = [];
+    const sectionMap = new Map<string, { field: CardField; originalIndex: number }[]>();
+
+    filtered.forEach((f) => {
+      // Find the original index in the unfiltered array
+      const originalIndex = fields.indexOf(f);
+      const sectionName = f.section || "Details";
+      if (!sectionMap.has(sectionName)) {
+        sectionMap.set(sectionName, []);
+      }
+      sectionMap.get(sectionName)!.push({ field: f, originalIndex });
+    });
+
+    sectionMap.forEach((items, name) => {
+      sections.push({ name, fields: items });
+    });
+
+    return sections;
+  };
+
+  const hasSections = (fields: CardField[]) => fields.some((f) => f.section);
+
   return (
     <div className="max-w-4xl">
       <div className="flex items-center gap-3 mb-6">
@@ -134,30 +193,119 @@ const ListDetail = () => {
           </Button>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {cards.map((card) => (
-            <div key={card.id} className="card-design-neumorph p-6">
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="text-lg font-bold text-primary">{card.title}</h3>
-                <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => openEdit(card)}>
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => handleDelete(card.id)}>
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </div>
-              </div>
-              <div className="space-y-2">
-                {card.fields.map((field, i) => (
-                  <div key={i} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{field.label}</span>
-                    <span className="font-medium text-primary">{field.value || "—"}</span>
+        <div className="space-y-6">
+          {cards.map((card) => {
+            const sections = groupFieldsBySection(card.fields);
+            const useSections = hasSections(card.fields);
+
+            return (
+              <div key={card.id} className="card-design-neumorph p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className="text-lg font-bold text-primary">{card.title}</h3>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="icon" onClick={() => openEdit(card)}>
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(card.id)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
                   </div>
-                ))}
+                </div>
+
+                {useSections ? (
+                  <div className="space-y-6">
+                    {sections.map((section) => (
+                      <div key={section.name}>
+                        <h4 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--swatch-cedar-grove)' }}>
+                          {section.name}
+                        </h4>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {section.fields.map(({ field, originalIndex }) => (
+                            <div key={originalIndex} className="space-y-1">
+                              <Label className="text-xs text-muted-foreground">{field.label}</Label>
+                              {field.type === "select" && field.options ? (
+                                <Select
+                                  value={field.value}
+                                  onValueChange={(val) => updateCardFieldValue(card.id, originalIndex, val)}
+                                >
+                                  <SelectTrigger className="rounded-xl h-9 text-sm">
+                                    <SelectValue placeholder={`Select ${field.label.toLowerCase()}...`} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {field.options.map((opt) => (
+                                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              ) : (
+                                <Input
+                                  value={field.value}
+                                  onChange={(e) => updateCardFieldValue(card.id, originalIndex, e.target.value)}
+                                  placeholder={`Enter ${field.label.toLowerCase()}...`}
+                                  className="rounded-xl h-9 text-sm"
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    <Button
+                      size="sm"
+                      className="rounded-full"
+                      onClick={() => saveCardInline(card)}
+                      disabled={saving}
+                    >
+                      <Save className="mr-2 h-3.5 w-3.5" />
+                      {saving ? "Saving..." : "Save"}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {filterFieldsByGender(card.fields).map((field, i) => {
+                      const originalIndex = card.fields.indexOf(field);
+                      return (
+                        <div key={i} className="space-y-1">
+                          <Label className="text-xs text-muted-foreground">{field.label}</Label>
+                          {field.type === "select" && field.options ? (
+                            <Select
+                              value={field.value}
+                              onValueChange={(val) => updateCardFieldValue(card.id, originalIndex, val)}
+                            >
+                              <SelectTrigger className="rounded-xl h-9 text-sm">
+                                <SelectValue placeholder={`Select...`} />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {field.options.map((opt) => (
+                                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Input
+                              value={field.value}
+                              onChange={(e) => updateCardFieldValue(card.id, originalIndex, e.target.value)}
+                              placeholder={`Enter ${field.label.toLowerCase()}...`}
+                              className="rounded-xl h-9 text-sm"
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                    <Button
+                      size="sm"
+                      className="rounded-full mt-2"
+                      onClick={() => saveCardInline(card)}
+                      disabled={saving}
+                    >
+                      <Save className="mr-2 h-3.5 w-3.5" />
+                      {saving ? "Saving..." : "Save"}
+                    </Button>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
