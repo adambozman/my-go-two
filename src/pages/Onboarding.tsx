@@ -55,6 +55,7 @@ const Onboarding = () => {
   const [slideDir, setSlideDir] = useState<1 | -1>(1);
   const [introCenter, setIntroCenter] = useState(4);
   const [completedCategories, setCompletedCategories] = useState<string[]>([]);
+  const selectedGender = useSelectedGender(answers);
 
   // Browser back button
   useEffect(() => {
