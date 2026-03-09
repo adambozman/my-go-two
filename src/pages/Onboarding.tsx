@@ -536,7 +536,9 @@ const Onboarding = () => {
                 {currentQuestion.title}
               </h2>
               <p className="text-sm text-muted-foreground">{currentQuestion.subtitle}</p>
-              <p className="text-xs text-muted-foreground italic mt-1">{currentQuestion.funnySubtext}</p>
+              {currentQuestion.funnySubtext && (
+                <p className="text-xs text-muted-foreground italic mt-1">{currentQuestion.funnySubtext}</p>
+              )}
             </div>
 
             {/* ── IMAGE GRID ── */}
@@ -550,7 +552,7 @@ const Onboarding = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03 }}
-                      onClick={() => toggleMulti(currentQuestion.id, opt.id)}
+                      onClick={() => currentQuestion.multiSelect === false ? setSingle(currentQuestion.id, opt.id) : toggleMulti(currentQuestion.id, opt.id)}
                       className="text-left group"
                     >
                       <div
