@@ -46,11 +46,11 @@ const DashboardHome = () => {
         ].map((s) => (
           <div key={s.label} className="card-design-neumorph p-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(232,198,174,0.4)' }}>
-                <s.icon className="w-5 h-5" style={{ color: '#D9654F' }} />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.4)' }}>
+                <s.icon className="w-5 h-5" style={{ color: 'var(--swatch-cedar-grove)' }} />
               </div>
               <div>
-                <p className="text-2xl font-bold" style={{ color: '#2F5F6D' }}>{s.value}</p>
+                <p className="text-2xl font-bold" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{s.value}</p>
                 <p className="text-sm text-muted-foreground">{s.label}</p>
               </div>
             </div>

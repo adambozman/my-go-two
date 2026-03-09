@@ -40,7 +40,7 @@ export function AppSidebar() {
       </div>
 
       <div className="mt-auto mb-4">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold card-design-neumorph" style={{ color: '#2F5F6D' }}>
+        <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold card-design-neumorph" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
           AT
         </div>
       </div>

@@ -43,8 +43,8 @@ const Templates = () => {
               className="card-design-neumorph p-6 cursor-pointer hover:shadow-lg transition-shadow"
               onClick={() => navigate("/dashboard/lists")}
             >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(232,198,174,0.3)' }}>
-                <Icon className="w-5 h-5 text-muted-foreground" />
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.3)' }}>
+                <Icon className="w-5 h-5" style={{ color: 'var(--swatch-cedar-grove)' }} />
               </div>
               <h3 className="text-lg font-bold text-primary mb-2">{t.name}</h3>
               <p className="text-sm text-muted-foreground mb-1">{t.category}</p>
