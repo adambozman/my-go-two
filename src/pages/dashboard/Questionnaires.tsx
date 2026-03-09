@@ -6,18 +6,17 @@ import { profileQuestions } from "@/data/profileQuestions";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 
 const Questionnaires = () => {
-  const { personalization } = usePersonalization();
+  const { profileAnswers } = usePersonalization();
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [selections, setSelections] = useState<Record<string, string[]>>(() => {
-    // Pre-populate from saved answers
     const saved: Record<string, string[]> = {};
-    if (personalization?.profileAnswers) {
-      const answers = personalization.profileAnswers as Record<string, any>;
+    if (profileAnswers) {
       for (const q of imageQuestions) {
-        if (answers[q.id]) {
-          saved[q.id] = Array.isArray(answers[q.id]) ? answers[q.id] : [answers[q.id]];
+        if (profileAnswers[q.id]) {
+          const val = profileAnswers[q.id];
+          saved[q.id] = Array.isArray(val) ? val as string[] : [val as string];
         }
       }
     }
