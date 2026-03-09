@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
 import TemplateCoverFlow, { templateSubtypes, type SubtypeItem } from "@/components/TemplateCoverFlow";
+import CategoryCoverFlow from "@/components/CategoryCoverFlow";
 import { AnimatePresence } from "framer-motion";
 
 // Template images
