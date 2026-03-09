@@ -36,9 +36,10 @@ const DashboardLayout = () => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+  // Auth guard disabled for development
+  // if (!user) {
+  //   return <Navigate to="/login" replace />;
+  // }
 
   return (
     <div className="app-page min-h-screen flex">
