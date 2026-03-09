@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const [searchParams] = useSearchParams();
