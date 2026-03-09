@@ -24,6 +24,10 @@ const Signup = () => {
     setLoading(true);
     try {
       await signUp(email, password, displayName);
+      // Store invite ID so it can be processed after email confirmation & login
+      if (inviteId) {
+        localStorage.setItem("gotwo_invite", inviteId);
+      }
       toast({ title: "Check your email", description: "We sent you a confirmation link." });
       navigate("/login");
     } catch (error: any) {
