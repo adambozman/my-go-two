@@ -9,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
+import TemplateCoverFlow, { templateSubtypes, type SubtypeItem } from "@/components/TemplateCoverFlow";
+import { AnimatePresence } from "framer-motion";
 
 // Template images
 import imgClothingSizes from "@/assets/templates/clothing-sizes.jpg";
@@ -91,6 +93,7 @@ const MyGoTwo = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[] } | null>(null);
 
   useEffect(() => {
     supabase.from("card_templates").select("*").then(({ data }) => {
@@ -125,11 +128,32 @@ const MyGoTwo = () => {
       toast({ title: "Please log in first", variant: "destructive" });
       return;
     }
-    setCreating(template.id);
+    
+    // Check if this template has subtypes (cover flow)
+    const subtypes = templateSubtypes[template.name];
+    if (subtypes) {
+      setCoverFlowTemplate({ name: template.name, subtypes });
+      return;
+    }
+
+    // No subtypes — create list directly
+    await createListFromTemplate(template.name, template.default_fields, template.id);
+  };
+
+  const handleSubtypeSelect = async (subtype: SubtypeItem) => {
+    if (!user) return;
+    const templateName = coverFlowTemplate?.name;
+    const cardTitle = `${templateName} - ${subtype.name}`;
+    await createListFromTemplate(cardTitle, subtype.fields as any, undefined);
+  };
+
+  const createListFromTemplate = async (name: string, fields: any, templateId?: string) => {
+    if (!user) return;
+    setCreating(name);
     try {
       const { data: newList, error: listError } = await supabase
         .from("lists")
-        .insert({ title: template.name, description: `Created from ${template.name} template`, user_id: user.id })
+        .insert({ title: name, description: `Created from template`, user_id: user.id })
         .select()
         .single();
 
@@ -141,17 +165,18 @@ const MyGoTwo = () => {
 
       if (newList) {
         const { error: cardError } = await supabase.from("cards").insert({
-          title: template.name,
-          fields: template.default_fields,
+          title: name,
+          fields,
           list_id: newList.id,
           user_id: user.id,
-          template_id: template.id,
+          ...(templateId ? { template_id: templateId } : {}),
         });
 
         if (cardError) {
           toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
         }
 
+        setCoverFlowTemplate(null);
         navigate(`/dashboard/lists/${newList.id}`);
       }
     } catch (e: any) {
@@ -169,6 +194,17 @@ const MyGoTwo = () => {
     .filter((g) => g.items.length > 0);
 
   return (
+    <AnimatePresence mode="wait">
+    {coverFlowTemplate ? (
+      <TemplateCoverFlow
+        key="coverflow"
+        templateName={coverFlowTemplate.name}
+        subtypes={coverFlowTemplate.subtypes}
+        onBack={() => setCoverFlowTemplate(null)}
+        onSelect={handleSubtypeSelect}
+        creating={creating !== null}
+      />
+    ) : (
     <div className="max-w-5xl">
       <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
         My <GoTwoText className="text-2xl" />
@@ -256,6 +292,8 @@ const MyGoTwo = () => {
         </DialogContent>
       </Dialog>
     </div>
+    )}
+    </AnimatePresence>
   );
 };
 
