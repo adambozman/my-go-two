@@ -12,7 +12,10 @@ import ResetPassword from "./pages/ResetPassword";
 import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import ListDetail from "./pages/dashboard/ListDetail";
-import SharedLists from "./pages/dashboard/SharedLists";
+import MyGoTwo from "./pages/dashboard/MyGoTwo";
+import Collaborations from "./pages/dashboard/Collaborations";
+import Recommendations from "./pages/dashboard/Recommendations";
+import Questionnaires from "./pages/dashboard/Questionnaires";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import NotFound from "./pages/NotFound";
 
@@ -34,7 +37,10 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />
               <Route path="lists/:listId" element={<ListDetail />} />
-              <Route path="shared" element={<SharedLists />} />
+              <Route path="my-go-two" element={<MyGoTwo />} />
+              <Route path="collaborations" element={<Collaborations />} />
+              <Route path="recommendations" element={<Recommendations />} />
+              <Route path="questionnaires" element={<Questionnaires />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
