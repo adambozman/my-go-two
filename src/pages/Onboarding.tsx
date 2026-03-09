@@ -39,6 +39,25 @@ const Onboarding = () => {
   const [slideDir, setSlideDir] = useState<1 | -1>(1);
   const [introCenter, setIntroCenter] = useState(4);
 
+  // Browser back button support — go to previous question instead of leaving page
+  useEffect(() => {
+    if (showIntro) return;
+    // Push a state entry for each question so browser back works
+    window.history.pushState({ questionIndex: currentIndex }, "");
+
+    const handlePopState = (e: PopStateEvent) => {
+      if (currentIndex > 0) {
+        setSlideDir(-1);
+        setCurrentIndex((i) => Math.max(0, i - 1));
+      } else {
+        setShowIntro(true);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [showIntro, currentIndex]);
+
   useEffect(() => {
     if (!showIntro) return;
     const interval = setInterval(() => {
