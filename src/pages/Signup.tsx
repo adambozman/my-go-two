@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
 
 const Signup = () => {
+  const [searchParams] = useSearchParams();
+  const inviteId = searchParams.get("invite");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
