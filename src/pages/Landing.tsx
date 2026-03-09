@@ -139,7 +139,7 @@ const Landing = () => {
             Join couples who never have to guess again.
           </p>
           <Link to="/signup">
-            <Button size="lg" className="rounded-full px-8 py-6 text-base" style={{ background: 'var(--swatch-cedar-grove)', color: '#fff' }}>
+            <Button size="lg" className="rounded-full px-8 py-6 text-base" style={{ background: 'var(--swatch-cedar-grove)', color: 'var(--swatch-cream-light)' }}>
               Create Your First Card
             </Button>
           </Link>
