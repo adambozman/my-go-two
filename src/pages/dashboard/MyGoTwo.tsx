@@ -87,6 +87,7 @@ const MyGoTwo = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState<string | null>(null);
@@ -94,6 +95,16 @@ const MyGoTwo = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[] } | null>(null);
+
+  // Reopen cover flow if navigating back from list detail
+  useEffect(() => {
+    const openTemplate = (location.state as any)?.openTemplate as string | undefined;
+    if (openTemplate && templateSubtypes[openTemplate]) {
+      setCoverFlowTemplate({ name: openTemplate, subtypes: templateSubtypes[openTemplate] });
+      // Clear state so refresh doesn't reopen
+      window.history.replaceState({}, "");
+    }
+  }, [location.state]);
 
   useEffect(() => {
     supabase.from("card_templates").select("*").then(({ data }) => {
