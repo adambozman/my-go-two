@@ -35,7 +35,6 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />
-              <Route path="lists" element={<MyLists />} />
               <Route path="lists/:listId" element={<ListDetail />} />
               <Route path="shared" element={<SharedLists />} />
               <Route path="templates" element={<Templates />} />

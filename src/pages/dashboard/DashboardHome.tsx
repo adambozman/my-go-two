@@ -1,35 +1,134 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ListChecks, Share2, Users, Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ListChecks, Share2, Users, Plus, Trash2, Edit2, Sparkles, Coffee, Shirt, Gift, Utensils, Heart, FileText, Footprints, Scissors, Ruler, SprayCan, Droplet, UtensilsCrossed, Salad, ShoppingBasket, Flower2, Gem, PartyPopper, Cake, MapPin, Plane, CalendarHeart, ThumbsDown, Languages, Tags, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
+import { Switch } from "@/components/ui/switch";
+
+interface List {
+  id: string;
+  title: string;
+  description: string | null;
+  is_shared: boolean | null;
+  created_at: string;
+}
+
+interface Template {
+  id: string;
+  name: string;
+  icon: string | null;
+  category: string;
+}
+
+const iconMap: Record<string, any> = {
+  shirt: Shirt,
+  footprints: Footprints,
+  sprayCan: SprayCan,
+  scissors: Scissors,
+  ruler: Ruler,
+  coffee: Coffee,
+  utensils: Utensils,
+  utensilsCrossed: UtensilsCrossed,
+  salad: Salad,
+  shoppingBasket: ShoppingBasket,
+  flower2: Flower2,
+  droplet: Droplet,
+  gem: Gem,
+  gift: Gift,
+  partyPopper: PartyPopper,
+  cake: Cake,
+  mapPin: MapPin,
+  plane: Plane,
+  calendarHeart: CalendarHeart,
+  thumbsDown: ThumbsDown,
+  languages: Languages,
+  tags: Tags,
+  package: Package,
+  heart: Heart,
+};
 
 const DashboardHome = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [stats, setStats] = useState({ lists: 0, cards: 0, collaborations: 0 });
   const [displayName, setDisplayName] = useState("");
+  const [lists, setLists] = useState<List[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingList, setEditingList] = useState<List | null>(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-        const [{ count: listCount }, { count: cardCount }, { count: coupleCount }, { data: profile }] = await Promise.all([
-          supabase.from("lists").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-          supabase.from("cards").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-          supabase.from("couples").select("*", { count: "exact", head: true }).eq("status", "accepted"),
-          supabase.from("profiles").select("display_name").eq("user_id", user.id).single(),
-        ]);
-        setStats({ lists: listCount ?? 0, cards: cardCount ?? 0, collaborations: coupleCount ?? 0 });
-        setDisplayName(profile?.display_name ?? "");
-      } catch {}
-    };
+  const fetchData = async () => {
+    if (!user) return;
+    try {
+      const [{ count: listCount }, { count: cardCount }, { count: coupleCount }, { data: profile }, { data: listsData }, { data: templatesData }] = await Promise.all([
+        supabase.from("lists").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("cards").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("couples").select("*", { count: "exact", head: true }).eq("status", "accepted"),
+        supabase.from("profiles").select("display_name").eq("user_id", user.id).single(),
+        supabase.from("lists").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("card_templates").select("id, name, icon, category").limit(6),
+      ]);
+      setStats({ lists: listCount ?? 0, cards: cardCount ?? 0, collaborations: coupleCount ?? 0 });
+      setDisplayName(profile?.display_name ?? "");
+      setLists(listsData ?? []);
+      setTemplates(templatesData ?? []);
+    } catch {}
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchData(); }, [user]);
+
+  const handleSave = async () => {
+    if (!user || !title.trim()) return;
+    if (editingList) {
+      await supabase.from("lists").update({ title, description }).eq("id", editingList.id);
+    } else {
+      await supabase.from("lists").insert({ title, description, user_id: user.id });
+    }
+    setDialogOpen(false);
+    setEditingList(null);
+    setTitle("");
+    setDescription("");
     fetchData();
-  }, []);
+  };
+
+  const handleDelete = async (id: string) => {
+    await supabase.from("lists").delete().eq("id", id);
+    fetchData();
+    toast({ title: "List deleted" });
+  };
+
+  const toggleShared = async (list: List) => {
+    await supabase.from("lists").update({ is_shared: !list.is_shared }).eq("id", list.id);
+    fetchData();
+  };
+
+  const openEdit = (list: List) => {
+    setEditingList(list);
+    setTitle(list.title);
+    setDescription(list.description ?? "");
+    setDialogOpen(true);
+  };
+
+  const openCreate = () => {
+    setEditingList(null);
+    setTitle("");
+    setDescription("");
+    setDialogOpen(true);
+  };
 
   return (
-    <div className="max-w-4xl">
-      {/* Hero card */}
+    <div className="max-w-5xl">
+      {/* Hero */}
       <div className="card-design-neumorph panel-polish p-8 mb-8">
         <h1 className="text-3xl font-bold mb-2">
           Hey, {displayName || "there"} 👋
@@ -42,7 +141,7 @@ const DashboardHome = () => {
         {[
           { label: "My Lists", value: stats.lists, icon: ListChecks },
           { label: "Total Cards", value: stats.cards, icon: Share2 },
-          { label: "Active Collaborations", value: stats.collaborations, icon: Users },
+          { label: "Collaborations", value: stats.collaborations, icon: Users },
         ].map((s) => (
           <div key={s.label} className="card-design-neumorph p-5">
             <div className="flex items-center gap-3">
@@ -58,17 +157,117 @@ const DashboardHome = () => {
         ))}
       </div>
 
-      <div className="flex gap-4">
-        <Link to="/dashboard/lists">
-          <Button className="rounded-full px-6">
-            <Plus className="mr-2 h-4 w-4" />
-            Create New List
+      {/* My Lists Section */}
+      <div className="mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-primary">My Lists</h2>
+          <Button className="rounded-full" size="sm" onClick={openCreate}>
+            <Plus className="mr-2 h-4 w-4" /> New List
           </Button>
-        </Link>
-        <Link to="/dashboard/templates">
-          <Button variant="outline" className="rounded-full px-6">Browse Templates</Button>
-        </Link>
+        </div>
+
+        {loading ? (
+          <p className="text-muted-foreground">Loading...</p>
+        ) : lists.length === 0 ? (
+          <div className="card-design-neumorph p-8 text-center">
+            <p className="text-muted-foreground mb-4">No lists yet. Create your first one!</p>
+            <Button className="rounded-full" onClick={openCreate}>
+              <Plus className="mr-2 h-4 w-4" /> Create List
+            </Button>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {lists.map((list) => (
+              <div key={list.id} className="card-design-neumorph p-5">
+                <div className="flex items-start justify-between mb-2">
+                  <Link to={`/dashboard/lists/${list.id}`} className="flex-1">
+                    <h3 className="text-base font-bold text-primary hover:underline cursor-pointer">{list.title}</h3>
+                  </Link>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(list)}>
+                      <Edit2 className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(list.id)}>
+                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+                {list.description && <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{list.description}</p>}
+                <div className="flex items-center gap-2 text-sm">
+                  <Share2 className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-muted-foreground text-xs">Shared</span>
+                  <Switch checked={list.is_shared ?? false} onCheckedChange={() => toggleShared(list)} className="scale-75" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Quick Start Templates */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-primary">Quick Start</h2>
+          <Link to="/dashboard/templates">
+            <Button variant="ghost" size="sm" className="rounded-full">View All Templates</Button>
+          </Link>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Make Your Own Card */}
+          <button
+            onClick={openCreate}
+            className="card-design-neumorph p-5 text-left hover:scale-[1.02] transition-transform group"
+          >
+            <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
+              <Sparkles className="w-5 h-5" style={{ color: 'var(--swatch-viridian-odyssey)' }} />
+            </div>
+            <h3 className="font-semibold text-primary group-hover:underline">Make Your Own</h3>
+            <p className="text-xs text-muted-foreground mt-1">Start from scratch</p>
+          </button>
+
+          {/* Template Cards */}
+          {templates.slice(0, 5).map((t) => {
+            const Icon = iconMap[t.icon ?? ""] || FileText;
+            return (
+              <Link
+                key={t.id}
+                to={`/dashboard/templates?use=${t.id}`}
+                className="card-design-neumorph p-5 hover:scale-[1.02] transition-transform group"
+              >
+                <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.4)' }}>
+                  <Icon className="w-5 h-5" style={{ color: 'var(--swatch-cedar-grove)' }} />
+                </div>
+                <h3 className="font-semibold text-primary group-hover:underline">{t.name}</h3>
+                <p className="text-xs text-muted-foreground mt-1">{t.category}</p>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingList ? "Edit List" : "Create New List"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Food & Drinks" className="rounded-xl" />
+            </div>
+            <div className="space-y-2">
+              <Label>Description (optional)</Label>
+              <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What's this list about?" className="rounded-xl" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button className="rounded-full" onClick={handleSave} disabled={!title.trim()}>
+              {editingList ? "Save Changes" : "Create List"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
