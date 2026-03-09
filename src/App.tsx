@@ -11,10 +11,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
-import MyLists from "./pages/dashboard/MyLists";
 import ListDetail from "./pages/dashboard/ListDetail";
 import SharedLists from "./pages/dashboard/SharedLists";
-import Templates from "./pages/dashboard/Templates";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import NotFound from "./pages/NotFound";
 
