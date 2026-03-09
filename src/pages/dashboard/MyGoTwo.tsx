@@ -246,10 +246,6 @@ const MyGoTwo = () => {
               />
             </div>
           ))
-        )}
-            </div>
-          ))
-        )}
       </div>
 
       {/* Create Your Own */}
