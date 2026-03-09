@@ -244,6 +244,39 @@ const Onboarding = () => {
     const cats = onboardingCategories;
     const goLeftCat = () => setCategoryIndex((i) => (i - 1 + cats.length) % cats.length);
     const goRightCat = () => setCategoryIndex((i) => (i + 1) % cats.length);
+  // ══════════════════════════════════════════
+  // RENDER: PERSONALIZING (AI loading screen)
+  // ══════════════════════════════════════════
+  if (phase === "personalizing") {
+    return (
+      <div className="landing-page min-h-screen flex flex-col items-center justify-center overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center px-6 max-w-md"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center"
+            style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" }}
+          >
+            <Sparkles className="w-8 h-8 text-primary-foreground" />
+          </motion.div>
+          <h2 className="text-2xl font-bold text-primary mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Analyzing Your Profile...
+          </h2>
+          <p className="text-muted-foreground mb-2">
+            Our AI is building your personalized experience
+          </p>
+          <p className="text-sm text-muted-foreground italic">
+            Matching brands, stores, and styles to your taste ✨
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
 
     return (
       <div className="landing-page min-h-screen flex flex-col overflow-hidden">
