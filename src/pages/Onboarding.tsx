@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { ChevronRight, ChevronLeft, Sparkles, Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
@@ -16,7 +17,7 @@ import {
 } from "@/data/onboardingQuestions";
 import { profileQuestions } from "@/data/profileQuestions";
 
-type Phase = "intro" | "profile" | "category-picker" | "category-questions";
+type Phase = "intro" | "profile" | "personalizing" | "category-picker" | "category-questions";
 
 const INTRO_IMAGES = [
   { id: "1542291026-7eec264c27ff", label: "Fashion" },
@@ -42,6 +43,7 @@ const CATEGORY_IMAGES: Record<string, string> = {
 const Onboarding = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { refetch: refetchPersonalization } = usePersonalization();
   const { toast } = useToast();
 
   const [phase, setPhase] = useState<Phase>("intro");
@@ -131,18 +133,19 @@ const Onboarding = () => {
   const handleComplete = async () => {
     if (!user) { navigate("/dashboard"); return; }
     try {
-      // Save identity to profile
-      const identityAnswer = answers["identity"];
-      const gender = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
-      if (gender && gender !== "prefer-not") {
-        await supabase.from("profiles").update({ gender }).eq("user_id", user.id);
+      // Separate category answers from profile answers
+      const profileIds = profileQuestions.map((q) => q.id);
+      const categoryAnswers: Record<string, string | string[]> = {};
+      for (const [key, val] of Object.entries(answers)) {
+        if (!profileIds.includes(key)) categoryAnswers[key] = val;
       }
 
       await supabase.from("user_preferences").upsert({
         user_id: user.id,
-        favorites: answers,
+        favorites: categoryAnswers,
         onboarding_complete: true,
       });
+      await refetchPersonalization();
       toast({ title: "You're all set! 🎉", description: "Your profile is personalized!" });
       navigate("/dashboard");
     } catch (error: any) {
@@ -236,13 +239,45 @@ const Onboarding = () => {
   }
 
   // ══════════════════════════════════════════
+  // RENDER: PERSONALIZING (AI loading screen)
+  // ══════════════════════════════════════════
+  if (phase === "personalizing") {
+    return (
+      <div className="landing-page min-h-screen flex flex-col items-center justify-center overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center px-6 max-w-md"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center"
+            style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" }}
+          >
+            <Sparkles className="w-8 h-8 text-primary-foreground" />
+          </motion.div>
+          <h2 className="text-2xl font-bold text-primary mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Analyzing Your Profile...
+          </h2>
+          <p className="text-muted-foreground mb-2">
+            Our AI is building your personalized experience
+          </p>
+          <p className="text-sm text-muted-foreground italic">
+            Matching brands, stores, and styles to your taste ✨
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ══════════════════════════════════════════
   // RENDER: CATEGORY PICKER (cover flow)
   // ══════════════════════════════════════════
   if (phase === "category-picker") {
     const cats = onboardingCategories;
     const goLeftCat = () => setCategoryIndex((i) => (i - 1 + cats.length) % cats.length);
     const goRightCat = () => setCategoryIndex((i) => (i + 1) % cats.length);
-
     return (
       <div className="landing-page min-h-screen flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-8 pt-6 pb-2 relative z-10">
@@ -392,7 +427,8 @@ const Onboarding = () => {
       else setCatQuestionIndex((i) => i + 1);
     } else {
       if (isProfilePhase) {
-        setPhase("category-picker");
+        // Trigger AI personalization
+        runPersonalization();
       } else {
         // Mark category as completed
         if (selectedCategory && !completedCategories.includes(selectedCategory)) {
@@ -401,6 +437,46 @@ const Onboarding = () => {
         setPhase("category-picker");
       }
     }
+  };
+
+  const runPersonalization = async () => {
+    setPhase("personalizing");
+    
+    // Collect only profile answers
+    const profileAnswerData: Record<string, string | string[]> = {};
+    for (const q of profileQuestions) {
+      if (answers[q.id]) profileAnswerData[q.id] = answers[q.id];
+    }
+
+    // Save gender to profile
+    if (user) {
+      const identityAnswer = profileAnswerData["identity"];
+      const gender = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
+      if (gender && gender !== "prefer-not") {
+        await supabase.from("profiles").update({ gender }).eq("user_id", user.id);
+      }
+    }
+
+    // Call AI personalization
+    if (user) {
+      try {
+        const { data, error } = await supabase.functions.invoke("personalize", {
+          body: { profile_answers: profileAnswerData },
+        });
+
+        if (error) {
+          console.error("Personalization error:", error);
+          toast({ title: "Personalization saved", description: "We'll refine as you answer more!" });
+        } else {
+          await refetchPersonalization();
+          toast({ title: "Profile analyzed! ✨", description: data?.personalization?.persona_summary || "Your experience is now personalized!" });
+        }
+      } catch (e) {
+        console.error("Personalization failed:", e);
+      }
+    }
+
+    setPhase("category-picker");
   };
 
   const goBack = () => {

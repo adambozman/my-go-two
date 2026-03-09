@@ -193,6 +193,7 @@ export type Database = {
       }
       user_preferences: {
         Row: {
+          ai_personalization: Json | null
           brands: Json | null
           created_at: string
           dislikes: Json | null
@@ -200,11 +201,13 @@ export type Database = {
           id: string
           onboarding_complete: boolean | null
           places: Json | null
+          profile_answers: Json | null
           style_preferences: Json | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          ai_personalization?: Json | null
           brands?: Json | null
           created_at?: string
           dislikes?: Json | null
@@ -212,11 +215,13 @@ export type Database = {
           id?: string
           onboarding_complete?: boolean | null
           places?: Json | null
+          profile_answers?: Json | null
           style_preferences?: Json | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          ai_personalization?: Json | null
           brands?: Json | null
           created_at?: string
           dislikes?: Json | null
@@ -224,6 +229,7 @@ export type Database = {
           id?: string
           onboarding_complete?: boolean | null
           places?: Json | null
+          profile_answers?: Json | null
           style_preferences?: Json | null
           updated_at?: string
           user_id?: string
