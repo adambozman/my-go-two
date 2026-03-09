@@ -152,7 +152,7 @@ const Onboarding = () => {
               Let's Get to Know You!
             </h1>
             <p className="text-muted-foreground mb-6">
-              Swipe right on things you <span className="text-red-400">❤️</span> love, left on things you don't.
+              Swipe right on things you <span className="text-destructive">❤️</span> love, left on things you don't.
               <br />
               <span className="text-sm italic">
                 (Your partner will thank us later 😉)
