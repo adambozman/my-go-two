@@ -418,7 +418,7 @@ const Onboarding = () => {
   const progress = totalQ > 0 ? ((qIndex + 1) / totalQ) * 100 : 0;
   const selected = currentQuestion ? getSelected(currentQuestion.id) : [];
   const currentCategory = isProfilePhase
-    ? { icon: "🧠", name: "About You" }
+    ? { name: "About You" }
     : onboardingCategories.find((c) => c.id === selectedCategory);
 
   const goNext = () => {
