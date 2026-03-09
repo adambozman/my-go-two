@@ -286,17 +286,17 @@ const Onboarding = () => {
         <Button
           size="lg"
           variant="outline"
-          className="rounded-full w-16 h-16 p-0 border-2 border-red-300 hover:bg-red-50 hover:border-red-400"
+          className="rounded-full w-16 h-16 p-0 border-2 border-destructive/40 hover:bg-destructive/10"
           onClick={() => handleSwipe("left")}
         >
-          <X className="h-8 w-8 text-red-500" />
+          <X className="h-8 w-8 text-destructive" />
         </Button>
         <Button
           size="lg"
-          className="rounded-full w-16 h-16 p-0 bg-green-500 hover:bg-green-600"
+          className="rounded-full w-16 h-16 p-0"
           onClick={() => handleSwipe("right")}
         >
-          <Heart className="h-8 w-8 text-white" />
+          <Heart className="h-8 w-8" />
         </Button>
       </div>
     </div>
