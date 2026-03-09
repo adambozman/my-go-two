@@ -16,6 +16,7 @@ import {
   OnboardingQuestion,
 } from "@/data/onboardingQuestions";
 import { profileQuestions } from "@/data/profileQuestions";
+import { getStyleImage, getCategoryImage } from "@/data/genderImages";
 
 type Phase = "intro" | "profile" | "personalizing" | "category-picker" | "category-questions";
 
