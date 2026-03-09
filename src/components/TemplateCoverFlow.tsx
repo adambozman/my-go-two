@@ -90,7 +90,6 @@ const shoeSubtypes: SubtypeItem[] = [
   },
 ];
 
-// Map template names to their subtypes
 export const templateSubtypes: Record<string, SubtypeItem[]> = {
   "Shoe Size": shoeSubtypes,
 };
@@ -124,93 +123,92 @@ const TemplateCoverFlow = ({ templateName, subtypes, onBack, onSelect, creating 
         <h1 className="text-2xl font-bold text-primary">{templateName}</h1>
       </div>
 
-      <p className="text-muted-foreground text-center mb-8 text-sm">
+      <p className="text-muted-foreground text-center mb-6 text-sm">
         Choose a type to get started
       </p>
 
       {/* Cover Flow */}
-      <div className="relative flex items-center justify-center py-4">
+      <div className="relative flex items-center justify-center">
         {/* Left arrow */}
         <Button
           variant="ghost"
           size="icon"
           onClick={goLeft}
           disabled={activeIndex === 0}
-          className="absolute left-0 z-10 rounded-full bg-background/80 backdrop-blur shadow-md"
+          className="absolute left-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
 
-        {/* Cards */}
-        <div className="flex items-center justify-center gap-0 w-full overflow-hidden" style={{ perspective: "1200px" }}>
-          {subtypes.map((subtype, index) => {
-            const offset = index - activeIndex;
-            const isActive = offset === 0;
-            const absOffset = Math.abs(offset);
+        {/* Cards container */}
+        <div className="relative w-full h-[340px] overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            {subtypes.map((subtype, index) => {
+              const offset = index - activeIndex;
+              const isActive = offset === 0;
+              const absOffset = Math.abs(offset);
 
-            // Only show nearby cards
-            if (absOffset > 2) return null;
+              if (absOffset > 2) return null;
 
-            const translateX = offset * 160;
-            const translateZ = isActive ? 0 : -120 * absOffset;
-            const rotateY = offset * -25;
-            const scale = isActive ? 1 : 0.75;
-            const opacity = isActive ? 1 : 0.6;
-            const zIndex = 10 - absOffset;
+              // Positioning: active card in center, others spread out
+              const xOffset = offset * 180;
+              const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
+              const zIndex = 10 - absOffset;
+              const blur = isActive ? 0 : 2;
+              const opacity = isActive ? 1 : 0.5;
 
-            return (
-              <motion.button
-                key={subtype.id}
-                onClick={() => {
-                  if (isActive) {
-                    onSelect(subtype);
-                  } else {
-                    setActiveIndex(index);
-                  }
-                }}
-                disabled={creating}
-                animate={{
-                  x: translateX,
-                  z: translateZ,
-                  rotateY,
-                  scale,
-                  opacity,
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="absolute flex-shrink-0 cursor-pointer disabled:opacity-50"
-                style={{
-                  zIndex,
-                  transformStyle: "preserve-3d",
-                }}
-              >
-                <div className={`card-design-neumorph overflow-hidden rounded-2xl transition-shadow duration-300 ${isActive ? "ring-2 ring-primary shadow-xl" : ""}`}
-                  style={{ width: 200, height: 260 }}
+              return (
+                <motion.div
+                  key={subtype.id}
+                  animate={{
+                    x: xOffset,
+                    scale,
+                    opacity,
+                    filter: `blur(${blur}px)`,
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="absolute cursor-pointer"
+                  style={{ zIndex }}
+                  onClick={() => {
+                    if (isActive) {
+                      onSelect(subtype);
+                    } else {
+                      setActiveIndex(index);
+                    }
+                  }}
                 >
-                  <div className="h-[180px] overflow-hidden">
-                    <img
-                      src={subtype.image}
-                      alt={subtype.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <div
+                    className={`card-design-neumorph overflow-hidden rounded-2xl transition-shadow duration-300 ${
+                      isActive ? "ring-2 ring-primary shadow-2xl" : ""
+                    }`}
+                    style={{ width: 220, height: 300 }}
+                  >
+                    <div className="h-[210px] overflow-hidden">
+                      <img
+                        src={subtype.image}
+                        alt={subtype.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-3 text-center">
+                      <h3 className={`font-semibold text-base ${isActive ? "text-primary" : "text-muted-foreground"}`}>
+                        {subtype.name}
+                      </h3>
+                      {isActive && (
+                        <motion.p
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="text-xs text-muted-foreground mt-1"
+                        >
+                          Tap to start
+                        </motion.p>
+                      )}
+                    </div>
                   </div>
-                  <div className="p-3 text-center">
-                    <h3 className={`font-semibold ${isActive ? "text-primary" : "text-muted-foreground"}`}>
-                      {subtype.name}
-                    </h3>
-                    {isActive && (
-                      <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-xs text-muted-foreground mt-1"
-                      >
-                        Tap to start
-                      </motion.p>
-                    )}
-                  </div>
-                </div>
-              </motion.button>
-            );
-          })}
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Right arrow */}
@@ -219,14 +217,14 @@ const TemplateCoverFlow = ({ templateName, subtypes, onBack, onSelect, creating 
           size="icon"
           onClick={goRight}
           disabled={activeIndex === subtypes.length - 1}
-          className="absolute right-0 z-10 rounded-full bg-background/80 backdrop-blur shadow-md"
+          className="absolute right-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
         >
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
 
-      {/* Active card label */}
-      <div className="text-center mt-12">
+      {/* Active card info */}
+      <div className="text-center mt-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={subtypes[activeIndex].id}
