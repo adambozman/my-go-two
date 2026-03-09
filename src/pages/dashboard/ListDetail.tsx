@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Trash2, Edit2, ArrowLeft, Save } from "lucide-react";
+import { Plus, Trash2, Edit2, ArrowLeft, Save, Sparkles, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -46,6 +46,7 @@ const ListDetail = () => {
   const [templates, setTemplates] = useState<any[]>([]);
   const [userGender, setUserGender] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [autofillingCardId, setAutofillingCardId] = useState<string | null>(null);
 
   const fetchData = async () => {
     if (!user || !listId) return;
@@ -167,7 +168,42 @@ const ListDetail = () => {
     return sections;
   };
 
+  const handleAiAutofill = async (card: GoTwoCard) => {
+    setAutofillingCardId(card.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-autofill', {
+        body: {
+          cardTitle: card.title,
+          fields: card.fields.map(f => ({
+            label: f.label,
+            type: f.type,
+            options: f.options,
+          })),
+        },
+      });
+      if (error) throw error;
+      const values: string[] = data?.values ?? [];
+      setCards(prev =>
+        prev.map(c => {
+          if (c.id !== card.id) return c;
+          const updated = c.fields.map((f, i) => ({
+            ...f,
+            value: values[i] ?? f.value,
+          }));
+          return { ...c, fields: updated };
+        })
+      );
+      toast({ title: "AI autofill complete!", description: "Review the suggestions and save when ready." });
+    } catch (e: any) {
+      console.error("AI autofill error:", e);
+      toast({ title: "Autofill failed", description: e.message || "Please try again.", variant: "destructive" });
+    } finally {
+      setAutofillingCardId(null);
+    }
+  };
   const hasSections = (fields: CardField[]) => fields.some((f) => f.section);
+
+
 
   return (
     <div className="max-w-4xl">
@@ -212,6 +248,19 @@ const ListDetail = () => {
                 <div className="flex items-start justify-between mb-4">
                   <h3 className="text-lg font-bold text-primary">{card.title}</h3>
                   <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleAiAutofill(card)}
+                      disabled={autofillingCardId === card.id}
+                      title="AI Autofill"
+                    >
+                      {autofillingCardId === card.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                      ) : (
+                        <Sparkles className="h-4 w-4 text-primary" />
+                      )}
+                    </Button>
                     <Button variant="ghost" size="icon" onClick={() => openEdit(card)}>
                       <Edit2 className="h-4 w-4" />
                     </Button>
