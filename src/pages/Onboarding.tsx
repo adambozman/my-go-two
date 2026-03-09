@@ -567,7 +567,7 @@ const Onboarding = () => {
                       >
                         <div className="aspect-[4/3] overflow-hidden relative">
                           <img
-                            src={`https://images.unsplash.com/photo-${opt.image}?w=350&h=260&fit=crop&q=80`}
+                            src={opt.localImage || `https://images.unsplash.com/photo-${opt.image}?w=350&h=260&fit=crop&q=80`}
                             alt={opt.label}
                             className={`w-full h-full object-cover transition-transform duration-300 ${
                               isSelected ? "scale-105" : "group-hover:scale-105"
