@@ -292,6 +292,8 @@ const MyGoTwo = () => {
         </DialogContent>
       </Dialog>
     </div>
+    )}
+    </AnimatePresence>
   );
 };
 
