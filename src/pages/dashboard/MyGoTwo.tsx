@@ -187,8 +187,9 @@ const MyGoTwo = () => {
           toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
         }
 
+        const fromTemplate = coverFlowTemplate?.name;
         setCoverFlowTemplate(null);
-        navigate(`/dashboard/lists/${newList.id}`);
+        navigate(`/dashboard/lists/${newList.id}`, { state: { fromTemplate } });
       }
     } catch (e: any) {
       toast({ title: "Something went wrong", description: e.message, variant: "destructive" });
