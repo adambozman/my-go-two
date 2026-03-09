@@ -43,16 +43,16 @@ export const profileQuestions: OnboardingQuestion[] = [
   {
     id: "identity",
     category: "profile",
-    type: "image-grid",
+    type: "single-select",
     title: "How do you identify?",
     subtitle: "Helps us with fit, tone, and recommendations",
     funnySubtext: "",
     multiSelect: false,
     options: [
-      { id: "male", label: "Male", localImage: classicImg },
-      { id: "female", label: "Female", localImage: polishedImg },
-      { id: "non-binary", label: "Non-binary", localImage: creativeImg },
-      { id: "prefer-not", label: "Prefer not to say", localImage: minimalImg },
+      { id: "male", label: "Male" },
+      { id: "female", label: "Female" },
+      { id: "non-binary", label: "Non-binary" },
+      { id: "prefer-not", label: "Prefer not to say" },
     ],
   },
   {

@@ -596,7 +596,52 @@ const Onboarding = () => {
               </div>
             )}
 
-            {/* ── PILL SELECT ── */}
+            {/* ── SINGLE SELECT (radio-style) ── */}
+            {currentQuestion.type === "single-select" && currentQuestion.options && (
+              <div className="flex flex-col gap-3 max-w-md mx-auto w-full flex-1 content-start overflow-y-auto pb-4">
+                {currentQuestion.options.map((opt, i) => {
+                  const isSelected = selected.includes(opt.id);
+                  return (
+                    <motion.button
+                      key={opt.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      onClick={() => setSingle(currentQuestion.id, opt.id)}
+                      className={`flex items-center gap-4 px-5 py-4 rounded-xl text-left transition-all duration-200 ${
+                        isSelected
+                          ? "shadow-md"
+                          : "hover:shadow-sm"
+                      }`}
+                      style={{
+                        background: isSelected
+                          ? "linear-gradient(158deg, rgba(232,198,174,0.5), rgba(107,109,98,0.2))"
+                          : "linear-gradient(158deg, rgba(232,198,174,0.2), rgba(107,109,98,0.08))",
+                        border: isSelected
+                          ? "2px solid hsl(196 40% 31%)"
+                          : "2px solid transparent",
+                      }}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                          isSelected ? "border-primary bg-primary" : "border-muted-foreground/40"
+                        }`}
+                      >
+                        {isSelected && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="w-2.5 h-2.5 rounded-full bg-white"
+                          />
+                        )}
+                      </div>
+                      <span className="text-sm font-semibold text-primary">{opt.label}</span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            )}
+
             {currentQuestion.type === "pill-select" && currentQuestion.options && (
               <div className="flex flex-wrap gap-3 justify-center flex-1 content-start overflow-y-auto pb-4">
                 {currentQuestion.options.map((opt, i) => {
