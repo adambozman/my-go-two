@@ -79,7 +79,7 @@ const DashboardHome = () => {
         className="card-design-neumorph panel-polish p-8"
       >
         <h1 className="text-3xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
-          Hey, {firstName} 👋
+          Hey, {firstName}
         </h1>
         <p className="text-muted-foreground">
           Your <GoTwoText className="text-base" /> dashboard — curated just for you.
