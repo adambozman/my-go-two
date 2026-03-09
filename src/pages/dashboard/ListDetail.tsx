@@ -46,6 +46,7 @@ const ListDetail = () => {
   const [templates, setTemplates] = useState<any[]>([]);
   const [userGender, setUserGender] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [autofillingCardId, setAutofillingCardId] = useState<string | null>(null);
 
   const fetchData = async () => {
     if (!user || !listId) return;
