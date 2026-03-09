@@ -133,18 +133,19 @@ const Onboarding = () => {
   const handleComplete = async () => {
     if (!user) { navigate("/dashboard"); return; }
     try {
-      // Save identity to profile
-      const identityAnswer = answers["identity"];
-      const gender = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
-      if (gender && gender !== "prefer-not") {
-        await supabase.from("profiles").update({ gender }).eq("user_id", user.id);
+      // Separate category answers from profile answers
+      const profileIds = profileQuestions.map((q) => q.id);
+      const categoryAnswers: Record<string, string | string[]> = {};
+      for (const [key, val] of Object.entries(answers)) {
+        if (!profileIds.includes(key)) categoryAnswers[key] = val;
       }
 
       await supabase.from("user_preferences").upsert({
         user_id: user.id,
-        favorites: answers,
+        favorites: categoryAnswers,
         onboarding_complete: true,
       });
+      await refetchPersonalization();
       toast({ title: "You're all set! 🎉", description: "Your profile is personalized!" });
       navigate("/dashboard");
     } catch (error: any) {
