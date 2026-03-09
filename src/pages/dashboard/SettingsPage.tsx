@@ -48,11 +48,11 @@ const SettingsPage = () => {
     <div className="max-w-4xl">
       {/* Hero */}
       <div className="card-design-neumorph panel-polish p-8 mb-8">
-        <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider mb-4" style={{ border: '1px solid rgba(174,176,161,0.62)', background: 'rgba(181,184,168,0.3)', color: '#2F5F6D' }}>
+        <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider mb-4" style={{ border: '1px solid var(--chip-border)', background: 'rgba(181,184,168,0.3)', color: 'var(--swatch-viridian-odyssey)' }}>
           <SettingsIcon className="h-3 w-3" />
           Settings
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-3" style={{ color: 'rgba(107,109,98,0.35)' }}>
+        <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-3" style={{ color: 'rgba(var(--swatch-antique-coin-rgb), 0.35)' }}>
           Workspace settings<br />for your workspace.
         </h1>
         <p className="text-muted-foreground">Control notifications, profile preferences, and workspace defaults.</p>
