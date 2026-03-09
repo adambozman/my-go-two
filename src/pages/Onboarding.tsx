@@ -394,7 +394,8 @@ const Onboarding = () => {
       else setCatQuestionIndex((i) => i + 1);
     } else {
       if (isProfilePhase) {
-        setPhase("category-picker");
+        // Trigger AI personalization
+        runPersonalization();
       } else {
         // Mark category as completed
         if (selectedCategory && !completedCategories.includes(selectedCategory)) {
@@ -403,6 +404,46 @@ const Onboarding = () => {
         setPhase("category-picker");
       }
     }
+  };
+
+  const runPersonalization = async () => {
+    setPhase("personalizing");
+    
+    // Collect only profile answers
+    const profileAnswerData: Record<string, string | string[]> = {};
+    for (const q of profileQuestions) {
+      if (answers[q.id]) profileAnswerData[q.id] = answers[q.id];
+    }
+
+    // Save gender to profile
+    if (user) {
+      const identityAnswer = profileAnswerData["identity"];
+      const gender = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
+      if (gender && gender !== "prefer-not") {
+        await supabase.from("profiles").update({ gender }).eq("user_id", user.id);
+      }
+    }
+
+    // Call AI personalization
+    if (user) {
+      try {
+        const { data, error } = await supabase.functions.invoke("personalize", {
+          body: { profile_answers: profileAnswerData },
+        });
+
+        if (error) {
+          console.error("Personalization error:", error);
+          toast({ title: "Personalization saved", description: "We'll refine as you answer more!" });
+        } else {
+          await refetchPersonalization();
+          toast({ title: "Profile analyzed! ✨", description: data?.personalization?.persona_summary || "Your experience is now personalized!" });
+        }
+      } catch (e) {
+        console.error("Personalization failed:", e);
+      }
+    }
+
+    setPhase("category-picker");
   };
 
   const goBack = () => {
