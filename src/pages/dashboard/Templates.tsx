@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Coffee, Shirt, Heart, Gift, Salad, FileText } from "lucide-react";
+import { Coffee, Shirt, Heart, Gift, Salad, FileText, Footprints, Sparkles, UtensilsCrossed, ShoppingBasket, Flower2, Gem, ListChecks, Cake, Plane, Store, Calendar, ThumbsDown, HeartHandshake, Tag, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import GoTwoText from "@/components/GoTwoText";
 
@@ -14,6 +13,16 @@ const iconMap: Record<string, any> = {
   file: FileText,
 };
 
+const categoryLabels: Record<string, string> = {
+  personal: "Personal",
+  "food-drink": "Food & Drink",
+  "gifts-occasions": "Gifts & Occasions",
+  experiences: "Experiences",
+  preferences: "Preferences",
+};
+
+const categoryOrder = ["personal", "food-drink", "gifts-occasions", "experiences", "preferences"];
+
 const Templates = () => {
   const [templates, setTemplates] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -24,6 +33,14 @@ const Templates = () => {
     });
   }, []);
 
+  const grouped = categoryOrder
+    .map((cat) => ({
+      key: cat,
+      label: categoryLabels[cat] ?? cat,
+      items: templates.filter((t) => t.category === cat),
+    }))
+    .filter((g) => g.items.length > 0);
+
   return (
     <div className="max-w-4xl">
       <div className="mb-8">
@@ -33,26 +50,30 @@ const Templates = () => {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {templates.map((t) => {
-          const Icon = iconMap[t.icon] || FileText;
-          const fieldCount = Array.isArray(t.default_fields) ? t.default_fields.length : 0;
-          return (
-            <div
-              key={t.id}
-              className="card-design-neumorph p-6 cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => navigate("/dashboard/lists")}
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.3)' }}>
-                <Icon className="w-5 h-5" style={{ color: 'var(--swatch-cedar-grove)' }} />
-              </div>
-              <h3 className="text-lg font-bold text-primary mb-2">{t.name}</h3>
-              <p className="text-sm text-muted-foreground mb-1">{t.category}</p>
-              <p className="text-xs text-muted-foreground">{fieldCount} fields</p>
-            </div>
-          );
-        })}
-      </div>
+      {grouped.map((group) => (
+        <div key={group.key} className="mb-10">
+          <h2 className="text-lg font-semibold text-primary mb-4">{group.label}</h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {group.items.map((t) => {
+              const Icon = iconMap[t.icon] || FileText;
+              const fieldCount = Array.isArray(t.default_fields) ? t.default_fields.length : 0;
+              return (
+                <div
+                  key={t.id}
+                  className="card-design-neumorph p-5 cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => navigate("/dashboard/lists")}
+                >
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.3)' }}>
+                    <Icon className="w-4 h-4" style={{ color: 'var(--swatch-cedar-grove)' }} />
+                  </div>
+                  <h3 className="text-base font-bold text-primary mb-1">{t.name}</h3>
+                  <p className="text-xs text-muted-foreground">{fieldCount} fields</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
