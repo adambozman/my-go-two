@@ -134,6 +134,8 @@ const Onboarding = () => {
     if (currentIndex > 0) {
       setSlideDir(-1);
       setCurrentIndex((i) => i - 1);
+    } else {
+      setShowIntro(true);
     }
   };
 
