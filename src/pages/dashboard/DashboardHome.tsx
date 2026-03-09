@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ListChecks, Share2, Users, Plus, Trash2, Edit2, Sparkles, Coffee, Shirt, Gift, Utensils, Heart, FileText, Footprints, Scissors, Ruler, SprayCan, Droplet, UtensilsCrossed, Salad, ShoppingBasket, Flower2, Gem, PartyPopper, Cake, MapPin, Plane, CalendarHeart, ThumbsDown, Languages, Tags, Package } from "lucide-react";
+import { ListChecks, Share2, Users, Plus, Trash2, Edit2, Sparkles, Coffee, Shirt, Gift, Utensils, Heart, FileText, Footprints, Scissors, Ruler, SprayCan, Droplet, UtensilsCrossed, Salad, ShoppingBasket, Flower2, Gem, PartyPopper, Cake, MapPin, Plane, CalendarHeart, ThumbsDown, Languages, Tags, Package, Apple, Store, Calendar, HeartHandshake, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -24,6 +24,7 @@ interface Template {
   name: string;
   icon: string | null;
   category: string;
+  default_fields: any;
 }
 
 const iconMap: Record<string, any> = {
@@ -51,7 +52,29 @@ const iconMap: Record<string, any> = {
   tags: Tags,
   package: Package,
   heart: Heart,
+  apple: Apple,
+  "shopping-basket": ShoppingBasket,
+  "flower-2": Flower2,
+  "list-checks": ListChecks,
+  "calendar-heart": CalendarHeart,
+  store: Store,
+  calendar: Calendar,
+  "thumbs-down": ThumbsDown,
+  "heart-handshake": HeartHandshake,
+  tag: Tag,
+  sparkles: Sparkles,
+  file: FileText,
 };
+
+const categoryLabels: Record<string, string> = {
+  personal: "Personal",
+  "food-drink": "Food & Drink",
+  "gifts-occasions": "Gifts & Occasions",
+  experiences: "Experiences",
+  preferences: "Preferences",
+};
+
+const categoryOrder = ["personal", "food-drink", "gifts-occasions", "experiences", "preferences"];
 
 const DashboardHome = () => {
   const { user } = useAuth();
@@ -75,7 +98,7 @@ const DashboardHome = () => {
         supabase.from("couples").select("*", { count: "exact", head: true }).eq("status", "accepted"),
         supabase.from("profiles").select("display_name").eq("user_id", user.id).single(),
         supabase.from("lists").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
-        supabase.from("card_templates").select("id, name, icon, category").limit(6),
+        supabase.from("card_templates").select("*"),
       ]);
       setStats({ lists: listCount ?? 0, cards: cardCount ?? 0, collaborations: coupleCount ?? 0 });
       setDisplayName(profile?.display_name ?? "");
@@ -126,6 +149,37 @@ const DashboardHome = () => {
     setDialogOpen(true);
   };
 
+  const handleTemplateClick = async (template: Template) => {
+    if (!user) return;
+    // Create a new list from template
+    const { data: newList } = await supabase
+      .from("lists")
+      .insert({ title: template.name, description: `Created from ${template.name} template`, user_id: user.id })
+      .select()
+      .single();
+    
+    if (newList) {
+      // Create a card with the template's default fields
+      await supabase.from("cards").insert({
+        title: template.name,
+        fields: template.default_fields,
+        list_id: newList.id,
+        user_id: user.id,
+        template_id: template.id,
+      });
+      toast({ title: `Created "${template.name}" list with starter card` });
+      fetchData();
+    }
+  };
+
+  const grouped = categoryOrder
+    .map((cat) => ({
+      key: cat,
+      label: categoryLabels[cat] ?? cat,
+      items: templates.filter((t) => t.category === cat),
+    }))
+    .filter((g) => g.items.length > 0);
+
   return (
     <div className="max-w-5xl">
       {/* Hero */}
@@ -170,10 +224,7 @@ const DashboardHome = () => {
           <p className="text-muted-foreground">Loading...</p>
         ) : lists.length === 0 ? (
           <div className="card-design-neumorph p-8 text-center">
-            <p className="text-muted-foreground mb-4">No lists yet. Create your first one!</p>
-            <Button className="rounded-full" onClick={openCreate}>
-              <Plus className="mr-2 h-4 w-4" /> Create List
-            </Button>
+            <p className="text-muted-foreground mb-4">No lists yet. Create your first one or start from a template below!</p>
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -204,45 +255,50 @@ const DashboardHome = () => {
         )}
       </div>
 
-      {/* Quick Start Templates */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-primary">Quick Start</h2>
-          <Link to="/dashboard/templates">
-            <Button variant="ghost" size="sm" className="rounded-full">View All Templates</Button>
-          </Link>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Make Your Own Card */}
-          <button
-            onClick={openCreate}
-            className="card-design-neumorph p-5 text-left hover:scale-[1.02] transition-transform group"
-          >
-            <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
-              <Sparkles className="w-5 h-5" style={{ color: 'var(--swatch-viridian-odyssey)' }} />
-            </div>
-            <h3 className="font-semibold text-primary group-hover:underline">Make Your Own</h3>
-            <p className="text-xs text-muted-foreground mt-1">Start from scratch</p>
-          </button>
+      {/* Create Your Own */}
+      <div className="mb-10">
+        <h2 className="text-xl font-bold text-primary mb-4">Create Your Own</h2>
+        <button
+          onClick={openCreate}
+          className="card-design-neumorph p-6 w-full text-left hover:scale-[1.01] transition-transform group flex items-center gap-4"
+        >
+          <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
+            <Sparkles className="w-6 h-6" style={{ color: 'var(--swatch-viridian-odyssey)' }} />
+          </div>
+          <div>
+            <h3 className="font-semibold text-primary group-hover:underline text-lg">Start from Scratch</h3>
+            <p className="text-sm text-muted-foreground">Create a custom list with your own fields</p>
+          </div>
+        </button>
+      </div>
 
-          {/* Template Cards */}
-          {templates.slice(0, 5).map((t) => {
-            const Icon = iconMap[t.icon ?? ""] || FileText;
-            return (
-              <Link
-                key={t.id}
-                to={`/dashboard/templates?use=${t.id}`}
-                className="card-design-neumorph p-5 hover:scale-[1.02] transition-transform group"
-              >
-                <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.4)' }}>
-                  <Icon className="w-5 h-5" style={{ color: 'var(--swatch-cedar-grove)' }} />
-                </div>
-                <h3 className="font-semibold text-primary group-hover:underline">{t.name}</h3>
-                <p className="text-xs text-muted-foreground mt-1">{t.category}</p>
-              </Link>
-            );
-          })}
-        </div>
+      {/* Templates by Category */}
+      <div>
+        <h2 className="text-xl font-bold text-primary mb-6">Start from a Template</h2>
+        {grouped.map((group) => (
+          <div key={group.key} className="mb-8">
+            <h3 className="text-base font-semibold text-muted-foreground mb-3">{group.label}</h3>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {group.items.map((t) => {
+                const Icon = iconMap[t.icon ?? ""] || FileText;
+                const fieldCount = Array.isArray(t.default_fields) ? t.default_fields.length : 0;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => handleTemplateClick(t)}
+                    className="card-design-neumorph p-4 text-left hover:scale-[1.02] transition-transform group"
+                  >
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center mb-2" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.3)' }}>
+                      <Icon className="w-4 h-4" style={{ color: 'var(--swatch-cedar-grove)' }} />
+                    </div>
+                    <h4 className="font-semibold text-primary text-sm group-hover:underline">{t.name}</h4>
+                    <p className="text-xs text-muted-foreground">{fieldCount} fields</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Dialog */}

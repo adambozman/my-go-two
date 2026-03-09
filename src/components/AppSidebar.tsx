@@ -1,11 +1,10 @@
-import { Home, ListChecks, Share2, LayoutTemplate, Settings } from "lucide-react";
+import { Home, Share2, Settings } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { icon: Home, url: "/dashboard", end: true },
   { icon: Share2, url: "/dashboard/shared" },
-  { icon: LayoutTemplate, url: "/dashboard/templates" },
   { icon: Settings, url: "/dashboard/settings" },
 ];
 
