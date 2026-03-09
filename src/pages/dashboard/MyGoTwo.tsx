@@ -9,7 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
-import TemplateCoverFlow, { templateSubtypes, type SubtypeItem } from "@/components/TemplateCoverFlow";
+import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
+import { allTemplateSubtypes } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
 import { AnimatePresence } from "framer-motion";
 
