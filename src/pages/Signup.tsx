@@ -1,13 +1,16 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
 
 const Signup = () => {
+  const [searchParams] = useSearchParams();
+  const inviteId = searchParams.get("invite");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -21,6 +24,10 @@ const Signup = () => {
     setLoading(true);
     try {
       await signUp(email, password, displayName);
+      // Store invite ID so it can be processed after email confirmation & login
+      if (inviteId) {
+        localStorage.setItem("gotwo_invite", inviteId);
+      }
       toast({ title: "Check your email", description: "We sent you a confirmation link." });
       navigate("/login");
     } catch (error: any) {
