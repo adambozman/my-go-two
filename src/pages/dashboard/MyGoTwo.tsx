@@ -121,24 +121,43 @@ const MyGoTwo = () => {
   };
 
   const handleTemplateClick = async (template: Template) => {
-    if (!user) return;
-    const { data: newList } = await supabase
-      .from("lists")
-      .insert({ title: template.name, description: `Created from ${template.name} template`, user_id: user.id })
-      .select()
-      .single();
-
-    if (newList) {
-      await supabase.from("cards").insert({
-        title: template.name,
-        fields: template.default_fields,
-        list_id: newList.id,
-        user_id: user.id,
-        template_id: template.id,
-      });
-      toast({ title: `Created "${template.name}" list` });
-      navigate(`/dashboard/lists/${newList.id}`);
+    if (!user) {
+      toast({ title: "Please log in first", variant: "destructive" });
+      return;
     }
+    setCreating(template.id);
+    try {
+      const { data: newList, error: listError } = await supabase
+        .from("lists")
+        .insert({ title: template.name, description: `Created from ${template.name} template`, user_id: user.id })
+        .select()
+        .single();
+
+      if (listError) {
+        toast({ title: "Error creating list", description: listError.message, variant: "destructive" });
+        setCreating(null);
+        return;
+      }
+
+      if (newList) {
+        const { error: cardError } = await supabase.from("cards").insert({
+          title: template.name,
+          fields: template.default_fields,
+          list_id: newList.id,
+          user_id: user.id,
+          template_id: template.id,
+        });
+
+        if (cardError) {
+          toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
+        }
+
+        navigate(`/dashboard/lists/${newList.id}`);
+      }
+    } catch (e: any) {
+      toast({ title: "Something went wrong", description: e.message, variant: "destructive" });
+    }
+    setCreating(null);
   };
 
   const grouped = categoryOrder
