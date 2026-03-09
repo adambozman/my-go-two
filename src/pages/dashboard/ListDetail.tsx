@@ -168,7 +168,41 @@ const ListDetail = () => {
     return sections;
   };
 
-  const hasSections = (fields: CardField[]) => fields.some((f) => f.section);
+  const handleAiAutofill = async (card: GoTwoCard) => {
+    setAutofillingCardId(card.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-autofill', {
+        body: {
+          cardTitle: card.title,
+          fields: card.fields.map(f => ({
+            label: f.label,
+            type: f.type,
+            options: f.options,
+          })),
+        },
+      });
+      if (error) throw error;
+      const values: string[] = data?.values ?? [];
+      setCards(prev =>
+        prev.map(c => {
+          if (c.id !== card.id) return c;
+          const updated = c.fields.map((f, i) => ({
+            ...f,
+            value: values[i] ?? f.value,
+          }));
+          return { ...c, fields: updated };
+        })
+      );
+      toast({ title: "AI autofill complete!", description: "Review the suggestions and save when ready." });
+    } catch (e: any) {
+      console.error("AI autofill error:", e);
+      toast({ title: "Autofill failed", description: e.message || "Please try again.", variant: "destructive" });
+    } finally {
+      setAutofillingCardId(null);
+    }
+  };
+
+
 
   return (
     <div className="max-w-4xl">
