@@ -3,96 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// Shoe subtype images
-import imgHeels from "@/assets/templates/shoe-heels.jpg";
-import imgSneakers from "@/assets/templates/shoe-sneakers.jpg";
-import imgBoots from "@/assets/templates/shoe-boots.jpg";
-import imgSandals from "@/assets/templates/shoe-sandals.jpg";
-import imgFlats from "@/assets/templates/shoe-flats.jpg";
-
 export interface SubtypeItem {
   id: string;
   name: string;
   image: string;
   fields: { label: string; type: "text" | "select"; value: string; options?: string[] }[];
 }
-
-const shoeSubtypes: SubtypeItem[] = [
-  {
-    id: "heels",
-    name: "Heels",
-    image: imgHeels,
-    fields: [
-      { label: "Size (US)", type: "text", value: "" },
-      { label: "Size (EU)", type: "text", value: "" },
-      { label: "Heel Height", type: "select", value: "", options: ["Kitten (1-2\")", "Mid (2-3\")", "High (3-4\")", "Stiletto (4\"+)"] },
-      { label: "Preferred Brands", type: "text", value: "" },
-      { label: "Width", type: "select", value: "", options: ["Narrow", "Standard", "Wide"] },
-      { label: "Fit Notes", type: "text", value: "" },
-      { label: "Example Brand That Fits Perfectly", type: "text", value: "" },
-    ],
-  },
-  {
-    id: "sneakers",
-    name: "Sneakers",
-    image: imgSneakers,
-    fields: [
-      { label: "Size (US)", type: "text", value: "" },
-      { label: "Size (EU)", type: "text", value: "" },
-      { label: "Preferred Brands", type: "text", value: "" },
-      { label: "Width", type: "select", value: "", options: ["Narrow", "Standard", "Wide", "Extra Wide"] },
-      { label: "Style", type: "select", value: "", options: ["Low-top", "Mid-top", "High-top", "Slip-on"] },
-      { label: "Fit Notes", type: "text", value: "" },
-      { label: "Example Brand That Fits Perfectly", type: "text", value: "" },
-    ],
-  },
-  {
-    id: "boots",
-    name: "Boots",
-    image: imgBoots,
-    fields: [
-      { label: "Size (US)", type: "text", value: "" },
-      { label: "Size (EU)", type: "text", value: "" },
-      { label: "Boot Height", type: "select", value: "", options: ["Ankle", "Mid-Calf", "Knee-High", "Over-the-Knee"] },
-      { label: "Preferred Brands", type: "text", value: "" },
-      { label: "Width", type: "select", value: "", options: ["Narrow", "Standard", "Wide"] },
-      { label: "Fit Notes", type: "text", value: "" },
-      { label: "Example Brand That Fits Perfectly", type: "text", value: "" },
-    ],
-  },
-  {
-    id: "sandals",
-    name: "Sandals",
-    image: imgSandals,
-    fields: [
-      { label: "Size (US)", type: "text", value: "" },
-      { label: "Size (EU)", type: "text", value: "" },
-      { label: "Style", type: "select", value: "", options: ["Slides", "Strappy", "Wedge", "Gladiator", "Flip-Flop"] },
-      { label: "Preferred Brands", type: "text", value: "" },
-      { label: "Width", type: "select", value: "", options: ["Narrow", "Standard", "Wide"] },
-      { label: "Fit Notes", type: "text", value: "" },
-      { label: "Example Brand That Fits Perfectly", type: "text", value: "" },
-    ],
-  },
-  {
-    id: "flats",
-    name: "Flats",
-    image: imgFlats,
-    fields: [
-      { label: "Size (US)", type: "text", value: "" },
-      { label: "Size (EU)", type: "text", value: "" },
-      { label: "Style", type: "select", value: "", options: ["Ballet", "Loafer", "Mule", "Espadrille"] },
-      { label: "Preferred Brands", type: "text", value: "" },
-      { label: "Width", type: "select", value: "", options: ["Narrow", "Standard", "Wide"] },
-      { label: "Fit Notes", type: "text", value: "" },
-      { label: "Example Brand That Fits Perfectly", type: "text", value: "" },
-    ],
-  },
-];
-
-export const templateSubtypes: Record<string, SubtypeItem[]> = {
-  "Shoe Size": shoeSubtypes,
-};
 
 interface TemplateCoverFlowProps {
   templateName: string;
