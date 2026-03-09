@@ -90,15 +90,6 @@ const CategoryCoverFlow = ({ items, onSelect, disabled }: CategoryCoverFlowProps
                     <h3 className={`font-semibold text-sm ${isActive ? "text-primary" : "text-muted-foreground"}`}>
                       {item.name}
                     </h3>
-                    {isActive && (
-                      <motion.p
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-xs text-muted-foreground mt-0.5"
-                      >
-                        {item.fieldCount} fields · Tap to start
-                      </motion.p>
-                    )}
                   </div>
                 </div>
               </motion.div>
