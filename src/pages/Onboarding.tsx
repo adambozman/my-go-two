@@ -373,7 +373,7 @@ const Onboarding = () => {
                         {cat.name}
                       </h3>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        {isDone ? "✅ Done" : `${catQCount} questions`}
+                        {isDone ? "Done" : `${catQCount} questions`}
                       </p>
                     </div>
                   </div>
