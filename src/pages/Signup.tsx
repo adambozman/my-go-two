@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -14,6 +15,8 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -21,10 +24,18 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!gender) {
+      toast({ title: "Please select your gender", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     try {
       await signUp(email, password, displayName);
-      // Store invite ID so it can be processed after email confirmation & login
+      // Store additional info for after email confirmation
+      localStorage.setItem("gotwo_signup_data", JSON.stringify({
+        age: parseInt(age) || null,
+        gender,
+      }));
       if (inviteId) {
         localStorage.setItem("gotwo_invite", inviteId);
       }
@@ -48,20 +59,72 @@ const Signup = () => {
         <div className="card-design-neumorph panel-polish p-8">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold mb-1">Create your account</h1>
-            <p className="text-sm text-muted-foreground">Start sharing what you love</p>
+            <p className="text-sm text-muted-foreground">Let's get to know each other 💕</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Display Name</Label>
-              <Input id="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required placeholder="Your name" className="rounded-xl" />
+              <Label htmlFor="name">What should we call you?</Label>
+              <Input 
+                id="name" 
+                value={displayName} 
+                onChange={(e) => setDisplayName(e.target.value)} 
+                required 
+                placeholder="Your name" 
+                className="rounded-xl" 
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="rounded-xl" />
+              <Input 
+                id="email" 
+                type="email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                required 
+                placeholder="you@example.com" 
+                className="rounded-xl" 
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="age">Age</Label>
+                <Input 
+                  id="age" 
+                  type="number" 
+                  value={age} 
+                  onChange={(e) => setAge(e.target.value)} 
+                  placeholder="25" 
+                  min="13"
+                  max="120"
+                  className="rounded-xl" 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>I am...</Label>
+                <Select value={gender} onValueChange={setGender}>
+                  <SelectTrigger className="rounded-xl">
+                    <SelectValue placeholder="Select..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="female">Female 👩</SelectItem>
+                    <SelectItem value="male">Male 👨</SelectItem>
+                    <SelectItem value="non-binary">Non-Binary 🌈</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" minLength={6} className="rounded-xl" />
+              <Input 
+                id="password" 
+                type="password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+                placeholder="••••••••" 
+                minLength={6} 
+                className="rounded-xl" 
+              />
             </div>
             <Button type="submit" className="w-full rounded-full" disabled={loading}>
               {loading ? "Creating account..." : "Get Started Free"}
