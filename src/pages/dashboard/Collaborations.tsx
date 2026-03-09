@@ -20,9 +20,10 @@ interface Couple {
 }
 
 const Collaborations = () => {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const { toast } = useToast();
   const [couples, setCouples] = useState<Couple[]>([]);
+  const [pendingForMe, setPendingForMe] = useState<Couple[]>([]);
   const [loading, setLoading] = useState(true);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
@@ -34,24 +35,48 @@ const Collaborations = () => {
     ? `${window.location.origin}/signup?invite=${user.id}`
     : "";
 
-  const fetchCouples = async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+  const callEdgeFunction = async (action: string, extra: Record<string, string> = {}) => {
+    const { data, error } = await supabase.functions.invoke("collaborations", {
+      body: { action, ...extra },
+    });
+    if (error) throw error;
+    return data;
+  };
+
+  const fetchData = async () => {
+    if (!user) { setLoading(false); return; }
     try {
-      const { data } = await supabase
+      // Fetch user's visible couples (RLS: inviter or invitee)
+      const { data: myData } = await supabase
         .from("couples")
         .select("*")
         .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`)
         .order("created_at", { ascending: false });
-      setCouples(data ?? []);
+      setCouples(myData ?? []);
+
+      // Fetch pending invites by email via edge function (bypasses RLS)
+      const result = await callEdgeFunction("get-pending");
+      setPendingForMe(result?.pending ?? []);
     } catch {}
     setLoading(false);
   };
 
+  useEffect(() => { fetchData(); }, [user]);
+
+  // Check for invite param in URL (from QR code link redirect)
   useEffect(() => {
-    fetchCouples();
+    const params = new URLSearchParams(window.location.search);
+    const inviterId = params.get("invite");
+    if (inviterId && user && inviterId !== user.id) {
+      callEdgeFunction("link-by-inviter", { inviter_id: inviterId })
+        .then(() => {
+          toast({ title: "Connected!", description: "You're now linked with your partner." });
+          // Clean URL
+          window.history.replaceState({}, "", window.location.pathname);
+          fetchData();
+        })
+        .catch(() => {});
+    }
   }, [user]);
 
   const handleEmailInvite = async () => {
@@ -69,7 +94,7 @@ const Collaborations = () => {
       toast({ title: "Invitation sent!", description: `Invited ${inviteEmail.trim()}` });
       setInviteEmail("");
       setEmailDialogOpen(false);
-      fetchCouples();
+      fetchData();
     }
   };
 
@@ -81,10 +106,23 @@ const Collaborations = () => {
   };
 
   const handleAccept = async (coupleId: string) => {
-    if (!user) return;
-    await supabase.from("couples").update({ status: "accepted", invitee_id: user.id }).eq("id", coupleId);
-    toast({ title: "Collaboration accepted!" });
-    fetchCouples();
+    try {
+      await callEdgeFunction("accept-invite", { invite_id: coupleId });
+      toast({ title: "Collaboration accepted!" });
+      fetchData();
+    } catch {
+      toast({ title: "Failed to accept", variant: "destructive" });
+    }
+  };
+
+  const handleAcceptAll = async () => {
+    try {
+      await callEdgeFunction("accept-by-email");
+      toast({ title: "All invitations accepted!" });
+      fetchData();
+    } catch {
+      toast({ title: "Failed to accept", variant: "destructive" });
+    }
   };
 
   const getStatusIcon = (status: string) => {
@@ -102,10 +140,6 @@ const Collaborations = () => {
       default: return status;
     }
   };
-
-  const pendingForMe = couples.filter(
-    (c) => c.status === "pending" && c.invitee_id === null && c.inviter_id !== user?.id
-  );
 
   return (
     <div className="max-w-3xl">
@@ -148,13 +182,20 @@ const Collaborations = () => {
       {/* Pending Invites for Me */}
       {pendingForMe.length > 0 && (
         <div className="mb-10">
-          <h2 className="text-lg font-bold text-primary mb-4">Pending Invitations</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-primary">Pending Invitations</h2>
+            {pendingForMe.length > 1 && (
+              <Button size="sm" variant="outline" className="rounded-full" onClick={handleAcceptAll}>
+                Accept All
+              </Button>
+            )}
+          </div>
           <div className="space-y-3">
             {pendingForMe.map((c) => (
               <div key={c.id} className="card-design-neumorph p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5" style={{ color: 'var(--swatch-sonoma-chardonnay)' }} />
-                  <span className="text-sm text-muted-foreground">Invitation from a partner</span>
+                  <span className="text-sm text-muted-foreground">Someone invited you to connect</span>
                 </div>
                 <Button size="sm" className="rounded-full" onClick={() => handleAccept(c.id)}>Accept</Button>
               </div>
@@ -168,7 +209,7 @@ const Collaborations = () => {
         <h2 className="text-lg font-bold text-primary mb-4">Your Connections</h2>
         {loading ? (
           <p className="text-muted-foreground">Loading...</p>
-        ) : couples.length === 0 ? (
+        ) : couples.length === 0 && pendingForMe.length === 0 ? (
           <div className="card-design-neumorph p-8 text-center">
             <Users className="w-10 h-10 mx-auto mb-3" style={{ color: 'var(--swatch-gypsum-rose)' }} />
             <p className="text-muted-foreground">No connections yet. Invite someone using a QR code or email above!</p>
@@ -247,6 +288,9 @@ const Collaborations = () => {
                 className="rounded-xl"
               />
             </div>
+            <p className="text-xs text-muted-foreground">
+              If they already have an account, they'll see the invite on their Collaborations page. Otherwise, share your QR code or invite link.
+            </p>
           </div>
           <DialogFooter>
             <Button className="rounded-full" onClick={handleEmailInvite} disabled={!inviteEmail.trim() || sending}>
