@@ -223,42 +223,30 @@ const MyGoTwo = () => {
         My <GoTwoText className="text-2xl" />
       </h1>
 
-      {/* Templates by Category */}
+      {/* Templates by Category - Cover Flows */}
       <div className="mb-10">
-        <h2 className="text-xl font-bold text-primary mb-6">Start from a Template</h2>
         {loading ? (
           <p className="text-muted-foreground">Loading templates...</p>
         ) : (
           grouped.map((group) => (
-            <div key={group.key} className="mb-8">
-              <h3 className="text-base font-semibold text-muted-foreground mb-3">{group.label}</h3>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {group.items.map((t) => {
-                  const img = templateImageMap[t.name];
-                  const fieldCount = Array.isArray(t.default_fields) ? t.default_fields.length : 0;
-                  return (
-                    <button
-                      key={t.id}
-                      onClick={() => handleTemplateClick(t)}
-                      disabled={creating !== null}
-                      className="card-design-neumorph overflow-hidden text-left hover:scale-[1.02] transition-transform group rounded-2xl disabled:opacity-60"
-                    >
-                      <div className="aspect-[4/3] overflow-hidden">
-                        <img
-                          src={img}
-                          alt={t.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                        />
-                      </div>
-                      <div className="p-3">
-                        <h4 className="font-semibold text-primary text-sm group-hover:underline">{t.name}</h4>
-                        <p className="text-xs text-muted-foreground">{fieldCount} fields</p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+            <div key={group.key} className="mb-10">
+              <h3 className="text-base font-semibold text-muted-foreground mb-4 text-center">{group.label}</h3>
+              <CategoryCoverFlow
+                items={group.items.map((t) => ({
+                  id: t.id,
+                  name: t.name,
+                  image: templateImageMap[t.name] || "",
+                  fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
+                }))}
+                onSelect={(id) => {
+                  const t = templates.find((tpl) => tpl.id === id);
+                  if (t) handleTemplateClick(t);
+                }}
+                disabled={creating !== null}
+              />
+            </div>
+          ))
+        )}
             </div>
           ))
         )}
