@@ -510,7 +510,7 @@ const Onboarding = () => {
       <div className="px-6 mb-1">
         <div className="flex items-center justify-between text-sm mb-1.5">
           <span className="font-semibold text-primary text-base">
-            {currentCategory?.icon} {currentCategory?.name}
+            {currentCategory?.name}
           </span>
           <span className="text-muted-foreground text-xs">
             {qIndex + 1} of {totalQ}
