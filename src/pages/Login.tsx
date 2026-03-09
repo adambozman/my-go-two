@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const [searchParams] = useSearchParams();
@@ -29,7 +30,22 @@ const Login = () => {
     setLoading(true);
     try {
       await signIn(email, password);
-      navigate("/dashboard");
+      // Check if user has completed onboarding
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        const { data: prefs } = await supabase
+          .from("user_preferences")
+          .select("onboarding_complete")
+          .eq("user_id", currentUser.id)
+          .maybeSingle();
+        if (!prefs?.onboarding_complete) {
+          navigate("/onboarding");
+        } else {
+          navigate("/dashboard");
+        }
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {

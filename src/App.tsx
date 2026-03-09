@@ -19,6 +19,7 @@ import Recommendations from "./pages/dashboard/Recommendations";
 import Questionnaires from "./pages/dashboard/Questionnaires";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import NotFound from "./pages/NotFound";
+import Onboarding from "./pages/Onboarding";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,8 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/connect" element={<Connect />} />
             <Route path="/connect" element={<Connect />} />
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />
