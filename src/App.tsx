@@ -35,7 +35,6 @@ const App = () => (
               <Route index element={<DashboardHome />} />
               <Route path="lists/:listId" element={<ListDetail />} />
               <Route path="shared" element={<SharedLists />} />
-              <Route path="templates" element={<Templates />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
