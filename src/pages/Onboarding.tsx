@@ -248,14 +248,14 @@ const Onboarding = () => {
                     
                     {/* Swipe indicators */}
                     <motion.div
-                      className="absolute top-4 left-4 bg-red-500 text-white px-4 py-2 rounded-lg font-bold transform -rotate-12"
+                      className="absolute top-4 left-4 bg-destructive text-destructive-foreground px-4 py-2 rounded-lg font-bold transform -rotate-12"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: direction === "left" ? 1 : 0 }}
                     >
                       NOPE
                     </motion.div>
                     <motion.div
-                      className="absolute top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg font-bold transform rotate-12"
+                      className="absolute top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-bold transform rotate-12"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: direction === "right" ? 1 : 0 }}
                     >
