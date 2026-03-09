@@ -191,7 +191,8 @@ const MyGoTwo = () => {
                     <button
                       key={t.id}
                       onClick={() => handleTemplateClick(t)}
-                      className="card-design-neumorph overflow-hidden text-left hover:scale-[1.02] transition-transform group rounded-2xl"
+                      disabled={creating !== null}
+                      className="card-design-neumorph overflow-hidden text-left hover:scale-[1.02] transition-transform group rounded-2xl disabled:opacity-60"
                     >
                       <div className="aspect-[4/3] overflow-hidden">
                         <img
