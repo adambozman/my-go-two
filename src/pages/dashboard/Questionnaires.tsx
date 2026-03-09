@@ -4,11 +4,13 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { profileQuestions } from "@/data/profileQuestions";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
+import { getStyleImage } from "@/data/genderImages";
 
 const Questionnaires = () => {
   const { profileAnswers } = usePersonalization();
+  const gender = (profileAnswers?.identity as string) || "male";
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [selections, setSelections] = useState<Record<string, string[]>>(() => {
     const saved: Record<string, string[]> = {};
@@ -25,6 +27,20 @@ const Questionnaires = () => {
 
   const goLeft = () => setActiveIndex((i) => (i - 1 + imageQuestions.length) % imageQuestions.length);
   const goRight = () => setActiveIndex((i) => (i + 1) % imageQuestions.length);
+
+  const getQuestionCoverImage = (q: typeof imageQuestions[0]) => {
+    // Try to get gender-specific image for first option
+    const firstOpt = q.options[0];
+    const genderImg = getStyleImage(firstOpt.id, gender as any);
+    if (genderImg) return genderImg;
+    return firstOpt.localImage || firstOpt.image || "";
+  };
+
+  const getOptionImage = (optionId: string, fallbackLocal?: string, fallbackUrl?: string) => {
+    const genderImg = getStyleImage(optionId, gender as any);
+    if (genderImg) return genderImg;
+    return fallbackLocal || fallbackUrl || "";
+  };
 
   const toggleOption = (questionId: string, optionId: string, multiSelect: boolean) => {
     setSelections((prev) => {
@@ -88,7 +104,7 @@ const Questionnaires = () => {
                 }`}
               >
                 <img
-                  src={opt.localImage || opt.image}
+                  src={getOptionImage(opt.id, opt.localImage, opt.image)}
                   alt={opt.label}
                   className="w-full h-full object-cover"
                 />
@@ -109,7 +125,7 @@ const Questionnaires = () => {
     );
   }
 
-  // Cover flow view
+  // Cover flow view — matches CategoryCoverFlow exactly
   return (
     <div className="space-y-6">
       <h1
@@ -122,83 +138,93 @@ const Questionnaires = () => {
         Tap a card to view and answer each question.
       </p>
 
-      <div className="relative flex items-center justify-center min-h-[400px]">
+      <div className="relative flex items-center justify-center pt-12">
         {/* Left arrow */}
         <Button
           variant="ghost"
           size="icon"
           onClick={goLeft}
-          className="absolute left-0 z-20 rounded-full card-design-neumorph w-10 h-10"
+          className="absolute left-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
 
-        {/* Cards */}
-        <div className="relative w-full max-w-2xl h-[380px] flex items-center justify-center">
-          <AnimatePresence mode="popLayout">
-            {imageQuestions.map((q, i) => {
-              const offset = i - activeIndex;
-              const wrappedOffset =
-                ((offset + imageQuestions.length / 2) % imageQuestions.length) -
-                imageQuestions.length / 2;
-              const absOffset = Math.abs(wrappedOffset);
+        {/* Cards container */}
+        <div className="relative w-full h-[420px] overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            {imageQuestions.map((q, index) => {
+              let offset = index - activeIndex;
+              const half = imageQuestions.length / 2;
+              if (offset > half) offset -= imageQuestions.length;
+              if (offset < -half) offset += imageQuestions.length;
+              const isActive = offset === 0;
+              const absOffset = Math.abs(offset);
 
               if (absOffset > 2) return null;
 
+              const xOffset = offset * (isActive ? 190 : 170);
+              const cardW = isActive ? 280 : 200;
+              const cardH = isActive ? 380 : 250;
+              const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
+              const zIndex = 10 - absOffset;
+              const blur = isActive ? 0 : 2;
+              const opacity = isActive ? 1 : 0.5;
               const answered = (selections[q.id] || []).length > 0;
 
               return (
                 <motion.div
                   key={q.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.8 }}
                   animate={{
-                    x: wrappedOffset * 160,
-                    scale: 1 - absOffset * 0.15,
-                    opacity: 1 - absOffset * 0.3,
-                    zIndex: 10 - absOffset,
-                    rotateY: wrappedOffset * -8,
+                    x: xOffset,
+                    scale,
+                    opacity,
+                    filter: `blur(${blur}px)`,
                   }}
-                  exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   className="absolute cursor-pointer"
+                  style={{ zIndex }}
                   onClick={() => {
-                    if (absOffset === 0) {
+                    if (isActive) {
                       setSelectedQuestion(q.id);
                     } else {
-                      setActiveIndex(i);
+                      setActiveIndex(index);
                     }
                   }}
-                  style={{ perspective: 1200 }}
                 >
-                  <div className="w-[220px] h-[300px] rounded-2xl overflow-hidden card-design-neumorph relative">
-                    {/* Use first option's image as cover */}
-                    <img
-                      src={q.options[0]?.localImage || q.options[0]?.image || ""}
-                      alt={q.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="text-white font-semibold text-sm leading-tight drop-shadow">
-                        {q.title}
-                      </h3>
-                      <p className="text-white/70 text-xs mt-1">
-                        {answered
-                          ? `${(selections[q.id] || []).length} selected`
-                          : "Tap to answer"}
-                      </p>
-                    </div>
-                    {answered && (
-                      <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
+                  <div
+                    className={`card-design-neumorph overflow-hidden rounded-2xl transition-shadow duration-300 ${
+                      isActive ? "ring-2 ring-primary shadow-2xl" : ""
+                    }`}
+                    style={{ width: cardW, height: cardH }}
+                  >
+                    <div className="relative w-full h-full overflow-hidden">
+                      <img
+                        src={getQuestionCoverImage(q)}
+                        alt={q.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4">
+                        <h3 className="text-white font-semibold text-sm leading-tight drop-shadow">
+                          {q.title}
+                        </h3>
+                        <p className="text-white/70 text-xs mt-1">
+                          {answered
+                            ? `${(selections[q.id] || []).length} selected`
+                            : "Tap to answer"}
+                        </p>
                       </div>
-                    )}
+                      {answered && (
+                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                          <span className="text-white text-xs">✓</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               );
             })}
-          </AnimatePresence>
+          </div>
         </div>
 
         {/* Right arrow */}
@@ -206,7 +232,7 @@ const Questionnaires = () => {
           variant="ghost"
           size="icon"
           onClick={goRight}
-          className="absolute right-0 z-20 rounded-full card-design-neumorph w-10 h-10"
+          className="absolute right-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
         >
           <ChevronRight className="h-5 w-5" />
         </Button>
