@@ -32,13 +32,12 @@ const INTRO_IMAGES = [
   { id: "1518611012118-696072aa579a", label: "Style" },
 ];
 
-const CATEGORY_IMAGES: Record<string, string> = {
-  shopping: "1441986300917-64674bd600d8",
-  style: "1558171813-4c2ab4ef9793",
-  food: "1498579150354-977475b7ea0b",
-  gifts: "1515562141207-7a88fb7ce338",
-  lifestyle: "1502602898657-3e91760cbb34",
-  fit: "1489987707025-afc232f7ea0f",
+// Gender helper — reads the identity answer from state
+const useSelectedGender = (answers: Record<string, string | string[]>) => {
+  const identity = answers["identity"];
+  if (!identity) return undefined;
+  const val = Array.isArray(identity) ? identity[0] : identity;
+  return val as "male" | "female" | "non-binary" | "prefer-not" | undefined;
 };
 
 const Onboarding = () => {
