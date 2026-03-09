@@ -536,7 +536,9 @@ const Onboarding = () => {
                 {currentQuestion.title}
               </h2>
               <p className="text-sm text-muted-foreground">{currentQuestion.subtitle}</p>
-              <p className="text-xs text-muted-foreground italic mt-1">{currentQuestion.funnySubtext}</p>
+              {currentQuestion.funnySubtext && (
+                <p className="text-xs text-muted-foreground italic mt-1">{currentQuestion.funnySubtext}</p>
+              )}
             </div>
 
             {/* ── IMAGE GRID ── */}
