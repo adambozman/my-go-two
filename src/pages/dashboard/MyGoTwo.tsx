@@ -93,6 +93,7 @@ const MyGoTwo = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[] } | null>(null);
 
   useEffect(() => {
     supabase.from("card_templates").select("*").then(({ data }) => {
