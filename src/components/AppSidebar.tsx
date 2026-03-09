@@ -1,11 +1,14 @@
-import { Home, Share2, Settings } from "lucide-react";
+import { Home, Heart, Users, Sparkles, ClipboardList, Settings } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { icon: Home, url: "/dashboard", end: true },
-  { icon: Share2, url: "/dashboard/shared" },
-  { icon: Settings, url: "/dashboard/settings" },
+  { icon: Home, url: "/dashboard", end: true, label: "Home" },
+  { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
+  { icon: Users, url: "/dashboard/collaborations", label: "Collaborations" },
+  { icon: Sparkles, url: "/dashboard/recommendations", label: "Recommendations" },
+  { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Questionnaires" },
+  { icon: Settings, url: "/dashboard/settings", label: "Settings" },
 ];
 
 export function AppSidebar() {
