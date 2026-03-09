@@ -216,7 +216,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, onBack, onSelect, creating 
           variant="ghost"
           size="icon"
           onClick={goRight}
-          disabled={activeIndex === subtypes.length - 1}
+          
           className="absolute right-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
         >
           <ChevronRight className="h-5 w-5" />
