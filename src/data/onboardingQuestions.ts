@@ -3,6 +3,7 @@ export interface QuestionOption {
   label: string;
   emoji?: string;
   image?: string; // unsplash photo ID — only for image-grid type
+  localImage?: string; // local imported image path
 }
 
 export type QuestionType = "image-grid" | "pill-select" | "single-select" | "free-input";
