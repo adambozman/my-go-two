@@ -90,20 +90,26 @@ const DashboardHome = () => {
   const [description, setDescription] = useState("");
 
   const fetchData = async () => {
-    if (!user) return;
     try {
-      const [{ count: listCount }, { count: cardCount }, { count: coupleCount }, { data: profile }, { data: listsData }, { data: templatesData }] = await Promise.all([
+      // Always fetch templates (public)
+      const { data: templatesData } = await supabase.from("card_templates").select("*");
+      setTemplates(templatesData ?? []);
+
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      const [{ count: listCount }, { count: cardCount }, { count: coupleCount }, { data: profile }, { data: listsData }] = await Promise.all([
         supabase.from("lists").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("cards").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("couples").select("*", { count: "exact", head: true }).eq("status", "accepted"),
         supabase.from("profiles").select("display_name").eq("user_id", user.id).single(),
         supabase.from("lists").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
-        supabase.from("card_templates").select("*"),
       ]);
       setStats({ lists: listCount ?? 0, cards: cardCount ?? 0, collaborations: coupleCount ?? 0 });
       setDisplayName(profile?.display_name ?? "");
       setLists(listsData ?? []);
-      setTemplates(templatesData ?? []);
     } catch {}
     setLoading(false);
   };
