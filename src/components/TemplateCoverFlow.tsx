@@ -144,7 +144,11 @@ const TemplateCoverFlow = ({ templateName, subtypes, onBack, onSelect, creating 
         <div className="relative w-full h-[340px] overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
             {subtypes.map((subtype, index) => {
-              const offset = index - activeIndex;
+              // Calculate shortest circular offset
+              let offset = index - activeIndex;
+              const half = subtypes.length / 2;
+              if (offset > half) offset -= subtypes.length;
+              if (offset < -half) offset += subtypes.length;
               const isActive = offset === 0;
               const absOffset = Math.abs(offset);
 
