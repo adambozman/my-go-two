@@ -98,13 +98,13 @@ const MyGoTwo = () => {
 
   // Reopen cover flow if navigating back from list detail
   useEffect(() => {
-    const openTemplate = (location.state as any)?.openTemplate as string | undefined;
-    if (openTemplate && templateSubtypes[openTemplate]) {
-      setCoverFlowTemplate({ name: openTemplate, subtypes: templateSubtypes[openTemplate] });
+    const state = location.state as { openTemplate?: string } | null;
+    if (state?.openTemplate && templateSubtypes[state.openTemplate]) {
+      setCoverFlowTemplate({ name: state.openTemplate, subtypes: templateSubtypes[state.openTemplate] });
       // Clear state so refresh doesn't reopen
-      window.history.replaceState({}, "");
+      window.history.replaceState({}, document.title);
     }
-  }, [location.state]);
+  }, [location]);
 
   useEffect(() => {
     supabase.from("card_templates").select("*").then(({ data }) => {
