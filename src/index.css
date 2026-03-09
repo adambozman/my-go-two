@@ -176,3 +176,29 @@ body {
   24%       { opacity: 0.24; }
   46%, 100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
 }
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--swatch-gypsum-rose-rgb) / 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--swatch-antique-coin-rgb) / 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--swatch-antique-coin-rgb) / 0.7);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(107 109 98 / 0.5) rgb(232 198 174 / 0.3);
+}
