@@ -101,8 +101,8 @@ const MyGoTwo = () => {
   // Reopen cover flow if navigating back from list detail
   useEffect(() => {
     const state = location.state as { openTemplate?: string } | null;
-    if (state?.openTemplate && templateSubtypes[state.openTemplate]) {
-      setCoverFlowTemplate({ name: state.openTemplate, subtypes: templateSubtypes[state.openTemplate] });
+    if (state?.openTemplate && allTemplateSubtypes[state.openTemplate]) {
+      setCoverFlowTemplate({ name: state.openTemplate, subtypes: allTemplateSubtypes[state.openTemplate] });
       // Clear state so refresh doesn't reopen
       window.history.replaceState({}, document.title);
     }
