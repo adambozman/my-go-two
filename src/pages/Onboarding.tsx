@@ -550,6 +550,7 @@ const Onboarding = () => {
             setPhase("category-picker");
           }}
         />
+        {isEditMode && <AppSidebar />}
       </div>
     );
   }
