@@ -205,8 +205,7 @@ const Landing = () => {
                     e.currentTarget.style.boxShadow = "0 4px 20px rgba(212, 84, 58, 0.30)";
                   }}
                 >
-                  Get Started Free
-                  <ArrowRight style={{ width: 16, height: 16 }} />
+                  Get Started Free &nbsp;→
                 </button>
               </Link>
               <a href="#how-it-works">
