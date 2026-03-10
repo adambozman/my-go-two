@@ -175,11 +175,11 @@ const Onboarding = () => {
     return (
       <div className="landing-page min-h-screen flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-8 pt-6 pb-2 relative z-10">
-          <GoTwoText className="text-3xl" />
+          <GoTwoText className="text-[42px] [&_.two]:text-[52px]" />
           <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">Skip</Button>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center relative">
-          <div className="relative w-full max-w-3xl h-[320px] flex items-center justify-center mb-10">
+          <div className="relative w-full max-w-3xl h-[400px] flex items-center justify-center mb-10">
             {INTRO_IMAGES.map((img, i) => {
               const offset = i - introCenter;
               const wrapped = offset > 4 ? offset - INTRO_IMAGES.length : offset < -4 ? offset + INTRO_IMAGES.length : offset;
@@ -190,7 +190,7 @@ const Onboarding = () => {
                 <motion.div
                   key={img.id}
                   animate={{
-                    x: wrapped * 160,
+                    x: wrapped * 180,
                     scale: isCenter ? 1 : 0.75 - abs * 0.05,
                     zIndex: 10 - abs,
                     opacity: isCenter ? 1 : Math.max(0.3, 0.7 - abs * 0.15),
@@ -201,7 +201,7 @@ const Onboarding = () => {
                   style={{ perspective: "1200px" }}
                 >
                   <div
-                    className={`card-design-neumorph overflow-hidden ${isCenter ? "w-[220px] h-[280px] shadow-2xl" : "w-[180px] h-[230px]"}`}
+                    className={`card-design-neumorph overflow-hidden ${isCenter ? "w-[275px] h-[350px] shadow-2xl" : "w-[225px] h-[288px]"}`}
                     style={{ borderRadius: "1.4rem" }}
                   >
                     <img
@@ -221,16 +221,23 @@ const Onboarding = () => {
             <h1 className="text-3xl md:text-4xl font-bold text-primary mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
               Let Our AI Get to Know You
             </h1>
-            <p className="text-muted-foreground mb-1 text-base">
-              We'll learn your brands, style, food, and gift preferences.
+            <p className="text-muted-foreground mb-8 text-base">
+              We'll learn your brands, style, food, and gift preferences. So your significant other is always on point.
             </p>
-            <p className="text-sm text-muted-foreground italic mb-8">
-              Every question reduces friction & improves accuracy ✨
-            </p>
-            <Button className="rounded-full h-13 px-12 text-base shadow-lg" onClick={() => setPhase("profile")}>
-              <Sparkles className="mr-2 h-5 w-5" />
-              Let's Go!
-            </Button>
+            <button
+              onClick={() => setPhase("profile")}
+              className="rounded-full h-13 px-12"
+              style={{
+                background: "#d4543a",
+                color: "#ffffff",
+                fontFamily: "'Jost', sans-serif",
+                fontWeight: 500,
+                fontSize: "13.5px",
+                boxShadow: "0 4px 20px rgba(212, 84, 58, 0.35)",
+              }}
+            >
+              Start My Profile →
+            </button>
             <div className="mt-4">
               <Button variant="ghost" className="text-muted-foreground text-sm" onClick={handleSkip}>
                 Skip for now
