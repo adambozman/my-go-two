@@ -88,36 +88,9 @@ const Landing = () => {
       </div>
 
       <div className="relative z-10">
-        {/* Nav — no logo, just auth buttons */}
-        <nav className="flex items-center justify-end px-8 md:px-16 py-5">
-          <div className="flex items-center gap-4">
-            <Link to="/login">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-sm font-semibold"
-                style={{ color: "var(--swatch-viridian-odyssey)" }}
-              >
-                Log in
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button
-                size="sm"
-                className="rounded-full px-6 text-sm font-bold border-0"
-                style={{
-                  background: "var(--swatch-viridian-odyssey)",
-                  color: "var(--swatch-cream-light)",
-                }}
-              >
-                Get Started Free
-              </Button>
-            </Link>
-          </div>
-        </nav>
 
         {/* Hero */}
-        <section className="max-w-6xl mx-auto px-8 md:px-16 pt-10 md:pt-20 pb-12 text-center">
+        <section className="max-w-6xl mx-auto px-8 md:px-16 pt-16 md:pt-28 pb-12 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -154,7 +127,7 @@ const Landing = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="w-72 md:w-80 mx-auto mb-10 relative"
+              className="w-72 md:w-80 mx-auto mb-12 relative"
               style={{ aspectRatio: "3/4" }}
             >
               <div
@@ -173,46 +146,6 @@ const Landing = () => {
               </div>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="max-w-lg mx-auto mb-4"
-            >
-              <p
-                className="text-base md:text-lg mb-2"
-                style={{ color: "var(--swatch-antique-coin)" }}
-              >
-                Create personal{" "}
-                <span className="logo-text text-base md:text-lg">
-                  <span className="go">Go</span>
-                  <span className="two">Two</span>
-                </span>{" "}
-                lists for the details that matter
-                <br />
-                coffee orders, clothing sizes, date ideas and much more.
-              </p>
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.65 }}
-              className="text-sm font-bold tracking-wide mb-4"
-              style={{ color: "var(--swatch-viridian-odyssey)" }}
-            >
-              Because Light isn't Ultra.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.75 }}
-              className="text-sm mb-10 leading-relaxed"
-              style={{ color: "var(--swatch-antique-coin)" }}
-            >
-              Share it once. · Update anytime. · Stop the arguments before they start.
-            </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 15 }}
