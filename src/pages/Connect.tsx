@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import AuthWatercolor from "@/components/AuthWatercolor";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -63,12 +64,7 @@ const Connect = () => {
 
   return (
     <div className="landing-page min-h-screen overflow-hidden relative">
-      {/* Decorative organic shapes */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute rounded-full" style={{ width: 680, height: 680, top: "-12%", right: "-8%", background: "radial-gradient(circle, rgba(232,198,174,0.35) 0%, transparent 70%)" }} />
-        <div className="absolute rounded-full" style={{ width: 400, height: 400, bottom: "15%", left: "-6%", background: "radial-gradient(circle, rgba(175,199,218,0.25) 0%, transparent 70%)" }} />
-        <div className="absolute rounded-full" style={{ width: 240, height: 240, top: "40%", right: "5%", background: "radial-gradient(circle, rgba(217,101,79,0.12) 0%, transparent 70%)" }} />
-      </div>
+      <AuthWatercolor />
 
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Nav */}
