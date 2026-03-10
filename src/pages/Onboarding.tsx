@@ -460,23 +460,29 @@ const Onboarding = () => {
       }
     }
 
-    // Call AI personalization
+    // Call AI personalization with a timeout to prevent infinite loading
     if (user) {
-      try {
-        const { data, error } = await supabase.functions.invoke("personalize", {
-          body: { profile_answers: profileAnswerData },
-        });
+      const timeoutPromise = new Promise<void>((resolve) => setTimeout(resolve, 30000));
+      const personalizationPromise = (async () => {
+        try {
+          const { data, error } = await supabase.functions.invoke("personalize", {
+            body: { profile_answers: profileAnswerData },
+          });
 
-        if (error) {
-          console.error("Personalization error:", error);
-          toast({ title: "Personalization saved", description: "We'll refine as you answer more!" });
-        } else {
-          await refetchPersonalization();
-          toast({ title: "Profile analyzed! ✨", description: data?.personalization?.persona_summary || "Your experience is now personalized!" });
+          if (error) {
+            console.error("Personalization error:", error);
+            toast({ title: "Personalization saved", description: "We'll refine as you answer more!" });
+          } else {
+            await refetchPersonalization();
+            toast({ title: "Profile analyzed! ✨", description: data?.personalization?.persona_summary || "Your experience is now personalized!" });
+          }
+        } catch (e) {
+          console.error("Personalization failed:", e);
+          toast({ title: "Profile saved", description: "We'll personalize your experience shortly!" });
         }
-      } catch (e) {
-        console.error("Personalization failed:", e);
-      }
+      })();
+
+      await Promise.race([personalizationPromise, timeoutPromise]);
     }
 
     setPhase("category-picker");
