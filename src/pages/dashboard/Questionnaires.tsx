@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Sparkles, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { profileQuestions } from "@/data/profileQuestions";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
@@ -29,7 +29,7 @@ const Questionnaires = () => {
   const { profileAnswers, refetch } = usePersonalization();
   const gender = (profileAnswers?.identity as string) || "male";
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
-
+  const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [selections, setSelections] = useState<Record<string, string[]>>(() => {
     const saved: Record<string, string[]> = {};
@@ -66,7 +66,12 @@ const Questionnaires = () => {
     }
   }, []);
 
-  useEffect(() => { fetchAiQuizzes(); }, []);
+  useEffect(() => {
+    fetchAiQuizzes();
+  }, []);
+
+  const goLeft = () => setActiveIndex((i) => (i - 1 + imageQuestions.length) % imageQuestions.length);
+  const goRight = () => setActiveIndex((i) => (i + 1) % imageQuestions.length);
 
   const getQuestionCoverImage = (q: typeof imageQuestions[0]) => {
     const firstOpt = q.options[0];
@@ -114,8 +119,10 @@ const Questionnaires = () => {
   const saveAiQuizAnswer = async (quizId: string) => {
     const selected = aiSelections[quizId];
     if (!selected?.length) return;
+
     setSavingQuiz(true);
     try {
+      // Save the AI quiz answer into profile_answers
       const updatedAnswers = { ...(profileAnswers || {}), [quizId]: selected };
       const { error } = await supabase
         .from("user_preferences")
@@ -125,25 +132,31 @@ const Questionnaires = () => {
       toast.success("Answer saved!");
       await refetch();
       setSelectedAiQuiz(null);
+      // Remove answered quiz from the list
       setAiQuizzes((prev) => prev.filter((q) => q.id !== quizId));
-    } catch {
+    } catch (e) {
       toast.error("Failed to save answer");
     } finally {
       setSavingQuiz(false);
     }
   };
 
-  // ── AI Quiz detail view ──
+  // AI Quiz detail view
   if (selectedAiQuiz) {
     const quiz = aiQuizzes.find((q) => q.id === selectedAiQuiz);
     if (!quiz) { setSelectedAiQuiz(null); return null; }
     const selected = aiSelections[quiz.id] || [];
 
     return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
         <Button variant="ghost" size="sm" onClick={() => setSelectedAiQuiz(null)} className="text-muted-foreground">
           ← Back
         </Button>
+
         <div className="text-center mb-4">
           <span
             className="inline-block text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full text-white mb-3"
@@ -156,6 +169,7 @@ const Questionnaires = () => {
           </h1>
           <p className="text-muted-foreground text-sm mt-1">{quiz.subtitle}</p>
         </div>
+
         <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
           {quiz.options.map((opt) => {
             const isSelected = selected.includes(opt.id);
@@ -176,6 +190,7 @@ const Questionnaires = () => {
             );
           })}
         </div>
+
         {selected.length > 0 && (
           <div className="text-center pt-2">
             <Button
@@ -192,23 +207,29 @@ const Questionnaires = () => {
     );
   }
 
-  // ── Profile question detail view ──
+  // Profile question detail view
   if (selectedQuestion) {
     const question = imageQuestions.find((q) => q.id === selectedQuestion)!;
     const isMulti = question.multiSelect !== false;
     const selected = selections[question.id] || [];
 
     return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
         <Button variant="ghost" size="sm" onClick={() => setSelectedQuestion(null)} className="text-muted-foreground">
           ← Back
         </Button>
+
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
             {question.title}
           </h1>
           <p className="text-muted-foreground text-sm">{question.subtitle}</p>
         </div>
+
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
           {question.options.map((opt) => {
             const isSelected = selected.includes(opt.id);
@@ -223,10 +244,16 @@ const Questionnaires = () => {
                 style={{ borderRadius: "1.2rem" }}
               >
                 <div className="aspect-[4/5] relative">
-                  <img src={getOptionImage(opt.id, opt.localImage, opt.image)} alt={opt.label} className="w-full h-full object-cover" />
+                  <img
+                    src={getOptionImage(opt.id, opt.localImage, opt.image)}
+                    alt={opt.label}
+                    className="w-full h-full object-cover"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
-                    <span className="text-sm font-semibold text-white leading-tight drop-shadow">{opt.label}</span>
+                    <span className="text-sm font-semibold text-white leading-tight drop-shadow">
+                      {opt.label}
+                    </span>
                   </div>
                   {isSelected && (
                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-md" style={{ background: "var(--swatch-teal)" }}>
@@ -242,64 +269,101 @@ const Questionnaires = () => {
     );
   }
 
-  // ── Main scrollable grid view ──
+  // Main view
   return (
     <div className="space-y-8 pb-4">
-      {/* Profile question cards — scrollable grid */}
+      {/* Profile questions cover flow */}
       <div>
-        <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-4">
-          Your Profile
+        <p className="text-muted-foreground text-sm mb-2">
+          Tap a card to review your answers.
         </p>
-        <div className="grid grid-cols-2 gap-4">
-          {imageQuestions.map((q, i) => {
-            const answered = (selections[q.id] || []).length > 0;
-            return (
-              <motion.button
-                key={q.id}
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.06, duration: 0.5, ease: [0.22, 0.68, 0, 1.2] }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => setSelectedQuestion(q.id)}
-                className="relative overflow-hidden text-left group aspect-[4/5]"
-                style={{ borderRadius: "1.4rem" }}
-              >
-                <img
-                  src={getQuestionCoverImage(q)}
-                  alt={q.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-                {answered && (
-                  <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>
-                    <span className="text-white text-[10px]">✓</span>
-                  </div>
-                )}
-                <div className="absolute bottom-0 left-0 right-0 p-3.5">
-                  <h3
-                    className="text-white font-semibold leading-tight drop-shadow"
-                    style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px" }}
+
+        <div className="relative flex items-center justify-center pt-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goLeft}
+            className="absolute left-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+
+          <div className="relative w-full h-[420px] overflow-hidden">
+            <div className="absolute inset-0 flex items-center justify-center">
+              {imageQuestions.map((q, index) => {
+                let offset = index - activeIndex;
+                const half = imageQuestions.length / 2;
+                if (offset > half) offset -= imageQuestions.length;
+                if (offset < -half) offset += imageQuestions.length;
+                const isActive = offset === 0;
+                const absOffset = Math.abs(offset);
+
+                if (absOffset > 2) return null;
+
+                const xOffset = offset * (isActive ? 190 : 170);
+                const cardW = isActive ? 280 : 200;
+                const cardH = isActive ? 380 : 250;
+                const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
+                const zIndex = 10 - absOffset;
+                const blur = isActive ? 0 : 2;
+                const opacity = isActive ? 1 : 0.5;
+                const answered = (selections[q.id] || []).length > 0;
+
+                return (
+                  <motion.div
+                    key={q.id}
+                    animate={{ x: xOffset, scale, opacity, filter: `blur(${blur}px)` }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="absolute cursor-pointer"
+                    style={{ zIndex }}
+                    onClick={() => isActive ? setSelectedQuestion(q.id) : setActiveIndex(index)}
                   >
-                    {q.title}
-                  </h3>
-                  <p className="text-white/60 text-[11px] mt-0.5">
-                    {answered ? `${(selections[q.id] || []).length} selected` : "Tap to answer"}
-                  </p>
-                </div>
-              </motion.button>
-            );
-          })}
+                    <div
+                      className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${isActive ? "ring-2 ring-primary shadow-2xl" : ""}`}
+                      style={{ width: cardW, height: cardH }}
+                    >
+                      <div className="relative w-full h-full overflow-hidden">
+                        <img src={getQuestionCoverImage(q)} alt={q.title} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <h3 className="text-white font-semibold text-sm leading-tight drop-shadow" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                            {q.title}
+                          </h3>
+                          <p className="text-white/70 text-xs mt-1">
+                            {answered ? `${(selections[q.id] || []).length} selected` : "Tap to answer"}
+                          </p>
+                        </div>
+                        {answered && (
+                          <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>
+                            <span className="text-white text-xs">✓</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goRight}
+            className="absolute right-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
         </div>
       </div>
 
-      {/* AI-generated quizzes */}
+      {/* AI-generated quizzes section */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--swatch-teal)" }} />
-          <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground">
-            Learn More About You
-          </p>
+          <Sparkles className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
+          <h2 className="text-lg font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+            Help us learn more about you
+          </h2>
         </div>
 
         {aiLoading ? (
@@ -309,14 +373,11 @@ const Questionnaires = () => {
           </div>
         ) : aiQuizzes.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {aiQuizzes.map((quiz, i) => {
+            {aiQuizzes.map((quiz) => {
               const answered = profileAnswers?.[quiz.id];
               return (
                 <motion.button
                   key={quiz.id}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05, duration: 0.4 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => !answered && setSelectedAiQuiz(quiz.id)}
                   className="text-left p-4 rounded-2xl transition-all"
