@@ -121,9 +121,11 @@ body {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: 
-    repeating-linear-gradient(0deg, rgba(80,55,40,0.18) 0px, transparent 1px, transparent 3px),
-    repeating-linear-gradient(90deg, rgba(80,55,40,0.18) 0px, transparent 1px, transparent 3px);
+  background-image: url("/images/linen-overlay.png");
+  background-size: 300px 300px;
+  background-repeat: repeat;
+  opacity: 0.6;
+  mix-blend-mode: multiply;
   pointer-events: none;
   z-index: 0;
 }
