@@ -138,10 +138,10 @@ function getGiftImage(name: string, i: number): string {
 }
 
 const quickActionData = [
-  { label: "Buy a Gift", desc: "Find something they'll love", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=600&h=800&fit=crop&q=80" },
-  { label: "Check Sizes", desc: "Their exact measurements", route: "/dashboard/my-gotwo", img: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=600&h=800&fit=crop&q=80" },
-  { label: "Saved Items", desc: "Things they've mentioned", route: "/dashboard/my-lists", img: "https://images.unsplash.com/photo-1483181957632-8bda974cbc91?w=600&h=800&fit=crop&q=80" },
-  { label: "Plan a Date", desc: "Ideas they'd enjoy", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1529903384028-929ae5deeae3?w=600&h=800&fit=crop&q=80" },
+  { label: "Buy Them a Gift", desc: "Filtered by what they actually want", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=600&h=800&fit=crop&q=80" },
+  { label: "Their Sizes", desc: "Clothing, shoes, ring — no guessing", route: "/dashboard/my-gotwo", img: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=600&h=800&fit=crop&q=80" },
+  { label: "Their Saved Items", desc: "Things they've mentioned wanting", route: "/dashboard/my-lists", img: "https://images.unsplash.com/photo-1483181957632-8bda974cbc91?w=600&h=800&fit=crop&q=80" },
+  { label: "Plan a Date", desc: "Places and activities they'd love", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1529903384028-929ae5deeae3?w=600&h=800&fit=crop&q=80" },
 ];
 
 /* ── Brand logo component ── */
