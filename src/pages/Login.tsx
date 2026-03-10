@@ -125,7 +125,7 @@ const Login = () => {
             {/* Heading */}
             <div className="text-center mb-10">
               <h1
-                className="text-3xl md:text-4xl font-bold mb-2"
+                className="text-4xl md:text-5xl font-bold mb-3"
                 style={{
                   fontFamily: "'Playfair Display', serif",
                   color: "var(--swatch-viridian-odyssey)",
@@ -134,7 +134,7 @@ const Login = () => {
                 Welcome Back
               </h1>
               <p
-                className="text-sm"
+                className="text-base"
                 style={{ color: "var(--swatch-antique-coin)" }}
               >
                 Sign in to your account

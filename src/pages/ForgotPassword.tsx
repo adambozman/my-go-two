@@ -87,12 +87,12 @@ const ForgotPassword = () => {
             {/* Heading */}
             <div className="text-center mb-10">
               <h1
-                className="text-3xl md:text-4xl font-bold mb-2"
+                className="text-4xl md:text-5xl font-bold mb-3"
                 style={{ fontFamily: "'Playfair Display', serif", color: "var(--swatch-viridian-odyssey)" }}
               >
                 Reset Password
               </h1>
-              <p className="text-sm" style={{ color: "var(--swatch-antique-coin)" }}>
+              <p className="text-base" style={{ color: "var(--swatch-antique-coin)" }}>
                 {sent ? "Check your email for a reset link" : "Enter your email to reset your password"}
               </p>
             </div>
