@@ -132,6 +132,62 @@ const SettingsPage = () => {
               <Save className="mr-2 h-4 w-4" />
               {loading ? "Saving..." : "Save Changes"}
             </Button>
+
+            {/* Password Change */}
+            <div className="border-t border-border/30 pt-6 mt-6">
+              <h3 className="text-base font-semibold mb-4" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
+                Change Password
+              </h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>New Password</Label>
+                  <Input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="••••••••"
+                    minLength={6}
+                    className="rounded-xl"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Confirm Password</Label>
+                  <Input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    minLength={6}
+                    className="rounded-xl"
+                  />
+                </div>
+                <Button
+                  className="rounded-full"
+                  disabled={passwordLoading || !newPassword || newPassword.length < 6}
+                  onClick={async () => {
+                    if (newPassword !== confirmPassword) {
+                      toast({ title: "Passwords don't match", variant: "destructive" });
+                      return;
+                    }
+                    setPasswordLoading(true);
+                    try {
+                      const { error } = await supabase.auth.updateUser({ password: newPassword });
+                      if (error) throw error;
+                      toast({ title: "Password updated" });
+                      setNewPassword("");
+                      setConfirmPassword("");
+                    } catch (error: any) {
+                      toast({ title: "Error", description: error.message, variant: "destructive" });
+                    } finally {
+                      setPasswordLoading(false);
+                    }
+                  }}
+                >
+                  <KeyRound className="mr-2 h-4 w-4" />
+                  {passwordLoading ? "Updating..." : "Update Password"}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       )}
