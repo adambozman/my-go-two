@@ -60,12 +60,12 @@ export const onboardingQuestions: OnboardingQuestion[] = [
     type: "single-select",
     title: "Do you shop mostly online or in-store?",
     subtitle: "How do you prefer to buy?",
-    funnySubtext: "No wrong answer… unless you say 'I don't shop' 😅",
+    funnySubtext: "No wrong answer… unless you say 'I don't shop'",
     multiSelect: false,
     options: [
-      { id: "online", label: "Mostly online", emoji: "📦" },
-      { id: "in-store", label: "Mostly in-store", emoji: "🏬" },
-      { id: "both", label: "50/50 mix", emoji: "🔄" },
+      { id: "online", label: "Mostly online", image: "1523474253046-8cd2748b5fd2" },
+      { id: "in-store", label: "Mostly in-store", image: "1441984904996-b133b5880093" },
+      { id: "both", label: "50/50 mix", image: "1441986300917-64674bd600d8" },
     ],
   },
   {
@@ -74,13 +74,13 @@ export const onboardingQuestions: OnboardingQuestion[] = [
     type: "single-select",
     title: "What price range feels normal for you?",
     subtitle: "No judgment — just helps us suggest better",
-    funnySubtext: "Your wallet wants us to know this 💸",
+    funnySubtext: "Your wallet wants us to know this",
     multiSelect: false,
     options: [
-      { id: "budget", label: "Budget-friendly", emoji: "💰" },
-      { id: "mid", label: "Mid-range", emoji: "⚖️" },
-      { id: "premium", label: "Premium", emoji: "✨" },
-      { id: "luxury", label: "Luxury", emoji: "👑" },
+      { id: "budget", label: "Budget-friendly", image: "1572883454114-efb6cbe0d31b" },
+      { id: "mid", label: "Mid-range", image: "1441986300917-64674bd600d8" },
+      { id: "premium", label: "Premium", image: "1441984904996-b133b5880093" },
+      { id: "luxury", label: "Luxury", image: "1490427712608-588e68359dbd" },
     ],
   },
   {
@@ -89,7 +89,7 @@ export const onboardingQuestions: OnboardingQuestion[] = [
     type: "free-input",
     title: "What brands fit you best?",
     subtitle: "Type the brands you keep coming back to",
-    funnySubtext: "The ones you're loyal to no matter what 🏷️",
+    funnySubtext: "The ones you're loyal to no matter what",
     placeholder: "e.g. Nike, Levi's, Coach, Zara...",
   },
   {
@@ -98,7 +98,7 @@ export const onboardingQuestions: OnboardingQuestion[] = [
     type: "free-input",
     title: "Any brands you avoid?",
     subtitle: "Brands that just aren't your thing",
-    funnySubtext: "We all have that one brand we won't touch 🚫",
+    funnySubtext: "We all have that one brand we won't touch",
     placeholder: "e.g. Ed Hardy, Crocs, Fast fashion...",
   },
 
