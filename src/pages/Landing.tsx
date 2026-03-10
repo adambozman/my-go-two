@@ -339,11 +339,11 @@ const Landing = () => {
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-5">
               {[
-                { icon: Coffee, label: "Coffee Order", gradient: "135deg, rgba(217,101,79,0.18) 0%, rgba(232,198,174,0.25) 100%" },
-                { icon: () => <span className="text-2xl">🥗</span>, label: "Salad Preferences", gradient: "135deg, rgba(157,166,79,0.18) 0%, rgba(232,198,174,0.25) 100%" },
-                { icon: Shirt, label: "Clothing Sizes", gradient: "135deg, rgba(47,95,109,0.18) 0%, rgba(175,199,218,0.25) 100%" },
-                { icon: CalendarHeart, label: "Date Ideas", gradient: "135deg, rgba(101,70,85,0.18) 0%, rgba(216,209,214,0.25) 100%" },
-                { icon: Gift, label: "Gift Ideas", gradient: "135deg, rgba(233,203,116,0.22) 0%, rgba(232,198,174,0.25) 100%" },
+                { Icon: Coffee, label: "Coffee Order", gradient: "135deg, rgba(217,101,79,0.18) 0%, rgba(232,198,174,0.25) 100%" },
+                { Icon: Shirt, label: "Clothing Sizes", gradient: "135deg, rgba(47,95,109,0.18) 0%, rgba(175,199,218,0.25) 100%" },
+                { Icon: CalendarHeart, label: "Date Ideas", gradient: "135deg, rgba(101,70,85,0.18) 0%, rgba(216,209,214,0.25) 100%" },
+                { Icon: Gift, label: "Gift Ideas", gradient: "135deg, rgba(233,203,116,0.22) 0%, rgba(232,198,174,0.25) 100%" },
+                { Icon: Sparkles, label: "Wish Lists", gradient: "135deg, rgba(157,166,79,0.18) 0%, rgba(232,198,174,0.25) 100%" },
               ].map((t, i) => (
                 <motion.div
                   key={t.label}
@@ -368,13 +368,7 @@ const Landing = () => {
                         backdropFilter: "blur(8px)",
                       }}
                     >
-                      {typeof t.icon === "function" && t.icon.length === 0 && typeof t.icon({}) === "object" ? (
-                        <t.icon className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-                      ) : typeof t.icon !== "function" ? (
-                        <t.icon className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-                      ) : (
-                        <t.icon />
-                      )}
+                      <t.Icon className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
                     </div>
                     <p
                       className="text-sm font-bold"
