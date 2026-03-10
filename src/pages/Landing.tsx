@@ -127,7 +127,7 @@ const Landing = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.35 }}
-              className="text-sm md:text-base mb-8"
+              className="text-sm md:text-base mb-10"
               style={{ color: "var(--swatch-antique-coin)" }}
             >
               One place for everything that matters to the people who matter most.
