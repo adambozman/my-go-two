@@ -83,9 +83,6 @@ const Recommendations = () => {
     <div className="space-y-6 pb-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
-            Picked For You
-          </h1>
           {personalization.persona_summary && (
             <p className="text-xs text-muted-foreground mt-1 max-w-sm italic">
               Based on your {personalization.price_tier || ""} {(personalization.style_keywords || []).slice(0, 3).join(", ")} style

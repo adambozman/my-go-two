@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
 import SwipeCards from "@/components/SwipeCards";
+import { AppSidebar } from "@/components/AppSidebar";
 import {
   onboardingCategories,
   onboardingQuestions,
@@ -298,7 +299,7 @@ const Onboarding = () => {
     const goLeftCat = () => setCategoryIndex((i) => (i - 1 + cats.length) % cats.length);
     const goRightCat = () => setCategoryIndex((i) => (i + 1) % cats.length);
     return (
-      <div className="landing-page min-h-screen flex flex-col overflow-hidden">
+      <div className={`landing-page min-h-screen flex flex-col overflow-hidden ${isEditMode ? "pb-24" : ""}`}>
         <div className="flex items-center justify-between px-8 pt-6 pb-2 relative z-10">
           <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
           <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">Skip</Button>
@@ -419,6 +420,7 @@ const Onboarding = () => {
             </motion.div>
           )}
         </div>
+        {isEditMode && <AppSidebar />}
       </div>
     );
   }
@@ -524,7 +526,7 @@ const Onboarding = () => {
   if (phase === "category-questions" && selectedCategory) {
     const catName = onboardingCategories.find(c => c.id === selectedCategory)?.name || "";
     return (
-      <div className="landing-page min-h-screen flex flex-col">
+      <div className={`landing-page min-h-screen flex flex-col ${isEditMode ? "pb-24" : ""}`}>
         <div className="flex items-center justify-between px-6 pt-5 pb-3">
         <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
           <Button variant="ghost" size="sm" onClick={() => setPhase("category-picker")} className="text-muted-foreground">
@@ -548,6 +550,7 @@ const Onboarding = () => {
             setPhase("category-picker");
           }}
         />
+        {isEditMode && <AppSidebar />}
       </div>
     );
   }
@@ -555,7 +558,7 @@ const Onboarding = () => {
   if (!currentQuestion) return null;
 
   return (
-    <div className="landing-page min-h-screen flex flex-col">
+    <div className={`landing-page min-h-screen flex flex-col ${isEditMode ? "pb-24" : ""}`}>
       {/* Top */}
       <div className="flex items-center justify-between px-6 pt-5 pb-3">
         <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
@@ -786,6 +789,7 @@ const Onboarding = () => {
           </p>
         )}
       </div>
+      {isEditMode && <AppSidebar />}
     </div>
   );
 };
