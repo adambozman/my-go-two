@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ChevronRight, RefreshCw } from "lucide-react";
+import { ChevronRight, RefreshCw, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
@@ -22,45 +22,57 @@ const categoryLabel: Record<string, string> = {
   lifestyle: "Lifestyle",
 };
 
-// Brand logos via Clearbit Logo API (free, high-quality)
-const brandLogoDomains: Record<string, string> = {
-  nordstrom: "nordstrom.com",
-  zara: "zara.com",
-  uniqlo: "uniqlo.com",
-  target: "target.com",
-  sephora: "sephora.com",
-  nike: "nike.com",
-  lululemon: "lululemon.com",
-  everlane: "everlane.com",
-  patagonia: "patagonia.com",
-  "common projects": "commonprojects.com",
-  adidas: "adidas.com",
-  "j.crew": "jcrew.com",
-  "banana republic": "bananarepublic.com",
-  "ralph lauren": "ralphlauren.com",
-  gucci: "gucci.com",
-  prada: "prada.com",
-  "all saints": "allsaints.com",
-  hm: "hm.com",
-  "h&m": "hm.com",
-  asos: "asos.com",
-  cos: "cosstores.com",
-  madewell: "madewell.com",
-  anthropologie: "anthropologie.com",
-  "free people": "freepeople.com",
-  reformation: "thereformation.com",
-  aritzia: "aritzia.com",
+/* ── Brand / store search URLs ── */
+const storeSearchUrls: Record<string, string> = {
+  nordstrom: "https://www.nordstrom.com",
+  zara: "https://www.zara.com",
+  uniqlo: "https://www.uniqlo.com",
+  target: "https://www.target.com",
+  sephora: "https://www.sephora.com",
+  "h&m": "https://www.hm.com",
+  hm: "https://www.hm.com",
+  asos: "https://www.asos.com",
+  madewell: "https://www.madewell.com",
+  anthropologie: "https://www.anthropologie.com",
+  amazon: "https://www.amazon.com",
 };
 
-function getBrandLogo(name: string): string {
-  const key = name.toLowerCase().trim();
-  const domain = brandLogoDomains[key];
-  if (domain) return `https://logo.clearbit.com/${domain}?size=128`;
-  // Try direct domain guess
-  const sanitized = key.replace(/[^a-z0-9]/g, "");
-  return `https://logo.clearbit.com/${sanitized}.com?size=128`;
+function getStoreUrl(name: string): string {
+  const key = name.toLowerCase().replace(/[^a-z0-9&]/g, "");
+  for (const [k, url] of Object.entries(storeSearchUrls)) {
+    if (key.includes(k.replace(/[^a-z0-9&]/g, "")) || k.replace(/[^a-z0-9&]/g, "").includes(key)) return url;
+  }
+  return `https://www.google.com/search?q=${encodeURIComponent(name + " store")}`;
 }
 
+function getBrandUrl(name: string): string {
+  const sanitized = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return `https://www.google.com/search?q=${encodeURIComponent(name + " shop")}`;
+}
+
+/* ── Brand logo via Clearbit ── */
+const brandDomains: Record<string, string> = {
+  nordstrom: "nordstrom.com", zara: "zara.com", uniqlo: "uniqlo.com",
+  target: "target.com", sephora: "sephora.com", nike: "nike.com",
+  lululemon: "lululemon.com", everlane: "everlane.com", patagonia: "patagonia.com",
+  "common projects": "commonprojects.com", adidas: "adidas.com",
+  "j.crew": "jcrew.com", gucci: "gucci.com", prada: "prada.com",
+  "ralph lauren": "ralphlauren.com", "banana republic": "bananarepublic.com",
+  hm: "hm.com", "h&m": "hm.com", asos: "asos.com", cos: "cosstores.com",
+  madewell: "madewell.com", anthropologie: "anthropologie.com",
+  "free people": "freepeople.com", reformation: "thereformation.com",
+  aritzia: "aritzia.com", amazon: "amazon.com",
+};
+
+function getBrandLogoUrl(name: string): string {
+  const key = name.toLowerCase().trim();
+  const domain = brandDomains[key];
+  if (domain) return `https://logo.clearbit.com/${domain}?size=80`;
+  const sanitized = key.replace(/[^a-z0-9]/g, "");
+  return `https://logo.clearbit.com/${sanitized}.com?size=80`;
+}
+
+/* ── Gift category images ── */
 const giftImages: Record<string, string> = {
   "athletic apparel": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=240&fit=crop&q=80",
   "high-quality basics": "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=400&h=240&fit=crop&q=80",
@@ -68,6 +80,14 @@ const giftImages: Record<string, string> = {
   "minimalist leather goods": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=240&fit=crop&q=80",
   "fitness trackers": "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400&h=240&fit=crop&q=80",
   "ergonomic office": "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=400&h=240&fit=crop&q=80",
+  "tech gadgets": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=240&fit=crop&q=80",
+  skincare: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400&h=240&fit=crop&q=80",
+  experiences: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=400&h=240&fit=crop&q=80",
+  clothing: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=240&fit=crop&q=80",
+  jewelry: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=240&fit=crop&q=80",
+  fragrances: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=240&fit=crop&q=80",
+  books: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=240&fit=crop&q=80",
+  wellness: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=240&fit=crop&q=80",
 };
 
 const fallbackImages = [
@@ -97,6 +117,41 @@ const styleImages: Record<string, string> = {
   luxury: "https://images.unsplash.com/photo-1490427712608-588e68359dbd?w=300&h=200&fit=crop&q=80",
   sporty: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&h=200&fit=crop&q=80",
   boho: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=300&h=200&fit=crop&q=80",
+};
+
+/* ── Brand Logo Component (no DOM hacks) ── */
+const BrandLogo = ({ name }: { name: string }) => {
+  const [failed, setFailed] = useState(false);
+  const logoUrl = getBrandLogoUrl(name);
+  const initial = name.charAt(0).toUpperCase();
+
+  if (failed) {
+    return (
+      <div
+        className="w-12 h-12 rounded-full flex items-center justify-center"
+        style={{ background: "rgba(var(--swatch-gypsum-rose-rgb), 0.5)" }}
+      >
+        <span className="text-lg font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
+          {initial}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden"
+      style={{ background: "#fff", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}
+    >
+      <img
+        src={logoUrl}
+        alt={name}
+        className="w-8 h-8 object-contain"
+        loading="lazy"
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
 };
 
 const DashboardHome = () => {
@@ -137,12 +192,17 @@ const DashboardHome = () => {
     if (personalization && !feed.length) fetchFeed();
   }, [personalization]);
 
+  const openExternal = (url: string) => window.open(url, "_blank", "noopener");
+
   const firstName = displayName?.split(" ")[0] || "there";
   const styles = profileAnswers?.["style-personality"] as string[] | undefined;
   const stores = personalization?.recommended_stores || [];
   const brands = personalization?.recommended_brands || [];
   const giftCats = personalization?.gift_categories || [];
-  const allPicks = [...stores.slice(0, 4), ...brands.slice(0, 4)];
+  const allPicks = [
+    ...stores.slice(0, 4).map((s) => ({ name: s, type: "store" as const })),
+    ...brands.slice(0, 5).map((b) => ({ name: b, type: "brand" as const })),
+  ];
 
   return (
     <div className="max-w-5xl space-y-8">
@@ -177,6 +237,7 @@ const DashboardHome = () => {
                   transition={{ delay: 0.05 * i }}
                   className="card-design-neumorph overflow-hidden shrink-0 group cursor-pointer"
                   style={{ borderRadius: "1.2rem", width: 160, height: 100 }}
+                  onClick={() => openExternal(`https://www.google.com/search?q=${encodeURIComponent(style + " style inspiration")}&tbm=isch`)}
                 >
                   <div className="relative w-full h-full">
                     <img src={img} alt={style} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
@@ -190,58 +251,33 @@ const DashboardHome = () => {
         </motion.div>
       )}
 
-      {/* Picked for You — brand logos */}
+      {/* Picked for You — brand logos, clickable */}
       {allPicks.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <h2 className="text-lg font-bold text-primary mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
             Picked for You
           </h2>
           <div className="flex gap-3 overflow-x-auto pb-2">
-            {allPicks.map((name, i) => {
-              const isStore = i < Math.min(stores.length, 4);
-              const logoUrl = getBrandLogo(name);
-              return (
-                <motion.div
-                  key={name}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 * i }}
-                  className="card-design-neumorph overflow-hidden hover:scale-[1.03] transition-transform cursor-pointer group shrink-0 flex flex-col items-center justify-center text-center"
-                  style={{ borderRadius: "1.2rem", width: 140, height: 140 }}
-                >
-                  <div
-                    className="w-14 h-14 rounded-full mb-3 flex items-center justify-center overflow-hidden"
-                    style={{ background: "rgba(255,255,255,0.7)", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
-                  >
-                    <img
-                      src={logoUrl}
-                      alt={name}
-                      className="w-10 h-10 object-contain"
-                      loading="lazy"
-                      onError={(e) => {
-                        // Fallback: show first letter monogram
-                        const el = e.target as HTMLImageElement;
-                        el.style.display = "none";
-                        const parent = el.parentElement;
-                        if (parent && !parent.querySelector("span")) {
-                          const span = document.createElement("span");
-                          span.textContent = name.charAt(0).toUpperCase();
-                          span.style.cssText = "font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--swatch-viridian-odyssey)";
-                          parent.appendChild(span);
-                        }
-                      }}
-                    />
-                  </div>
-                  <p className="text-xs font-semibold text-primary truncate max-w-[120px]">{name}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{isStore ? "Store" : "Brand"}</p>
-                </motion.div>
-              );
-            })}
+            {allPicks.map(({ name, type }, i) => (
+              <motion.div
+                key={name}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 * i }}
+                className="card-design-neumorph overflow-hidden hover:scale-[1.03] active:scale-[0.98] transition-transform cursor-pointer group shrink-0 flex flex-col items-center justify-center text-center p-4"
+                style={{ borderRadius: "1.2rem", width: 130, height: 130 }}
+                onClick={() => openExternal(type === "store" ? getStoreUrl(name) : getBrandUrl(name))}
+              >
+                <BrandLogo name={name} />
+                <p className="text-xs font-semibold text-primary truncate max-w-[110px] mt-3">{name}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5 capitalize">{type}</p>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       )}
 
-      {/* Gift Ideas */}
+      {/* Gift Ideas — clickable */}
       {giftCats.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <h2 className="text-lg font-bold text-primary mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -256,8 +292,9 @@ const DashboardHome = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.04 * i }}
-                  className="card-design-neumorph overflow-hidden shrink-0 hover:scale-[1.02] transition-transform cursor-pointer group"
+                  className="card-design-neumorph overflow-hidden shrink-0 hover:scale-[1.02] active:scale-[0.98] transition-transform cursor-pointer group"
                   style={{ borderRadius: "1.2rem", width: 180, height: 130 }}
+                  onClick={() => openExternal(`https://www.google.com/search?q=${encodeURIComponent(cat + " gift ideas")}&tbm=shop`)}
                 >
                   <div className="relative w-full h-full">
                     <img src={img} alt={cat} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
@@ -271,7 +308,7 @@ const DashboardHome = () => {
         </motion.div>
       )}
 
-      {/* Trending Feed — varied sizes with large hero cards */}
+      {/* Trending Feed — hero + varied grid */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -299,20 +336,22 @@ const DashboardHome = () => {
           </div>
         ) : feed.length > 0 ? (
           <div className="space-y-4">
-            {/* Hero card — first item, full width */}
-            {feed.length > 0 && (() => {
+            {/* Hero — first card, full-width */}
+            {(() => {
               const card = feed[0];
               const label = categoryLabel[card.category] || "Lifestyle";
+              const imgUrl = `https://images.unsplash.com/featured/?${encodeURIComponent(card.image_query)}&w=900&h=500&fit=crop&q=80`;
               return (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="card-design-neumorph overflow-hidden hover:scale-[1.005] transition-transform cursor-pointer group"
+                  className="card-design-neumorph overflow-hidden hover:scale-[1.005] active:scale-[0.998] transition-transform cursor-pointer group"
                   style={{ borderRadius: "1.4rem" }}
+                  onClick={() => openExternal(`https://www.google.com/search?q=${encodeURIComponent(card.title)}`)}
                 >
                   <div className="relative h-64 sm:h-72 overflow-hidden">
                     <img
-                      src={`https://images.unsplash.com/photo-${card.image_query}?w=900&h=500&fit=crop&q=80`}
+                      src={imgUrl}
                       alt={card.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
@@ -332,11 +371,11 @@ const DashboardHome = () => {
                         {card.title}
                       </h3>
                       <p className="text-white/80 text-sm leading-relaxed line-clamp-2 max-w-xl">{card.description}</p>
-                      <div className="flex items-center mt-3">
+                      <div className="flex items-center gap-2 mt-3">
                         <span className="text-[10px] uppercase tracking-widest text-white/60 font-semibold">
                           {card.source_label}
                         </span>
-                        <ChevronRight className="w-3.5 h-3.5 text-white/60 ml-1" />
+                        <ExternalLink className="w-3 h-3 text-white/40" />
                       </div>
                     </div>
                   </div>
@@ -344,25 +383,26 @@ const DashboardHome = () => {
               );
             })()}
 
-            {/* Remaining cards — 2-column varied grid */}
+            {/* Remaining — varied grid */}
             {feed.length > 1 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {feed.slice(1).map((card, i) => {
                   const label = categoryLabel[card.category] || "Lifestyle";
-                  // Every 3rd card (index 2, 5, 8...) spans full width for visual variety
                   const isWide = i % 3 === 2;
+                  const imgUrl = `https://images.unsplash.com/featured/?${encodeURIComponent(card.image_query)}&w=${isWide ? 900 : 500}&h=${isWide ? 400 : 300}&fit=crop&q=80`;
                   return (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.06 * (i + 1) }}
-                      className={`card-design-neumorph overflow-hidden hover:scale-[1.01] transition-transform cursor-pointer group ${isWide ? "sm:col-span-2" : ""}`}
+                      className={`card-design-neumorph overflow-hidden hover:scale-[1.01] active:scale-[0.99] transition-transform cursor-pointer group ${isWide ? "sm:col-span-2" : ""}`}
                       style={{ borderRadius: "1.2rem" }}
+                      onClick={() => openExternal(`https://www.google.com/search?q=${encodeURIComponent(card.title)}`)}
                     >
                       <div className={`${isWide ? "h-48" : "h-36"} overflow-hidden relative`}>
                         <img
-                          src={`https://images.unsplash.com/photo-${card.image_query}?w=${isWide ? 900 : 500}&h=${isWide ? 400 : 300}&fit=crop&q=80`}
+                          src={imgUrl}
                           alt={card.title}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                           loading="lazy"
@@ -385,7 +425,7 @@ const DashboardHome = () => {
                           <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                             {card.source_label}
                           </span>
-                          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+                          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
                         </div>
                       </div>
                     </motion.div>
