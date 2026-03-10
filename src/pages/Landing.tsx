@@ -288,7 +288,6 @@ const Landing = () => {
 
           </motion.div>
         </section>
-        </section>
 
         {/* Section divider */}
         <div
