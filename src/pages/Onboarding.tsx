@@ -174,12 +174,12 @@ const Onboarding = () => {
   if (phase === "intro") {
     return (
       <div className="landing-page min-h-screen flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between px-8 pt-6 pb-2 relative z-10">
+        <div className="flex items-center justify-between px-8 pt-6 pb-1 relative z-10">
           <GoTwoText className="text-[42px] [&_.two]:text-[52px]" />
           <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">Skip</Button>
         </div>
-        <div className="flex-1 flex flex-col items-center justify-center relative">
-          <div className="relative w-full max-w-3xl h-[400px] flex items-center justify-center mb-10">
+        <div className="flex-1 flex flex-col items-center justify-center relative pb-4">
+          <div className="relative w-full max-w-3xl h-[400px] flex items-center justify-center mb-6">
             {INTRO_IMAGES.map((img, i) => {
               const offset = i - introCenter;
               const wrapped = offset > 4 ? offset - INTRO_IMAGES.length : offset < -4 ? offset + INTRO_IMAGES.length : offset;
