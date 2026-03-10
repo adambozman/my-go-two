@@ -256,9 +256,11 @@ const Landing = () => {
               className="flex items-center"
               style={{
                 background: "rgba(255,255,255,0.70)",
+                border: "1px solid rgba(255,255,255,0.8)",
                 borderRadius: 50,
                 padding: "12px 22px",
                 gap: 14,
+                boxShadow: "0 2px 16px rgba(45,104,112,0.07)",
               }}
             >
               {/* 500+ Couples */}
