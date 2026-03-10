@@ -393,8 +393,8 @@ const DashboardHome = () => {
         </motion.div>
       )}
 
-      {/* No partner CTA */}
-      {hasPartner === false && !showData && (
+      {/* No partner CTA — this is the primary state when not connected */}
+      {hasPartner === false && (
         <motion.div variants={itemVariant} className="relative overflow-hidden" style={{ borderRadius: "1.8rem", minHeight: 280 }}>
           <div className="absolute inset-0" style={{
             background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.6) 100%)",
