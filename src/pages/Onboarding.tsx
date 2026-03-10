@@ -41,6 +41,15 @@ const useSelectedGender = (answers: Record<string, string | string[]>) => {
   return val as "male" | "female" | "non-binary" | "prefer-not" | undefined;
 };
 
+// Accent color based on gender selection
+const getGenderAccent = (gender: string | undefined) => {
+  switch (gender) {
+    case "female": return { solid: "#d4543a", ring: "#d4543a", bg: "rgba(212, 84, 58, 0.2)", bgStrong: "rgba(212, 84, 58, 0.5)" };
+    case "non-binary": return { solid: "#8b7355", ring: "#8b7355", bg: "rgba(139, 115, 85, 0.2)", bgStrong: "rgba(139, 115, 85, 0.5)" };
+    default: return { solid: "hsl(196 40% 31%)", ring: "hsl(196 40% 31%)", bg: "rgba(45, 104, 112, 0.2)", bgStrong: "rgba(45, 104, 112, 0.5)" };
+  }
+};
+
 const Onboarding = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
