@@ -90,17 +90,18 @@ const Landing = () => {
       <div className="relative z-10">
 
         {/* Hero */}
-        <section className="max-w-6xl mx-auto px-8 md:px-16 pt-16 md:pt-28 pb-12 text-center">
+        <section className="max-w-5xl mx-auto px-6 md:px-12 pt-10 md:pt-16 pb-8 text-center min-h-[calc(100vh-80px)] flex flex-col justify-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
+            className="flex flex-col items-center"
           >
-            {/* Giant GoTwo branding — THE focal point */}
-            <div className="mb-6">
+            {/* GoTwo branding */}
+            <div className="mb-4">
               <span
                 className="logo-text"
-                style={{ fontSize: "clamp(5.5rem, 14vw, 12rem)", lineHeight: 0.95 }}
+                style={{ fontSize: "clamp(4rem, 12vw, 9rem)", lineHeight: 0.95 }}
               >
                 <span className="go">Go</span>
                 <span className="two">Two</span>
@@ -111,7 +112,7 @@ const Landing = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-2xl md:text-4xl font-bold mb-10 leading-snug"
+              className="text-xl md:text-3xl font-bold mb-6 leading-snug"
               style={{
                 fontFamily: "'Playfair Display', serif",
                 color: "var(--swatch-viridian-odyssey)",
@@ -127,11 +128,11 @@ const Landing = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="w-full max-w-4xl mx-auto mb-12 relative"
+              className="w-full max-w-3xl mb-8 relative"
               style={{ aspectRatio: "16/9" }}
             >
               <div
-                className="w-full h-full rounded-3xl flex items-center justify-center card-design-neumorph"
+                className="w-full h-full rounded-2xl flex items-center justify-center card-design-neumorph"
                 style={{
                   background:
                     "linear-gradient(165deg, rgba(246,226,212,0.7) 0%, rgba(232,198,174,0.5) 100%)",
@@ -146,31 +147,31 @@ const Landing = () => {
               </div>
             </motion.div>
 
-
+            {/* CTA buttons */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.85 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              className="flex flex-col sm:flex-row gap-3 justify-center"
             >
               <Link to="/signup">
                 <Button
                   size="lg"
-                  className="text-base px-10 py-7 rounded-full font-bold border-0 shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                  className="text-sm px-8 py-6 rounded-full font-bold border-0 shadow-lg hover:shadow-xl transition-all hover:scale-105"
                   style={{
                     background: "var(--swatch-cedar-grove)",
                     color: "var(--swatch-cream-light)",
                   }}
                 >
                   Get Started Free
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
               <a href="#how-it-works">
                 <Button
                   variant="outline"
                   size="lg"
-                  className="text-base px-10 py-7 rounded-full font-semibold transition-all hover:scale-105"
+                  className="text-sm px-8 py-6 rounded-full font-semibold transition-all hover:scale-105"
                   style={{
                     borderColor: "var(--swatch-viridian-odyssey)",
                     color: "var(--swatch-viridian-odyssey)",
