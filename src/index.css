@@ -124,7 +124,8 @@ body {
   background-image: url("/images/linen-texture-overlay.png");
   background-size: 300px 300px;
   background-repeat: repeat;
-  opacity: 0.5;
+  opacity: 1;
+  mix-blend-mode: multiply;
   pointer-events: none;
   z-index: 0;
 }
