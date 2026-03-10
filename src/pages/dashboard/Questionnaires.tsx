@@ -91,7 +91,7 @@ const Questionnaires = () => {
           <p className="text-muted-foreground text-sm">{question.subtitle}</p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
           {question.options.map((opt) => {
             const isSelected = selected.includes(opt.id);
             return (
@@ -99,19 +99,32 @@ const Questionnaires = () => {
                 key={opt.id}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => toggleOption(question.id, opt.id, isMulti)}
-                className={`relative rounded-2xl overflow-hidden aspect-[3/4] card-design-neumorph transition-all ${
-                  isSelected ? "ring-2 ring-primary" : ""
+                className={`relative overflow-hidden transition-all duration-200 ${
+                  isSelected ? "ring-2 ring-primary scale-[1.03] shadow-xl" : "hover:scale-[1.02] hover:shadow-lg"
                 }`}
+                style={{ borderRadius: "1.2rem" }}
               >
-                <img
-                  src={getOptionImage(opt.id, opt.localImage, opt.image)}
-                  alt={opt.label}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                <span className="absolute bottom-3 left-0 right-0 text-center text-white font-semibold text-sm drop-shadow">
-                  {opt.label}
-                </span>
+                <div className="aspect-[4/5] relative">
+                  <img
+                    src={getOptionImage(opt.id, opt.localImage, opt.image)}
+                    alt={opt.label}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
+                    <span className="text-sm font-semibold text-white leading-tight drop-shadow">
+                      {opt.label}
+                    </span>
+                  </div>
+                  {isSelected && (
+                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-md" style={{ background: "hsl(196 40% 31%)" }}>
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                  )}
+                </div>
+              </motion.button>
+            );
+          })}
                 {isSelected && (
                   <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
                     <span className="text-white text-xs">✓</span>
