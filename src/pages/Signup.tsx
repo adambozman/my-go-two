@@ -128,7 +128,7 @@ const Signup = () => {
                 Create Your Account
               </h1>
               <p
-                className="text-sm"
+                className="text-base"
                 style={{ color: "var(--swatch-antique-coin)" }}
               >
                 Let's get to know each other
