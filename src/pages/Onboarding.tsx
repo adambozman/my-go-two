@@ -299,7 +299,8 @@ const Onboarding = () => {
     const goLeftCat = () => setCategoryIndex((i) => (i - 1 + cats.length) % cats.length);
     const goRightCat = () => setCategoryIndex((i) => (i + 1) % cats.length);
     return (
-      <div className="landing-page min-h-screen flex flex-col overflow-hidden">
+      <>
+      <div className={`landing-page min-h-screen flex flex-col overflow-hidden ${isEditMode ? "pb-24" : ""}`}>
         <div className="flex items-center justify-between px-8 pt-6 pb-2 relative z-10">
           <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
           <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">Skip</Button>
