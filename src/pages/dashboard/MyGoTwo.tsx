@@ -302,6 +302,8 @@ const MyGoTwo = () => {
           </div>
         </button>
       </div>
+      </>
+      )}
 
       {/* Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
