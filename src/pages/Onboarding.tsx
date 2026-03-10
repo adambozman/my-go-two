@@ -306,17 +306,24 @@ const Onboarding = () => {
         </div>
 
         <div className="flex-1 flex flex-col items-center justify-center relative">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 px-6">
-            <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Choose a Category
-            </h1>
-            <p className="text-muted-foreground text-base">
-              Tap a category to answer questions about it
+          {!isEditMode && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 px-6">
+              <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Choose a Category
+              </h1>
+              <p className="text-muted-foreground text-base">
+                Tap a category to answer questions about it
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {completedCategories.length} of {cats.length} completed
+              </p>
+            </motion.div>
+          )}
+          {isEditMode && (
+            <p className="text-muted-foreground text-sm mb-2 self-start px-6">
+              Tap a card to retake a category.
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {completedCategories.length} of {cats.length} completed
-            </p>
-          </motion.div>
+          )}
 
           {/* Cover flow */}
           <div className="relative w-full max-w-3xl h-[320px] flex items-center justify-center">
