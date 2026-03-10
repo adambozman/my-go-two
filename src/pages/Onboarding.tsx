@@ -641,7 +641,7 @@ const Onboarding = () => {
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
                               className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center shadow-md"
-                              style={{ background: "hsl(196 40% 31%)" }}
+                              style={{ background: accent.solid }}
                             >
                               <Check className="w-4 h-4 text-white" />
                             </motion.div>
