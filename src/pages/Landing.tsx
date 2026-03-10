@@ -146,46 +146,6 @@ const Landing = () => {
               </div>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="max-w-lg mx-auto mb-4"
-            >
-              <p
-                className="text-base md:text-lg mb-2"
-                style={{ color: "var(--swatch-antique-coin)" }}
-              >
-                Create personal{" "}
-                <span className="logo-text text-base md:text-lg">
-                  <span className="go">Go</span>
-                  <span className="two">Two</span>
-                </span>{" "}
-                lists for the details that matter
-                <br />
-                coffee orders, clothing sizes, date ideas and much more.
-              </p>
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.65 }}
-              className="text-sm font-bold tracking-wide mb-4"
-              style={{ color: "var(--swatch-viridian-odyssey)" }}
-            >
-              Because Light isn't Ultra.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.75 }}
-              className="text-sm mb-10 leading-relaxed"
-              style={{ color: "var(--swatch-antique-coin)" }}
-            >
-              Share it once. · Update anytime. · Stop the arguments before they start.
-            </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 15 }}
