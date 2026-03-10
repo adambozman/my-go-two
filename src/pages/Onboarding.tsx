@@ -218,7 +218,7 @@ const Onboarding = () => {
             })}
           </div>
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-center px-6 max-w-lg">
-            <p style={{ fontFamily: "'Benedict', serif", fontWeight: 400, fontSize: "26px", color: "var(--swatch-viridian-odyssey)", lineHeight: 1.4 }} className="mb-6 text-center">
+            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: "28px", color: "var(--swatch-viridian-odyssey)", lineHeight: 1.4 }} className="mb-6 text-center">
               We'll learn your brands, style, food, and gift preferences. So your significant other is always on point.
             </p>
             <button
