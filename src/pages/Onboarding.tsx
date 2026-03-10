@@ -41,6 +41,15 @@ const useSelectedGender = (answers: Record<string, string | string[]>) => {
   return val as "male" | "female" | "non-binary" | "prefer-not" | undefined;
 };
 
+// Accent color based on gender selection
+const getGenderAccent = (gender: string | undefined) => {
+  switch (gender) {
+    case "female": return { solid: "#d4543a", ring: "#d4543a", bg: "rgba(212, 84, 58, 0.2)", bgStrong: "rgba(212, 84, 58, 0.5)" };
+    case "non-binary": return { solid: "#8b7355", ring: "#8b7355", bg: "rgba(139, 115, 85, 0.2)", bgStrong: "rgba(139, 115, 85, 0.5)" };
+    default: return { solid: "hsl(196 40% 31%)", ring: "hsl(196 40% 31%)", bg: "rgba(45, 104, 112, 0.2)", bgStrong: "rgba(45, 104, 112, 0.5)" };
+  }
+};
+
 const Onboarding = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -59,6 +68,7 @@ const Onboarding = () => {
   const [introCenter, setIntroCenter] = useState(4);
   const [completedCategories, setCompletedCategories] = useState<string[]>([]);
   const selectedGender = useSelectedGender(answers);
+  const accent = getGenderAccent(selectedGender);
 
   // Browser back button
   useEffect(() => {
@@ -611,7 +621,8 @@ const Onboarding = () => {
                         }`}
                         style={{
                           borderRadius: "1.2rem",
-                          ...(isSelected ? { borderColor: "hsl(196 40% 31%)" } : {}),
+                          ...(isSelected ? { borderColor: accent.solid, ringColor: accent.solid, outlineColor: accent.solid } : {}),
+                          ...(isSelected ? { boxShadow: `0 0 0 2px ${accent.solid}` } : {}),
                         }}
                       >
                         <div className="aspect-[4/5] overflow-hidden relative">
@@ -630,7 +641,7 @@ const Onboarding = () => {
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
                               className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center shadow-md"
-                              style={{ background: "hsl(196 40% 31%)" }}
+                              style={{ background: accent.solid }}
                             >
                               <Check className="w-4 h-4 text-white" />
                             </motion.div>
@@ -651,6 +662,10 @@ const Onboarding = () => {
               <div className="flex flex-col gap-3 max-w-md mx-auto w-full flex-1 content-start overflow-y-auto pb-4">
                 {currentQuestion.options.map((opt, i) => {
                   const isSelected = selected.includes(opt.id);
+                  // For identity question, each option gets its own accent color
+                  const optAccent = currentQuestion.id === "identity"
+                    ? getGenderAccent(opt.id)
+                    : accent;
                   return (
                     <motion.button
                       key={opt.id}
@@ -665,17 +680,19 @@ const Onboarding = () => {
                       }`}
                       style={{
                         background: isSelected
-                          ? "linear-gradient(158deg, rgba(232,198,174,0.5), rgba(107,109,98,0.2))"
+                          ? `linear-gradient(158deg, ${optAccent.bgStrong}, ${optAccent.bg})`
                           : "linear-gradient(158deg, rgba(232,198,174,0.2), rgba(107,109,98,0.08))",
                         border: isSelected
-                          ? "2px solid hsl(196 40% 31%)"
+                          ? `2px solid ${optAccent.solid}`
                           : "2px solid transparent",
                       }}
                     >
                       <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                          isSelected ? "border-primary bg-primary" : "border-muted-foreground/40"
-                        }`}
+                        className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all"
+                        style={{
+                          borderColor: isSelected ? optAccent.solid : "rgba(107,109,98,0.4)",
+                          background: isSelected ? optAccent.solid : "transparent",
+                        }}
                       >
                         {isSelected && (
                           <motion.div
@@ -708,11 +725,11 @@ const Onboarding = () => {
                       }`}
                       style={{
                         background: isSelected
-                          ? "hsl(196 40% 31%)"
+                          ? accent.solid
                           : "linear-gradient(158deg, rgba(232,198,174,0.38), rgba(107,109,98,0.15))",
-                        color: isSelected ? "hsl(42 25% 92%)" : "hsl(196 40% 31%)",
+                        color: isSelected ? "#fff" : "hsl(196 40% 31%)",
                         border: isSelected
-                          ? "2px solid hsl(196 40% 31%)"
+                          ? `2px solid ${accent.solid}`
                           : "1px solid rgba(107,109,98,0.4)",
                       }}
                     >
