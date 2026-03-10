@@ -725,11 +725,11 @@ const Onboarding = () => {
                       }`}
                       style={{
                         background: isSelected
-                          ? "hsl(196 40% 31%)"
+                          ? accent.solid
                           : "linear-gradient(158deg, rgba(232,198,174,0.38), rgba(107,109,98,0.15))",
-                        color: isSelected ? "hsl(42 25% 92%)" : "hsl(196 40% 31%)",
+                        color: isSelected ? "#fff" : "hsl(196 40% 31%)",
                         border: isSelected
-                          ? "2px solid hsl(196 40% 31%)"
+                          ? `2px solid ${accent.solid}`
                           : "1px solid rgba(107,109,98,0.4)",
                       }}
                     >
