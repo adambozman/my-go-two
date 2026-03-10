@@ -47,7 +47,7 @@ function getStoreUrl(name: string): string {
 
 function getBrandUrl(name: string): string {
   const sanitized = name.toLowerCase().replace(/[^a-z0-9]/g, "");
-  return `https://www.google.com/search?q=${encodeURIComponent(name + " shop")}`;
+  return `https://www.${sanitized}.com`;
 }
 
 /* ── Brand logo via Clearbit ── */
