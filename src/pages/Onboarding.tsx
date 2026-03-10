@@ -68,6 +68,7 @@ const Onboarding = () => {
   const [introCenter, setIntroCenter] = useState(4);
   const [completedCategories, setCompletedCategories] = useState<string[]>([]);
   const selectedGender = useSelectedGender(answers);
+  const accent = getGenderAccent(selectedGender);
 
   // Browser back button
   useEffect(() => {
