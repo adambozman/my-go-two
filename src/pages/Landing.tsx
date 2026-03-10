@@ -133,7 +133,7 @@ const Landing = () => {
               style={{ maxWidth: 560, marginBottom: 36, aspectRatio: "16/9" }}
             >
               <div
-                className="w-full h-full flex flex-col items-center justify-center gap-3"
+                className="w-full h-full flex flex-col items-center justify-center gap-3 relative overflow-hidden"
                 style={{
                   background: "rgba(255,255,255,0.70)",
                   border: "1px solid rgba(255,255,255,0.85)",
@@ -141,6 +141,10 @@ const Landing = () => {
                   boxShadow: "0 8px 48px rgba(45,104,112,0.10), inset 0 1px 0 rgba(255,255,255,0.90)",
                 }}
               >
+                {/* Shine overlay */}
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%)",
+                }} />
                 <div
                   className="flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
                   style={{
@@ -256,9 +260,11 @@ const Landing = () => {
               className="flex items-center"
               style={{
                 background: "rgba(255,255,255,0.70)",
+                border: "1px solid rgba(255,255,255,0.8)",
                 borderRadius: 50,
                 padding: "12px 22px",
                 gap: 14,
+                boxShadow: "0 2px 16px rgba(45,104,112,0.07)",
               }}
             >
               {/* 500+ Couples */}
@@ -485,13 +491,21 @@ const Landing = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 0.68, 0, 1.2] as [number, number, number, number] }}
               viewport={{ once: true, margin: "-15%" }}
-              className="relative overflow-hidden rounded-[2rem] p-12 md:p-16 text-center"
+              className="relative overflow-hidden rounded-[20px] p-12 md:p-16 text-center"
               style={{
-                background:
-                  "linear-gradient(145deg, var(--swatch-viridian-odyssey) 0%, var(--swatch-teal) 100%)",
+                background: "var(--swatch-viridian-odyssey)",
                 boxShadow: "0 24px 48px rgba(30, 74, 82, 0.3)",
               }}
             >
+              {/* Subtle orbs */}
+              <div className="absolute pointer-events-none" style={{
+                top: -60, right: -60, width: 240, height: 240, borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(212,84,58,0.18) 0%, transparent 70%)",
+              }} />
+              <div className="absolute pointer-events-none" style={{
+                bottom: -80, left: -50, width: 280, height: 280, borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)",
+              }} />
               <div className="relative z-10">
                 <div className="mb-6">
                   <span
@@ -509,16 +523,16 @@ const Landing = () => {
 
                 <h2
                   className="text-2xl md:text-4xl font-semibold mb-4"
-                  style={{ color: "var(--swatch-cream-light)" }}
+                  style={{ color: "white" }}
                 >
-                  Ready to make every
+                  Ready to get it right,
                   <br />
-                  gesture count?
+                  every single time?
                 </h2>
 
                 <p
-                  className="text-base mb-8 opacity-80"
-                  style={{ color: "var(--swatch-cream-light)", fontWeight: 300 }}
+                  className="text-base mb-8"
+                  style={{ color: "rgba(255,255,255,0.58)", fontWeight: 300, letterSpacing: "0.2px" }}
                 >
                   Join couples who never have to guess again.
                 </p>
@@ -546,8 +560,7 @@ const Landing = () => {
                       e.currentTarget.style.boxShadow = "0 4px 20px rgba(212, 84, 58, 0.30)";
                     }}
                   >
-                    Create Your First Card
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    Create Your First Card&nbsp;&nbsp;→
                   </Button>
                 </Link>
               </div>
