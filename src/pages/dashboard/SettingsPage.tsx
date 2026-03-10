@@ -14,6 +14,9 @@ const SettingsPage = () => {
   const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
