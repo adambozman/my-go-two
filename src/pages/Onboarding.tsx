@@ -261,26 +261,29 @@ const Onboarding = () => {
     return (
       <div className="landing-page min-h-screen flex flex-col items-center justify-center overflow-hidden">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
           className="text-center px-6 max-w-md"
         >
+          <GoTwoText className="text-[48px] [&_.two]:text-[60px] mb-8" />
+          
           <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" }}
-          >
-            <Sparkles className="w-8 h-8 text-primary-foreground" />
-          </motion.div>
-          <h2 className="text-2xl font-bold text-primary mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Analyzing Your Profile...
+            initial={{ width: 0 }}
+            animate={{ width: "60%" }}
+            transition={{ duration: 3, ease: "easeInOut" }}
+            className="h-[2px] mx-auto mb-8"
+            style={{ background: "var(--swatch-teal)" }}
+          />
+
+          <h2 className="text-2xl font-bold mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+            Building Your Profile...
           </h2>
-          <p className="text-muted-foreground mb-2">
-            Our AI is building your personalized experience
+          <p className="text-muted-foreground mb-2" style={{ fontFamily: "'Jost', sans-serif" }}>
+            Matching brands, stores, and styles to your taste.
           </p>
-          <p className="text-sm text-muted-foreground italic">
-            Matching brands, stores, and styles to your taste ✨
+          <p className="text-sm" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", color: "var(--swatch-teal)" }}>
+            This only takes a moment.
           </p>
         </motion.div>
       </div>
