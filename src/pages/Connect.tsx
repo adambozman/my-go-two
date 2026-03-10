@@ -106,9 +106,9 @@ const Connect = () => {
               >
                 You've Been Invited
               </h1>
-              <p className="text-base md:text-lg" style={{ color: "var(--swatch-antique-coin)" }}>
+              <p className="text-lg md:text-xl" style={{ color: "var(--swatch-antique-coin)" }}>
                 Someone wants to connect with you on{" "}
-                <span className="logo-text text-base md:text-lg">
+                <span className="logo-text text-2xl md:text-3xl">
                   <span className="go">Go</span>
                   <span className="two">Two</span>
                 </span>
