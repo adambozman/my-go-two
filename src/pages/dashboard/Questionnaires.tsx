@@ -122,12 +122,13 @@ const Questionnaires = () => {
 
     setSavingQuiz(true);
     try {
+      const userId = (await supabase.auth.getUser()).data.user!.id;
       // Save the AI quiz answer into profile_answers
       const updatedAnswers = { ...(profileAnswers || {}), [quizId]: selected };
       const { error } = await supabase
         .from("user_preferences")
         .update({ profile_answers: updatedAnswers, updated_at: new Date().toISOString() })
-        .eq("user_id", (await supabase.auth.getUser()).data.user!.id);
+        .eq("user_id", userId);
       if (error) throw error;
       toast.success("Answer saved!");
       await refetch();
