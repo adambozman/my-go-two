@@ -461,27 +461,24 @@ const DashboardHome = () => {
       <motion.div variants={itemVariant}>
         <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-4">Quick Actions</p>
         <div className="grid grid-cols-2 gap-4">
-          {quickActionData.map(({ label, desc, route, img }, i) => (
+          {quickActionData.map(({ label, desc, route, img }) => (
             <motion.button key={label}
               variants={itemVariant}
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
               onClick={() => navigate(route)}
-              className="relative overflow-hidden text-left group"
-              style={{ borderRadius: "1.4rem", height: i === 0 ? 200 : 160 }}>
+              className="relative overflow-hidden text-left group aspect-[4/5]"
+              style={{ borderRadius: "1.4rem" }}>
               <img src={img} alt={label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
               <div className="relative z-10 h-full flex flex-col justify-end p-5">
-                <h3 className="text-lg font-bold leading-tight drop-shadow-lg"
-                  style={{ fontFamily: "'Playfair Display', serif", color: "#f6e2d4" }}>
+                <h3 className="text-lg leading-tight drop-shadow-lg"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "#fff" }}>
                   {label}
                 </h3>
-                <p className="text-xs mt-1 leading-snug" style={{ color: "rgba(246,226,212,0.7)" }}>
+                <p className="text-[11px] mt-1 leading-snug" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 300, color: "rgba(255,255,255,0.75)" }}>
                   {desc}
                 </p>
               </div>
-              {/* Subtle corner shine */}
-              <div className="absolute top-0 right-0 w-24 h-24 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ background: "radial-gradient(circle at 100% 0%, rgba(255,255,255,0.15) 0%, transparent 70%)" }} />
             </motion.button>
           ))}
         </div>
