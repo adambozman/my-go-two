@@ -179,7 +179,7 @@ const Onboarding = () => {
           <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">Skip</Button>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center relative pb-4">
-          <div className="relative w-full max-w-3xl h-[400px] flex items-center justify-center mb-6">
+          <div className="relative w-full max-w-4xl h-[480px] flex items-center justify-center mb-4">
             {INTRO_IMAGES.map((img, i) => {
               const offset = i - introCenter;
               const wrapped = offset > 4 ? offset - INTRO_IMAGES.length : offset < -4 ? offset + INTRO_IMAGES.length : offset;
@@ -190,7 +190,7 @@ const Onboarding = () => {
                 <motion.div
                   key={img.id}
                   animate={{
-                    x: wrapped * 180,
+                    x: wrapped * 195,
                     scale: isCenter ? 1 : 0.75 - abs * 0.05,
                     zIndex: 10 - abs,
                     opacity: isCenter ? 1 : Math.max(0.3, 0.7 - abs * 0.15),
@@ -201,7 +201,7 @@ const Onboarding = () => {
                   style={{ perspective: "1200px" }}
                 >
                   <div
-                    className={`card-design-neumorph overflow-hidden ${isCenter ? "w-[275px] h-[350px] shadow-2xl" : "w-[225px] h-[288px]"}`}
+                    className={`card-design-neumorph overflow-hidden ${isCenter ? "w-[310px] h-[420px] shadow-2xl" : "w-[255px] h-[345px]"}`}
                     style={{ borderRadius: "1.4rem" }}
                   >
                     <img
@@ -218,7 +218,7 @@ const Onboarding = () => {
             })}
           </div>
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-center px-6 max-w-lg">
-            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: "28px", color: "var(--swatch-viridian-odyssey)" }} className="mb-8 text-center">
+            <p style={{ fontFamily: "'Benedict', serif", fontWeight: 400, fontSize: "26px", color: "var(--swatch-viridian-odyssey)", lineHeight: 1.4 }} className="mb-6 text-center">
               We'll learn your brands, style, food, and gift preferences. So your significant other is always on point.
             </p>
             <button
