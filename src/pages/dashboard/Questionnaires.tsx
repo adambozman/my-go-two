@@ -2,9 +2,13 @@ import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { profileQuestions } from "@/data/profileQuestions";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
-import { getStyleImage, getCategoryImage } from "@/data/genderImages";
+import { useAuth } from "@/contexts/AuthContext";
+import { getCategoryImage } from "@/data/genderImages";
+import {
+  onboardingCategories,
+  onboardingQuestions,
+} from "@/data/onboardingQuestions";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SwipeCards from "@/components/SwipeCards";
@@ -12,7 +16,7 @@ import SwipeCards from "@/components/SwipeCards";
 interface AIQuizCategory {
   id: string;
   name: string;
-  category: string; // style | sizing | lifestyle | gifting | products
+  category: string;
   questions: {
     id: string;
     title: string;
@@ -23,7 +27,6 @@ interface AIQuizCategory {
   }[];
 }
 
-// Map AI category types to onboarding category IDs for cover images
 const categoryImageMap: Record<string, string> = {
   style: "style",
   sizing: "fit",
@@ -33,30 +36,43 @@ const categoryImageMap: Record<string, string> = {
 };
 
 const Questionnaires = () => {
+  const { user } = useAuth();
   const { profileAnswers, refetch } = usePersonalization();
   const gender = (profileAnswers?.identity as string) || "male";
-  const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
 
-  // Merge profile question cards + AI category cards into one array
   const [activeIndex, setActiveIndex] = useState(0);
-  const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedAiCategory, setSelectedAiCategory] = useState<string | null>(null);
-  const [selections, setSelections] = useState<Record<string, string[]>>(() => {
-    const saved: Record<string, string[]> = {};
-    if (profileAnswers) {
-      for (const q of imageQuestions) {
-        if (profileAnswers[q.id]) {
-          const val = profileAnswers[q.id];
-          saved[q.id] = Array.isArray(val) ? (val as string[]) : [val as string];
-        }
-      }
-    }
-    return saved;
-  });
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+  const [completedCategories, setCompletedCategories] = useState<string[]>([]);
 
   // AI quizzes
   const [aiCategories, setAiCategories] = useState<AIQuizCategory[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
+
+  // Load existing answers
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from("user_preferences")
+        .select("favorites")
+        .eq("user_id", user.id)
+        .single();
+      if (data?.favorites && typeof data.favorites === "object") {
+        setAnswers(data.favorites as Record<string, string | string[]>);
+        const answered = new Set(Object.keys(data.favorites as object));
+        const done = onboardingCategories
+          .filter((cat) => {
+            const catQs = onboardingQuestions.filter((q) => q.category === cat.id);
+            return catQs.some((q) => answered.has(q.id));
+          })
+          .map((c) => c.id);
+        setCompletedCategories(done);
+      }
+    };
+    load();
+  }, [user, profileAnswers]);
 
   const fetchAiQuizzes = useCallback(async () => {
     setAiLoading(true);
@@ -77,68 +93,73 @@ const Questionnaires = () => {
     fetchAiQuizzes();
   }, []);
 
-  // Build combined card list: profile questions + AI categories
+  // Build combined card list: onboarding categories + AI categories
   type CoverCard =
-    | { kind: "profile"; question: (typeof imageQuestions)[0] }
+    | { kind: "onboarding"; cat: (typeof onboardingCategories)[0] }
     | { kind: "ai"; category: AIQuizCategory };
 
   const coverCards: CoverCard[] = [
-    ...imageQuestions.map((q) => ({ kind: "profile" as const, question: q })),
+    ...onboardingCategories.map((c) => ({ kind: "onboarding" as const, cat: c })),
     ...aiCategories.map((c) => ({ kind: "ai" as const, category: c })),
   ];
 
-  // Center the active index when cards load
-  useEffect(() => {
-    if (coverCards.length > 0 && activeIndex >= coverCards.length) {
-      setActiveIndex(Math.floor(coverCards.length / 2));
-    }
-  }, [coverCards.length]);
-
-  // Set initial center
   useEffect(() => {
     if (coverCards.length > 0 && activeIndex === 0) {
-      setActiveIndex(Math.floor(imageQuestions.length / 2));
+      setActiveIndex(Math.floor(onboardingCategories.length / 2));
     }
-  }, [imageQuestions.length]);
+  }, [onboardingCategories.length]);
 
   const goLeft = () => setActiveIndex((i) => (i - 1 + coverCards.length) % coverCards.length);
   const goRight = () => setActiveIndex((i) => (i + 1) % coverCards.length);
 
-  const getQuestionCoverImage = (q: (typeof imageQuestions)[0]) => {
-    const firstOpt = q.options[0];
-    const genderImg = getStyleImage(firstOpt.id, gender as any);
-    if (genderImg) return genderImg;
-    return firstOpt.localImage || firstOpt.image || "";
-  };
+  // Onboarding category swipe view
+  if (selectedCategory) {
+    const catName = onboardingCategories.find((c) => c.id === selectedCategory)?.name || "";
+    const categoryQuestions = onboardingQuestions.filter((q) => q.category === selectedCategory);
 
-  const getOptionImage = (optionId: string, fallbackLocal?: string, fallbackUrl?: string) => {
-    const genderImg = getStyleImage(optionId, gender as any);
-    if (genderImg) return genderImg;
-    return fallbackLocal || fallbackUrl || "";
-  };
+    return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <SwipeCards
+          questions={categoryQuestions.map((q) => ({
+            id: q.id,
+            title: q.title,
+            subtitle: q.subtitle,
+            type: q.type,
+            options: q.options,
+            placeholder: q.placeholder,
+            multiSelect: q.multiSelect,
+          }))}
+          categoryName={catName}
+          onComplete={async (selections) => {
+            const newAnswers = { ...answers, ...selections };
+            setAnswers(newAnswers);
+            if (!completedCategories.includes(selectedCategory)) {
+              setCompletedCategories((prev) => [...prev, selectedCategory]);
+            }
+            if (user) {
+              try {
+                await supabase
+                  .from("user_preferences")
+                  .update({ favorites: newAnswers, updated_at: new Date().toISOString() })
+                  .eq("user_id", user.id);
+                toast.success("Answers saved!");
+                await refetch();
+              } catch {
+                toast.error("Failed to save");
+              }
+            }
+            setSelectedCategory(null);
+          }}
+          onBack={() => setSelectedCategory(null)}
+        />
+      </motion.div>
+    );
+  }
 
-  const toggleOption = (questionId: string, optionId: string, multiSelect: boolean) => {
-    setSelections((prev) => {
-      const current = prev[questionId] || [];
-      if (!multiSelect) {
-        return { ...prev, [questionId]: current.includes(optionId) ? [] : [optionId] };
-      }
-      return {
-        ...prev,
-        [questionId]: current.includes(optionId)
-          ? current.filter((id) => id !== optionId)
-          : [...current, optionId],
-      };
-    });
-  };
-
-  // ── AI category swipe view ──
+  // AI category swipe view
   if (selectedAiCategory) {
     const cat = aiCategories.find((c) => c.id === selectedAiCategory);
-    if (!cat) {
-      setSelectedAiCategory(null);
-      return null;
-    }
+    if (!cat) { setSelectedAiCategory(null); return null; }
 
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -152,10 +173,10 @@ const Questionnaires = () => {
             multiSelect: q.multi_select,
           }))}
           categoryName={cat.name}
-          onComplete={async (answers) => {
+          onComplete={async (selections) => {
             try {
               const userId = (await supabase.auth.getUser()).data.user!.id;
-              const updatedAnswers = { ...(profileAnswers || {}), ...answers };
+              const updatedAnswers = { ...(profileAnswers || {}), ...selections };
               const { error } = await supabase
                 .from("user_preferences")
                 .update({ profile_answers: updatedAnswers, updated_at: new Date().toISOString() })
@@ -163,7 +184,6 @@ const Questionnaires = () => {
               if (error) throw error;
               toast.success("Answers saved!");
               await refetch();
-              // Remove completed category
               setAiCategories((prev) => prev.filter((c) => c.id !== cat.id));
             } catch {
               toast.error("Failed to save answers");
@@ -176,73 +196,14 @@ const Questionnaires = () => {
     );
   }
 
-  // ── Profile question detail view ──
-  if (selectedQuestion) {
-    const question = imageQuestions.find((q) => q.id === selectedQuestion)!;
-    const isMulti = question.multiSelect !== false;
-    const selected = selections[question.id] || [];
-
-    return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-        <Button variant="ghost" size="sm" onClick={() => setSelectedQuestion(null)} className="text-muted-foreground">
-          ← Back
-        </Button>
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
-            {question.title}
-          </h1>
-          <p className="text-muted-foreground text-sm">{question.subtitle}</p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-          {question.options.map((opt) => {
-            const isSelected = selected.includes(opt.id);
-            return (
-              <motion.button
-                key={opt.id}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => toggleOption(question.id, opt.id, isMulti)}
-                className={`relative overflow-hidden transition-all duration-200 ${
-                  isSelected ? "ring-2 ring-primary scale-[1.03] shadow-xl" : "hover:scale-[1.02] hover:shadow-lg"
-                }`}
-                style={{ borderRadius: "1.2rem" }}
-              >
-                <div className="aspect-[4/5] relative">
-                  <img
-                    src={getOptionImage(opt.id, opt.localImage, opt.image)}
-                    alt={opt.label}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
-                    <span className="text-sm font-semibold text-white leading-tight drop-shadow">{opt.label}</span>
-                  </div>
-                  {isSelected && (
-                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-md" style={{ background: "var(--swatch-teal)" }}>
-                      <span className="text-white text-xs">✓</span>
-                    </div>
-                  )}
-                </div>
-              </motion.button>
-            );
-          })}
-        </div>
-      </motion.div>
-    );
-  }
-
-  // ── Main cover flow view ──
+  // Main cover flow
   return (
     <div className="space-y-8 pb-4">
       <div>
-        <p className="text-muted-foreground text-sm mb-2">Tap a card to review your answers.</p>
+        <p className="text-muted-foreground text-sm mb-2">Tap a card to answer questions.</p>
 
         <div className="relative flex items-center justify-center pt-8">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={goLeft}
-            className="absolute left-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
-          >
+          <Button variant="ghost" size="icon" onClick={goLeft} className="absolute left-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md">
             <ChevronLeft className="h-5 w-5" />
           </Button>
 
@@ -255,7 +216,6 @@ const Questionnaires = () => {
                 if (offset < -half) offset += coverCards.length;
                 const isActive = offset === 0;
                 const absOffset = Math.abs(offset);
-
                 if (absOffset > 2) return null;
 
                 const xOffset = offset * (isActive ? 190 : 170);
@@ -266,34 +226,32 @@ const Questionnaires = () => {
                 const blur = isActive ? 0 : 2;
                 const opacity = isActive ? 1 : 0.5;
 
-                const cardId = card.kind === "profile" ? card.question.id : card.category.id;
                 const isAi = card.kind === "ai";
+                const cardId = isAi ? card.category.id : card.cat.id;
 
-                // Card image
+                // Image
                 let coverImage = "";
-                if (card.kind === "profile") {
-                  coverImage = getQuestionCoverImage(card.question);
+                if (isAi) {
+                  const mapped = categoryImageMap[card.category.category] || "style";
+                  coverImage = getCategoryImage(mapped, gender as any);
                 } else {
-                  const mappedCat = categoryImageMap[card.category.category] || "style";
-                  coverImage = getCategoryImage(mappedCat, gender as any);
+                  coverImage = getCategoryImage(card.cat.id, gender as any);
                 }
 
-                // Card title & subtitle
+                // Title & subtitle
                 let title = "";
                 let subtitle = "";
-                if (card.kind === "profile") {
-                  const answered = (selections[card.question.id] || []).length > 0;
-                  title = card.question.title;
-                  subtitle = answered ? `${(selections[card.question.id] || []).length} selected` : "Tap to answer";
-                } else {
+                if (isAi) {
                   title = card.category.name;
                   subtitle = `${card.category.questions.length} questions`;
+                } else {
+                  const isDone = completedCategories.includes(card.cat.id);
+                  const catQCount = onboardingQuestions.filter((q) => q.category === card.cat.id).length;
+                  title = card.cat.name;
+                  subtitle = isDone ? "Completed" : `${catQCount} questions`;
                 }
 
-                const answered =
-                  card.kind === "profile"
-                    ? (selections[card.question.id] || []).length > 0
-                    : false;
+                const isDone = !isAi && completedCategories.includes(card.cat.id);
 
                 return (
                   <motion.div
@@ -304,17 +262,15 @@ const Questionnaires = () => {
                     style={{ zIndex }}
                     onClick={() => {
                       if (isActive) {
-                        if (card.kind === "profile") setSelectedQuestion(card.question.id);
-                        else setSelectedAiCategory(card.category.id);
+                        if (isAi) setSelectedAiCategory(card.category.id);
+                        else setSelectedCategory(card.cat.id);
                       } else {
                         setActiveIndex(index);
                       }
                     }}
                   >
                     <div
-                      className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
-                        isActive ? "ring-2 ring-primary shadow-2xl" : ""
-                      }`}
+                      className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${isActive ? "ring-2 ring-primary shadow-2xl" : ""}`}
                       style={{ width: cardW, height: cardH }}
                     >
                       <div className="relative w-full h-full overflow-hidden">
@@ -324,24 +280,16 @@ const Questionnaires = () => {
                           {isAi && (
                             <div className="flex items-center gap-1 mb-1">
                               <Sparkles className="h-3 w-3 text-white/80" />
-                              <span className="text-[10px] text-white/70 uppercase tracking-wider font-semibold">
-                                AI Generated
-                              </span>
+                              <span className="text-[10px] text-white/70 uppercase tracking-wider font-semibold">AI Generated</span>
                             </div>
                           )}
-                          <h3
-                            className="text-white font-semibold text-sm leading-tight drop-shadow"
-                            style={{ fontFamily: "'Cormorant Garamond', serif" }}
-                          >
+                          <h3 className="text-white font-semibold text-sm leading-tight drop-shadow" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                             {title}
                           </h3>
                           <p className="text-white/70 text-xs mt-1">{subtitle}</p>
                         </div>
-                        {answered && (
-                          <div
-                            className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
-                            style={{ background: "var(--swatch-teal)" }}
-                          >
+                        {isDone && (
+                          <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>
                             <span className="text-white text-xs">✓</span>
                           </div>
                         )}
@@ -351,8 +299,7 @@ const Questionnaires = () => {
                 );
               })}
 
-              {/* Loading indicator when AI quizzes are being fetched */}
-              {aiLoading && coverCards.length === imageQuestions.length && (
+              {aiLoading && aiCategories.length === 0 && (
                 <div className="absolute bottom-4 flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" style={{ color: "var(--swatch-teal)" }} />
                   <span className="text-xs text-muted-foreground">Loading more cards...</span>
@@ -361,12 +308,7 @@ const Questionnaires = () => {
             </div>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={goRight}
-            className="absolute right-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
-          >
+          <Button variant="ghost" size="icon" onClick={goRight} className="absolute right-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md">
             <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
