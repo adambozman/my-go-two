@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_generated_quizzes: {
+        Row: {
+          generated_at: string
+          id: string
+          quizzes: Json
+          user_id: string
+        }
+        Insert: {
+          generated_at?: string
+          id?: string
+          quizzes?: Json
+          user_id: string
+        }
+        Update: {
+          generated_at?: string
+          id?: string
+          quizzes?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       card_templates: {
         Row: {
           category: string

@@ -7,6 +7,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -23,20 +25,44 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error("Unauthorized");
 
-    // Fetch user's current profile data
+    // Check for cached quizzes less than 7 days old
+    const { data: cached } = await supabase
+      .from("ai_generated_quizzes")
+      .select("quizzes, generated_at")
+      .eq("user_id", user.id)
+      .single();
+
+    if (cached) {
+      const age = Date.now() - new Date(cached.generated_at).getTime();
+      if (age < SEVEN_DAYS_MS && Array.isArray(cached.quizzes) && cached.quizzes.length > 0) {
+        // Filter out already-answered quizzes
+        const { data: prefs } = await supabase
+          .from("user_preferences")
+          .select("profile_answers")
+          .eq("user_id", user.id)
+          .single();
+        const profileAnswers = (prefs?.profile_answers as Record<string, any>) || {};
+        const unanswered = (cached.quizzes as any[]).filter((q: any) => !profileAnswers[q.id]);
+
+        return new Response(JSON.stringify({ quizzes: unanswered }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    // Generate new quizzes
     const { data: prefs } = await supabase
       .from("user_preferences")
       .select("profile_answers, ai_personalization")
       .eq("user_id", user.id)
       .single();
 
-    const profileAnswers = prefs?.profile_answers as Record<string, any> || {};
-    const personalization = prefs?.ai_personalization as any || {};
+    const profileAnswers = (prefs?.profile_answers as Record<string, any>) || {};
+    const personalization = (prefs?.ai_personalization as any) || {};
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    // Build context of what we already know
     const knownAnswers = Object.entries(profileAnswers)
       .map(([key, value]) => {
         const display = Array.isArray(value) ? value.join(", ") : String(value);
@@ -144,6 +170,15 @@ Use the provided tool to return the questions.`;
     if (!toolCall) throw new Error("No tool call in AI response");
 
     const { quizzes } = JSON.parse(toolCall.function.arguments);
+
+    // Cache the generated quizzes
+    await supabase
+      .from("ai_generated_quizzes")
+      .upsert({
+        user_id: user.id,
+        quizzes,
+        generated_at: new Date().toISOString(),
+      }, { onConflict: "user_id" });
 
     return new Response(JSON.stringify({ quizzes }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
