@@ -92,9 +92,8 @@ const CategoryCoverFlow = ({ items, onSelect, disabled }: CategoryCoverFlowProps
                       <h3 className="text-white font-semibold text-sm leading-tight drop-shadow">
                         {item.name}
                       </h3>
-                      <p className="text-white/70 text-xs mt-1">
-                        {item.fieldCount} {item.fieldCount === 1 ? "field" : "fields"}
-                      </p>
+
+
                     </div>
                   </div>
                 </div>

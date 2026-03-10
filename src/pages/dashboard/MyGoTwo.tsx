@@ -222,10 +222,6 @@ const MyGoTwo = () => {
       />
     ) : (
     <div className="max-w-5xl">
-      <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
-        My <GoTwoText className="text-2xl" />
-      </h1>
-
 
 
       {/* Templates by Category - Cover Flows */}
