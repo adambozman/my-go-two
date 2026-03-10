@@ -129,13 +129,13 @@ const Landing = () => {
             {/* Video frame — exact specs */}
             <motion.div
               {...riseIn(0.24)}
-              className="w-full px-4"
+              className="w-full"
               style={{ marginBottom: 36 }}
             >
-              <div style={{ width: "100%", maxWidth: 560, margin: "0 auto", aspectRatio: "16/9" }}>
               <div
-                className="w-full h-full flex flex-col items-center justify-center gap-3 relative overflow-hidden"
+                className="w-full flex flex-col items-center justify-center gap-3 relative overflow-hidden"
                 style={{
+                  aspectRatio: "16/9",
                   background: "rgba(255,255,255,0.70)",
                   border: "1px solid rgba(255,255,255,0.85)",
                   borderRadius: 16,
@@ -147,7 +147,7 @@ const Landing = () => {
                   background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%)",
                 }} />
                 <div
-                  className="flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+                  className="flex items-center justify-center cursor-pointer hover:scale-110 transition-transform relative z-10"
                   style={{
                     width: 56,
                     height: 56,
@@ -160,7 +160,7 @@ const Landing = () => {
                     <path d="M8 5.14v14.72a1 1 0 001.5.86l11-7.36a1 1 0 000-1.72l-11-7.36A1 1 0 008 5.14z" fill="currentColor" />
                   </svg>
                 </div>
-                <span style={{
+                <span className="relative z-10" style={{
                   fontFamily: "'Jost', sans-serif",
                   fontWeight: 500,
                   fontSize: 11,
@@ -170,7 +170,6 @@ const Landing = () => {
                 }}>
                   See It In Action
                 </span>
-              </div>
               </div>
             </motion.div>
 
