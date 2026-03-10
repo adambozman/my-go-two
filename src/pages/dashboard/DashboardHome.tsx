@@ -237,7 +237,7 @@ const DashboardHome = () => {
                   transition={{ delay: 0.05 * i }}
                   className="card-design-neumorph overflow-hidden shrink-0 group cursor-pointer"
                   style={{ borderRadius: "1.2rem", width: 160, height: 100 }}
-                  onClick={() => openExternal(`https://www.google.com/search?q=${encodeURIComponent(style + " style inspiration")}&tbm=isch`)}
+                  onClick={() => openExternal(`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(style + " style inspiration")}`)}
                 >
                   <div className="relative w-full h-full">
                     <img src={img} alt={style} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
