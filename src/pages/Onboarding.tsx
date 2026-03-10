@@ -789,6 +789,7 @@ const Onboarding = () => {
           </p>
         )}
       </div>
+      {isEditMode && <AppSidebar />}
     </div>
   );
 };
