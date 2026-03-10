@@ -172,9 +172,9 @@ body {
   gap: 0.05em;
 }
 .logo-text .go {
-  font-family: 'Benedict', cursive;
-  font-weight: 400;
-  color: var(--swatch-cedar-grove);
+  font-family: 'Dancing Script', cursive;
+  font-weight: 600;
+  color: #d4543a;
 }
 .logo-text .two {
   font-family: 'Cormorant Garamond', serif;
