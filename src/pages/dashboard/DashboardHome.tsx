@@ -22,22 +22,44 @@ const categoryLabel: Record<string, string> = {
   lifestyle: "Lifestyle",
 };
 
-// Curated Unsplash images for stores/brands/gifts
-const storeImages: Record<string, string> = {
-  nordstrom: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop&q=80",
-  zara: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=300&fit=crop&q=80",
-  uniqlo: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=400&h=300&fit=crop&q=80",
-  target: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=400&h=300&fit=crop&q=80",
-  sephora: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop&q=80",
+// Brand logos via Clearbit Logo API (free, high-quality)
+const brandLogoDomains: Record<string, string> = {
+  nordstrom: "nordstrom.com",
+  zara: "zara.com",
+  uniqlo: "uniqlo.com",
+  target: "target.com",
+  sephora: "sephora.com",
+  nike: "nike.com",
+  lululemon: "lululemon.com",
+  everlane: "everlane.com",
+  patagonia: "patagonia.com",
+  "common projects": "commonprojects.com",
+  adidas: "adidas.com",
+  "j.crew": "jcrew.com",
+  "banana republic": "bananarepublic.com",
+  "ralph lauren": "ralphlauren.com",
+  gucci: "gucci.com",
+  prada: "prada.com",
+  "all saints": "allsaints.com",
+  hm: "hm.com",
+  "h&m": "hm.com",
+  asos: "asos.com",
+  cos: "cosstores.com",
+  madewell: "madewell.com",
+  anthropologie: "anthropologie.com",
+  "free people": "freepeople.com",
+  reformation: "thereformation.com",
+  aritzia: "aritzia.com",
 };
 
-const brandImages: Record<string, string> = {
-  nike: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop&q=80",
-  lululemon: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop&q=80",
-  everlane: "https://images.unsplash.com/photo-1434389677669-e08b4cda3b00?w=400&h=300&fit=crop&q=80",
-  patagonia: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop&q=80",
-  "common projects": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&h=300&fit=crop&q=80",
-};
+function getBrandLogo(name: string): string {
+  const key = name.toLowerCase().trim();
+  const domain = brandLogoDomains[key];
+  if (domain) return `https://logo.clearbit.com/${domain}?size=128`;
+  // Try direct domain guess
+  const sanitized = key.replace(/[^a-z0-9]/g, "");
+  return `https://logo.clearbit.com/${sanitized}.com?size=128`;
+}
 
 const giftImages: Record<string, string> = {
   "athletic apparel": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=240&fit=crop&q=80",
@@ -49,18 +71,17 @@ const giftImages: Record<string, string> = {
 };
 
 const fallbackImages = [
-  "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=300&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1490427712608-588e68359dbd?w=400&h=300&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=300&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=300&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&h=400&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1490427712608-588e68359dbd?w=600&h=400&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1445205170230-053b83016050?w=600&h=400&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=600&h=400&fit=crop&q=80",
 ];
 
 function getImageFor(name: string, map: Record<string, string>, index: number): string {
   const key = name.toLowerCase();
   if (map[key]) return map[key];
-  // Partial match
   for (const k of Object.keys(map)) {
     if (key.includes(k) || k.includes(key)) return map[k];
   }
@@ -121,6 +142,7 @@ const DashboardHome = () => {
   const stores = personalization?.recommended_stores || [];
   const brands = personalization?.recommended_brands || [];
   const giftCats = personalization?.gift_categories || [];
+  const allPicks = [...stores.slice(0, 4), ...brands.slice(0, 4)];
 
   return (
     <div className="max-w-5xl space-y-8">
@@ -168,35 +190,50 @@ const DashboardHome = () => {
         </motion.div>
       )}
 
-      {/* Picked for You — stores & brands with images */}
-      {(stores.length > 0 || brands.length > 0) && (
+      {/* Picked for You — brand logos */}
+      {allPicks.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <h2 className="text-lg font-bold text-primary mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
             Picked for You
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {[...stores.slice(0, 4), ...brands.slice(0, 4)].map((name, i) => {
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {allPicks.map((name, i) => {
               const isStore = i < Math.min(stores.length, 4);
-              const img = isStore
-                ? getImageFor(name, storeImages, i)
-                : getImageFor(name, brandImages, i);
+              const logoUrl = getBrandLogo(name);
               return (
                 <motion.div
                   key={name}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.05 * i }}
-                  className="card-design-neumorph overflow-hidden hover:scale-[1.02] transition-transform cursor-pointer group"
-                  style={{ borderRadius: "1.2rem" }}
+                  className="card-design-neumorph overflow-hidden hover:scale-[1.03] transition-transform cursor-pointer group shrink-0 flex flex-col items-center justify-center text-center"
+                  style={{ borderRadius: "1.2rem", width: 140, height: 140 }}
                 >
-                  <div className="relative h-28 overflow-hidden">
-                    <img src={img} alt={name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent" />
+                  <div
+                    className="w-14 h-14 rounded-full mb-3 flex items-center justify-center overflow-hidden"
+                    style={{ background: "rgba(255,255,255,0.7)", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
+                  >
+                    <img
+                      src={logoUrl}
+                      alt={name}
+                      className="w-10 h-10 object-contain"
+                      loading="lazy"
+                      onError={(e) => {
+                        // Fallback: show first letter monogram
+                        const el = e.target as HTMLImageElement;
+                        el.style.display = "none";
+                        const parent = el.parentElement;
+                        if (parent && !parent.querySelector("span")) {
+                          const span = document.createElement("span");
+                          span.textContent = name.charAt(0).toUpperCase();
+                          span.style.cssText = "font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--swatch-viridian-odyssey)";
+                          parent.appendChild(span);
+                        }
+                      }}
+                    />
                   </div>
-                  <div className="p-3">
-                    <p className="text-sm font-semibold text-primary truncate">{name}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{isStore ? "Recommended store" : "Your brand"}</p>
-                  </div>
+                  <p className="text-xs font-semibold text-primary truncate max-w-[120px]">{name}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{isStore ? "Store" : "Brand"}</p>
                 </motion.div>
               );
             })}
@@ -234,9 +271,9 @@ const DashboardHome = () => {
         </motion.div>
       )}
 
-      {/* Trending Feed */}
+      {/* Trending Feed — varied sizes with large hero cards */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
             Trending for You
           </h2>
@@ -253,61 +290,109 @@ const DashboardHome = () => {
         </div>
 
         {feedLoading && !feed.length ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="card-design-neumorph p-4 animate-pulse" style={{ borderRadius: "1.2rem" }}>
-                <div className="h-36 rounded-xl mb-3" style={{ background: "rgba(var(--swatch-gypsum-rose-rgb), 0.4)" }} />
-                <div className="h-4 rounded w-3/4 mb-2" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.3)" }} />
-                <div className="h-3 rounded w-full" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.2)" }} />
-              </div>
-            ))}
+          <div className="space-y-4">
+            <div className="card-design-neumorph animate-pulse" style={{ borderRadius: "1.2rem", height: 280 }} />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="card-design-neumorph animate-pulse" style={{ borderRadius: "1.2rem", height: 200 }} />
+              <div className="card-design-neumorph animate-pulse" style={{ borderRadius: "1.2rem", height: 200 }} />
+            </div>
           </div>
         ) : feed.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {feed.map((card, i) => {
+          <div className="space-y-4">
+            {/* Hero card — first item, full width */}
+            {feed.length > 0 && (() => {
+              const card = feed[0];
               const label = categoryLabel[card.category] || "Lifestyle";
               return (
                 <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.06 * i }}
-                  className="card-design-neumorph overflow-hidden hover:scale-[1.01] transition-transform cursor-pointer group"
-                  style={{ borderRadius: "1.2rem" }}
+                  className="card-design-neumorph overflow-hidden hover:scale-[1.005] transition-transform cursor-pointer group"
+                  style={{ borderRadius: "1.4rem" }}
                 >
-                  <div className="h-40 overflow-hidden relative">
+                  <div className="relative h-64 sm:h-72 overflow-hidden">
                     <img
-                      src={`https://images.unsplash.com/photo-${card.image_query}?w=500&h=300&fit=crop&q=80`}
+                      src={`https://images.unsplash.com/photo-${card.image_query}?w=900&h=500&fit=crop&q=80`}
                       alt={card.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = fallbackImages[i % fallbackImages.length];
-                      }}
+                      onError={(e) => { (e.target as HTMLImageElement).src = fallbackImages[0]; }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                    <div className="absolute top-3 left-3">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute top-4 left-4">
                       <span
-                        className="text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm"
-                        style={{ background: "rgba(255,255,255,0.75)", color: "var(--swatch-viridian-odyssey)" }}
+                        className="text-xs font-semibold px-3 py-1.5 rounded-full backdrop-blur-md"
+                        style={{ background: "rgba(255,255,255,0.8)", color: "var(--swatch-viridian-odyssey)" }}
                       >
                         {label}
                       </span>
                     </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-sm font-bold text-primary mb-1 leading-snug">{card.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-2">{card.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                        {card.source_label}
-                      </span>
-                      <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <h3 className="text-white text-xl font-bold mb-1.5 leading-snug drop-shadow-lg" style={{ fontFamily: "'Playfair Display', serif" }}>
+                        {card.title}
+                      </h3>
+                      <p className="text-white/80 text-sm leading-relaxed line-clamp-2 max-w-xl">{card.description}</p>
+                      <div className="flex items-center mt-3">
+                        <span className="text-[10px] uppercase tracking-widest text-white/60 font-semibold">
+                          {card.source_label}
+                        </span>
+                        <ChevronRight className="w-3.5 h-3.5 text-white/60 ml-1" />
+                      </div>
                     </div>
                   </div>
                 </motion.div>
               );
-            })}
+            })()}
+
+            {/* Remaining cards — 2-column varied grid */}
+            {feed.length > 1 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {feed.slice(1).map((card, i) => {
+                  const label = categoryLabel[card.category] || "Lifestyle";
+                  // Every 3rd card (index 2, 5, 8...) spans full width for visual variety
+                  const isWide = i % 3 === 2;
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.06 * (i + 1) }}
+                      className={`card-design-neumorph overflow-hidden hover:scale-[1.01] transition-transform cursor-pointer group ${isWide ? "sm:col-span-2" : ""}`}
+                      style={{ borderRadius: "1.2rem" }}
+                    >
+                      <div className={`${isWide ? "h-48" : "h-36"} overflow-hidden relative`}>
+                        <img
+                          src={`https://images.unsplash.com/photo-${card.image_query}?w=${isWide ? 900 : 500}&h=${isWide ? 400 : 300}&fit=crop&q=80`}
+                          alt={card.title}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                          onError={(e) => { (e.target as HTMLImageElement).src = fallbackImages[(i + 1) % fallbackImages.length]; }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                        <div className="absolute top-3 left-3">
+                          <span
+                            className="text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm"
+                            style={{ background: "rgba(255,255,255,0.75)", color: "var(--swatch-viridian-odyssey)" }}
+                          >
+                            {label}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-sm font-bold text-primary mb-1 leading-snug">{card.title}</h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed mb-2 line-clamp-2">{card.description}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                            {card.source_label}
+                          </span>
+                          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         ) : !persLoading && !personalization ? (
           <div className="card-design-neumorph p-8 text-center" style={{ borderRadius: "1.2rem" }}>
