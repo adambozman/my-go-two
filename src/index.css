@@ -28,7 +28,7 @@ html::-webkit-scrollbar {
 
 @layer base {
   :root {
-    --background: 40 30% 88%;
+    --background: 28 40% 87%;
     --foreground: 68 9% 60%;
     --heading: 196 40% 31%;
 

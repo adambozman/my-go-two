@@ -90,7 +90,7 @@ const Landing = () => {
       <div className="relative z-10">
 
         {/* Hero */}
-        <section className="max-w-5xl mx-auto px-6 md:px-12 pt-10 md:pt-16 pb-8 text-center min-h-[calc(100vh-80px)] flex flex-col justify-center">
+        <section className="max-w-5xl mx-auto px-6 md:px-12 pt-16 md:pt-24 pb-10 text-center min-h-screen flex flex-col justify-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -98,7 +98,7 @@ const Landing = () => {
             className="flex flex-col items-center"
           >
             {/* GoTwo branding */}
-            <div className="mb-4">
+            <div className="mb-6">
               <span
                 className="logo-text"
                 style={{ fontSize: "clamp(4rem, 12vw, 9rem)", lineHeight: 0.95 }}
@@ -112,7 +112,7 @@ const Landing = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-xl md:text-3xl font-bold mb-3 leading-snug"
+              className="text-xl md:text-3xl font-bold mb-4 leading-snug"
               style={{
                 fontFamily: "'Playfair Display', serif",
                 color: "var(--swatch-viridian-odyssey)",
@@ -127,7 +127,7 @@ const Landing = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.35 }}
-              className="text-sm md:text-base mb-8"
+              className="text-sm md:text-base mb-10"
               style={{ color: "var(--swatch-antique-coin)" }}
             >
               One place for everything that matters to the people who matter most.
@@ -138,7 +138,7 @@ const Landing = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="w-full max-w-3xl mb-8 relative"
+              className="w-full max-w-3xl mb-10 relative"
               style={{ aspectRatio: "16/9" }}
             >
               <div
