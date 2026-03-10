@@ -347,7 +347,7 @@ const DashboardHome = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="card-design-neumorph overflow-hidden hover:scale-[1.005] active:scale-[0.998] transition-transform cursor-pointer group"
                   style={{ borderRadius: "1.4rem" }}
-                  onClick={() => openExternal(`https://www.google.com/search?q=${encodeURIComponent(card.title)}`)}
+                  onClick={() => openExternal(`https://www.amazon.com/s?k=${encodeURIComponent(card.title)}`)}
                 >
                   <div className="relative h-64 sm:h-72 overflow-hidden">
                     <img
