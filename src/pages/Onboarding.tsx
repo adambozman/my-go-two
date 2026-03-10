@@ -10,6 +10,7 @@ import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
+import SwipeCards from "@/components/SwipeCards";
 import {
   onboardingCategories,
   onboardingQuestions,
