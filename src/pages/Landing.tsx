@@ -127,7 +127,7 @@ const Landing = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="w-72 md:w-80 mx-auto mb-10 relative"
+              className="w-72 md:w-80 mx-auto mb-12 relative"
               style={{ aspectRatio: "3/4" }}
             >
               <div
