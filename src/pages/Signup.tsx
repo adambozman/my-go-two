@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import AuthWatercolor from "@/components/AuthWatercolor";
+
 
 const Signup = () => {
   const [searchParams] = useSearchParams();
@@ -51,7 +51,7 @@ const Signup = () => {
 
   return (
     <div className="landing-page min-h-screen overflow-hidden relative">
-      <AuthWatercolor />
+      
 
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Nav */}

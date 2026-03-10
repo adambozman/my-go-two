@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowLeft } from "lucide-react";
-import AuthWatercolor from "@/components/AuthWatercolor";
+
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -31,7 +31,7 @@ const ForgotPassword = () => {
 
   return (
     <div className="landing-page min-h-screen overflow-hidden relative">
-      <AuthWatercolor />
+      
 
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Nav */}

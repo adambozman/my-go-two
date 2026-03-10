@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import AuthWatercolor from "@/components/AuthWatercolor";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -64,7 +64,7 @@ const Connect = () => {
 
   return (
     <div className="landing-page min-h-screen overflow-hidden relative">
-      <AuthWatercolor />
+      
 
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Nav */}
