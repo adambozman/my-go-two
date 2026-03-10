@@ -62,116 +62,164 @@ const Landing = () => {
       <div className="relative z-10">
 
         {/* Hero */}
-        <section className="max-w-5xl mx-auto px-6 md:px-12 pt-16 md:pt-24 pb-10 text-center min-h-screen flex flex-col justify-center">
+        <section
+          className="text-center flex flex-col justify-center items-center"
+          style={{ paddingTop: 64, paddingBottom: 72, paddingLeft: 52, paddingRight: 52 }}
+        >
           <motion.div
             {...riseIn(0)}
             className="flex flex-col items-center"
           >
-            {/* GoTwo branding */}
-            <div className="mb-6">
-              <span
-                className="logo-text"
-                style={{ fontSize: "clamp(4rem, 12vw, 9rem)", lineHeight: 0.95 }}
-              >
-                <span className="go">Go</span>
-                <span className="two">Two</span>
-              </span>
+            {/* Logo — exact specs */}
+            <div style={{ marginBottom: 36, display: "flex", alignItems: "baseline", gap: 3 }}>
+              <span style={{
+                fontFamily: "'Dancing Script', cursive",
+                fontWeight: 600,
+                fontSize: 56,
+                color: "#d4543a",
+                lineHeight: 1,
+              }}>Go</span>
+              <span style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontWeight: 600,
+                fontSize: 70,
+                color: "#2d6870",
+                lineHeight: 1,
+              }}>Two</span>
             </div>
 
-            <motion.h1
-              {...riseIn(0.08)}
-              className="text-2xl md:text-4xl font-semibold mb-4 leading-snug"
-              style={{ color: "var(--swatch-viridian-odyssey)" }}
-            >
-              The Shortcut to Thoughtful.
-              <br />
-              <em style={{ color: "var(--swatch-cedar-grove)", fontStyle: "italic" }}>
+            {/* Tagline block */}
+            <motion.div {...riseIn(0.08)} className="flex flex-col items-center" style={{ marginBottom: 44 }}>
+              <h1 style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontWeight: 600,
+                fontSize: 28,
+                color: "#1e4a52",
+                lineHeight: 1.3,
+                margin: 0,
+              }}>
+                The Shortcut to Thoughtful.
+              </h1>
+              <em style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontWeight: 600,
+                fontSize: 28,
+                color: "#d4543a",
+                lineHeight: 1.3,
+                marginTop: 4,
+                display: "block",
+              }}>
                 Never forget again.
               </em>
-            </motion.h1>
+              <p style={{
+                fontFamily: "'Jost', sans-serif",
+                fontWeight: 300,
+                fontSize: 13.5,
+                color: "#4a6068",
+                maxWidth: 360,
+                textAlign: "center",
+                marginTop: 10,
+                marginBottom: 0,
+                lineHeight: 1.5,
+              }}>
+                One place for everything that matters to the people who matter most.
+              </p>
+            </motion.div>
 
-            <motion.p
-              {...riseIn(0.16)}
-              className="text-sm md:text-base mb-10"
-              style={{ color: "var(--swatch-antique-coin)", fontWeight: 300 }}
-            >
-              One place for everything that matters to the people who matter most.
-            </motion.p>
-
-            {/* Video placeholder */}
+            {/* Video frame — exact specs */}
             <motion.div
               {...riseIn(0.24)}
-              className="w-full max-w-3xl mb-10 relative"
-              style={{ aspectRatio: "16/9" }}
+              className="w-full"
+              style={{ maxWidth: 560, marginBottom: 36, aspectRatio: "16/9" }}
             >
               <div
-                className="w-full h-full flex flex-col items-center justify-center gap-3 card-design-neumorph"
+                className="w-full h-full flex flex-col items-center justify-center gap-3"
+                style={{
+                  background: "rgba(255,255,255,0.70)",
+                  border: "1px solid rgba(255,255,255,0.85)",
+                  borderRadius: 16,
+                  boxShadow: "0 8px 48px rgba(45,104,112,0.10), inset 0 1px 0 rgba(255,255,255,0.90)",
+                }}
               >
                 <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+                  className="flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
                   style={{
-                    background: "var(--swatch-cedar-grove)",
+                    width: 56,
+                    height: 56,
+                    borderRadius: "50%",
+                    background: "#d4543a",
                     boxShadow: "0 4px 20px rgba(212, 84, 58, 0.30)",
                   }}
                 >
-                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 ml-0.5" style={{ color: "#fff" }}>
+                  <svg viewBox="0 0 24 24" fill="none" style={{ width: 24, height: 24, marginLeft: 2, color: "#fff" }}>
                     <path d="M8 5.14v14.72a1 1 0 001.5.86l11-7.36a1 1 0 000-1.72l-11-7.36A1 1 0 008 5.14z" fill="currentColor" />
                   </svg>
                 </div>
-                <span
-                  className="tracking-[0.3em] uppercase text-xs"
-                  style={{ color: "var(--swatch-text-light)", fontWeight: 500 }}
-                >
+                <span style={{
+                  fontFamily: "'Jost', sans-serif",
+                  fontWeight: 500,
+                  fontSize: 11,
+                  color: "#8a9ea4",
+                  letterSpacing: "0.3em",
+                  textTransform: "uppercase" as const,
+                }}>
                   See It In Action
                 </span>
               </div>
             </motion.div>
 
-            {/* CTA buttons */}
+            {/* Buttons — exact specs */}
             <motion.div
               {...riseIn(0.32)}
-              className="flex flex-col sm:flex-row gap-3 justify-center"
+              className="flex flex-row justify-center"
+              style={{ gap: 14, marginBottom: 12 }}
             >
               <Link to="/signup">
-                <Button
-                  size="lg"
-                  className="rounded-full font-medium border-0 transition-all text-white"
+                <button
                   style={{
-                    background: "var(--swatch-cedar-grove)",
                     padding: "14px 32px",
-                    fontSize: "13.5px",
+                    borderRadius: 40,
                     fontFamily: "'Jost', sans-serif",
                     fontWeight: 500,
+                    fontSize: 13.5,
+                    background: "#d4543a",
+                    color: "#fff",
+                    border: "none",
+                    cursor: "pointer",
                     boxShadow: "0 4px 20px rgba(212, 84, 58, 0.30)",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "var(--swatch-cedar-grove-hover)";
+                    e.currentTarget.style.background = "#c4432a";
                     e.currentTarget.style.transform = "translateY(-1px)";
                     e.currentTarget.style.boxShadow = "0 6px 28px rgba(212, 84, 58, 0.42)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "var(--swatch-cedar-grove)";
+                    e.currentTarget.style.background = "#d4543a";
                     e.currentTarget.style.transform = "translateY(0)";
                     e.currentTarget.style.boxShadow = "0 4px 20px rgba(212, 84, 58, 0.30)";
                   }}
                 >
                   Get Started Free
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
+                  <ArrowRight style={{ width: 16, height: 16 }} />
+                </button>
               </Link>
               <a href="#how-it-works">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="rounded-full font-medium transition-all"
+                <button
                   style={{
-                    border: "1.5px solid rgba(45, 104, 112, 0.45)",
-                    color: "var(--swatch-teal)",
-                    background: "transparent",
-                    padding: "14px 32px",
-                    fontSize: "13.5px",
+                    padding: "13px 28px",
+                    borderRadius: 40,
                     fontFamily: "'Jost', sans-serif",
-                    fontWeight: 500,
+                    fontWeight: 400,
+                    fontSize: 13.5,
+                    background: "transparent",
+                    color: "#2d6870",
+                    border: "1.5px solid rgba(45, 104, 112, 0.45)",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = "rgba(45, 104, 112, 0.06)";
@@ -183,18 +231,63 @@ const Landing = () => {
                   }}
                 >
                   See How It Works
-                </Button>
+                </button>
               </a>
             </motion.div>
 
+            {/* Fine print */}
             <motion.p
               {...riseIn(0.40)}
-              className="text-xs mt-4"
-              style={{ color: "var(--swatch-text-light)", fontWeight: 300 }}
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                fontWeight: 300,
+                fontSize: 12,
+                color: "#8a9ea4",
+                marginTop: 0,
+                marginBottom: 36,
+              }}
             >
               Free to start &nbsp;·&nbsp; No credit card required
             </motion.p>
+
+            {/* Social proof bar */}
+            <motion.div
+              {...riseIn(0.48)}
+              className="flex items-center"
+              style={{
+                background: "rgba(255,255,255,0.70)",
+                borderRadius: 50,
+                padding: "12px 22px",
+                gap: 14,
+              }}
+            >
+              {/* 500+ Couples */}
+              <div className="flex flex-col items-center" style={{ gap: 1 }}>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 20, color: "#1e4a52", lineHeight: 1.1 }}>500+</span>
+                <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 300, fontSize: 10.5, color: "#8a9ea4" }}>Couples</span>
+              </div>
+              {/* Divider */}
+              <div style={{ width: 1, height: 28, background: "rgba(45,104,112,0.15)" }} />
+              {/* Stars */}
+              <div className="flex flex-col items-center" style={{ gap: 1 }}>
+                <div className="flex" style={{ gap: 1 }}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} style={{ width: 13, height: 13, color: "#d4543a", fill: "#d4543a" }} />
+                  ))}
+                </div>
+                <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 300, fontSize: 10.5, color: "#8a9ea4" }}>Rated 5 stars</span>
+              </div>
+              {/* Divider */}
+              <div style={{ width: 1, height: 28, background: "rgba(45,104,112,0.15)" }} />
+              {/* 0 Wrong orders */}
+              <div className="flex flex-col items-center" style={{ gap: 1 }}>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 20, color: "#1e4a52", lineHeight: 1.1 }}>0</span>
+                <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 300, fontSize: 10.5, color: "#8a9ea4" }}>Wrong orders</span>
+              </div>
+            </motion.div>
+
           </motion.div>
+        </section>
         </section>
 
         {/* Section divider */}
