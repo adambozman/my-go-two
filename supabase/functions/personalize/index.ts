@@ -151,10 +151,45 @@ For image_themes, suggest Unsplash-style search terms that match their aesthetic
     }
 
     const aiResult = await response.json();
+    
+    let personalization;
     const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) throw new Error("No tool call in AI response");
-
-    const personalization = JSON.parse(toolCall.function.arguments);
+    
+    if (toolCall?.function?.arguments) {
+      personalization = JSON.parse(toolCall.function.arguments);
+    } else {
+      // Fallback: try to parse from message content if model didn't use tool
+      const content = aiResult.choices?.[0]?.message?.content;
+      if (content) {
+        try {
+          // Try to extract JSON from the content
+          const jsonMatch = content.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            personalization = JSON.parse(jsonMatch[0]);
+          }
+        } catch {}
+      }
+      
+      // If still no personalization, generate defaults based on answers
+      if (!personalization) {
+        console.warn("AI did not return structured data, using defaults");
+        const identity = profile_answers?.identity;
+        const gender = Array.isArray(identity) ? identity[0] : identity || "unspecified";
+        const styles = profile_answers?.["style-personality"] || [];
+        const styleList = Array.isArray(styles) ? styles : [styles];
+        
+        personalization = {
+          recommended_brands: ["Nike", "Zara", "H&M", "Target", "Amazon"],
+          recommended_stores: ["Nordstrom", "Target", "Amazon"],
+          image_themes: ["lifestyle", "fashion", "modern"],
+          color_palette: ["#2C3E50", "#E8C6AE", "#6B6D62", "#D4A574", "#3A7CA5"],
+          gift_categories: ["tech gadgets", "experiences", "clothing"],
+          price_tier: "mid-range",
+          style_keywords: styleList.length > 0 ? styleList : ["casual", "modern"],
+          persona_summary: `A ${gender} with a ${styleList.join(", ") || "versatile"} style who values quality and practicality.`,
+        };
+      }
+    }
 
     // Save both profile answers and AI personalization to DB
     const { error: updateError } = await supabase
@@ -168,7 +203,6 @@ For image_themes, suggest Unsplash-style search terms that match their aesthetic
 
     if (updateError) {
       console.error("DB update error:", updateError);
-      // Try upsert if row doesn't exist
       await supabase.from("user_preferences").upsert({
         user_id: user.id,
         profile_answers,
