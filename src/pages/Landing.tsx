@@ -200,6 +200,16 @@ const Landing = () => {
                 </Button>
               </a>
             </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 1 }}
+              className="text-xs mt-3"
+              style={{ color: "var(--swatch-antique-coin)", opacity: 0.7 }}
+            >
+              Free to start &nbsp;·&nbsp; No credit card required
+            </motion.p>
           </motion.div>
         </section>
 
