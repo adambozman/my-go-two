@@ -1,1 +1,7 @@
 project_id = "emaarjwsapuldzvdsite"
+
+[functions.ai-quizzes]
+verify_jwt = false
+
+[functions.ai-products]
+verify_jwt = false
