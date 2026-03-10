@@ -523,16 +523,16 @@ const Landing = () => {
 
                 <h2
                   className="text-2xl md:text-4xl font-semibold mb-4"
-                  style={{ color: "var(--swatch-cream-light)" }}
+                  style={{ color: "white" }}
                 >
-                  Ready to make every
+                  Ready to get it right,
                   <br />
-                  gesture count?
+                  every single time?
                 </h2>
 
                 <p
-                  className="text-base mb-8 opacity-80"
-                  style={{ color: "var(--swatch-cream-light)", fontWeight: 300 }}
+                  className="text-base mb-8"
+                  style={{ color: "rgba(255,255,255,0.58)", fontWeight: 300, letterSpacing: "0.2px" }}
                 >
                   Join couples who never have to guess again.
                 </p>
