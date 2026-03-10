@@ -41,6 +41,15 @@ import imgLoveLanguage from "@/assets/templates/love-language.jpg";
 import imgPetPeeves from "@/assets/templates/pet-peeves.jpg";
 import imgSpecificProducts from "@/assets/templates/specific-products.jpg";
 
+// Male-specific template images
+import imgMaleClothingSizes from "@/assets/templates/male/clothing-sizes.jpg";
+import imgMaleShoeSize from "@/assets/templates/male/shoe-size.jpg";
+import imgMaleScents from "@/assets/templates/male/scents.jpg";
+import imgMaleGrooming from "@/assets/templates/male/grooming.jpg";
+import imgMaleMeasurements from "@/assets/templates/male/measurements.jpg";
+import imgMaleFragrances from "@/assets/templates/male/fragrances.jpg";
+import imgMaleJewelry from "@/assets/templates/male/jewelry.jpg";
+
 interface Template {
   id: string;
   name: string;
@@ -76,6 +85,16 @@ const templateImageMap: Record<string, string> = {
   "Specific Product Versions": imgSpecificProducts,
 };
 
+const maleImageOverrides: Record<string, string> = {
+  "Clothing Sizes": imgMaleClothingSizes,
+  "Shoe Size": imgMaleShoeSize,
+  "Scents": imgMaleScents,
+  "Grooming": imgMaleGrooming,
+  "Measurements": imgMaleMeasurements,
+  "Fragrances": imgMaleFragrances,
+  "Jewelry": imgMaleJewelry,
+};
+
 const categoryLabels: Record<string, string> = {
   personal: "Personal",
   "food-drink": "Food & Drink",
@@ -89,8 +108,17 @@ const categoryOrder = ["personal", "food-drink", "gifts-occasions", "experiences
 const MyGoTwo = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { profileAnswers } = usePersonalization();
   const navigate = useNavigate();
   const location = useLocation();
+  const isMale = profileAnswers?.identity?.[0] === "male" || (Array.isArray(profileAnswers?.identity) && (profileAnswers?.identity as string[]).includes("male"));
+
+  const getTemplateImage = (name: string) => {
+    if (isMale && maleImageOverrides[name]) return maleImageOverrides[name];
+    return templateImageMap[name] || "";
+  };
+
+
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState<string | null>(null);
@@ -222,10 +250,6 @@ const MyGoTwo = () => {
       />
     ) : (
     <div className="max-w-5xl">
-      <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
-        My <GoTwoText className="text-2xl" />
-      </h1>
-
 
 
       {/* Templates by Category - Cover Flows */}
@@ -240,7 +264,7 @@ const MyGoTwo = () => {
                 items={group.items.map((t) => ({
                   id: t.id,
                   name: t.name,
-                  image: templateImageMap[t.name] || "",
+                  image: getTemplateImage(t.name),
                   fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
                 }))}
                 onSelect={(id) => {
