@@ -10,6 +10,7 @@ import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
+import SwipeCards from "@/components/SwipeCards";
 import {
   onboardingCategories,
   onboardingQuestions,
@@ -501,6 +502,40 @@ const Onboarding = () => {
       }
     }
   };
+
+  // ══════════════════════════════════════════
+  // RENDER: CATEGORY QUESTIONS (Swipe cards)
+  // ══════════════════════════════════════════
+  if (phase === "category-questions" && selectedCategory) {
+    const catName = onboardingCategories.find(c => c.id === selectedCategory)?.name || "";
+    return (
+      <div className="landing-page min-h-screen flex flex-col">
+        <div className="flex items-center justify-between px-6 pt-5 pb-3">
+          <GoTwoText className="text-2xl" />
+          <Button variant="ghost" size="sm" onClick={() => setPhase("category-picker")} className="text-muted-foreground">
+            Back
+          </Button>
+        </div>
+        <div className="px-6 mb-2">
+          <span className="font-semibold text-primary text-base">{catName}</span>
+        </div>
+        <SwipeCards
+          questions={categoryQuestions}
+          categoryName={catName}
+          getImage={(optionId) => getStyleImage(optionId, selectedGender) || ""}
+          onBack={() => setPhase("category-picker")}
+          onComplete={(catSelections) => {
+            // Merge selections into answers
+            setAnswers(prev => ({ ...prev, ...catSelections }));
+            if (!completedCategories.includes(selectedCategory)) {
+              setCompletedCategories(prev => [...prev, selectedCategory]);
+            }
+            setPhase("category-picker");
+          }}
+        />
+      </div>
+    );
+  }
 
   if (!currentQuestion) return null;
 
