@@ -125,14 +125,6 @@ const Questionnaires = () => {
               </motion.button>
             );
           })}
-                {isSelected && (
-                  <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                    <span className="text-white text-xs">✓</span>
-                  </div>
-                )}
-              </motion.button>
-            );
-          })}
         </div>
       </motion.div>
     );
