@@ -55,9 +55,17 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
         // Sanitize corrupted unicode characters from AI personalization data
         const raw = data.ai_personalization as any;
         if (raw) {
-          const sanitize = (v: unknown): unknown => {
-            if (typeof v === "string") return v.replace(/[^\x20-\x7E\n\r\t]/g, "").replace(/,\s*$/, "").trim();
-            if (Array.isArray(v)) return v.map(sanitize).filter(Boolean);
+        const sanitize = (v: unknown): unknown => {
+            if (typeof v === "string") {
+              // Strip non-printable chars, trailing JSON artifacts, and structural noise
+              let s = v.replace(/[^\x20-\x7E\n\r\t]/g, "").trim();
+              // Remove trailing/leading JSON structural chars like ]}},, or key fragments
+              s = s.replace(/^[\[\]{},\s:]+/, "").replace(/[\[\]{},\s:]+$/, "").trim();
+              // If it still looks like a JSON fragment, discard it
+              if (/[{}\[\]]/.test(s) || s.includes("_keywords") || s.length < 2) return "";
+              return s;
+            }
+            if (Array.isArray(v)) return v.map(sanitize).filter(x => typeof x === "string" ? x.length > 0 : Boolean(x));
             if (v && typeof v === "object") {
               return Object.fromEntries(Object.entries(v).map(([k, val]) => [k, sanitize(val)]));
             }
