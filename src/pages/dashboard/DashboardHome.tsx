@@ -323,10 +323,10 @@ const DashboardHome = () => {
             <div>
               <motion.p
                 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-                className="text-xs uppercase tracking-[0.2em] font-semibold mb-2"
+                 className="text-xs uppercase tracking-[0.2em] font-semibold mb-2"
                 style={{ color: "rgba(246,226,212,0.7)" }}
               >
-                {hasPartner ? "Partner Snapshot" : "Your Profile"}
+                {showDataName}'s Snapshot
               </motion.p>
               <motion.h1
                 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
