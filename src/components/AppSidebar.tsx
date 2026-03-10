@@ -18,43 +18,43 @@ export function AppSidebar() {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <aside className="fixed left-0 top-0 h-screen w-[72px] flex flex-col items-center py-6 z-50">
-        <div className="card-design-neumorph p-3 flex flex-col gap-2 mt-20">
-          {navItems.map((item) => {
-            const isActive = item.end
-              ? location.pathname === item.url
-              : location.pathname.startsWith(item.url);
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-2 py-2"
+        style={{
+          background: "var(--swatch-sand)",
+          borderTop: "1px solid rgba(74, 96, 104, 0.12)",
+          boxShadow: "0 -2px 12px rgba(0,0,0,0.04)",
+        }}
+      >
+        {navItems.map((item) => {
+          const isActive = item.end
+            ? location.pathname === item.url
+            : location.pathname.startsWith(item.url);
 
-            return (
-              <Tooltip key={item.url}>
-                <TooltipTrigger asChild>
-                  <NavLink
-                    to={item.url}
-                    className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-                      isActive
-                        ? "text-primary"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                    style={isActive ? { background: 'rgba(232,198,174,0.4)' } : undefined}
-                  >
-                    <item.icon className="h-5 w-5" />
-                  </NavLink>
-                </TooltipTrigger>
-                <TooltipContent side="right" sideOffset={8}>
-                  {item.label}
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
-        </div>
-
-        <div className="mt-auto mb-4">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold card-design-neumorph" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
-            AT
-          </div>
-        </div>
-      </aside>
+          return (
+            <Tooltip key={item.url}>
+              <TooltipTrigger asChild>
+                <NavLink
+                  to={item.url}
+                  className={cn(
+                    "flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all",
+                    isActive
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                  style={isActive ? { background: 'rgba(232,198,174,0.4)' } : undefined}
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span className="text-[10px] font-medium leading-none">{item.label}</span>
+                </NavLink>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={8}>
+                {item.label}
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </nav>
     </TooltipProvider>
   );
 }

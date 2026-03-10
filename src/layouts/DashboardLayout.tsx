@@ -36,20 +36,13 @@ const DashboardLayout = () => {
     );
   }
 
-  // Auth guard disabled for development
-  // if (!user) {
-  //   return <Navigate to="/login" replace />;
-  // }
-
   return (
-    <div className="app-page min-h-screen flex">
+    <div className="app-page min-h-screen flex flex-col">
+      <DashboardTopBar />
+      <main className="flex-1 px-8 pb-24">
+        <Outlet />
+      </main>
       <AppSidebar />
-      <div className="flex-1 flex flex-col ml-[72px]">
-        <DashboardTopBar />
-        <main className="flex-1 p-8">
-          <Outlet />
-        </main>
-      </div>
     </div>
   );
 };
