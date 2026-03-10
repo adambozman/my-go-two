@@ -41,6 +41,15 @@ import imgLoveLanguage from "@/assets/templates/love-language.jpg";
 import imgPetPeeves from "@/assets/templates/pet-peeves.jpg";
 import imgSpecificProducts from "@/assets/templates/specific-products.jpg";
 
+// Male-specific template images
+import imgMaleClothingSizes from "@/assets/templates/male/clothing-sizes.jpg";
+import imgMaleShoeSize from "@/assets/templates/male/shoe-size.jpg";
+import imgMaleScents from "@/assets/templates/male/scents.jpg";
+import imgMaleGrooming from "@/assets/templates/male/grooming.jpg";
+import imgMaleMeasurements from "@/assets/templates/male/measurements.jpg";
+import imgMaleFragrances from "@/assets/templates/male/fragrances.jpg";
+import imgMaleJewelry from "@/assets/templates/male/jewelry.jpg";
+
 interface Template {
   id: string;
   name: string;
@@ -74,6 +83,16 @@ const templateImageMap: Record<string, string> = {
   "Love Language": imgLoveLanguage,
   "Pet Peeves": imgPetPeeves,
   "Specific Product Versions": imgSpecificProducts,
+};
+
+const maleImageOverrides: Record<string, string> = {
+  "Clothing Sizes": imgMaleClothingSizes,
+  "Shoe Size": imgMaleShoeSize,
+  "Scents": imgMaleScents,
+  "Grooming": imgMaleGrooming,
+  "Measurements": imgMaleMeasurements,
+  "Fragrances": imgMaleFragrances,
+  "Jewelry": imgMaleJewelry,
 };
 
 const categoryLabels: Record<string, string> = {
