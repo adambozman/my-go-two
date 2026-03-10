@@ -122,7 +122,7 @@ const Landing = () => {
                 marginBottom: 0,
                 lineHeight: 1.5,
               }}>
-                One place for everything that matters to the people who matter most.
+                One place for everything that matters to the people you love.
               </p>
             </motion.div>
 
