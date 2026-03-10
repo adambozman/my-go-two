@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronRight, UserPlus, CalendarHeart, AlertCircle } from "lucide-react";
+import { ChevronRight, UserPlus, CalendarHeart, AlertCircle, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
@@ -25,7 +25,6 @@ const storeDomains: Record<string, string> = {
   cos: "https://www.cos.com", "free people": "https://www.freepeople.com",
 };
 
-/* Search URLs — for contextual affiliate links */
 const storeSearchUrls: Record<string, string> = {
   nordstrom: "https://www.nordstrom.com/sr?keyword=",
   zara: "https://www.zara.com/us/en/search?searchTerm=",
@@ -65,7 +64,6 @@ function getStoreSearchUrl(name: string, query: string): string {
   return getStoreDomain(name);
 }
 
-/* ── Brand logos ── */
 const brandDomainMap: Record<string, string> = {
   nordstrom: "nordstrom.com", zara: "zara.com", uniqlo: "uniqlo.com",
   target: "target.com", sephora: "sephora.com", nike: "nike.com",
@@ -86,24 +84,23 @@ function getBrandLogoUrl(name: string): string {
   return `https://logo.clearbit.com/${key.replace(/[^a-z0-9]/g, "")}.com?size=80`;
 }
 
-/* ── Store imagery ── */
+/* ── Imagery ── */
 const storeHeroImages: Record<string, string> = {
-  nordstrom: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=300&fit=crop&q=80",
-  everlane: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=600&h=300&fit=crop&q=80",
-  lululemon: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=300&fit=crop&q=80",
-  uniqlo: "https://images.unsplash.com/photo-1434389677669-e08b4cda3b00?w=600&h=300&fit=crop&q=80",
-  nike: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=600&h=300&fit=crop&q=80",
-  adidas: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=300&fit=crop&q=80",
-  "common projects": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=300&fit=crop&q=80",
-  sephora: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=600&h=300&fit=crop&q=80",
-  zara: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=600&h=300&fit=crop&q=80",
-  target: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=600&h=300&fit=crop&q=80",
+  nordstrom: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=500&fit=crop&q=80",
+  everlane: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&h=500&fit=crop&q=80",
+  lululemon: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=500&fit=crop&q=80",
+  uniqlo: "https://images.unsplash.com/photo-1434389677669-e08b4cda3b00?w=800&h=500&fit=crop&q=80",
+  nike: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=800&h=500&fit=crop&q=80",
+  adidas: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&h=500&fit=crop&q=80",
+  sephora: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800&h=500&fit=crop&q=80",
+  zara: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&h=500&fit=crop&q=80",
+  target: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&h=500&fit=crop&q=80",
 };
 const fallbackStoreImgs = [
-  "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=300&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&h=300&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1490427712608-588e68359dbd?w=600&h=300&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1445205170230-053b83016050?w=600&h=300&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=500&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&h=500&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1490427712608-588e68359dbd?w=800&h=500&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&h=500&fit=crop&q=80",
 ];
 function getStoreImage(name: string, i: number): string {
   const key = cleanStoreName(name);
@@ -114,24 +111,22 @@ function getStoreImage(name: string, i: number): string {
   return fallbackStoreImgs[i % fallbackStoreImgs.length];
 }
 
-/* ── Gift images ── */
 const giftImages: Record<string, string> = {
-  "athletic apparel": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&q=80",
-  "high-quality basics": "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=400&h=300&fit=crop&q=80",
-  "smart home tech": "https://images.unsplash.com/photo-1558089687-f282ffcbc126?w=400&h=300&fit=crop&q=80",
-  "minimalist leather goods": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=300&fit=crop&q=80",
-  "fitness trackers": "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400&h=300&fit=crop&q=80",
-  "ergonomic office accessories": "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=400&h=300&fit=crop&q=80",
-  skincare: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400&h=300&fit=crop&q=80",
-  jewelry: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop&q=80",
-  fragrances: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=300&fit=crop&q=80",
-  clothing: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=300&fit=crop&q=80",
-  wellness: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&q=80",
+  "athletic apparel": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop&q=80",
+  "high-quality basics": "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=500&h=400&fit=crop&q=80",
+  "smart home tech": "https://images.unsplash.com/photo-1558089687-f282ffcbc126?w=500&h=400&fit=crop&q=80",
+  "minimalist leather goods": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&h=400&fit=crop&q=80",
+  "fitness trackers": "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=500&h=400&fit=crop&q=80",
+  skincare: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=500&h=400&fit=crop&q=80",
+  jewelry: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&h=400&fit=crop&q=80",
+  fragrances: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=500&h=400&fit=crop&q=80",
+  clothing: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=500&h=400&fit=crop&q=80",
+  wellness: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&h=400&fit=crop&q=80",
 };
 const fallbackGiftImgs = [
-  "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=400&h=300&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&h=300&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1512909006721-3d6018887383?w=400&h=300&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&h=400&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500&h=400&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1512909006721-3d6018887383?w=500&h=400&fit=crop&q=80",
 ];
 function getGiftImage(name: string, i: number): string {
   const key = name.toLowerCase();
@@ -142,13 +137,12 @@ function getGiftImage(name: string, i: number): string {
   return fallbackGiftImgs[i % fallbackGiftImgs.length];
 }
 
-/* ── Quick action images ── */
-const quickActionImages: Record<string, string> = {
-  "Buy a Gift": "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=400&h=300&fit=crop&q=80",
-  "Check Sizes": "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&h=300&fit=crop&q=80",
-  "Saved Items": "https://images.unsplash.com/photo-1483181957632-8bda974cbc91?w=400&h=300&fit=crop&q=80",
-  "Plan a Date": "https://images.unsplash.com/photo-1529903384028-929ae5deeae3?w=400&h=300&fit=crop&q=80",
-};
+const quickActionData = [
+  { label: "Buy a Gift", desc: "Find something they'll love", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=600&h=800&fit=crop&q=80" },
+  { label: "Check Sizes", desc: "Their exact measurements", route: "/dashboard/my-gotwo", img: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=600&h=800&fit=crop&q=80" },
+  { label: "Saved Items", desc: "Things they've mentioned", route: "/dashboard/my-lists", img: "https://images.unsplash.com/photo-1483181957632-8bda974cbc91?w=600&h=800&fit=crop&q=80" },
+  { label: "Plan a Date", desc: "Ideas they'd enjoy", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1529903384028-929ae5deeae3?w=600&h=800&fit=crop&q=80" },
+];
 
 /* ── Brand logo component ── */
 const BrandLogo = ({ name, size = 28 }: { name: string; size?: number }) => {
@@ -156,8 +150,8 @@ const BrandLogo = ({ name, size = 28 }: { name: string; size?: number }) => {
   const logoUrl = getBrandLogoUrl(name);
   if (failed) {
     return (
-      <div className="rounded-full flex items-center justify-center bg-secondary"
-        style={{ width: size + 8, height: size + 8 }}>
+      <div className="rounded-full flex items-center justify-center"
+        style={{ width: size + 10, height: size + 10, background: "rgba(255,255,255,0.9)", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
         <span className="font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif", fontSize: size * 0.45 }}>
           {name.charAt(0).toUpperCase()}
         </span>
@@ -166,36 +160,26 @@ const BrandLogo = ({ name, size = 28 }: { name: string; size?: number }) => {
   }
   return (
     <div className="rounded-full flex items-center justify-center overflow-hidden"
-      style={{ width: size + 8, height: size + 8, background: "#fff", boxShadow: "0 1px 6px rgba(0,0,0,0.08)" }}>
+      style={{ width: size + 10, height: size + 10, background: "#fff", boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }}>
       <img src={logoUrl} alt={name} style={{ width: size, height: size }}
         className="object-contain" loading="lazy" onError={() => setFailed(true)} />
     </div>
   );
 };
 
-/* ── Price tier ── */
 const priceTierLabels: Record<string, string> = {
   budget: "Under $50", "mid-range": "$50–$150", premium: "$150–$300", luxury: "$300+",
 };
 
-/* ── Date helpers ── */
 function daysUntil(dateStr: string | null): number | null {
   if (!dateStr) return null;
   const today = new Date();
   const d = new Date(dateStr);
-  // Set to this year
   d.setFullYear(today.getFullYear());
-  // If already passed this year, set to next year
   if (d < today) d.setFullYear(today.getFullYear() + 1);
   return Math.ceil((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-function formatDateShort(dateStr: string): string {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-/* ── Data types ── */
 interface PartnerData {
   displayName: string;
   styles: string[];
@@ -223,7 +207,6 @@ const DashboardHome = () => {
   const [ownAnniversary, setOwnAnniversary] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch own profile
   useEffect(() => {
     if (!user) { setLoading(false); return; }
     supabase.from("profiles").select("display_name, birthday, anniversary")
@@ -236,23 +219,19 @@ const DashboardHome = () => {
       });
   }, [user]);
 
-  // Fetch partner
   useEffect(() => {
     if (!user) return;
     const fetchPartner = async () => {
       const { data: couples } = await supabase.from("couples").select("*")
         .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`).eq("status", "accepted");
       if (!couples?.length) { setHasPartner(false); return; }
-
       const couple = couples[0];
       const partnerId = couple.inviter_id === user.id ? couple.invitee_id : couple.inviter_id;
       if (!partnerId) { setHasPartner(false); return; }
-
       const [profileRes, prefsRes] = await Promise.all([
         supabase.from("profiles").select("display_name, gender, birthday, anniversary").eq("user_id", partnerId).single(),
         supabase.from("user_preferences").select("ai_personalization").eq("user_id", partnerId).single(),
       ]);
-
       const profile = profileRes.data as any;
       const aiData = prefsRes.data?.ai_personalization as any;
       const clean = (v: unknown): unknown => {
@@ -260,7 +239,6 @@ const DashboardHome = () => {
         if (Array.isArray(v)) return v.map(clean).filter(Boolean);
         return v;
       };
-
       setPartner({
         displayName: profile?.display_name || "Your Partner",
         styles: (clean(aiData?.style_keywords) as string[]) || [],
@@ -280,7 +258,6 @@ const DashboardHome = () => {
   const firstName = displayName?.split(" ")[0] || "there";
   const partnerFirstName = partner?.displayName?.split(" ")[0] || "Partner";
 
-  // Use own data if no partner
   const showData = partner || (personalization ? {
     displayName: displayName || "You",
     styles: personalization.style_keywords || [],
@@ -296,36 +273,22 @@ const DashboardHome = () => {
   const showDataName = hasPartner ? partnerFirstName : firstName;
   const allStoresAndBrands = showData ? [...showData.stores, ...showData.brands] : [];
 
-  // Build smart triggers
-  const triggers: { label: string; urgency: "urgent" | "soon" | "info"; days: number | null; action: () => void }[] = [];
-
+  const triggers: { label: string; urgency: "urgent" | "soon"; days: number | null; action: () => void }[] = [];
   if (showData?.birthday) {
     const days = daysUntil(showData.birthday);
     if (days !== null && days <= 30) {
-      triggers.push({
-        label: `${showDataName}'s birthday is in ${days} day${days === 1 ? "" : "s"}`,
-        urgency: days <= 7 ? "urgent" : "soon",
-        days,
-        action: () => navigate("/dashboard/templates"),
-      });
+      triggers.push({ label: `${showDataName}'s birthday in ${days} day${days === 1 ? "" : "s"}`, urgency: days <= 7 ? "urgent" : "soon", days, action: () => navigate("/dashboard/templates") });
     }
   }
   if (showData?.anniversary) {
     const days = daysUntil(showData.anniversary);
     if (days !== null && days <= 30) {
-      triggers.push({
-        label: `Anniversary in ${days} day${days === 1 ? "" : "s"}`,
-        urgency: days <= 7 ? "urgent" : "soon",
-        days,
-        action: () => navigate("/dashboard/templates"),
-      });
+      triggers.push({ label: `Anniversary in ${days} day${days === 1 ? "" : "s"}`, urgency: days <= 7 ? "urgent" : "soon", days, action: () => navigate("/dashboard/templates") });
     }
   }
 
-  // Prompt to add dates if missing
   const missingDates = showData && (!showData.birthday || !showData.anniversary);
 
-  // Build "safe picks" — contextual product searches at their stores
   const safePicks = showData ? allStoresAndBrands.slice(0, 5).map((store) => {
     const styleQuery = showData.styles.length > 0
       ? showData.styles[0].toLowerCase() + " " + (showData.giftCategories[0]?.toLowerCase() || "essentials")
@@ -333,247 +296,293 @@ const DashboardHome = () => {
     return {
       store,
       searchUrl: getStoreSearchUrl(store, styleQuery),
-      homeUrl: getStoreDomain(store),
       image: getStoreImage(store, allStoresAndBrands.indexOf(store)),
       query: styleQuery,
     };
   }) : [];
 
+  const containerVariant = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.07 } } };
+  const itemVariant = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
+
   return (
-    <div className="max-w-3xl space-y-8">
+    <motion.div className="max-w-4xl space-y-10 pb-12"
+      variants={containerVariant} initial="hidden" animate="show">
 
       {/* ══════════════════════════════════════
-         LEVEL 1: CORE UTILITY (TRUST BUILDER)
+         HERO — PARTNER SNAPSHOT
          ══════════════════════════════════════ */}
 
-      {/* Greeting */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
-          Hey, {firstName}
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {hasPartner
-            ? `Here's everything you need to never mess up for ${partnerFirstName}.`
-            : "Connect with your partner to unlock shopping for them."
-          }
-        </p>
-      </motion.div>
-
-      {/* No Partner CTA */}
-      {hasPartner === false && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
-          className="card-design-neumorph overflow-hidden" style={{ borderRadius: "1.2rem" }}>
-          <div className="relative h-36 overflow-hidden"
-            style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))" }}>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <UserPlus className="w-14 h-14 text-primary-foreground opacity-15" />
-            </div>
+      {showData && (
+        <motion.div variants={itemVariant} className="relative overflow-hidden" style={{ borderRadius: "1.8rem", minHeight: 340 }}>
+          {/* Background image */}
+          <div className="absolute inset-0">
+            <img
+              src={allStoresAndBrands.length > 0 ? getStoreImage(allStoresAndBrands[0], 0) : fallbackStoreImgs[0]}
+              alt="" className="w-full h-full object-cover" loading="eager"
+            />
+            <div className="absolute inset-0" style={{
+              background: "linear-gradient(160deg, rgba(47,95,109,0.92) 0%, rgba(47,95,109,0.7) 40%, rgba(217,101,79,0.5) 100%)",
+            }} />
+            <div className="absolute inset-0" style={{
+              background: "radial-gradient(ellipse at 70% 20%, rgba(232,198,174,0.25) 0%, transparent 60%)",
+            }} />
           </div>
-          <div className="p-5 text-center">
-            <h2 className="text-lg font-bold text-primary mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+
+          {/* Content */}
+          <div className="relative z-10 p-8 sm:p-10 flex flex-col justify-between" style={{ minHeight: 340 }}>
+            <div>
+              <motion.p
+                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
+                className="text-xs uppercase tracking-[0.2em] font-semibold mb-2"
+                style={{ color: "rgba(246,226,212,0.7)" }}
+              >
+                {hasPartner ? "Partner Snapshot" : "Your Profile"}
+              </motion.p>
+              <motion.h1
+                initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
+                className="text-4xl sm:text-5xl font-bold leading-tight"
+                style={{ fontFamily: "'Playfair Display', serif", color: "#f6e2d4" }}
+              >
+                {showData.displayName}
+              </motion.h1>
+              {showData.persona && (
+                <motion.p
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+                  className="mt-3 text-sm max-w-md leading-relaxed italic"
+                  style={{ color: "rgba(246,226,212,0.65)" }}
+                >
+                  "{showData.persona}"
+                </motion.p>
+              )}
+            </div>
+
+            <div className="mt-6 space-y-5">
+              {/* Style tags */}
+              {showData.styles.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {showData.styles.map((s) => (
+                    <span key={s} className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md"
+                      style={{ background: "rgba(255,255,255,0.15)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.2)" }}>
+                      {s}
+                    </span>
+                  ))}
+                  {showData.priceTier && (
+                    <span className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md"
+                      style={{ background: "rgba(217,101,79,0.35)", color: "#f6e2d4", border: "1px solid rgba(217,101,79,0.4)" }}>
+                      {priceTierLabels[showData.priceTier] || showData.priceTier}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Brand logos row */}
+              {allStoresAndBrands.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] uppercase tracking-widest font-semibold shrink-0" style={{ color: "rgba(246,226,212,0.5)" }}>
+                    Shops at
+                  </span>
+                  <div className="flex gap-2 overflow-x-auto pb-1">
+                    {allStoresAndBrands.slice(0, 7).map((name) => (
+                      <a key={name} href={getStoreDomain(name)} target="_blank" rel="noopener noreferrer"
+                        className="shrink-0 hover:scale-110 active:scale-95 transition-transform">
+                        <BrandLogo name={name} size={26} />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Full profile link */}
+            <button onClick={() => navigate(hasPartner ? "/dashboard/collaborations" : "/dashboard/my-gotwo")}
+              className="absolute top-8 right-8 flex items-center gap-1.5 text-xs font-semibold backdrop-blur-md px-4 py-2 rounded-full hover:scale-105 active:scale-95 transition-transform"
+              style={{ background: "rgba(255,255,255,0.15)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.2)" }}>
+              Full Profile <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* No partner CTA */}
+      {hasPartner === false && !showData && (
+        <motion.div variants={itemVariant} className="relative overflow-hidden" style={{ borderRadius: "1.8rem", minHeight: 280 }}>
+          <div className="absolute inset-0" style={{
+            background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.6) 100%)",
+          }} />
+          <div className="relative z-10 p-10 flex flex-col items-center justify-center text-center" style={{ minHeight: 280 }}>
+            <UserPlus className="w-12 h-12 mb-4" style={{ color: "rgba(246,226,212,0.4)" }} />
+            <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif", color: "#f6e2d4" }}>
               Connect Your Partner
             </h2>
-            <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
+            <p className="text-sm mb-6 max-w-sm" style={{ color: "rgba(246,226,212,0.7)" }}>
               Their style, sizes, and preferences — right here. So you never miss.
             </p>
-            <Button className="rounded-full" onClick={() => navigate("/dashboard/collaborations")}>
+            <Button className="rounded-full px-8" onClick={() => navigate("/dashboard/collaborations")}
+              style={{ background: "rgba(255,255,255,0.2)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.3)" }}>
               Invite Partner
             </Button>
           </div>
         </motion.div>
       )}
 
-      {/* ─── Smart Triggers (Level 3 — but positioned high for urgency) ─── */}
+      {/* ── Smart Triggers ── */}
       {triggers.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}
-          className="space-y-2">
+        <motion.div variants={itemVariant} className="space-y-3">
           {triggers.map((trigger, i) => (
-            <motion.button
-              key={i}
-              initial={{ opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.08 + i * 0.04 }}
-              onClick={trigger.action}
-              className="w-full card-design-neumorph p-4 flex items-center gap-3 hover:scale-[1.01] active:scale-[0.99] transition-transform group text-left"
+            <motion.button key={i} onClick={trigger.action}
+              whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
+              className="w-full relative overflow-hidden flex items-center gap-4 p-5 text-left group"
               style={{
-                borderRadius: "1rem",
-                borderLeft: trigger.urgency === "urgent" ? "4px solid hsl(var(--destructive))" : "4px solid hsl(var(--primary))",
-              }}
-            >
-              <AlertCircle className={`w-5 h-5 shrink-0 ${trigger.urgency === "urgent" ? "text-destructive" : "text-primary"}`} />
+                borderRadius: "1.2rem",
+                background: trigger.urgency === "urgent"
+                  ? "linear-gradient(135deg, rgba(217,101,79,0.15) 0%, rgba(217,101,79,0.05) 100%)"
+                  : "linear-gradient(135deg, rgba(47,95,109,0.1) 0%, rgba(47,95,109,0.03) 100%)",
+                border: trigger.urgency === "urgent"
+                  ? "1px solid rgba(217,101,79,0.3)"
+                  : "1px solid rgba(47,95,109,0.2)",
+              }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                style={{
+                  background: trigger.urgency === "urgent" ? "rgba(217,101,79,0.2)" : "rgba(47,95,109,0.15)",
+                }}>
+                <AlertCircle className={`w-5 h-5 ${trigger.urgency === "urgent" ? "text-destructive" : "text-primary"}`} />
+              </div>
               <div className="flex-1">
                 <p className={`text-sm font-bold ${trigger.urgency === "urgent" ? "text-destructive" : "text-primary"}`}>
                   {trigger.label}
                 </p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Don't wait — find the perfect gift now
-                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">Don't wait — find the perfect gift now</p>
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform shrink-0" />
+              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
             </motion.button>
           ))}
         </motion.div>
       )}
 
-      {/* ─── Partner Snapshot ─── */}
-      {showData && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
-          className="card-design-neumorph overflow-hidden" style={{ borderRadius: "1.2rem" }}>
+      {/* ══════════════════════════════════════
+         QUICK ACTIONS — Large photo tiles
+         ══════════════════════════════════════ */}
 
-          {/* Header */}
-          <div className="p-5 pb-4" style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--primary) / 0.02))" }}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">
-                  {hasPartner ? "Partner Snapshot" : "Your Profile"}
-                </p>
-                <h2 className="text-xl font-bold text-primary mt-0.5" style={{ fontFamily: "'Playfair Display', serif" }}>
-                  {showData.displayName}
-                </h2>
-              </div>
-              <Button variant="ghost" size="sm" className="text-xs text-muted-foreground"
-                onClick={() => navigate(hasPartner ? "/dashboard/shared-lists" : "/dashboard/my-gotwo")}>
-                Full Profile <ChevronRight className="w-3.5 h-3.5 ml-1" />
-              </Button>
-            </div>
-
-            {showData.styles.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-3">
-                {showData.styles.map((s) => (
-                  <span key={s} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary text-primary-foreground">
-                    {s}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Brand logos */}
-          {allStoresAndBrands.length > 0 && (
-            <div className="px-5 py-4 border-t border-border/30">
-              <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-3">Shops At</p>
-              <div className="flex gap-3 overflow-x-auto pb-1">
-                {allStoresAndBrands.slice(0, 6).map((name) => (
-                  <a key={name} href={getStoreDomain(name)} target="_blank" rel="noopener noreferrer"
-                    className="flex flex-col items-center gap-1.5 shrink-0 hover:scale-105 active:scale-95 transition-transform"
-                    style={{ width: 64 }}>
-                    <BrandLogo name={name} size={28} />
-                    <span className="text-[10px] text-primary font-medium text-center leading-tight truncate w-full">{name}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Price zone */}
-          {showData.priceTier && (
-            <div className="px-5 py-3 border-t border-border/30 flex items-center justify-between">
-              <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Price Zone</p>
-              <p className="text-sm text-primary font-bold">{priceTierLabels[showData.priceTier] || showData.priceTier}</p>
-            </div>
-          )}
-        </motion.div>
-      )}
-
-      {/* Quick Actions */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-        <p className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground mb-3">Quick Actions</p>
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: "Buy a Gift", desc: "Find something they'll love", route: "/dashboard/templates" },
-            { label: "Check Sizes", desc: "Their exact measurements", route: "/dashboard/my-gotwo" },
-            { label: "Saved Items", desc: "Things they've mentioned", route: "/dashboard/my-lists" },
-            { label: "Plan a Date", desc: "Ideas they'd enjoy", route: "/dashboard/templates" },
-          ].map(({ label, desc, route }, i) => (
+      <motion.div variants={itemVariant}>
+        <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-4">Quick Actions</p>
+        <div className="grid grid-cols-2 gap-4">
+          {quickActionData.map(({ label, desc, route, img }, i) => (
             <motion.button key={label}
-              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.14 + i * 0.03 }}
+              variants={itemVariant}
+              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
               onClick={() => navigate(route)}
-              className="card-design-neumorph overflow-hidden text-left hover:scale-[1.02] active:scale-[0.97] transition-transform group"
-              style={{ borderRadius: "1rem" }}>
-              <div className="relative h-20 overflow-hidden">
-                <img src={quickActionImages[label]} alt={label}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                <p className="absolute bottom-2 left-3 text-white text-sm font-bold drop-shadow-md"
-                  style={{ fontFamily: "'Playfair Display', serif" }}>{label}</p>
+              className="relative overflow-hidden text-left group"
+              style={{ borderRadius: "1.4rem", height: i === 0 ? 200 : 160 }}>
+              <img src={img} alt={label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+              <div className="absolute inset-0" style={{
+                background: "linear-gradient(180deg, transparent 30%, rgba(47,95,109,0.85) 100%)",
+              }} />
+              <div className="absolute inset-0" style={{
+                background: "radial-gradient(ellipse at 80% 10%, rgba(232,198,174,0.15) 0%, transparent 50%)",
+              }} />
+              <div className="relative z-10 h-full flex flex-col justify-end p-5">
+                <h3 className="text-lg font-bold leading-tight drop-shadow-lg"
+                  style={{ fontFamily: "'Playfair Display', serif", color: "#f6e2d4" }}>
+                  {label}
+                </h3>
+                <p className="text-xs mt-1 leading-snug" style={{ color: "rgba(246,226,212,0.7)" }}>
+                  {desc}
+                </p>
               </div>
-              <div className="px-3 py-2.5">
-                <p className="text-[11px] text-muted-foreground leading-snug">{desc}</p>
-              </div>
+              {/* Subtle corner shine */}
+              <div className="absolute top-0 right-0 w-24 h-24 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{ background: "radial-gradient(circle at 100% 0%, rgba(255,255,255,0.15) 0%, transparent 70%)" }} />
             </motion.button>
           ))}
         </div>
       </motion.div>
 
       {/* ══════════════════════════════════════
-         LEVEL 2: CONTEXTUAL MONETIZATION
+         LEVEL 2: SAFE PICKS — Immersive cards
          ══════════════════════════════════════ */}
 
       {safePicks.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <p className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground mb-1">
-            Based on {showDataName}'s Go-Tos
-          </p>
-          <p className="text-xs text-muted-foreground mb-4">
-            Filtered by their stores, style, and price range
-          </p>
+        <motion.div variants={itemVariant}>
+          <div className="flex items-end justify-between mb-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground">
+                Based on {showDataName}'s Go-Tos
+              </p>
+              <p className="text-[11px] text-muted-foreground mt-1">
+                Filtered by their stores, style & price range
+              </p>
+            </div>
+          </div>
 
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {safePicks.map(({ store, searchUrl, image }, i) => (
               <motion.a key={store} href={searchUrl} target="_blank" rel="noopener noreferrer"
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.22 + i * 0.04 }}
-                className="card-design-neumorph overflow-hidden flex hover:scale-[1.01] active:scale-[0.99] transition-transform group block"
-                style={{ borderRadius: "1rem", height: 100 }}>
-                <div className="w-28 sm:w-36 shrink-0 overflow-hidden relative">
-                  <img src={image} alt={store}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10" />
-                </div>
-                <div className="flex-1 p-4 flex items-center justify-between">
+                variants={itemVariant}
+                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                className="relative overflow-hidden group block"
+                style={{ borderRadius: "1.4rem", height: i === 0 ? 220 : 180 }}>
+                <img src={image} alt={store} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                <div className="absolute inset-0" style={{
+                  background: "linear-gradient(160deg, rgba(0,0,0,0.1) 0%, rgba(47,95,109,0.75) 100%)",
+                }} />
+
+                {/* Brand logo + label */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 flex items-end justify-between">
                   <div className="flex items-center gap-3">
-                    <BrandLogo name={store} size={24} />
+                    <BrandLogo name={store} size={32} />
                     <div>
-                      <p className="text-sm font-bold text-primary">{store}</p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">
+                      <p className="text-base font-bold drop-shadow-lg" style={{ color: "#f6e2d4" }}>{store}</p>
+                      <p className="text-[11px] mt-0.5" style={{ color: "rgba(246,226,212,0.6)" }}>
                         {showData!.styles.length > 0
-                          ? `${showData!.styles[0]} picks · ${priceTierLabels[showData!.priceTier] || "Their range"}`
+                          ? `${showData!.styles[0]} picks`
                           : "Curated for them"
                         }
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform shrink-0" />
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform"
+                    style={{ background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.3)" }}>
+                    <ArrowRight className="w-4 h-4" style={{ color: "#f6e2d4" }} />
+                  </div>
                 </div>
+
+                {/* Top-right price tag */}
+                {showData!.priceTier && (
+                  <div className="absolute top-4 right-4 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                    style={{ background: "rgba(255,255,255,0.15)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.2)" }}>
+                    {priceTierLabels[showData!.priceTier] || showData!.priceTier}
+                  </div>
+                )}
               </motion.a>
             ))}
           </div>
         </motion.div>
       )}
 
-      {/* Gift Category Cards */}
+      {/* ── Gift Categories — Horizontal scroll ── */}
       {showData && showData.giftCategories.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}>
-          <p className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground mb-3">
+        <motion.div variants={itemVariant}>
+          <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-4">
             What to Get {showDataName}
           </p>
-          <div className="flex gap-3 overflow-x-auto pb-2">
+          <div className="flex gap-4 overflow-x-auto pb-3 -mx-2 px-2">
             {showData.giftCategories.map((cat, i) => {
               const img = getGiftImage(cat, i);
               const searchStore = allStoresAndBrands[0];
               const url = searchStore ? getStoreSearchUrl(searchStore, cat) : "#";
               return (
                 <motion.a key={cat} href={url} target="_blank" rel="noopener noreferrer"
-                  initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 + i * 0.04 }}
-                  className="card-design-neumorph overflow-hidden shrink-0 hover:scale-[1.02] active:scale-[0.97] transition-transform group"
-                  style={{ borderRadius: "1rem", width: 150, height: 110 }}>
-                  <div className="relative w-full h-full">
-                    <img src={img} alt={cat}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent" />
-                    <p className="absolute bottom-2.5 left-3 right-2 text-white text-xs font-semibold capitalize drop-shadow-md leading-tight">
+                  variants={itemVariant}
+                  whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                  className="relative overflow-hidden shrink-0 group"
+                  style={{ borderRadius: "1.2rem", width: 160, height: 200 }}>
+                  <img src={img} alt={cat} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                  <div className="absolute inset-0" style={{
+                    background: "linear-gradient(180deg, transparent 40%, rgba(47,95,109,0.85) 100%)",
+                  }} />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="text-sm font-bold capitalize drop-shadow-lg leading-tight"
+                      style={{ fontFamily: "'Playfair Display', serif", color: "#f6e2d4" }}>
                       {cat}
                     </p>
                   </div>
@@ -584,52 +593,47 @@ const DashboardHome = () => {
         </motion.div>
       )}
 
-      {/* ══════════════════════════════════════
-         LEVEL 3: SMART TRIGGERS
-         ══════════════════════════════════════ */}
-
-      {/* Date setup prompt */}
+      {/* ── Date setup prompt ── */}
       {missingDates && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.34 }}
-          className="card-design-neumorph p-5 flex items-start gap-4" style={{ borderRadius: "1rem" }}>
-          <CalendarHeart className="w-8 h-8 text-primary opacity-50 shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Never forget an important date
-            </p>
-            <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
-              Add {hasPartner ? `${partnerFirstName}'s` : "your"} birthday and anniversary to get timely reminders so you're never scrambling last minute.
-            </p>
-            <Button variant="ghost" size="sm" className="text-xs mt-2 px-0 text-primary"
-              onClick={() => navigate("/dashboard/settings")}>
-              Add Important Dates <ChevronRight className="w-3.5 h-3.5 ml-1" />
-            </Button>
+        <motion.div variants={itemVariant} className="relative overflow-hidden"
+          style={{ borderRadius: "1.4rem", background: "linear-gradient(135deg, rgba(47,95,109,0.08) 0%, rgba(232,198,174,0.15) 100%)", border: "1px solid rgba(47,95,109,0.12)" }}>
+          <div className="p-6 flex items-start gap-5">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(47,95,109,0.1)" }}>
+              <CalendarHeart className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <p className="text-base font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Never forget an important date
+              </p>
+              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed max-w-md">
+                Add {hasPartner ? `${partnerFirstName}'s` : "your"} birthday and anniversary to get timely reminders.
+              </p>
+              <button onClick={() => navigate("/dashboard/settings")}
+                className="mt-3 flex items-center gap-1.5 text-xs font-bold text-primary hover:underline">
+                Add Important Dates <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
-        </motion.div>
-      )}
-
-      {/* Persona */}
-      {showData?.persona && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36 }}
-          className="card-design-neumorph p-5" style={{ borderRadius: "1.2rem" }}>
-          <p className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground mb-2">
-            {hasPartner ? `Who ${partnerFirstName} Is` : "Your Persona"}
-          </p>
-          <p className="text-sm text-primary leading-relaxed italic">"{showData.persona}"</p>
         </motion.div>
       )}
 
       {/* Not onboarded */}
       {!persLoading && !personalization && !loading && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          className="card-design-neumorph p-6 text-center" style={{ borderRadius: "1rem" }}>
-          <p className="text-sm text-muted-foreground mb-3">
-            Complete your profile so your partner knows exactly what you love.
-          </p>
-          <Button className="rounded-full" onClick={() => navigate("/onboarding")}>Set Up Profile</Button>
+        <motion.div variants={itemVariant} className="relative overflow-hidden" style={{ borderRadius: "1.4rem" }}>
+          <div className="absolute inset-0" style={{
+            background: "linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--primary) / 0.02))",
+            border: "1px solid hsl(var(--primary) / 0.1)",
+            borderRadius: "1.4rem",
+          }} />
+          <div className="relative p-8 text-center">
+            <p className="text-sm text-muted-foreground mb-4">
+              Complete your profile so your partner knows exactly what you love.
+            </p>
+            <Button className="rounded-full px-8" onClick={() => navigate("/onboarding")}>Set Up Profile</Button>
+          </div>
         </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
