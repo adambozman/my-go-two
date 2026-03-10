@@ -138,10 +138,10 @@ function getGiftImage(name: string, i: number): string {
 }
 
 const quickActionData = [
-  { label: "Buy a Gift", desc: "Find something they'll love", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=600&h=800&fit=crop&q=80" },
-  { label: "Check Sizes", desc: "Their exact measurements", route: "/dashboard/my-gotwo", img: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=600&h=800&fit=crop&q=80" },
-  { label: "Saved Items", desc: "Things they've mentioned", route: "/dashboard/my-lists", img: "https://images.unsplash.com/photo-1483181957632-8bda974cbc91?w=600&h=800&fit=crop&q=80" },
-  { label: "Plan a Date", desc: "Ideas they'd enjoy", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1529903384028-929ae5deeae3?w=600&h=800&fit=crop&q=80" },
+  { label: "Buy Them a Gift", desc: "Filtered by what they actually want", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=600&h=800&fit=crop&q=80" },
+  { label: "Their Sizes", desc: "Clothing, shoes, ring — no guessing", route: "/dashboard/my-gotwo", img: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=600&h=800&fit=crop&q=80" },
+  { label: "Their Saved Items", desc: "Things they've mentioned wanting", route: "/dashboard/my-lists", img: "https://images.unsplash.com/photo-1483181957632-8bda974cbc91?w=600&h=800&fit=crop&q=80" },
+  { label: "Plan a Date", desc: "Places and activities they'd love", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1529903384028-929ae5deeae3?w=600&h=800&fit=crop&q=80" },
 ];
 
 /* ── Brand logo component ── */
@@ -258,19 +258,9 @@ const DashboardHome = () => {
   const firstName = displayName?.split(" ")[0] || "there";
   const partnerFirstName = partner?.displayName?.split(" ")[0] || "Partner";
 
-  const showData = partner || (personalization ? {
-    displayName: displayName || "You",
-    styles: personalization.style_keywords || [],
-    stores: personalization.recommended_stores || [],
-    brands: personalization.recommended_brands || [],
-    giftCategories: personalization.gift_categories || [],
-    priceTier: personalization.price_tier || "",
-    persona: personalization.persona_summary || "",
-    birthday: ownBirthday,
-    anniversary: ownAnniversary,
-  } : null);
-
-  const showDataName = hasPartner ? partnerFirstName : firstName;
+  // Dashboard is entirely partner-centric — only show partner data
+  const showData = partner;
+  const showDataName = partnerFirstName;
   const allStoresAndBrands = showData ? [...showData.stores, ...showData.brands] : [];
 
   const triggers: { label: string; urgency: "urgent" | "soon"; days: number | null; action: () => void }[] = [];
@@ -333,10 +323,10 @@ const DashboardHome = () => {
             <div>
               <motion.p
                 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-                className="text-xs uppercase tracking-[0.2em] font-semibold mb-2"
+                 className="text-xs uppercase tracking-[0.2em] font-semibold mb-2"
                 style={{ color: "rgba(246,226,212,0.7)" }}
               >
-                {hasPartner ? "Partner Snapshot" : "Your Profile"}
+                {showDataName}'s Snapshot
               </motion.p>
               <motion.h1
                 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
@@ -378,8 +368,8 @@ const DashboardHome = () => {
               {/* Brand logos row */}
               {allStoresAndBrands.length > 0 && (
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] uppercase tracking-widest font-semibold shrink-0" style={{ color: "rgba(246,226,212,0.5)" }}>
-                    Shops at
+                    <span className="text-[10px] uppercase tracking-widest font-semibold shrink-0" style={{ color: "rgba(246,226,212,0.5)" }}>
+                    {showDataName} shops at
                   </span>
                   <div className="flex gap-2 overflow-x-auto pb-1">
                     {allStoresAndBrands.slice(0, 7).map((name) => (
@@ -394,17 +384,17 @@ const DashboardHome = () => {
             </div>
 
             {/* Full profile link */}
-            <button onClick={() => navigate(hasPartner ? "/dashboard/collaborations" : "/dashboard/my-gotwo")}
+            <button onClick={() => navigate("/dashboard/collaborations")}
               className="absolute top-8 right-8 flex items-center gap-1.5 text-xs font-semibold backdrop-blur-md px-4 py-2 rounded-full hover:scale-105 active:scale-95 transition-transform"
               style={{ background: "rgba(255,255,255,0.15)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.2)" }}>
-              Full Profile <ChevronRight className="w-3.5 h-3.5" />
+              {showDataName}'s Full Profile <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </motion.div>
       )}
 
-      {/* No partner CTA */}
-      {hasPartner === false && !showData && (
+      {/* No partner CTA — this is the primary state when not connected */}
+      {hasPartner === false && (
         <motion.div variants={itemVariant} className="relative overflow-hidden" style={{ borderRadius: "1.8rem", minHeight: 280 }}>
           <div className="absolute inset-0" style={{
             background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.6) 100%)",
@@ -606,7 +596,7 @@ const DashboardHome = () => {
                 Never forget an important date
               </p>
               <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed max-w-md">
-                Add {hasPartner ? `${partnerFirstName}'s` : "your"} birthday and anniversary to get timely reminders.
+                Add {partnerFirstName}'s birthday and anniversary so you're never scrambling last minute.
               </p>
               <button onClick={() => navigate("/dashboard/settings")}
                 className="mt-3 flex items-center gap-1.5 text-xs font-bold text-primary hover:underline">
@@ -627,9 +617,9 @@ const DashboardHome = () => {
           }} />
           <div className="relative p-8 text-center">
             <p className="text-sm text-muted-foreground mb-4">
-              Complete your profile so your partner knows exactly what you love.
+              Complete your profile so {hasPartner ? partnerFirstName : "your partner"} knows exactly what to get you.
             </p>
-            <Button className="rounded-full px-8" onClick={() => navigate("/onboarding")}>Set Up Profile</Button>
+            <Button className="rounded-full px-8" onClick={() => navigate("/onboarding")}>Set Up My Profile</Button>
           </div>
         </motion.div>
       )}
