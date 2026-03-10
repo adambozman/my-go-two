@@ -548,7 +548,7 @@ const Onboarding = () => {
     <div className="landing-page min-h-screen flex flex-col">
       {/* Top */}
       <div className="flex items-center justify-between px-6 pt-5 pb-3">
-        <GoTwoText className="text-2xl" />
+        <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
         <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">
           Skip <ChevronRight className="ml-1 h-4 w-4" />
         </Button>
