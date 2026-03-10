@@ -71,7 +71,7 @@
     --swatch-cedar-grove-rgb: 217 101 79;
 
     --chip-border: rgba(174, 176, 161, 0.62);
-    --texture-linen-light: url("/images/linen-texture.jpg");
+    --texture-linen-light: url("./assets/textures/linen-overlay-light.svg");
   }
 }
 
@@ -122,10 +122,9 @@ body {
   position: fixed;
   inset: 0;
   background-image: var(--texture-linen-light);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.08;
+  background-size: 4px 4px;
+  background-repeat: repeat;
+  opacity: 1;
   pointer-events: none;
   z-index: 0;
 }
