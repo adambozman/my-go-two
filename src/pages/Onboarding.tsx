@@ -624,6 +624,7 @@ const Onboarding = () => {
                             }`}
                             loading="lazy"
                           />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                           {isSelected && <div className="absolute inset-0 bg-primary/20" />}
                           {isSelected && (
                             <motion.div
@@ -635,9 +636,9 @@ const Onboarding = () => {
                               <Check className="w-4 h-4 text-white" />
                             </motion.div>
                           )}
-                        </div>
-                        <div className="px-3 py-2.5 text-center">
-                          <p className="text-sm font-semibold text-primary leading-tight">{opt.label}</p>
+                          <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5 text-center">
+                            <p className="text-sm font-semibold text-white leading-tight">{opt.label}</p>
+                          </div>
                         </div>
                       </div>
                     </motion.button>
