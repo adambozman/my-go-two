@@ -606,13 +606,12 @@ const Onboarding = () => {
                       className="text-left group"
                     >
                       <div
-                        className={`card-design-neumorph overflow-hidden transition-all duration-200 ${
-                          isSelected ? "scale-[1.03] shadow-xl" : "hover:scale-[1.02] hover:shadow-lg"
+                        className={`overflow-hidden transition-all duration-200 ${
+                          isSelected ? "scale-[1.03] shadow-xl ring-2" : "hover:scale-[1.02] hover:shadow-lg"
                         }`}
                         style={{
                           borderRadius: "1.2rem",
-                          borderColor: isSelected ? "hsl(196 40% 31%)" : undefined,
-                          borderWidth: isSelected ? "2px" : undefined,
+                          ...(isSelected ? { borderColor: "hsl(196 40% 31%)" } : {}),
                         }}
                       >
                         <div className="aspect-[4/3] overflow-hidden relative">
