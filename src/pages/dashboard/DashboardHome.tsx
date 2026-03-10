@@ -294,7 +294,7 @@ const DashboardHome = () => {
                   transition={{ delay: 0.04 * i }}
                   className="card-design-neumorph overflow-hidden shrink-0 hover:scale-[1.02] active:scale-[0.98] transition-transform cursor-pointer group"
                   style={{ borderRadius: "1.2rem", width: 180, height: 130 }}
-                  onClick={() => openExternal(`https://www.google.com/search?q=${encodeURIComponent(cat + " gift ideas")}&tbm=shop`)}
+                  onClick={() => openExternal(`https://www.amazon.com/s?k=${encodeURIComponent(cat + " gift")}`)}
                 >
                   <div className="relative w-full h-full">
                     <img src={img} alt={cat} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
