@@ -218,13 +218,14 @@ const Onboarding = () => {
             })}
           </div>
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-center px-6 max-w-lg">
-            <p className="text-muted-foreground mb-8 text-base">
+            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: "28px", color: "var(--swatch-viridian-odyssey)" }} className="mb-8 text-center">
               We'll learn your brands, style, food, and gift preferences. So your significant other is always on point.
             </p>
             <button
               onClick={() => setPhase("profile")}
-              className="rounded-full h-13 px-12"
+              className="rounded-full"
               style={{
+                padding: "14px 40px",
                 background: "#d4543a",
                 color: "#ffffff",
                 fontFamily: "'Jost', sans-serif",
@@ -235,7 +236,7 @@ const Onboarding = () => {
             >
               Start My Profile →
             </button>
-            <div className="mt-4">
+            <div className="mt-3">
               <Button variant="ghost" className="text-muted-foreground text-sm" onClick={handleSkip}>
                 Skip for now
               </Button>
