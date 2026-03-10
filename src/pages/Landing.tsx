@@ -133,7 +133,7 @@ const Landing = () => {
               style={{ maxWidth: 560, marginBottom: 36, aspectRatio: "16/9" }}
             >
               <div
-                className="w-full h-full flex flex-col items-center justify-center gap-3"
+                className="w-full h-full flex flex-col items-center justify-center gap-3 relative overflow-hidden"
                 style={{
                   background: "rgba(255,255,255,0.70)",
                   border: "1px solid rgba(255,255,255,0.85)",
@@ -141,6 +141,10 @@ const Landing = () => {
                   boxShadow: "0 8px 48px rgba(45,104,112,0.10), inset 0 1px 0 rgba(255,255,255,0.90)",
                 }}
               >
+                {/* Shine overlay */}
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%)",
+                }} />
                 <div
                   className="flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
                   style={{
