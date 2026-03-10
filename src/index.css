@@ -112,9 +112,9 @@ body {
     radial-gradient(54rem 26rem at 10% -4%, rgba(240, 197, 170, 0.52) 0%, rgba(240, 197, 170, 0) 70%),
     radial-gradient(44rem 24rem at 95% 7%, rgba(175, 199, 218, 0.08) 0%, rgba(175, 199, 218, 0) 74%),
     linear-gradient(145deg, #f6e2d4 0%, #edd0bc 56%, #dfb69b 100%);
-  background-size: cover, auto, auto, auto;
+  background-size: 800px 800px, auto, auto, auto;
   background-position: center, center, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
   background-attachment: fixed;
   min-height: 100vh;
 }
