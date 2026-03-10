@@ -118,12 +118,7 @@ const Preferences = () => {
   };
 
   // Category questions (swipe) view
-  if (selectedCategory && currentCatQuestion) {
-    const progress =
-      categoryQuestions.length > 0
-        ? ((catQuestionIndex + 1) / categoryQuestions.length) * 100
-        : 0;
-    const selected = getSelected(currentCatQuestion.id);
+  if (selectedCategory) {
     const catName =
       onboardingCategories.find((c) => c.id === selectedCategory)?.name || "";
 
@@ -133,128 +128,42 @@ const Preferences = () => {
         animate={{ opacity: 1, y: 0 }}
         className="space-y-4"
       >
-        <div className="flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={goBack}
-            className="text-muted-foreground"
-          >
-            ← Back
-          </Button>
-          <span
-            className="text-xs font-medium"
-            style={{ color: "var(--swatch-teal)" }}
-          >
-            {catQuestionIndex + 1} / {categoryQuestions.length}
-          </span>
-        </div>
-
-        <div
-          className="h-1 rounded-full overflow-hidden"
-          style={{ background: "var(--swatch-sand-mid)" }}
-        >
-          <motion.div
-            className="h-full rounded-full"
-            style={{ background: "var(--swatch-teal)" }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.3 }}
-          />
-        </div>
-
-        <div className="text-center mb-2">
-          <p
-            className="text-xs uppercase tracking-wider font-semibold"
-            style={{ color: "var(--swatch-teal)" }}
-          >
-            {catName}
-          </p>
-          <h2
-            className="text-xl font-bold mt-1"
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              color: "var(--swatch-viridian-odyssey)",
-            }}
-          >
-            {currentCatQuestion.title}
-          </h2>
-          <p className="text-muted-foreground text-sm mt-1">
-            {currentCatQuestion.subtitle}
-          </p>
-        </div>
-
-        {currentCatQuestion.type === "image-grid" &&
-        currentCatQuestion.options ? (
-          <SwipeCards
-            key={currentCatQuestion.id}
-            items={currentCatQuestion.options.map((opt) => ({
-              id: opt.id,
-              label: opt.label,
-              image:
-                opt.localImage ||
-                (opt.image
-                  ? `https://images.unsplash.com/photo-${opt.image}?w=600&h=800&fit=crop&q=80`
-                  : ""),
-            }))}
-            onComplete={(accepted) => {
-              setAnswers((prev) => ({
-                ...prev,
-                [currentCatQuestion.id]: accepted,
-              }));
-              setTimeout(goNext, 300);
-            }}
-          />
-        ) : currentCatQuestion.options ? (
-          <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
-            {currentCatQuestion.options.map((opt) => {
-              const isSelected = selected.includes(opt.id);
-              return (
-                <motion.button
-                  key={opt.id}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => {
-                    if (currentCatQuestion.multiSelect === false) {
-                      setSingle(currentCatQuestion.id, opt.id);
-                    } else {
-                      toggleMulti(currentCatQuestion.id, opt.id);
-                    }
-                  }}
-                  className="text-left px-4 py-3.5 rounded-2xl transition-all text-sm font-medium"
-                  style={{
-                    background: isSelected
-                      ? "rgba(45, 104, 112, 0.12)"
-                      : "var(--swatch-sand-mid)",
-                    border: isSelected
-                      ? "2px solid var(--swatch-teal)"
-                      : "1px solid var(--chip-border)",
-                    color: isSelected
-                      ? "var(--swatch-teal)"
-                      : "var(--swatch-antique-coin)",
-                  }}
-                >
-                  {opt.label}
-                </motion.button>
-              );
-            })}
-          </div>
-        ) : null}
-
-        {currentCatQuestion.type !== "image-grid" && selected.length > 0 && (
-          <div className="text-center pt-2">
-            <Button
-              onClick={goNext}
-              className="rounded-full px-8 text-white font-semibold"
-              style={{
-                backgroundColor: "var(--swatch-cedar-grove)",
-                boxShadow: "0 4px 20px rgba(212, 84, 58, 0.30)",
-              }}
-            >
-              {catQuestionIndex < categoryQuestions.length - 1
-                ? "Next"
-                : "Done"}
-            </Button>
-          </div>
-        )}
+        <SwipeCards
+          questions={categoryQuestions.map((q) => ({
+            id: q.id,
+            title: q.title,
+            subtitle: q.subtitle,
+            type: q.type,
+            options: q.options,
+            placeholder: q.placeholder,
+            multiSelect: q.multiSelect,
+          }))}
+          categoryName={catName}
+          onComplete={async (selections) => {
+            const newAnswers = { ...answers, ...selections };
+            setAnswers(newAnswers);
+            if (selectedCategory && !completedCategories.includes(selectedCategory)) {
+              setCompletedCategories((prev) => [...prev, selectedCategory]);
+            }
+            if (user) {
+              try {
+                await supabase
+                  .from("user_preferences")
+                  .update({
+                    favorites: newAnswers,
+                    updated_at: new Date().toISOString(),
+                  })
+                  .eq("user_id", user.id);
+                toast.success("Preferences saved!");
+                await refetch();
+              } catch {
+                toast.error("Failed to save");
+              }
+            }
+            setSelectedCategory(null);
+          }}
+          onBack={() => setSelectedCategory(null)}
+        />
       </motion.div>
     );
   }
