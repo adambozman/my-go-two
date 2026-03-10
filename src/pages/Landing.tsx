@@ -112,7 +112,7 @@ const Landing = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-xl md:text-3xl font-bold mb-3 leading-snug"
+              className="text-xl md:text-3xl font-bold mb-4 leading-snug"
               style={{
                 fontFamily: "'Playfair Display', serif",
                 color: "var(--swatch-viridian-odyssey)",
