@@ -97,13 +97,24 @@ const MyGoTwo = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[] } | null>(null);
+  const [hasPartner, setHasPartner] = useState<boolean | null>(null);
+
+  // Check for connected partner
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("couples").select("id")
+      .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`)
+      .eq("status", "accepted")
+      .then(({ data }) => {
+        setHasPartner(!!(data && data.length > 0));
+      });
+  }, [user]);
 
   // Reopen cover flow if navigating back from list detail
   useEffect(() => {
     const state = location.state as { openTemplate?: string } | null;
     if (state?.openTemplate && allTemplateSubtypes[state.openTemplate]) {
       setCoverFlowTemplate({ name: state.openTemplate, subtypes: allTemplateSubtypes[state.openTemplate] });
-      // Clear state so refresh doesn't reopen
       window.history.replaceState({}, document.title);
     }
   }, [location]);
