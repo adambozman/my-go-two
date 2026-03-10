@@ -137,45 +137,8 @@ const Landing = () => {
           </motion.div>
         </section>
 
-        {/* Linen fold divider */}
-        <div className="relative" style={{ height: 48, overflow: "hidden" }}>
-          {/* Upper shadow — the fold casting downward */}
-          <div style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: "50%",
-            background: "linear-gradient(to bottom, transparent 0%, rgba(160,140,120,0.08) 60%, rgba(140,120,100,0.14) 100%)",
-          }} />
-          {/* Crease line */}
-          <div style={{
-            position: "absolute",
-            top: "50%",
-            left: "5%",
-            right: "5%",
-            height: 1,
-            background: "linear-gradient(90deg, transparent, rgba(120,100,80,0.18) 15%, rgba(120,100,80,0.22) 50%, rgba(120,100,80,0.18) 85%, transparent)",
-          }} />
-          {/* Highlight just below the crease — light catching the fold */}
-          <div style={{
-            position: "absolute",
-            top: "calc(50% + 1px)",
-            left: "8%",
-            right: "8%",
-            height: 1,
-            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.5) 20%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.5) 80%, transparent)",
-          }} />
-          {/* Lower shadow — fabric settling back */}
-          <div style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: "45%",
-            background: "linear-gradient(to top, transparent 0%, rgba(160,140,120,0.06) 70%, rgba(140,120,100,0.10) 100%)",
-          }} />
-        </div>
+        {/* Divider */}
+        <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(45,104,112,0.15) 20%, rgba(45,104,112,0.15) 80%, transparent)", margin: "0 52px" }} />
 
         {/* ═══ HOW IT WORKS ═══ */}
         <section id="how-it-works" style={{ padding: "72px 0 56px" }}>
