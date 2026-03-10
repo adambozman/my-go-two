@@ -179,7 +179,7 @@ const Onboarding = () => {
           <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">Skip</Button>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center relative">
-          <div className="relative w-full max-w-3xl h-[320px] flex items-center justify-center mb-10">
+          <div className="relative w-full max-w-3xl h-[400px] flex items-center justify-center mb-10">
             {INTRO_IMAGES.map((img, i) => {
               const offset = i - introCenter;
               const wrapped = offset > 4 ? offset - INTRO_IMAGES.length : offset < -4 ? offset + INTRO_IMAGES.length : offset;
@@ -190,7 +190,7 @@ const Onboarding = () => {
                 <motion.div
                   key={img.id}
                   animate={{
-                    x: wrapped * 160,
+                    x: wrapped * 180,
                     scale: isCenter ? 1 : 0.75 - abs * 0.05,
                     zIndex: 10 - abs,
                     opacity: isCenter ? 1 : Math.max(0.3, 0.7 - abs * 0.15),
@@ -201,7 +201,7 @@ const Onboarding = () => {
                   style={{ perspective: "1200px" }}
                 >
                   <div
-                    className={`card-design-neumorph overflow-hidden ${isCenter ? "w-[220px] h-[280px] shadow-2xl" : "w-[180px] h-[230px]"}`}
+                    className={`card-design-neumorph overflow-hidden ${isCenter ? "w-[275px] h-[350px] shadow-2xl" : "w-[225px] h-[288px]"}`}
                     style={{ borderRadius: "1.4rem" }}
                   >
                     <img
