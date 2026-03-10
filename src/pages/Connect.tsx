@@ -101,14 +101,14 @@ const Connect = () => {
                 <Users className="w-9 h-9" style={{ color: "var(--swatch-viridian-odyssey)" }} />
               </div>
               <h1
-                className="text-3xl md:text-4xl font-bold mb-2"
+                className="text-4xl md:text-5xl font-bold mb-3"
                 style={{ fontFamily: "'Playfair Display', serif", color: "var(--swatch-viridian-odyssey)" }}
               >
                 You've Been Invited
               </h1>
-              <p className="text-sm" style={{ color: "var(--swatch-antique-coin)" }}>
+              <p className="text-base md:text-lg" style={{ color: "var(--swatch-antique-coin)" }}>
                 Someone wants to connect with you on{" "}
-                <span className="logo-text text-sm">
+                <span className="logo-text text-base md:text-lg">
                   <span className="go">Go</span>
                   <span className="two">Two</span>
                 </span>
@@ -132,7 +132,7 @@ const Connect = () => {
               )}
               <div className="space-y-4">
                 <Button
-                  className="w-full rounded-full h-12 text-sm font-bold border-0 shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
+                  className="w-full rounded-full h-14 text-base font-bold border-0 shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
                   onClick={() => storeInviteAndGo("/login")}
                   style={{ background: "var(--swatch-cedar-grove)", color: "var(--swatch-cream-light)" }}
                 >
@@ -141,7 +141,7 @@ const Connect = () => {
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full rounded-full h-12 text-sm font-bold transition-all hover:scale-[1.02]"
+                  className="w-full rounded-full h-14 text-base font-bold transition-all hover:scale-[1.02]"
                   onClick={() => storeInviteAndGo("/signup")}
                   style={{ borderColor: "var(--swatch-viridian-odyssey)", color: "var(--swatch-viridian-odyssey)", background: "transparent" }}
                 >
