@@ -560,8 +560,7 @@ const Landing = () => {
                       e.currentTarget.style.boxShadow = "0 4px 20px rgba(212, 84, 58, 0.30)";
                     }}
                   >
-                    Create Your First Card
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    Create Your First Card&nbsp;&nbsp;→
                   </Button>
                 </Link>
               </div>
