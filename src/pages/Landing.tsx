@@ -129,9 +129,10 @@ const Landing = () => {
             {/* Video frame — exact specs */}
             <motion.div
               {...riseIn(0.24)}
-              className="w-full"
-              style={{ maxWidth: 560, marginBottom: 36, aspectRatio: "16/9" }}
+              className="w-full px-4"
+              style={{ marginBottom: 36 }}
             >
+              <div style={{ width: "100%", maxWidth: 560, margin: "0 auto", aspectRatio: "16/9" }}>
               <div
                 className="w-full h-full flex flex-col items-center justify-center gap-3 relative overflow-hidden"
                 style={{
