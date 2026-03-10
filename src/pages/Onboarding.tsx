@@ -557,7 +557,7 @@ const Onboarding = () => {
   if (!currentQuestion) return null;
 
   return (
-    <div className="landing-page min-h-screen flex flex-col">
+    <div className={`landing-page min-h-screen flex flex-col ${isEditMode ? "pb-24" : ""}`}>
       {/* Top */}
       <div className="flex items-center justify-between px-6 pt-5 pb-3">
         <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
