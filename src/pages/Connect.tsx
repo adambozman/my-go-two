@@ -58,24 +58,8 @@ const Connect = () => {
     );
   }
 
-  if (!inviteId) {
-    return (
-      <div className="landing-page min-h-screen overflow-hidden relative">
-        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute rounded-full" style={{ width: 680, height: 680, top: "-12%", right: "-8%", background: "radial-gradient(circle, rgba(232,198,174,0.35) 0%, transparent 70%)" }} />
-          <div className="absolute rounded-full" style={{ width: 400, height: 400, bottom: "15%", left: "-6%", background: "radial-gradient(circle, rgba(175,199,218,0.25) 0%, transparent 70%)" }} />
-        </div>
-        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
-          <p className="text-sm mb-6" style={{ color: "var(--swatch-antique-coin)" }}>Invalid invite link</p>
-          <Link to="/">
-            <Button variant="outline" className="rounded-full" style={{ borderColor: "var(--swatch-viridian-odyssey)", color: "var(--swatch-viridian-odyssey)" }}>
-              Go Home
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  // Show the full invite page design even without an invite param (for design preview)
+  const displayInviteId = inviteId || "preview";
 
   return (
     <div className="landing-page min-h-screen overflow-hidden relative">
