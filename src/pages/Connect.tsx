@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import GoTwoText from "@/components/GoTwoText";
-import { Users, Loader2 } from "lucide-react";
+import { Users, Loader2, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Connect = () => {
   const [searchParams] = useSearchParams();
@@ -17,7 +17,6 @@ const Connect = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // If user is logged in and we have an invite, link immediately
     if (!authLoading && user && inviteId && inviteId !== user.id) {
       setLinking(true);
       supabase.functions
@@ -41,7 +40,6 @@ const Connect = () => {
     }
   }, [user, inviteId, authLoading, navigate, toast]);
 
-  // Store invite for after login/signup
   const storeInviteAndGo = (path: string) => {
     if (inviteId) {
       localStorage.setItem("gotwo_invite", inviteId);
@@ -51,10 +49,10 @@ const Connect = () => {
 
   if (authLoading || linking) {
     return (
-      <div className="landing-page min-h-screen flex items-center justify-center px-4">
+      <div className="landing-page min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-          <p className="text-muted-foreground">{linking ? "Connecting accounts..." : "Loading..."}</p>
+          <p style={{ color: "var(--swatch-antique-coin)" }}>{linking ? "Connecting accounts..." : "Loading..."}</p>
         </div>
       </div>
     );
@@ -62,43 +60,112 @@ const Connect = () => {
 
   if (!inviteId) {
     return (
-      <div className="landing-page min-h-screen flex items-center justify-center px-4">
-        <div className="text-center">
-          <p className="text-muted-foreground mb-4">Invalid invite link</p>
+      <div className="landing-page min-h-screen overflow-hidden relative">
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+          <div className="absolute rounded-full" style={{ width: 680, height: 680, top: "-12%", right: "-8%", background: "radial-gradient(circle, rgba(232,198,174,0.35) 0%, transparent 70%)" }} />
+          <div className="absolute rounded-full" style={{ width: 400, height: 400, bottom: "15%", left: "-6%", background: "radial-gradient(circle, rgba(175,199,218,0.25) 0%, transparent 70%)" }} />
+        </div>
+        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
+          <p className="text-sm mb-6" style={{ color: "var(--swatch-antique-coin)" }}>Invalid invite link</p>
           <Link to="/">
-            <Button variant="outline" className="rounded-full">Go Home</Button>
+            <Button variant="outline" className="rounded-full" style={{ borderColor: "var(--swatch-viridian-odyssey)", color: "var(--swatch-viridian-odyssey)" }}>
+              Go Home
+            </Button>
           </Link>
         </div>
       </div>
     );
   }
 
-  // Not logged in — show options
   return (
-    <div className="landing-page min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
+    <div className="landing-page min-h-screen overflow-hidden relative">
+      {/* Decorative organic shapes */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute rounded-full" style={{ width: 680, height: 680, top: "-12%", right: "-8%", background: "radial-gradient(circle, rgba(232,198,174,0.35) 0%, transparent 70%)" }} />
+        <div className="absolute rounded-full" style={{ width: 400, height: 400, bottom: "15%", left: "-6%", background: "radial-gradient(circle, rgba(175,199,218,0.25) 0%, transparent 70%)" }} />
+        <div className="absolute rounded-full" style={{ width: 240, height: 240, top: "40%", right: "5%", background: "radial-gradient(circle, rgba(217,101,79,0.12) 0%, transparent 70%)" }} />
+      </div>
+
+      <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Nav */}
+        <nav className="flex items-center justify-center px-8 md:px-16 py-5">
           <Link to="/">
-            <GoTwoText className="text-4xl" />
+            <span className="logo-text" style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)", lineHeight: 1 }}>
+              <span className="go">Go</span>
+              <span className="two">Two</span>
+            </span>
           </Link>
-        </div>
-        <div className="card-design-neumorph panel-polish p-8 text-center">
-          <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ background: "rgba(var(--swatch-gypsum-rose-rgb), 0.5)" }}>
-            <Users className="w-8 h-8" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-          </div>
-          <h1 className="text-2xl font-bold mb-2">You've been invited!</h1>
-          <p className="text-muted-foreground mb-6">
-            Someone wants to connect with you on <GoTwoText className="text-sm inline" />.
-          </p>
-          {error && <p className="text-destructive text-sm mb-4">{error}</p>}
-          <div className="space-y-3">
-            <Button className="w-full rounded-full" onClick={() => storeInviteAndGo("/login")}>
-              Sign In to Connect
-            </Button>
-            <Button variant="outline" className="w-full rounded-full" onClick={() => storeInviteAndGo("/signup")}>
-              Create an Account
-            </Button>
-          </div>
+        </nav>
+
+        {/* Content */}
+        <div className="flex-1 flex items-center justify-center px-4 pb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="w-full max-w-md"
+          >
+            {/* Heading */}
+            <div className="text-center mb-10">
+              <div
+                className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
+                style={{
+                  background: "linear-gradient(165deg, rgba(232,198,174,0.4) 0%, rgba(175,199,218,0.3) 100%)",
+                  boxShadow: "8px 8px 20px rgba(217,101,79,0.06), -6px -6px 16px rgba(255,255,255,0.45)",
+                }}
+              >
+                <Users className="w-9 h-9" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+              </div>
+              <h1
+                className="text-3xl md:text-4xl font-bold mb-2"
+                style={{ fontFamily: "'Playfair Display', serif", color: "var(--swatch-viridian-odyssey)" }}
+              >
+                You've Been Invited
+              </h1>
+              <p className="text-sm" style={{ color: "var(--swatch-antique-coin)" }}>
+                Someone wants to connect with you on{" "}
+                <span className="logo-text text-sm">
+                  <span className="go">Go</span>
+                  <span className="two">Two</span>
+                </span>
+              </p>
+            </div>
+
+            {/* Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="rounded-3xl p-8 md:p-10"
+              style={{
+                background: "linear-gradient(165deg, rgba(255,255,255,0.65) 0%, rgba(246,226,212,0.35) 100%)",
+                border: "1px solid rgba(232,198,174,0.3)",
+                boxShadow: "8px 8px 20px rgba(217,101,79,0.06), -6px -6px 16px rgba(255,255,255,0.45)",
+              }}
+            >
+              {error && (
+                <p className="text-destructive text-sm mb-4 text-center">{error}</p>
+              )}
+              <div className="space-y-4">
+                <Button
+                  className="w-full rounded-full h-12 text-sm font-bold border-0 shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
+                  onClick={() => storeInviteAndGo("/login")}
+                  style={{ background: "var(--swatch-cedar-grove)", color: "var(--swatch-cream-light)" }}
+                >
+                  Sign In to Connect
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full rounded-full h-12 text-sm font-bold transition-all hover:scale-[1.02]"
+                  onClick={() => storeInviteAndGo("/signup")}
+                  style={{ borderColor: "var(--swatch-viridian-odyssey)", color: "var(--swatch-viridian-odyssey)", background: "transparent" }}
+                >
+                  Create an Account
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </div>
