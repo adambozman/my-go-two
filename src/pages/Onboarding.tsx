@@ -290,7 +290,7 @@ const Onboarding = () => {
     return (
       <div className="landing-page min-h-screen flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-8 pt-6 pb-2 relative z-10">
-          <GoTwoText className="text-3xl" />
+          <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
           <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">Skip</Button>
         </div>
 
@@ -516,7 +516,7 @@ const Onboarding = () => {
     return (
       <div className="landing-page min-h-screen flex flex-col">
         <div className="flex items-center justify-between px-6 pt-5 pb-3">
-          <GoTwoText className="text-2xl" />
+        <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
           <Button variant="ghost" size="sm" onClick={() => setPhase("category-picker")} className="text-muted-foreground">
             Back
           </Button>
@@ -548,7 +548,7 @@ const Onboarding = () => {
     <div className="landing-page min-h-screen flex flex-col">
       {/* Top */}
       <div className="flex items-center justify-between px-6 pt-5 pb-3">
-        <GoTwoText className="text-2xl" />
+        <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
         <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">
           Skip <ChevronRight className="ml-1 h-4 w-4" />
         </Button>
