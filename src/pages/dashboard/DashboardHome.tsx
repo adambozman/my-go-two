@@ -24,17 +24,17 @@ const categoryLabel: Record<string, string> = {
 
 /* ── Brand / store search URLs ── */
 const storeSearchUrls: Record<string, string> = {
-  nordstrom: "https://www.nordstrom.com",
-  zara: "https://www.zara.com",
-  uniqlo: "https://www.uniqlo.com",
-  target: "https://www.target.com",
-  sephora: "https://www.sephora.com",
-  "h&m": "https://www.hm.com",
-  hm: "https://www.hm.com",
-  asos: "https://www.asos.com",
-  madewell: "https://www.madewell.com",
-  anthropologie: "https://www.anthropologie.com",
-  amazon: "https://www.amazon.com",
+  nordstrom: "https://www.nordstrom.com/sr?keyword=",
+  zara: "https://www.zara.com/us/en/search?searchTerm=",
+  uniqlo: "https://www.uniqlo.com/us/en/search?q=",
+  target: "https://www.target.com/s?searchTerm=",
+  sephora: "https://www.sephora.com/search?keyword=",
+  "h&m": "https://www2.hm.com/en_us/search-results.html?q=",
+  hm: "https://www2.hm.com/en_us/search-results.html?q=",
+  asos: "https://www.asos.com/us/search/?q=",
+  madewell: "https://www.madewell.com/search?q=",
+  anthropologie: "https://www.anthropologie.com/search?q=",
+  amazon: "https://www.amazon.com/s?k=",
 };
 
 function getStoreUrl(name: string): string {
@@ -42,7 +42,7 @@ function getStoreUrl(name: string): string {
   for (const [k, url] of Object.entries(storeSearchUrls)) {
     if (key.includes(k.replace(/[^a-z0-9&]/g, "")) || k.replace(/[^a-z0-9&]/g, "").includes(key)) return url;
   }
-  return `https://www.google.com/search?q=${encodeURIComponent(name + " store")}`;
+  return `https://www.amazon.com/s?k=${encodeURIComponent(name)}`;
 }
 
 function getBrandUrl(name: string): string {
