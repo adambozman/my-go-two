@@ -384,10 +384,10 @@ const DashboardHome = () => {
             </div>
 
             {/* Full profile link */}
-            <button onClick={() => navigate(hasPartner ? "/dashboard/collaborations" : "/dashboard/my-gotwo")}
+            <button onClick={() => navigate("/dashboard/collaborations")}
               className="absolute top-8 right-8 flex items-center gap-1.5 text-xs font-semibold backdrop-blur-md px-4 py-2 rounded-full hover:scale-105 active:scale-95 transition-transform"
               style={{ background: "rgba(255,255,255,0.15)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.2)" }}>
-              Full Profile <ChevronRight className="w-3.5 h-3.5" />
+              {showDataName}'s Full Profile <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </motion.div>
