@@ -24,17 +24,17 @@ const categoryLabel: Record<string, string> = {
 
 /* ── Brand / store search URLs ── */
 const storeSearchUrls: Record<string, string> = {
-  nordstrom: "https://www.nordstrom.com",
-  zara: "https://www.zara.com",
-  uniqlo: "https://www.uniqlo.com",
-  target: "https://www.target.com",
-  sephora: "https://www.sephora.com",
-  "h&m": "https://www.hm.com",
-  hm: "https://www.hm.com",
-  asos: "https://www.asos.com",
-  madewell: "https://www.madewell.com",
-  anthropologie: "https://www.anthropologie.com",
-  amazon: "https://www.amazon.com",
+  nordstrom: "https://www.nordstrom.com/sr?keyword=",
+  zara: "https://www.zara.com/us/en/search?searchTerm=",
+  uniqlo: "https://www.uniqlo.com/us/en/search?q=",
+  target: "https://www.target.com/s?searchTerm=",
+  sephora: "https://www.sephora.com/search?keyword=",
+  "h&m": "https://www2.hm.com/en_us/search-results.html?q=",
+  hm: "https://www2.hm.com/en_us/search-results.html?q=",
+  asos: "https://www.asos.com/us/search/?q=",
+  madewell: "https://www.madewell.com/search?q=",
+  anthropologie: "https://www.anthropologie.com/search?q=",
+  amazon: "https://www.amazon.com/s?k=",
 };
 
 function getStoreUrl(name: string): string {
@@ -42,12 +42,12 @@ function getStoreUrl(name: string): string {
   for (const [k, url] of Object.entries(storeSearchUrls)) {
     if (key.includes(k.replace(/[^a-z0-9&]/g, "")) || k.replace(/[^a-z0-9&]/g, "").includes(key)) return url;
   }
-  return `https://www.google.com/search?q=${encodeURIComponent(name + " store")}`;
+  return `https://www.amazon.com/s?k=${encodeURIComponent(name)}`;
 }
 
 function getBrandUrl(name: string): string {
   const sanitized = name.toLowerCase().replace(/[^a-z0-9]/g, "");
-  return `https://www.google.com/search?q=${encodeURIComponent(name + " shop")}`;
+  return `https://www.${sanitized}.com`;
 }
 
 /* ── Brand logo via Clearbit ── */
@@ -237,7 +237,7 @@ const DashboardHome = () => {
                   transition={{ delay: 0.05 * i }}
                   className="card-design-neumorph overflow-hidden shrink-0 group cursor-pointer"
                   style={{ borderRadius: "1.2rem", width: 160, height: 100 }}
-                  onClick={() => openExternal(`https://www.google.com/search?q=${encodeURIComponent(style + " style inspiration")}&tbm=isch`)}
+                  onClick={() => openExternal(`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(style + " style inspiration")}`)}
                 >
                   <div className="relative w-full h-full">
                     <img src={img} alt={style} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
@@ -294,7 +294,7 @@ const DashboardHome = () => {
                   transition={{ delay: 0.04 * i }}
                   className="card-design-neumorph overflow-hidden shrink-0 hover:scale-[1.02] active:scale-[0.98] transition-transform cursor-pointer group"
                   style={{ borderRadius: "1.2rem", width: 180, height: 130 }}
-                  onClick={() => openExternal(`https://www.google.com/search?q=${encodeURIComponent(cat + " gift ideas")}&tbm=shop`)}
+                  onClick={() => openExternal(`https://www.amazon.com/s?k=${encodeURIComponent(cat + " gift")}`)}
                 >
                   <div className="relative w-full h-full">
                     <img src={img} alt={cat} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
@@ -347,7 +347,7 @@ const DashboardHome = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="card-design-neumorph overflow-hidden hover:scale-[1.005] active:scale-[0.998] transition-transform cursor-pointer group"
                   style={{ borderRadius: "1.4rem" }}
-                  onClick={() => openExternal(`https://www.google.com/search?q=${encodeURIComponent(card.title)}`)}
+                  onClick={() => openExternal(`https://www.amazon.com/s?k=${encodeURIComponent(card.title)}`)}
                 >
                   <div className="relative h-64 sm:h-72 overflow-hidden">
                     <img
@@ -398,7 +398,7 @@ const DashboardHome = () => {
                       transition={{ delay: 0.06 * (i + 1) }}
                       className={`card-design-neumorph overflow-hidden hover:scale-[1.01] active:scale-[0.99] transition-transform cursor-pointer group ${isWide ? "sm:col-span-2" : ""}`}
                       style={{ borderRadius: "1.2rem" }}
-                      onClick={() => openExternal(`https://www.google.com/search?q=${encodeURIComponent(card.title)}`)}
+                      onClick={() => openExternal(`https://www.amazon.com/s?k=${encodeURIComponent(card.title)}`)}
                     >
                       <div className={`${isWide ? "h-48" : "h-36"} overflow-hidden relative`}>
                         <img
