@@ -593,7 +593,7 @@ const Onboarding = () => {
 
             {/* ── IMAGE GRID ── */}
             {currentQuestion.type === "image-grid" && currentQuestion.options && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 flex-1 content-start overflow-y-auto pb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 flex-1 content-start overflow-y-auto pb-4">
                 {currentQuestion.options.map((opt, i) => {
                   const isSelected = selected.includes(opt.id);
                   return (
@@ -614,9 +614,9 @@ const Onboarding = () => {
                           ...(isSelected ? { borderColor: "hsl(196 40% 31%)" } : {}),
                         }}
                       >
-                        <div className="aspect-[4/3] overflow-hidden relative">
+                        <div className="aspect-[4/5] overflow-hidden relative">
                           <img
-                            src={getStyleImage(opt.id, selectedGender) || opt.localImage || `https://images.unsplash.com/photo-${opt.image}?w=350&h=260&fit=crop&q=80`}
+                            src={getStyleImage(opt.id, selectedGender) || opt.localImage || `https://images.unsplash.com/photo-${opt.image}?w=350&h=440&fit=crop&q=80`}
                             alt={opt.label}
                             className={`w-full h-full object-cover transition-transform duration-300 ${
                               isSelected ? "scale-105" : "group-hover:scale-105"
@@ -635,8 +635,8 @@ const Onboarding = () => {
                               <Check className="w-4 h-4 text-white" />
                             </motion.div>
                           )}
-                          <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5 text-center">
-                            <p className="text-sm font-semibold text-white leading-tight">{opt.label}</p>
+                          <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
+                            <p className="text-sm font-semibold text-white leading-tight drop-shadow">{opt.label}</p>
                           </div>
                         </div>
                       </div>
