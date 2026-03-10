@@ -201,16 +201,17 @@ const Onboarding = () => {
                   style={{ perspective: "1200px" }}
                 >
                   <div
-                    className={`card-design-neumorph overflow-hidden ${isCenter ? "w-[310px] h-[420px] shadow-2xl" : "w-[255px] h-[345px]"}`}
+                    className={`overflow-hidden relative ${isCenter ? "w-[310px] h-[420px] shadow-2xl" : "w-[255px] h-[345px]"}`}
                     style={{ borderRadius: "1.4rem" }}
                   >
                     <img
                       src={`https://images.unsplash.com/photo-${img.id}?w=400&h=500&fit=crop&q=80`}
                       alt={img.label}
-                      className="w-full h-[75%] object-cover"
+                      className="w-full h-full object-cover"
                     />
-                    <div className="p-3 text-center">
-                      <p className="text-sm font-semibold text-primary">{img.label}</p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <p className="text-white font-semibold text-sm" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px" }}>{img.label}</p>
                     </div>
                   </div>
                 </motion.div>
