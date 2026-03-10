@@ -53,7 +53,7 @@ const timelineSteps = [
 const riseIn = (delay: number) => ({
   initial: { opacity: 0, y: 18 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.9, delay, ease: [0.22, 0.68, 0, 1.2] },
+  transition: { duration: 0.9, delay, ease: [0.22, 0.68, 0, 1.2] as [number, number, number, number] },
 });
 
 const Landing = () => {
