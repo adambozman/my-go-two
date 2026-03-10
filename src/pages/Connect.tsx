@@ -141,7 +141,7 @@ const Connect = () => {
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full rounded-full h-12 text-sm font-bold transition-all hover:scale-[1.02]"
+                  className="w-full rounded-full h-14 text-base font-bold transition-all hover:scale-[1.02]"
                   onClick={() => storeInviteAndGo("/signup")}
                   style={{ borderColor: "var(--swatch-viridian-odyssey)", color: "var(--swatch-viridian-odyssey)", background: "transparent" }}
                 >
