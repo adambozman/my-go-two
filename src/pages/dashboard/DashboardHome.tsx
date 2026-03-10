@@ -143,9 +143,9 @@ function getGiftImage(name: string, i: number): string {
 }
 
 const quickActionData = [
-  { label: "Their Sizes", desc: "Clothing, shoes, ring — no guessing", route: "/dashboard/my-gotwo", img: quickSizesImg },
-  { label: "Their Saved Items", desc: "Things they've mentioned wanting", route: "/dashboard/my-lists", img: quickSavedImg },
-  { label: "Their Brands", desc: "The stores and labels they love", route: "/dashboard/my-gotwo", img: quickBrandsImg },
+  { label: "Their Sizes", desc: "Clothing, shoes, ring — no guessing", route: "/dashboard/my-go-two", img: quickSizesImg },
+  { label: "Their Saved Items", desc: "Things they've mentioned wanting", route: "/dashboard/my-go-two", img: quickSavedImg },
+  { label: "Their Brands", desc: "The stores and labels they love", route: "/dashboard/my-go-two", img: quickBrandsImg },
   { label: "Gift Ideas", desc: "Curated picks based on their taste", route: "/dashboard/recommendations", img: quickGiftImg },
 ];
 
