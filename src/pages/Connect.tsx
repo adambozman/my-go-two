@@ -132,7 +132,7 @@ const Connect = () => {
               )}
               <div className="space-y-4">
                 <Button
-                  className="w-full rounded-full h-12 text-sm font-bold border-0 shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
+                  className="w-full rounded-full h-14 text-base font-bold border-0 shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
                   onClick={() => storeInviteAndGo("/login")}
                   style={{ background: "var(--swatch-cedar-grove)", color: "var(--swatch-cream-light)" }}
                 >
