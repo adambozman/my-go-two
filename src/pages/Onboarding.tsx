@@ -662,6 +662,10 @@ const Onboarding = () => {
               <div className="flex flex-col gap-3 max-w-md mx-auto w-full flex-1 content-start overflow-y-auto pb-4">
                 {currentQuestion.options.map((opt, i) => {
                   const isSelected = selected.includes(opt.id);
+                  // For identity question, each option gets its own accent color
+                  const optAccent = currentQuestion.id === "identity"
+                    ? getGenderAccent(opt.id)
+                    : accent;
                   return (
                     <motion.button
                       key={opt.id}
@@ -676,17 +680,19 @@ const Onboarding = () => {
                       }`}
                       style={{
                         background: isSelected
-                          ? "linear-gradient(158deg, rgba(232,198,174,0.5), rgba(107,109,98,0.2))"
+                          ? `linear-gradient(158deg, ${optAccent.bgStrong}, ${optAccent.bg})`
                           : "linear-gradient(158deg, rgba(232,198,174,0.2), rgba(107,109,98,0.08))",
                         border: isSelected
-                          ? "2px solid hsl(196 40% 31%)"
+                          ? `2px solid ${optAccent.solid}`
                           : "2px solid transparent",
                       }}
                     >
                       <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                          isSelected ? "border-primary bg-primary" : "border-muted-foreground/40"
-                        }`}
+                        className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all"
+                        style={{
+                          borderColor: isSelected ? optAccent.solid : "rgba(107,109,98,0.4)",
+                          background: isSelected ? optAccent.solid : "transparent",
+                        }}
                       >
                         {isSelected && (
                           <motion.div
