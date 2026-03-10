@@ -1,7 +1,54 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Heart, ListChecks, Share2, Sparkles, ArrowRight, Coffee, Shirt, Gift, CalendarHeart } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+
+const timelineSteps = [
+  {
+    step: "01",
+    title: "Sign Up & Tell Us About You",
+    description:
+      "Create your account and take a quick questionnaire — your style, your vibe, what you love, what you hate. This is how we learn you.",
+    accent: "var(--swatch-cedar-grove)",
+  },
+  {
+    step: "02",
+    title: "AI Builds Your Profile",
+    description:
+      "Behind the scenes, our AI starts working immediately — analyzing your preferences to understand your taste at a level no one else can.",
+    accent: "var(--swatch-viridian-odyssey)",
+    aiHighlight: true,
+  },
+  {
+    step: "03",
+    title: "Create Your GoTwo Lists",
+    description:
+      "Coffee orders. Clothing sizes. Date night ideas. Gift wishlists. Build cards for every detail that matters — or let AI auto-fill them for you.",
+    accent: "var(--swatch-cedar-grove)",
+  },
+  {
+    step: "04",
+    title: "Add Your People",
+    description:
+      "Invite your significant other, your mom, your brother, your best friend. Each person gets their own connection to your lists.",
+    accent: "var(--swatch-viridian-odyssey)",
+  },
+  {
+    step: "05",
+    title: "Control Who Sees What",
+    description:
+      "Your partner sees your date ideas and gift preferences. Your mom sees your clothing sizes. You decide who gets access to what.",
+    accent: "var(--swatch-cedar-grove)",
+  },
+  {
+    step: "06",
+    title: "AI Powers Every Decision",
+    description:
+      "Perfect gift suggestions. Curated date ideas. Shopping experiences tailored to the people you love — all powered by what they actually want.",
+    accent: "var(--swatch-viridian-odyssey)",
+    aiHighlight: true,
+  },
+];
 
 const Landing = () => {
   return (
@@ -41,15 +88,16 @@ const Landing = () => {
       </div>
 
       <div className="relative z-10">
-        {/* Nav */}
-        <nav className="flex items-center justify-between px-8 md:px-16 py-5">
-          <span className="logo-text text-2xl">
-            <span className="go">Go</span>
-            <span className="two">Two</span>
-          </span>
+        {/* Nav — no logo, just auth buttons */}
+        <nav className="flex items-center justify-end px-8 md:px-16 py-5">
           <div className="flex items-center gap-4">
             <Link to="/login">
-              <Button variant="ghost" size="sm" className="text-sm font-semibold" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-sm font-semibold"
+                style={{ color: "var(--swatch-viridian-odyssey)" }}
+              >
                 Log in
               </Button>
             </Link>
@@ -69,15 +117,18 @@ const Landing = () => {
         </nav>
 
         {/* Hero */}
-        <section className="max-w-6xl mx-auto px-8 md:px-16 pt-16 md:pt-24 pb-12 text-center">
+        <section className="max-w-6xl mx-auto px-8 md:px-16 pt-10 md:pt-20 pb-12 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
           >
-            {/* Giant GoTwo branding */}
-            <div className="mb-8">
-              <span className="logo-text" style={{ fontSize: "clamp(5rem, 12vw, 10rem)", lineHeight: 1 }}>
+            {/* Giant GoTwo branding — THE focal point */}
+            <div className="mb-6">
+              <span
+                className="logo-text"
+                style={{ fontSize: "clamp(5.5rem, 14vw, 12rem)", lineHeight: 0.95 }}
+              >
                 <span className="go">Go</span>
                 <span className="two">Two</span>
               </span>
@@ -98,7 +149,7 @@ const Landing = () => {
               <span style={{ color: "var(--swatch-cedar-grove)" }}>Never forget again.</span>
             </motion.h1>
 
-            {/* Video placeholder — kept for future use */}
+            {/* Video placeholder */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -109,7 +160,8 @@ const Landing = () => {
               <div
                 className="w-full h-full rounded-3xl flex items-center justify-center card-design-neumorph"
                 style={{
-                  background: "linear-gradient(165deg, rgba(246,226,212,0.7) 0%, rgba(232,198,174,0.5) 100%)",
+                  background:
+                    "linear-gradient(165deg, rgba(246,226,212,0.7) 0%, rgba(232,198,174,0.5) 100%)",
                 }}
               >
                 <span
@@ -127,7 +179,10 @@ const Landing = () => {
               transition={{ duration: 0.5, delay: 0.5 }}
               className="max-w-lg mx-auto mb-4"
             >
-              <p className="text-base md:text-lg mb-2" style={{ color: "var(--swatch-antique-coin)" }}>
+              <p
+                className="text-base md:text-lg mb-2"
+                style={{ color: "var(--swatch-antique-coin)" }}
+              >
                 Create personal{" "}
                 <span className="logo-text text-base md:text-lg">
                   <span className="go">Go</span>
@@ -198,26 +253,39 @@ const Landing = () => {
 
         {/* Divider wave */}
         <div className="w-full overflow-hidden" style={{ height: 80 }}>
-          <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" preserveAspectRatio="none">
-            <path d="M0 40C240 80 480 0 720 40C960 80 1200 0 1440 40V80H0V40Z" fill="rgba(47,95,109,0.06)" />
+          <svg
+            viewBox="0 0 1440 80"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0 40C240 80 480 0 720 40C960 80 1200 0 1440 40V80H0V40Z"
+              fill="rgba(47,95,109,0.06)"
+            />
           </svg>
         </div>
 
-        {/* How It Works */}
-        <section id="how-it-works" className="py-20 md:py-28" style={{ background: "rgba(47,95,109,0.04)" }}>
-          <div className="max-w-6xl mx-auto px-8 md:px-16">
+        {/* How It Works — Timeline */}
+        <section
+          id="how-it-works"
+          className="py-20 md:py-28"
+          style={{ background: "rgba(47,95,109,0.04)" }}
+        >
+          <div className="max-w-5xl mx-auto px-8 md:px-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-20"
             >
               <p
                 className="text-sm font-bold tracking-[0.3em] uppercase mb-3"
                 style={{ color: "var(--swatch-cedar-grove)" }}
               >
-                Simple & Powerful
+                Your Journey
               </p>
               <h2
                 className="text-3xl md:text-5xl font-bold"
@@ -230,155 +298,171 @@ const Landing = () => {
               </h2>
             </motion.div>
 
-            <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-              {[
-                {
-                  icon: ListChecks,
-                  step: "01",
-                  title: "Create Your Cards",
-                  description: "Build GoTwo cards for your favorite coffee order, clothing sizes, gift ideas, and anything else your partner needs to know.",
-                },
-                {
-                  icon: Share2,
-                  step: "02",
-                  title: "Share With Your Partner",
-                  description: "Invite your significant other to access your lists. They'll always have your preferences at their fingertips.",
-                },
-                {
-                  icon: Heart,
-                  step: "03",
-                  title: "Never Guess Again",
-                  description: "No more wrong sizes, forgotten orders, or generic gifts. Every choice becomes thoughtful and personal.",
-                },
-              ].map((step, i) => (
-                <motion.div
-                  key={step.title}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.15 }}
-                  viewport={{ once: true }}
-                  className="relative group"
-                >
-                  <div
-                    className="p-8 md:p-10 text-center rounded-3xl transition-all duration-300 group-hover:translate-y-[-4px] group-hover:shadow-xl"
-                    style={{
-                      background: "linear-gradient(165deg, rgba(255,255,255,0.7) 0%, rgba(246,226,212,0.4) 100%)",
-                      border: "1px solid rgba(232,198,174,0.35)",
-                      boxShadow: "8px 8px 20px rgba(217,101,79,0.08), -6px -6px 16px rgba(255,255,255,0.5)",
-                    }}
-                  >
-                    {/* Step number */}
-                    <span
-                      className="text-6xl md:text-7xl font-black opacity-[0.07] absolute top-4 right-6"
-                      style={{
-                        fontFamily: "'Playfair Display', serif",
-                        color: "var(--swatch-viridian-odyssey)",
-                      }}
-                    >
-                      {step.step}
-                    </span>
-
-                    <div
-                      className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-110"
-                      style={{
-                        background: "linear-gradient(135deg, var(--swatch-viridian-odyssey) 0%, rgba(47,95,109,0.8) 100%)",
-                        boxShadow: "0 8px 20px rgba(47,95,109,0.25)",
-                      }}
-                    >
-                      <step.icon className="w-7 h-7" style={{ color: "var(--swatch-cream-light)" }} />
-                    </div>
-
-                    <h3
-                      className="text-xl md:text-2xl font-bold mb-3"
-                      style={{
-                        fontFamily: "'Playfair Display', serif",
-                        color: "var(--swatch-viridian-odyssey)",
-                      }}
-                    >
-                      {step.title}
-                    </h3>
-                    <p className="text-sm md:text-base leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                      {step.description}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Templates Preview */}
-        <section className="py-20 md:py-28">
-          <div className="max-w-6xl mx-auto px-8 md:px-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="text-center mb-14"
-            >
-              <p
-                className="text-sm font-bold tracking-[0.3em] uppercase mb-3"
-                style={{ color: "var(--swatch-cedar-grove)" }}
-              >
-                Ready To Go
-              </p>
-              <h2
-                className="text-3xl md:text-5xl font-bold mb-4"
+            {/* Timeline */}
+            <div className="relative">
+              {/* Vertical line */}
+              <div
+                className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px hidden md:block"
                 style={{
-                  fontFamily: "'Playfair Display', serif",
-                  color: "var(--swatch-viridian-odyssey)",
+                  background:
+                    "linear-gradient(to bottom, transparent, var(--swatch-gypsum-rose), var(--swatch-viridian-odyssey), var(--swatch-gypsum-rose), transparent)",
                 }}
-              >
-                Curated Templates
-              </h2>
-              <p className="text-base max-w-md mx-auto" style={{ color: "var(--swatch-antique-coin)" }}>
-                Start with our ready-made cards or create your own from scratch.
-              </p>
-            </motion.div>
+              />
+              {/* Mobile vertical line */}
+              <div
+                className="absolute left-6 top-0 bottom-0 w-px md:hidden"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, transparent, var(--swatch-gypsum-rose), var(--swatch-viridian-odyssey), var(--swatch-gypsum-rose), transparent)",
+                }}
+              />
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-5">
-              {[
-                { Icon: Coffee, label: "Coffee Order", gradient: "135deg, rgba(217,101,79,0.18) 0%, rgba(232,198,174,0.25) 100%" },
-                { Icon: Shirt, label: "Clothing Sizes", gradient: "135deg, rgba(47,95,109,0.18) 0%, rgba(175,199,218,0.25) 100%" },
-                { Icon: CalendarHeart, label: "Date Ideas", gradient: "135deg, rgba(101,70,85,0.18) 0%, rgba(216,209,214,0.25) 100%" },
-                { Icon: Gift, label: "Gift Ideas", gradient: "135deg, rgba(233,203,116,0.22) 0%, rgba(232,198,174,0.25) 100%" },
-                { Icon: Sparkles, label: "Wish Lists", gradient: "135deg, rgba(157,166,79,0.18) 0%, rgba(232,198,174,0.25) 100%" },
-              ].map((t, i) => (
-                <motion.div
-                  key={t.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: i * 0.08 }}
-                  viewport={{ once: true }}
-                  className="group cursor-pointer"
-                >
-                  <div
-                    className="p-6 md:p-7 text-center rounded-2xl transition-all duration-300 group-hover:translate-y-[-4px] group-hover:shadow-lg"
-                    style={{
-                      background: `linear-gradient(${t.gradient})`,
-                      border: "1px solid rgba(232,198,174,0.3)",
-                      boxShadow: "6px 6px 16px rgba(217,101,79,0.06), -4px -4px 12px rgba(255,255,255,0.4)",
-                    }}
-                  >
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 transition-transform duration-300 group-hover:scale-110"
-                      style={{
-                        background: "rgba(255,255,255,0.6)",
-                        backdropFilter: "blur(8px)",
-                      }}
+              <div className="space-y-12 md:space-y-16">
+                {timelineSteps.map((step, i) => {
+                  const isLeft = i % 2 === 0;
+                  return (
+                    <motion.div
+                      key={step.step}
+                      initial={{ opacity: 0, x: isLeft ? -30 : 30 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.1 }}
+                      viewport={{ once: true }}
+                      className="relative"
                     >
-                      <t.Icon className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-                    </div>
-                    <p
-                      className="text-sm font-bold"
-                      style={{ color: "var(--swatch-viridian-odyssey)" }}
-                    >
-                      {t.label}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
+                      {/* Desktop layout */}
+                      <div className="hidden md:grid md:grid-cols-2 md:gap-12 items-center">
+                        {/* Left content */}
+                        <div className={isLeft ? "text-right pr-12" : "order-2 pl-12"}>
+                          <div
+                            className="inline-block rounded-2xl p-8 transition-all duration-300 hover:translate-y-[-2px]"
+                            style={{
+                              background: step.aiHighlight
+                                ? "linear-gradient(165deg, rgba(47,95,109,0.12) 0%, rgba(175,199,218,0.15) 100%)"
+                                : "linear-gradient(165deg, rgba(255,255,255,0.65) 0%, rgba(246,226,212,0.35) 100%)",
+                              border: step.aiHighlight
+                                ? "1px solid rgba(47,95,109,0.2)"
+                                : "1px solid rgba(232,198,174,0.3)",
+                              boxShadow:
+                                "8px 8px 20px rgba(217,101,79,0.06), -6px -6px 16px rgba(255,255,255,0.45)",
+                            }}
+                          >
+                            {step.aiHighlight && (
+                              <div
+                                className="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.15em] uppercase mb-3 px-3 py-1 rounded-full"
+                                style={{
+                                  background: "rgba(47,95,109,0.1)",
+                                  color: "var(--swatch-viridian-odyssey)",
+                                }}
+                              >
+                                <Sparkles className="w-3 h-3" />
+                                AI-Powered
+                              </div>
+                            )}
+                            <h3
+                              className="text-xl md:text-2xl font-bold mb-3"
+                              style={{
+                                fontFamily: "'Playfair Display', serif",
+                                color: "var(--swatch-viridian-odyssey)",
+                              }}
+                            >
+                              {step.title}
+                            </h3>
+                            <p
+                              className="text-sm md:text-base leading-relaxed"
+                              style={{ color: "var(--swatch-antique-coin)" }}
+                            >
+                              {step.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Right spacer (or left spacer when reversed) */}
+                        <div className={isLeft ? "order-2" : ""} />
+                      </div>
+
+                      {/* Timeline node — Desktop */}
+                      <div
+                        className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full items-center justify-center z-10"
+                        style={{
+                          background: step.accent,
+                          boxShadow: `0 4px 16px ${step.accent}44`,
+                        }}
+                      >
+                        <span
+                          className="text-xs font-black"
+                          style={{ color: "var(--swatch-cream-light)" }}
+                        >
+                          {step.step}
+                        </span>
+                      </div>
+
+                      {/* Mobile layout */}
+                      <div className="md:hidden flex gap-5">
+                        {/* Timeline node — Mobile */}
+                        <div className="flex-shrink-0 relative z-10">
+                          <div
+                            className="w-12 h-12 rounded-full flex items-center justify-center"
+                            style={{
+                              background: step.accent,
+                              boxShadow: `0 4px 16px ${step.accent}44`,
+                            }}
+                          >
+                            <span
+                              className="text-xs font-black"
+                              style={{ color: "var(--swatch-cream-light)" }}
+                            >
+                              {step.step}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Mobile content */}
+                        <div
+                          className="flex-1 rounded-2xl p-6"
+                          style={{
+                            background: step.aiHighlight
+                              ? "linear-gradient(165deg, rgba(47,95,109,0.12) 0%, rgba(175,199,218,0.15) 100%)"
+                              : "linear-gradient(165deg, rgba(255,255,255,0.65) 0%, rgba(246,226,212,0.35) 100%)",
+                            border: step.aiHighlight
+                              ? "1px solid rgba(47,95,109,0.2)"
+                              : "1px solid rgba(232,198,174,0.3)",
+                            boxShadow:
+                              "6px 6px 16px rgba(217,101,79,0.06), -4px -4px 12px rgba(255,255,255,0.4)",
+                          }}
+                        >
+                          {step.aiHighlight && (
+                            <div
+                              className="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.15em] uppercase mb-3 px-3 py-1 rounded-full"
+                              style={{
+                                background: "rgba(47,95,109,0.1)",
+                                color: "var(--swatch-viridian-odyssey)",
+                              }}
+                            >
+                              <Sparkles className="w-3 h-3" />
+                              AI-Powered
+                            </div>
+                          )}
+                          <h3
+                            className="text-lg font-bold mb-2"
+                            style={{
+                              fontFamily: "'Playfair Display', serif",
+                              color: "var(--swatch-viridian-odyssey)",
+                            }}
+                          >
+                            {step.title}
+                          </h3>
+                          <p
+                            className="text-sm leading-relaxed"
+                            style={{ color: "var(--swatch-antique-coin)" }}
+                          >
+                            {step.description}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </section>
@@ -393,11 +477,12 @@ const Landing = () => {
               viewport={{ once: true }}
               className="relative overflow-hidden rounded-[2rem] p-12 md:p-16 text-center"
               style={{
-                background: "linear-gradient(145deg, var(--swatch-viridian-odyssey) 0%, rgba(47,95,109,0.9) 100%)",
+                background:
+                  "linear-gradient(145deg, var(--swatch-viridian-odyssey) 0%, rgba(47,95,109,0.9) 100%)",
                 boxShadow: "0 24px 48px rgba(47,95,109,0.3)",
               }}
             >
-              {/* Decorative circles in CTA */}
+              {/* Decorative circles */}
               <div
                 className="absolute rounded-full"
                 style={{
@@ -405,7 +490,8 @@ const Landing = () => {
                   height: 300,
                   top: "-40%",
                   right: "-10%",
-                  background: "radial-gradient(circle, rgba(217,101,79,0.25) 0%, transparent 60%)",
+                  background:
+                    "radial-gradient(circle, rgba(217,101,79,0.25) 0%, transparent 60%)",
                 }}
               />
               <div
@@ -415,15 +501,28 @@ const Landing = () => {
                   height: 200,
                   bottom: "-30%",
                   left: "-5%",
-                  background: "radial-gradient(circle, rgba(232,198,174,0.2) 0%, transparent 60%)",
+                  background:
+                    "radial-gradient(circle, rgba(232,198,174,0.2) 0%, transparent 60%)",
                 }}
               />
 
               <div className="relative z-10">
-                <Sparkles className="w-10 h-10 mx-auto mb-5" style={{ color: "var(--swatch-cedar-grove)" }} />
+                <div className="mb-6">
+                  <span
+                    className="logo-text"
+                    style={{ fontSize: "clamp(2.5rem, 6vw, 4rem)", lineHeight: 1 }}
+                  >
+                    <span className="go" style={{ color: "var(--swatch-cedar-grove)" }}>
+                      Go
+                    </span>
+                    <span className="two" style={{ color: "var(--swatch-cream-light)" }}>
+                      Two
+                    </span>
+                  </span>
+                </div>
 
                 <h2
-                  className="text-3xl md:text-4xl font-bold mb-4"
+                  className="text-2xl md:text-4xl font-bold mb-4"
                   style={{
                     fontFamily: "'Playfair Display', serif",
                     color: "var(--swatch-cream-light)",
@@ -434,7 +533,10 @@ const Landing = () => {
                   gesture count?
                 </h2>
 
-                <p className="text-base mb-8 opacity-80" style={{ color: "var(--swatch-cream-light)" }}>
+                <p
+                  className="text-base mb-8 opacity-80"
+                  style={{ color: "var(--swatch-cream-light)" }}
+                >
                   Join couples who never have to guess again.
                 </p>
 
@@ -457,7 +559,10 @@ const Landing = () => {
         </section>
 
         {/* Footer */}
-        <footer className="py-10 text-center" style={{ borderTop: "1px solid rgba(232,198,174,0.3)" }}>
+        <footer
+          className="py-10 text-center"
+          style={{ borderTop: "1px solid rgba(232,198,174,0.3)" }}
+        >
           <span className="logo-text text-2xl">
             <span className="go">Go</span>
             <span className="two">Two</span>
