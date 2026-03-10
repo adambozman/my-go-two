@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Star, Coffee, Ruler, Tag, Gem, ShoppingCart, Heart } from "lucide-react";
+import { ArrowRight, Sparkles, Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 const timelineSteps = [
