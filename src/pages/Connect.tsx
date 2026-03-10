@@ -101,14 +101,14 @@ const Connect = () => {
                 <Users className="w-9 h-9" style={{ color: "var(--swatch-viridian-odyssey)" }} />
               </div>
               <h1
-                className="text-3xl md:text-4xl font-bold mb-2"
+                className="text-4xl md:text-5xl font-bold mb-3"
                 style={{ fontFamily: "'Playfair Display', serif", color: "var(--swatch-viridian-odyssey)" }}
               >
                 You've Been Invited
               </h1>
-              <p className="text-sm" style={{ color: "var(--swatch-antique-coin)" }}>
+              <p className="text-base md:text-lg" style={{ color: "var(--swatch-antique-coin)" }}>
                 Someone wants to connect with you on{" "}
-                <span className="logo-text text-sm">
+                <span className="logo-text text-base md:text-lg">
                   <span className="go">Go</span>
                   <span className="two">Two</span>
                 </span>
