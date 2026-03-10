@@ -7,6 +7,11 @@ import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
+import quickSizesImg from "@/assets/dashboard/quick-their-sizes.jpg";
+import quickSavedImg from "@/assets/dashboard/quick-saved-items.jpg";
+import quickBrandsImg from "@/assets/dashboard/quick-their-brands.jpg";
+import quickGiftImg from "@/assets/dashboard/quick-gift-ideas.jpg";
+
 /* ═══════════════════════════════════════════
    STORE / BRAND DATA
    ═══════════════════════════════════════════ */
@@ -138,10 +143,10 @@ function getGiftImage(name: string, i: number): string {
 }
 
 const quickActionData = [
-  { label: "Buy Them a Gift", desc: "Filtered by what they actually want", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=600&h=800&fit=crop&q=80" },
-  { label: "Their Sizes", desc: "Clothing, shoes, ring — no guessing", route: "/dashboard/my-gotwo", img: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=600&h=800&fit=crop&q=80" },
-  { label: "Their Saved Items", desc: "Things they've mentioned wanting", route: "/dashboard/my-lists", img: "https://images.unsplash.com/photo-1483181957632-8bda974cbc91?w=600&h=800&fit=crop&q=80" },
-  { label: "Plan a Date", desc: "Places and activities they'd love", route: "/dashboard/templates", img: "https://images.unsplash.com/photo-1529903384028-929ae5deeae3?w=600&h=800&fit=crop&q=80" },
+  { label: "Their Sizes", desc: "Clothing, shoes, ring — no guessing", route: "/dashboard/my-gotwo", img: quickSizesImg },
+  { label: "Their Saved Items", desc: "Things they've mentioned wanting", route: "/dashboard/my-lists", img: quickSavedImg },
+  { label: "Their Brands", desc: "The stores and labels they love", route: "/dashboard/my-gotwo", img: quickBrandsImg },
+  { label: "Gift Ideas", desc: "Curated picks based on their taste", route: "/dashboard/recommendations", img: quickGiftImg },
 ];
 
 /* ── Brand logo component ── */
@@ -464,12 +469,7 @@ const DashboardHome = () => {
               className="relative overflow-hidden text-left group"
               style={{ borderRadius: "1.4rem", height: i === 0 ? 200 : 160 }}>
               <img src={img} alt={label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-              <div className="absolute inset-0" style={{
-                background: "linear-gradient(180deg, transparent 30%, rgba(47,95,109,0.85) 100%)",
-              }} />
-              <div className="absolute inset-0" style={{
-                background: "radial-gradient(ellipse at 80% 10%, rgba(232,198,174,0.15) 0%, transparent 50%)",
-              }} />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
               <div className="relative z-10 h-full flex flex-col justify-end p-5">
                 <h3 className="text-lg font-bold leading-tight drop-shadow-lg"
                   style={{ fontFamily: "'Playfair Display', serif", color: "#f6e2d4" }}>
