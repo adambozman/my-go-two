@@ -88,33 +88,6 @@ const Landing = () => {
       </div>
 
       <div className="relative z-10">
-        {/* Nav — no logo, just auth buttons */}
-        <nav className="flex items-center justify-end px-8 md:px-16 py-5">
-          <div className="flex items-center gap-4">
-            <Link to="/login">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-sm font-semibold"
-                style={{ color: "var(--swatch-viridian-odyssey)" }}
-              >
-                Log in
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button
-                size="sm"
-                className="rounded-full px-6 text-sm font-bold border-0"
-                style={{
-                  background: "var(--swatch-viridian-odyssey)",
-                  color: "var(--swatch-cream-light)",
-                }}
-              >
-                Get Started Free
-              </Button>
-            </Link>
-          </div>
-        </nav>
 
         {/* Hero */}
         <section className="max-w-6xl mx-auto px-8 md:px-16 pt-10 md:pt-20 pb-12 text-center">
