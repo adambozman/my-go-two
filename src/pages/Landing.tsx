@@ -129,11 +129,10 @@ const Landing = () => {
             {/* Video frame — exact specs */}
             <motion.div
               {...riseIn(0.24)}
-              className="w-full"
-              style={{ marginBottom: 36 }}
+              style={{ width: "100%", maxWidth: 560, marginBottom: 36 }}
             >
               <div
-                className="w-full flex flex-col items-center justify-center gap-3 relative overflow-hidden"
+                className="w-full flex flex-col items-center justify-center gap-3.5 relative overflow-hidden"
                 style={{
                   aspectRatio: "16/9",
                   background: "rgba(255,255,255,0.70)",
@@ -142,33 +141,31 @@ const Landing = () => {
                   boxShadow: "0 8px 48px rgba(45,104,112,0.10), inset 0 1px 0 rgba(255,255,255,0.90)",
                 }}
               >
-                {/* Shine overlay */}
                 <div className="absolute inset-0 pointer-events-none" style={{
                   background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%)",
                 }} />
                 <div
-                  className="flex items-center justify-center cursor-pointer hover:scale-110 transition-transform relative z-10"
+                  className="flex items-center justify-center cursor-pointer hover:scale-105 transition-transform relative z-10"
                   style={{
-                    width: 56,
-                    height: 56,
+                    width: 52,
+                    height: 52,
                     borderRadius: "50%",
                     background: "#d4543a",
-                    boxShadow: "0 4px 20px rgba(212, 84, 58, 0.30)",
+                    boxShadow: "0 4px 24px rgba(212,84,58,0.38)",
                   }}
                 >
-                  <svg viewBox="0 0 24 24" fill="none" style={{ width: 24, height: 24, marginLeft: 2, color: "#fff" }}>
+                  <svg viewBox="0 0 24 24" fill="none" style={{ width: 22, height: 22, marginLeft: 3, color: "#fff" }}>
                     <path d="M8 5.14v14.72a1 1 0 001.5.86l11-7.36a1 1 0 000-1.72l-11-7.36A1 1 0 008 5.14z" fill="currentColor" />
                   </svg>
                 </div>
                 <span className="relative z-10" style={{
-                  fontFamily: "'Jost', sans-serif",
-                  fontWeight: 500,
                   fontSize: 11,
-                  color: "#8a9ea4",
-                  letterSpacing: "0.3em",
+                  letterSpacing: "2.5px",
                   textTransform: "uppercase" as const,
+                  color: "#8a9ea4",
+                  fontWeight: 400,
                 }}>
-                  See It In Action
+                  See it in action
                 </span>
               </div>
             </motion.div>
