@@ -90,7 +90,7 @@ const Landing = () => {
       <div className="relative z-10">
 
         {/* Hero */}
-        <section className="max-w-5xl mx-auto px-6 md:px-12 pt-10 md:pt-16 pb-8 text-center min-h-[calc(100vh-80px)] flex flex-col justify-center">
+        <section className="max-w-5xl mx-auto px-6 md:px-12 pt-16 md:pt-24 pb-10 text-center min-h-screen flex flex-col justify-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
