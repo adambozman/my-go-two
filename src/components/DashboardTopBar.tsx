@@ -4,10 +4,8 @@ import GoTwoText from "@/components/GoTwoText";
 
 export function DashboardTopBar() {
   return (
-    <header className="flex items-center justify-between px-8 py-4">
-      <div className="card-design-neumorph px-4 py-2 flex items-center gap-2">
-        <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
-      </div>
+    <header className="flex items-center justify-between px-8 pt-6 pb-2">
+      <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
 
       <div className="flex items-center gap-4">
         <div className="relative">
