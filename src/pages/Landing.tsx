@@ -112,7 +112,7 @@ const Landing = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-xl md:text-3xl font-bold mb-6 leading-snug"
+              className="text-xl md:text-3xl font-bold mb-3 leading-snug"
               style={{
                 fontFamily: "'Playfair Display', serif",
                 color: "var(--swatch-viridian-odyssey)",
@@ -123,6 +123,16 @@ const Landing = () => {
               <span style={{ color: "var(--swatch-cedar-grove)" }}>Never forget again.</span>
             </motion.h1>
 
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.35 }}
+              className="text-sm md:text-base mb-8"
+              style={{ color: "var(--swatch-antique-coin)" }}
+            >
+              One place for everything that matters to the people who matter most.
+            </motion.p>
+
             {/* Video placeholder */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -132,17 +142,25 @@ const Landing = () => {
               style={{ aspectRatio: "16/9" }}
             >
               <div
-                className="w-full h-full rounded-2xl flex items-center justify-center card-design-neumorph"
+                className="w-full h-full rounded-2xl flex flex-col items-center justify-center gap-3 card-design-neumorph"
                 style={{
                   background:
                     "linear-gradient(165deg, rgba(246,226,212,0.7) 0%, rgba(232,198,174,0.5) 100%)",
                 }}
               >
+                <div
+                  className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform"
+                  style={{ background: "var(--swatch-cedar-grove)" }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 ml-0.5" style={{ color: "var(--swatch-cream-light)" }}>
+                    <path d="M8 5.14v14.72a1 1 0 001.5.86l11-7.36a1 1 0 000-1.72l-11-7.36A1 1 0 008 5.14z" fill="currentColor" />
+                  </svg>
+                </div>
                 <span
-                  className="tracking-[0.4em] uppercase text-xs font-semibold"
+                  className="tracking-[0.3em] uppercase text-xs font-semibold"
                   style={{ color: "var(--swatch-antique-coin)" }}
                 >
-                  Video
+                  See It In Action
                 </span>
               </div>
             </motion.div>
@@ -182,6 +200,16 @@ const Landing = () => {
                 </Button>
               </a>
             </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 1 }}
+              className="text-xs mt-3"
+              style={{ color: "var(--swatch-antique-coin)", opacity: 0.7 }}
+            >
+              Free to start &nbsp;·&nbsp; No credit card required
+            </motion.p>
           </motion.div>
         </section>
 
