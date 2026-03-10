@@ -171,6 +171,7 @@ const Landing = () => {
                   See It In Action
                 </span>
               </div>
+              </div>
             </motion.div>
 
             {/* Buttons — exact specs */}
