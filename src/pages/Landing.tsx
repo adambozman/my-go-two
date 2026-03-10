@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Star, Coffee, Ruler, Tag, Gem, ShoppingCart, Heart } from "lucide-react";
+import { ArrowRight, Sparkles, Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 const timelineSteps = [
@@ -129,13 +129,13 @@ const Landing = () => {
             {/* Video frame — exact specs */}
             <motion.div
               {...riseIn(0.24)}
-              className="w-full px-4"
+              className="w-full"
               style={{ marginBottom: 36 }}
             >
-              <div style={{ width: "100%", maxWidth: 560, margin: "0 auto", aspectRatio: "16/9" }}>
               <div
-                className="w-full h-full flex flex-col items-center justify-center gap-3 relative overflow-hidden"
+                className="w-full flex flex-col items-center justify-center gap-3 relative overflow-hidden"
                 style={{
+                  aspectRatio: "16/9",
                   background: "rgba(255,255,255,0.70)",
                   border: "1px solid rgba(255,255,255,0.85)",
                   borderRadius: 16,
@@ -147,7 +147,7 @@ const Landing = () => {
                   background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%)",
                 }} />
                 <div
-                  className="flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+                  className="flex items-center justify-center cursor-pointer hover:scale-110 transition-transform relative z-10"
                   style={{
                     width: 56,
                     height: 56,
@@ -160,7 +160,7 @@ const Landing = () => {
                     <path d="M8 5.14v14.72a1 1 0 001.5.86l11-7.36a1 1 0 000-1.72l-11-7.36A1 1 0 008 5.14z" fill="currentColor" />
                   </svg>
                 </div>
-                <span style={{
+                <span className="relative z-10" style={{
                   fontFamily: "'Jost', sans-serif",
                   fontWeight: 500,
                   fontSize: 11,
@@ -170,7 +170,6 @@ const Landing = () => {
                 }}>
                   See It In Action
                 </span>
-              </div>
               </div>
             </motion.div>
 
@@ -295,90 +294,6 @@ const Landing = () => {
             </motion.div>
 
           </motion.div>
-        </section>
-
-        {/* Section divider */}
-        <div
-          className="mx-auto max-w-3xl h-px"
-          style={{
-            background: "linear-gradient(90deg, transparent, rgba(45, 104, 112, 0.15) 20%, rgba(45, 104, 112, 0.15) 80%, transparent)",
-          }}
-        />
-
-        {/* What You Can Save */}
-        <section
-          className="relative"
-          style={{
-            padding: "72px 52px",
-            background: "linear-gradient(180deg, var(--swatch-sand) 0%, var(--swatch-sand-mid) 100%)",
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 0.68, 0, 1.2] as [number, number, number, number] }}
-            viewport={{ once: true, margin: "-15%" }}
-            className="text-center"
-          >
-            <p className="text-sm tracking-[0.25em] uppercase mb-2" style={{ color: "var(--swatch-cedar-grove)", fontWeight: 500, fontSize: 10.5 }}>
-              Everything that matters
-            </p>
-            <h2 className="text-3xl md:text-4xl font-semibold mb-3" style={{ color: "var(--swatch-viridian-odyssey)", lineHeight: 1.15 }}>
-              One place for all of it
-            </h2>
-            <p className="mx-auto mb-12" style={{ fontSize: 14, fontWeight: 300, color: "var(--swatch-antique-coin)", maxWidth: 380, lineHeight: 1.7 }}>
-              Stop asking. Stop guessing. Stop the friction. Every preference, saved once — accessible to whoever you choose.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mx-auto">
-            {[
-              { icon: Coffee, title: "Coffee & Drinks Order", desc: "Never stare at the menu on their behalf again. Their exact order, always ready.", example: "Oat latte · medium · one pump vanilla · no sugar", featured: true },
-              { icon: Ruler, title: "Clothing Sizes", desc: "Top, pants, shoes, dress. Every size, exactly right.", example: "Top: S · Jeans: 27 · Shoes: 7.5" },
-              { icon: Tag, title: "Favorite Brands", desc: "Shampoo, deodorant, skincare. The exact brand and version they love.", example: "Pantene Moisture Renewal · Dove sensitive" },
-              { icon: Gem, title: "Ring & Jewelry Size", desc: "For the moments that really count. No more secret measuring.", example: "Ring: size 6.5 · Bracelet: small" },
-              { icon: ShoppingCart, title: "Grocery Preferences", desc: "Their brand of everything. Milk, snacks, toiletries — no substitutions.", example: "Almond milk · Whole Foods granola" },
-              { icon: Heart, title: "Date Night Ideas", desc: "Restaurants they've mentioned. Experiences they want. Saved before you forget.", example: "Wants to try: Nobu · spa day · cooking class" },
-            ].map((card, i) => (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.06, ease: [0.22, 0.68, 0, 1.2] as [number, number, number, number] }}
-                viewport={{ once: true, margin: "-10%" }}
-                className={`flex items-start gap-4 p-5 transition-all duration-200 hover:-translate-y-0.5 ${card.featured ? 'card-design-ai md:col-span-2' : 'card-design-glass'}`}
-                style={{ cursor: "default" }}
-              >
-                <div
-                  className="flex-shrink-0 w-9 h-9 rounded-[10px] flex items-center justify-center"
-                  style={{ background: card.featured ? "rgba(212,84,58,0.1)" : "rgba(45,104,112,0.1)" }}
-                >
-                  <card.icon className="w-[18px] h-[18px]" style={{ color: card.featured ? "var(--swatch-cedar-grove)" : "var(--swatch-teal)", strokeWidth: 1.5 }} />
-                </div>
-                <div>
-                  <h4 className="text-base font-semibold mb-1" style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Cormorant Garamond', serif", fontSize: 17 }}>
-                    {card.title}
-                  </h4>
-                  <p style={{ fontSize: 12.5, color: "var(--swatch-antique-coin)", fontWeight: 300, lineHeight: 1.5, marginBottom: 6 }}>
-                    {card.desc}
-                  </p>
-                  <span
-                    className="inline-block rounded-md text-xs italic"
-                    style={{
-                      padding: "3px 9px",
-                      fontSize: 11.5,
-                      fontWeight: 400,
-                      letterSpacing: "0.2px",
-                      background: card.featured ? "rgba(212,84,58,0.08)" : "rgba(45,104,112,0.08)",
-                      color: card.featured ? "var(--swatch-cedar-grove)" : "var(--swatch-antique-coin)",
-                    }}
-                  >
-                    {card.example}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
         </section>
 
         {/* Section divider */}
