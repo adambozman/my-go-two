@@ -97,18 +97,8 @@ const MyGoTwo = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[] } | null>(null);
-  const [hasPartner, setHasPartner] = useState<boolean | null>(null);
 
-  // Check for connected partner
-  useEffect(() => {
-    if (!user) return;
-    supabase.from("couples").select("id")
-      .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`)
-      .eq("status", "accepted")
-      .then(({ data }) => {
-        setHasPartner(!!(data && data.length > 0));
-      });
-  }, [user]);
+
 
   // Reopen cover flow if navigating back from list detail
   useEffect(() => {
@@ -235,30 +225,7 @@ const MyGoTwo = () => {
         My <GoTwoText className="text-2xl" />
       </h1>
 
-      {/* No partner empty state */}
-      {hasPartner === false && (
-        <div className="flex flex-col items-center justify-center text-center py-16 px-6">
-          <h2 className="text-3xl font-semibold mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", color: 'var(--swatch-viridian-odyssey)' }}>
-            No one here yet
-          </h2>
-          <p className="text-muted-foreground max-w-sm mb-8" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 300 }}>
-            You don't have anyone connected to your lists yet. Create your own or send someone a link to get started.
-          </p>
-          <div className="flex gap-3">
-            <Button className="rounded-full px-6" onClick={() => navigate("/dashboard/collaborations")}
-              style={{ background: 'var(--swatch-viridian-odyssey)', color: 'var(--swatch-cream-light)' }}>
-              Send a Link
-            </Button>
-            <Button variant="outline" className="rounded-full px-6" onClick={openCreate}
-              style={{ borderColor: 'var(--swatch-viridian-odyssey)', color: 'var(--swatch-viridian-odyssey)' }}>
-              Create Your Own
-            </Button>
-          </div>
-        </div>
-      )}
 
-      {hasPartner !== false && (
-      <>
 
       {/* Templates by Category - Cover Flows */}
       <div className="mb-10">
@@ -302,8 +269,8 @@ const MyGoTwo = () => {
           </div>
         </button>
       </div>
-      </>
-      )}
+
+
 
       {/* Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
