@@ -258,19 +258,9 @@ const DashboardHome = () => {
   const firstName = displayName?.split(" ")[0] || "there";
   const partnerFirstName = partner?.displayName?.split(" ")[0] || "Partner";
 
-  const showData = partner || (personalization ? {
-    displayName: displayName || "You",
-    styles: personalization.style_keywords || [],
-    stores: personalization.recommended_stores || [],
-    brands: personalization.recommended_brands || [],
-    giftCategories: personalization.gift_categories || [],
-    priceTier: personalization.price_tier || "",
-    persona: personalization.persona_summary || "",
-    birthday: ownBirthday,
-    anniversary: ownAnniversary,
-  } : null);
-
-  const showDataName = hasPartner ? partnerFirstName : firstName;
+  // Dashboard is entirely partner-centric — only show partner data
+  const showData = partner;
+  const showDataName = partnerFirstName;
   const allStoresAndBrands = showData ? [...showData.stores, ...showData.brands] : [];
 
   const triggers: { label: string; urgency: "urgent" | "soon"; days: number | null; action: () => void }[] = [];
