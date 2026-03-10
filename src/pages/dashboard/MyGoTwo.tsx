@@ -117,7 +117,8 @@ const MyGoTwo = () => {
     if (isMale && maleImageOverrides[name]) return maleImageOverrides[name];
     return templateImageMap[name] || "";
   };
-  const location = useLocation();
+
+
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState<string | null>(null);
