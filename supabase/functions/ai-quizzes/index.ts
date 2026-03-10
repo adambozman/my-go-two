@@ -32,25 +32,6 @@ serve(async (req) => {
       .eq("user_id", user.id)
       .single();
 
-    if (cached) {
-      const age = Date.now() - new Date(cached.generated_at).getTime();
-      if (age < SEVEN_DAYS_MS && Array.isArray(cached.quizzes) && cached.quizzes.length > 0) {
-        // Filter out already-answered quizzes
-        const { data: prefs } = await supabase
-          .from("user_preferences")
-          .select("profile_answers")
-          .eq("user_id", user.id)
-          .single();
-        const profileAnswers = (prefs?.profile_answers as Record<string, any>) || {};
-        const unanswered = (cached.quizzes as any[]).filter((q: any) => !profileAnswers[q.id]);
-
-        return new Response(JSON.stringify({ quizzes: unanswered }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-    }
-
-    // Generate new quizzes
     const { data: prefs } = await supabase
       .from("user_preferences")
       .select("profile_answers, ai_personalization")
@@ -58,6 +39,21 @@ serve(async (req) => {
       .single();
 
     const profileAnswers = (prefs?.profile_answers as Record<string, any>) || {};
+
+    if (cached) {
+      const age = Date.now() - new Date(cached.generated_at).getTime();
+      if (age < SEVEN_DAYS_MS && Array.isArray(cached.quizzes) && cached.quizzes.length > 0) {
+        // Filter out categories where all questions are answered
+        const categories = cached.quizzes as any[];
+        const unanswered = categories.filter((cat: any) =>
+          cat.questions.some((q: any) => !profileAnswers[q.id])
+        );
+        return new Response(JSON.stringify({ categories: unanswered }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     const personalization = (prefs?.ai_personalization as any) || {};
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -70,7 +66,7 @@ serve(async (req) => {
       })
       .join("\n");
 
-    const prompt = `You are a lifestyle AI for GoTwo, a couples' preference-sharing app. 
+    const prompt = `You are a lifestyle AI for GoTwo, a couples' preference-sharing app.
 You are building a deep profile of this user to power personalized product and gift recommendations.
 
 Here is what we already know about this user:
@@ -81,19 +77,19 @@ Their style keywords: ${(personalization.style_keywords || []).join(", ") || "No
 Their brands: ${(personalization.recommended_brands || []).join(", ") || "None"}
 Their price tier: ${personalization.price_tier || "Unknown"}
 
-Generate 4-6 NEW quiz questions that will help us learn MORE about this person to improve product recommendations. 
-Focus on GAPS in our knowledge. For example:
-- If we don't know their sizes, ask about sizes
-- If we don't know their color preferences, ask about colors
-- If we don't know their scent preferences, ask about fragrances
-- If we don't know their tech preferences, ask about gadgets
-- If we know they like luxury, dig deeper into which luxury categories
-- Ask about specific product categories relevant to their style
+Generate exactly 5 CATEGORIES of questions. Each category should have 3-5 questions.
+The categories must map to one of: style, sizing, lifestyle, gifting, products.
 
-Each question should feel personal and relevant to what we already know.
-Do NOT repeat questions we've already answered.
+Focus on GAPS in knowledge. Do NOT repeat questions already answered.
 
-Use the provided tool to return the questions.`;
+CRITICAL RULES:
+- All text MUST be plain English only. No special characters, no unicode, no emoji, no Chinese/Japanese characters.
+- Keep question titles short (5-10 words).
+- Keep subtitles to one short sentence.
+- Option labels should be 1-4 words, plain English only.
+- Each question ID must be unique kebab-case.
+
+Use the provided tool to return the categories.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -102,52 +98,66 @@ Use the provided tool to return the questions.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [{ role: "user", content: prompt }],
         tools: [
           {
             type: "function",
             function: {
-              name: "generate_quizzes",
-              description: "Generate personalized quiz questions to deepen user profile",
+              name: "generate_quiz_categories",
+              description: "Generate categorized quiz questions to deepen user profile",
               parameters: {
                 type: "object",
                 properties: {
-                  quizzes: {
+                  categories: {
                     type: "array",
+                    description: "Array of quiz categories, each with multiple questions",
                     items: {
                       type: "object",
                       properties: {
-                        id: { type: "string", description: "unique kebab-case id like 'color-preference'" },
-                        title: { type: "string", description: "The question, 5-10 words" },
-                        subtitle: { type: "string", description: "Helpful context, 1 sentence" },
+                        id: { type: "string", description: "unique kebab-case category id like 'style-deep-dive'" },
+                        name: { type: "string", description: "Display name for the category, 2-4 words" },
                         category: { type: "string", enum: ["style", "sizing", "lifestyle", "gifting", "products"] },
-                        multi_select: { type: "boolean" },
-                        options: {
+                        questions: {
                           type: "array",
                           items: {
                             type: "object",
                             properties: {
-                              id: { type: "string" },
-                              label: { type: "string" },
+                              id: { type: "string", description: "unique kebab-case question id" },
+                              title: { type: "string", description: "The question, 5-10 words, plain English only" },
+                              subtitle: { type: "string", description: "One short sentence of context, plain English only" },
+                              type: { type: "string", enum: ["pill-select", "single-select"], description: "Question type" },
+                              multi_select: { type: "boolean" },
+                              options: {
+                                type: "array",
+                                items: {
+                                  type: "object",
+                                  properties: {
+                                    id: { type: "string" },
+                                    label: { type: "string", description: "1-4 words, plain English only" },
+                                  },
+                                  required: ["id", "label"],
+                                  additionalProperties: false,
+                                },
+                              },
                             },
-                            required: ["id", "label"],
+                            required: ["id", "title", "subtitle", "type", "multi_select", "options"],
                             additionalProperties: false,
                           },
                         },
                       },
-                      required: ["id", "title", "subtitle", "category", "multi_select", "options"],
+                      required: ["id", "name", "category", "questions"],
                       additionalProperties: false,
                     },
                   },
                 },
-                required: ["quizzes"],
+                required: ["categories"],
                 additionalProperties: false,
               },
             },
           },
         ],
-        tool_choice: { type: "function", function: { name: "generate_quizzes" } },
+        tool_choice: { type: "function", function: { name: "generate_quiz_categories" } },
       }),
     });
 
@@ -169,18 +179,18 @@ Use the provided tool to return the questions.`;
     const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall) throw new Error("No tool call in AI response");
 
-    const { quizzes } = JSON.parse(toolCall.function.arguments);
+    const { categories } = JSON.parse(toolCall.function.arguments);
 
     // Cache the generated quizzes
     await supabase
       .from("ai_generated_quizzes")
       .upsert({
         user_id: user.id,
-        quizzes,
+        quizzes: categories,
         generated_at: new Date().toISOString(),
       }, { onConflict: "user_id" });
 
-    return new Response(JSON.stringify({ quizzes }), {
+    return new Response(JSON.stringify({ categories }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
