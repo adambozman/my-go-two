@@ -491,13 +491,21 @@ const Landing = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 0.68, 0, 1.2] as [number, number, number, number] }}
               viewport={{ once: true, margin: "-15%" }}
-              className="relative overflow-hidden rounded-[2rem] p-12 md:p-16 text-center"
+              className="relative overflow-hidden rounded-[20px] p-12 md:p-16 text-center"
               style={{
-                background:
-                  "linear-gradient(145deg, var(--swatch-viridian-odyssey) 0%, var(--swatch-teal) 100%)",
+                background: "var(--swatch-viridian-odyssey)",
                 boxShadow: "0 24px 48px rgba(30, 74, 82, 0.3)",
               }}
             >
+              {/* Subtle orbs */}
+              <div className="absolute pointer-events-none" style={{
+                top: -60, right: -60, width: 240, height: 240, borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(212,84,58,0.18) 0%, transparent 70%)",
+              }} />
+              <div className="absolute pointer-events-none" style={{
+                bottom: -80, left: -50, width: 280, height: 280, borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)",
+              }} />
               <div className="relative z-10">
                 <div className="mb-6">
                   <span
