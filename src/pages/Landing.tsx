@@ -98,7 +98,7 @@ const Landing = () => {
             className="flex flex-col items-center"
           >
             {/* GoTwo branding */}
-            <div className="mb-4">
+            <div className="mb-6">
               <span
                 className="logo-text"
                 style={{ fontSize: "clamp(4rem, 12vw, 9rem)", lineHeight: 0.95 }}
