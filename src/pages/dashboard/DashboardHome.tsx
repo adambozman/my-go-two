@@ -7,6 +7,11 @@ import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
+import quickSizesImg from "@/assets/dashboard/quick-their-sizes.jpg";
+import quickSavedImg from "@/assets/dashboard/quick-saved-items.jpg";
+import quickBrandsImg from "@/assets/dashboard/quick-their-brands.jpg";
+import quickGiftImg from "@/assets/dashboard/quick-gift-ideas.jpg";
+
 /* ═══════════════════════════════════════════
    STORE / BRAND DATA
    ═══════════════════════════════════════════ */
