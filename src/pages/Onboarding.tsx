@@ -218,9 +218,6 @@ const Onboarding = () => {
             })}
           </div>
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-center px-6 max-w-lg">
-            <h1 className="text-3xl md:text-4xl font-bold text-primary mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Let Our AI Get to Know You
-            </h1>
             <p className="text-muted-foreground mb-8 text-base">
               We'll learn your brands, style, food, and gift preferences. So your significant other is always on point.
             </p>
