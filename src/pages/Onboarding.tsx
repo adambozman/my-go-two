@@ -526,7 +526,7 @@ const Onboarding = () => {
   if (phase === "category-questions" && selectedCategory) {
     const catName = onboardingCategories.find(c => c.id === selectedCategory)?.name || "";
     return (
-      <div className="landing-page min-h-screen flex flex-col">
+      <div className={`landing-page min-h-screen flex flex-col ${isEditMode ? "pb-24" : ""}`}>
         <div className="flex items-center justify-between px-6 pt-5 pb-3">
         <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
           <Button variant="ghost" size="sm" onClick={() => setPhase("category-picker")} className="text-muted-foreground">
