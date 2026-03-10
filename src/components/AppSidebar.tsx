@@ -9,7 +9,7 @@ const navItems = [
   { icon: Users, url: "/dashboard/collaborations", label: "Connections" },
   { icon: Sparkles, url: "/dashboard/recommendations", label: "Recommendations" },
   { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Questionnaires" },
-  { icon: SlidersHorizontal, url: "/onboarding?edit=true", label: "Preferences" },
+  { icon: SlidersHorizontal, url: "/dashboard/preferences", label: "Preferences" },
   { icon: Settings, url: "/dashboard/settings", label: "Settings" },
 ];
 
