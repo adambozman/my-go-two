@@ -368,8 +368,8 @@ const DashboardHome = () => {
               {/* Brand logos row */}
               {allStoresAndBrands.length > 0 && (
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] uppercase tracking-widest font-semibold shrink-0" style={{ color: "rgba(246,226,212,0.5)" }}>
-                    Shops at
+                    <span className="text-[10px] uppercase tracking-widest font-semibold shrink-0" style={{ color: "rgba(246,226,212,0.5)" }}>
+                    {showDataName} shops at
                   </span>
                   <div className="flex gap-2 overflow-x-auto pb-1">
                     {allStoresAndBrands.slice(0, 7).map((name) => (
