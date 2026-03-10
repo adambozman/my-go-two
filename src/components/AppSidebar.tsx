@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 const navItems = [
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
   { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
-  { icon: Users, url: "/dashboard/collaborations", label: "Collaborations" },
+  { icon: Users, url: "/dashboard/collaborations", label: "Connections" },
   { icon: Sparkles, url: "/dashboard/recommendations", label: "Recommendations" },
   { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Questionnaires" },
   { icon: SlidersHorizontal, url: "/onboarding?edit=true", label: "Preferences" },
