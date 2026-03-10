@@ -51,7 +51,7 @@ const Signup = () => {
 
   return (
     <div className="landing-page min-h-screen overflow-hidden relative">
-      <AuthWatercolor />
+      
 
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Nav */}
