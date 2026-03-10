@@ -621,7 +621,8 @@ const Onboarding = () => {
                         }`}
                         style={{
                           borderRadius: "1.2rem",
-                          ...(isSelected ? { borderColor: "hsl(196 40% 31%)" } : {}),
+                          ...(isSelected ? { borderColor: accent.solid, ringColor: accent.solid, outlineColor: accent.solid } : {}),
+                          ...(isSelected ? { boxShadow: `0 0 0 2px ${accent.solid}` } : {}),
                         }}
                       >
                         <div className="aspect-[4/5] overflow-hidden relative">
