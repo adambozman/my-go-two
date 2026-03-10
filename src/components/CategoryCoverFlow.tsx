@@ -76,7 +76,7 @@ const CategoryCoverFlow = ({ items, onSelect, disabled }: CategoryCoverFlowProps
                 }}
               >
                 <div
-                  className={`card-design-neumorph overflow-hidden rounded-2xl transition-shadow duration-300 ${
+                  className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
                     isActive ? "ring-2 ring-primary shadow-2xl" : ""
                   }`}
                   style={{ width: cardW, height: cardH }}
