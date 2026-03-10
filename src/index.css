@@ -99,12 +99,14 @@ html::-webkit-scrollbar {
 
   body {
     @apply text-foreground;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
     min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    color: hsl(196 40% 31%);
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--swatch-viridian-odyssey);
   }
 }
 
