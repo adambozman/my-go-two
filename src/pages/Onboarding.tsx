@@ -420,6 +420,7 @@ const Onboarding = () => {
             </motion.div>
           )}
         </div>
+        {isEditMode && <AppSidebar />}
       </div>
     );
   }
