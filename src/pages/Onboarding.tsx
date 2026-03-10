@@ -22,7 +22,7 @@ import { getStyleImage, getCategoryImage } from "@/data/genderImages";
 type Phase = "intro" | "profile" | "personalizing" | "category-picker" | "category-questions";
 
 const INTRO_IMAGES = [
-  { id: "1483985988355-763728e1935b", label: "Fashion" },
+  { id: "1469334031218-e382a71b716b", label: "Fashion" },
   { id: "1414235077428-338989a2e8c0", label: "Dining" },
   { id: "1509042239860-f550ce710b93", label: "Coffee" },
   { id: "1502602898657-3e91760cbb34", label: "Travel" },
