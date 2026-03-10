@@ -221,16 +221,23 @@ const Onboarding = () => {
             <h1 className="text-3xl md:text-4xl font-bold text-primary mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
               Let Our AI Get to Know You
             </h1>
-            <p className="text-muted-foreground mb-1 text-base">
-              We'll learn your brands, style, food, and gift preferences.
+            <p className="text-muted-foreground mb-8 text-base">
+              We'll learn your brands, style, food, and gift preferences. So your significant other is always on point.
             </p>
-            <p className="text-sm text-muted-foreground italic mb-8">
-              Every question reduces friction & improves accuracy ✨
-            </p>
-            <Button className="rounded-full h-13 px-12 text-base shadow-lg" onClick={() => setPhase("profile")}>
-              <Sparkles className="mr-2 h-5 w-5" />
-              Let's Go!
-            </Button>
+            <button
+              onClick={() => setPhase("profile")}
+              className="rounded-full h-13 px-12"
+              style={{
+                background: "#d4543a",
+                color: "#ffffff",
+                fontFamily: "'Jost', sans-serif",
+                fontWeight: 500,
+                fontSize: "13.5px",
+                boxShadow: "0 4px 20px rgba(212, 84, 58, 0.35)",
+              }}
+            >
+              Start My Profile →
+            </button>
             <div className="mt-4">
               <Button variant="ghost" className="text-muted-foreground text-sm" onClick={handleSkip}>
                 Skip for now
