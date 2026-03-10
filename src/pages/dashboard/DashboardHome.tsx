@@ -469,12 +469,7 @@ const DashboardHome = () => {
               className="relative overflow-hidden text-left group"
               style={{ borderRadius: "1.4rem", height: i === 0 ? 200 : 160 }}>
               <img src={img} alt={label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-              <div className="absolute inset-0" style={{
-                background: "linear-gradient(180deg, transparent 30%, rgba(47,95,109,0.85) 100%)",
-              }} />
-              <div className="absolute inset-0" style={{
-                background: "radial-gradient(ellipse at 80% 10%, rgba(232,198,174,0.15) 0%, transparent 50%)",
-              }} />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
               <div className="relative z-10 h-full flex flex-col justify-end p-5">
                 <h3 className="text-lg font-bold leading-tight drop-shadow-lg"
                   style={{ fontFamily: "'Playfair Display', serif", color: "#f6e2d4" }}>
