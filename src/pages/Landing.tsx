@@ -123,30 +123,17 @@ const Landing = () => {
             Free to start &nbsp;·&nbsp; No credit card required
           </motion.p>
 
-          {/* Social proof */}
-          <motion.div
-            {...riseIn(0.42)}
-            className="flex items-center"
-            style={{ marginTop: 36, padding: "12px 22px", background: "rgba(255,255,255,0.70)", border: "1px solid rgba(255,255,255,0.8)", borderRadius: 50, boxShadow: "0 2px 16px rgba(45,104,112,0.07)", gap: 14 }}
-          >
-            <div className="flex flex-col items-center" style={{ gap: 2 }}>
-              <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 600, color: "#1e4a52", lineHeight: 1 }}>500+</span>
-              <span style={{ fontSize: 10.5, color: "#8a9ea4", letterSpacing: "0.5px", fontWeight: 300 }}>Couples</span>
-            </div>
-            <div style={{ width: 1, height: 28, background: "rgba(45,104,112,0.15)" }} />
-            <div className="flex flex-col items-center" style={{ gap: 2 }}>
-              <div className="flex" style={{ gap: 1 }}>
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} style={{ width: 13, height: 13, color: "#d4543a", fill: "#d4543a" }} />
-                ))}
-              </div>
-              <span style={{ fontSize: 10.5, color: "#8a9ea4", letterSpacing: "0.5px", fontWeight: 300 }}>Rated 5 stars</span>
-            </div>
-            <div style={{ width: 1, height: 28, background: "rgba(45,104,112,0.15)" }} />
-            <div className="flex flex-col items-center" style={{ gap: 2 }}>
-              <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 600, color: "#1e4a52", lineHeight: 1 }}>0</span>
-              <span style={{ fontSize: 10.5, color: "#8a9ea4", letterSpacing: "0.5px", fontWeight: 300 }}>Wrong orders</span>
-            </div>
+          {/* Section intro */}
+          <motion.div {...riseIn(0.42)} className="flex flex-col items-center text-center" style={{ marginTop: 72 }}>
+            <p style={{ fontSize: 10.5, letterSpacing: 3, textTransform: "uppercase", color: "#d4543a", fontWeight: 500, marginBottom: 10 }}>
+              Everything that matters
+            </p>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 38, fontWeight: 600, color: "#1e4a52", lineHeight: 1.15, marginBottom: 14 }}>
+              One place for all of it
+            </h2>
+            <p style={{ fontSize: 14, fontWeight: 300, color: "#4a6068", maxWidth: 380, lineHeight: 1.7 }}>
+              Stop asking. Stop guessing. Stop the friction. Every preference, saved once — accessible to whoever you choose.
+            </p>
           </motion.div>
         </section>
 
