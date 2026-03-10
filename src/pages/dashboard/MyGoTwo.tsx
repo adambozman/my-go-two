@@ -264,7 +264,7 @@ const MyGoTwo = () => {
                 items={group.items.map((t) => ({
                   id: t.id,
                   name: t.name,
-                  image: templateImageMap[t.name] || "",
+                  image: getTemplateImage(t.name),
                   fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
                 }))}
                 onSelect={(id) => {
