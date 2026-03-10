@@ -367,33 +367,31 @@ const Onboarding = () => {
                   }}
                 >
                   <div
-                    className={`card-design-neumorph overflow-hidden transition-shadow duration-300 ${
+                    className={`overflow-hidden transition-shadow duration-300 ${
                       isActive ? "ring-2 ring-primary shadow-2xl" : ""
                     }`}
-                    style={{ width: 210, height: 270, borderRadius: "1.4rem" }}
+                    style={{ width: 210, height: 280, borderRadius: "1.4rem" }}
                   >
-                    <div className="h-[175px] overflow-hidden relative">
+                    <div className="relative w-full h-full overflow-hidden">
                       <img
                         src={getCategoryImage(cat.id, selectedGender)}
                         alt={cat.name}
                         className="w-full h-full object-cover"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                       {isDone && (
-                        <div className="absolute inset-0 bg-primary/30 flex items-center justify-center">
-                          <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg">
-                            <Check className="w-6 h-6 text-primary-foreground" />
-                          </div>
+                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>
+                          <Check className="w-3.5 h-3.5 text-white" />
                         </div>
                       )}
-                    </div>
-                    <div className="p-3 text-center">
-                      
-                      <h3 className={`font-semibold text-sm ${isActive ? "text-primary" : "text-muted-foreground"}`}>
-                        {cat.name}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {isDone ? "Done" : `${catQCount} questions`}
-                      </p>
+                      <div className="absolute bottom-0 left-0 right-0 p-3.5">
+                        <h3 className="text-white font-semibold text-sm leading-tight drop-shadow" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px" }}>
+                          {cat.name}
+                        </h3>
+                        <p className="text-white/70 text-xs mt-0.5">
+                          {isDone ? "Done" : `${catQCount} questions`}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
