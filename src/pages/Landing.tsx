@@ -214,7 +214,7 @@ const Landing = () => {
             <motion.div
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 0.68, 0, 1.2] }}
+              transition={{ duration: 0.6, ease: [0.22, 0.68, 0, 1.2] as [number, number, number, number] }}
               viewport={{ once: true, margin: "-15%" }}
               className="text-center mb-20"
             >
