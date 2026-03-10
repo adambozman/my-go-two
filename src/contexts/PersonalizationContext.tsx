@@ -52,7 +52,19 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
 
       if (data) {
         setProfileAnswers(data.profile_answers as any);
-        setPersonalization(data.ai_personalization as any);
+        // Sanitize corrupted unicode characters from AI personalization data
+        const raw = data.ai_personalization as any;
+        if (raw) {
+          const sanitize = (v: unknown): unknown => {
+            if (typeof v === "string") return v.replace(/[^\x20-\x7E\n\r\t]/g, "").replace(/,\s*$/, "").trim();
+            if (Array.isArray(v)) return v.map(sanitize).filter(Boolean);
+            if (v && typeof v === "object") {
+              return Object.fromEntries(Object.entries(v).map(([k, val]) => [k, sanitize(val)]));
+            }
+            return v;
+          };
+          setPersonalization(sanitize(raw) as Personalization);
+        }
       }
     } catch (e) {
       console.error("Failed to fetch personalization:", e);
