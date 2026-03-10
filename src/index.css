@@ -121,11 +121,10 @@ body {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: url("/images/linen-overlay.png");
+  background-image: url("/images/linen-texture-overlay.png");
   background-size: 300px 300px;
   background-repeat: repeat;
-  opacity: 0.35;
-  mix-blend-mode: overlay;
+  opacity: 0.5;
   pointer-events: none;
   z-index: 0;
 }
