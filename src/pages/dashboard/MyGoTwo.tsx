@@ -8,6 +8,7 @@ import { Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { usePersonalization } from "@/contexts/PersonalizationContext";
 import GoTwoText from "@/components/GoTwoText";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import { allTemplateSubtypes } from "@/data/templateSubtypes";
