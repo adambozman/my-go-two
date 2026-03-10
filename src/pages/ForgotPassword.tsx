@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowLeft } from "lucide-react";
-import AuthWatercolor from "@/components/AuthWatercolor";
+
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
