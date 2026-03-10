@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, useMotionValue, useTransform, AnimatePresence, PanInfo } from "framer-motion";
 import { Check, X, SkipForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,13 +30,7 @@ interface SwipeCardsProps {
   getImage?: (optionId: string) => string;
 }
 
-// Unsplash fallback images by category keyword
-const getCategoryFallbackImage = (label: string) => {
-  return `https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=500&fit=crop&q=80`;
-};
-
 const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: SwipeCardsProps) => {
-  // Flatten all options from all questions into swipeable items
   const [selections, setSelections] = useState<Record<string, string[]>>({});
   const [freeTextAnswers, setFreeTextAnswers] = useState<Record<string, string>>({});
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
@@ -46,7 +40,6 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
 
   const currentQuestion = questions[currentQuestionIdx];
   if (!currentQuestion) {
-    // All done
     const result: Record<string, string | string[]> = {};
     for (const q of questions) {
       if (q.type === "free-input") {
@@ -59,7 +52,7 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
     return null;
   }
 
-  // Free-input questions get their own card
+  // Free-input questions get a clean input card
   if (currentQuestion.type === "free-input") {
     return (
       <div className="flex flex-col items-center justify-center flex-1 px-6">
@@ -93,13 +86,21 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
     );
   }
 
-  // For single-select: show one card per option, selecting one auto-advances the question
-  // For multi-select (image-grid, pill-select): swipe through each option
   const options = currentQuestion.options || [];
   const currentOption = options[currentOptionIdx];
   const isSingleSelect = currentQuestion.type === "single-select" || currentQuestion.multiSelect === false;
   const totalOptions = options.length;
   const selectedForQuestion = selections[currentQuestion.id] || [];
+
+  const getOptionImage = (opt: SwipeOption): string | null => {
+    if (getImage) {
+      const img = getImage(opt.id);
+      if (img) return img;
+    }
+    if (opt.localImage) return opt.localImage;
+    if (opt.image) return `https://images.unsplash.com/photo-${opt.image}?w=400&h=500&fit=crop&q=80`;
+    return null;
+  };
 
   const handleSwipe = (direction: "left" | "right") => {
     if (isAnimating) return;
@@ -107,7 +108,6 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
     setExitDirection(direction);
 
     if (direction === "right" && currentOption) {
-      // Select this option
       setSelections(prev => {
         const current = prev[currentQuestion.id] || [];
         if (isSingleSelect) {
@@ -119,7 +119,6 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
         return prev;
       });
 
-      // For single-select, advance to next question immediately
       if (isSingleSelect) {
         setTimeout(() => {
           setCurrentQuestionIdx(i => i + 1);
@@ -131,7 +130,6 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
       }
     }
 
-    // Advance to next option or next question
     setTimeout(() => {
       if (currentOptionIdx < totalOptions - 1) {
         setCurrentOptionIdx(i => i + 1);
@@ -144,38 +142,8 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
     }, 300);
   };
 
-  const getOptionImage = (opt: SwipeOption): string | null => {
-    if (getImage) {
-      const img = getImage(opt.id);
-      if (img) return img;
-    }
-    if (opt.localImage) return opt.localImage;
-    if (opt.image) return `https://images.unsplash.com/photo-${opt.image}?w=400&h=500&fit=crop&q=80`;
-    return null;
-  };
-
   const optImage = currentOption ? getOptionImage(currentOption) : null;
   const hasImage = !!optImage;
-
-  // Progress across all questions
-  let totalItems = 0;
-  let completedItems = 0;
-  for (let i = 0; i < questions.length; i++) {
-    const q = questions[i];
-    if (q.type === "free-input") {
-      totalItems += 1;
-      if (i < currentQuestionIdx) completedItems += 1;
-    } else {
-      const optCount = q.options?.length || 0;
-      totalItems += optCount;
-      if (i < currentQuestionIdx) {
-        completedItems += optCount;
-      } else if (i === currentQuestionIdx) {
-        completedItems += currentOptionIdx;
-      }
-    }
-  }
-  const progress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
 
   return (
     <div className="flex flex-col items-center flex-1 px-4 pt-2">
@@ -207,7 +175,7 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
               width: 260,
               height: 360,
               borderRadius: "1.5rem",
-              opacity: 0.5,
+              opacity: 0.4,
               transform: "scale(0.92)",
             }}
           >
@@ -217,8 +185,9 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
               return nextImg ? (
                 <img src={nextImg} alt="" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center" style={{ background: "rgba(var(--swatch-gypsum-rose-rgb), 0.4)" }}>
-                  <span className="text-5xl">{nextOpt.emoji || "✨"}</span>
+                <div className="w-full h-full flex items-center justify-center"
+                  style={{ background: "linear-gradient(158deg, rgba(232,198,174,0.25), rgba(107,109,98,0.08))" }}>
+                  <span className="text-lg font-semibold text-muted-foreground">{nextOpt.label}</span>
                 </div>
               );
             })()}
@@ -251,7 +220,6 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
         </button>
         <button
           onClick={() => {
-            // Skip remaining options in this question
             setCurrentQuestionIdx(i => i + 1);
             setCurrentOptionIdx(0);
           }}
@@ -269,17 +237,16 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
         </button>
       </div>
 
-      {/* Selected count */}
       {selectedForQuestion.length > 0 && (
         <p className="text-xs text-muted-foreground mt-3">
-          {selectedForQuestion.length} selected for this question
+          {selectedForQuestion.length} selected
         </p>
       )}
     </div>
   );
 };
 
-// Individual swipeable card
+// Individual swipeable card — clean, professional, no emojis
 const SwipeableCard = ({
   option,
   image,
@@ -332,32 +299,59 @@ const SwipeableCard = ({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
-              <h3 className="text-white text-xl font-bold drop-shadow-lg">{option.label}</h3>
+              <h3 className="text-white text-xl font-bold drop-shadow-lg" style={{ fontFamily: "'Playfair Display', serif" }}>
+                {option.label}
+              </h3>
             </div>
           </>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center p-6" style={{ background: "linear-gradient(158deg, rgba(232,198,174,0.3), rgba(107,109,98,0.1))" }}>
-            <span className="text-6xl mb-4">{option.emoji || "✨"}</span>
-            <h3 className="text-xl font-bold text-primary">{option.label}</h3>
+          /* Clean typographic card — no emojis */
+          <div
+            className="w-full h-full flex flex-col items-center justify-center p-8"
+            style={{ background: "linear-gradient(158deg, rgba(232,198,174,0.22), rgba(107,109,98,0.08))" }}
+          >
+            <div
+              className="w-16 h-16 rounded-full mb-6 flex items-center justify-center"
+              style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.15)" }}
+            >
+              <span className="text-2xl font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
+                {option.label.charAt(0)}
+              </span>
+            </div>
+            <h3 className="text-xl font-bold text-primary text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+              {option.label}
+            </h3>
           </div>
         )}
 
         {/* YES overlay */}
         <motion.div
-          style={{ opacity: yesOpacity }}
-          className="absolute top-6 left-6 px-4 py-2 rounded-xl border-3 font-bold text-2xl uppercase tracking-wider"
-          {...{ style: { opacity: yesOpacity, borderWidth: 3, borderColor: "#4CAF50", color: "#4CAF50", transform: "rotate(-15deg)" } }}
+          className="absolute top-6 left-6 px-4 py-2 rounded-xl font-bold text-xl uppercase tracking-wider"
+          style={{
+            opacity: yesOpacity,
+            borderWidth: 3,
+            borderStyle: "solid",
+            borderColor: "hsl(var(--primary))",
+            color: "hsl(var(--primary))",
+            transform: "rotate(-15deg)",
+          }}
         >
           YES
         </motion.div>
 
         {/* NOPE overlay */}
         <motion.div
-          style={{ opacity: noOpacity }}
-          className="absolute top-6 right-6 px-4 py-2 rounded-xl font-bold text-2xl uppercase tracking-wider"
-          {...{ style: { opacity: noOpacity, borderWidth: 3, borderColor: "#FF5252", color: "#FF5252", transform: "rotate(15deg)" } }}
+          className="absolute top-6 right-6 px-4 py-2 rounded-xl font-bold text-xl uppercase tracking-wider"
+          style={{
+            opacity: noOpacity,
+            borderWidth: 3,
+            borderStyle: "solid",
+            borderColor: "var(--swatch-antique-coin)",
+            color: "var(--swatch-antique-coin)",
+            transform: "rotate(15deg)",
+          }}
         >
-          NOPE
+          PASS
         </motion.div>
 
         {isSelected && (
