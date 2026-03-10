@@ -617,9 +617,9 @@ const DashboardHome = () => {
           }} />
           <div className="relative p-8 text-center">
             <p className="text-sm text-muted-foreground mb-4">
-              Complete your profile so your partner knows exactly what you love.
+              Complete your profile so {hasPartner ? partnerFirstName : "your partner"} knows exactly what to get you.
             </p>
-            <Button className="rounded-full px-8" onClick={() => navigate("/onboarding")}>Set Up Profile</Button>
+            <Button className="rounded-full px-8" onClick={() => navigate("/onboarding")}>Set Up My Profile</Button>
           </div>
         </motion.div>
       )}
