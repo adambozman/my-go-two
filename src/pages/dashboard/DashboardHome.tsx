@@ -596,7 +596,7 @@ const DashboardHome = () => {
                 Never forget an important date
               </p>
               <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed max-w-md">
-                Add {hasPartner ? `${partnerFirstName}'s` : "your"} birthday and anniversary to get timely reminders.
+                Add {partnerFirstName}'s birthday and anniversary so you're never scrambling last minute.
               </p>
               <button onClick={() => navigate("/dashboard/settings")}
                 className="mt-3 flex items-center gap-1.5 text-xs font-bold text-primary hover:underline">
