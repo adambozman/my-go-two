@@ -17,7 +17,17 @@ const X_GAP = 180;
 const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
 import { getDefaultPhotoForLabel } from "@/data/stockPhotos";
 
-const DEFAULT_IMAGE = getDefaultPhotoForLabel("friend");
+// Local category images
+import imgBirthdays from "@/assets/stock/birthdays.jpg";
+import imgAnniversaries from "@/assets/stock/anniversaries.jpg";
+import imgHolidays from "@/assets/stock/holidays.jpg";
+import imgDateNights from "@/assets/stock/date-nights.jpg";
+import imgNewLists from "@/assets/stock/new-lists.jpg";
+import imgUpdatedCards from "@/assets/stock/updated-cards.jpg";
+import imgValentines from "@/assets/stock/valentines.jpg";
+import imgJustBecause from "@/assets/stock/just-because.jpg";
+import imgFirstDate from "@/assets/stock/first-date.jpg";
+import imgTrips from "@/assets/stock/trips.jpg";
 
 const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
   {
