@@ -64,9 +64,7 @@ const Questionnaires = () => {
   const { user } = useAuth();
   const { toast: uiToast } = useToast();
   const navigate = useNavigate();
-  const { profileAnswers, refetch } = usePersonalization();
-  const rawIdentity = profileAnswers?.identity;
-  const gender = (Array.isArray(rawIdentity) ? rawIdentity[0] : rawIdentity) as string || "neutral";
+  const { profileAnswers, gender, refetch } = usePersonalization();
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
