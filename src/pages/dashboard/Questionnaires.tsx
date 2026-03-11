@@ -13,7 +13,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SwipeCards from "@/components/SwipeCards";
-import { allTemplateSubtypes, templateSubcategories } from "@/data/templateSubtypes";
+import { allTemplateSubtypes, templateSubcategories, filterSubtypesByGender, filterSubcategoriesByGender } from "@/data/templateSubtypes";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import { useToast } from "@/hooks/use-toast";
 
