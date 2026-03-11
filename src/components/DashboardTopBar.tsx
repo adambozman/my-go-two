@@ -5,8 +5,17 @@ import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
+const taglines: Record<string, string> = {
+  "/dashboard": "The people who matter most.",
+  "/dashboard/my-go-two": "Everything about you, in one place.",
+  "/dashboard/recommendations": "AI-curated picks, just for you.",
+  "/dashboard/questionnaires": "The more you share, the better they know you.",
+  "/dashboard/search": "Find anything, for anyone.",
+};
+
 export function DashboardTopBar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
 
