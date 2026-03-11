@@ -405,16 +405,160 @@ const SettingsPage = () => {
         </div>
       )}
 
-      {/* Placeholder for other sections */}
-      {activeSection && activeSection !== "profile" && activeSection !== "connections" && (
+      {/* Notifications Section */}
+      {activeSection === "notifications" && (
         <div className="card-design-neumorph p-8">
           <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block">
             ← Back to Settings
           </button>
-          <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
-            {settingsItems.find(s => s.key === activeSection)?.title}
-          </h2>
-          <p className="text-muted-foreground">Coming soon.</p>
+          <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Notifications</h2>
+          <div className="space-y-5 max-w-md">
+            {[
+              { label: "Gift reminders", desc: "Get notified before birthdays and anniversaries", key: "gift_reminders" },
+              { label: "Partner activity", desc: "When your partner updates their preferences", key: "partner_activity" },
+              { label: "New recommendations", desc: "AI-powered suggestions for your partner", key: "recommendations" },
+              { label: "Email digests", desc: "Weekly summary of updates and ideas", key: "email_digests" },
+            ].map((item) => (
+              <div key={item.key} className="flex items-center justify-between py-2">
+                <div>
+                  <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
+                  <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:rounded-full after:h-5 after:w-5 after:transition-all" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
+                    <div className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-transform peer-checked:translate-x-full" style={{ background: 'var(--swatch-teal)' }} />
+                  </div>
+                </label>
+              </div>
+            ))}
+            <p className="text-xs pt-4" style={{ color: 'var(--swatch-text-light)' }}>
+              Notification preferences are saved automatically.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Sharing & Privacy Section */}
+      {activeSection === "privacy" && (
+        <div className="card-design-neumorph p-8">
+          <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block">
+            ← Back to Settings
+          </button>
+          <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Sharing & Privacy</h2>
+          <div className="space-y-5 max-w-md">
+            {[
+              { label: "Share preferences with partner", desc: "Let your connected partner see your style and size preferences", key: "share_prefs" },
+              { label: "Share wish list", desc: "Allow your partner to view your saved items", key: "share_wishlist" },
+              { label: "Visible profile", desc: "Let others find you by email when sending invites", key: "visible_profile" },
+            ].map((item) => (
+              <div key={item.key} className="flex items-center justify-between py-2">
+                <div>
+                  <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
+                  <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:rounded-full after:h-5 after:w-5 after:transition-all" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
+                    <div className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-transform peer-checked:translate-x-full" style={{ background: 'var(--swatch-teal)' }} />
+                  </div>
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Subscription Section */}
+      {activeSection === "subscription" && (
+        <div className="card-design-neumorph p-8">
+          <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block">
+            ← Back to Settings
+          </button>
+          <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Subscription</h2>
+          <div className="space-y-6 max-w-md">
+            <div className="p-5 rounded-2xl" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.25)', border: '1px solid rgba(var(--swatch-teal-rgb), 0.12)' }}>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Current Plan</p>
+                <span className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ background: 'rgba(var(--swatch-teal-rgb), 0.15)', color: 'var(--swatch-teal)' }}>Free</span>
+              </div>
+              <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>You're on the free plan. Upgrade to unlock unlimited lists, AI recommendations, and more.</p>
+            </div>
+            <Button className="rounded-full w-full" style={{ background: '#d4543a', color: 'white', boxShadow: '0 4px 20px rgba(212,84,58,0.3)' }}>
+              Upgrade Plan
+            </Button>
+            <div className="border-t pt-4" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }}>
+              <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>
+                Need to manage billing or cancel? Contact us at support@gotwo.app
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Help & Support Section */}
+      {activeSection === "help" && (
+        <div className="card-design-neumorph p-8">
+          <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block">
+            ← Back to Settings
+          </button>
+          <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Help & Support</h2>
+          <div className="space-y-3 max-w-md">
+            {[
+              { label: "FAQs", desc: "Common questions and quick answers", href: "#" },
+              { label: "Contact Support", desc: "Reach our team via email", href: "mailto:support@gotwo.app" },
+              { label: "Report a Bug", desc: "Let us know if something isn't working", href: "mailto:bugs@gotwo.app" },
+            ].map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-colors text-left group w-full hover:bg-secondary/30"
+                style={{ border: '1px solid rgba(var(--swatch-teal-rgb), 0.08)' }}
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
+                  <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
+                </div>
+                <ChevronRight className="h-4 w-4 shrink-0" style={{ color: 'var(--swatch-text-light)' }} />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* About GoTwo Section */}
+      {activeSection === "about" && (
+        <div className="card-design-neumorph p-8">
+          <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block">
+            ← Back to Settings
+          </button>
+          <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>About GoTwo</h2>
+          <div className="space-y-5 max-w-md">
+            <div className="flex items-center justify-between py-1">
+              <p className="text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Version</p>
+              <p className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>1.0.0</p>
+            </div>
+            <div className="border-t" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }} />
+            {[
+              { label: "Terms of Service", href: "#" },
+              { label: "Privacy Policy", href: "#" },
+              { label: "Open Source Licenses", href: "#" },
+            ].map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="flex items-center justify-between py-1 group"
+              >
+                <p className="text-sm group-hover:underline" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
+                <ChevronRight className="h-4 w-4" style={{ color: 'var(--swatch-text-light)' }} />
+              </a>
+            ))}
+            <div className="border-t pt-4" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }}>
+              <p className="text-xs text-center" style={{ color: 'var(--swatch-text-light)' }}>
+                Made with ♥ for couples who actually pay attention.
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
