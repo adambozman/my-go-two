@@ -18,6 +18,7 @@ import MyGoTwo from "./pages/dashboard/MyGoTwo";
 
 import Recommendations from "./pages/dashboard/Recommendations";
 import Questionnaires from "./pages/dashboard/Questionnaires";
+import Notifications from "./pages/dashboard/Notifications";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 
 import NotFound from "./pages/NotFound";
