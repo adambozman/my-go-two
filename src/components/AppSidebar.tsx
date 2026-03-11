@@ -9,8 +9,8 @@ const navItems = [
   { icon: Users, url: "/dashboard/collaborations", label: "Connections" },
   { icon: Sparkles, url: "/dashboard/recommendations", label: "Recommendations" },
   { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Know Me" },
-  { icon: Settings, url: "/dashboard/settings", label: "Settings" },
   { icon: Search, url: "/dashboard/search", label: "Search" },
+  { icon: Settings, url: "/dashboard/settings", label: "Settings" },
 ];
 
 export function AppSidebar() {
