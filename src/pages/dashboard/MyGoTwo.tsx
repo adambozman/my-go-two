@@ -204,6 +204,20 @@ const PreferencesSection = () => {
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
+      {/* Horizontal dots — scroll cards left/right */}
+      <div className="flex justify-center gap-1.5 mt-8">
+        {imageQuestions.map((q, i) => (
+          <button
+            key={`dot-${q.id}`}
+            onClick={() => setActiveIndex(i)}
+            className="w-2 h-2 rounded-full transition-all duration-300"
+            style={{
+              background: i === activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
+              transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 };
