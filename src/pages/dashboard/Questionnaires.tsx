@@ -66,7 +66,7 @@ const Questionnaires = () => {
   const navigate = useNavigate();
   const { profileAnswers, refetch } = usePersonalization();
   const rawIdentity = profileAnswers?.identity;
-  const gender = (Array.isArray(rawIdentity) ? rawIdentity[0] : rawIdentity) as string || "male";
+  const gender = (Array.isArray(rawIdentity) ? rawIdentity[0] : rawIdentity) as string || "neutral";
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
