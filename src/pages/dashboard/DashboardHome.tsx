@@ -334,7 +334,7 @@ const HomeCoverFlow = ({ cards }: { cards: PlaceholderCard[] }) => {
                       src={card.image}
                       alt={card.name}
                       className="w-full h-full object-cover"
-                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
                       loading="eager"
                       onError={(e) => {
                         const target = e.currentTarget;
