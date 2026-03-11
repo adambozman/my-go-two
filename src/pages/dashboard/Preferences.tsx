@@ -7,7 +7,9 @@ import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { getStyleImage } from "@/data/genderImages";
 
 const Preferences = () => {
-  const { profileAnswers, gender } = usePersonalization();
+  const { profileAnswers, gender, loading: genderLoading } = usePersonalization();
+  
+  if (genderLoading) return <p className="text-muted-foreground p-4">Loading...</p>;
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
