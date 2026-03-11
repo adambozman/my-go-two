@@ -15,35 +15,36 @@ const FLANK_W = 160;
 const FLANK_H = 260;
 const X_GAP = 180;
 const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
+import { getDefaultPhotoForLabel } from "@/data/stockPhotos";
 
-const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&h=625&fit=crop&q=80";
+const DEFAULT_IMAGE = getDefaultPhotoForLabel("friend");
 
 const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
   {
     id: "placeholder-wife",
     name: "Wife",
-    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&h=625&fit=crop&q=80",
+    image: getDefaultPhotoForLabel("wife"),
     email: "",
     status: "placeholder",
   },
   {
     id: "placeholder-sig-other",
     name: "Significant Other",
-    image: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&h=625&fit=crop&q=80",
+    image: getDefaultPhotoForLabel("significant other"),
     email: "",
     status: "placeholder",
   },
   {
     id: "placeholder-mom",
     name: "Mom",
-    image: "https://images.unsplash.com/photo-1462275646964-a0e3c11f18a6?w=500&h=625&fit=crop&q=80",
+    image: getDefaultPhotoForLabel("mom"),
     email: "",
     status: "placeholder",
   },
   {
     id: "placeholder-dad",
     name: "Dad",
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=500&h=625&fit=crop&q=80",
+    image: getDefaultPhotoForLabel("dad"),
     email: "",
     status: "placeholder",
   },
