@@ -50,13 +50,13 @@ export function DashboardTopBar() {
   return (
     <header className="px-8" style={{ paddingTop: 28, paddingBottom: 0 }}>
       <div className="flex items-center justify-between gap-4">
-        <GoTwoText className="text-[48px] [&_.two]:text-[60px] shrink-0" />
+        <GoTwoText className="text-[58px] [&_.two]:text-[72px] shrink-0" />
 
         <p
           className="flex-1 text-center italic truncate"
           style={{
             fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 32,
+            fontSize: 26,
             fontWeight: 500,
             letterSpacing: "0.02em",
             color: "#2D6870",
