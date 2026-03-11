@@ -361,7 +361,7 @@ const MyGoTwo = () => {
         />
       ) : (
         <div className="h-full">
-          {loading ? (
+          {(loading || genderLoading) ? (
             <p className="text-muted-foreground p-4">Loading templates...</p>
           ) : (
             <SnapScrollLayout
