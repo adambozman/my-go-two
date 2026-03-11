@@ -417,15 +417,19 @@ const MyGoTwo = () => {
           <div className="mb-10">
             <button
               onClick={openCreate}
-              className="card-design-neumorph w-full rounded-2xl overflow-hidden transition-transform hover:scale-[1.01] active:scale-[0.99]"
+              className="w-full rounded-2xl overflow-hidden transition-transform hover:scale-[1.01] active:scale-[0.99]"
+              style={{
+                background: "linear-gradient(135deg, var(--swatch-teal-dark), var(--swatch-teal))",
+                boxShadow: "0 8px 24px rgba(45, 104, 112, 0.25)",
+              }}
             >
               <div className="flex items-center gap-4 px-6 py-5">
-                <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(45, 104, 112, 0.1)" }}>
-                  <Sparkles className="w-5 h-5" style={{ color: "var(--swatch-teal)" }} />
+                <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.15)" }}>
+                  <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <h3 className="font-semibold text-base" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal-dark)" }}>Start from Scratch</h3>
-                  <p className="text-muted-foreground text-xs mt-0.5">Create a custom list with your own fields</p>
+                  <h3 className="font-semibold text-white text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Start from Scratch</h3>
+                  <p className="text-white/70 text-xs mt-0.5">Create a custom list with your own fields</p>
                 </div>
                 <ChevronRight className="ml-auto h-5 w-5 text-muted-foreground/50 flex-shrink-0" />
               </div>
