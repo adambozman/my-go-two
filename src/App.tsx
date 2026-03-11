@@ -19,7 +19,7 @@ import Collaborations from "./pages/dashboard/Collaborations";
 import Recommendations from "./pages/dashboard/Recommendations";
 import Questionnaires from "./pages/dashboard/Questionnaires";
 import SettingsPage from "./pages/dashboard/SettingsPage";
-import Preferences from "./pages/dashboard/Preferences";
+
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 
