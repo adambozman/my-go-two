@@ -19,7 +19,19 @@ interface Couple {
   invitee_email: string;
   status: string;
   created_at: string;
+  display_label: string | null;
 }
+
+const SHARING_CATEGORIES = [
+  { key: "sizes", label: "Sizes", desc: "Clothing & shoe sizes" },
+  { key: "brands", label: "Brands", desc: "Favorite brands" },
+  { key: "saved_items", label: "Saved Items", desc: "Bookmarked products" },
+  { key: "food_preferences", label: "Food Preferences", desc: "Dietary info & favorites" },
+  { key: "gift_ideas", label: "Gift Ideas", desc: "Curated gift suggestions" },
+  { key: "wish_list", label: "Wish List", desc: "Items they want" },
+  { key: "occasions", label: "Occasions", desc: "Birthdays, anniversaries" },
+  { key: "memories", label: "Memories", desc: "Shared moments & milestones" },
+] as const;
 
 const SettingsPage = () => {
   const { user } = useAuth();
