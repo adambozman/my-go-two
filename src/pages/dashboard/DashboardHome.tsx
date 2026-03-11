@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { ChevronRight, UserPlus, CalendarHeart, AlertCircle, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import SnapScrollLayout from "@/components/SnapScrollLayout";
 
 import quickSizesImg from "@/assets/dashboard/quick-their-sizes.jpg";
 import quickSavedImg from "@/assets/dashboard/quick-saved-items.jpg";
@@ -299,150 +300,139 @@ const DashboardHome = () => {
   const containerVariant = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.07 } } };
   const itemVariant = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
 
-  return (
-    <motion.div className="max-w-4xl space-y-10 pb-12"
-      variants={containerVariant} initial="hidden" animate="show">
+  const sections: { id: string; label: string; content: ReactNode }[] = [];
 
-      {/* ══════════════════════════════════════
-         HERO — PARTNER SNAPSHOT
-         ══════════════════════════════════════ */}
-
-      {showData && (
-        <motion.div variants={itemVariant} className="relative overflow-hidden" style={{ borderRadius: "1.8rem", minHeight: 340 }}>
-          {/* Background image */}
-          <div className="absolute inset-0">
-            <img
-              src={allStoresAndBrands.length > 0 ? getStoreImage(allStoresAndBrands[0], 0) : fallbackStoreImgs[0]}
-              alt="" className="w-full h-full object-cover" loading="eager"
-            />
-            <div className="absolute inset-0" style={{
-              background: "linear-gradient(160deg, rgba(47,95,109,0.92) 0%, rgba(47,95,109,0.7) 40%, rgba(217,101,79,0.5) 100%)",
-            }} />
-            <div className="absolute inset-0" style={{
-              background: "radial-gradient(ellipse at 70% 20%, rgba(232,198,174,0.25) 0%, transparent 60%)",
-            }} />
-          </div>
-
-          {/* Content */}
-          <div className="relative z-10 p-8 sm:p-10 flex flex-col justify-between" style={{ minHeight: 340 }}>
-            <div>
-              <motion.p
-                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-                 className="text-xs uppercase tracking-[0.2em] font-semibold mb-2"
-                style={{ color: "rgba(246,226,212,0.7)" }}
-              >
-                {showDataName}'s Snapshot
-              </motion.p>
-              <motion.h1
-                initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
-                className="text-4xl sm:text-5xl font-bold leading-tight"
-                style={{ fontFamily: "'Playfair Display', serif", color: "#f6e2d4" }}
-              >
-                {showData.displayName}
-              </motion.h1>
-              {showData.persona && (
+  // Hero section
+  if (showData) {
+    sections.push({
+      id: "snapshot",
+      label: `${showDataName}'s Snapshot`,
+      content: (
+        <div className="space-y-6 max-w-4xl mx-auto">
+          <motion.div variants={itemVariant} className="relative overflow-hidden" style={{ borderRadius: "1.8rem", minHeight: 300 }}>
+            <div className="absolute inset-0">
+              <img
+                src={allStoresAndBrands.length > 0 ? getStoreImage(allStoresAndBrands[0], 0) : fallbackStoreImgs[0]}
+                alt="" className="w-full h-full object-cover" loading="eager"
+              />
+              <div className="absolute inset-0" style={{
+                background: "linear-gradient(160deg, rgba(47,95,109,0.92) 0%, rgba(47,95,109,0.7) 40%, rgba(217,101,79,0.5) 100%)",
+              }} />
+              <div className="absolute inset-0" style={{
+                background: "radial-gradient(ellipse at 70% 20%, rgba(232,198,174,0.25) 0%, transparent 60%)",
+              }} />
+            </div>
+            <div className="relative z-10 p-8 sm:p-10 flex flex-col justify-between" style={{ minHeight: 300 }}>
+              <div>
                 <motion.p
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-                  className="mt-3 text-sm max-w-md leading-relaxed italic"
-                  style={{ color: "rgba(246,226,212,0.65)" }}
+                  initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
+                  className="text-xs uppercase tracking-[0.2em] font-semibold mb-2"
+                  style={{ color: "rgba(246,226,212,0.7)" }}
                 >
-                  "{showData.persona}"
+                  {showDataName}'s Snapshot
                 </motion.p>
-              )}
-            </div>
-
-            <div className="mt-6 space-y-5">
-              {/* Style tags */}
-              {showData.styles.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {showData.styles.map((s) => (
-                    <span key={s} className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md"
-                      style={{ background: "rgba(255,255,255,0.15)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.2)" }}>
-                      {s}
-                    </span>
-                  ))}
-                  {showData.priceTier && (
-                    <span className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md"
-                      style={{ background: "rgba(217,101,79,0.35)", color: "#f6e2d4", border: "1px solid rgba(217,101,79,0.4)" }}>
-                      {priceTierLabels[showData.priceTier] || showData.priceTier}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Brand logos row */}
-              {allStoresAndBrands.length > 0 && (
-                <div className="flex items-center gap-3">
-                    <span className="text-[10px] uppercase tracking-widest font-semibold shrink-0" style={{ color: "rgba(246,226,212,0.5)" }}>
-                    {showDataName} shops at
-                  </span>
-                  <div className="flex gap-2 overflow-x-auto pb-1">
-                    {allStoresAndBrands.slice(0, 7).map((name) => (
-                      <a key={name} href={getStoreDomain(name)} target="_blank" rel="noopener noreferrer"
-                        className="shrink-0 hover:scale-110 active:scale-95 transition-transform">
-                        <BrandLogo name={name} size={26} />
-                      </a>
+                <motion.h1
+                  initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
+                  className="text-4xl sm:text-5xl font-bold leading-tight"
+                  style={{ fontFamily: "'Playfair Display', serif", color: "#f6e2d4" }}
+                >
+                  {showData.displayName}
+                </motion.h1>
+                {showData.persona && (
+                  <motion.p
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+                    className="mt-3 text-sm max-w-md leading-relaxed italic"
+                    style={{ color: "rgba(246,226,212,0.65)" }}
+                  >
+                    "{showData.persona}"
+                  </motion.p>
+                )}
+              </div>
+              <div className="mt-6 space-y-5">
+                {showData.styles.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {showData.styles.map((s) => (
+                      <span key={s} className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md"
+                        style={{ background: "rgba(255,255,255,0.15)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.2)" }}>
+                        {s}
+                      </span>
                     ))}
+                    {showData.priceTier && (
+                      <span className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md"
+                        style={{ background: "rgba(217,101,79,0.35)", color: "#f6e2d4", border: "1px solid rgba(217,101,79,0.4)" }}>
+                        {priceTierLabels[showData.priceTier] || showData.priceTier}
+                      </span>
+                    )}
                   </div>
-                </div>
-              )}
+                )}
+                {allStoresAndBrands.length > 0 && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] uppercase tracking-widest font-semibold shrink-0" style={{ color: "rgba(246,226,212,0.5)" }}>
+                      {showDataName} shops at
+                    </span>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {allStoresAndBrands.slice(0, 7).map((name) => (
+                        <a key={name} href={getStoreDomain(name)} target="_blank" rel="noopener noreferrer"
+                          className="shrink-0 hover:scale-110 active:scale-95 transition-transform">
+                          <BrandLogo name={name} size={26} />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <button onClick={() => navigate("/dashboard/collaborations")}
+                className="absolute top-8 right-8 flex items-center gap-1.5 text-xs font-semibold backdrop-blur-md px-4 py-2 rounded-full hover:scale-105 active:scale-95 transition-transform"
+                style={{ background: "rgba(255,255,255,0.15)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.2)" }}>
+                {showDataName}'s Full Profile <ChevronRight className="w-3.5 h-3.5" />
+              </button>
             </div>
+          </motion.div>
 
-            {/* Full profile link */}
-            <button onClick={() => navigate("/dashboard/collaborations")}
-              className="absolute top-8 right-8 flex items-center gap-1.5 text-xs font-semibold backdrop-blur-md px-4 py-2 rounded-full hover:scale-105 active:scale-95 transition-transform"
-              style={{ background: "rgba(255,255,255,0.15)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.2)" }}>
-              {showDataName}'s Full Profile <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </motion.div>
-      )}
+          {triggers.length > 0 && (
+            <div className="space-y-3">
+              {triggers.map((trigger, i) => (
+                <motion.button key={i} onClick={trigger.action}
+                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
+                  className="w-full relative overflow-hidden flex items-center gap-4 p-5 text-left group"
+                  style={{
+                    borderRadius: "1.2rem",
+                    background: trigger.urgency === "urgent"
+                      ? "linear-gradient(135deg, rgba(217,101,79,0.15) 0%, rgba(217,101,79,0.05) 100%)"
+                      : "linear-gradient(135deg, rgba(47,95,109,0.1) 0%, rgba(47,95,109,0.03) 100%)",
+                    border: trigger.urgency === "urgent"
+                      ? "1px solid rgba(217,101,79,0.3)"
+                      : "1px solid rgba(47,95,109,0.2)",
+                  }}>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                    style={{ background: trigger.urgency === "urgent" ? "rgba(217,101,79,0.2)" : "rgba(47,95,109,0.15)" }}>
+                    <AlertCircle className={`w-5 h-5 ${trigger.urgency === "urgent" ? "text-destructive" : "text-primary"}`} />
+                  </div>
+                  <div className="flex-1">
+                    <p className={`text-sm font-bold ${trigger.urgency === "urgent" ? "text-destructive" : "text-primary"}`}>
+                      {trigger.label}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Don't wait — find the perfect gift now</p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                </motion.button>
+              ))}
+            </div>
+          )}
+        </div>
+      ),
+    });
+  }
 
-
-      {/* ── Smart Triggers ── */}
-      {triggers.length > 0 && (
-        <motion.div variants={itemVariant} className="space-y-3">
-          {triggers.map((trigger, i) => (
-            <motion.button key={i} onClick={trigger.action}
-              whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
-              className="w-full relative overflow-hidden flex items-center gap-4 p-5 text-left group"
-              style={{
-                borderRadius: "1.2rem",
-                background: trigger.urgency === "urgent"
-                  ? "linear-gradient(135deg, rgba(217,101,79,0.15) 0%, rgba(217,101,79,0.05) 100%)"
-                  : "linear-gradient(135deg, rgba(47,95,109,0.1) 0%, rgba(47,95,109,0.03) 100%)",
-                border: trigger.urgency === "urgent"
-                  ? "1px solid rgba(217,101,79,0.3)"
-                  : "1px solid rgba(47,95,109,0.2)",
-              }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                style={{
-                  background: trigger.urgency === "urgent" ? "rgba(217,101,79,0.2)" : "rgba(47,95,109,0.15)",
-                }}>
-                <AlertCircle className={`w-5 h-5 ${trigger.urgency === "urgent" ? "text-destructive" : "text-primary"}`} />
-              </div>
-              <div className="flex-1">
-                <p className={`text-sm font-bold ${trigger.urgency === "urgent" ? "text-destructive" : "text-primary"}`}>
-                  {trigger.label}
-                </p>
-                <p className="text-xs text-muted-foreground mt-0.5">Don't wait — find the perfect gift now</p>
-              </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-          ))}
-        </motion.div>
-      )}
-
-      {/* ══════════════════════════════════════
-         QUICK ACTIONS — Large photo tiles
-         ══════════════════════════════════════ */}
-
-      <motion.div variants={itemVariant}>
-        <p className="section-header mb-4">Quick Actions</p>
+  // Quick Actions
+  sections.push({
+    id: "quick-actions",
+    label: "Quick Actions",
+    content: (
+      <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-2 gap-4">
           {quickActionData.map(({ label, desc, route, img }) => (
             <motion.button key={label}
-              variants={itemVariant}
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
               onClick={() => navigate(route)}
               className="relative overflow-hidden text-left group aspect-[4/5]"
@@ -460,29 +450,23 @@ const DashboardHome = () => {
             </motion.button>
           ))}
         </div>
-      </motion.div>
+      </div>
+    ),
+  });
 
-      {/* ══════════════════════════════════════
-         LEVEL 2: SAFE PICKS — Immersive cards
-         ══════════════════════════════════════ */}
-
-      {safePicks.length > 0 && (
-        <motion.div variants={itemVariant}>
-          <div className="flex items-end justify-between mb-4">
-            <div>
-              <p className="section-header">
-                Based on {showDataName}'s Go-Tos
-              </p>
-              <p className="text-[11px] text-muted-foreground mt-1">
-                Filtered by their stores, style & price range
-              </p>
-            </div>
-          </div>
-
+  // Safe Picks
+  if (safePicks.length > 0) {
+    sections.push({
+      id: "safe-picks",
+      label: `Based on ${showDataName}'s Go-Tos`,
+      content: (
+        <div className="max-w-4xl mx-auto">
+          <p className="text-[11px] text-muted-foreground mb-4 text-center">
+            Filtered by their stores, style & price range
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {safePicks.map(({ store, searchUrl, image }, i) => (
               <motion.a key={store} href={searchUrl} target="_blank" rel="noopener noreferrer"
-                variants={itemVariant}
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 className="relative overflow-hidden group block"
                 style={{ borderRadius: "1.4rem", height: i === 0 ? 220 : 180 }}>
@@ -490,18 +474,13 @@ const DashboardHome = () => {
                 <div className="absolute inset-0" style={{
                   background: "linear-gradient(160deg, rgba(0,0,0,0.1) 0%, rgba(47,95,109,0.75) 100%)",
                 }} />
-
-                {/* Brand logo + label */}
                 <div className="absolute bottom-0 left-0 right-0 p-5 flex items-end justify-between">
                   <div className="flex items-center gap-3">
                     <BrandLogo name={store} size={32} />
                     <div>
                       <p className="text-base font-bold drop-shadow-lg" style={{ color: "#f6e2d4" }}>{store}</p>
                       <p className="text-[11px] mt-0.5" style={{ color: "rgba(246,226,212,0.6)" }}>
-                        {showData!.styles.length > 0
-                          ? `${showData!.styles[0]} picks`
-                          : "Curated for them"
-                        }
+                        {showData!.styles.length > 0 ? `${showData!.styles[0]} picks` : "Curated for them"}
                       </p>
                     </div>
                   </div>
@@ -510,8 +489,6 @@ const DashboardHome = () => {
                     <ArrowRight className="w-4 h-4" style={{ color: "#f6e2d4" }} />
                   </div>
                 </div>
-
-                {/* Top-right price tag */}
                 {showData!.priceTier && (
                   <div className="absolute top-4 right-4 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
                     style={{ background: "rgba(255,255,255,0.15)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.2)" }}>
@@ -521,15 +498,18 @@ const DashboardHome = () => {
               </motion.a>
             ))}
           </div>
-        </motion.div>
-      )}
+        </div>
+      ),
+    });
+  }
 
-      {/* ── Gift Categories — Horizontal scroll ── */}
-      {showData && showData.giftCategories.length > 0 && (
-        <motion.div variants={itemVariant}>
-          <p className="section-header mb-4">
-            What to Get {showDataName}
-          </p>
+  // Gift Categories
+  if (showData && showData.giftCategories.length > 0) {
+    sections.push({
+      id: "gift-categories",
+      label: `What to Get ${showDataName}`,
+      content: (
+        <div className="max-w-4xl mx-auto">
           <div className="flex gap-4 overflow-x-auto pb-3 -mx-2 px-2">
             {showData.giftCategories.map((cat, i) => {
               const img = getGiftImage(cat, i);
@@ -537,7 +517,6 @@ const DashboardHome = () => {
               const url = searchStore ? getStoreSearchUrl(searchStore, cat) : "#";
               return (
                 <motion.a key={cat} href={url} target="_blank" rel="noopener noreferrer"
-                  variants={itemVariant}
                   whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                   className="relative overflow-hidden shrink-0 group"
                   style={{ borderRadius: "1.2rem", width: 160, height: 200 }}>
@@ -555,50 +534,48 @@ const DashboardHome = () => {
               );
             })}
           </div>
-        </motion.div>
-      )}
+        </div>
+      ),
+    });
+  }
 
-      {/* ── Date setup prompt ── */}
-      {missingDates && (
-        <motion.div variants={itemVariant} className="relative overflow-hidden"
-          style={{ borderRadius: "1.4rem", background: "linear-gradient(135deg, rgba(47,95,109,0.08) 0%, rgba(232,198,174,0.15) 100%)", border: "1px solid rgba(47,95,109,0.12)" }}>
-          <div className="p-6 flex items-start gap-5">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(47,95,109,0.1)" }}>
-              <CalendarHeart className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-base font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
-                Never forget an important date
+  // Not onboarded prompt
+  if (!persLoading && !personalization && !loading) {
+    sections.push({
+      id: "onboard-prompt",
+      label: "Get Started",
+      content: (
+        <div className="max-w-4xl mx-auto">
+          <div className="relative overflow-hidden" style={{ borderRadius: "1.4rem" }}>
+            <div className="absolute inset-0" style={{
+              background: "linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--primary) / 0.02))",
+              border: "1px solid hsl(var(--primary) / 0.1)",
+              borderRadius: "1.4rem",
+            }} />
+            <div className="relative p-8 text-center">
+              <p className="text-sm text-muted-foreground mb-4">
+                Complete your profile so {hasPartner ? partnerFirstName : "your partner"} knows exactly what to get you.
               </p>
-              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed max-w-md">
-                Add {partnerFirstName}'s birthday and anniversary so you're never scrambling last minute.
-              </p>
-              <button onClick={() => navigate("/dashboard/settings")}
-                className="mt-3 flex items-center gap-1.5 text-xs font-bold text-primary hover:underline">
-                Add Important Dates <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              <Button className="rounded-full px-8" onClick={() => navigate("/onboarding")}>Set Up My Profile</Button>
             </div>
           </div>
-        </motion.div>
-      )}
+        </div>
+      ),
+    });
+  }
 
-      {/* Not onboarded */}
-      {!persLoading && !personalization && !loading && (
-        <motion.div variants={itemVariant} className="relative overflow-hidden" style={{ borderRadius: "1.4rem" }}>
-          <div className="absolute inset-0" style={{
-            background: "linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--primary) / 0.02))",
-            border: "1px solid hsl(var(--primary) / 0.1)",
-            borderRadius: "1.4rem",
-          }} />
-          <div className="relative p-8 text-center">
-            <p className="text-sm text-muted-foreground mb-4">
-              Complete your profile so {hasPartner ? partnerFirstName : "your partner"} knows exactly what to get you.
-            </p>
-            <Button className="rounded-full px-8" onClick={() => navigate("/onboarding")}>Set Up My Profile</Button>
-          </div>
-        </motion.div>
-      )}
-    </motion.div>
+  if (sections.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full">
+      <SnapScrollLayout sections={sections} />
+    </div>
   );
 };
 

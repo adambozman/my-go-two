@@ -315,8 +315,8 @@ const Questionnaires = () => {
 
   // Main cover flow
   return (
-    <div className="space-y-8 pb-4">
-      <div>
+    <div className="h-full flex flex-col pb-16">
+      <div className="flex-1 flex flex-col">
         <p className="text-muted-foreground text-sm mb-2">Tap a card to answer questions.</p>
 
         <div className="relative flex items-center justify-center py-4">

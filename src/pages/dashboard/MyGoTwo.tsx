@@ -14,6 +14,7 @@ import GoTwoText from "@/components/GoTwoText";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import { allTemplateSubtypes, templateSubcategories, filterSubtypesByGender, filterSubcategoriesByGender } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
+import SnapScrollLayout from "@/components/SnapScrollLayout";
 import { AnimatePresence } from "framer-motion";
 import { profileQuestions } from "@/data/profileQuestions";
 import { getStyleImage } from "@/data/genderImages";
@@ -134,8 +135,7 @@ const PreferencesSection = () => {
 
   // Cover flow
   return (
-    <div className="mb-10">
-      <h3 className="section-header mb-2 text-center">My Preferences</h3>
+    <div>
       <p className="text-muted-foreground text-xs text-center mb-4">Tap a card to review your preferences.</p>
 
       <div className="relative flex items-center justify-center py-4">
@@ -364,58 +364,60 @@ const MyGoTwo = () => {
           gender={gender}
         />
       ) : (
-        <div className="max-w-5xl mx-auto">
-          {/* Templates by Category */}
-          <div className="mb-10">
-            {loading ? (
-              <p className="text-muted-foreground">Loading templates...</p>
-            ) : (
-              grouped.map((group) => {
-                const allItems = [
-                  ...group.items.map((t) => ({
-                    id: t.id,
-                    name: t.name,
-                    image: getTemplateImage(t.name),
-                    fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
-                    isCustom: false,
-                  })),
-                  ...group.customItems.map((ct) => ({
-                    id: ct.id,
-                    name: ct.name,
-                    image: ct.image_url || "",
-                    fieldCount: Array.isArray(ct.default_fields) ? ct.default_fields.length : 0,
-                    isCustom: true,
-                  })),
-                ];
+        <div className="h-full">
+          {loading ? (
+            <p className="text-muted-foreground p-4">Loading templates...</p>
+          ) : (
+            <SnapScrollLayout
+              sections={[
+                ...grouped.map((group) => {
+                  const allItems = [
+                    ...group.items.map((t) => ({
+                      id: t.id,
+                      name: t.name,
+                      image: getTemplateImage(t.name),
+                      fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
+                      isCustom: false,
+                    })),
+                    ...group.customItems.map((ct) => ({
+                      id: ct.id,
+                      name: ct.name,
+                      image: ct.image_url || "",
+                      fieldCount: Array.isArray(ct.default_fields) ? ct.default_fields.length : 0,
+                      isCustom: true,
+                    })),
+                  ];
+                  return {
+                    id: group.key,
+                    label: group.label,
+                    content: (
+                      <CategoryCoverFlow
+                        items={allItems}
+                        onSelect={(id) => {
+                          const t = templates.find((tpl) => tpl.id === id);
+                          if (t) {
+                            handleTemplateClick(t);
+                            return;
+                          }
+                          const ct = customTemplates.find((c) => c.id === id);
+                          if (ct) handleCustomTemplateClick(ct);
+                        }}
+                        onAdd={() => openCreateSheet(group.key, group.label)}
+                        onDelete={handleDeleteCustomTemplate}
+                        disabled={creating !== null}
+                      />
+                    ),
+                  };
+                }),
+                {
+                  id: "preferences",
+                  label: "My Preferences",
+                  content: <PreferencesSection />,
+                },
+              ]}
+            />
+          )}
 
-                return (
-                  <div key={group.key} className="mb-10">
-                    <h3 className="section-header mb-4 text-center">{group.label}</h3>
-                    <CategoryCoverFlow
-                      items={allItems}
-                      onSelect={(id) => {
-                        const t = templates.find((tpl) => tpl.id === id);
-                        if (t) {
-                          handleTemplateClick(t);
-                          return;
-                        }
-                        const ct = customTemplates.find((c) => c.id === id);
-                        if (ct) handleCustomTemplateClick(ct);
-                      }}
-                      onAdd={() => openCreateSheet(group.key, group.label)}
-                      onDelete={handleDeleteCustomTemplate}
-                      disabled={creating !== null}
-                    />
-                  </div>
-                );
-              })
-            )}
-          </div>
-
-          {/* Preferences Section */}
-          <PreferencesSection />
-
-          {/* Custom Card Creation Sheet */}
           <CreateCustomCardSheet
             open={createSheetOpen}
             onOpenChange={setCreateSheetOpen}
