@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { User, Bell, Shield, Users, ChevronRight, Save, KeyRound, Mail, QrCode, Copy, Check, Clock, UserCheck, UserX, CreditCard, HelpCircle, Info } from "lucide-react";
@@ -40,6 +41,45 @@ const SettingsPage = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
+
+  // User settings state
+  type SettingsKeys = 'gift_reminders' | 'partner_activity' | 'recommendations' | 'email_digests' | 'share_prefs' | 'share_wishlist' | 'visible_profile';
+  const [settings, setSettings] = useState<Record<SettingsKeys, boolean>>({
+    gift_reminders: true, partner_activity: true, recommendations: true, email_digests: true,
+    share_prefs: true, share_wishlist: true, visible_profile: true,
+  });
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
+
+  const fetchSettings = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase.from("user_settings").select("*").eq("user_id", user.id).maybeSingle();
+    if (data) {
+      setSettings({
+        gift_reminders: data.gift_reminders, partner_activity: data.partner_activity,
+        recommendations: data.recommendations, email_digests: data.email_digests,
+        share_prefs: data.share_prefs, share_wishlist: data.share_wishlist,
+        visible_profile: data.visible_profile,
+      });
+    }
+    setSettingsLoaded(true);
+  }, [user]);
+
+  useEffect(() => { fetchSettings(); }, [fetchSettings]);
+
+  const toggleSetting = async (key: SettingsKeys) => {
+    if (!user) return;
+    const newVal = !settings[key];
+    setSettings(prev => ({ ...prev, [key]: newVal }));
+    // Upsert
+    const { error } = await supabase.from("user_settings").upsert(
+      { user_id: user.id, [key]: newVal } as any,
+      { onConflict: "user_id" }
+    );
+    if (error) {
+      setSettings(prev => ({ ...prev, [key]: !newVal }));
+      toast({ title: "Failed to save", variant: "destructive" });
+    }
+  };
 
   const inviteLink = user
     ? `${window.location.origin}/connect?invite=${user.id}`
@@ -413,23 +453,22 @@ const SettingsPage = () => {
           </button>
           <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Notifications</h2>
           <div className="space-y-5 max-w-md">
-            {[
-              { label: "Gift reminders", desc: "Get notified before birthdays and anniversaries", key: "gift_reminders" },
-              { label: "Partner activity", desc: "When your partner updates their preferences", key: "partner_activity" },
-              { label: "New recommendations", desc: "AI-powered suggestions for your partner", key: "recommendations" },
-              { label: "Email digests", desc: "Weekly summary of updates and ideas", key: "email_digests" },
-            ].map((item) => (
+            {([
+              { label: "Gift reminders", desc: "Get notified before birthdays and anniversaries", key: "gift_reminders" as SettingsKeys },
+              { label: "Partner activity", desc: "When your partner updates their preferences", key: "partner_activity" as SettingsKeys },
+              { label: "New recommendations", desc: "AI-powered suggestions for your partner", key: "recommendations" as SettingsKeys },
+              { label: "Email digests", desc: "Weekly summary of updates and ideas", key: "email_digests" as SettingsKeys },
+            ]).map((item) => (
               <div key={item.key} className="flex items-center justify-between py-2">
                 <div>
                   <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
                   <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:rounded-full after:h-5 after:w-5 after:transition-all" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
-                    <div className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-transform peer-checked:translate-x-full" style={{ background: 'var(--swatch-teal)' }} />
-                  </div>
-                </label>
+                <Switch
+                  checked={settings[item.key]}
+                  onCheckedChange={() => toggleSetting(item.key)}
+                  disabled={!settingsLoaded}
+                />
               </div>
             ))}
             <p className="text-xs pt-4" style={{ color: 'var(--swatch-text-light)' }}>
@@ -447,22 +486,21 @@ const SettingsPage = () => {
           </button>
           <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Sharing & Privacy</h2>
           <div className="space-y-5 max-w-md">
-            {[
-              { label: "Share preferences with partner", desc: "Let your connected partner see your style and size preferences", key: "share_prefs" },
-              { label: "Share wish list", desc: "Allow your partner to view your saved items", key: "share_wishlist" },
-              { label: "Visible profile", desc: "Let others find you by email when sending invites", key: "visible_profile" },
-            ].map((item) => (
+            {([
+              { label: "Share preferences with partner", desc: "Let your connected partner see your style and size preferences", key: "share_prefs" as SettingsKeys },
+              { label: "Share wish list", desc: "Allow your partner to view your saved items", key: "share_wishlist" as SettingsKeys },
+              { label: "Visible profile", desc: "Let others find you by email when sending invites", key: "visible_profile" as SettingsKeys },
+            ]).map((item) => (
               <div key={item.key} className="flex items-center justify-between py-2">
                 <div>
                   <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
                   <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:rounded-full after:h-5 after:w-5 after:transition-all" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
-                    <div className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-transform peer-checked:translate-x-full" style={{ background: 'var(--swatch-teal)' }} />
-                  </div>
-                </label>
+                <Switch
+                  checked={settings[item.key]}
+                  onCheckedChange={() => toggleSetting(item.key)}
+                  disabled={!settingsLoaded}
+                />
               </div>
             ))}
           </div>
