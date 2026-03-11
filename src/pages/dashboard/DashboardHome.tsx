@@ -470,7 +470,7 @@ const DashboardHome = () => {
         <motion.div variants={itemVariant}>
           <div className="flex items-end justify-between mb-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground">
+              <p className="section-header">
                 Based on {showDataName}'s Go-Tos
               </p>
               <p className="text-[11px] text-muted-foreground mt-1">
