@@ -293,6 +293,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          created_at: string
+          email_digests: boolean
+          gift_reminders: boolean
+          id: string
+          partner_activity: boolean
+          recommendations: boolean
+          share_prefs: boolean
+          share_wishlist: boolean
+          updated_at: string
+          user_id: string
+          visible_profile: boolean
+        }
+        Insert: {
+          created_at?: string
+          email_digests?: boolean
+          gift_reminders?: boolean
+          id?: string
+          partner_activity?: boolean
+          recommendations?: boolean
+          share_prefs?: boolean
+          share_wishlist?: boolean
+          updated_at?: string
+          user_id: string
+          visible_profile?: boolean
+        }
+        Update: {
+          created_at?: string
+          email_digests?: boolean
+          gift_reminders?: boolean
+          id?: string
+          partner_activity?: boolean
+          recommendations?: boolean
+          share_prefs?: boolean
+          share_wishlist?: boolean
+          updated_at?: string
+          user_id?: string
+          visible_profile?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
