@@ -7,7 +7,7 @@ import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { getStyleImage } from "@/data/genderImages";
 
 const Preferences = () => {
-  const { profileAnswers, gender } = usePersonalization();
+  const { profileAnswers, gender, loading: genderLoading } = usePersonalization();
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
@@ -24,6 +24,8 @@ const Preferences = () => {
     }
     return saved;
   });
+
+  if (genderLoading) return <p className="text-muted-foreground p-4">Loading...</p>;
 
   const goLeft = () => setActiveIndex((i) => (i - 1 + imageQuestions.length) % imageQuestions.length);
   const goRight = () => setActiveIndex((i) => (i + 1) % imageQuestions.length);

@@ -64,7 +64,7 @@ const Questionnaires = () => {
   const { user } = useAuth();
   const { toast: uiToast } = useToast();
   const navigate = useNavigate();
-  const { profileAnswers, gender, refetch } = usePersonalization();
+  const { profileAnswers, gender, loading: genderLoading, refetch } = usePersonalization();
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -312,6 +312,10 @@ const Questionnaires = () => {
   }
 
   // Main cover flow
+  if (genderLoading) {
+    return <p className="text-muted-foreground p-4">Loading...</p>;
+  }
+
   return (
     <div className="h-full flex flex-col pb-16">
       <div className="flex-1 flex flex-col">

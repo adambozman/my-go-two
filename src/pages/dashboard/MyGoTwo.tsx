@@ -32,7 +32,7 @@ const categoryOrder = ["personal", "food-drink", "gifts-occasions", "experiences
 
 // ── Preferences Section (profile questions cover flow) ──
 const PreferencesSection = () => {
-  const { profileAnswers, gender } = usePersonalization();
+  const { profileAnswers, gender, loading: genderLoading } = usePersonalization();
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
@@ -210,7 +210,7 @@ const PreferencesSection = () => {
 const MyGoTwo = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { profileAnswers, gender } = usePersonalization();
+  const { profileAnswers, gender, loading: genderLoading } = usePersonalization();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -361,7 +361,7 @@ const MyGoTwo = () => {
         />
       ) : (
         <div className="h-full">
-          {loading ? (
+          {(loading || genderLoading) ? (
             <p className="text-muted-foreground p-4">Loading templates...</p>
           ) : (
             <SnapScrollLayout
