@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CategoryCoverFlowProps {
@@ -39,15 +39,6 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
 
   return (
     <div className="relative flex items-center justify-center py-4">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={goLeft}
-        className="absolute left-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
-      >
-        <ChevronLeft className="h-5 w-5" />
-      </Button>
-
       <div className="relative w-full h-[420px] overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
           {allCards.map((item, index) => {
@@ -139,15 +130,6 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
           })}
         </div>
       </div>
-
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={goRight}
-        className="absolute right-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
-      >
-        <ChevronRight className="h-5 w-5" />
-      </Button>
     </div>
   );
 };
