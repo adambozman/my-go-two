@@ -548,35 +548,37 @@ const SettingsPage = () => {
 
       {/* About GoTwo Section */}
       {activeSection === "about" && (
-        <div className="card-design-neumorph p-8">
-          <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block">
+        <div className="mx-auto" style={{ maxWidth: 520 }}>
+          <button
+            onClick={() => setActiveSection(null)}
+            className="hover:underline block text-left"
+            style={{ color: '#2d6870', fontFamily: "'Jost', sans-serif", fontWeight: 400, fontSize: 13, marginBottom: 12 }}
+          >
             ← Back to Settings
           </button>
-          <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>About GoTwo</h2>
-          <div className="space-y-5 max-w-md">
-            <div className="flex items-center justify-between py-1">
-              <p className="text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Version</p>
-              <p className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>1.0.0</p>
-            </div>
-            <div className="border-t" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }} />
-            {[
-              { label: "Terms of Service", href: "#" },
-              { label: "Privacy Policy", href: "#" },
-              { label: "Open Source Licenses", href: "#" },
-            ].map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="flex items-center justify-between py-1 group"
-              >
-                <p className="text-sm group-hover:underline" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
-                <ChevronRight className="h-4 w-4" style={{ color: 'var(--swatch-text-light)' }} />
-              </a>
-            ))}
-            <div className="border-t pt-4" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }}>
-              <p className="text-xs text-center" style={{ color: 'var(--swatch-text-light)' }}>
-                Made with ♥ for couples who actually pay attention.
-              </p>
+          <div className="card-design-neumorph" style={{ padding: 40 }}>
+            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>About GoTwo</h2>
+            <div className="space-y-5">
+              <div className="flex items-center justify-between py-1">
+                <p className="text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Version</p>
+                <p className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>1.0.0</p>
+              </div>
+              <div className="border-t" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }} />
+              {[
+                { label: "Terms of Service", href: "#" },
+                { label: "Privacy Policy", href: "#" },
+                { label: "Open Source Licenses", href: "#" },
+              ].map((item) => (
+                <a key={item.label} href={item.href} className="flex items-center justify-between py-1 group">
+                  <p className="text-sm group-hover:underline" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
+                  <ChevronRight className="h-4 w-4" style={{ color: 'var(--swatch-text-light)' }} />
+                </a>
+              ))}
+              <div className="border-t pt-4" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }}>
+                <p className="text-xs text-center" style={{ color: 'var(--swatch-text-light)' }}>
+                  Made with ♥ for couples who actually pay attention.
+                </p>
+              </div>
             </div>
           </div>
         </div>
