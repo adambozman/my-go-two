@@ -27,6 +27,7 @@ const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
 
 const KnowMeCarousel = ({ cards, onCardClick, loading }: KnowMeCarouselProps) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
+  useRegisterCarousel(cards.length, activeIndex, setActiveIndex);
   
 
   if (cards.length === 0 && loading) {
