@@ -15,7 +15,7 @@ const FLANK_W = 160;
 const FLANK_H = 260;
 const X_GAP = 180;
 const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
-import { getDefaultPhotoForLabel } from "@/data/stockPhotos";
+import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
 
 // Local category images
 import imgBirthdays from "@/assets/stock/birthdays.jpg";
@@ -32,34 +32,10 @@ import imgTrips from "@/assets/stock/trips.jpg";
 const DEFAULT_IMAGE = getDefaultPhotoForLabel("friend");
 
 const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
-  {
-    id: "placeholder-wife",
-    name: "Wife",
-    image: getDefaultPhotoForLabel("wife"),
-    email: "",
-    status: "placeholder",
-  },
-  {
-    id: "placeholder-sig-other",
-    name: "Significant Other",
-    image: getDefaultPhotoForLabel("significant other"),
-    email: "",
-    status: "placeholder",
-  },
-  {
-    id: "placeholder-mom",
-    name: "Mom",
-    image: getDefaultPhotoForLabel("mom"),
-    email: "",
-    status: "placeholder",
-  },
-  {
-    id: "placeholder-dad",
-    name: "Dad",
-    image: getDefaultPhotoForLabel("dad"),
-    email: "",
-    status: "placeholder",
-  },
+  { id: "placeholder-wife", name: "Wife", image: "", email: "", status: "placeholder" },
+  { id: "placeholder-sig-other", name: "Significant Other", image: "", email: "", status: "placeholder" },
+  { id: "placeholder-mom", name: "Mom", image: "", email: "", status: "placeholder" },
+  { id: "placeholder-dad", name: "Dad", image: "", email: "", status: "placeholder" },
 ];
 
 interface ConnectionCard {
@@ -403,7 +379,7 @@ const DashboardHome = () => {
       return {
         id: row.id,
         name: label,
-        image: row.photo_url || getDefaultPhotoForLabel(label),
+        image: row.photo_url || "",
         email: row.invitee_email || "",
         status: row.status,
       };
@@ -415,10 +391,13 @@ const DashboardHome = () => {
       const usedNames = new Set(cards.map(c => c.name.toLowerCase()));
       const placeholders = PLACEHOLDER_CONNECTIONS
         .filter(p => !usedNames.has(p.name.toLowerCase()))
-        .slice(0, remainingSlots);
-      setConnections([...cards, ...placeholders]);
+        .slice(0, remainingSlots)
+        .map(p => ({ ...p, image: "" })); // clear default so assignUniquePhotos picks
+      const allCards = assignUniquePhotos([...cards, ...placeholders], (c) => !!c.image);
+      setConnections(allCards);
     } else {
-      setConnections(cards);
+      const uniqueCards = assignUniquePhotos(cards, (c) => !!c.image);
+      setConnections(uniqueCards);
     }
   }, [user]);
 
