@@ -453,23 +453,22 @@ const SettingsPage = () => {
           </button>
           <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Notifications</h2>
           <div className="space-y-5 max-w-md">
-            {[
-              { label: "Gift reminders", desc: "Get notified before birthdays and anniversaries", key: "gift_reminders" },
-              { label: "Partner activity", desc: "When your partner updates their preferences", key: "partner_activity" },
-              { label: "New recommendations", desc: "AI-powered suggestions for your partner", key: "recommendations" },
-              { label: "Email digests", desc: "Weekly summary of updates and ideas", key: "email_digests" },
-            ].map((item) => (
+            {([
+              { label: "Gift reminders", desc: "Get notified before birthdays and anniversaries", key: "gift_reminders" as SettingsKeys },
+              { label: "Partner activity", desc: "When your partner updates their preferences", key: "partner_activity" as SettingsKeys },
+              { label: "New recommendations", desc: "AI-powered suggestions for your partner", key: "recommendations" as SettingsKeys },
+              { label: "Email digests", desc: "Weekly summary of updates and ideas", key: "email_digests" as SettingsKeys },
+            ]).map((item) => (
               <div key={item.key} className="flex items-center justify-between py-2">
                 <div>
                   <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
                   <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:rounded-full after:h-5 after:w-5 after:transition-all" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
-                    <div className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-transform peer-checked:translate-x-full" style={{ background: 'var(--swatch-teal)' }} />
-                  </div>
-                </label>
+                <Switch
+                  checked={settings[item.key]}
+                  onCheckedChange={() => toggleSetting(item.key)}
+                  disabled={!settingsLoaded}
+                />
               </div>
             ))}
             <p className="text-xs pt-4" style={{ color: 'var(--swatch-text-light)' }}>
