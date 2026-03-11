@@ -99,6 +99,17 @@ const tf = (label: string, type: "text" | "select" = "text", options?: string[])
   label, type, value: "", ...(options ? { options } : {}),
 });
 
+// Standard product-centric fields
+const productFields = (typeLabel: string, typeOptions?: string[]) => [
+  tf("Brand"),
+  tf("Product Name"),
+  ...(typeOptions ? [tf(typeLabel, "select", typeOptions)] : []),
+  tf("Where to Buy"),
+  tf("Price Range", "select", ["Under $10", "$10-$25", "$25-$50", "$50-$100", "$100+"]),
+  tf("Rating", "select", ["Love It", "Really Like", "It's Okay", "Want to Switch"]),
+  tf("Notes"),
+];
+
 export const allTemplateSubtypes: Record<string, SubtypeItem[]> = {
   "Clothing Sizes": [
     { id: "tops", name: "Tops", image: imgClothingTops, fields: [tf("Size", "select", ["XS", "S", "M", "L", "XL", "XXL"]), tf("Preferred Fit", "select", ["Slim", "Regular", "Relaxed", "Oversized"]), tf("Preferred Brands"), tf("Notes")] },
@@ -115,17 +126,29 @@ export const allTemplateSubtypes: Record<string, SubtypeItem[]> = {
     { id: "flats", name: "Flats", image: imgFlats, fields: [tf("Size (US)"), tf("Size (EU)"), tf("Style", "select", ["Ballet", "Loafer", "Mule", "Espadrille"]), tf("Preferred Brands"), tf("Width", "select", ["Narrow", "Standard", "Wide"]), tf("Fit Notes"), tf("Example Brand That Fits Perfectly")] },
   ],
   "Scents": [
-    { id: "perfume", name: "Perfume", image: imgScentPerfume, fields: [tf("Favorite Scents"), tf("Scent Family", "select", ["Floral", "Woody", "Fresh", "Oriental", "Gourmand"]), tf("Preferred Brands"), tf("Concentration", "select", ["EDT", "EDP", "Parfum"]), tf("Notes")] },
-    { id: "candles", name: "Candles", image: imgScentCandles, fields: [tf("Favorite Scents"), tf("Preferred Brands"), tf("Wax Type", "select", ["Soy", "Beeswax", "Coconut", "Paraffin", "No Preference"]), tf("Size Preference", "select", ["Small", "Medium", "Large", "Variety"]), tf("Notes")] },
-    { id: "bodycare", name: "Body Care", image: imgScentBodycare, fields: [tf("Favorite Scents"), tf("Product Types", "select", ["Lotion", "Body Wash", "Body Spray", "All"]), tf("Preferred Brands"), tf("Skin Sensitivity", "select", ["Normal", "Sensitive", "Very Sensitive"]), tf("Notes")] },
-    { id: "oils", name: "Essential Oils", image: imgScentOils, fields: [tf("Favorite Oils"), tf("Use", "select", ["Aromatherapy", "Topical", "Diffuser", "Bath"]), tf("Preferred Brands"), tf("Notes")] },
-    { id: "home", name: "Home Fragrance", image: imgScentHome, fields: [tf("Favorite Scents"), tf("Type", "select", ["Diffuser", "Room Spray", "Incense", "Wax Melts"]), tf("Preferred Brands"), tf("Notes")] },
+    { id: "perfume", name: "Perfume", image: imgScentPerfume, fields: [...productFields("Concentration", ["EDT", "EDP", "Parfum", "Cologne"]), tf("Scent Family", "select", ["Floral", "Woody", "Fresh", "Oriental", "Gourmand"])] },
+    { id: "cologne", name: "Cologne", image: imgScentPerfume, fields: [...productFields("Concentration", ["EDT", "EDP", "Cologne"]), tf("Scent Family", "select", ["Fresh", "Woody", "Spicy", "Aquatic", "Aromatic"])] },
+    { id: "candle", name: "Candle", image: imgScentCandles, fields: [...productFields("Wax Type", ["Soy", "Beeswax", "Coconut", "Paraffin", "No Preference"]), tf("Size", "select", ["Small", "Medium", "Large", "Travel"])] },
+    { id: "body-lotion", name: "Body Lotion", image: imgScentBodycare, fields: productFields("Skin Type", ["Normal", "Dry", "Sensitive", "All"]) },
+    { id: "body-wash", name: "Body Wash", image: imgScentBodycare, fields: productFields("Type", ["Gel", "Cream", "Oil", "Bar"]) },
+    { id: "essential-oil", name: "Essential Oil", image: imgScentOils, fields: productFields("Use", ["Aromatherapy", "Topical", "Diffuser", "Bath"]) },
+    { id: "room-spray", name: "Room Spray", image: imgScentHome, fields: productFields("Type", ["Spray", "Diffuser", "Incense", "Wax Melts"]) },
   ],
   "Grooming": [
-    { id: "hair", name: "Hair Care", image: imgGroomingHair, fields: [tf("Hair Type", "select", ["Straight", "Wavy", "Curly", "Coily"]), tf("Current Products"), tf("Preferred Brands"), tf("Concerns"), tf("Notes")] },
-    { id: "skin", name: "Skin Care", image: imgGroomingSkin, fields: [tf("Skin Type", "select", ["Oily", "Dry", "Combination", "Normal", "Sensitive"]), tf("Current Routine"), tf("Preferred Brands"), tf("Concerns"), tf("Notes")] },
-    { id: "shaving", name: "Shaving", image: imgGroomingShaving, fields: [tf("Razor Type", "select", ["Cartridge", "Safety", "Electric", "Straight"]), tf("Shaving Cream/Soap"), tf("Aftershave"), tf("Preferred Brands"), tf("Notes")] },
-    { id: "makeup", name: "Makeup", image: imgGroomingMakeup, fields: [tf("Foundation Shade"), tf("Skin Tone", "select", ["Fair", "Light", "Medium", "Tan", "Deep"]), tf("Preferred Brands"), tf("Must-Have Products"), tf("Notes")] },
+    { id: "shampoo", name: "Shampoo", image: imgGroomingHair, fields: productFields("Hair Type", ["Straight", "Wavy", "Curly", "Coily", "All Types"]) },
+    { id: "conditioner", name: "Conditioner", image: imgGroomingHair, fields: productFields("Hair Type", ["Straight", "Wavy", "Curly", "Coily", "All Types"]) },
+    { id: "hair-styling", name: "Hair Styling", image: imgGroomingHair, fields: productFields("Type", ["Gel", "Pomade", "Mousse", "Spray", "Cream", "Oil"]) },
+    { id: "moisturizer", name: "Moisturizer", image: imgGroomingSkin, fields: productFields("Skin Type", ["Oily", "Dry", "Combination", "Normal", "Sensitive"]) },
+    { id: "cleanser", name: "Cleanser", image: imgGroomingSkin, fields: productFields("Skin Type", ["Oily", "Dry", "Combination", "Normal", "Sensitive"]) },
+    { id: "sunscreen", name: "Sunscreen", image: imgGroomingSkin, fields: [...productFields("SPF", ["SPF 15", "SPF 30", "SPF 50", "SPF 50+"]), tf("Finish", "select", ["Matte", "Dewy", "Natural"])] },
+    { id: "razor", name: "Razor", image: imgGroomingShaving, fields: productFields("Type", ["Cartridge", "Safety", "Electric", "Straight", "Disposable"]) },
+    { id: "shaving-cream", name: "Shaving Cream", image: imgGroomingShaving, fields: productFields("Type", ["Cream", "Gel", "Foam", "Soap", "Oil"]) },
+    { id: "aftershave", name: "Aftershave", image: imgGroomingShaving, fields: productFields("Type", ["Balm", "Splash", "Lotion", "Gel"]) },
+    { id: "pre-shave", name: "Pre-Shave", image: imgGroomingShaving, fields: productFields("Type", ["Oil", "Cream", "Gel", "Scrub"]) },
+    { id: "foundation", name: "Foundation", image: imgGroomingMakeup, fields: [...productFields("Finish", ["Matte", "Dewy", "Satin", "Natural"]), tf("Shade")] },
+    { id: "concealer", name: "Concealer", image: imgGroomingMakeup, fields: [...productFields("Coverage", ["Light", "Medium", "Full"]), tf("Shade")] },
+    { id: "mascara", name: "Mascara", image: imgGroomingMakeup, fields: productFields("Effect", ["Lengthening", "Volumizing", "Curling", "Waterproof"]) },
+    { id: "lip-product", name: "Lip Product", image: imgGroomingMakeup, fields: [...productFields("Type", ["Lipstick", "Lip Gloss", "Lip Liner", "Lip Balm", "Lip Stain"]), tf("Shade")] },
   ],
   "Measurements": [
     { id: "body", name: "Body", image: imgMeasureBody, fields: [tf("Chest/Bust"), tf("Waist"), tf("Hips"), tf("Inseam"), tf("Shoulder Width"), tf("Notes")] },
@@ -177,16 +200,16 @@ export const allTemplateSubtypes: Record<string, SubtypeItem[]> = {
     { id: "lilies", name: "Lilies", image: imgFlowersLilies, fields: [tf("Color Preference"), tf("Type", "select", ["Asiatic", "Oriental", "Stargazer", "Calla"]), tf("Arrangement", "select", ["Bouquet", "Vase", "Mixed"]), tf("Notes")] },
   ],
   "Fragrances": [
-    { id: "floral", name: "Floral", image: imgFragrances, fields: [tf("Favorite Notes"), tf("Preferred Brands"), tf("Season", "select", ["Spring/Summer", "Fall/Winter", "Year-Round"]), tf("Notes")] },
-    { id: "woody", name: "Woody", image: imgScentOils, fields: [tf("Favorite Notes"), tf("Preferred Brands"), tf("Season", "select", ["Spring/Summer", "Fall/Winter", "Year-Round"]), tf("Notes")] },
-    { id: "fresh", name: "Fresh", image: imgScentBodycare, fields: [tf("Favorite Notes"), tf("Preferred Brands"), tf("Season", "select", ["Spring/Summer", "Fall/Winter", "Year-Round"]), tf("Notes")] },
-    { id: "oriental", name: "Oriental", image: imgScentPerfume, fields: [tf("Favorite Notes"), tf("Preferred Brands"), tf("Season", "select", ["Spring/Summer", "Fall/Winter", "Year-Round"]), tf("Notes")] },
+    { id: "daily-fragrance", name: "Daily Fragrance", image: imgFragrances, fields: [...productFields("Scent Family", ["Floral", "Woody", "Fresh", "Oriental", "Gourmand", "Aquatic"]), tf("Season", "select", ["Spring/Summer", "Fall/Winter", "Year-Round"])] },
+    { id: "evening-fragrance", name: "Evening Fragrance", image: imgScentPerfume, fields: [...productFields("Scent Family", ["Floral", "Woody", "Fresh", "Oriental", "Gourmand", "Spicy"]), tf("Season", "select", ["Spring/Summer", "Fall/Winter", "Year-Round"])] },
+    { id: "body-mist", name: "Body Mist", image: imgScentBodycare, fields: productFields("Scent Family", ["Floral", "Fruity", "Fresh", "Sweet"]) },
+    { id: "fragrance-oil", name: "Fragrance Oil", image: imgScentOils, fields: productFields("Use", ["Skin", "Diffuser", "Bath", "Layering"]) },
   ],
   "Jewelry": [
-    { id: "necklaces", name: "Necklaces", image: imgJewelryNecklaces, fields: [tf("Style", "select", ["Chain", "Pendant", "Choker", "Layered"]), tf("Metal", "select", ["Gold", "Silver", "Rose Gold", "Platinum"]), tf("Length", "select", ["Choker (14\")", "Princess (18\")", "Matinee (22\")", "Opera (30\")"]), tf("Preferred Brands"), tf("Notes")] },
-    { id: "bracelets", name: "Bracelets", image: imgJewelryBracelets, fields: [tf("Style", "select", ["Bangle", "Chain", "Cuff", "Charm", "Beaded"]), tf("Metal", "select", ["Gold", "Silver", "Rose Gold", "Leather"]), tf("Wrist Size"), tf("Preferred Brands"), tf("Notes")] },
-    { id: "earrings", name: "Earrings", image: imgJewelryEarrings, fields: [tf("Style", "select", ["Stud", "Hoop", "Drop", "Huggie", "Clip-On"]), tf("Metal", "select", ["Gold", "Silver", "Rose Gold", "Platinum"]), tf("Preferred Brands"), tf("Sensitivity", "select", ["None", "Nickel-Free Only", "Hypoallergenic Only"]), tf("Notes")] },
-    { id: "watches", name: "Watches", image: imgJewelryWatches, fields: [tf("Type", "select", ["Analog", "Digital", "Smart Watch"]), tf("Style", "select", ["Casual", "Dress", "Sport", "Luxury"]), tf("Preferred Brands"), tf("Band", "select", ["Metal", "Leather", "Silicone", "NATO"]), tf("Notes")] },
+    { id: "necklaces", name: "Necklace", image: imgJewelryNecklaces, fields: [...productFields("Style", ["Chain", "Pendant", "Choker", "Layered"]), tf("Metal", "select", ["Gold", "Silver", "Rose Gold", "Platinum"]), tf("Length", "select", ["Choker (14\")", "Princess (18\")", "Matinee (22\")", "Opera (30\")"])] },
+    { id: "bracelets", name: "Bracelet", image: imgJewelryBracelets, fields: [...productFields("Style", ["Bangle", "Chain", "Cuff", "Charm", "Beaded"]), tf("Metal", "select", ["Gold", "Silver", "Rose Gold", "Leather"]), tf("Wrist Size")] },
+    { id: "earrings", name: "Earrings", image: imgJewelryEarrings, fields: [...productFields("Style", ["Stud", "Hoop", "Drop", "Huggie", "Clip-On"]), tf("Metal", "select", ["Gold", "Silver", "Rose Gold", "Platinum"]), tf("Sensitivity", "select", ["None", "Nickel-Free Only", "Hypoallergenic Only"])] },
+    { id: "watches", name: "Watch", image: imgJewelryWatches, fields: [...productFields("Type", ["Analog", "Digital", "Smart Watch"]), tf("Style", "select", ["Casual", "Dress", "Sport", "Luxury"]), tf("Band", "select", ["Metal", "Leather", "Silicone", "NATO"])] },
   ],
   "Wish List Items": [
     { id: "tech", name: "Tech", image: imgSpecificProducts, fields: [tf("Item"), tf("Brand"), tf("Model/Version"), tf("Price Range"), tf("Where to Buy"), tf("Notes")] },

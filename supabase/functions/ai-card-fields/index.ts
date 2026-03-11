@@ -16,20 +16,27 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const prompt = `You are building a personal preferences card for a couples app called GoTwo. The user wants to create a card titled "${title}" in the "${category}" category.
+    const prompt = `You are building a PRODUCT-SPECIFIC preferences card for a couples app called GoTwo. The user wants to create a card titled "${title}" in the "${category}" category.
 
-Generate 4-8 relevant fields that would be useful for tracking preferences about "${title}". Each field should have a name, type (either "text" or "select"), and if type is "select", include 3-6 sensible options.
+This card represents ONE specific product or item. Generate 5-8 product-centric fields. Every card MUST include these standard fields:
+- "Brand" (text)
+- "Product Name" (text)  
+- "Where to Buy" (text)
+- "Price Range" (select with options: "Under $10", "$10-$25", "$25-$50", "$50-$100", "$100+")
+- "Rating" (select with options: "Love It", "Really Like", "It's Okay", "Want to Switch")
+- "Notes" (text)
 
-Examples of good fields:
-- For "Sexy Time": fields like "Preferred Time of Day" (select: Morning, Afternoon, Evening, Late Night), "Mood Lighting" (select: Candles, Dim, Dark, Bright), "Music Preference" (text), "Favorite Setting" (text)
-- For "Comfort Foods": fields like "Go-To Comfort Meal" (text), "Preferred Cuisine" (select: Italian, Mexican, Asian, American, Indian), "Sweet or Savory" (select: Sweet, Savory, Both), "Cooking Style" (select: Homemade, Takeout, Either)
+Then add 1-3 product-specific fields that are unique to "${title}". For example:
+- For "Razor": add "Type" (select: Cartridge, Safety, Electric, Straight, Disposable)
+- For "Shampoo": add "Hair Type" (select: Straight, Wavy, Curly, Coily)
+- For "Sexy Time Candle": add "Scent" (text), "Burn Time" (select: 1-2 hrs, 3-5 hrs, 6+ hrs)
 
 RULES:
+- Always include Brand, Product Name, Where to Buy, Price Range, Rating, Notes
+- Add 1-3 additional product-specific fields
 - Plain English only, no special characters or emoji
-- Field names should be 2-5 words
+- Field names should be 1-4 words
 - Select options should be 1-3 words each
-- Make fields specific and useful, not generic
-- Include a mix of text and select types
 
 Use the provided tool to return the fields.`;
 
