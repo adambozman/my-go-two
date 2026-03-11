@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
-import { useSwipeCarousel } from "@/hooks/useSwipeCarousel";
+
 import CreateCustomCardSheet from "@/components/CreateCustomCardSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
