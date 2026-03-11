@@ -442,7 +442,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Notifications</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Notifications</h2>
             <div className="space-y-5">
               {([
                 { label: "Gift reminders", desc: "Get notified before birthdays and anniversaries", key: "gift_reminders" as SettingsKeys },
