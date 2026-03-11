@@ -294,3 +294,12 @@ export const templateSubcategories: Record<string, SubcategoryGroup[]> = {
     },
   ],
 };
+
+// Filter subtypes and subcategories by gender
+export function filterSubtypesByGender(items: SubtypeItem[], gender: string): SubtypeItem[] {
+  return items.filter(item => !item.gender || item.gender.includes(gender));
+}
+
+export function filterSubcategoriesByGender(groups: SubcategoryGroup[], gender: string): SubcategoryGroup[] {
+  return groups.filter(g => !g.gender || g.gender.includes(gender));
+}
