@@ -99,7 +99,7 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
             msOverflowStyle: "none",
           }}
         >
-          {sections.map((section) => (
+          {sections.map((section, sectionIdx) => (
             <div
               key={section.id}
               className="w-full flex flex-col"
@@ -110,11 +110,12 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
                 scrollSnapStop: "always",
               }}
             >
-              {/* Carousel centered, title 24px above */}
               <div className="flex-1 flex items-center justify-center">
                 <div className="w-full relative">
                   <h3 className="section-header text-center absolute left-0 right-0" style={{ top: -24, transform: "translateY(-100%)" }}>{section.label}</h3>
-                  {section.content}
+                  <SectionIndexContext.Provider value={sectionIdx}>
+                    {section.content}
+                  </SectionIndexContext.Provider>
                 </div>
               </div>
             </div>
