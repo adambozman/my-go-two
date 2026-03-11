@@ -113,7 +113,7 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
             >
               <div className="flex-1 flex items-center justify-center">
                 <div className="w-full relative">
-                  <h3 className="section-header text-center absolute left-0 right-0" style={{ top: -24, transform: "translateY(-100%)" }}>{section.label}</h3>
+                  <h3 className="section-header text-center absolute left-0 right-0" style={{ top: -24, transform: "translateY(-100%)", ...section.labelStyle }}>{section.label}</h3>
                   <SectionIndexContext.Provider value={sectionIdx}>
                     {section.content}
                   </SectionIndexContext.Provider>
