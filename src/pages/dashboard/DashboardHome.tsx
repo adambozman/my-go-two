@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
+import CardEditButton from "@/components/CardEditButton";
 
 /* ═══════════════════════════════════════════
    PLACEHOLDER CARD DATA
