@@ -24,11 +24,12 @@ const BottomDots = () => {
         <button
           key={i}
           onClick={() => carouselState.setActiveIndex(i)}
-          className="w-2 h-2 rounded-full transition-all duration-300"
-          style={{
-            background: i === carouselState.activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
-            transform: i === carouselState.activeIndex ? "scale(1.3)" : "scale(1)",
-          }}
+            className="rounded-full transition-all duration-300"
+            style={{
+              width: 8,
+              height: 8,
+              background: i === carouselState.activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
+            }}
         />
       ))}
     </div>
