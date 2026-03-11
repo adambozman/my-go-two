@@ -388,12 +388,22 @@ const MyGoTwo = () => {
   };
 
   const grouped = categoryOrder
-    .map((cat) => ({
-      key: cat,
-      label: categoryLabels[cat] ?? cat,
-      items: templates.filter((t) => t.category === cat),
-    }))
-    .filter((g) => g.items.length > 0);
+    .map((cat) => {
+      const systemItems = templates.filter((t) => t.category === cat);
+      const customItems = customTemplates.filter((ct) => ct.category === cat);
+      return {
+        key: cat,
+        label: categoryLabels[cat] ?? cat,
+        items: systemItems,
+        customItems,
+      };
+    })
+    .filter((g) => g.items.length > 0 || g.customItems.length > 0);
+
+  const handleCustomTemplateClick = async (ct: any) => {
+    if (!user) return;
+    await createListFromTemplate(ct.name, ct.default_fields, undefined);
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -413,54 +423,56 @@ const MyGoTwo = () => {
             {loading ? (
               <p className="text-muted-foreground">Loading templates...</p>
             ) : (
-              grouped.map((group) => (
-                <div key={group.key} className="mb-10">
-                  <h3 className="text-base font-semibold text-muted-foreground mb-4 text-center">{group.label}</h3>
-                  <CategoryCoverFlow
-                    items={group.items.map((t) => ({
-                      id: t.id,
-                      name: t.name,
-                      image: getTemplateImage(t.name),
-                      fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
-                    }))}
-                    onSelect={(id) => {
-                      const t = templates.find((tpl) => tpl.id === id);
-                      if (t) handleTemplateClick(t);
-                    }}
-                    onAdd={openCreate}
-                    disabled={creating !== null}
-                  />
-                </div>
-              ))
+              grouped.map((group) => {
+                const allItems = [
+                  ...group.items.map((t) => ({
+                    id: t.id,
+                    name: t.name,
+                    image: getTemplateImage(t.name),
+                    fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
+                  })),
+                  ...group.customItems.map((ct) => ({
+                    id: ct.id,
+                    name: ct.name,
+                    image: ct.image_url || "",
+                    fieldCount: Array.isArray(ct.default_fields) ? ct.default_fields.length : 0,
+                  })),
+                ];
+
+                return (
+                  <div key={group.key} className="mb-10">
+                    <h3 className="text-base font-semibold text-muted-foreground mb-4 text-center">{group.label}</h3>
+                    <CategoryCoverFlow
+                      items={allItems}
+                      onSelect={(id) => {
+                        const t = templates.find((tpl) => tpl.id === id);
+                        if (t) {
+                          handleTemplateClick(t);
+                          return;
+                        }
+                        const ct = customTemplates.find((c) => c.id === id);
+                        if (ct) handleCustomTemplateClick(ct);
+                      }}
+                      onAdd={() => openCreateSheet(group.key, group.label)}
+                      disabled={creating !== null}
+                    />
+                  </div>
+                );
+              })
             )}
           </div>
 
           {/* Preferences Section */}
           <PreferencesSection />
 
-          {/* Dialog */}
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New List</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Title</Label>
-                  <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Food & Drinks" className="rounded-xl" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Description (optional)</Label>
-                  <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What's this list about?" className="rounded-xl" />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button className="rounded-full" onClick={handleSave} disabled={!title.trim()}>
-                  Create List
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          {/* Custom Card Creation Sheet */}
+          <CreateCustomCardSheet
+            open={createSheetOpen}
+            onOpenChange={setCreateSheetOpen}
+            category={createSheetCategory.key}
+            categoryLabel={createSheetCategory.label}
+            onCreated={fetchTemplates}
+          />
         </div>
       )}
     </AnimatePresence>
