@@ -150,15 +150,19 @@ const ConnectionsCoverFlow = ({
                 <div
                   className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
                     isActive ? "ring-2 ring-primary shadow-2xl" : ""
-                  }`}
-                  style={{ width: cardW, height: cardH }}
+                  } ${card.status === "placeholder" ? "border-2 border-dashed" : ""}`}
+                  style={{
+                    width: cardW,
+                    height: cardH,
+                    ...(card.status === "placeholder" ? { borderColor: "var(--swatch-viridian-odyssey)", opacity: 0.85 } : {}),
+                  }}
                 >
                   <div className="relative w-full h-full overflow-hidden">
                     <CardEditButton
                       title={card.name}
                       maxLength={20}
                       isConnection
-                      isNewConnection={card.isNew}
+                      isNewConnection={card.isNew || card.status === "placeholder"}
                       currentImage={card.image}
                       currentEmail={card.email}
                       onSaveConnection={(newLabel, newImage, newEmail) =>
@@ -169,6 +173,7 @@ const ConnectionsCoverFlow = ({
                       src={card.image}
                       alt={card.name}
                       className="w-full h-full object-cover"
+                      style={card.status === "placeholder" ? { filter: "saturate(0.4) brightness(0.85)" } : {}}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -177,6 +182,21 @@ const ConnectionsCoverFlow = ({
                         <span className="text-[10px] text-white/60 uppercase tracking-wider">Pending</span>
                       )}
                     </div>
+                    {card.status === "placeholder" && isActive && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <span
+                          className="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider"
+                          style={{
+                            background: "rgba(47, 95, 109, 0.75)",
+                            color: "rgba(246, 226, 212, 0.9)",
+                            backdropFilter: "blur(4px)",
+                            letterSpacing: "0.08em",
+                          }}
+                        >
+                          Tap to invite
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
