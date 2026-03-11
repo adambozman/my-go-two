@@ -13,6 +13,7 @@ interface SnapScrollLayoutProps {
 const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const touchStartY = useRef(0);
 
   const handleScroll = useCallback(() => {
     const el = containerRef.current;
@@ -33,9 +34,23 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
   const scrollTo = (index: number) => {
     const el = containerRef.current;
     if (!el) return;
+    const clamped = Math.max(0, Math.min(index, sections.length - 1));
     const sectionHeight = el.clientHeight;
-    el.scrollTo({ top: index * sectionHeight, behavior: "smooth" });
+    el.scrollTo({ top: clamped * sectionHeight, behavior: "smooth" });
   };
+
+  // Touch swipe for vertical snap
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    if (Math.abs(dy) > 50) {
+      const next = dy < 0 ? activeIndex + 1 : activeIndex - 1;
+      scrollTo(next);
+    }
+  }, [activeIndex, sections.length]);
 
   if (sections.length === 0) return null;
 
