@@ -9,7 +9,6 @@ const navItems = [
   { icon: Sparkles, url: "/dashboard/recommendations", label: "Recommendations" },
   { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Know Me" },
   { icon: Search, url: "/dashboard/search", label: "Search" },
-  { icon: Settings, url: "/dashboard/settings", label: "Settings" },
 ];
 
 export function AppSidebar() {
