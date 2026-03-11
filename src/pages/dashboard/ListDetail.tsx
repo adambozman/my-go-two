@@ -61,7 +61,11 @@ const ListDetail = () => {
     setCards(
       (cardsData ?? []).map((c) => ({
         ...c,
-        fields: (c.fields as unknown as CardField[]) ?? [],
+        fields: ((c.fields as unknown as any[]) ?? []).map((f: any) => ({
+          ...f,
+          label: f.label || f.name || "Untitled",
+          value: f.value ?? "",
+        })) as CardField[],
       }))
     );
     setTemplates(templatesData ?? []);
@@ -82,7 +86,12 @@ const ListDetail = () => {
     const t = templates.find((t) => t.id === templateId);
     if (!t) return;
     setCardTitle(t.name);
-    setFields((t.default_fields as unknown as CardField[]) ?? []);
+    const rawFields = (t.default_fields as unknown as any[]) ?? [];
+    setFields(rawFields.map((f: any) => ({
+      ...f,
+      label: f.label || f.name || "Untitled",
+      value: f.value ?? "",
+    })) as CardField[]);
   };
 
   const addField = () => setFields([...fields, { label: "", type: "text", value: "" }]);
