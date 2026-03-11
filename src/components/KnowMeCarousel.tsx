@@ -26,6 +26,7 @@ const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
 
 const KnowMeCarousel = ({ cards, onCardClick, loading }: KnowMeCarouselProps) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
+  const swipe = useSwipeCarousel(setActiveIndex, cards.length);
 
   if (cards.length === 0 && loading) {
     return (
@@ -40,7 +41,7 @@ const KnowMeCarousel = ({ cards, onCardClick, loading }: KnowMeCarouselProps) =>
 
   return (
     <div className="relative flex items-center justify-center py-4">
-      <div className="relative w-full h-[420px] overflow-hidden">
+      <div className="relative w-full h-[420px] overflow-hidden cursor-grab active:cursor-grabbing touch-none" onPointerDown={swipe.onPointerDown} onPointerUp={swipe.onPointerUp}>
         <div className="absolute inset-0 flex items-center justify-center">
           {cards.map((card, index) => {
             let offset = index - activeIndex;
