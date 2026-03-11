@@ -344,6 +344,7 @@ const HomeCoverFlow = ({ cards }: { cards: PlaceholderCard[] }) => {
 const DashboardHome = () => {
   const { user } = useAuth();
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
+  const [openConnection, setOpenConnection] = useState<{ card: ConnectionCard; rect: { x: number; y: number; width: number; height: number } } | null>(null);
 
   // Load connections from couples table (both as inviter and invitee)
   const loadConnections = useCallback(async () => {
