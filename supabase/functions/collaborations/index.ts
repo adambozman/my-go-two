@@ -65,6 +65,26 @@ async function sendInviteEmail(inviterName: string, inviteeEmail: string, invite
   }
 }
 
+async function createNotification(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  title: string,
+  body: string,
+  type: string = "partner"
+) {
+  try {
+    await supabase.from("notifications").insert({
+      user_id: userId,
+      title,
+      body,
+      type,
+      is_read: false,
+    });
+  } catch (e) {
+    console.error("Failed to create notification:", e);
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -88,24 +108,49 @@ Deno.serve(async (req) => {
 
     const { action, invite_id, inviter_id, invitee_email } = await req.json();
 
+    // Helper to get display name
+    const getDisplayName = async (userId: string) => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("user_id", userId)
+        .single();
+      return data?.display_name || "Someone";
+    };
+
     if (action === "send-invite-email") {
-      // Send invitation email to the invitee
       if (!invitee_email) {
         return new Response(JSON.stringify({ error: "Missing invitee_email" }), { status: 400, headers: corsHeaders });
       }
 
-      // Get inviter's display name
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("display_name")
-        .eq("user_id", user.id)
-        .single();
-
-      const inviterName = profile?.display_name || user.email || "Someone";
+      const inviterName = await getDisplayName(user.id);
       const origin = req.headers.get("origin") || req.headers.get("referer")?.replace(/\/+$/, "") || "https://mygotwo.com";
       const inviteLink = `${origin}/connect?invite=${user.id}`;
 
+      // Send email
       await sendInviteEmail(inviterName, invitee_email, inviteLink);
+
+      // If invitee already has an account, create an in-app notification for them
+      const { data: inviteeUsers } = await supabase.auth.admin.listUsers();
+      const inviteeUser = inviteeUsers?.users?.find(u => u.email === invitee_email);
+      if (inviteeUser) {
+        await createNotification(
+          supabase,
+          inviteeUser.id,
+          "New Connection Invite",
+          `${inviterName} wants to connect with you on GoTwo!`,
+          "partner"
+        );
+      }
+
+      // Notify the inviter that the invite was sent
+      await createNotification(
+        supabase,
+        user.id,
+        "Invitation Sent",
+        `Your invitation to ${invitee_email} has been sent.`,
+        "general"
+      );
 
       return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
     }
@@ -132,10 +177,29 @@ Deno.serve(async (req) => {
         return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: corsHeaders });
       }
 
+      // Notify all inviters that their invitation was accepted
+      const accepterName = await getDisplayName(user.id);
+      for (const couple of pending) {
+        await createNotification(
+          supabase,
+          couple.inviter_id,
+          "Connection Accepted! 🎉",
+          `${accepterName} accepted your invitation and is now connected with you.`,
+          "partner"
+        );
+      }
+
       return new Response(JSON.stringify({ success: true, accepted: pending.length }), { headers: corsHeaders });
     }
 
     if (action === "accept-invite") {
+      const { data: couple } = await supabase
+        .from("couples")
+        .select("*")
+        .eq("id", invite_id)
+        .eq("status", "pending")
+        .single();
+
       const { error } = await supabase
         .from("couples")
         .update({ invitee_id: user.id, status: "accepted" })
@@ -145,6 +209,19 @@ Deno.serve(async (req) => {
       if (error) {
         return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: corsHeaders });
       }
+
+      // Notify the inviter
+      if (couple) {
+        const accepterName = await getDisplayName(user.id);
+        await createNotification(
+          supabase,
+          couple.inviter_id,
+          "Connection Accepted! 🎉",
+          `${accepterName} accepted your invitation and is now connected with you.`,
+          "partner"
+        );
+      }
+
       return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
     }
 
@@ -173,6 +250,27 @@ Deno.serve(async (req) => {
       if (error) {
         return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: corsHeaders });
       }
+
+      // Notify both parties of the new connection
+      const connectorName = await getDisplayName(user.id);
+      const inviterName = await getDisplayName(inviter_id);
+
+      await createNotification(
+        supabase,
+        inviter_id,
+        "New Connection! 🎉",
+        `${connectorName} connected with you via your invite link.`,
+        "partner"
+      );
+
+      await createNotification(
+        supabase,
+        user.id,
+        "Connected! 🎉",
+        `You're now connected with ${inviterName}.`,
+        "partner"
+      );
+
       return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
     }
 
