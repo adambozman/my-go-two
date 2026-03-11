@@ -431,7 +431,7 @@ const MyGoTwo = () => {
                   <h3 className="font-semibold text-white text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Start from Scratch</h3>
                   <p className="text-white/70 text-xs mt-0.5">Create a custom list with your own fields</p>
                 </div>
-                <ChevronRight className="ml-auto h-5 w-5 text-muted-foreground/50 flex-shrink-0" />
+                <ChevronRight className="ml-auto h-5 w-5 text-white/50 flex-shrink-0" />
               </div>
             </button>
           </div>
