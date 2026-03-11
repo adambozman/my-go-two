@@ -104,6 +104,25 @@ const CardEditButton = ({
   const [selectedPhoto, setSelectedPhoto] = useState(currentImage || "");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Close edit panel when clicking outside
+  useEffect(() => {
+    if (!editing) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setEditing(false);
+      }
+    };
+    // Use setTimeout to avoid the same click that opened the panel from closing it
+    const timer = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [editing]);
 
   useEffect(() => {
     if (editing) {
