@@ -331,102 +331,102 @@ const SettingsPage = () => {
 
       {/* Connections Section */}
       {activeSection === "connections" && (
-        <div className="card-design-neumorph p-8">
-          <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block">
+        <div className="mx-auto" style={{ maxWidth: 520 }}>
+          <button
+            onClick={() => setActiveSection(null)}
+            className="hover:underline block text-left"
+            style={{ color: '#2d6870', fontFamily: "'Jost', sans-serif", fontWeight: 400, fontSize: 13, marginBottom: 12 }}
+          >
             ← Back to Settings
           </button>
-          <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Connections</h2>
+          <div className="card-design-neumorph" style={{ padding: 40 }}>
+            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Connections</h2>
 
-          {/* Invite Methods */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <button
-              onClick={() => setQrDialogOpen(true)}
-              className="card-design-neumorph p-6 text-left hover:scale-[1.01] transition-transform group flex items-center gap-4"
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
-                <QrCode className="w-6 h-6" style={{ color: 'var(--swatch-viridian-odyssey)' }} />
-              </div>
-              <div>
-                <h3 className="font-semibold text-primary group-hover:underline">Share QR Code</h3>
-                <p className="text-sm text-muted-foreground">Scan to connect instantly</p>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setEmailDialogOpen(true)}
-              className="card-design-neumorph p-6 text-left hover:scale-[1.01] transition-transform group flex items-center gap-4"
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
-                <Mail className="w-6 h-6" style={{ color: 'var(--swatch-cedar-grove)' }} />
-              </div>
-              <div>
-                <h3 className="font-semibold text-primary group-hover:underline">Invite by Email</h3>
-                <p className="text-sm text-muted-foreground">Send an email invitation</p>
-              </div>
-            </button>
-          </div>
-
-          {/* Pending Invites */}
-          {pendingForMe.length > 0 && (
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold text-primary">Pending Invitations</h3>
-                {pendingForMe.length > 1 && (
-                  <Button size="sm" variant="outline" className="rounded-full" onClick={handleAcceptAll}>
-                    Accept All
-                  </Button>
-                )}
-              </div>
-              <div className="space-y-3">
-                {pendingForMe.map((c) => (
-                  <div key={c.id} className="card-design-neumorph p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-5 h-5" style={{ color: 'var(--swatch-sonoma-chardonnay)' }} />
-                      <span className="text-sm text-muted-foreground">Someone invited you to connect</span>
-                    </div>
-                    <Button size="sm" className="rounded-full" onClick={() => handleAccept(c.id)}>Accept</Button>
-                  </div>
-                ))}
-              </div>
+            {/* Invite Methods */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+              <button
+                onClick={() => setQrDialogOpen(true)}
+                className="card-design-neumorph p-5 text-left hover:scale-[1.01] transition-transform group flex items-center gap-3"
+              >
+                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>
+                  <QrCode className="w-5 h-5" style={{ color: 'var(--swatch-teal)' }} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-sm group-hover:underline" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Share QR Code</h3>
+                  <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>Scan to connect</p>
+                </div>
+              </button>
+              <button
+                onClick={() => setEmailDialogOpen(true)}
+                className="card-design-neumorph p-5 text-left hover:scale-[1.01] transition-transform group flex items-center gap-3"
+              >
+                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>
+                  <Mail className="w-5 h-5" style={{ color: 'var(--swatch-teal)' }} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-sm group-hover:underline" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Invite by Email</h3>
+                  <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>Send an invitation</p>
+                </div>
+              </button>
             </div>
-          )}
 
-          {/* Connections List */}
-          <div>
-            <h3 className="text-base font-bold text-primary mb-4">Your Connections</h3>
-            {connectionsLoading ? (
-              <p className="text-muted-foreground">Loading...</p>
-            ) : couples.length === 0 && pendingForMe.length === 0 ? (
-              <div className="card-design-neumorph p-8 text-center">
-                <Users className="w-10 h-10 mx-auto mb-3" style={{ color: 'var(--swatch-gypsum-rose)' }} />
-                <p className="text-muted-foreground">No connections yet. Invite someone using a QR code or email above!</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {couples.map((c) => (
-                  <div key={c.id} className="card-design-neumorph p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {getStatusIcon(c.status)}
-                      <div>
-                        <p className="text-sm font-medium text-primary">{c.invitee_email}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {c.inviter_id === user?.id ? "You invited" : "Invited you"} · {new Date(c.created_at).toLocaleDateString()}
-                        </p>
+            {/* Pending Invites */}
+            {pendingForMe.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Pending Invitations</h3>
+                  {pendingForMe.length > 1 && (
+                    <Button size="sm" variant="outline" className="rounded-full" onClick={handleAcceptAll}>Accept All</Button>
+                  )}
+                </div>
+                <div className="space-y-3">
+                  {pendingForMe.map((c) => (
+                    <div key={c.id} className="card-design-neumorph p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Clock className="w-5 h-5" style={{ color: 'var(--swatch-sonoma-chardonnay)' }} />
+                        <span className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>Someone invited you to connect</span>
                       </div>
+                      <Button size="sm" className="rounded-full" onClick={() => handleAccept(c.id)}>Accept</Button>
                     </div>
-                    <span
-                      className="text-xs font-medium px-2 py-1 rounded-full"
-                      style={{
-                        background: c.status === "accepted" ? 'rgba(157, 166, 79, 0.2)' : 'rgba(233, 203, 116, 0.2)',
-                        color: c.status === "accepted" ? 'var(--swatch-gothic-revival-green)' : 'var(--swatch-sonoma-chardonnay)',
-                      }}
-                    >
-                      {getStatusLabel(c.status)}
-                    </span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
+
+            {/* Connections List */}
+            <div>
+              <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Your Connections</h3>
+              {connectionsLoading ? (
+                <p style={{ color: 'var(--swatch-text-light)' }} className="text-sm">Loading...</p>
+              ) : couples.length === 0 && pendingForMe.length === 0 ? (
+                <div className="card-design-neumorph p-8 text-center">
+                  <Users className="w-10 h-10 mx-auto mb-3" style={{ color: 'var(--swatch-text-light)' }} />
+                  <p className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>No connections yet. Invite someone above!</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {couples.map((c) => (
+                    <div key={c.id} className="card-design-neumorph p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {getStatusIcon(c.status)}
+                        <div>
+                          <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{c.invitee_email}</p>
+                          <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>
+                            {c.inviter_id === user?.id ? "You invited" : "Invited you"} · {new Date(c.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-medium px-2 py-1 rounded-full" style={{
+                        background: c.status === "accepted" ? 'rgba(157, 166, 79, 0.2)' : 'rgba(233, 203, 116, 0.2)',
+                        color: c.status === "accepted" ? 'var(--swatch-gothic-revival-green)' : 'var(--swatch-sonoma-chardonnay)',
+                      }}>
+                        {getStatusLabel(c.status)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
