@@ -134,8 +134,8 @@ export const allTemplateSubtypes: Record<string, SubtypeItem[]> = {
     { id: "flats", name: "Flats", image: imgFlats, gender: ["female"], fields: [tf("Size (US)"), tf("Size (EU)"), tf("Style", "select", ["Ballet", "Loafer", "Mule", "Espadrille"]), tf("Preferred Brands"), tf("Width", "select", ["Narrow", "Standard", "Wide"]), tf("Fit Notes"), tf("Example Brand That Fits Perfectly")] },
   ],
   "Scents": [
-    { id: "perfume", name: "Perfume", image: imgScentPerfume, fields: [...productFields("Concentration", ["EDT", "EDP", "Parfum", "Cologne"]), tf("Scent Family", "select", ["Floral", "Woody", "Fresh", "Oriental", "Gourmand"])] },
-    { id: "cologne", name: "Cologne", image: imgScentPerfume, fields: [...productFields("Concentration", ["EDT", "EDP", "Cologne"]), tf("Scent Family", "select", ["Fresh", "Woody", "Spicy", "Aquatic", "Aromatic"])] },
+    { id: "perfume", name: "Perfume", image: imgScentPerfume, gender: ["female"], fields: [...productFields("Concentration", ["EDT", "EDP", "Parfum", "Cologne"]), tf("Scent Family", "select", ["Floral", "Woody", "Fresh", "Oriental", "Gourmand"])] },
+    { id: "cologne", name: "Cologne", image: imgScentPerfume, gender: ["male"], fields: [...productFields("Concentration", ["EDT", "EDP", "Cologne"]), tf("Scent Family", "select", ["Fresh", "Woody", "Spicy", "Aquatic", "Aromatic"])] },
     { id: "candle", name: "Candle", image: imgScentCandles, fields: [...productFields("Wax Type", ["Soy", "Beeswax", "Coconut", "Paraffin", "No Preference"]), tf("Size", "select", ["Small", "Medium", "Large", "Travel"])] },
     { id: "body-lotion", name: "Body Lotion", image: imgScentBodycare, fields: productFields("Skin Type", ["Normal", "Dry", "Sensitive", "All"]) },
     { id: "body-wash", name: "Body Wash", image: imgScentBodycare, fields: productFields("Type", ["Gel", "Cream", "Oil", "Bar"]) },
