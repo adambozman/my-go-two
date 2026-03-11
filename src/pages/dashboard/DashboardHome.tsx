@@ -397,16 +397,12 @@ const DashboardHome = () => {
 
       // If this is a "new" or placeholder card, create it
       if (cardId.startsWith("new-") || cardId.startsWith("placeholder-")) {
-        if (!_email) {
-          toast.error("Email is required");
-          return;
-        }
         const { error } = await supabase.from("couples").insert({
           inviter_id: user.id,
-          invitee_email: _email,
+          invitee_email: _email || null,
           display_label: newLabel,
           photo_url: newImage || null,
-          status: "pending",
+          status: _email ? "pending" : "draft",
         });
 
         if (error) {
@@ -415,8 +411,7 @@ const DashboardHome = () => {
           return;
         }
 
-        toast.success("Connection invitation sent!");
-        // Remove the temp card and reload
+        toast.success(_email ? "Connection invitation sent!" : "Connection saved!");
         setConnections((prev) => prev.filter((c) => c.id !== cardId));
         loadConnections();
         return;
