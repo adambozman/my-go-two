@@ -284,7 +284,7 @@ export const templateSubcategories: Record<string, SubcategoryGroup[]> = {
       ],
     },
     {
-      id: "makeup", name: "Makeup", image: imgGroomingMakeup,
+      id: "makeup", name: "Makeup", image: imgGroomingMakeup, gender: ["female"],
       products: [
         { id: "foundation", name: "Foundation", image: imgGroomingMakeup, fields: [...productFields("Finish", ["Matte", "Dewy", "Satin", "Natural"]), tf("Shade")] },
         { id: "concealer", name: "Concealer", image: imgGroomingMakeup, fields: [...productFields("Coverage", ["Light", "Medium", "Full"]), tf("Shade")] },
