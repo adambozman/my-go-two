@@ -15,7 +15,7 @@ const FLANK_W = 160;
 const FLANK_H = 260;
 const X_GAP = 180;
 const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
-import { getDefaultPhotoForLabel } from "@/data/stockPhotos";
+import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
 
 // Local category images
 import imgBirthdays from "@/assets/stock/birthdays.jpg";
