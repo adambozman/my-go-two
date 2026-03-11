@@ -98,7 +98,7 @@ const CardEditButton = ({
   title, onRename, onSaveConnection, currentImage, currentEmail,
   maxLength, isConnection, isNewConnection,
 }: CardEditButtonProps) => {
-  const [editing, setEditing] = useState(isNewConnection || false);
+  const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(title);
   const [email, setEmail] = useState(currentEmail || "");
   const [selectedPhoto, setSelectedPhoto] = useState(currentImage || "");
