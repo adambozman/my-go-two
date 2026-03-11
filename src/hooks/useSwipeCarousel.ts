@@ -7,20 +7,21 @@ export function useSwipeCarousel(
   length: number
 ) {
   const startX = useRef(0);
-  const isDragging = useRef(false);
+  const startY = useRef(0);
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     startX.current = e.clientX;
-    isDragging.current = true;
+    startY.current = e.clientY;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }, []);
 
   const onPointerUp = useCallback((e: React.PointerEvent) => {
-    if (!isDragging.current) return;
-    isDragging.current = false;
-    const diff = e.clientX - startX.current;
-    if (Math.abs(diff) > SWIPE_THRESHOLD) {
-      if (diff < 0) {
+    const dx = e.clientX - startX.current;
+    const dy = e.clientY - startY.current;
+
+    // Only handle horizontal swipes; let vertical pass through to snap scroll
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > SWIPE_THRESHOLD) {
+      if (dx < 0) {
         setActiveIndex((i) => (i + 1) % length);
       } else {
         setActiveIndex((i) => (i - 1 + length) % length);
