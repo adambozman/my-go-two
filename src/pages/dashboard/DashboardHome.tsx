@@ -107,10 +107,12 @@ const ConnectionsCoverFlow = ({
   cards,
   onSaveConnection,
   onAddConnection,
+  onOpenConnection,
 }: {
   cards: ConnectionCard[];
   onSaveConnection: (cardId: string, newLabel: string, newImage: string, email?: string) => void;
   onAddConnection: () => void;
+  onOpenConnection?: (card: ConnectionCard, rect: DOMRect) => void;
 }) => {
   // Include a virtual "add" card at the end
   const totalCount = cards.length + 1;
