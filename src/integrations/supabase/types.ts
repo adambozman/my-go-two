@@ -119,28 +119,34 @@ export type Database = {
       couples: {
         Row: {
           created_at: string
+          display_label: string | null
           id: string
           invitee_email: string
           invitee_id: string | null
           inviter_id: string
+          photo_url: string | null
           status: string
           updated_at: string
         }
         Insert: {
           created_at?: string
+          display_label?: string | null
           id?: string
           invitee_email: string
           invitee_id?: string | null
           inviter_id: string
+          photo_url?: string | null
           status?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
+          display_label?: string | null
           id?: string
           invitee_email?: string
           invitee_id?: string | null
           inviter_id?: string
+          photo_url?: string | null
           status?: string
           updated_at?: string
         }
