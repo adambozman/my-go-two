@@ -438,7 +438,7 @@ const DashboardHome = () => {
          ══════════════════════════════════════ */}
 
       <motion.div variants={itemVariant}>
-        <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-4">Quick Actions</p>
+        <p className="section-header mb-4">Quick Actions</p>
         <div className="grid grid-cols-2 gap-4">
           {quickActionData.map(({ label, desc, route, img }) => (
             <motion.button key={label}
