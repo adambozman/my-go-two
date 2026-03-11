@@ -87,7 +87,7 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
                 {section.content}
                 {/* Bottom dot pagination */}
                 {sections.length > 1 && (
-                  <div className="absolute left-0 right-0 flex justify-center gap-2.5 z-30" style={{ bottom: -24, transform: "translateY(100%)" }}>
+                  <div className="absolute left-0 right-0 flex justify-center gap-2.5 z-30" style={{ bottom: -40, transform: "translateY(100%)" }}>
                     {sections.map((s, i) => (
                       <button
                         key={s.id}
