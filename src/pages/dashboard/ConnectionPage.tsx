@@ -179,8 +179,8 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
       {/* Header */}
       <div className="flex flex-col items-center pt-8 pb-2 px-4">
         <div
-          className="w-16 h-16 rounded-full overflow-hidden mb-2 ring-2"
-          style={{ ringColor: "#2D6870" }}
+        className="w-16 h-16 rounded-full overflow-hidden mb-2 ring-2"
+        style={{ "--tw-ring-color": "#2D6870" } as React.CSSProperties}
         >
           <img
             src={connection.image}
