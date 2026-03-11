@@ -385,7 +385,8 @@ const Questionnaires = () => {
   ];
 
   return (
-    <div className="h-full">
+    <div className="h-full relative">
+      <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "#2D6870", fontWeight: 400 }} className="absolute top-0 left-0 px-4 pt-1 z-10">Tap a card to view or edit your details.</p>
       <SnapScrollLayout
         sections={sections.map((section) => ({
           id: section.id,
