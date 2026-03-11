@@ -221,7 +221,7 @@ const PreferencesSection = () => {
           <ChevronLeft className="h-5 w-5" />
         </Button>
 
-        <div className="relative w-full h-[320px] overflow-hidden">
+        <div className="relative w-full h-[420px] overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
             {imageQuestions.map((q, index) => {
               let offset = index - activeIndex;
@@ -232,9 +232,9 @@ const PreferencesSection = () => {
               const absOffset = Math.abs(offset);
               if (absOffset > 2) return null;
 
-              const xOffset = offset * (isActive ? 170 : 150);
-              const cardW = isActive ? 220 : 160;
-              const cardH = isActive ? 300 : 200;
+              const xOffset = offset * (isActive ? 190 : 170);
+              const cardW = isActive ? 280 : 200;
+              const cardH = isActive ? 380 : 250;
               const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
               const zIndex = 10 - absOffset;
               const blur = isActive ? 0 : 2;
@@ -257,17 +257,17 @@ const PreferencesSection = () => {
                     <div className="relative w-full h-full overflow-hidden">
                       <img src={getQuestionCoverImage(q)} alt={q.title} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-3">
-                        <h3 className="text-white font-semibold text-xs leading-tight drop-shadow" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                      <div className="absolute bottom-0 left-0 right-0 p-4">
+                        <h3 className="text-white font-semibold text-sm leading-tight drop-shadow" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                           {q.title}
                         </h3>
-                        <p className="text-white/70 text-[10px] mt-0.5">
+                        <p className="text-white/70 text-xs mt-1">
                           {answered ? `${(selections[q.id] || []).length} selected` : "Tap to answer"}
                         </p>
                       </div>
                       {answered && (
-                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>
-                          <span className="text-white text-[10px]">✓</span>
+                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>
+                          <span className="text-white text-xs">✓</span>
                         </div>
                       )}
                     </div>
@@ -413,9 +413,6 @@ const MyGoTwo = () => {
         />
       ) : (
         <div className="max-w-5xl">
-          {/* Preferences Section */}
-          <PreferencesSection />
-
           {/* Templates by Category */}
           <div className="mb-10">
             {loading ? (
@@ -441,6 +438,9 @@ const MyGoTwo = () => {
               ))
             )}
           </div>
+
+          {/* Preferences Section */}
+          <PreferencesSection />
 
           {/* Create Your Own */}
           <div className="mb-10">
