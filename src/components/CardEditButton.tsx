@@ -86,15 +86,21 @@ function getPhotosForLabel(label: string): { id: string; url: string }[] {
 interface CardEditButtonProps {
   title: string;
   onRename?: (newTitle: string) => void;
-  onSaveConnection?: (newTitle: string, newImage: string) => void;
+  onSaveConnection?: (newTitle: string, newImage: string, email?: string) => void;
   currentImage?: string;
+  currentEmail?: string;
   maxLength?: number;
   isConnection?: boolean;
+  isNewConnection?: boolean;
 }
 
-const CardEditButton = ({ title, onRename, onSaveConnection, currentImage, maxLength, isConnection }: CardEditButtonProps) => {
-  const [editing, setEditing] = useState(false);
+const CardEditButton = ({
+  title, onRename, onSaveConnection, currentImage, currentEmail,
+  maxLength, isConnection, isNewConnection,
+}: CardEditButtonProps) => {
+  const [editing, setEditing] = useState(isNewConnection || false);
   const [value, setValue] = useState(title);
+  const [email, setEmail] = useState(currentEmail || "");
   const [selectedPhoto, setSelectedPhoto] = useState(currentImage || "");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -103,19 +109,17 @@ const CardEditButton = ({ title, onRename, onSaveConnection, currentImage, maxLe
     if (editing) {
       setValue(title);
       setSelectedPhoto(currentImage || "");
+      setEmail(currentEmail || "");
     }
-  }, [editing, title, currentImage]);
+  }, [editing, title, currentImage, currentEmail]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
       return;
     }
-    // Validate size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Image must be under 5MB");
       return;
@@ -149,19 +153,32 @@ const CardEditButton = ({ title, onRename, onSaveConnection, currentImage, maxLe
       toast.error("Failed to upload photo");
     } finally {
       setUploading(false);
-      // Reset input so the same file can be re-selected
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
   if (editing && isConnection) {
-    const photos = getPhotosForLabel(title);
+    const photos = getPhotosForLabel(value || title);
     return (
       <div
         className="absolute inset-0 z-20 flex flex-col rounded-2xl p-4 overflow-y-auto"
         style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)" }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Email field — only for new or editable connections */}
+        <label className="text-[11px] font-medium text-white/60 mb-1 tracking-wide uppercase">Their Email</label>
+        <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full rounded-lg px-3 py-2 text-sm bg-white/90 text-gray-900 outline-none mb-3"
+          placeholder="name@example.com"
+          type="email"
+          disabled={!!currentEmail && !isNewConnection}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setEditing(false);
+          }}
+        />
+
         {/* Label field */}
         <label className="text-[11px] font-medium text-white/60 mb-1 tracking-wide uppercase">Display Label</label>
         <input
@@ -170,7 +187,7 @@ const CardEditButton = ({ title, onRename, onSaveConnection, currentImage, maxLe
           onChange={(e) => setValue(e.target.value)}
           className="w-full rounded-lg px-3 py-2 text-sm bg-white/90 text-gray-900 outline-none mb-3"
           placeholder="What do you call them?"
-          autoFocus
+          autoFocus={!isNewConnection}
           onKeyDown={(e) => {
             if (e.key === "Escape") setEditing(false);
           }}
@@ -179,7 +196,6 @@ const CardEditButton = ({ title, onRename, onSaveConnection, currentImage, maxLe
         {/* Photo grid */}
         <label className="text-[11px] font-medium text-white/60 mb-1.5 tracking-wide uppercase">Photo</label>
         <div className="grid grid-cols-3 gap-1.5 mb-3">
-          {/* Upload button — first tile */}
           <button
             className="relative rounded-lg overflow-hidden aspect-square flex flex-col items-center justify-center gap-1 border border-dashed border-white/30"
             style={{ background: "rgba(255,255,255,0.08)" }}
@@ -223,11 +239,10 @@ const CardEditButton = ({ title, onRename, onSaveConnection, currentImage, maxLe
             );
           })}
 
-          {/* Show uploaded photo as selectable tile if it's a custom URL */}
           {selectedPhoto && !photos.some((p) => p.url === selectedPhoto) && (
             <button
               className="relative rounded-lg overflow-hidden aspect-square"
-              onClick={() => {/* already selected */}}
+              onClick={() => {}}
             >
               <img src={selectedPhoto} alt="Your photo" className="w-full h-full object-cover" />
               <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(45,104,112,0.45)" }}>
@@ -246,7 +261,18 @@ const CardEditButton = ({ title, onRename, onSaveConnection, currentImage, maxLe
           onClick={() => {
             const finalLabel = value.trim() || title;
             const finalPhoto = selectedPhoto || currentImage || "";
-            onSaveConnection?.(finalLabel, finalPhoto);
+            const finalEmail = email.trim();
+
+            if (isNewConnection && !finalEmail) {
+              toast.error("Please enter their email address");
+              return;
+            }
+            if (finalEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(finalEmail)) {
+              toast.error("Please enter a valid email address");
+              return;
+            }
+
+            onSaveConnection?.(finalLabel, finalPhoto, finalEmail || undefined);
             setEditing(false);
           }}
         >
