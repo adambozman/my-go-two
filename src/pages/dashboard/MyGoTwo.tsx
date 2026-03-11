@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -14,6 +15,8 @@ import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverF
 import { allTemplateSubtypes } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
 import { AnimatePresence } from "framer-motion";
+import { profileQuestions } from "@/data/profileQuestions";
+import { getStyleImage } from "@/data/genderImages";
 
 // Template images
 import imgClothingSizes from "@/assets/templates/clothing-sizes.jpg";
@@ -105,6 +108,185 @@ const categoryLabels: Record<string, string> = {
 
 const categoryOrder = ["personal", "food-drink", "gifts-occasions", "experiences", "preferences"];
 
+// ── Preferences Section (profile questions cover flow) ──
+const PreferencesSection = () => {
+  const { profileAnswers } = usePersonalization();
+  const gender = (profileAnswers?.identity as string) || "male";
+  const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
+
+  const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
+  const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
+  const [selections, setSelections] = useState<Record<string, string[]>>(() => {
+    const saved: Record<string, string[]> = {};
+    if (profileAnswers) {
+      for (const q of imageQuestions) {
+        if (profileAnswers[q.id]) {
+          const val = profileAnswers[q.id];
+          saved[q.id] = Array.isArray(val) ? (val as string[]) : [val as string];
+        }
+      }
+    }
+    return saved;
+  });
+
+  const goLeft = () => setActiveIndex((i) => (i - 1 + imageQuestions.length) % imageQuestions.length);
+  const goRight = () => setActiveIndex((i) => (i + 1) % imageQuestions.length);
+
+  const getQuestionCoverImage = (q: (typeof imageQuestions)[0]) => {
+    const firstOpt = q.options[0];
+    const genderImg = getStyleImage(firstOpt.id, gender as any);
+    if (genderImg) return genderImg;
+    return firstOpt.localImage || firstOpt.image || "";
+  };
+
+  const getOptionImage = (optionId: string, fallbackLocal?: string, fallbackUrl?: string) => {
+    const genderImg = getStyleImage(optionId, gender as any);
+    if (genderImg) return genderImg;
+    return fallbackLocal || fallbackUrl || "";
+  };
+
+  const toggleOption = (questionId: string, optionId: string, multiSelect: boolean) => {
+    setSelections((prev) => {
+      const current = prev[questionId] || [];
+      if (!multiSelect) {
+        return { ...prev, [questionId]: current.includes(optionId) ? [] : [optionId] };
+      }
+      return {
+        ...prev,
+        [questionId]: current.includes(optionId)
+          ? current.filter((id) => id !== optionId)
+          : [...current, optionId],
+      };
+    });
+  };
+
+  // Detail view
+  if (selectedQuestion) {
+    const question = imageQuestions.find((q) => q.id === selectedQuestion)!;
+    const isMulti = question.multiSelect !== false;
+    const selected = selections[question.id] || [];
+
+    return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+        <Button variant="ghost" size="sm" onClick={() => setSelectedQuestion(null)} className="text-muted-foreground">
+          ← Back
+        </Button>
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+            {question.title}
+          </h1>
+          <p className="text-muted-foreground text-sm">{question.subtitle}</p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+          {question.options.map((opt) => {
+            const isSelected = selected.includes(opt.id);
+            return (
+              <motion.button
+                key={opt.id}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => toggleOption(question.id, opt.id, isMulti)}
+                className={`relative overflow-hidden transition-all duration-200 ${
+                  isSelected ? "ring-2 ring-primary scale-[1.03] shadow-xl" : "hover:scale-[1.02] hover:shadow-lg"
+                }`}
+                style={{ borderRadius: "1.2rem" }}
+              >
+                <div className="aspect-[4/5] relative">
+                  <img src={getOptionImage(opt.id, opt.localImage, opt.image)} alt={opt.label} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
+                    <span className="text-sm font-semibold text-white leading-tight drop-shadow">{opt.label}</span>
+                  </div>
+                  {isSelected && (
+                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-md" style={{ background: "var(--swatch-teal)" }}>
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                  )}
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Cover flow
+  return (
+    <div className="mb-10">
+      <h3 className="text-base font-semibold text-muted-foreground mb-2 text-center">My Preferences</h3>
+      <p className="text-muted-foreground text-xs text-center mb-4">Tap a card to review your preferences.</p>
+
+      <div className="relative flex items-center justify-center">
+        <Button variant="ghost" size="icon" onClick={goLeft} className="absolute left-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md">
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+
+        <div className="relative w-full h-[320px] overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            {imageQuestions.map((q, index) => {
+              let offset = index - activeIndex;
+              const half = imageQuestions.length / 2;
+              if (offset > half) offset -= imageQuestions.length;
+              if (offset < -half) offset += imageQuestions.length;
+              const isActive = offset === 0;
+              const absOffset = Math.abs(offset);
+              if (absOffset > 2) return null;
+
+              const xOffset = offset * (isActive ? 170 : 150);
+              const cardW = isActive ? 220 : 160;
+              const cardH = isActive ? 300 : 200;
+              const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
+              const zIndex = 10 - absOffset;
+              const blur = isActive ? 0 : 2;
+              const opacity = isActive ? 1 : 0.5;
+              const answered = (selections[q.id] || []).length > 0;
+
+              return (
+                <motion.div
+                  key={q.id}
+                  animate={{ x: xOffset, scale, opacity, filter: `blur(${blur}px)` }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="absolute cursor-pointer"
+                  style={{ zIndex }}
+                  onClick={() => (isActive ? setSelectedQuestion(q.id) : setActiveIndex(index))}
+                >
+                  <div
+                    className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${isActive ? "ring-2 ring-primary shadow-2xl" : ""}`}
+                    style={{ width: cardW, height: cardH }}
+                  >
+                    <div className="relative w-full h-full overflow-hidden">
+                      <img src={getQuestionCoverImage(q)} alt={q.title} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-3">
+                        <h3 className="text-white font-semibold text-xs leading-tight drop-shadow" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                          {q.title}
+                        </h3>
+                        <p className="text-white/70 text-[10px] mt-0.5">
+                          {answered ? `${(selections[q.id] || []).length} selected` : "Tap to answer"}
+                        </p>
+                      </div>
+                      {answered && (
+                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>
+                          <span className="text-white text-[10px]">✓</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+
+        <Button variant="ghost" size="icon" onClick={goRight} className="absolute right-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md">
+          <ChevronRight className="h-5 w-5" />
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// ── Main MyGoTwo Page ──
 const MyGoTwo = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -118,7 +300,6 @@ const MyGoTwo = () => {
     return templateImageMap[name] || "";
   };
 
-
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState<string | null>(null);
@@ -127,9 +308,6 @@ const MyGoTwo = () => {
   const [description, setDescription] = useState("");
   const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[] } | null>(null);
 
-
-
-  // Reopen cover flow if navigating back from list detail
   useEffect(() => {
     const state = location.state as { openTemplate?: string } | null;
     if (state?.openTemplate && allTemplateSubtypes[state.openTemplate]) {
@@ -155,9 +333,7 @@ const MyGoTwo = () => {
     setDialogOpen(false);
     setTitle("");
     setDescription("");
-    if (newList) {
-      navigate(`/dashboard/lists/${newList.id}`);
-    }
+    if (newList) navigate(`/dashboard/lists/${newList.id}`);
   };
 
   const openCreate = () => {
@@ -171,15 +347,11 @@ const MyGoTwo = () => {
       toast({ title: "Please log in first", variant: "destructive" });
       return;
     }
-    
-    // Check if this template has subtypes (cover flow)
     const subtypes = allTemplateSubtypes[template.name];
     if (subtypes) {
       setCoverFlowTemplate({ name: template.name, subtypes });
       return;
     }
-
-    // No subtypes — create list directly
     await createListFromTemplate(template.name, template.default_fields, template.id);
   };
 
@@ -199,26 +371,17 @@ const MyGoTwo = () => {
         .insert({ title: name, description: `Created from template`, user_id: user.id })
         .select()
         .single();
-
       if (listError) {
         toast({ title: "Error creating list", description: listError.message, variant: "destructive" });
         setCreating(null);
         return;
       }
-
       if (newList) {
         const { error: cardError } = await supabase.from("cards").insert({
-          title: name,
-          fields,
-          list_id: newList.id,
-          user_id: user.id,
+          title: name, fields, list_id: newList.id, user_id: user.id,
           ...(templateId ? { template_id: templateId } : {}),
         });
-
-        if (cardError) {
-          toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
-        }
-
+        if (cardError) toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
         const fromTemplate = coverFlowTemplate?.name;
         setCoverFlowTemplate(null);
         navigate(`/dashboard/lists/${newList.id}`, { state: { fromTemplate } });
@@ -239,89 +402,88 @@ const MyGoTwo = () => {
 
   return (
     <AnimatePresence mode="wait">
-    {coverFlowTemplate ? (
-      <TemplateCoverFlow
-        key="coverflow"
-        templateName={coverFlowTemplate.name}
-        subtypes={coverFlowTemplate.subtypes}
-        onBack={() => setCoverFlowTemplate(null)}
-        onSelect={handleSubtypeSelect}
-        creating={creating !== null}
-      />
-    ) : (
-    <div className="max-w-5xl">
+      {coverFlowTemplate ? (
+        <TemplateCoverFlow
+          key="coverflow"
+          templateName={coverFlowTemplate.name}
+          subtypes={coverFlowTemplate.subtypes}
+          onBack={() => setCoverFlowTemplate(null)}
+          onSelect={handleSubtypeSelect}
+          creating={creating !== null}
+        />
+      ) : (
+        <div className="max-w-5xl">
+          {/* Preferences Section */}
+          <PreferencesSection />
 
-
-      {/* Templates by Category - Cover Flows */}
-      <div className="mb-10">
-        {loading ? (
-          <p className="text-muted-foreground">Loading templates...</p>
-        ) : (
-          grouped.map((group) => (
-            <div key={group.key} className="mb-10">
-              <h3 className="text-base font-semibold text-muted-foreground mb-4 text-center">{group.label}</h3>
-              <CategoryCoverFlow
-                items={group.items.map((t) => ({
-                  id: t.id,
-                  name: t.name,
-                  image: getTemplateImage(t.name),
-                  fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
-                }))}
-                onSelect={(id) => {
-                  const t = templates.find((tpl) => tpl.id === id);
-                  if (t) handleTemplateClick(t);
-                }}
-                disabled={creating !== null}
-              />
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Create Your Own */}
-      <div className="mb-10">
-        <h2 className="text-xl font-bold text-primary mb-4">Create Your Own</h2>
-        <button
-          onClick={openCreate}
-          className="card-design-neumorph p-6 w-full text-left hover:scale-[1.01] transition-transform group flex items-center gap-4"
-        >
-          <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
-            <Sparkles className="w-6 h-6" style={{ color: 'var(--swatch-viridian-odyssey)' }} />
+          {/* Templates by Category */}
+          <div className="mb-10">
+            {loading ? (
+              <p className="text-muted-foreground">Loading templates...</p>
+            ) : (
+              grouped.map((group) => (
+                <div key={group.key} className="mb-10">
+                  <h3 className="text-base font-semibold text-muted-foreground mb-4 text-center">{group.label}</h3>
+                  <CategoryCoverFlow
+                    items={group.items.map((t) => ({
+                      id: t.id,
+                      name: t.name,
+                      image: getTemplateImage(t.name),
+                      fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
+                    }))}
+                    onSelect={(id) => {
+                      const t = templates.find((tpl) => tpl.id === id);
+                      if (t) handleTemplateClick(t);
+                    }}
+                    disabled={creating !== null}
+                  />
+                </div>
+              ))
+            )}
           </div>
-          <div>
-            <h3 className="font-semibold text-primary group-hover:underline text-lg">Start from Scratch</h3>
-            <p className="text-sm text-muted-foreground">Create a custom list with your own fields</p>
+
+          {/* Create Your Own */}
+          <div className="mb-10">
+            <h2 className="text-xl font-bold text-primary mb-4">Create Your Own</h2>
+            <button
+              onClick={openCreate}
+              className="card-design-neumorph p-6 w-full text-left hover:scale-[1.01] transition-transform group flex items-center gap-4"
+            >
+              <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.5)' }}>
+                <Sparkles className="w-6 h-6" style={{ color: 'var(--swatch-viridian-odyssey)' }} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-primary group-hover:underline text-lg">Start from Scratch</h3>
+                <p className="text-sm text-muted-foreground">Create a custom list with your own fields</p>
+              </div>
+            </button>
           </div>
-        </button>
-      </div>
 
-
-
-      {/* Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create New List</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Food & Drinks" className="rounded-xl" />
-            </div>
-            <div className="space-y-2">
-              <Label>Description (optional)</Label>
-              <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What's this list about?" className="rounded-xl" />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button className="rounded-full" onClick={handleSave} disabled={!title.trim()}>
-              Create List
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-    )}
+          {/* Dialog */}
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New List</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Food & Drinks" className="rounded-xl" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Description (optional)</Label>
+                  <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What's this list about?" className="rounded-xl" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button className="rounded-full" onClick={handleSave} disabled={!title.trim()}>
+                  Create List
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
     </AnimatePresence>
   );
 };
