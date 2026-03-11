@@ -414,6 +414,7 @@ const MyGoTwo = () => {
                 },
               ]}
             />
+            </>
           )}
 
           <CreateCustomCardSheet
