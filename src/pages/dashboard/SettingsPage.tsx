@@ -253,7 +253,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Profile</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Profile</h2>
             <div className="space-y-5">
               <div className="space-y-2">
                 <Label>Display Name</Label>
@@ -340,7 +340,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Connections</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Connections</h2>
 
             {/* Invite Methods */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
@@ -442,7 +442,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Notifications</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Notifications</h2>
             <div className="space-y-5">
               {([
                 { label: "Gift reminders", desc: "Get notified before birthdays and anniversaries", key: "gift_reminders" as SettingsKeys },
@@ -481,7 +481,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Sharing & Privacy</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Sharing & Privacy</h2>
             <div className="space-y-5">
               {([
                 { label: "Share preferences with partner", desc: "Let your connected partner see your style and size preferences", key: "share_prefs" as SettingsKeys },
@@ -521,7 +521,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Help & Support</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Help & Support</h2>
             <div className="space-y-3">
               {[
                 { label: "FAQs", desc: "Common questions and quick answers", href: "#" },
@@ -557,7 +557,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>About GoTwo</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">About GoTwo</h2>
             <div className="space-y-5">
               <div className="flex items-center justify-between py-1">
                 <p className="text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Version</p>

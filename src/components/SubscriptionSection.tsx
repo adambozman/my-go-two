@@ -57,7 +57,7 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
     : null;
 
   return (
-    <div className="mx-auto mt-10" style={{ maxWidth: 520 }}>
+    <div className="mx-auto" style={{ maxWidth: 520 }}>
       <button
         onClick={onBack}
         className="hover:underline block text-left"
@@ -66,7 +66,7 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
         ← Back to Settings
       </button>
       <div className="card-design-neumorph text-center" style={{ padding: 40 }}>
-        <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Subscription</h2>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6">Subscription</h2>
 
         {subscriptionLoading ? (
           <p className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>Checking subscription…</p>
