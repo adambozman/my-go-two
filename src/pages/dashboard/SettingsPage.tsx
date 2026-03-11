@@ -177,25 +177,22 @@ const SettingsPage = () => {
       {/* Settings Menu */}
       {!activeSection && (
         <div className="card-design-neumorph panel-polish p-8">
-          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: '#1e4a52' }} className="mb-6">Your Account</h2>
-          <div className="flex flex-col gap-2">
+          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6">Your Account</h2>
+          <div className="flex flex-col gap-1">
             {settingsItems.map((item) => (
               <button
                 key={item.key}
                 onClick={() => setActiveSection(item.key)}
-                className="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all text-left group w-full"
-                style={{ background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(74, 96, 104, 0.08)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.7)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.45)'; }}
+                className="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-colors text-left group w-full hover:bg-white/40"
               >
-                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(232,198,174,0.25)' }}>
-                  <item.icon className="h-4 w-4" style={{ color: 'var(--swatch-viridian-odyssey)' }} />
+                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.35)' }}>
+                  <item.icon className="h-4 w-4" style={{ color: 'var(--swatch-teal)' }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm" style={{ color: '#1e4a52' }}>{item.title}</p>
-                  <p className="text-xs" style={{ color: '#8a9ea4' }}>{item.description}</p>
+                  <p className="font-medium text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.title}</p>
+                  <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.description}</p>
                 </div>
-                <ChevronRight className="h-4 w-4 shrink-0 transition-colors" style={{ color: 'rgba(74, 96, 104, 0.3)' }} />
+                <ChevronRight className="h-4 w-4 shrink-0 transition-colors" style={{ color: 'var(--swatch-text-light)' }} />
               </button>
             ))}
           </div>
