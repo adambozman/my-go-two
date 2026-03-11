@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CategoryCoverFlowProps {
@@ -11,20 +11,26 @@ interface CategoryCoverFlowProps {
     fieldCount: number;
   }[];
   onSelect: (id: string) => void;
+  onAdd?: () => void;
   disabled: boolean;
 }
 
-const CategoryCoverFlow = ({ items, onSelect, disabled }: CategoryCoverFlowProps) => {
+const CategoryCoverFlow = ({ items, onSelect, onAdd, disabled }: CategoryCoverFlowProps) => {
+  // Append a virtual "add" card at the end
+  const allCards = [
+    ...items.map((item) => ({ ...item, isAdd: false as const })),
+    ...(onAdd ? [{ id: "__add__", name: "Add Your Own", image: "", fieldCount: 0, isAdd: true as const }] : []),
+  ];
+
   const [activeIndex, setActiveIndex] = useState(Math.floor(items.length / 2));
 
-  const goLeft = () => setActiveIndex((i) => (i - 1 + items.length) % items.length);
-  const goRight = () => setActiveIndex((i) => (i + 1) % items.length);
+  const goLeft = () => setActiveIndex((i) => (i - 1 + allCards.length) % allCards.length);
+  const goRight = () => setActiveIndex((i) => (i + 1) % allCards.length);
 
-  if (items.length === 0) return null;
+  if (allCards.length === 0) return null;
 
   return (
     <div className="relative flex items-center justify-center">
-      {/* Left arrow */}
       <Button
         variant="ghost"
         size="icon"
@@ -34,14 +40,13 @@ const CategoryCoverFlow = ({ items, onSelect, disabled }: CategoryCoverFlowProps
         <ChevronLeft className="h-5 w-5" />
       </Button>
 
-      {/* Cards container */}
       <div className="relative w-full h-[420px] overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
-          {items.map((item, index) => {
+          {allCards.map((item, index) => {
             let offset = index - activeIndex;
-            const half = items.length / 2;
-            if (offset > half) offset -= items.length;
-            if (offset < -half) offset += items.length;
+            const half = allCards.length / 2;
+            if (offset > half) offset -= allCards.length;
+            if (offset < -half) offset += allCards.length;
             const isActive = offset === 0;
             const absOffset = Math.abs(offset);
 
@@ -69,7 +74,8 @@ const CategoryCoverFlow = ({ items, onSelect, disabled }: CategoryCoverFlowProps
                 style={{ zIndex }}
                 onClick={() => {
                   if (isActive) {
-                    onSelect(item.id);
+                    if (item.isAdd && onAdd) onAdd();
+                    else onSelect(item.id);
                   } else {
                     setActiveIndex(index);
                   }
@@ -81,21 +87,44 @@ const CategoryCoverFlow = ({ items, onSelect, disabled }: CategoryCoverFlowProps
                   }`}
                   style={{ width: cardW, height: cardH }}
                 >
-                  <div className="relative w-full h-full overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="text-white font-semibold text-sm leading-tight drop-shadow">
-                        {item.name}
+                  {item.isAdd ? (
+                    <div
+                      className="w-full h-full flex flex-col items-center justify-center gap-3"
+                      style={{
+                        background: "linear-gradient(135deg, var(--swatch-viridian-odyssey), var(--swatch-teal))",
+                      }}
+                    >
+                      <div
+                        className="w-14 h-14 rounded-full flex items-center justify-center"
+                        style={{ background: "rgba(255,255,255,0.15)" }}
+                      >
+                        <Plus className="w-7 h-7 text-white" />
+                      </div>
+                      <h3
+                        className="text-white font-semibold text-sm"
+                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                      >
+                        Add Your Own
                       </h3>
-
-
+                      <p className="text-white/60 text-xs px-6 text-center">
+                        Create a custom list
+                      </p>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="relative w-full h-full overflow-hidden">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4">
+                        <h3 className="text-white font-semibold text-sm leading-tight drop-shadow">
+                          {item.name}
+                        </h3>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             );
@@ -103,7 +132,6 @@ const CategoryCoverFlow = ({ items, onSelect, disabled }: CategoryCoverFlowProps
         </div>
       </div>
 
-      {/* Right arrow */}
       <Button
         variant="ghost"
         size="icon"
