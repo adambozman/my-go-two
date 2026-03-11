@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
@@ -7,6 +7,7 @@ import CardEditButton from "@/components/CardEditButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import ConnectionPage from "./ConnectionPage";
 
 const CARD_W = 280;
 const CARD_H = 380;
