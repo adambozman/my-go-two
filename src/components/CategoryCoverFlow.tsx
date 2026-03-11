@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CategoryCoverFlowProps {
@@ -9,17 +9,19 @@ interface CategoryCoverFlowProps {
     name: string;
     image: string;
     fieldCount: number;
+    isCustom?: boolean;
   }[];
   onSelect: (id: string) => void;
   onAdd?: () => void;
+  onDelete?: (id: string) => void;
   disabled: boolean;
 }
 
-const CategoryCoverFlow = ({ items, onSelect, onAdd, disabled }: CategoryCoverFlowProps) => {
+const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: CategoryCoverFlowProps) => {
   // Append a virtual "add" card at the end
   const allCards = [
     ...items.map((item) => ({ ...item, isAdd: false as const })),
-    ...(onAdd ? [{ id: "__add__", name: "Add Your Own", image: "", fieldCount: 0, isAdd: true as const }] : []),
+    ...(onAdd ? [{ id: "__add__", name: "Add Your Own", image: "", fieldCount: 0, isAdd: true as const, isCustom: false }] : []),
   ];
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(items.length / 2));
@@ -123,6 +125,17 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, disabled }: CategoryCoverFl
                           {item.name}
                         </h3>
                       </div>
+                      {isActive && item.isCustom && onDelete && (
+                        <button
+                          className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 backdrop-blur flex items-center justify-center hover:bg-destructive/80 transition-colors z-10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(item.id);
+                          }}
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-white" />
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
