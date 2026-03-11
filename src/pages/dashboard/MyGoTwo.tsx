@@ -359,6 +359,7 @@ const MyGoTwo = () => {
           onBack={() => setCoverFlowTemplate(null)}
           onSelect={handleSubtypeSelect}
           creating={creating !== null}
+          gender={gender}
         />
       ) : (
         <div className="max-w-5xl">
