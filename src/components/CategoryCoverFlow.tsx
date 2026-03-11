@@ -31,7 +31,7 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
   ];
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(items.length / 2));
-  const swipe = useSwipeCarousel(setActiveIndex, allCards.length);
+  
 
   const goLeft = () => setActiveIndex((i) => (i - 1 + allCards.length) % allCards.length);
   const goRight = () => setActiveIndex((i) => (i + 1) % allCards.length);
