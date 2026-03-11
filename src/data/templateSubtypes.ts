@@ -126,11 +126,13 @@ export const allTemplateSubtypes: Record<string, SubtypeItem[]> = {
     { id: "flats", name: "Flats", image: imgFlats, fields: [tf("Size (US)"), tf("Size (EU)"), tf("Style", "select", ["Ballet", "Loafer", "Mule", "Espadrille"]), tf("Preferred Brands"), tf("Width", "select", ["Narrow", "Standard", "Wide"]), tf("Fit Notes"), tf("Example Brand That Fits Perfectly")] },
   ],
   "Scents": [
-    { id: "perfume", name: "Perfume", image: imgScentPerfume, fields: [tf("Favorite Scents"), tf("Scent Family", "select", ["Floral", "Woody", "Fresh", "Oriental", "Gourmand"]), tf("Preferred Brands"), tf("Concentration", "select", ["EDT", "EDP", "Parfum"]), tf("Notes")] },
-    { id: "candles", name: "Candles", image: imgScentCandles, fields: [tf("Favorite Scents"), tf("Preferred Brands"), tf("Wax Type", "select", ["Soy", "Beeswax", "Coconut", "Paraffin", "No Preference"]), tf("Size Preference", "select", ["Small", "Medium", "Large", "Variety"]), tf("Notes")] },
-    { id: "bodycare", name: "Body Care", image: imgScentBodycare, fields: [tf("Favorite Scents"), tf("Product Types", "select", ["Lotion", "Body Wash", "Body Spray", "All"]), tf("Preferred Brands"), tf("Skin Sensitivity", "select", ["Normal", "Sensitive", "Very Sensitive"]), tf("Notes")] },
-    { id: "oils", name: "Essential Oils", image: imgScentOils, fields: [tf("Favorite Oils"), tf("Use", "select", ["Aromatherapy", "Topical", "Diffuser", "Bath"]), tf("Preferred Brands"), tf("Notes")] },
-    { id: "home", name: "Home Fragrance", image: imgScentHome, fields: [tf("Favorite Scents"), tf("Type", "select", ["Diffuser", "Room Spray", "Incense", "Wax Melts"]), tf("Preferred Brands"), tf("Notes")] },
+    { id: "perfume", name: "Perfume", image: imgScentPerfume, fields: [...productFields("Concentration", ["EDT", "EDP", "Parfum", "Cologne"]), tf("Scent Family", "select", ["Floral", "Woody", "Fresh", "Oriental", "Gourmand"])] },
+    { id: "cologne", name: "Cologne", image: imgScentPerfume, fields: [...productFields("Concentration", ["EDT", "EDP", "Cologne"]), tf("Scent Family", "select", ["Fresh", "Woody", "Spicy", "Aquatic", "Aromatic"])] },
+    { id: "candle", name: "Candle", image: imgScentCandles, fields: [...productFields("Wax Type", ["Soy", "Beeswax", "Coconut", "Paraffin", "No Preference"]), tf("Size", "select", ["Small", "Medium", "Large", "Travel"])] },
+    { id: "body-lotion", name: "Body Lotion", image: imgScentBodycare, fields: productFields("Skin Type", ["Normal", "Dry", "Sensitive", "All"]) },
+    { id: "body-wash", name: "Body Wash", image: imgScentBodycare, fields: productFields("Type", ["Gel", "Cream", "Oil", "Bar"]) },
+    { id: "essential-oil", name: "Essential Oil", image: imgScentOils, fields: productFields("Use", ["Aromatherapy", "Topical", "Diffuser", "Bath"]) },
+    { id: "room-spray", name: "Room Spray", image: imgScentHome, fields: productFields("Type", ["Spray", "Diffuser", "Incense", "Wax Melts"]) },
   ],
   "Grooming": [
     { id: "shampoo", name: "Shampoo", image: imgGroomingHair, fields: productFields("Hair Type", ["Straight", "Wavy", "Curly", "Coily", "All Types"]) },
