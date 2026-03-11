@@ -213,19 +213,19 @@ const SettingsPage = () => {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto" style={{ paddingTop: 40 }}>
 
       {/* Settings Menu */}
       {!activeSection && (
         <div className="mx-auto" style={{ maxWidth: 520 }}>
-          <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Your Account</h2>
-            <div className="flex flex-col gap-1">
+          <div className="card-design-neumorph" style={{ padding: '40px 40px 32px' }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-8 text-center">Your Account</h2>
+            <div className="flex flex-col" style={{ gap: 6 }}>
               {settingsItems.map((item) => (
                 <button
                   key={item.key}
                   onClick={() => setActiveSection(item.key)}
-                  className="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-colors text-left group w-full hover:bg-secondary/30"
+                  className="flex items-center gap-4 px-4 py-4 rounded-2xl transition-colors text-left group w-full hover:bg-secondary/30"
                 >
                   <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>
                     <item.icon className="h-4 w-4" style={{ color: 'var(--swatch-teal)' }} />
