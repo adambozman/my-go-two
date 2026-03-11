@@ -398,27 +398,6 @@ const DashboardHome = () => {
         </motion.div>
       )}
 
-      {/* No partner CTA — this is the primary state when not connected */}
-      {hasPartner === false && (
-        <motion.div variants={itemVariant} className="relative overflow-hidden" style={{ borderRadius: "1.8rem", minHeight: 280 }}>
-          <div className="absolute inset-0" style={{
-            background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.6) 100%)",
-          }} />
-          <div className="relative z-10 p-10 flex flex-col items-center justify-center text-center" style={{ minHeight: 280 }}>
-            <UserPlus className="w-12 h-12 mb-4" style={{ color: "rgba(246,226,212,0.4)" }} />
-            <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif", color: "#f6e2d4" }}>
-              Connect Your Partner
-            </h2>
-            <p className="text-sm mb-6 max-w-sm" style={{ color: "rgba(246,226,212,0.7)" }}>
-              Their style, sizes, and preferences — right here. So you never miss.
-            </p>
-            <Button className="rounded-full px-8" onClick={() => navigate("/dashboard/collaborations")}
-              style={{ background: "rgba(255,255,255,0.2)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.3)" }}>
-              Invite Partner
-            </Button>
-          </div>
-        </motion.div>
-      )}
 
       {/* ── Smart Triggers ── */}
       {triggers.length > 0 && (
