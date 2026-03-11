@@ -1,4 +1,4 @@
-import { Home, Heart, Sparkles, ClipboardList, Settings, Search } from "lucide-react";
+import { Home, Heart, Sparkles, ClipboardList, Search } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -9,7 +9,6 @@ const navItems = [
   { icon: Sparkles, url: "/dashboard/recommendations", label: "Recommendations" },
   { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Know Me" },
   { icon: Search, url: "/dashboard/search", label: "Search" },
-  { icon: Settings, url: "/dashboard/settings", label: "Settings" },
 ];
 
 export function AppSidebar() {
