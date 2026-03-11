@@ -42,16 +42,18 @@ serve(async (req) => {
 
     if (cached) {
       const age = Date.now() - new Date(cached.generated_at).getTime();
-      if (age < SEVEN_DAYS_MS && Array.isArray(cached.quizzes) && cached.quizzes.length > 0) {
-        // Filter out categories where all questions are answered
-        const categories = cached.quizzes as any[];
-        const unanswered = categories.filter((cat: any) =>
+      const quizData = cached.quizzes as any[];
+      // Validate it's the new category format (each item has .questions array)
+      const isNewFormat = Array.isArray(quizData) && quizData.length > 0 && Array.isArray(quizData[0]?.questions);
+      if (isNewFormat && age < SEVEN_DAYS_MS) {
+        const unanswered = quizData.filter((cat: any) =>
           cat.questions.some((q: any) => !profileAnswers[q.id])
         );
         return new Response(JSON.stringify({ categories: unanswered }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+      // Old format or expired — will regenerate below
     }
 
     const personalization = (prefs?.ai_personalization as any) || {};

@@ -1,0 +1,1 @@
+TRUNCATE public.ai_generated_quizzes;
