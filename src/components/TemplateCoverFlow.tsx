@@ -140,9 +140,12 @@ const CoverFlowCarousel = ({
   );
 };
 
-const TemplateCoverFlow = ({ templateName, subtypes, subcategories, onBack, onSelect, creating }: TemplateCoverFlowProps) => {
+const TemplateCoverFlow = ({ templateName, subtypes, subcategories, onBack, onSelect, creating, gender = "male" }: TemplateCoverFlowProps) => {
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const hasSubcategories = subcategories && subcategories.length > 0;
+
+  // Resolve images based on gender
+  const resolveImage = (id: string, fallback: string) => getProductImage(id, gender, fallback);
 
   // If we have subcategories and none is selected, show subcategory picker
   if (hasSubcategories && !activeSubcategory) {
