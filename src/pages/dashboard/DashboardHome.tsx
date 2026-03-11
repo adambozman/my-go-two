@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import { Plus } from "lucide-react";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
 import CardEditButton from "@/components/CardEditButton";
@@ -14,27 +15,24 @@ const FLANK_H = 260;
 const X_GAP = 180;
 const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
 
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&h=625&fit=crop&q=80";
+
+interface ConnectionCard {
+  id: string;
+  name: string;
+  image: string;
+  email: string;
+  status: string;
+  isNew?: boolean;
+}
+
 interface PlaceholderCard {
   id: string;
   name: string;
   image: string;
 }
 
-interface ConnectionData {
-  labels: Record<string, string>;
-  images: Record<string, string>;
-}
-
-const defaultConnectionCards: PlaceholderCard[] = [
-  { id: "conn-1", name: "Partner", image: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&h=625&fit=crop&q=80" },
-  { id: "conn-2", name: "Best Friend", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&h=625&fit=crop&q=80" },
-  { id: "conn-3", name: "Mom", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&h=625&fit=crop&q=80" },
-  { id: "conn-4", name: "Dad", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=625&fit=crop&q=80" },
-  { id: "conn-5", name: "Sibling", image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&h=625&fit=crop&q=80" },
-];
-
-const homeCategories: { id: string; label: string; cards: PlaceholderCard[] }[] = [
-  { id: "connections", label: "Your Connections", cards: defaultConnectionCards },
+const otherCategories: { id: string; label: string; cards: PlaceholderCard[] }[] = [
   {
     id: "calendar", label: "Shared Calendar", cards: [
       { id: "cal-1", name: "Birthdays", image: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=500&h=625&fit=crop&q=80" },
@@ -70,20 +68,153 @@ const homeCategories: { id: string; label: string; cards: PlaceholderCard[] }[] 
 ];
 
 /* ═══════════════════════════════════════════
-   HOME CAROUSEL
+   CONNECTIONS CAROUSEL — backed by couples table
    ═══════════════════════════════════════════ */
 
-const HomeCoverFlow = ({
+const ConnectionsCoverFlow = ({
   cards,
-  connectionData,
   onSaveConnection,
-  isConnectionCategory,
+  onAddConnection,
 }: {
-  cards: PlaceholderCard[];
-  connectionData?: ConnectionData;
-  onSaveConnection?: (cardId: string, newLabel: string, newImage: string) => void;
-  isConnectionCategory?: boolean;
+  cards: ConnectionCard[];
+  onSaveConnection: (cardId: string, newLabel: string, newImage: string, email?: string) => void;
+  onAddConnection: () => void;
 }) => {
+  // Include a virtual "add" card at the end
+  const totalCount = cards.length + 1;
+  const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
+  useRegisterCarousel(totalCount, activeIndex, setActiveIndex);
+
+  return (
+    <div className="relative flex items-center justify-center py-4">
+      <div className="relative w-full h-[420px] overflow-hidden">
+        <div className="absolute inset-0 flex items-center justify-center">
+          {cards.map((card, index) => {
+            let offset = index - activeIndex;
+            const half = totalCount / 2;
+            if (offset > half) offset -= totalCount;
+            if (offset < -half) offset += totalCount;
+            const isActive = offset === 0;
+            const absOffset = Math.abs(offset);
+
+            if (absOffset > 2) return null;
+
+            const xOffset = offset * X_GAP;
+            const cardW = isActive ? CARD_W : FLANK_W;
+            const cardH = isActive ? CARD_H : FLANK_H;
+            const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
+            const zIndex = 10 - absOffset;
+            const blur = isActive ? 0 : 1.8;
+            const opacity = isActive ? 1 : 0.5;
+
+            return (
+              <motion.div
+                key={card.id}
+                animate={{ x: xOffset, scale, opacity, filter: `blur(${blur}px)` }}
+                transition={SPRING}
+                className="absolute cursor-pointer"
+                style={{ zIndex }}
+                onClick={() => { if (!isActive) setActiveIndex(index); }}
+              >
+                <div
+                  className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
+                    isActive ? "ring-2 ring-primary shadow-2xl" : ""
+                  }`}
+                  style={{ width: cardW, height: cardH }}
+                >
+                  <div className="relative w-full h-full overflow-hidden">
+                    <CardEditButton
+                      title={card.name}
+                      maxLength={20}
+                      isConnection
+                      isNewConnection={card.isNew}
+                      currentImage={card.image}
+                      currentEmail={card.email}
+                      onSaveConnection={(newLabel, newImage, newEmail) =>
+                        onSaveConnection(card.id, newLabel, newImage, newEmail)
+                      }
+                    />
+                    <img
+                      src={card.image}
+                      alt={card.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <h3 className="card-title leading-tight">{card.name}</h3>
+                      {card.status === "pending" && (
+                        <span className="text-[10px] text-white/60 uppercase tracking-wider">Pending</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+
+          {/* Add New Connection card */}
+          {(() => {
+            const addIndex = cards.length;
+            let offset = addIndex - activeIndex;
+            const half = totalCount / 2;
+            if (offset > half) offset -= totalCount;
+            if (offset < -half) offset += totalCount;
+            const isActive = offset === 0;
+            const absOffset = Math.abs(offset);
+
+            if (absOffset > 2) return null;
+
+            const xOffset = offset * X_GAP;
+            const cardW = isActive ? CARD_W : FLANK_W;
+            const cardH = isActive ? CARD_H : FLANK_H;
+            const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
+            const zIndex = 10 - absOffset;
+            const blur = isActive ? 0 : 1.8;
+            const opacity = isActive ? 1 : 0.5;
+
+            return (
+              <motion.div
+                key="add-new"
+                animate={{ x: xOffset, scale, opacity, filter: `blur(${blur}px)` }}
+                transition={SPRING}
+                className="absolute cursor-pointer"
+                style={{ zIndex }}
+                onClick={() => {
+                  if (!isActive) {
+                    setActiveIndex(addIndex);
+                  } else {
+                    onAddConnection();
+                  }
+                }}
+              >
+                <div
+                  className={`overflow-hidden rounded-2xl transition-shadow duration-300 border-2 border-dashed border-white/30 flex flex-col items-center justify-center gap-2 ${
+                    isActive ? "ring-2 ring-primary shadow-2xl" : ""
+                  }`}
+                  style={{ width: cardW, height: cardH, background: "rgba(255,255,255,0.05)" }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center"
+                    style={{ background: "rgba(45,104,112,0.3)" }}
+                  >
+                    <Plus className="w-6 h-6 text-white/70" />
+                  </div>
+                  <span className="text-sm text-white/60 font-medium">Add Connection</span>
+                </div>
+              </motion.div>
+            );
+          })()}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════
+   GENERIC CAROUSEL (for other categories)
+   ═══════════════════════════════════════════ */
+
+const HomeCoverFlow = ({ cards }: { cards: PlaceholderCard[] }) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
   useRegisterCarousel(cards.length, activeIndex, setActiveIndex);
 
@@ -111,9 +242,6 @@ const HomeCoverFlow = ({
             const blur = isActive ? 0 : 1.8;
             const opacity = isActive ? 1 : 0.5;
 
-            const displayName = (isConnectionCategory && connectionData?.labels?.[card.id]) || card.name;
-            const displayImage = (isConnectionCategory && connectionData?.images?.[card.id]) || card.image;
-
             return (
               <motion.div
                 key={card.id}
@@ -121,9 +249,7 @@ const HomeCoverFlow = ({
                 transition={SPRING}
                 className="absolute cursor-pointer"
                 style={{ zIndex }}
-                onClick={() => {
-                  if (!isActive) setActiveIndex(index);
-                }}
+                onClick={() => { if (!isActive) setActiveIndex(index); }}
               >
                 <div
                   className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
@@ -132,27 +258,11 @@ const HomeCoverFlow = ({
                   style={{ width: cardW, height: cardH }}
                 >
                   <div className="relative w-full h-full overflow-hidden">
-                    <CardEditButton
-                      title={displayName}
-                      maxLength={20}
-                      isConnection={isConnectionCategory}
-                      currentImage={displayImage}
-                      onSaveConnection={
-                        isConnectionCategory && onSaveConnection
-                          ? (newLabel, newImage) => onSaveConnection(card.id, newLabel, newImage)
-                          : undefined
-                      }
-                    />
-                    <img
-                      src={displayImage}
-                      alt={displayName}
-                      className="w-full h-full object-cover"
-                    />
+                    <CardEditButton title={card.name} />
+                    <img src={card.image} alt={card.name} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="card-title leading-tight">
-                        {displayName}
-                      </h3>
+                      <h3 className="card-title leading-tight">{card.name}</h3>
                     </div>
                   </div>
                 </div>
@@ -171,80 +281,143 @@ const HomeCoverFlow = ({
 
 const DashboardHome = () => {
   const { user } = useAuth();
-  const [connectionData, setConnectionData] = useState<ConnectionData>({ labels: {}, images: {} });
+  const [connections, setConnections] = useState<ConnectionCard[]>([]);
 
-  // Load saved connection data from user_preferences.profile_answers
-  useEffect(() => {
+  // Load connections from couples table (both as inviter and invitee)
+  const loadConnections = useCallback(async () => {
     if (!user) return;
-    const load = async () => {
-      const { data } = await supabase
-        .from("user_preferences")
-        .select("profile_answers")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      if (data?.profile_answers && typeof data.profile_answers === "object") {
-        const answers = data.profile_answers as Record<string, any>;
-        setConnectionData({
-          labels: answers.connection_labels || {},
-          images: answers.connection_images || {},
-        });
-      }
-    };
-    load();
+
+    const { data, error } = await supabase
+      .from("couples")
+      .select("*")
+      .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`);
+
+    if (error) {
+      console.error("Failed to load connections:", error);
+      return;
+    }
+
+    if (!data) return;
+
+    const cards: ConnectionCard[] = data.map((row: any) => {
+      const isInviter = row.inviter_id === user.id;
+      return {
+        id: row.id,
+        name: row.display_label || (isInviter ? row.invitee_email.split("@")[0] : "Connection"),
+        image: row.photo_url || DEFAULT_IMAGE,
+        email: row.invitee_email,
+        status: row.status,
+      };
+    });
+
+    setConnections(cards);
   }, [user]);
 
+  useEffect(() => {
+    loadConnections();
+  }, [loadConnections]);
+
+  // Save edits to an existing connection
   const handleSaveConnection = useCallback(
-    async (cardId: string, newLabel: string, newImage: string) => {
+    async (cardId: string, newLabel: string, newImage: string, _email?: string) => {
       if (!user) return;
-      const updatedLabels = { ...connectionData.labels, [cardId]: newLabel };
-      const updatedImages = { ...connectionData.images, [cardId]: newImage };
-      setConnectionData({ labels: updatedLabels, images: updatedImages });
 
-      const { data: existing } = await supabase
-        .from("user_preferences")
-        .select("profile_answers")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      // If this is a "new" card (temp id), create it
+      if (cardId.startsWith("new-")) {
+        if (!_email) {
+          toast.error("Email is required");
+          return;
+        }
+        const { error } = await supabase.from("couples").insert({
+          inviter_id: user.id,
+          invitee_email: _email,
+          display_label: newLabel,
+          photo_url: newImage || null,
+          status: "pending",
+        });
 
-      const currentAnswers =
-        existing?.profile_answers && typeof existing.profile_answers === "object"
-          ? (existing.profile_answers as Record<string, any>)
-          : {};
+        if (error) {
+          console.error("Failed to create connection:", error);
+          toast.error("Failed to create connection");
+          return;
+        }
 
+        toast.success("Connection invitation sent!");
+        // Remove the temp card and reload
+        setConnections((prev) => prev.filter((c) => c.id !== cardId));
+        loadConnections();
+        return;
+      }
+
+      // Update existing connection
       const { error } = await supabase
-        .from("user_preferences")
+        .from("couples")
         .update({
-          profile_answers: {
-            ...currentAnswers,
-            connection_labels: updatedLabels,
-            connection_images: updatedImages,
-          },
+          display_label: newLabel,
+          photo_url: newImage || null,
         })
-        .eq("user_id", user.id);
+        .eq("id", cardId);
 
       if (error) {
         console.error("Failed to save connection:", error);
         toast.error("Failed to save connection");
+        return;
       }
+
+      // Update local state
+      setConnections((prev) =>
+        prev.map((c) =>
+          c.id === cardId ? { ...c, name: newLabel, image: newImage || DEFAULT_IMAGE } : c
+        )
+      );
+      toast.success("Connection updated!");
     },
-    [user, connectionData]
+    [user, loadConnections]
   );
+
+  // Add a temporary "new connection" card
+  const handleAddConnection = useCallback(() => {
+    const tempId = `new-${Date.now()}`;
+    setConnections((prev) => [
+      ...prev,
+      {
+        id: tempId,
+        name: "New Connection",
+        image: DEFAULT_IMAGE,
+        email: "",
+        status: "pending",
+        isNew: true,
+      },
+    ]);
+  }, []);
+
+  const allSections = [
+    {
+      id: "connections",
+      label: "Your Connections",
+      content: (
+        <ConnectionsCoverFlow
+          cards={connections}
+          onSaveConnection={handleSaveConnection}
+          onAddConnection={handleAddConnection}
+        />
+      ),
+    },
+    ...otherCategories.map((cat) => ({
+      id: cat.id,
+      label: cat.label,
+      content: <HomeCoverFlow cards={cat.cards} />,
+    })),
+  ];
 
   return (
     <div className="h-full relative">
       <SnapScrollLayout
-        sections={homeCategories.map((cat) => ({
-          id: cat.id,
-          label: cat.label,
+        sections={allSections.map((s) => ({
+          id: s.id,
+          label: s.label,
           labelStyle: { color: "#d4543a" },
-          content: (
-            <HomeCoverFlow
-              cards={cat.cards}
-              isConnectionCategory={cat.id === "connections"}
-              connectionData={connectionData}
-              onSaveConnection={handleSaveConnection}
-            />
-          ),
+          content: s.content,
         }))}
       />
     </div>
