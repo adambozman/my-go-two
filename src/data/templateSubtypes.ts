@@ -1,5 +1,12 @@
 import type { SubtypeItem } from "@/components/TemplateCoverFlow";
 
+export interface SubcategoryGroup {
+  id: string;
+  name: string;
+  image: string;
+  products: SubtypeItem[];
+}
+
 // === CLOTHING SIZES ===
 import imgClothingTops from "@/assets/templates/clothing-tops.jpg";
 import imgClothingBottoms from "@/assets/templates/clothing-bottoms.jpg";
