@@ -91,27 +91,6 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
         ))}
       </div>
 
-      {/* Bottom dot pagination — fixed, halfway to bottom nav */}
-      {sections.length > 1 && (
-        <div
-          className="absolute left-0 right-0 flex justify-center gap-2.5 z-30"
-          style={{ bottom: "4%" }}
-        >
-          {sections.map((section, i) => (
-            <button
-              key={`bottom-${section.id}`}
-              onClick={() => scrollTo(i)}
-              className="w-2.5 h-2.5 rounded-full transition-all duration-300"
-              style={{
-                background: i === activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
-                transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
-              }}
-              aria-label={`Go to ${section.label}`}
-            />
-          ))}
-        </div>
-      )}
-
       {/* Dot pagination — right side */}
       {sections.length > 1 && (
         <div
