@@ -106,9 +106,6 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
                       <h3 className="card-title">
                         Add Your Own
                       </h3>
-                      <p className="text-white/60 text-xs px-6 text-center">
-                        Create a custom list
-                      </p>
                     </div>
                   ) : (
                     <div className="relative w-full h-full overflow-hidden">
