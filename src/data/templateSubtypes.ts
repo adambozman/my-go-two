@@ -99,6 +99,17 @@ const tf = (label: string, type: "text" | "select" = "text", options?: string[])
   label, type, value: "", ...(options ? { options } : {}),
 });
 
+// Standard product-centric fields
+const productFields = (typeLabel: string, typeOptions?: string[]) => [
+  tf("Brand"),
+  tf("Product Name"),
+  ...(typeOptions ? [tf(typeLabel, "select", typeOptions)] : []),
+  tf("Where to Buy"),
+  tf("Price Range", "select", ["Under $10", "$10-$25", "$25-$50", "$50-$100", "$100+"]),
+  tf("Rating", "select", ["Love It", "Really Like", "It's Okay", "Want to Switch"]),
+  tf("Notes"),
+];
+
 export const allTemplateSubtypes: Record<string, SubtypeItem[]> = {
   "Clothing Sizes": [
     { id: "tops", name: "Tops", image: imgClothingTops, fields: [tf("Size", "select", ["XS", "S", "M", "L", "XL", "XXL"]), tf("Preferred Fit", "select", ["Slim", "Regular", "Relaxed", "Oversized"]), tf("Preferred Brands"), tf("Notes")] },
