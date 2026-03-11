@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import { useSwipeCarousel } from "@/hooks/useSwipeCarousel";
 import CreateCustomCardSheet from "@/components/CreateCustomCardSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -36,6 +37,7 @@ const PreferencesSection = () => {
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
+  const swipe = useSwipeCarousel(setActiveIndex, imageQuestions.length);
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [selections, setSelections] = useState<Record<string, string[]>>(() => {
     const saved: Record<string, string[]> = {};
@@ -141,7 +143,7 @@ const PreferencesSection = () => {
           <ChevronLeft className="h-5 w-5" />
         </Button>
 
-        <div className="relative w-full h-[420px] overflow-hidden">
+        <div className="relative w-full h-[420px] overflow-hidden cursor-grab active:cursor-grabbing touch-none" onPointerDown={swipe.onPointerDown} onPointerUp={swipe.onPointerUp}>
           <div className="absolute inset-0 flex items-center justify-center">
             {imageQuestions.map((q, index) => {
               let offset = index - activeIndex;
