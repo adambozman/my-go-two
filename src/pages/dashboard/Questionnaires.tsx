@@ -1,8 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCategoryImage } from "@/data/genderImages";
@@ -16,6 +14,8 @@ import SwipeCards from "@/components/SwipeCards";
 import { allTemplateSubtypes, templateSubcategories, filterSubtypesByGender, filterSubcategoriesByGender } from "@/data/templateSubtypes";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import { useToast } from "@/hooks/use-toast";
+import SnapScrollLayout from "@/components/SnapScrollLayout";
+import KnowMeCarousel, { type KnowMeCard } from "@/components/KnowMeCarousel";
 
 // Template images for preferences category
 import imgBrandPreferences from "@/assets/templates/brand-preferences.jpg";
@@ -60,13 +60,39 @@ const templateImageMap: Record<string, string> = {
   "Specific Product Versions": imgSpecificProducts,
 };
 
+// Which onboarding categories go in which section
+const SECTION_MAP: Record<string, string> = {
+  style: "style-fit",
+  fit: "style-fit",
+  shopping: "shopping",
+  food: "lifestyle-gifts",
+  gifts: "lifestyle-gifts",
+  lifestyle: "lifestyle-gifts",
+};
+
+// Which templates go in which section
+const TEMPLATE_SECTION_MAP: Record<string, string> = {
+  "Brand Preferences": "shopping",
+  "Specific Product Versions": "shopping",
+  "Love Language": "lifestyle-gifts",
+  "Pet Peeves": "lifestyle-gifts",
+};
+
+// Which AI categories go in which section
+const AI_SECTION_MAP: Record<string, string> = {
+  style: "style-fit",
+  sizing: "style-fit",
+  products: "shopping",
+  lifestyle: "lifestyle-gifts",
+  gifting: "lifestyle-gifts",
+};
+
 const Questionnaires = () => {
   const { user } = useAuth();
   const { toast: uiToast } = useToast();
   const navigate = useNavigate();
   const { profileAnswers, gender, loading: genderLoading, refetch } = usePersonalization();
 
-  const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedAiCategory, setSelectedAiCategory] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
@@ -135,27 +161,6 @@ const Questionnaires = () => {
     fetchAiQuizzes();
   }, []);
 
-  // Build combined card list: onboarding categories + preferences templates + AI categories
-  type CoverCard =
-    | { kind: "onboarding"; cat: (typeof onboardingCategories)[0] }
-    | { kind: "ai"; category: AIQuizCategory }
-    | { kind: "template"; template: Template };
-
-  const coverCards: CoverCard[] = [
-    ...onboardingCategories.map((c) => ({ kind: "onboarding" as const, cat: c })),
-    ...prefTemplates.map((t) => ({ kind: "template" as const, template: t })),
-    ...aiCategories.map((c) => ({ kind: "ai" as const, category: c })),
-  ];
-
-  useEffect(() => {
-    if (coverCards.length > 0 && activeIndex === 0) {
-      setActiveIndex(Math.floor(onboardingCategories.length / 2));
-    }
-  }, [onboardingCategories.length]);
-
-  const goLeft = () => setActiveIndex((i) => (i - 1 + coverCards.length) % coverCards.length);
-  const goRight = () => setActiveIndex((i) => (i + 1) % coverCards.length);
-
   // Template list creation
   const handleTemplateClick = async (template: Template) => {
     if (!user) {
@@ -210,6 +215,63 @@ const Questionnaires = () => {
       uiToast({ title: "Something went wrong", description: e.message, variant: "destructive" });
     }
     setCreating(null);
+  };
+
+  // Handle card click from carousel
+  const handleCardClick = (card: KnowMeCard) => {
+    if (card.kind === "onboarding") {
+      setSelectedCategory(card.id);
+    } else if (card.kind === "ai") {
+      setSelectedAiCategory(card.id);
+    } else if (card.kind === "template") {
+      const template = prefTemplates.find((t) => t.id === card.id);
+      if (template) handleTemplateClick(template);
+    }
+  };
+
+  // Build cards grouped by section
+  const buildSectionCards = (sectionId: string): KnowMeCard[] => {
+    const cards: KnowMeCard[] = [];
+
+    // Onboarding categories for this section
+    for (const cat of onboardingCategories) {
+      if (SECTION_MAP[cat.id] === sectionId) {
+        cards.push({
+          id: cat.id,
+          kind: "onboarding",
+          title: cat.name,
+          image: getCategoryImage(cat.id, gender as any),
+          isDone: completedCategories.includes(cat.id),
+        });
+      }
+    }
+
+    // Templates for this section
+    for (const t of prefTemplates) {
+      if (TEMPLATE_SECTION_MAP[t.name] === sectionId) {
+        cards.push({
+          id: t.id,
+          kind: "template",
+          title: t.name,
+          image: templateImageMap[t.name] || "",
+        });
+      }
+    }
+
+    // AI quizzes for this section
+    for (const ai of aiCategories) {
+      if ((AI_SECTION_MAP[ai.category] || "lifestyle-gifts") === sectionId) {
+        const mapped = categoryImageMap[ai.category] || "style";
+        cards.push({
+          id: ai.id,
+          kind: "ai",
+          title: ai.name,
+          image: getCategoryImage(mapped, gender as any),
+        });
+      }
+    }
+
+    return cards;
   };
 
   // Subtype cover flow view
@@ -311,118 +373,33 @@ const Questionnaires = () => {
     );
   }
 
-  // Main cover flow
+  // Main view with snap scroll sections
   if (genderLoading) {
     return <p className="text-muted-foreground p-4">Loading...</p>;
   }
 
+  const sections = [
+    { id: "style-fit", label: "Style & Fit" },
+    { id: "shopping", label: "Shopping" },
+    { id: "lifestyle-gifts", label: "Lifestyle & Gifts" },
+  ];
+
   return (
-    <div className="h-full flex flex-col pb-16">
-      <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "#2D6870", fontWeight: 400 }} className="px-4 pt-2">Tap a card to view or edit your details.</p>
-      <div className="flex-1 flex items-center justify-center">
-        <div className="relative w-full">
-          <div className="relative w-full h-[420px] overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              {coverCards.map((card, index) => {
-                let offset = index - activeIndex;
-                const half = coverCards.length / 2;
-                if (offset > half) offset -= coverCards.length;
-                if (offset < -half) offset += coverCards.length;
-                const isActive = offset === 0;
-                const absOffset = Math.abs(offset);
-                if (absOffset > 2) return null;
-
-                const xOffset = offset * 180;
-                const cardW = isActive ? 260 : 200;
-                const cardH = isActive ? 350 : 260;
-                const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
-                const zIndex = 10 - absOffset;
-                const blur = isActive ? 0 : 2;
-                const opacity = isActive ? 1 : 0.5;
-
-                const isAi = card.kind === "ai";
-                const isTemplate = card.kind === "template";
-                const cardId = isAi ? card.category.id : isTemplate ? card.template.id : card.cat.id;
-
-                // Image
-                let coverImage = "";
-                if (isAi) {
-                  const mapped = categoryImageMap[card.category.category] || "style";
-                  coverImage = getCategoryImage(mapped, gender as any);
-                } else if (isTemplate) {
-                  coverImage = templateImageMap[card.template.name] || "";
-                } else {
-                  coverImage = getCategoryImage(card.cat.id, gender as any);
-                }
-
-                // Title & subtitle
-                let title = "";
-                let subtitle = "";
-                if (isAi) {
-                  title = card.category.name;
-                  subtitle = `${card.category.questions.length} questions`;
-                } else if (isTemplate) {
-                  title = card.template.name;
-                  subtitle = "Tap to fill out";
-                } else {
-                  const isDone = completedCategories.includes(card.cat.id);
-                  const catQCount = onboardingQuestions.filter((q) => q.category === card.cat.id).length;
-                  title = card.cat.name;
-                  subtitle = isDone ? "Completed" : `${catQCount} questions`;
-                }
-
-                const isDone = !isAi && !isTemplate && completedCategories.includes(card.cat.id);
-
-                return (
-                  <motion.div
-                    key={cardId}
-                    animate={{ x: xOffset, scale, opacity, filter: `blur(${blur}px)` }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="absolute cursor-pointer"
-                    style={{ zIndex }}
-                    onClick={() => {
-                      if (isActive) {
-                        if (isAi) setSelectedAiCategory(card.category.id);
-                        else if (isTemplate) handleTemplateClick(card.template);
-                        else setSelectedCategory(card.cat.id);
-                      } else {
-                        setActiveIndex(index);
-                      }
-                    }}
-                  >
-                    <div
-                      className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${isActive ? "ring-2 ring-primary shadow-2xl" : ""}`}
-                      style={{ width: cardW, height: cardH }}
-                    >
-                      <div className="relative w-full h-full overflow-hidden">
-                        <img src={coverImage} alt={title} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                        <div className="absolute bottom-0 left-0 right-0 p-4">
-                          <h3 className="card-title leading-tight">
-                            {title}
-                          </h3>
-                        </div>
-                        {isDone && (
-                          <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>
-                            <span className="text-white text-xs">✓</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-
-              {aiLoading && aiCategories.length === 0 && (
-                <div className="absolute bottom-4 flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" style={{ color: "var(--swatch-teal)" }} />
-                  <span className="text-xs text-muted-foreground">Loading more cards...</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="h-full">
+      <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "#2D6870", fontWeight: 400 }} className="mb-2">Tap a card to view or edit your details.</p>
+      <SnapScrollLayout
+        sections={sections.map((section) => ({
+          id: section.id,
+          label: section.label,
+          content: (
+            <KnowMeCarousel
+              cards={buildSectionCards(section.id)}
+              onCardClick={handleCardClick}
+              loading={aiLoading && aiCategories.length === 0}
+            />
+          ),
+        }))}
+      />
     </div>
   );
 };
