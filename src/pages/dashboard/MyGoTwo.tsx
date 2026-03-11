@@ -266,8 +266,8 @@ const PreferencesSection = () => {
                         </p>
                       </div>
                       {answered && (
-                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>
-                          <span className="text-white text-[10px]">✓</span>
+                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>
+                          <span className="text-white text-xs">✓</span>
                         </div>
                       )}
                     </div>
