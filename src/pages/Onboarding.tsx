@@ -218,7 +218,7 @@ const Onboarding = () => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <p className="text-white font-semibold text-sm" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px" }}>{img.label}</p>
+                      <p className="card-title">{img.label}</p>
                     </div>
                   </div>
                 </motion.div>
