@@ -392,7 +392,7 @@ const Onboarding = () => {
                         </div>
                       )}
                       <div className="absolute bottom-0 left-0 right-0 p-3.5">
-                        <h3 className="text-white font-semibold text-sm leading-tight drop-shadow" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px" }}>
+                        <h3 className="card-title leading-tight">
                           {cat.name}
                         </h3>
                         <p className="text-white/70 text-xs mt-0.5">
