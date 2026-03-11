@@ -464,6 +464,10 @@ const DashboardHome = () => {
     ]);
   }, []);
 
+  const handleOpenConnection = useCallback((card: ConnectionCard, rect: DOMRect) => {
+    setOpenConnection({ card, rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height } });
+  }, []);
+
   const allSections = [
     {
       id: "connections",
@@ -473,6 +477,7 @@ const DashboardHome = () => {
           cards={connections}
           onSaveConnection={handleSaveConnection}
           onAddConnection={handleAddConnection}
+          onOpenConnection={handleOpenConnection}
         />
       ),
     },
@@ -493,6 +498,20 @@ const DashboardHome = () => {
           content: s.content,
         }))}
       />
+      <AnimatePresence>
+        {openConnection && (
+          <ConnectionPage
+            key={openConnection.card.id}
+            connection={{
+              id: openConnection.card.id,
+              name: openConnection.card.name,
+              image: openConnection.card.image,
+            }}
+            cardRect={openConnection.rect}
+            onClose={() => setOpenConnection(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
