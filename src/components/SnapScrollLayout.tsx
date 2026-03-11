@@ -80,35 +80,39 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
               scrollSnapStop: "always",
             }}
           >
-            {/* Carousel centered, title 24px above, dots 24px below */}
+            {/* Carousel centered, title 24px above */}
             <div className="flex-1 flex items-center justify-center">
               <div className="w-full relative">
                 <h3 className="section-header text-center absolute left-0 right-0" style={{ top: -24, transform: "translateY(-100%)" }}>{section.label}</h3>
                 {section.content}
-                {/* Bottom dot pagination */}
-                {sections.length > 1 && (
-                  <div className="absolute left-0 right-0 flex justify-center gap-2.5 z-30" style={{ bottom: -40, transform: "translateY(100%)" }}>
-                    {sections.map((s, i) => (
-                      <button
-                        key={s.id}
-                        onClick={() => scrollTo(i)}
-                        className="w-2.5 h-2.5 rounded-full transition-all duration-300"
-                        style={{
-                          background: i === activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
-                          transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
-                        }}
-                        aria-label={`Go to ${s.label}`}
-                      />
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Dot pagination — right side, moved up */}
+      {/* Bottom dot pagination — fixed, halfway to bottom nav */}
+      {sections.length > 1 && (
+        <div
+          className="absolute left-0 right-0 flex justify-center gap-2.5 z-30"
+          style={{ bottom: "4%" }}
+        >
+          {sections.map((section, i) => (
+            <button
+              key={`bottom-${section.id}`}
+              onClick={() => scrollTo(i)}
+              className="w-2.5 h-2.5 rounded-full transition-all duration-300"
+              style={{
+                background: i === activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
+                transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
+              }}
+              aria-label={`Go to ${section.label}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Dot pagination — right side */}
       {sections.length > 1 && (
         <div
           className="absolute right-3 flex flex-col gap-2.5 z-30"
@@ -116,7 +120,7 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
         >
           {sections.map((section, i) => (
             <button
-              key={section.id}
+              key={`right-${section.id}`}
               onClick={() => scrollTo(i)}
               className="w-2.5 h-2.5 rounded-full transition-all duration-300"
               style={{
