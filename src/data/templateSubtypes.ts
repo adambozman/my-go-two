@@ -253,3 +253,43 @@ export const allTemplateSubtypes: Record<string, SubtypeItem[]> = {
     { id: "food", name: "Food & Drink", image: imgGroceryPantry, fields: [tf("Product"), tf("Brand"), tf("Flavor/Variant"), tf("Where to Buy"), tf("Notes")] },
   ],
 };
+
+// Templates with subcategory grouping (Category → Subcategory → Products)
+export const templateSubcategories: Record<string, SubcategoryGroup[]> = {
+  "Grooming": [
+    {
+      id: "hair-care", name: "Hair Care", image: imgGroomingHair,
+      products: [
+        { id: "shampoo", name: "Shampoo", image: imgGroomingHair, fields: productFields("Hair Type", ["Straight", "Wavy", "Curly", "Coily", "All Types"]) },
+        { id: "conditioner", name: "Conditioner", image: imgGroomingHair, fields: productFields("Hair Type", ["Straight", "Wavy", "Curly", "Coily", "All Types"]) },
+        { id: "hair-styling", name: "Hair Styling", image: imgGroomingHair, fields: productFields("Type", ["Gel", "Pomade", "Mousse", "Spray", "Cream", "Oil"]) },
+      ],
+    },
+    {
+      id: "skin-care", name: "Skin Care", image: imgGroomingSkin,
+      products: [
+        { id: "moisturizer", name: "Moisturizer", image: imgGroomingSkin, fields: productFields("Skin Type", ["Oily", "Dry", "Combination", "Normal", "Sensitive"]) },
+        { id: "cleanser", name: "Cleanser", image: imgGroomingSkin, fields: productFields("Skin Type", ["Oily", "Dry", "Combination", "Normal", "Sensitive"]) },
+        { id: "sunscreen", name: "Sunscreen", image: imgGroomingSkin, fields: [...productFields("SPF", ["SPF 15", "SPF 30", "SPF 50", "SPF 50+"]), tf("Finish", "select", ["Matte", "Dewy", "Natural"])] },
+      ],
+    },
+    {
+      id: "shaving", name: "Shaving", image: imgGroomingShaving,
+      products: [
+        { id: "razor", name: "Razor", image: imgGroomingShaving, fields: productFields("Type", ["Cartridge", "Safety", "Electric", "Straight", "Disposable"]) },
+        { id: "shaving-cream", name: "Shaving Cream", image: imgGroomingShaving, fields: productFields("Type", ["Cream", "Gel", "Foam", "Soap", "Oil"]) },
+        { id: "aftershave", name: "Aftershave", image: imgGroomingShaving, fields: productFields("Type", ["Balm", "Splash", "Lotion", "Gel"]) },
+        { id: "pre-shave", name: "Pre-Shave", image: imgGroomingShaving, fields: productFields("Type", ["Oil", "Cream", "Gel", "Scrub"]) },
+      ],
+    },
+    {
+      id: "makeup", name: "Makeup", image: imgGroomingMakeup,
+      products: [
+        { id: "foundation", name: "Foundation", image: imgGroomingMakeup, fields: [...productFields("Finish", ["Matte", "Dewy", "Satin", "Natural"]), tf("Shade")] },
+        { id: "concealer", name: "Concealer", image: imgGroomingMakeup, fields: [...productFields("Coverage", ["Light", "Medium", "Full"]), tf("Shade")] },
+        { id: "mascara", name: "Mascara", image: imgGroomingMakeup, fields: productFields("Effect", ["Lengthening", "Volumizing", "Curling", "Waterproof"]) },
+        { id: "lip-product", name: "Lip Product", image: imgGroomingMakeup, fields: [...productFields("Type", ["Lipstick", "Lip Gloss", "Lip Liner", "Lip Balm", "Lip Stain"]), tf("Shade")] },
+      ],
+    },
+  ],
+};
