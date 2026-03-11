@@ -120,3 +120,34 @@ export function getPhotosForLabel(label: string): { id: string; url: string }[] 
 export function getDefaultPhotoForLabel(label: string): string {
   return getPhotosForLabel(label)[0]?.url || partner1;
 }
+
+/**
+ * Assign a unique photo to each card in a list so no two cards
+ * in the same carousel share the same image.
+ * Cards that already have a user-set photo keep it; only cards
+ * using fallback/stock photos get de-duplicated.
+ */
+export function assignUniquePhotos<T extends { image: string; name: string }>(
+  cards: T[],
+  isUserPhoto?: (card: T) => boolean
+): T[] {
+  const used = new Set<string>();
+
+  // First pass: lock in user-uploaded photos
+  for (const card of cards) {
+    if (isUserPhoto?.(card)) {
+      used.add(card.image);
+    }
+  }
+
+  // Second pass: assign unique stock photos
+  return cards.map((card) => {
+    if (isUserPhoto?.(card)) return card;
+
+    const photos = getPhotosForLabel(card.name);
+    const available = photos.find((p) => !used.has(p.url));
+    const chosen = available?.url || photos[0]?.url || partner1;
+    used.add(chosen);
+    return { ...card, image: chosen };
+  });
+}
