@@ -61,7 +61,11 @@ const ListDetail = () => {
     setCards(
       (cardsData ?? []).map((c) => ({
         ...c,
-        fields: (c.fields as unknown as CardField[]) ?? [],
+        fields: ((c.fields as unknown as any[]) ?? []).map((f: any) => ({
+          ...f,
+          label: f.label || f.name || "Untitled",
+          value: f.value ?? "",
+        })) as CardField[],
       }))
     );
     setTemplates(templatesData ?? []);
