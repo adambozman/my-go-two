@@ -33,7 +33,7 @@ const categoryOrder = ["personal", "food-drink", "gifts-occasions", "experiences
 const PreferencesSection = () => {
   const { profileAnswers } = usePersonalization();
   const rawIdentity = profileAnswers?.identity;
-  const gender = (Array.isArray(rawIdentity) ? rawIdentity[0] : rawIdentity) as string || "male";
+  const gender = (Array.isArray(rawIdentity) ? rawIdentity[0] : rawIdentity) as string || "neutral";
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
@@ -216,7 +216,7 @@ const MyGoTwo = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const rawId = profileAnswers?.identity;
-  const gender = (Array.isArray(rawId) ? rawId[0] : rawId) as string || "male";
+  const gender = (Array.isArray(rawId) ? rawId[0] : rawId) as string || "neutral";
 
   const getTemplateImage = (name: string) => resolveTemplateImage(name, gender);
 
