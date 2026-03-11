@@ -223,6 +223,7 @@ const Questionnaires = () => {
         onBack={() => setCoverFlowTemplate(null)}
         onSelect={handleSubtypeSelect}
         creating={creating !== null}
+        gender={gender}
       />
     );
   }

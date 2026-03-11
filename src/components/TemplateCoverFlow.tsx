@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
+import { getProductImage } from "@/data/templateImageResolver";
 
 export interface SubtypeItem {
   id: string;
@@ -19,6 +20,7 @@ interface TemplateCoverFlowProps {
   onBack: () => void;
   onSelect: (subtype: SubtypeItem, subcategoryName?: string) => void;
   creating: boolean;
+  gender?: string;
 }
 
 const CoverFlowCarousel = ({
@@ -138,16 +140,19 @@ const CoverFlowCarousel = ({
   );
 };
 
-const TemplateCoverFlow = ({ templateName, subtypes, subcategories, onBack, onSelect, creating }: TemplateCoverFlowProps) => {
+const TemplateCoverFlow = ({ templateName, subtypes, subcategories, onBack, onSelect, creating, gender = "male" }: TemplateCoverFlowProps) => {
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const hasSubcategories = subcategories && subcategories.length > 0;
+
+  // Resolve images based on gender
+  const resolveImage = (id: string, fallback: string) => getProductImage(id, gender, fallback);
 
   // If we have subcategories and none is selected, show subcategory picker
   if (hasSubcategories && !activeSubcategory) {
     const items = subcategories.map((sc) => ({
       id: sc.id,
       name: sc.name,
-      image: sc.image,
+      image: resolveImage(sc.id, sc.image),
       subtitle: `${sc.products.length} products`,
     }));
 
@@ -180,7 +185,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, onBack, onSe
   const productItems = products.map((p) => ({
     id: p.id,
     name: p.name,
-    image: p.image,
+    image: resolveImage(p.id, p.image),
     subtitle: `${p.fields.length} fields`,
   }));
 
