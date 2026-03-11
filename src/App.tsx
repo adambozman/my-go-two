@@ -49,7 +49,7 @@ const App = () => (
                 <Route path="recommendations" element={<Recommendations />} />
                 <Route path="questionnaires" element={<Questionnaires />} />
                 <Route path="settings" element={<SettingsPage />} />
-                
+                <Route path="preferences" element={<Navigate to="/dashboard/my-go-two" replace />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
