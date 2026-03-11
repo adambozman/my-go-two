@@ -419,7 +419,6 @@ const Questionnaires = () => {
                   <span className="text-xs text-muted-foreground">Loading more cards...</span>
                 </div>
               )}
-            </div>
           </div>
         </div>
       </div>
