@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback, type ReactNode } from "react";
-import { CarouselDotsContext, useCarouselDotsProvider, useCarouselDots } from "@/contexts/CarouselDotsContext";
+import { CarouselDotsContext, SectionIndexContext, useCarouselDotsProvider, useCarouselDots } from "@/contexts/CarouselDotsContext";
 
 interface SnapSection {
   id: string;
@@ -48,7 +48,9 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
     const scrollTop = el.scrollTop;
     const sectionHeight = el.clientHeight;
     const idx = Math.round(scrollTop / sectionHeight);
-    setActiveIndex(Math.min(idx, sections.length - 1));
+    const newIdx = Math.min(idx, sections.length - 1);
+    setActiveIndex(newIdx);
+    dotsProvider.setActiveSection(newIdx);
   }, [sections.length]);
 
   useEffect(() => {
@@ -97,7 +99,7 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
             msOverflowStyle: "none",
           }}
         >
-          {sections.map((section) => (
+          {sections.map((section, sectionIdx) => (
             <div
               key={section.id}
               className="w-full flex flex-col"
@@ -108,11 +110,12 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
                 scrollSnapStop: "always",
               }}
             >
-              {/* Carousel centered, title 24px above */}
               <div className="flex-1 flex items-center justify-center">
                 <div className="w-full relative">
                   <h3 className="section-header text-center absolute left-0 right-0" style={{ top: -24, transform: "translateY(-100%)" }}>{section.label}</h3>
-                  {section.content}
+                  <SectionIndexContext.Provider value={sectionIdx}>
+                    {section.content}
+                  </SectionIndexContext.Provider>
                 </div>
               </div>
             </div>
