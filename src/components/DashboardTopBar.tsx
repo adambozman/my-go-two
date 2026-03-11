@@ -56,7 +56,7 @@ export function DashboardTopBar() {
           className="flex-1 text-center italic truncate"
           style={{
             fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 18,
+            fontSize: 32,
             fontWeight: 500,
             letterSpacing: "0.02em",
             color: "#2D6870",
