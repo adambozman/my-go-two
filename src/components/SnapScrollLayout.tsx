@@ -132,10 +132,11 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
               <button
                 key={`right-${section.id}`}
                 onClick={() => scrollTo(i)}
-                className="w-2.5 h-2.5 rounded-full transition-all duration-300"
+                className="rounded-full transition-all duration-300"
                 style={{
+                  width: 8,
+                  height: 8,
                   background: i === activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
-                  transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
                 }}
                 aria-label={`Go to ${section.label}`}
               />
