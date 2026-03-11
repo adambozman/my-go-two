@@ -48,7 +48,9 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
     const scrollTop = el.scrollTop;
     const sectionHeight = el.clientHeight;
     const idx = Math.round(scrollTop / sectionHeight);
-    setActiveIndex(Math.min(idx, sections.length - 1));
+    const newIdx = Math.min(idx, sections.length - 1);
+    setActiveIndex(newIdx);
+    dotsProvider.setActiveSection(newIdx);
   }, [sections.length]);
 
   useEffect(() => {
