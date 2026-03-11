@@ -319,7 +319,7 @@ const Questionnaires = () => {
   return (
     <div className="h-full flex flex-col pb-16">
       <div className="flex-1 flex flex-col">
-        <p className="text-muted-foreground text-sm mb-2">Tap a card to answer questions.</p>
+        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "13px", color: "#2D6870", fontWeight: 400 }} className="mb-2">Tap a card to view or edit your details.</p>
 
         <div className="relative flex items-center justify-center py-4">
           <div className="relative w-full h-[420px] overflow-hidden">
