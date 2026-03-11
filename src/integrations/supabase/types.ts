@@ -121,7 +121,7 @@ export type Database = {
           created_at: string
           display_label: string | null
           id: string
-          invitee_email: string
+          invitee_email: string | null
           invitee_id: string | null
           inviter_id: string
           photo_url: string | null
@@ -132,7 +132,7 @@ export type Database = {
           created_at?: string
           display_label?: string | null
           id?: string
-          invitee_email: string
+          invitee_email?: string | null
           invitee_id?: string | null
           inviter_id: string
           photo_url?: string | null
@@ -143,7 +143,7 @@ export type Database = {
           created_at?: string
           display_label?: string | null
           id?: string
-          invitee_email?: string
+          invitee_email?: string | null
           invitee_id?: string | null
           inviter_id?: string
           photo_url?: string | null

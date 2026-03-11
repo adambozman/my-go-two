@@ -1,0 +1,1 @@
+ALTER TABLE public.couples ALTER COLUMN invitee_email DROP NOT NULL;
