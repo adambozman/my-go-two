@@ -64,7 +64,7 @@ const Questionnaires = () => {
   const { user } = useAuth();
   const { toast: uiToast } = useToast();
   const navigate = useNavigate();
-  const { profileAnswers, gender, refetch } = usePersonalization();
+  const { profileAnswers, gender, loading: genderLoading, refetch } = usePersonalization();
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
