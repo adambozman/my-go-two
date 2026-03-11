@@ -474,6 +474,7 @@ const MyGoTwo = () => {
                         if (ct) handleCustomTemplateClick(ct);
                       }}
                       onAdd={() => openCreateSheet(group.key, group.label)}
+                      onDelete={handleDeleteCustomTemplate}
                       disabled={creating !== null}
                     />
                   </div>
