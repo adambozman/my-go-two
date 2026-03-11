@@ -37,7 +37,7 @@ const PreferencesSection = () => {
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
-  const swipe = useSwipeCarousel(setActiveIndex, imageQuestions.length);
+  
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [selections, setSelections] = useState<Record<string, string[]>>(() => {
     const saved: Record<string, string[]> = {};
