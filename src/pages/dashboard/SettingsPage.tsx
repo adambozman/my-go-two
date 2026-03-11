@@ -512,30 +512,36 @@ const SettingsPage = () => {
 
       {/* Help & Support Section */}
       {activeSection === "help" && (
-        <div className="card-design-neumorph p-8">
-          <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block">
+        <div className="mx-auto" style={{ maxWidth: 520 }}>
+          <button
+            onClick={() => setActiveSection(null)}
+            className="hover:underline block text-left"
+            style={{ color: '#2d6870', fontFamily: "'Jost', sans-serif", fontWeight: 400, fontSize: 13, marginBottom: 12 }}
+          >
             ← Back to Settings
           </button>
-          <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Help & Support</h2>
-          <div className="space-y-3 max-w-md">
-            {[
-              { label: "FAQs", desc: "Common questions and quick answers", href: "#" },
-              { label: "Contact Support", desc: "Reach our team via email", href: "mailto:support@gotwo.app" },
-              { label: "Report a Bug", desc: "Let us know if something isn't working", href: "mailto:bugs@gotwo.app" },
-            ].map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-colors text-left group w-full hover:bg-secondary/30"
-                style={{ border: '1px solid rgba(var(--swatch-teal-rgb), 0.08)' }}
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
-                  <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
-                </div>
-                <ChevronRight className="h-4 w-4 shrink-0" style={{ color: 'var(--swatch-text-light)' }} />
-              </a>
-            ))}
+          <div className="card-design-neumorph" style={{ padding: 40 }}>
+            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Help & Support</h2>
+            <div className="space-y-3">
+              {[
+                { label: "FAQs", desc: "Common questions and quick answers", href: "#" },
+                { label: "Contact Support", desc: "Reach our team via email", href: "mailto:support@gotwo.app" },
+                { label: "Report a Bug", desc: "Let us know if something isn't working", href: "mailto:bugs@gotwo.app" },
+              ].map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-colors text-left group w-full hover:bg-secondary/30"
+                  style={{ border: '1px solid rgba(var(--swatch-teal-rgb), 0.08)' }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
+                    <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 shrink-0" style={{ color: 'var(--swatch-text-light)' }} />
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       )}
