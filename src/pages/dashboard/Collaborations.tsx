@@ -143,9 +143,31 @@ const Collaborations = () => {
 
   return (
     <div className="max-w-3xl">
-      <p className="text-muted-foreground mb-8">
-        Link your <GoTwoText className="text-sm" /> account with someone to share lists and preferences.
-      </p>
+      {/* Hero Card */}
+      <div className="relative overflow-hidden mb-10" style={{ borderRadius: "1.8rem", minHeight: 220 }}>
+        <div className="absolute inset-0" style={{
+          background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.6) 100%)",
+        }} />
+        <div className="relative z-10 p-10 flex flex-col items-center justify-center text-center" style={{ minHeight: 220 }}>
+          <Users className="w-12 h-12 mb-4" style={{ color: "rgba(246,226,212,0.4)" }} />
+          <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif", color: "#f6e2d4" }}>
+            Connect Your Partner
+          </h2>
+          <p className="text-sm mb-6 max-w-sm" style={{ color: "rgba(246,226,212,0.7)" }}>
+            Their style, sizes, and preferences — right here. So you never miss.
+          </p>
+          <div className="flex gap-3">
+            <Button className="rounded-full px-6" onClick={() => setQrDialogOpen(true)}
+              style={{ background: "rgba(255,255,255,0.2)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.3)" }}>
+              <QrCode className="w-4 h-4 mr-2" /> Share QR Code
+            </Button>
+            <Button className="rounded-full px-6" onClick={() => setEmailDialogOpen(true)}
+              style={{ background: "rgba(255,255,255,0.2)", color: "#f6e2d4", border: "1px solid rgba(255,255,255,0.3)" }}>
+              <Mail className="w-4 h-4 mr-2" /> Invite by Email
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Invite Methods */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
