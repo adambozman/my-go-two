@@ -48,6 +48,8 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
         style={{
           scrollSnapType: "y mandatory",
           WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
         }}
       >
         {sections.map((section) => (
