@@ -131,20 +131,6 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
           })}
         </div>
       </div>
-      {/* Bottom horizontal dots for card navigation */}
-      <div className="flex justify-center gap-1.5 mt-6">
-        {allCards.map((item, i) => (
-          <button
-            key={`dot-${item.id}`}
-            onClick={() => setActiveIndex(i)}
-            className="w-2 h-2 rounded-full transition-all duration-300"
-            style={{
-              background: i === activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
-              transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
-            }}
-          />
-        ))}
-      </div>
     </div>
   );
 };
