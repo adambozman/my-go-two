@@ -185,7 +185,7 @@ const ConnectionsCoverFlow = ({
                       alt={card.name}
                       className="w-full h-full object-cover"
                       style={card.status === "placeholder" ? { filter: "saturate(0.4) brightness(0.85)" } : {}}
-                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
                       loading="eager"
                       onError={(e) => {
                         const target = e.currentTarget;
