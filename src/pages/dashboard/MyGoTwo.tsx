@@ -411,6 +411,17 @@ const MyGoTwo = () => {
     await createListFromTemplate(ct.name, ct.default_fields, undefined);
   };
 
+  const handleDeleteCustomTemplate = async (id: string) => {
+    if (!user) return;
+    const { error } = await supabase.from("custom_templates").delete().eq("id", id).eq("user_id", user.id);
+    if (error) {
+      toast({ title: "Failed to delete", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Template deleted" });
+      fetchTemplates();
+    }
+  };
+
   return (
     <AnimatePresence mode="wait">
       {coverFlowTemplate ? (
@@ -437,12 +448,14 @@ const MyGoTwo = () => {
                     name: t.name,
                     image: getTemplateImage(t.name),
                     fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
+                    isCustom: false,
                   })),
                   ...group.customItems.map((ct) => ({
                     id: ct.id,
                     name: ct.name,
                     image: ct.image_url || "",
                     fieldCount: Array.isArray(ct.default_fields) ? ct.default_fields.length : 0,
+                    isCustom: true,
                   })),
                 ];
 
@@ -461,6 +474,7 @@ const MyGoTwo = () => {
                         if (ct) handleCustomTemplateClick(ct);
                       }}
                       onAdd={() => openCreateSheet(group.key, group.label)}
+                      onDelete={handleDeleteCustomTemplate}
                       disabled={creating !== null}
                     />
                   </div>
