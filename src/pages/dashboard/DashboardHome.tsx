@@ -399,10 +399,11 @@ const DashboardHome = () => {
 
     const cards: ConnectionCard[] = data.map((row: any) => {
       const isInviter = row.inviter_id === user.id;
+      const label = row.display_label || (isInviter && row.invitee_email ? row.invitee_email.split("@")[0] : "Connection");
       return {
         id: row.id,
-        name: row.display_label || (isInviter && row.invitee_email ? row.invitee_email.split("@")[0] : "Connection"),
-        image: row.photo_url || DEFAULT_IMAGE,
+        name: label,
+        image: row.photo_url || getDefaultPhotoForLabel(label),
         email: row.invitee_email || "",
         status: row.status,
       };
