@@ -104,15 +104,6 @@ const CoverFlowCarousel = ({
                         <h3 className="card-title leading-tight">
                           {item.name}
                         </h3>
-                        {isActive && (
-                          <motion.p
-                            initial={{ opacity: 0, y: 4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="text-xs text-white/70 mt-1"
-                          >
-                            {item.subtitle || "Tap to start"}
-                          </motion.p>
-                        )}
                       </div>
                     </div>
                   </div>

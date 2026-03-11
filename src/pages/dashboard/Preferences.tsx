@@ -159,9 +159,6 @@ const Preferences = () => {
                           <h3 className="text-white font-semibold text-sm leading-tight drop-shadow" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                             {q.title}
                           </h3>
-                          <p className="text-white/70 text-xs mt-1">
-                            {answered ? `${(selections[q.id] || []).length} selected` : "Tap to answer"}
-                          </p>
                         </div>
                         {answered && (
                           <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>

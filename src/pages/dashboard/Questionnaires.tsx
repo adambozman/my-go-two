@@ -403,16 +403,9 @@ const Questionnaires = () => {
                         <img src={coverImage} alt={title} className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-4">
-                          {isAi && (
-                            <div className="flex items-center gap-1 mb-1">
-                              <Sparkles className="h-3 w-3 text-white/80" />
-                              <span className="text-[10px] text-white/70 uppercase tracking-wider font-semibold">AI Generated</span>
-                            </div>
-                          )}
                           <h3 className="card-title leading-tight">
                             {title}
                           </h3>
-                          <p className="text-white/70 text-xs mt-1">{subtitle}</p>
                         </div>
                         {isDone && (
                           <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "var(--swatch-teal)" }}>
