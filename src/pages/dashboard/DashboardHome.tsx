@@ -17,6 +17,37 @@ const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&h=625&fit=crop&q=80";
 
+const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
+  {
+    id: "placeholder-wife",
+    name: "Wife",
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&h=625&fit=crop&q=80",
+    email: "",
+    status: "placeholder",
+  },
+  {
+    id: "placeholder-sig-other",
+    name: "Significant Other",
+    image: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&h=625&fit=crop&q=80",
+    email: "",
+    status: "placeholder",
+  },
+  {
+    id: "placeholder-mom",
+    name: "Mom",
+    image: "https://images.unsplash.com/photo-1462275646964-a0e3c11f18a6?w=500&h=625&fit=crop&q=80",
+    email: "",
+    status: "placeholder",
+  },
+  {
+    id: "placeholder-dad",
+    name: "Dad",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=500&h=625&fit=crop&q=80",
+    email: "",
+    status: "placeholder",
+  },
+];
+
 interface ConnectionCard {
   id: string;
   name: string;
@@ -310,7 +341,17 @@ const DashboardHome = () => {
       };
     });
 
-    setConnections(cards);
+    // Show placeholder cards when user has few/no real connections
+    if (cards.length < 4) {
+      const remainingSlots = 4 - cards.length;
+      const usedNames = new Set(cards.map(c => c.name.toLowerCase()));
+      const placeholders = PLACEHOLDER_CONNECTIONS
+        .filter(p => !usedNames.has(p.name.toLowerCase()))
+        .slice(0, remainingSlots);
+      setConnections([...cards, ...placeholders]);
+    } else {
+      setConnections(cards);
+    }
   }, [user]);
 
   useEffect(() => {
@@ -322,8 +363,8 @@ const DashboardHome = () => {
     async (cardId: string, newLabel: string, newImage: string, _email?: string) => {
       if (!user) return;
 
-      // If this is a "new" card (temp id), create it
-      if (cardId.startsWith("new-")) {
+      // If this is a "new" or placeholder card, create it
+      if (cardId.startsWith("new-") || cardId.startsWith("placeholder-")) {
         if (!_email) {
           toast.error("Email is required");
           return;
