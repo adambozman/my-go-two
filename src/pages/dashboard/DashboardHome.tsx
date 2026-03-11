@@ -20,6 +20,11 @@ interface PlaceholderCard {
   image: string;
 }
 
+interface ConnectionData {
+  labels: Record<string, string>;
+  images: Record<string, string>;
+}
+
 const defaultConnectionCards: PlaceholderCard[] = [
   { id: "conn-1", name: "Partner", image: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&h=625&fit=crop&q=80" },
   { id: "conn-2", name: "Best Friend", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&h=625&fit=crop&q=80" },
