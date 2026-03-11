@@ -102,12 +102,12 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
                       >
                         <Plus className="w-7 h-7 text-white" />
                       </div>
-                      <h3
-                        className="text-white font-semibold text-sm"
-                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
-                      >
-                        Add Your Own
-                      </h3>
+                        <h3
+106:                         className="card-title"
+107:                         style={{ fontFamily: "'Cormorant Garamond', serif" }}
+108:                       >
+109:                         Add Your Own
+110:                       </h3>
                       <p className="text-white/60 text-xs px-6 text-center">
                         Create a custom list
                       </p>
