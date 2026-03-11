@@ -13,7 +13,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SwipeCards from "@/components/SwipeCards";
-import { allTemplateSubtypes, templateSubcategories } from "@/data/templateSubtypes";
+import { allTemplateSubtypes, templateSubcategories, filterSubtypesByGender, filterSubcategoriesByGender } from "@/data/templateSubtypes";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import { useToast } from "@/hooks/use-toast";
 
@@ -163,8 +163,10 @@ const Questionnaires = () => {
       uiToast({ title: "Please log in first", variant: "destructive" });
       return;
     }
-    const subtypes = allTemplateSubtypes[template.name];
-    const subcategories = templateSubcategories[template.name];
+    const rawSubtypes = allTemplateSubtypes[template.name];
+    const rawSubcategories = templateSubcategories[template.name];
+    const subtypes = rawSubtypes ? filterSubtypesByGender(rawSubtypes, gender) : undefined;
+    const subcategories = rawSubcategories ? filterSubcategoriesByGender(rawSubcategories, gender) : undefined;
     if (subtypes || subcategories) {
       setCoverFlowTemplate({ name: template.name, subtypes: subtypes || [], subcategories });
       return;

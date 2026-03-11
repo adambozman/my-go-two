@@ -8,6 +8,7 @@ export interface SubtypeItem {
   id: string;
   name: string;
   image: string;
+  gender?: string[];
   fields: { label: string; type: "text" | "select"; value: string; options?: string[] }[];
 }
 

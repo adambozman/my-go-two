@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import GoTwoText from "@/components/GoTwoText";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
-import { allTemplateSubtypes, templateSubcategories } from "@/data/templateSubtypes";
+import { allTemplateSubtypes, templateSubcategories, filterSubtypesByGender, filterSubcategoriesByGender } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
 import { AnimatePresence } from "framer-motion";
 import { profileQuestions } from "@/data/profileQuestions";
@@ -293,7 +293,8 @@ const MyGoTwo = () => {
   const { profileAnswers } = usePersonalization();
   const navigate = useNavigate();
   const location = useLocation();
-  const isMale = profileAnswers?.identity?.[0] === "male" || (Array.isArray(profileAnswers?.identity) && (profileAnswers?.identity as string[]).includes("male"));
+  const gender = (profileAnswers?.identity as string) || "male";
+  const isMale = gender === "male";
 
   const getTemplateImage = (name: string) => {
     if (isMale && maleImageOverrides[name]) return maleImageOverrides[name];
@@ -342,8 +343,10 @@ const MyGoTwo = () => {
       toast({ title: "Please log in first", variant: "destructive" });
       return;
     }
-    const subtypes = allTemplateSubtypes[template.name];
-    const subcategories = templateSubcategories[template.name];
+    const rawSubtypes = allTemplateSubtypes[template.name];
+    const rawSubcategories = templateSubcategories[template.name];
+    const subtypes = rawSubtypes ? filterSubtypesByGender(rawSubtypes, gender) : undefined;
+    const subcategories = rawSubcategories ? filterSubcategoriesByGender(rawSubcategories, gender) : undefined;
     if (subtypes || subcategories) {
       setCoverFlowTemplate({ name: template.name, subtypes: subtypes || [], subcategories });
       return;

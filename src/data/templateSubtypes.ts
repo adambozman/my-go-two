@@ -5,6 +5,7 @@ export interface SubcategoryGroup {
   name: string;
   image: string;
   products: SubtypeItem[];
+  gender?: string[]; // e.g. ["female"] means female-only; omit for all genders
 }
 
 // === CLOTHING SIZES ===
@@ -121,20 +122,20 @@ export const allTemplateSubtypes: Record<string, SubtypeItem[]> = {
   "Clothing Sizes": [
     { id: "tops", name: "Tops", image: imgClothingTops, fields: [tf("Size", "select", ["XS", "S", "M", "L", "XL", "XXL"]), tf("Preferred Fit", "select", ["Slim", "Regular", "Relaxed", "Oversized"]), tf("Preferred Brands"), tf("Notes")] },
     { id: "bottoms", name: "Bottoms", image: imgClothingBottoms, fields: [tf("Waist Size"), tf("Length/Inseam"), tf("Preferred Fit", "select", ["Skinny", "Slim", "Regular", "Relaxed", "Wide"]), tf("Preferred Brands"), tf("Notes")] },
-    { id: "dresses", name: "Dresses", image: imgClothingDresses, fields: [tf("Size", "select", ["XS", "S", "M", "L", "XL", "XXL"]), tf("Length", "select", ["Mini", "Midi", "Maxi"]), tf("Preferred Style", "select", ["A-Line", "Bodycon", "Wrap", "Shift", "Maxi"]), tf("Preferred Brands"), tf("Notes")] },
+    { id: "dresses", name: "Dresses", image: imgClothingDresses, gender: ["female"], fields: [tf("Size", "select", ["XS", "S", "M", "L", "XL", "XXL"]), tf("Length", "select", ["Mini", "Midi", "Maxi"]), tf("Preferred Style", "select", ["A-Line", "Bodycon", "Wrap", "Shift", "Maxi"]), tf("Preferred Brands"), tf("Notes")] },
     { id: "outerwear", name: "Outerwear", image: imgClothingOuterwear, fields: [tf("Size", "select", ["XS", "S", "M", "L", "XL", "XXL"]), tf("Type", "select", ["Jacket", "Coat", "Parka", "Blazer", "Vest"]), tf("Preferred Brands"), tf("Notes")] },
     { id: "activewear", name: "Activewear", image: imgClothingActivewear, fields: [tf("Top Size", "select", ["XS", "S", "M", "L", "XL"]), tf("Bottom Size", "select", ["XS", "S", "M", "L", "XL"]), tf("Sports Bra Size"), tf("Preferred Brands"), tf("Notes")] },
   ],
   "Shoe Size": [
-    { id: "heels", name: "Heels", image: imgHeels, fields: [tf("Size (US)"), tf("Size (EU)"), tf("Heel Height", "select", ["Kitten (1-2\")", "Mid (2-3\")", "High (3-4\")", "Stiletto (4\"+)"]), tf("Preferred Brands"), tf("Width", "select", ["Narrow", "Standard", "Wide"]), tf("Fit Notes"), tf("Example Brand That Fits Perfectly")] },
+    { id: "heels", name: "Heels", image: imgHeels, gender: ["female"], fields: [tf("Size (US)"), tf("Size (EU)"), tf("Heel Height", "select", ["Kitten (1-2\")", "Mid (2-3\")", "High (3-4\")", "Stiletto (4\"+)"]), tf("Preferred Brands"), tf("Width", "select", ["Narrow", "Standard", "Wide"]), tf("Fit Notes"), tf("Example Brand That Fits Perfectly")] },
     { id: "sneakers", name: "Sneakers", image: imgSneakers, fields: [tf("Size (US)"), tf("Size (EU)"), tf("Preferred Brands"), tf("Width", "select", ["Narrow", "Standard", "Wide", "Extra Wide"]), tf("Style", "select", ["Low-top", "Mid-top", "High-top", "Slip-on"]), tf("Fit Notes"), tf("Example Brand That Fits Perfectly")] },
     { id: "boots", name: "Boots", image: imgBoots, fields: [tf("Size (US)"), tf("Size (EU)"), tf("Boot Height", "select", ["Ankle", "Mid-Calf", "Knee-High", "Over-the-Knee"]), tf("Preferred Brands"), tf("Width", "select", ["Narrow", "Standard", "Wide"]), tf("Fit Notes"), tf("Example Brand That Fits Perfectly")] },
     { id: "sandals", name: "Sandals", image: imgSandals, fields: [tf("Size (US)"), tf("Size (EU)"), tf("Style", "select", ["Slides", "Strappy", "Wedge", "Gladiator", "Flip-Flop"]), tf("Preferred Brands"), tf("Width", "select", ["Narrow", "Standard", "Wide"]), tf("Fit Notes"), tf("Example Brand That Fits Perfectly")] },
-    { id: "flats", name: "Flats", image: imgFlats, fields: [tf("Size (US)"), tf("Size (EU)"), tf("Style", "select", ["Ballet", "Loafer", "Mule", "Espadrille"]), tf("Preferred Brands"), tf("Width", "select", ["Narrow", "Standard", "Wide"]), tf("Fit Notes"), tf("Example Brand That Fits Perfectly")] },
+    { id: "flats", name: "Flats", image: imgFlats, gender: ["female"], fields: [tf("Size (US)"), tf("Size (EU)"), tf("Style", "select", ["Ballet", "Loafer", "Mule", "Espadrille"]), tf("Preferred Brands"), tf("Width", "select", ["Narrow", "Standard", "Wide"]), tf("Fit Notes"), tf("Example Brand That Fits Perfectly")] },
   ],
   "Scents": [
-    { id: "perfume", name: "Perfume", image: imgScentPerfume, fields: [...productFields("Concentration", ["EDT", "EDP", "Parfum", "Cologne"]), tf("Scent Family", "select", ["Floral", "Woody", "Fresh", "Oriental", "Gourmand"])] },
-    { id: "cologne", name: "Cologne", image: imgScentPerfume, fields: [...productFields("Concentration", ["EDT", "EDP", "Cologne"]), tf("Scent Family", "select", ["Fresh", "Woody", "Spicy", "Aquatic", "Aromatic"])] },
+    { id: "perfume", name: "Perfume", image: imgScentPerfume, gender: ["female"], fields: [...productFields("Concentration", ["EDT", "EDP", "Parfum", "Cologne"]), tf("Scent Family", "select", ["Floral", "Woody", "Fresh", "Oriental", "Gourmand"])] },
+    { id: "cologne", name: "Cologne", image: imgScentPerfume, gender: ["male"], fields: [...productFields("Concentration", ["EDT", "EDP", "Cologne"]), tf("Scent Family", "select", ["Fresh", "Woody", "Spicy", "Aquatic", "Aromatic"])] },
     { id: "candle", name: "Candle", image: imgScentCandles, fields: [...productFields("Wax Type", ["Soy", "Beeswax", "Coconut", "Paraffin", "No Preference"]), tf("Size", "select", ["Small", "Medium", "Large", "Travel"])] },
     { id: "body-lotion", name: "Body Lotion", image: imgScentBodycare, fields: productFields("Skin Type", ["Normal", "Dry", "Sensitive", "All"]) },
     { id: "body-wash", name: "Body Wash", image: imgScentBodycare, fields: productFields("Type", ["Gel", "Cream", "Oil", "Bar"]) },
@@ -283,7 +284,7 @@ export const templateSubcategories: Record<string, SubcategoryGroup[]> = {
       ],
     },
     {
-      id: "makeup", name: "Makeup", image: imgGroomingMakeup,
+      id: "makeup", name: "Makeup", image: imgGroomingMakeup, gender: ["female"],
       products: [
         { id: "foundation", name: "Foundation", image: imgGroomingMakeup, fields: [...productFields("Finish", ["Matte", "Dewy", "Satin", "Natural"]), tf("Shade")] },
         { id: "concealer", name: "Concealer", image: imgGroomingMakeup, fields: [...productFields("Coverage", ["Light", "Medium", "Full"]), tf("Shade")] },
@@ -293,3 +294,12 @@ export const templateSubcategories: Record<string, SubcategoryGroup[]> = {
     },
   ],
 };
+
+// Filter subtypes and subcategories by gender
+export function filterSubtypesByGender(items: SubtypeItem[], gender: string): SubtypeItem[] {
+  return items.filter(item => !item.gender || item.gender.includes(gender));
+}
+
+export function filterSubcategoriesByGender(groups: SubcategoryGroup[], gender: string): SubcategoryGroup[] {
+  return groups.filter(g => !g.gender || g.gender.includes(gender));
+}
