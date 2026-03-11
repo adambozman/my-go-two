@@ -29,6 +29,8 @@ const CoverFlowCarousel = ({
 }) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(items.length / 2));
 
+  if (items.length === 0) return null;
+
   const goLeft = () => setActiveIndex((i) => (i - 1 + items.length) % items.length);
   const goRight = () => setActiveIndex((i) => (i + 1) % items.length);
 
