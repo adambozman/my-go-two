@@ -210,7 +210,7 @@ const PreferencesSection = () => {
 const MyGoTwo = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { profileAnswers, gender } = usePersonalization();
+  const { profileAnswers, gender, loading: genderLoading } = usePersonalization();
   const navigate = useNavigate();
   const location = useLocation();
 
