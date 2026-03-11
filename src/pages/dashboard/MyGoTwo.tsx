@@ -225,7 +225,7 @@ const MyGoTwo = () => {
     category: string;
     default_fields: any;
   }
-import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
+
   const [templates, setTemplates] = useState<Template[]>([]);
   const [customTemplates, setCustomTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
