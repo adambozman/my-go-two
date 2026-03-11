@@ -127,7 +127,7 @@ const CardEditButton = ({ title, onRename, onSaveConnection, currentImage, maxLe
         {/* Photo grid */}
         <label className="text-[11px] font-medium text-white/60 mb-1.5 tracking-wide uppercase">Photo</label>
         <div className="grid grid-cols-3 gap-1.5 mb-3">
-          {STOCK_PHOTOS.map((photo) => {
+          {getPhotosForLabel(title).map((photo) => {
             const isSelected = selectedPhoto === photo.url;
             return (
               <button
@@ -135,7 +135,7 @@ const CardEditButton = ({ title, onRename, onSaveConnection, currentImage, maxLe
                 className="relative rounded-lg overflow-hidden aspect-square"
                 onClick={() => setSelectedPhoto(photo.url)}
               >
-                <img src={photo.url} alt={photo.label} className="w-full h-full object-cover" />
+                <img src={photo.url} alt={photo.id} className="w-full h-full object-cover" />
                 {isSelected && (
                   <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(45,104,112,0.45)" }}>
                     <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "#2D6870" }}>
