@@ -283,10 +283,6 @@ const CardEditButton = ({
             const finalPhoto = selectedPhoto || currentImage || "";
             const finalEmail = email.trim();
 
-            if (isNewConnection && !finalEmail) {
-              toast.error("Please enter their email address");
-              return;
-            }
             if (finalEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(finalEmail)) {
               toast.error("Please enter a valid email address");
               return;
