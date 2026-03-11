@@ -80,7 +80,7 @@ const Questionnaires = () => {
   // Preferences templates
   const [prefTemplates, setPrefTemplates] = useState<Template[]>([]);
   const [creating, setCreating] = useState<string | null>(null);
-  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[] } | null>(null);
+  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(null);
 
   // Load existing answers
   useEffect(() => {
