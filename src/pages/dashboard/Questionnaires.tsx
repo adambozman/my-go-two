@@ -312,6 +312,10 @@ const Questionnaires = () => {
   }
 
   // Main cover flow
+  if (genderLoading) {
+    return <p className="text-muted-foreground p-4">Loading...</p>;
+  }
+
   return (
     <div className="h-full flex flex-col pb-16">
       <div className="flex-1 flex flex-col">
