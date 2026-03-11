@@ -134,22 +134,7 @@ export const allTemplateSubtypes: Record<string, SubtypeItem[]> = {
     { id: "essential-oil", name: "Essential Oil", image: imgScentOils, fields: productFields("Use", ["Aromatherapy", "Topical", "Diffuser", "Bath"]) },
     { id: "room-spray", name: "Room Spray", image: imgScentHome, fields: productFields("Type", ["Spray", "Diffuser", "Incense", "Wax Melts"]) },
   ],
-  "Grooming": [
-    { id: "shampoo", name: "Shampoo", image: imgGroomingHair, fields: productFields("Hair Type", ["Straight", "Wavy", "Curly", "Coily", "All Types"]) },
-    { id: "conditioner", name: "Conditioner", image: imgGroomingHair, fields: productFields("Hair Type", ["Straight", "Wavy", "Curly", "Coily", "All Types"]) },
-    { id: "hair-styling", name: "Hair Styling", image: imgGroomingHair, fields: productFields("Type", ["Gel", "Pomade", "Mousse", "Spray", "Cream", "Oil"]) },
-    { id: "moisturizer", name: "Moisturizer", image: imgGroomingSkin, fields: productFields("Skin Type", ["Oily", "Dry", "Combination", "Normal", "Sensitive"]) },
-    { id: "cleanser", name: "Cleanser", image: imgGroomingSkin, fields: productFields("Skin Type", ["Oily", "Dry", "Combination", "Normal", "Sensitive"]) },
-    { id: "sunscreen", name: "Sunscreen", image: imgGroomingSkin, fields: [...productFields("SPF", ["SPF 15", "SPF 30", "SPF 50", "SPF 50+"]), tf("Finish", "select", ["Matte", "Dewy", "Natural"])] },
-    { id: "razor", name: "Razor", image: imgGroomingShaving, fields: productFields("Type", ["Cartridge", "Safety", "Electric", "Straight", "Disposable"]) },
-    { id: "shaving-cream", name: "Shaving Cream", image: imgGroomingShaving, fields: productFields("Type", ["Cream", "Gel", "Foam", "Soap", "Oil"]) },
-    { id: "aftershave", name: "Aftershave", image: imgGroomingShaving, fields: productFields("Type", ["Balm", "Splash", "Lotion", "Gel"]) },
-    { id: "pre-shave", name: "Pre-Shave", image: imgGroomingShaving, fields: productFields("Type", ["Oil", "Cream", "Gel", "Scrub"]) },
-    { id: "foundation", name: "Foundation", image: imgGroomingMakeup, fields: [...productFields("Finish", ["Matte", "Dewy", "Satin", "Natural"]), tf("Shade")] },
-    { id: "concealer", name: "Concealer", image: imgGroomingMakeup, fields: [...productFields("Coverage", ["Light", "Medium", "Full"]), tf("Shade")] },
-    { id: "mascara", name: "Mascara", image: imgGroomingMakeup, fields: productFields("Effect", ["Lengthening", "Volumizing", "Curling", "Waterproof"]) },
-    { id: "lip-product", name: "Lip Product", image: imgGroomingMakeup, fields: [...productFields("Type", ["Lipstick", "Lip Gloss", "Lip Liner", "Lip Balm", "Lip Stain"]), tf("Shade")] },
-  ],
+  "Grooming": [], // Handled by subcategories below
   "Measurements": [
     { id: "body", name: "Body", image: imgMeasureBody, fields: [tf("Chest/Bust"), tf("Waist"), tf("Hips"), tf("Inseam"), tf("Shoulder Width"), tf("Notes")] },
     { id: "ring", name: "Ring Size", image: imgMeasureRing, fields: [tf("Ring Size (US)"), tf("Ring Size (EU)"), tf("Preferred Finger"), tf("Metal Preference", "select", ["Gold", "Silver", "Rose Gold", "Platinum"]), tf("Notes")] },
