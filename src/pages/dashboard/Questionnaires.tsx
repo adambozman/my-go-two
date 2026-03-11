@@ -172,10 +172,12 @@ const Questionnaires = () => {
     await createListFromTemplate(template.name, template.default_fields, template.id);
   };
 
-  const handleSubtypeSelect = async (subtype: SubtypeItem) => {
+  const handleSubtypeSelect = async (subtype: SubtypeItem, subcategoryName?: string) => {
     if (!user) return;
     const templateName = coverFlowTemplate?.name;
-    const cardTitle = `${templateName} - ${subtype.name}`;
+    const cardTitle = subcategoryName
+      ? `${templateName} - ${subcategoryName} - ${subtype.name}`
+      : `${templateName} - ${subtype.name}`;
     await createListFromTemplate(cardTitle, subtype.fields as any, undefined);
   };
 
