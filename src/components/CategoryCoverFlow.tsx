@@ -17,8 +17,14 @@ interface CategoryCoverFlowProps {
   disabled: boolean;
 }
 
+const CARD_W = 260;
+const CARD_H = 350;
+const FLANK_W = 200;
+const FLANK_H = 260;
+const X_GAP = 180;
+const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
+
 const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: CategoryCoverFlowProps) => {
-  // Append a virtual "add" card at the end
   const allCards = [
     ...items.map((item) => ({ ...item, isAdd: false as const })),
     ...(onAdd ? [{ id: "__add__", name: "Add Your Own", image: "", fieldCount: 0, isAdd: true as const, isCustom: false }] : []),
@@ -32,12 +38,12 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
   if (allCards.length === 0) return null;
 
   return (
-    <div className="relative flex items-center justify-center">
+    <div className="relative flex items-center justify-center py-4">
       <Button
         variant="ghost"
         size="icon"
         onClick={goLeft}
-        className="absolute left-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
+        className="absolute left-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
       >
         <ChevronLeft className="h-5 w-5" />
       </Button>
@@ -54,9 +60,9 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
 
             if (absOffset > 2) return null;
 
-            const xOffset = offset * (isActive ? 190 : 170);
-            const cardW = isActive ? 280 : 200;
-            const cardH = isActive ? 380 : 250;
+            const xOffset = offset * X_GAP;
+            const cardW = isActive ? CARD_W : FLANK_W;
+            const cardH = isActive ? CARD_H : FLANK_H;
             const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
             const zIndex = 10 - absOffset;
             const blur = isActive ? 0 : 2;
@@ -65,13 +71,8 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
             return (
               <motion.div
                 key={item.id}
-                animate={{
-                  x: xOffset,
-                  scale,
-                  opacity,
-                  filter: `blur(${blur}px)`,
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                animate={{ x: xOffset, scale, opacity, filter: `blur(${blur}px)` }}
+                transition={SPRING}
                 className="absolute cursor-pointer"
                 style={{ zIndex }}
                 onClick={() => {
@@ -146,7 +147,7 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
         variant="ghost"
         size="icon"
         onClick={goRight}
-        className="absolute right-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
+        className="absolute right-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
       >
         <ChevronRight className="h-5 w-5" />
       </Button>

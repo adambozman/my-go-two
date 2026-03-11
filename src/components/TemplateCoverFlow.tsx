@@ -23,6 +23,13 @@ interface TemplateCoverFlowProps {
   gender?: string;
 }
 
+const CARD_W = 260;
+const CARD_H = 350;
+const FLANK_W = 200;
+const FLANK_H = 260;
+const X_GAP = 180;
+const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
+
 const CoverFlowCarousel = ({
   items,
   onItemClick,
@@ -39,17 +46,17 @@ const CoverFlowCarousel = ({
 
   return (
     <>
-      <div className="relative flex items-center justify-center">
+      <div className="relative flex items-center justify-center py-4">
         <Button
           variant="ghost"
           size="icon"
           onClick={goLeft}
-          className="absolute left-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
+          className="absolute left-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
 
-        <div className="relative w-full h-[340px] overflow-hidden">
+        <div className="relative w-full h-[420px] overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
             {items.map((item, index) => {
               let offset = index - activeIndex;
@@ -61,7 +68,9 @@ const CoverFlowCarousel = ({
 
               if (absOffset > 2) return null;
 
-              const xOffset = offset * 180;
+              const xOffset = offset * X_GAP;
+              const cardW = isActive ? CARD_W : FLANK_W;
+              const cardH = isActive ? CARD_H : FLANK_H;
               const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
               const zIndex = 10 - absOffset;
               const blur = isActive ? 0 : 2;
@@ -71,7 +80,7 @@ const CoverFlowCarousel = ({
                 <motion.div
                   key={item.id}
                   animate={{ x: xOffset, scale, opacity, filter: `blur(${blur}px)` }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  transition={SPRING}
                   className="absolute cursor-pointer"
                   style={{ zIndex }}
                   onClick={() => {
@@ -86,7 +95,7 @@ const CoverFlowCarousel = ({
                     className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
                       isActive ? "ring-2 ring-primary shadow-2xl" : ""
                     }`}
-                    style={{ width: 220, height: 300 }}
+                    style={{ width: cardW, height: cardH }}
                   >
                     <div className="relative w-full h-full overflow-hidden">
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
@@ -117,7 +126,7 @@ const CoverFlowCarousel = ({
           variant="ghost"
           size="icon"
           onClick={goRight}
-          className="absolute right-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
+          className="absolute right-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
         >
           <ChevronRight className="h-5 w-5" />
         </Button>
@@ -161,7 +170,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, onBack, onSe
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className="max-w-5xl"
+        className="max-w-5xl mx-auto"
       >
         <div className="flex items-center gap-3 mb-8">
           <Button variant="ghost" size="icon" onClick={onBack}>
@@ -195,7 +204,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, onBack, onSe
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="max-w-5xl"
+      className="max-w-5xl mx-auto"
     >
       <div className="flex items-center gap-3 mb-8">
         <Button
