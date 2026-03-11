@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import GoTwoText from "@/components/GoTwoText";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
-import { allTemplateSubtypes } from "@/data/templateSubtypes";
+import { allTemplateSubtypes, templateSubcategories } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
 import { AnimatePresence } from "framer-motion";
 import { profileQuestions } from "@/data/profileQuestions";
