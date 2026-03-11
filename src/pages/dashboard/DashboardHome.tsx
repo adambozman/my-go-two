@@ -20,6 +20,11 @@ interface PlaceholderCard {
   image: string;
 }
 
+interface ConnectionData {
+  labels: Record<string, string>;
+  images: Record<string, string>;
+}
+
 const defaultConnectionCards: PlaceholderCard[] = [
   { id: "conn-1", name: "Partner", image: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&h=625&fit=crop&q=80" },
   { id: "conn-2", name: "Best Friend", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&h=625&fit=crop&q=80" },
@@ -70,13 +75,13 @@ const homeCategories: { id: string; label: string; cards: PlaceholderCard[] }[] 
 
 const HomeCoverFlow = ({
   cards,
-  connectionLabels,
-  onRenameConnection,
+  connectionData,
+  onSaveConnection,
   isConnectionCategory,
 }: {
   cards: PlaceholderCard[];
-  connectionLabels?: Record<string, string>;
-  onRenameConnection?: (cardId: string, newLabel: string) => void;
+  connectionData?: ConnectionData;
+  onSaveConnection?: (cardId: string, newLabel: string, newImage: string) => void;
   isConnectionCategory?: boolean;
 }) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
@@ -106,7 +111,8 @@ const HomeCoverFlow = ({
             const blur = isActive ? 0 : 1.8;
             const opacity = isActive ? 1 : 0.5;
 
-            const displayName = (isConnectionCategory && connectionLabels?.[card.id]) || card.name;
+            const displayName = (isConnectionCategory && connectionData?.labels?.[card.id]) || card.name;
+            const displayImage = (isConnectionCategory && connectionData?.images?.[card.id]) || card.image;
 
             return (
               <motion.div
@@ -128,15 +134,17 @@ const HomeCoverFlow = ({
                   <div className="relative w-full h-full overflow-hidden">
                     <CardEditButton
                       title={displayName}
-                      maxLength={isConnectionCategory ? 20 : undefined}
-                      onRename={
-                        isConnectionCategory && onRenameConnection
-                          ? (newName) => onRenameConnection(card.id, newName)
+                      maxLength={20}
+                      isConnection={isConnectionCategory}
+                      currentImage={displayImage}
+                      onSaveConnection={
+                        isConnectionCategory && onSaveConnection
+                          ? (newLabel, newImage) => onSaveConnection(card.id, newLabel, newImage)
                           : undefined
                       }
                     />
                     <img
-                      src={card.image}
+                      src={displayImage}
                       alt={displayName}
                       className="w-full h-full object-cover"
                     />
@@ -163,9 +171,9 @@ const HomeCoverFlow = ({
 
 const DashboardHome = () => {
   const { user } = useAuth();
-  const [connectionLabels, setConnectionLabels] = useState<Record<string, string>>({});
+  const [connectionData, setConnectionData] = useState<ConnectionData>({ labels: {}, images: {} });
 
-  // Load saved connection labels from user_preferences.profile_answers
+  // Load saved connection data from user_preferences.profile_answers
   useEffect(() => {
     if (!user) return;
     const load = async () => {
@@ -176,21 +184,22 @@ const DashboardHome = () => {
         .maybeSingle();
       if (data?.profile_answers && typeof data.profile_answers === "object") {
         const answers = data.profile_answers as Record<string, any>;
-        if (answers.connection_labels) {
-          setConnectionLabels(answers.connection_labels);
-        }
+        setConnectionData({
+          labels: answers.connection_labels || {},
+          images: answers.connection_images || {},
+        });
       }
     };
     load();
   }, [user]);
 
-  const handleRenameConnection = useCallback(
-    async (cardId: string, newLabel: string) => {
+  const handleSaveConnection = useCallback(
+    async (cardId: string, newLabel: string, newImage: string) => {
       if (!user) return;
-      const updated = { ...connectionLabels, [cardId]: newLabel };
-      setConnectionLabels(updated);
+      const updatedLabels = { ...connectionData.labels, [cardId]: newLabel };
+      const updatedImages = { ...connectionData.images, [cardId]: newImage };
+      setConnectionData({ labels: updatedLabels, images: updatedImages });
 
-      // Persist to DB — merge into profile_answers JSONB
       const { data: existing } = await supabase
         .from("user_preferences")
         .select("profile_answers")
@@ -205,16 +214,20 @@ const DashboardHome = () => {
       const { error } = await supabase
         .from("user_preferences")
         .update({
-          profile_answers: { ...currentAnswers, connection_labels: updated },
+          profile_answers: {
+            ...currentAnswers,
+            connection_labels: updatedLabels,
+            connection_images: updatedImages,
+          },
         })
         .eq("user_id", user.id);
 
       if (error) {
-        console.error("Failed to save label:", error);
-        toast.error("Failed to save label");
+        console.error("Failed to save connection:", error);
+        toast.error("Failed to save connection");
       }
     },
-    [user, connectionLabels]
+    [user, connectionData]
   );
 
   return (
@@ -228,8 +241,8 @@ const DashboardHome = () => {
             <HomeCoverFlow
               cards={cat.cards}
               isConnectionCategory={cat.id === "connections"}
-              connectionLabels={connectionLabels}
-              onRenameConnection={handleRenameConnection}
+              connectionData={connectionData}
+              onSaveConnection={handleSaveConnection}
             />
           ),
         }))}
