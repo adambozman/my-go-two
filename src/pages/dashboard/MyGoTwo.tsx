@@ -216,7 +216,7 @@ const MyGoTwo = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const rawId = profileAnswers?.identity;
-  const gender = (Array.isArray(rawId) ? rawId[0] : rawId) as string || "male";
+  const gender = (Array.isArray(rawId) ? rawId[0] : rawId) as string || "neutral";
 
   const getTemplateImage = (name: string) => resolveTemplateImage(name, gender);
 
