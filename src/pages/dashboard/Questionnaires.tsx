@@ -65,7 +65,8 @@ const Questionnaires = () => {
   const { toast: uiToast } = useToast();
   const navigate = useNavigate();
   const { profileAnswers, refetch } = usePersonalization();
-  const gender = (profileAnswers?.identity as string) || "male";
+  const rawIdentity = profileAnswers?.identity;
+  const gender = (Array.isArray(rawIdentity) ? rawIdentity[0] : rawIdentity) as string || "male";
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
