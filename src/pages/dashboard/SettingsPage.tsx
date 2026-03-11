@@ -509,22 +509,22 @@ const SettingsPage = () => {
 
       {/* Subscription Section */}
       {activeSection === "subscription" && (
-        <div className="card-design-neumorph p-8">
-          <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block">
+        <div className="card-design-neumorph mx-auto mt-10 text-center" style={{ padding: 40, maxWidth: 520 }}>
+          <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block mx-auto">
             ← Back to Settings
           </button>
           <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Subscription</h2>
-          <div className="space-y-6 max-w-md">
+          <div className="space-y-6">
             <div className="p-5 rounded-2xl" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.25)', border: '1px solid rgba(var(--swatch-teal-rgb), 0.12)' }}>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Current Plan</p>
-                <span className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ background: 'rgba(var(--swatch-teal-rgb), 0.15)', color: 'var(--swatch-teal)' }}>Free</span>
-              </div>
+              <p className="text-sm font-semibold mb-2" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Current Plan</p>
+              <span className="text-xs font-medium px-2.5 py-1 rounded-full inline-block mb-2" style={{ background: 'rgba(var(--swatch-teal-rgb), 0.15)', color: 'var(--swatch-teal)' }}>Free</span>
               <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>You're on the free plan. Upgrade to unlock unlimited lists, AI recommendations, and more.</p>
             </div>
-            <Button className="rounded-full w-full" style={{ background: '#d4543a', color: 'white', boxShadow: '0 4px 20px rgba(212,84,58,0.3)' }}>
-              Upgrade Plan
-            </Button>
+            <div className="flex justify-center">
+              <Button className="rounded-full" style={{ background: '#d4543a', color: 'white', boxShadow: '0 4px 20px rgba(212,84,58,0.3)', width: 280 }}>
+                Upgrade Plan
+              </Button>
+            </div>
             <div className="border-t pt-4" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }}>
               <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>
                 Need to manage billing or cancel? Contact us at support@gotwo.app
