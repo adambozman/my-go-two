@@ -13,7 +13,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SwipeCards from "@/components/SwipeCards";
-import { allTemplateSubtypes } from "@/data/templateSubtypes";
+import { allTemplateSubtypes, templateSubcategories } from "@/data/templateSubtypes";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import { useToast } from "@/hooks/use-toast";
 
@@ -80,7 +80,7 @@ const Questionnaires = () => {
   // Preferences templates
   const [prefTemplates, setPrefTemplates] = useState<Template[]>([]);
   const [creating, setCreating] = useState<string | null>(null);
-  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[] } | null>(null);
+  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(null);
 
   // Load existing answers
   useEffect(() => {
@@ -164,17 +164,20 @@ const Questionnaires = () => {
       return;
     }
     const subtypes = allTemplateSubtypes[template.name];
-    if (subtypes) {
-      setCoverFlowTemplate({ name: template.name, subtypes });
+    const subcategories = templateSubcategories[template.name];
+    if (subtypes || subcategories) {
+      setCoverFlowTemplate({ name: template.name, subtypes: subtypes || [], subcategories });
       return;
     }
     await createListFromTemplate(template.name, template.default_fields, template.id);
   };
 
-  const handleSubtypeSelect = async (subtype: SubtypeItem) => {
+  const handleSubtypeSelect = async (subtype: SubtypeItem, subcategoryName?: string) => {
     if (!user) return;
     const templateName = coverFlowTemplate?.name;
-    const cardTitle = `${templateName} - ${subtype.name}`;
+    const cardTitle = subcategoryName
+      ? `${templateName} - ${subcategoryName} - ${subtype.name}`
+      : `${templateName} - ${subtype.name}`;
     await createListFromTemplate(cardTitle, subtype.fields as any, undefined);
   };
 
@@ -214,6 +217,7 @@ const Questionnaires = () => {
       <TemplateCoverFlow
         templateName={coverFlowTemplate.name}
         subtypes={coverFlowTemplate.subtypes}
+        subcategories={coverFlowTemplate.subcategories}
         onBack={() => setCoverFlowTemplate(null)}
         onSelect={handleSubtypeSelect}
         creating={creating !== null}

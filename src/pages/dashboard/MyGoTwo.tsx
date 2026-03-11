@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import GoTwoText from "@/components/GoTwoText";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
-import { allTemplateSubtypes } from "@/data/templateSubtypes";
+import { allTemplateSubtypes, templateSubcategories } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
 import { AnimatePresence } from "framer-motion";
 import { profileQuestions } from "@/data/profileQuestions";
@@ -306,7 +306,7 @@ const MyGoTwo = () => {
   const [creating, setCreating] = useState<string | null>(null);
   const [createSheetOpen, setCreateSheetOpen] = useState(false);
   const [createSheetCategory, setCreateSheetCategory] = useState<{ key: string; label: string }>({ key: "", label: "" });
-  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[] } | null>(null);
+  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(null);
 
   useEffect(() => {
     const state = location.state as { openTemplate?: string } | null;
@@ -343,17 +343,20 @@ const MyGoTwo = () => {
       return;
     }
     const subtypes = allTemplateSubtypes[template.name];
-    if (subtypes) {
-      setCoverFlowTemplate({ name: template.name, subtypes });
+    const subcategories = templateSubcategories[template.name];
+    if (subtypes || subcategories) {
+      setCoverFlowTemplate({ name: template.name, subtypes: subtypes || [], subcategories });
       return;
     }
     await createListFromTemplate(template.name, template.default_fields, template.id);
   };
 
-  const handleSubtypeSelect = async (subtype: SubtypeItem) => {
+  const handleSubtypeSelect = async (subtype: SubtypeItem, subcategoryName?: string) => {
     if (!user) return;
     const templateName = coverFlowTemplate?.name;
-    const cardTitle = `${templateName} - ${subtype.name}`;
+    const cardTitle = subcategoryName
+      ? `${templateName} - ${subcategoryName} - ${subtype.name}`
+      : `${templateName} - ${subtype.name}`;
     await createListFromTemplate(cardTitle, subtype.fields as any, undefined);
   };
 
@@ -412,6 +415,7 @@ const MyGoTwo = () => {
           key="coverflow"
           templateName={coverFlowTemplate.name}
           subtypes={coverFlowTemplate.subtypes}
+          subcategories={coverFlowTemplate.subcategories}
           onBack={() => setCoverFlowTemplate(null)}
           onSelect={handleSubtypeSelect}
           creating={creating !== null}
