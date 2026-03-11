@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Bell, Settings } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
