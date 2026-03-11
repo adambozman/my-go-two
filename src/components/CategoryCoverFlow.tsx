@@ -17,9 +17,9 @@ interface CategoryCoverFlowProps {
   disabled: boolean;
 }
 
-const CARD_W = 260;
-const CARD_H = 350;
-const FLANK_W = 200;
+const CARD_W = 280;
+const CARD_H = 380;
+const FLANK_W = 160;
 const FLANK_H = 260;
 const X_GAP = 180;
 const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
