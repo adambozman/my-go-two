@@ -146,6 +146,36 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_templates: {
+        Row: {
+          category: string
+          created_at: string
+          default_fields: Json
+          id: string
+          image_url: string | null
+          name: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          default_fields?: Json
+          id?: string
+          image_url?: string | null
+          name: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          default_fields?: Json
+          id?: string
+          image_url?: string | null
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       lists: {
         Row: {
           created_at: string
