@@ -176,25 +176,31 @@ const SettingsPage = () => {
 
       {/* Settings Menu */}
       {!activeSection && (
-        <div className="card-design-neumorph panel-polish p-8">
-          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6">Your Account</h2>
-          <div className="flex flex-col gap-1">
-            {settingsItems.map((item) => (
-              <button
-                key={item.key}
-                onClick={() => setActiveSection(item.key)}
-                className="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-colors text-left group w-full hover:bg-white/40"
-              >
-                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.35)' }}>
-                  <item.icon className="h-4 w-4" style={{ color: 'var(--swatch-teal)' }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.title}</p>
-                  <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.description}</p>
-                </div>
-                <ChevronRight className="h-4 w-4 shrink-0 transition-colors" style={{ color: 'var(--swatch-text-light)' }} />
-              </button>
-            ))}
+        <div className="relative overflow-hidden" style={{ background: '#1e4a52', borderRadius: 20, padding: '40px 32px' }}>
+          {/* Decorative orbs */}
+          <div style={{ position: 'absolute', top: -60, right: -60, width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,84,58,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: -80, left: -50, width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+          <div className="relative z-10">
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'white' }} className="mb-6">Your Account</h2>
+            <div className="flex flex-col gap-1">
+              {settingsItems.map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => setActiveSection(item.key)}
+                  className="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-colors text-left group w-full hover:bg-white/10"
+                >
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(255,255,255,0.12)' }}>
+                    <item.icon className="h-4 w-4" style={{ color: 'rgba(255,255,255,0.7)' }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm" style={{ color: 'white' }}>{item.title}</p>
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{item.description}</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 shrink-0" style={{ color: 'rgba(255,255,255,0.3)' }} />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
