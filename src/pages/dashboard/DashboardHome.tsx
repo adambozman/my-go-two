@@ -157,6 +157,7 @@ const DashboardHome = () => {
         sections={homeCategories.map((cat) => ({
           id: cat.id,
           label: cat.label,
+          labelStyle: { color: "#d4543a" },
           content: <HomeCoverFlow cards={cat.cards} />,
         }))}
       />
