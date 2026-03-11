@@ -301,11 +301,11 @@ const MyGoTwo = () => {
   };
 
   const [templates, setTemplates] = useState<Template[]>([]);
+  const [customTemplates, setCustomTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState<string | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [createSheetOpen, setCreateSheetOpen] = useState(false);
+  const [createSheetCategory, setCreateSheetCategory] = useState<{ key: string; label: string }>({ key: "", label: "" });
   const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[] } | null>(null);
 
   useEffect(() => {
@@ -316,30 +316,25 @@ const MyGoTwo = () => {
     }
   }, [location]);
 
-  useEffect(() => {
+  const fetchTemplates = () => {
     supabase.from("card_templates").select("*").then(({ data }) => {
       setTemplates(data ?? []);
       setLoading(false);
     });
-  }, []);
-
-  const handleSave = async () => {
-    if (!user || !title.trim()) return;
-    const { data: newList } = await supabase
-      .from("lists")
-      .insert({ title, description, user_id: user.id })
-      .select()
-      .single();
-    setDialogOpen(false);
-    setTitle("");
-    setDescription("");
-    if (newList) navigate(`/dashboard/lists/${newList.id}`);
+    if (user) {
+      supabase.from("custom_templates").select("*").eq("user_id", user.id).then(({ data }) => {
+        setCustomTemplates(data ?? []);
+      });
+    }
   };
 
-  const openCreate = () => {
-    setTitle("");
-    setDescription("");
-    setDialogOpen(true);
+  useEffect(() => {
+    fetchTemplates();
+  }, [user]);
+
+  const openCreateSheet = (categoryKey: string, categoryLabel: string) => {
+    setCreateSheetCategory({ key: categoryKey, label: categoryLabel });
+    setCreateSheetOpen(true);
   };
 
   const handleTemplateClick = async (template: Template) => {
