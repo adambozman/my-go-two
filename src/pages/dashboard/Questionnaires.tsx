@@ -322,10 +322,6 @@ const Questionnaires = () => {
         <p className="text-muted-foreground text-sm mb-2">Tap a card to answer questions.</p>
 
         <div className="relative flex items-center justify-center py-4">
-          <Button variant="ghost" size="icon" onClick={goLeft} className="absolute left-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md">
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-
           <div className="relative w-full h-[420px] overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-center">
               {coverCards.map((card, index) => {
