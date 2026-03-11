@@ -13,6 +13,7 @@ interface SnapScrollLayoutProps {
 const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const touchStartY = useRef(0);
 
   const handleScroll = useCallback(() => {
     const el = containerRef.current;
@@ -33,9 +34,23 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
   const scrollTo = (index: number) => {
     const el = containerRef.current;
     if (!el) return;
+    const clamped = Math.max(0, Math.min(index, sections.length - 1));
     const sectionHeight = el.clientHeight;
-    el.scrollTo({ top: index * sectionHeight, behavior: "smooth" });
+    el.scrollTo({ top: clamped * sectionHeight, behavior: "smooth" });
   };
+
+  // Touch swipe for vertical snap
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    if (Math.abs(dy) > 50) {
+      const next = dy < 0 ? activeIndex + 1 : activeIndex - 1;
+      scrollTo(next);
+    }
+  }, [activeIndex, sections.length]);
 
   if (sections.length === 0) return null;
 
@@ -45,6 +60,8 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
       <div
         ref={containerRef}
         className="w-full h-full overflow-y-auto"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
         style={{
           scrollSnapType: "y mandatory",
           WebkitOverflowScrolling: "touch",
@@ -63,21 +80,39 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
               scrollSnapStop: "always",
             }}
           >
-            {/* Carousel centered, title positioned 24px above */}
+            {/* Carousel centered, title 24px above, dots 24px below */}
             <div className="flex-1 flex items-center justify-center">
               <div className="w-full relative">
                 <h3 className="section-header text-center absolute left-0 right-0" style={{ top: -24, transform: "translateY(-100%)" }}>{section.label}</h3>
                 {section.content}
+                {/* Bottom dot pagination */}
+                {sections.length > 1 && (
+                  <div className="absolute left-0 right-0 flex justify-center gap-2.5 z-30" style={{ bottom: -24, transform: "translateY(100%)" }}>
+                    {sections.map((s, i) => (
+                      <button
+                        key={s.id}
+                        onClick={() => scrollTo(i)}
+                        className="w-2.5 h-2.5 rounded-full transition-all duration-300"
+                        style={{
+                          background: i === activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
+                          transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
+                        }}
+                        aria-label={`Go to ${s.label}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Dot pagination — right side */}
+      {/* Dot pagination — right side, moved up */}
       {sections.length > 1 && (
         <div
-          className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-2.5 z-30"
+          className="absolute right-3 flex flex-col gap-2.5 z-30"
+          style={{ top: "40%", transform: "translateY(-50%)" }}
         >
           {sections.map((section, i) => (
             <button
