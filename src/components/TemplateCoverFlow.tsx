@@ -20,6 +20,7 @@ interface TemplateCoverFlowProps {
   onBack: () => void;
   onSelect: (subtype: SubtypeItem, subcategoryName?: string) => void;
   creating: boolean;
+  gender?: string;
 }
 
 const CoverFlowCarousel = ({
