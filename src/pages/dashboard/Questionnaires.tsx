@@ -407,7 +407,7 @@ const Questionnaires = () => {
                               <span className="text-[10px] text-white/70 uppercase tracking-wider font-semibold">AI Generated</span>
                             </div>
                           )}
-                          <h3 className="text-white font-semibold text-sm leading-tight drop-shadow" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                          <h3 className="card-title leading-tight">
                             {title}
                           </h3>
                           <p className="text-white/70 text-xs mt-1">{subtitle}</p>

@@ -121,7 +121,7 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 className="text-white font-semibold text-sm leading-tight drop-shadow">
+                        <h3 className="card-title leading-tight">
                           {item.name}
                         </h3>
                       </div>

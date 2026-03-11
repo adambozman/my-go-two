@@ -390,7 +390,7 @@ const MyGoTwo = () => {
 
                 return (
                   <div key={group.key} className="mb-10">
-                    <h3 className="text-base font-semibold text-muted-foreground mb-4 text-center">{group.label}</h3>
+                    <h3 className="section-header mb-4 text-center">{group.label}</h3>
                     <CategoryCoverFlow
                       items={allItems}
                       onSelect={(id) => {

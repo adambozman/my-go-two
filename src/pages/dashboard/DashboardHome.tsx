@@ -450,8 +450,7 @@ const DashboardHome = () => {
               <img src={img} alt={label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
               <div className="relative z-10 h-full flex flex-col justify-end p-5">
-                <h3 className="text-lg leading-tight drop-shadow-lg"
-                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "#fff" }}>
+                <h3 className="card-title text-lg leading-tight">
                   {label}
                 </h3>
                 <p className="text-[11px] mt-1 leading-snug" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 300, color: "rgba(255,255,255,0.75)" }}>
