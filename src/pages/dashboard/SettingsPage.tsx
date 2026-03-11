@@ -433,33 +433,39 @@ const SettingsPage = () => {
 
       {/* Notifications Section */}
       {activeSection === "notifications" && (
-        <div className="card-design-neumorph p-8">
-          <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block">
+        <div className="mx-auto" style={{ maxWidth: 520 }}>
+          <button
+            onClick={() => setActiveSection(null)}
+            className="hover:underline block text-left"
+            style={{ color: '#2d6870', fontFamily: "'Jost', sans-serif", fontWeight: 400, fontSize: 13, marginBottom: 12 }}
+          >
             ← Back to Settings
           </button>
-          <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Notifications</h2>
-          <div className="space-y-5 max-w-md">
-            {([
-              { label: "Gift reminders", desc: "Get notified before birthdays and anniversaries", key: "gift_reminders" as SettingsKeys },
-              { label: "Partner activity", desc: "When your partner updates their preferences", key: "partner_activity" as SettingsKeys },
-              { label: "New recommendations", desc: "AI-powered suggestions for your partner", key: "recommendations" as SettingsKeys },
-              { label: "Email digests", desc: "Weekly summary of updates and ideas", key: "email_digests" as SettingsKeys },
-            ]).map((item) => (
-              <div key={item.key} className="flex items-center justify-between py-2">
-                <div>
-                  <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
-                  <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
+          <div className="card-design-neumorph" style={{ padding: 40 }}>
+            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Notifications</h2>
+            <div className="space-y-5">
+              {([
+                { label: "Gift reminders", desc: "Get notified before birthdays and anniversaries", key: "gift_reminders" as SettingsKeys },
+                { label: "Partner activity", desc: "When your partner updates their preferences", key: "partner_activity" as SettingsKeys },
+                { label: "New recommendations", desc: "AI-powered suggestions for your partner", key: "recommendations" as SettingsKeys },
+                { label: "Email digests", desc: "Weekly summary of updates and ideas", key: "email_digests" as SettingsKeys },
+              ]).map((item) => (
+                <div key={item.key} className="flex items-center justify-between py-2">
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
+                    <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
+                  </div>
+                  <Switch
+                    checked={settings[item.key]}
+                    onCheckedChange={() => toggleSetting(item.key)}
+                    disabled={!settingsLoaded}
+                  />
                 </div>
-                <Switch
-                  checked={settings[item.key]}
-                  onCheckedChange={() => toggleSetting(item.key)}
-                  disabled={!settingsLoaded}
-                />
-              </div>
-            ))}
-            <p className="text-xs pt-4" style={{ color: 'var(--swatch-text-light)' }}>
-              Notification preferences are saved automatically.
-            </p>
+              ))}
+              <p className="text-xs pt-4" style={{ color: 'var(--swatch-text-light)' }}>
+                Notification preferences are saved automatically.
+              </p>
+            </div>
           </div>
         </div>
       )}
