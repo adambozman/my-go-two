@@ -125,6 +125,7 @@ const HomeCoverFlow = ({ cards }: { cards: PlaceholderCard[] }) => {
                   style={{ width: cardW, height: cardH }}
                 >
                   <div className="relative w-full h-full overflow-hidden">
+                    <CardEditButton title={card.name} />
                     <img
                       src={card.image}
                       alt={card.name}
