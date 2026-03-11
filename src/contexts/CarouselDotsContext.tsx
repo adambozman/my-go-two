@@ -35,17 +35,19 @@ export function useCarouselDotsProvider() {
 
 export function useRegisterCarousel(count: number, activeIndex: number, setActiveIndex: (i: number) => void) {
   const ctx = useContext(CarouselDotsContext);
-  // Register on every render so the dots stay in sync
   if (ctx) {
     ctx.register({ count, activeIndex, setActiveIndex });
   }
 }
 
-export function useCarouselDots() {
+export function useCarouselDots(): CarouselState | null {
   const ctx = useContext(CarouselDotsContext);
-  if (!ctx) return null;
-
-  const state = useSyncExternalStore(ctx.subscribe, ctx.getState);
+  const emptySubscribe = useCallback((cb: () => void) => () => {}, []);
+  const emptyGetState = useCallback(() => null, []);
+  const state = useSyncExternalStore(
+    ctx ? ctx.subscribe : emptySubscribe,
+    ctx ? ctx.getState : emptyGetState
+  );
   return state;
 }
 
