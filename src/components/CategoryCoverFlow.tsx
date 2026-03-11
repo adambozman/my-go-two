@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Trash2 } from "lucide-react";
+import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import { Button } from "@/components/ui/button";
 
 interface CategoryCoverFlowProps {
@@ -31,6 +32,7 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
   ];
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(items.length / 2));
+  useRegisterCarousel(allCards.length, activeIndex, setActiveIndex);
   
 
   const goLeft = () => setActiveIndex((i) => (i - 1 + allCards.length) % allCards.length);
@@ -130,20 +132,6 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
             );
           })}
         </div>
-      </div>
-      {/* Horizontal dots — scroll cards left/right */}
-      <div className="flex justify-center gap-1.5 mt-8">
-        {allCards.map((item, i) => (
-          <button
-            key={`dot-${item.id}`}
-            onClick={() => setActiveIndex(i)}
-            className="w-2 h-2 rounded-full transition-all duration-300"
-            style={{
-              background: i === activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
-              transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
-            }}
-          />
-        ))}
       </div>
     </div>
   );

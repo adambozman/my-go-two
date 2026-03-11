@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 
 
 export interface KnowMeCard {
@@ -26,6 +27,7 @@ const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
 
 const KnowMeCarousel = ({ cards, onCardClick, loading }: KnowMeCarouselProps) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
+  useRegisterCarousel(cards.length, activeIndex, setActiveIndex);
   
 
   if (cards.length === 0 && loading) {
@@ -93,20 +95,6 @@ const KnowMeCarousel = ({ cards, onCardClick, loading }: KnowMeCarouselProps) =>
             );
           })}
         </div>
-      </div>
-      {/* Horizontal dots — scroll cards left/right */}
-      <div className="flex justify-center gap-1.5 mt-8">
-        {cards.map((card, i) => (
-          <button
-            key={`dot-${card.id}`}
-            onClick={() => setActiveIndex(i)}
-            className="w-2 h-2 rounded-full transition-all duration-300"
-            style={{
-              background: i === activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
-              transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
-            }}
-          />
-        ))}
       </div>
     </div>
   );

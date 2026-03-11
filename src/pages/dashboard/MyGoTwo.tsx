@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
-
+import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import CreateCustomCardSheet from "@/components/CreateCustomCardSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -37,7 +37,7 @@ const PreferencesSection = () => {
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
-  
+  useRegisterCarousel(imageQuestions.length, activeIndex, setActiveIndex);
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [selections, setSelections] = useState<Record<string, string[]>>(() => {
     const saved: Record<string, string[]> = {};
@@ -204,20 +204,6 @@ const PreferencesSection = () => {
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
-      {/* Horizontal dots — scroll cards left/right */}
-      <div className="flex justify-center gap-1.5 mt-8">
-        {imageQuestions.map((q, i) => (
-          <button
-            key={`dot-${q.id}`}
-            onClick={() => setActiveIndex(i)}
-            className="w-2 h-2 rounded-full transition-all duration-300"
-            style={{
-              background: i === activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
-              transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
-            }}
-          />
-        ))}
-      </div>
     </div>
   );
 };
@@ -239,7 +225,6 @@ const MyGoTwo = () => {
     category: string;
     default_fields: any;
   }
-
 
   const [templates, setTemplates] = useState<Template[]>([]);
   const [customTemplates, setCustomTemplates] = useState<any[]>([]);
