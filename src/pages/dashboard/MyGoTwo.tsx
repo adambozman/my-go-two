@@ -215,12 +215,17 @@ const MyGoTwo = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const gender = (profileAnswers?.identity as string) || "male";
-  const isMale = gender === "male";
 
-  const getTemplateImage = (name: string) => {
-    if (isMale && maleImageOverrides[name]) return maleImageOverrides[name];
-    return templateImageMap[name] || "";
-  };
+  const getTemplateImage = (name: string) => resolveTemplateImage(name, gender);
+
+  interface Template {
+    id: string;
+    name: string;
+    icon: string | null;
+    category: string;
+    default_fields: any;
+  }
+
 
   const [templates, setTemplates] = useState<Template[]>([]);
   const [customTemplates, setCustomTemplates] = useState<any[]>([]);
