@@ -341,7 +341,17 @@ const DashboardHome = () => {
       };
     });
 
-    setConnections(cards);
+    // Show placeholder cards when user has few/no real connections
+    if (cards.length < 4) {
+      const remainingSlots = 4 - cards.length;
+      const usedNames = new Set(cards.map(c => c.name.toLowerCase()));
+      const placeholders = PLACEHOLDER_CONNECTIONS
+        .filter(p => !usedNames.has(p.name.toLowerCase()))
+        .slice(0, remainingSlots);
+      setConnections([...cards, ...placeholders]);
+    } else {
+      setConnections(cards);
+    }
   }, [user]);
 
   useEffect(() => {
