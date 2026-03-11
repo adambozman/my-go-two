@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import SnapScrollLayout from "@/components/SnapScrollLayout";
 
 import quickSizesImg from "@/assets/dashboard/quick-their-sizes.jpg";
 import quickSavedImg from "@/assets/dashboard/quick-saved-items.jpg";
