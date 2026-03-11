@@ -138,8 +138,8 @@ const PreferencesSection = () => {
       <h3 className="section-header mb-2 text-center">My Preferences</h3>
       <p className="text-muted-foreground text-xs text-center mb-4">Tap a card to review your preferences.</p>
 
-      <div className="relative flex items-center justify-center">
-        <Button variant="ghost" size="icon" onClick={goLeft} className="absolute left-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md">
+      <div className="relative flex items-center justify-center py-4">
+        <Button variant="ghost" size="icon" onClick={goLeft} className="absolute left-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md">
           <ChevronLeft className="h-5 w-5" />
         </Button>
 
@@ -154,9 +154,9 @@ const PreferencesSection = () => {
               const absOffset = Math.abs(offset);
               if (absOffset > 2) return null;
 
-              const xOffset = offset * (isActive ? 190 : 170);
-              const cardW = isActive ? 280 : 200;
-              const cardH = isActive ? 380 : 250;
+              const xOffset = offset * 180;
+              const cardW = isActive ? 260 : 200;
+              const cardH = isActive ? 350 : 260;
               const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
               const zIndex = 10 - absOffset;
               const blur = isActive ? 0 : 2;
@@ -200,7 +200,7 @@ const PreferencesSection = () => {
           </div>
         </div>
 
-        <Button variant="ghost" size="icon" onClick={goRight} className="absolute right-0 z-20 rounded-full bg-background/80 backdrop-blur shadow-md">
+        <Button variant="ghost" size="icon" onClick={goRight} className="absolute right-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md">
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
