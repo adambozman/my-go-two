@@ -419,7 +419,7 @@ const MyGoTwo = () => {
               onClick={openCreate}
               className="w-full rounded-2xl overflow-hidden transition-transform hover:scale-[1.01] active:scale-[0.99]"
               style={{
-                background: "linear-gradient(135deg, var(--swatch-teal-dark), var(--swatch-teal))",
+                background: "linear-gradient(135deg, var(--swatch-viridian-odyssey), var(--swatch-teal))",
                 boxShadow: "0 8px 24px rgba(45, 104, 112, 0.25)",
               }}
             >
