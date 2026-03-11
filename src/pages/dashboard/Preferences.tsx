@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { profileQuestions } from "@/data/profileQuestions";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
