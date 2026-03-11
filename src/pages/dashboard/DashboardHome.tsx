@@ -363,8 +363,8 @@ const DashboardHome = () => {
     async (cardId: string, newLabel: string, newImage: string, _email?: string) => {
       if (!user) return;
 
-      // If this is a "new" card (temp id), create it
-      if (cardId.startsWith("new-")) {
+      // If this is a "new" or placeholder card, create it
+      if (cardId.startsWith("new-") || cardId.startsWith("placeholder-")) {
         if (!_email) {
           toast.error("Email is required");
           return;
