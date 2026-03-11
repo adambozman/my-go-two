@@ -106,7 +106,7 @@ const categoryLabels: Record<string, string> = {
   preferences: "Preferences",
 };
 
-const categoryOrder = ["personal", "food-drink", "gifts-occasions", "experiences", "preferences"];
+const categoryOrder = ["personal", "food-drink", "gifts-occasions", "experiences"];
 
 // ── Preferences Section (profile questions cover flow) ──
 const PreferencesSection = () => {

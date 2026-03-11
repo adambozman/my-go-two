@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,15 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SwipeCards from "@/components/SwipeCards";
+import { allTemplateSubtypes } from "@/data/templateSubtypes";
+import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
+import { useToast } from "@/hooks/use-toast";
+
+// Template images for preferences category
+import imgBrandPreferences from "@/assets/templates/brand-preferences.jpg";
+import imgLoveLanguage from "@/assets/templates/love-language.jpg";
+import imgPetPeeves from "@/assets/templates/pet-peeves.jpg";
+import imgSpecificProducts from "@/assets/templates/specific-products.jpg";
 
 interface AIQuizCategory {
   id: string;
@@ -27,6 +37,14 @@ interface AIQuizCategory {
   }[];
 }
 
+interface Template {
+  id: string;
+  name: string;
+  icon: string | null;
+  category: string;
+  default_fields: any;
+}
+
 const categoryImageMap: Record<string, string> = {
   style: "style",
   sizing: "fit",
@@ -35,8 +53,17 @@ const categoryImageMap: Record<string, string> = {
   products: "shopping",
 };
 
+const templateImageMap: Record<string, string> = {
+  "Brand Preferences": imgBrandPreferences,
+  "Love Language": imgLoveLanguage,
+  "Pet Peeves": imgPetPeeves,
+  "Specific Product Versions": imgSpecificProducts,
+};
+
 const Questionnaires = () => {
   const { user } = useAuth();
+  const { toast: uiToast } = useToast();
+  const navigate = useNavigate();
   const { profileAnswers, refetch } = usePersonalization();
   const gender = (profileAnswers?.identity as string) || "male";
 
@@ -49,6 +76,11 @@ const Questionnaires = () => {
   // AI quizzes
   const [aiCategories, setAiCategories] = useState<AIQuizCategory[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
+
+  // Preferences templates
+  const [prefTemplates, setPrefTemplates] = useState<Template[]>([]);
+  const [creating, setCreating] = useState<string | null>(null);
+  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[] } | null>(null);
 
   // Load existing answers
   useEffect(() => {
@@ -74,6 +106,17 @@ const Questionnaires = () => {
     load();
   }, [user, profileAnswers]);
 
+  // Load preferences category templates
+  useEffect(() => {
+    supabase
+      .from("card_templates")
+      .select("*")
+      .eq("category", "preferences")
+      .then(({ data }) => {
+        setPrefTemplates(data ?? []);
+      });
+  }, []);
+
   const fetchAiQuizzes = useCallback(async () => {
     setAiLoading(true);
     try {
@@ -93,13 +136,15 @@ const Questionnaires = () => {
     fetchAiQuizzes();
   }, []);
 
-  // Build combined card list: onboarding categories + AI categories
+  // Build combined card list: onboarding categories + preferences templates + AI categories
   type CoverCard =
     | { kind: "onboarding"; cat: (typeof onboardingCategories)[0] }
-    | { kind: "ai"; category: AIQuizCategory };
+    | { kind: "ai"; category: AIQuizCategory }
+    | { kind: "template"; template: Template };
 
   const coverCards: CoverCard[] = [
     ...onboardingCategories.map((c) => ({ kind: "onboarding" as const, cat: c })),
+    ...prefTemplates.map((t) => ({ kind: "template" as const, template: t })),
     ...aiCategories.map((c) => ({ kind: "ai" as const, category: c })),
   ];
 
@@ -111,6 +156,70 @@ const Questionnaires = () => {
 
   const goLeft = () => setActiveIndex((i) => (i - 1 + coverCards.length) % coverCards.length);
   const goRight = () => setActiveIndex((i) => (i + 1) % coverCards.length);
+
+  // Template list creation
+  const handleTemplateClick = async (template: Template) => {
+    if (!user) {
+      uiToast({ title: "Please log in first", variant: "destructive" });
+      return;
+    }
+    const subtypes = allTemplateSubtypes[template.name];
+    if (subtypes) {
+      setCoverFlowTemplate({ name: template.name, subtypes });
+      return;
+    }
+    await createListFromTemplate(template.name, template.default_fields, template.id);
+  };
+
+  const handleSubtypeSelect = async (subtype: SubtypeItem) => {
+    if (!user) return;
+    const templateName = coverFlowTemplate?.name;
+    const cardTitle = `${templateName} - ${subtype.name}`;
+    await createListFromTemplate(cardTitle, subtype.fields as any, undefined);
+  };
+
+  const createListFromTemplate = async (name: string, fields: any, templateId?: string) => {
+    if (!user) return;
+    setCreating(name);
+    try {
+      const { data: newList, error: listError } = await supabase
+        .from("lists")
+        .insert({ title: name, description: `Created from template`, user_id: user.id })
+        .select()
+        .single();
+      if (listError) {
+        uiToast({ title: "Error creating list", description: listError.message, variant: "destructive" });
+        setCreating(null);
+        return;
+      }
+      if (newList) {
+        const { error: cardError } = await supabase.from("cards").insert({
+          title: name, fields, list_id: newList.id, user_id: user.id,
+          ...(templateId ? { template_id: templateId } : {}),
+        });
+        if (cardError) uiToast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
+        const fromTemplate = coverFlowTemplate?.name;
+        setCoverFlowTemplate(null);
+        navigate(`/dashboard/lists/${newList.id}`, { state: { fromTemplate } });
+      }
+    } catch (e: any) {
+      uiToast({ title: "Something went wrong", description: e.message, variant: "destructive" });
+    }
+    setCreating(null);
+  };
+
+  // Subtype cover flow view
+  if (coverFlowTemplate) {
+    return (
+      <TemplateCoverFlow
+        templateName={coverFlowTemplate.name}
+        subtypes={coverFlowTemplate.subtypes}
+        onBack={() => setCoverFlowTemplate(null)}
+        onSelect={handleSubtypeSelect}
+        creating={creating !== null}
+      />
+    );
+  }
 
   // Onboarding category swipe view
   if (selectedCategory) {
@@ -227,13 +336,16 @@ const Questionnaires = () => {
                 const opacity = isActive ? 1 : 0.5;
 
                 const isAi = card.kind === "ai";
-                const cardId = isAi ? card.category.id : card.cat.id;
+                const isTemplate = card.kind === "template";
+                const cardId = isAi ? card.category.id : isTemplate ? card.template.id : card.cat.id;
 
                 // Image
                 let coverImage = "";
                 if (isAi) {
                   const mapped = categoryImageMap[card.category.category] || "style";
                   coverImage = getCategoryImage(mapped, gender as any);
+                } else if (isTemplate) {
+                  coverImage = templateImageMap[card.template.name] || "";
                 } else {
                   coverImage = getCategoryImage(card.cat.id, gender as any);
                 }
@@ -244,6 +356,9 @@ const Questionnaires = () => {
                 if (isAi) {
                   title = card.category.name;
                   subtitle = `${card.category.questions.length} questions`;
+                } else if (isTemplate) {
+                  title = card.template.name;
+                  subtitle = "Tap to fill out";
                 } else {
                   const isDone = completedCategories.includes(card.cat.id);
                   const catQCount = onboardingQuestions.filter((q) => q.category === card.cat.id).length;
@@ -251,7 +366,7 @@ const Questionnaires = () => {
                   subtitle = isDone ? "Completed" : `${catQCount} questions`;
                 }
 
-                const isDone = !isAi && completedCategories.includes(card.cat.id);
+                const isDone = !isAi && !isTemplate && completedCategories.includes(card.cat.id);
 
                 return (
                   <motion.div
@@ -263,6 +378,7 @@ const Questionnaires = () => {
                     onClick={() => {
                       if (isActive) {
                         if (isAi) setSelectedAiCategory(card.category.id);
+                        else if (isTemplate) handleTemplateClick(card.template);
                         else setSelectedCategory(card.cat.id);
                       } else {
                         setActiveIndex(index);
