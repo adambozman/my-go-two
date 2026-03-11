@@ -293,7 +293,8 @@ const MyGoTwo = () => {
   const { profileAnswers } = usePersonalization();
   const navigate = useNavigate();
   const location = useLocation();
-  const isMale = profileAnswers?.identity?.[0] === "male" || (Array.isArray(profileAnswers?.identity) && (profileAnswers?.identity as string[]).includes("male"));
+  const gender = (profileAnswers?.identity as string) || "male";
+  const isMale = gender === "male";
 
   const getTemplateImage = (name: string) => {
     if (isMale && maleImageOverrides[name]) return maleImageOverrides[name];
