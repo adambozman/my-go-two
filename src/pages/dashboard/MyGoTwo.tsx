@@ -116,7 +116,7 @@ const PreferencesSection = () => {
                   <img src={getOptionImage(opt.id, opt.localImage, opt.image)} alt={opt.label} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
-                    <span className="text-sm font-semibold text-white leading-tight drop-shadow">{opt.label}</span>
+                    <span className="card-title leading-tight">{opt.label}</span>
                   </div>
                   {isSelected && (
                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-md" style={{ background: "var(--swatch-teal)" }}>
