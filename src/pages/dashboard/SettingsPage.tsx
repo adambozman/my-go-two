@@ -557,7 +557,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>About GoTwo</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">About GoTwo</h2>
             <div className="space-y-5">
               <div className="flex items-center justify-between py-1">
                 <p className="text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Version</p>
