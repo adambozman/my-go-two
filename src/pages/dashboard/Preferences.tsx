@@ -170,7 +170,6 @@ const Preferences = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 
