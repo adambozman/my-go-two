@@ -92,6 +92,10 @@ const Collaborations = () => {
       toast({ title: "Could not send invite", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Invitation sent!", description: `Invited ${inviteEmail.trim()}` });
+      // Fire-and-forget email notification to the invitee
+      supabase.functions.invoke("collaborations", {
+        body: { action: "send-invite-email", invitee_email: inviteEmail.trim() },
+      }).catch(() => {});
       setInviteEmail("");
       setEmailDialogOpen(false);
       fetchData();
