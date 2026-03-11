@@ -116,7 +116,7 @@ const PreferencesSection = () => {
                   <img src={getOptionImage(opt.id, opt.localImage, opt.image)} alt={opt.label} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
-                    <span className="text-sm font-semibold text-white leading-tight drop-shadow">{opt.label}</span>
+                    <span className="card-title leading-tight">{opt.label}</span>
                   </div>
                   {isSelected && (
                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-md" style={{ background: "var(--swatch-teal)" }}>
@@ -135,7 +135,7 @@ const PreferencesSection = () => {
   // Cover flow
   return (
     <div className="mb-10">
-      <h3 className="text-base font-semibold text-muted-foreground mb-2 text-center">My Preferences</h3>
+      <h3 className="section-header mb-2 text-center">My Preferences</h3>
       <p className="text-muted-foreground text-xs text-center mb-4">Tap a card to review your preferences.</p>
 
       <div className="relative flex items-center justify-center">
@@ -180,7 +180,7 @@ const PreferencesSection = () => {
                       <img src={getQuestionCoverImage(q)} alt={q.title} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 className="text-white font-semibold text-sm leading-tight drop-shadow" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                        <h3 className="card-title leading-tight">
                           {q.title}
                         </h3>
                         <p className="text-white/70 text-xs mt-1">
@@ -390,7 +390,7 @@ const MyGoTwo = () => {
 
                 return (
                   <div key={group.key} className="mb-10">
-                    <h3 className="text-base font-semibold text-muted-foreground mb-4 text-center">{group.label}</h3>
+                    <h3 className="section-header mb-4 text-center">{group.label}</h3>
                     <CategoryCoverFlow
                       items={allItems}
                       onSelect={(id) => {

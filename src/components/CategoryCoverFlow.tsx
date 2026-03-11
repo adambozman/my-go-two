@@ -102,10 +102,7 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
                       >
                         <Plus className="w-7 h-7 text-white" />
                       </div>
-                      <h3
-                        className="text-white font-semibold text-sm"
-                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
-                      >
+                      <h3 className="card-title">
                         Add Your Own
                       </h3>
                       <p className="text-white/60 text-xs px-6 text-center">
@@ -121,7 +118,7 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 className="text-white font-semibold text-sm leading-tight drop-shadow">
+                        <h3 className="card-title leading-tight">
                           {item.name}
                         </h3>
                       </div>

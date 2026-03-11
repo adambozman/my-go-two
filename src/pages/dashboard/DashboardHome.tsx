@@ -438,7 +438,7 @@ const DashboardHome = () => {
          ══════════════════════════════════════ */}
 
       <motion.div variants={itemVariant}>
-        <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-4">Quick Actions</p>
+        <p className="section-header mb-4">Quick Actions</p>
         <div className="grid grid-cols-2 gap-4">
           {quickActionData.map(({ label, desc, route, img }) => (
             <motion.button key={label}
@@ -450,8 +450,7 @@ const DashboardHome = () => {
               <img src={img} alt={label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
               <div className="relative z-10 h-full flex flex-col justify-end p-5">
-                <h3 className="text-lg leading-tight drop-shadow-lg"
-                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "#fff" }}>
+                <h3 className="card-title text-lg leading-tight">
                   {label}
                 </h3>
                 <p className="text-[11px] mt-1 leading-snug" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 300, color: "rgba(255,255,255,0.75)" }}>
@@ -471,7 +470,7 @@ const DashboardHome = () => {
         <motion.div variants={itemVariant}>
           <div className="flex items-end justify-between mb-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground">
+              <p className="section-header">
                 Based on {showDataName}'s Go-Tos
               </p>
               <p className="text-[11px] text-muted-foreground mt-1">
@@ -528,7 +527,7 @@ const DashboardHome = () => {
       {/* ── Gift Categories — Horizontal scroll ── */}
       {showData && showData.giftCategories.length > 0 && (
         <motion.div variants={itemVariant}>
-          <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-4">
+          <p className="section-header mb-4">
             What to Get {showDataName}
           </p>
           <div className="flex gap-4 overflow-x-auto pb-3 -mx-2 px-2">
