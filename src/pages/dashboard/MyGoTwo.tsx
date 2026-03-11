@@ -221,7 +221,7 @@ const PreferencesSection = () => {
           <ChevronLeft className="h-5 w-5" />
         </Button>
 
-        <div className="relative w-full h-[320px] overflow-hidden">
+        <div className="relative w-full h-[420px] overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
             {imageQuestions.map((q, index) => {
               let offset = index - activeIndex;
@@ -232,9 +232,9 @@ const PreferencesSection = () => {
               const absOffset = Math.abs(offset);
               if (absOffset > 2) return null;
 
-              const xOffset = offset * (isActive ? 170 : 150);
-              const cardW = isActive ? 220 : 160;
-              const cardH = isActive ? 300 : 200;
+              const xOffset = offset * (isActive ? 190 : 170);
+              const cardW = isActive ? 280 : 200;
+              const cardH = isActive ? 380 : 250;
               const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
               const zIndex = 10 - absOffset;
               const blur = isActive ? 0 : 2;
