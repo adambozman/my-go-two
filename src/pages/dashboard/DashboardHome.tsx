@@ -111,7 +111,8 @@ const HomeCoverFlow = ({
             const blur = isActive ? 0 : 1.8;
             const opacity = isActive ? 1 : 0.5;
 
-            const displayName = (isConnectionCategory && connectionLabels?.[card.id]) || card.name;
+            const displayName = (isConnectionCategory && connectionData?.labels?.[card.id]) || card.name;
+            const displayImage = (isConnectionCategory && connectionData?.images?.[card.id]) || card.image;
 
             return (
               <motion.div
@@ -133,15 +134,17 @@ const HomeCoverFlow = ({
                   <div className="relative w-full h-full overflow-hidden">
                     <CardEditButton
                       title={displayName}
-                      maxLength={isConnectionCategory ? 20 : undefined}
-                      onRename={
-                        isConnectionCategory && onRenameConnection
-                          ? (newName) => onRenameConnection(card.id, newName)
+                      maxLength={20}
+                      isConnection={isConnectionCategory}
+                      currentImage={displayImage}
+                      onSaveConnection={
+                        isConnectionCategory && onSaveConnection
+                          ? (newLabel, newImage) => onSaveConnection(card.id, newLabel, newImage)
                           : undefined
                       }
                     />
                     <img
-                      src={card.image}
+                      src={displayImage}
                       alt={displayName}
                       className="w-full h-full object-cover"
                     />
