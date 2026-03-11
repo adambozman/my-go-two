@@ -164,8 +164,9 @@ const Questionnaires = () => {
       return;
     }
     const subtypes = allTemplateSubtypes[template.name];
-    if (subtypes) {
-      setCoverFlowTemplate({ name: template.name, subtypes });
+    const subcategories = templateSubcategories[template.name];
+    if (subtypes || subcategories) {
+      setCoverFlowTemplate({ name: template.name, subtypes: subtypes || [], subcategories });
       return;
     }
     await createListFromTemplate(template.name, template.default_fields, template.id);
