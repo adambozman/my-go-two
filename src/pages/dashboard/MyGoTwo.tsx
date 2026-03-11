@@ -364,7 +364,7 @@ const MyGoTwo = () => {
           gender={gender}
         />
       ) : (
-        <div className="max-w-5xl">
+        <div className="max-w-5xl mx-auto">
           {/* Templates by Category */}
           <div className="mb-10">
             {loading ? (
