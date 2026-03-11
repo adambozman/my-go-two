@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useSwipeCarousel } from "@/hooks/useSwipeCarousel";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

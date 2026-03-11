@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { useSwipeCarousel } from "@/hooks/useSwipeCarousel";
 
 export interface KnowMeCard {
   id: string;
