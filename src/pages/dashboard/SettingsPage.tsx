@@ -340,7 +340,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Connections</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Connections</h2>
 
             {/* Invite Methods */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
