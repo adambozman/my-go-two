@@ -448,12 +448,14 @@ const MyGoTwo = () => {
                     name: t.name,
                     image: getTemplateImage(t.name),
                     fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
+                    isCustom: false,
                   })),
                   ...group.customItems.map((ct) => ({
                     id: ct.id,
                     name: ct.name,
                     image: ct.image_url || "",
                     fieldCount: Array.isArray(ct.default_fields) ? ct.default_fields.length : 0,
+                    isCustom: true,
                   })),
                 ];
 
