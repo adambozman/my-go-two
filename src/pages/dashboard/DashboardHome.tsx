@@ -75,13 +75,13 @@ const homeCategories: { id: string; label: string; cards: PlaceholderCard[] }[] 
 
 const HomeCoverFlow = ({
   cards,
-  connectionLabels,
-  onRenameConnection,
+  connectionData,
+  onSaveConnection,
   isConnectionCategory,
 }: {
   cards: PlaceholderCard[];
-  connectionLabels?: Record<string, string>;
-  onRenameConnection?: (cardId: string, newLabel: string) => void;
+  connectionData?: ConnectionData;
+  onSaveConnection?: (cardId: string, newLabel: string, newImage: string) => void;
   isConnectionCategory?: boolean;
 }) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
