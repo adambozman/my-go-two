@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { User, Bell, Shield, Users, ChevronRight, Settings as SettingsIcon, Save, KeyRound, Mail, QrCode, Copy, Check, Clock, UserCheck, UserX } from "lucide-react";
+import { User, Bell, Shield, Users, ChevronRight, Save, KeyRound, Mail, QrCode, Copy, Check, Clock, UserCheck, UserX, CreditCard, HelpCircle, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -162,37 +162,28 @@ const SettingsPage = () => {
   };
 
   const settingsItems = [
-    { key: "profile", icon: User, title: "Profile", description: "Name, gender, and account details." },
-    { key: "connections", icon: Users, title: "Connections", description: "Connect your partner and manage invites." },
-    { key: "notifications", icon: Bell, title: "Notifications", description: "Push and email preferences for list updates." },
-    { key: "privacy", icon: Shield, title: "Sharing & Privacy", description: "Default sharing rules and privacy controls." },
+    { key: "profile", icon: User, title: "Profile", description: "Name, gender, and account details" },
+    { key: "connections", icon: Users, title: "Connections", description: "Connect your partner and manage access" },
+    { key: "notifications", icon: Bell, title: "Notifications", description: "Push and email preferences" },
+    { key: "privacy", icon: Shield, title: "Sharing & Privacy", description: "Default sharing rules and privacy controls" },
+    { key: "subscription", icon: CreditCard, title: "Subscription", description: "Your plan and billing details" },
+    { key: "help", icon: HelpCircle, title: "Help & Support", description: "Get help, contact us, FAQs" },
+    { key: "about", icon: Info, title: "About GoTwo", description: "Version, terms, and privacy policy" },
   ];
 
   return (
     <div className="max-w-4xl">
-      {/* Hero */}
-      <div className="card-design-neumorph panel-polish p-8 mb-8">
-        <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider mb-4" style={{ border: '1px solid var(--chip-border)', background: 'rgba(181,184,168,0.3)', color: 'var(--swatch-viridian-odyssey)' }}>
-          <SettingsIcon className="h-3 w-3" />
-          Settings
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-3" style={{ color: 'rgba(var(--swatch-antique-coin-rgb), 0.35)' }}>
-          Workspace settings<br />for your workspace.
-        </h1>
-        <p className="text-muted-foreground">Control notifications, profile preferences, and workspace defaults.</p>
-      </div>
 
       {/* Settings Menu */}
       {!activeSection && (
         <div className="card-design-neumorph p-8">
-          <h2 className="text-lg font-semibold mb-1" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Settings Menu</h2>
-          <p className="text-sm text-muted-foreground mb-6">Choose a section to manage your workspace preferences.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: '#1e4a52' }} className="mb-6">Your Account</h2>
+          <div className="flex flex-col gap-3">
             {settingsItems.map((item) => (
               <button
                 key={item.key}
                 onClick={() => setActiveSection(item.key)}
-                className="flex items-center gap-3 p-4 rounded-2xl border border-border/20 hover:bg-secondary/30 transition-colors text-left group"
+                className="flex items-center gap-3 p-4 rounded-2xl border border-border/20 hover:bg-secondary/30 transition-colors text-left group w-full"
               >
                 <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.3)' }}>
                   <item.icon className="h-4 w-4 text-muted-foreground" />
@@ -201,7 +192,7 @@ const SettingsPage = () => {
                   <p className="font-medium text-sm" style={{ color: 'var(--swatch-antique-coin)' }}>{item.title}</p>
                   <p className="text-xs text-muted-foreground truncate">{item.description}</p>
                 </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground/50 group-hover:text-foreground transition-colors" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground/50 group-hover:text-foreground transition-colors shrink-0" />
               </button>
             ))}
           </div>
