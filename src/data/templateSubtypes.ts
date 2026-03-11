@@ -122,7 +122,7 @@ export const allTemplateSubtypes: Record<string, SubtypeItem[]> = {
   "Clothing Sizes": [
     { id: "tops", name: "Tops", image: imgClothingTops, fields: [tf("Size", "select", ["XS", "S", "M", "L", "XL", "XXL"]), tf("Preferred Fit", "select", ["Slim", "Regular", "Relaxed", "Oversized"]), tf("Preferred Brands"), tf("Notes")] },
     { id: "bottoms", name: "Bottoms", image: imgClothingBottoms, fields: [tf("Waist Size"), tf("Length/Inseam"), tf("Preferred Fit", "select", ["Skinny", "Slim", "Regular", "Relaxed", "Wide"]), tf("Preferred Brands"), tf("Notes")] },
-    { id: "dresses", name: "Dresses", image: imgClothingDresses, fields: [tf("Size", "select", ["XS", "S", "M", "L", "XL", "XXL"]), tf("Length", "select", ["Mini", "Midi", "Maxi"]), tf("Preferred Style", "select", ["A-Line", "Bodycon", "Wrap", "Shift", "Maxi"]), tf("Preferred Brands"), tf("Notes")] },
+    { id: "dresses", name: "Dresses", image: imgClothingDresses, gender: ["female"], fields: [tf("Size", "select", ["XS", "S", "M", "L", "XL", "XXL"]), tf("Length", "select", ["Mini", "Midi", "Maxi"]), tf("Preferred Style", "select", ["A-Line", "Bodycon", "Wrap", "Shift", "Maxi"]), tf("Preferred Brands"), tf("Notes")] },
     { id: "outerwear", name: "Outerwear", image: imgClothingOuterwear, fields: [tf("Size", "select", ["XS", "S", "M", "L", "XL", "XXL"]), tf("Type", "select", ["Jacket", "Coat", "Parka", "Blazer", "Vest"]), tf("Preferred Brands"), tf("Notes")] },
     { id: "activewear", name: "Activewear", image: imgClothingActivewear, fields: [tf("Top Size", "select", ["XS", "S", "M", "L", "XL"]), tf("Bottom Size", "select", ["XS", "S", "M", "L", "XL"]), tf("Sports Bra Size"), tf("Preferred Brands"), tf("Notes")] },
   ],
