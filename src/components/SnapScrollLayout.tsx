@@ -63,10 +63,10 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
               scrollSnapStop: "always",
             }}
           >
-            {/* Title + carousel centered together */}
+            {/* Carousel centered, title positioned 24px above */}
             <div className="flex-1 flex items-center justify-center">
-              <div className="w-full">
-                <h3 className="section-header text-center" style={{ marginBottom: 24 }}>{section.label}</h3>
+              <div className="w-full relative">
+                <h3 className="section-header text-center absolute left-0 right-0" style={{ top: -24, transform: "translateY(-100%)" }}>{section.label}</h3>
                 {section.content}
               </div>
             </div>
