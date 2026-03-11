@@ -365,7 +365,7 @@ const MyGoTwo = () => {
             <p className="text-muted-foreground p-4">Loading templates...</p>
           ) : (
             <>
-            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px", color: "#2D6870", fontWeight: 400 }} className="mb-2">Tap a card to view or edit your details.</p>
+            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "#2D6870", fontWeight: 400 }} className="mb-2">Tap a card to view or edit your details.</p>
             <SnapScrollLayout
               sections={[
                 ...grouped.map((group) => {
