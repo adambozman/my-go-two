@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
+import CardEditButton from "@/components/CardEditButton";
 
 /* ═══════════════════════════════════════════
    PLACEHOLDER CARD DATA
@@ -124,6 +125,7 @@ const HomeCoverFlow = ({ cards }: { cards: PlaceholderCard[] }) => {
                   style={{ width: cardW, height: cardH }}
                 >
                   <div className="relative w-full h-full overflow-hidden">
+                    <CardEditButton title={card.name} />
                     <img
                       src={card.image}
                       alt={card.name}

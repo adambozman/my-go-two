@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Plus, Trash2 } from "lucide-react";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import { Button } from "@/components/ui/button";
+import CardEditButton from "@/components/CardEditButton";
 
 interface CategoryCoverFlowProps {
   items: {
@@ -103,6 +104,7 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
                     </div>
                   ) : (
                     <div className="relative w-full h-full overflow-hidden">
+                      <CardEditButton title={item.name} />
                       <img
                         src={item.image}
                         alt={item.name}

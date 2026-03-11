@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import CardEditButton from "@/components/CardEditButton";
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
 import { getProductImage } from "@/data/templateImageResolver";
 
@@ -89,6 +90,7 @@ const CoverFlowCarousel = ({
                     style={{ width: cardW, height: cardH }}
                   >
                     <div className="relative w-full h-full overflow-hidden">
+                      <CardEditButton title={item.name} />
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-4">
