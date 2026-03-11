@@ -185,6 +185,15 @@ const ConnectionsCoverFlow = ({
                       alt={card.name}
                       className="w-full h-full object-cover"
                       style={card.status === "placeholder" ? { filter: "saturate(0.4) brightness(0.85)" } : {}}
+                      crossOrigin="anonymous"
+                      loading="eager"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        target.style.display = "none";
+                        if (target.parentElement) {
+                          target.parentElement.style.background = "linear-gradient(135deg, #2D6870, #1e4a52)";
+                        }
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4">
