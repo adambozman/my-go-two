@@ -413,9 +413,6 @@ const MyGoTwo = () => {
         />
       ) : (
         <div className="max-w-5xl">
-          {/* Preferences Section */}
-          <PreferencesSection />
-
           {/* Templates by Category */}
           <div className="mb-10">
             {loading ? (
@@ -441,6 +438,9 @@ const MyGoTwo = () => {
               ))
             )}
           </div>
+
+          {/* Preferences Section */}
+          <PreferencesSection />
 
           {/* Create Your Own */}
           <div className="mb-10">
