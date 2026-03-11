@@ -244,96 +244,85 @@ const SettingsPage = () => {
 
       {/* Profile Section */}
       {activeSection === "profile" && (
-        <div className="card-design-neumorph p-8">
-          <button onClick={() => setActiveSection(null)} className="text-sm text-muted-foreground hover:underline mb-4 block">
+        <div className="mx-auto" style={{ maxWidth: 520 }}>
+          <button
+            onClick={() => setActiveSection(null)}
+            className="hover:underline block text-left"
+            style={{ color: '#2d6870', fontFamily: "'Jost', sans-serif", fontWeight: 400, fontSize: 13, marginBottom: 12 }}
+          >
             ← Back to Settings
           </button>
-          <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Profile</h2>
-          
-          <div className="space-y-5 max-w-md">
-            <div className="space-y-2">
-              <Label>Display Name</Label>
-              <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your name" className="rounded-xl" />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Email</Label>
-              <Input value={email} disabled className="rounded-xl opacity-60" />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Gender</Label>
-              <p className="text-xs text-muted-foreground">This customizes template fields (e.g. clothing sizes) to show relevant options.</p>
-              <Select value={gender} onValueChange={setGender}>
-                <SelectTrigger className="rounded-xl">
-                  <SelectValue placeholder="Select gender..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="female">Female</SelectItem>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="non-binary">Non-Binary</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button className="rounded-full" onClick={handleSave} disabled={loading}>
-              <Save className="mr-2 h-4 w-4" />
-              {loading ? "Saving..." : "Save Changes"}
-            </Button>
-
-            {/* Password Change */}
-            <div className="border-t border-border/30 pt-6 mt-6">
-              <h3 className="text-base font-semibold mb-4" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
-                Change Password
-              </h3>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>New Password</Label>
-                  <Input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="••••••••"
-                    minLength={6}
-                    className="rounded-xl"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Confirm Password</Label>
-                  <Input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    minLength={6}
-                    className="rounded-xl"
-                  />
-                </div>
-                <Button
-                  className="rounded-full"
-                  disabled={passwordLoading || !newPassword || newPassword.length < 6}
-                  onClick={async () => {
-                    if (newPassword !== confirmPassword) {
-                      toast({ title: "Passwords don't match", variant: "destructive" });
-                      return;
-                    }
-                    setPasswordLoading(true);
-                    try {
-                      const { error } = await supabase.auth.updateUser({ password: newPassword });
-                      if (error) throw error;
-                      toast({ title: "Password updated" });
-                      setNewPassword("");
-                      setConfirmPassword("");
-                    } catch (error: any) {
-                      toast({ title: "Error", description: error.message, variant: "destructive" });
-                    } finally {
-                      setPasswordLoading(false);
-                    }
-                  }}
-                >
-                  <KeyRound className="mr-2 h-4 w-4" />
-                  {passwordLoading ? "Updating..." : "Update Password"}
+          <div className="card-design-neumorph" style={{ padding: 40 }}>
+            <h2 className="text-lg font-semibold mb-6 text-center" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Profile</h2>
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <Label>Display Name</Label>
+                <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your name" className="rounded-xl" />
+              </div>
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input value={email} disabled className="rounded-xl opacity-60" />
+              </div>
+              <div className="space-y-2">
+                <Label>Gender</Label>
+                <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>This customizes template fields (e.g. clothing sizes) to show relevant options.</p>
+                <Select value={gender} onValueChange={setGender}>
+                  <SelectTrigger className="rounded-xl">
+                    <SelectValue placeholder="Select gender..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="non-binary">Non-Binary</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-center">
+                <Button className="rounded-full" onClick={handleSave} disabled={loading}>
+                  <Save className="mr-2 h-4 w-4" />
+                  {loading ? "Saving..." : "Save Changes"}
                 </Button>
+              </div>
+              {/* Password Change */}
+              <div className="border-t pt-6 mt-6" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }}>
+                <h3 className="text-base font-semibold mb-4" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Change Password</h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>New Password</Label>
+                    <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••" minLength={6} className="rounded-xl" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Confirm Password</Label>
+                    <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" minLength={6} className="rounded-xl" />
+                  </div>
+                  <div className="flex justify-center">
+                    <Button
+                      className="rounded-full"
+                      disabled={passwordLoading || !newPassword || newPassword.length < 6}
+                      onClick={async () => {
+                        if (newPassword !== confirmPassword) {
+                          toast({ title: "Passwords don't match", variant: "destructive" });
+                          return;
+                        }
+                        setPasswordLoading(true);
+                        try {
+                          const { error } = await supabase.auth.updateUser({ password: newPassword });
+                          if (error) throw error;
+                          toast({ title: "Password updated" });
+                          setNewPassword("");
+                          setConfirmPassword("");
+                        } catch (error: any) {
+                          toast({ title: "Error", description: error.message, variant: "destructive" });
+                        } finally {
+                          setPasswordLoading(false);
+                        }
+                      }}
+                    >
+                      <KeyRound className="mr-2 h-4 w-4" />
+                      {passwordLoading ? "Updating..." : "Update Password"}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
