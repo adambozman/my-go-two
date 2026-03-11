@@ -15,7 +15,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import ListDetail from "./pages/dashboard/ListDetail";
 import MyGoTwo from "./pages/dashboard/MyGoTwo";
-import Collaborations from "./pages/dashboard/Collaborations";
+// Collaborations merged into SettingsPage
 import Recommendations from "./pages/dashboard/Recommendations";
 import Questionnaires from "./pages/dashboard/Questionnaires";
 import SettingsPage from "./pages/dashboard/SettingsPage";
@@ -45,7 +45,7 @@ const App = () => (
                 <Route index element={<DashboardHome />} />
                 <Route path="lists/:listId" element={<ListDetail />} />
                 <Route path="my-go-two" element={<MyGoTwo />} />
-                <Route path="collaborations" element={<Collaborations />} />
+                <Route path="collaborations" element={<Navigate to="/dashboard/settings" replace />} />
                 <Route path="recommendations" element={<Recommendations />} />
                 <Route path="questionnaires" element={<Questionnaires />} />
                 <Route path="settings" element={<SettingsPage />} />
