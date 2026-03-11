@@ -366,9 +366,9 @@ const DashboardHome = () => {
       const isInviter = row.inviter_id === user.id;
       return {
         id: row.id,
-        name: row.display_label || (isInviter ? row.invitee_email.split("@")[0] : "Connection"),
+        name: row.display_label || (isInviter && row.invitee_email ? row.invitee_email.split("@")[0] : "Connection"),
         image: row.photo_url || DEFAULT_IMAGE,
-        email: row.invitee_email,
+        email: row.invitee_email || "",
         status: row.status,
       };
     });
