@@ -135,7 +135,7 @@ const PreferencesSection = () => {
   // Cover flow
   return (
     <div className="mb-10">
-      <h3 className="text-base font-semibold text-muted-foreground mb-2 text-center">My Preferences</h3>
+      <h3 className="section-header mb-2 text-center">My Preferences</h3>
       <p className="text-muted-foreground text-xs text-center mb-4">Tap a card to review your preferences.</p>
 
       <div className="relative flex items-center justify-center">
