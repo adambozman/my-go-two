@@ -415,6 +415,7 @@ const MyGoTwo = () => {
           key="coverflow"
           templateName={coverFlowTemplate.name}
           subtypes={coverFlowTemplate.subtypes}
+          subcategories={coverFlowTemplate.subcategories}
           onBack={() => setCoverFlowTemplate(null)}
           onSelect={handleSubtypeSelect}
           creating={creating !== null}
