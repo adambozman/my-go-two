@@ -110,12 +110,12 @@ const Preferences = () => {
 
   // Main cover flow
   return (
-    <div className="space-y-8 pb-4">
+    <div className="h-full flex flex-col">
       <div>
         <p className="text-muted-foreground text-sm mb-2">Tap a card to review your preferences.</p>
-
-        <div className="relative flex items-center justify-center pt-8">
-          <div className="relative w-full h-[420px] overflow-hidden">
+      </div>
+      <div className="flex-1 flex items-center justify-center">
+        <div className="relative w-full h-[420px] overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-center">
               {imageQuestions.map((q, index) => {
                 let offset = index - activeIndex;
@@ -170,7 +170,6 @@ const Preferences = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

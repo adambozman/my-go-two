@@ -318,10 +318,9 @@ const Questionnaires = () => {
 
   return (
     <div className="h-full flex flex-col pb-16">
-      <div className="flex-1 flex flex-col">
-        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "#2D6870", fontWeight: 400 }} className="mb-2">Tap a card to view or edit your details.</p>
-
-        <div className="relative flex items-center justify-center py-4">
+      <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "#2D6870", fontWeight: 400 }} className="px-4 pt-2">Tap a card to view or edit your details.</p>
+      <div className="flex-1 flex items-center justify-center">
+        <div className="relative w-full">
           <div className="relative w-full h-[420px] overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-center">
               {coverCards.map((card, index) => {
