@@ -42,6 +42,45 @@ const SettingsPage = () => {
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
 
+  // User settings state
+  type SettingsKeys = 'gift_reminders' | 'partner_activity' | 'recommendations' | 'email_digests' | 'share_prefs' | 'share_wishlist' | 'visible_profile';
+  const [settings, setSettings] = useState<Record<SettingsKeys, boolean>>({
+    gift_reminders: true, partner_activity: true, recommendations: true, email_digests: true,
+    share_prefs: true, share_wishlist: true, visible_profile: true,
+  });
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
+
+  const fetchSettings = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase.from("user_settings").select("*").eq("user_id", user.id).maybeSingle();
+    if (data) {
+      setSettings({
+        gift_reminders: data.gift_reminders, partner_activity: data.partner_activity,
+        recommendations: data.recommendations, email_digests: data.email_digests,
+        share_prefs: data.share_prefs, share_wishlist: data.share_wishlist,
+        visible_profile: data.visible_profile,
+      });
+    }
+    setSettingsLoaded(true);
+  }, [user]);
+
+  useEffect(() => { fetchSettings(); }, [fetchSettings]);
+
+  const toggleSetting = async (key: SettingsKeys) => {
+    if (!user) return;
+    const newVal = !settings[key];
+    setSettings(prev => ({ ...prev, [key]: newVal }));
+    // Upsert
+    const { error } = await supabase.from("user_settings").upsert(
+      { user_id: user.id, [key]: newVal } as any,
+      { onConflict: "user_id" }
+    );
+    if (error) {
+      setSettings(prev => ({ ...prev, [key]: !newVal }));
+      toast({ title: "Failed to save", variant: "destructive" });
+    }
+  };
+
   const inviteLink = user
     ? `${window.location.origin}/connect?invite=${user.id}`
     : "";
