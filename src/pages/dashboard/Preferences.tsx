@@ -7,9 +7,7 @@ import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { getStyleImage } from "@/data/genderImages";
 
 const Preferences = () => {
-  const { profileAnswers } = usePersonalization();
-  const rawIdentity = profileAnswers?.identity;
-  const gender = (Array.isArray(rawIdentity) ? rawIdentity[0] : rawIdentity) as string || "neutral";
+  const { profileAnswers, gender } = usePersonalization();
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
