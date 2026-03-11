@@ -153,11 +153,11 @@ const PreferencesSection = () => {
               if (absOffset > 2) return null;
 
               const xOffset = offset * 180;
-              const cardW = isActive ? 260 : 200;
-              const cardH = isActive ? 350 : 260;
+              const cardW = isActive ? 280 : 160;
+              const cardH = isActive ? 380 : 260;
               const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
               const zIndex = 10 - absOffset;
-              const blur = isActive ? 0 : 2;
+              const blur = isActive ? 0 : 1.8;
               const opacity = isActive ? 1 : 0.5;
               const answered = (selections[q.id] || []).length > 0;
 
