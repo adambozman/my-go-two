@@ -171,9 +171,9 @@ const HomeCoverFlow = ({
 
 const DashboardHome = () => {
   const { user } = useAuth();
-  const [connectionLabels, setConnectionLabels] = useState<Record<string, string>>({});
+  const [connectionData, setConnectionData] = useState<ConnectionData>({ labels: {}, images: {} });
 
-  // Load saved connection labels from user_preferences.profile_answers
+  // Load saved connection data from user_preferences.profile_answers
   useEffect(() => {
     if (!user) return;
     const load = async () => {
@@ -184,21 +184,22 @@ const DashboardHome = () => {
         .maybeSingle();
       if (data?.profile_answers && typeof data.profile_answers === "object") {
         const answers = data.profile_answers as Record<string, any>;
-        if (answers.connection_labels) {
-          setConnectionLabels(answers.connection_labels);
-        }
+        setConnectionData({
+          labels: answers.connection_labels || {},
+          images: answers.connection_images || {},
+        });
       }
     };
     load();
   }, [user]);
 
-  const handleRenameConnection = useCallback(
-    async (cardId: string, newLabel: string) => {
+  const handleSaveConnection = useCallback(
+    async (cardId: string, newLabel: string, newImage: string) => {
       if (!user) return;
-      const updated = { ...connectionLabels, [cardId]: newLabel };
-      setConnectionLabels(updated);
+      const updatedLabels = { ...connectionData.labels, [cardId]: newLabel };
+      const updatedImages = { ...connectionData.images, [cardId]: newImage };
+      setConnectionData({ labels: updatedLabels, images: updatedImages });
 
-      // Persist to DB — merge into profile_answers JSONB
       const { data: existing } = await supabase
         .from("user_preferences")
         .select("profile_answers")
@@ -213,16 +214,20 @@ const DashboardHome = () => {
       const { error } = await supabase
         .from("user_preferences")
         .update({
-          profile_answers: { ...currentAnswers, connection_labels: updated },
+          profile_answers: {
+            ...currentAnswers,
+            connection_labels: updatedLabels,
+            connection_images: updatedImages,
+          },
         })
         .eq("user_id", user.id);
 
       if (error) {
-        console.error("Failed to save label:", error);
-        toast.error("Failed to save label");
+        console.error("Failed to save connection:", error);
+        toast.error("Failed to save connection");
       }
     },
-    [user, connectionLabels]
+    [user, connectionData]
   );
 
   return (
@@ -236,8 +241,8 @@ const DashboardHome = () => {
             <HomeCoverFlow
               cards={cat.cards}
               isConnectionCategory={cat.id === "connections"}
-              connectionLabels={connectionLabels}
-              onRenameConnection={handleRenameConnection}
+              connectionData={connectionData}
+              onSaveConnection={handleSaveConnection}
             />
           ),
         }))}
