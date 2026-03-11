@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
@@ -7,6 +7,7 @@ import CardEditButton from "@/components/CardEditButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import ConnectionPage from "./ConnectionPage";
 
 const CARD_W = 280;
 const CARD_H = 380;
@@ -106,10 +107,12 @@ const ConnectionsCoverFlow = ({
   cards,
   onSaveConnection,
   onAddConnection,
+  onOpenConnection,
 }: {
   cards: ConnectionCard[];
   onSaveConnection: (cardId: string, newLabel: string, newImage: string, email?: string) => void;
   onAddConnection: () => void;
+  onOpenConnection?: (card: ConnectionCard, rect: DOMRect) => void;
 }) => {
   // Include a virtual "add" card at the end
   const totalCount = cards.length + 1;
@@ -145,7 +148,15 @@ const ConnectionsCoverFlow = ({
                 transition={SPRING}
                 className="absolute cursor-pointer"
                 style={{ zIndex }}
-                onClick={() => { if (!isActive) setActiveIndex(index); }}
+                onClick={(e) => {
+                  if (!isActive) {
+                    setActiveIndex(index);
+                  } else if (card.status === "accepted" && onOpenConnection) {
+                    const el = e.currentTarget as HTMLElement;
+                    const rect = el.getBoundingClientRect();
+                    onOpenConnection(card, rect);
+                  }
+                }}
               >
                 <div
                   className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
@@ -333,6 +344,7 @@ const HomeCoverFlow = ({ cards }: { cards: PlaceholderCard[] }) => {
 const DashboardHome = () => {
   const { user } = useAuth();
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
+  const [openConnection, setOpenConnection] = useState<{ card: ConnectionCard; rect: { x: number; y: number; width: number; height: number } } | null>(null);
 
   // Load connections from couples table (both as inviter and invitee)
   const loadConnections = useCallback(async () => {
@@ -452,6 +464,10 @@ const DashboardHome = () => {
     ]);
   }, []);
 
+  const handleOpenConnection = useCallback((card: ConnectionCard, rect: DOMRect) => {
+    setOpenConnection({ card, rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height } });
+  }, []);
+
   const allSections = [
     {
       id: "connections",
@@ -461,6 +477,7 @@ const DashboardHome = () => {
           cards={connections}
           onSaveConnection={handleSaveConnection}
           onAddConnection={handleAddConnection}
+          onOpenConnection={handleOpenConnection}
         />
       ),
     },
@@ -481,6 +498,20 @@ const DashboardHome = () => {
           content: s.content,
         }))}
       />
+      <AnimatePresence>
+        {openConnection && (
+          <ConnectionPage
+            key={openConnection.card.id}
+            connection={{
+              id: openConnection.card.id,
+              name: openConnection.card.name,
+              image: openConnection.card.image,
+            }}
+            cardRect={openConnection.rect}
+            onClose={() => setOpenConnection(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
