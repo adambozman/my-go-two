@@ -29,6 +29,8 @@ import imgJustBecause from "@/assets/stock/just-because.jpg";
 import imgFirstDate from "@/assets/stock/first-date.jpg";
 import imgTrips from "@/assets/stock/trips.jpg";
 
+const DEFAULT_IMAGE = getDefaultPhotoForLabel("friend");
+
 const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
   {
     id: "placeholder-wife",
