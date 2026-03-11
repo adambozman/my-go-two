@@ -403,7 +403,7 @@ const DashboardHome = () => {
       return {
         id: row.id,
         name: label,
-        image: row.photo_url || getDefaultPhotoForLabel(label),
+        image: row.photo_url || "",
         email: row.invitee_email || "",
         status: row.status,
       };
@@ -415,10 +415,13 @@ const DashboardHome = () => {
       const usedNames = new Set(cards.map(c => c.name.toLowerCase()));
       const placeholders = PLACEHOLDER_CONNECTIONS
         .filter(p => !usedNames.has(p.name.toLowerCase()))
-        .slice(0, remainingSlots);
-      setConnections([...cards, ...placeholders]);
+        .slice(0, remainingSlots)
+        .map(p => ({ ...p, image: "" })); // clear default so assignUniquePhotos picks
+      const allCards = assignUniquePhotos([...cards, ...placeholders], (c) => !!c.image);
+      setConnections(allCards);
     } else {
-      setConnections(cards);
+      const uniqueCards = assignUniquePhotos(cards, (c) => !!c.image);
+      setConnections(uniqueCards);
     }
   }, [user]);
 
