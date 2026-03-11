@@ -180,6 +180,7 @@ const CardEditButton = ({
     const photos = getPhotosForLabel(value || title);
     return (
       <div
+        ref={panelRef}
         className="absolute inset-0 z-20 flex flex-col rounded-2xl p-4 overflow-y-auto"
         style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)" }}
         onClick={(e) => e.stopPropagation()}
