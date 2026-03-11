@@ -18,6 +18,7 @@ import MyGoTwo from "./pages/dashboard/MyGoTwo";
 
 import Recommendations from "./pages/dashboard/Recommendations";
 import Questionnaires from "./pages/dashboard/Questionnaires";
+import Notifications from "./pages/dashboard/Notifications";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 
 import NotFound from "./pages/NotFound";
@@ -49,6 +50,7 @@ const App = () => (
                 <Route path="recommendations" element={<Recommendations />} />
                 <Route path="questionnaires" element={<Questionnaires />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="notifications" element={<Notifications />} />
                 <Route path="preferences" element={<Navigate to="/dashboard/my-go-two" replace />} />
               </Route>
               <Route path="*" element={<NotFound />} />
