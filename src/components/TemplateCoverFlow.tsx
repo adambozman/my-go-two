@@ -103,15 +103,6 @@ const CoverFlowCarousel = ({
             })}
           </div>
         </div>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={goRight}
-          className="absolute right-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </Button>
       </div>
 
       {/* Active item info */}
