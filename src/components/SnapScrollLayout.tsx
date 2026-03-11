@@ -112,7 +112,7 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
       {sections.length > 1 && (
         <div
           className="absolute right-3 flex flex-col gap-2.5 z-30"
-          style={{ top: "40%", transform: "translateY(-50%)" }}
+          style={{ top: "25%", transform: "translateY(-50%)" }}
         >
           {sections.map((section, i) => (
             <button
