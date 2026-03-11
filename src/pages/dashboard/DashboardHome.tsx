@@ -148,7 +148,15 @@ const ConnectionsCoverFlow = ({
                 transition={SPRING}
                 className="absolute cursor-pointer"
                 style={{ zIndex }}
-                onClick={() => { if (!isActive) setActiveIndex(index); }}
+                onClick={(e) => {
+                  if (!isActive) {
+                    setActiveIndex(index);
+                  } else if (card.status === "accepted" && onOpenConnection) {
+                    const el = e.currentTarget as HTMLElement;
+                    const rect = el.getBoundingClientRect();
+                    onOpenConnection(card, rect);
+                  }
+                }}
               >
                 <div
                   className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
