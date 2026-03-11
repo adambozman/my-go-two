@@ -5,6 +5,7 @@ export interface SubcategoryGroup {
   name: string;
   image: string;
   products: SubtypeItem[];
+  gender?: string[]; // e.g. ["female"] means female-only; omit for all genders
 }
 
 // === CLOTHING SIZES ===
