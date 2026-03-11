@@ -41,7 +41,7 @@ const KnowMeCarousel = ({ cards, onCardClick, loading }: KnowMeCarouselProps) =>
 
   return (
     <div className="relative flex items-center justify-center py-4">
-      <div className="relative w-full h-[420px] overflow-hidden cursor-grab active:cursor-grabbing touch-none" onPointerDown={swipe.onPointerDown} onPointerUp={swipe.onPointerUp}>
+      <div className="relative w-full h-[420px] overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y" onPointerDown={swipe.onPointerDown} onPointerUp={swipe.onPointerUp}>
         <div className="absolute inset-0 flex items-center justify-center">
           {cards.map((card, index) => {
             let offset = index - activeIndex;
