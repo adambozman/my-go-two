@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import CardEditButton from "@/components/CardEditButton";
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
 import { getProductImage } from "@/data/templateImageResolver";
 
