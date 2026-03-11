@@ -60,6 +60,8 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
       <div
         ref={containerRef}
         className="w-full h-full overflow-y-auto"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
         style={{
           scrollSnapType: "y mandatory",
           WebkitOverflowScrolling: "touch",
