@@ -45,7 +45,7 @@ const App = () => (
                 <Route index element={<DashboardHome />} />
                 <Route path="lists/:listId" element={<ListDetail />} />
                 <Route path="my-go-two" element={<MyGoTwo />} />
-                <Route path="collaborations" element={<Collaborations />} />
+                <Route path="collaborations" element={<Navigate to="/dashboard/settings" replace />} />
                 <Route path="recommendations" element={<Recommendations />} />
                 <Route path="questionnaires" element={<Questionnaires />} />
                 <Route path="settings" element={<SettingsPage />} />
