@@ -1,4 +1,4 @@
-import { Home, Heart, Users, Sparkles, ClipboardList, Settings } from "lucide-react";
+import { Home, Heart, Users, Sparkles, ClipboardList, Settings, Search } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
