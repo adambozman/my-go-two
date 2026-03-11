@@ -527,7 +527,7 @@ const DashboardHome = () => {
       {/* ── Gift Categories — Horizontal scroll ── */}
       {showData && showData.giftCategories.length > 0 && (
         <motion.div variants={itemVariant}>
-          <p className="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-4">
+          <p className="section-header mb-4">
             What to Get {showDataName}
           </p>
           <div className="flex gap-4 overflow-x-auto pb-3 -mx-2 px-2">
