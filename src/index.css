@@ -169,7 +169,11 @@ body {
 .logo-text {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.05em;
+  gap: 0;
+}
+.logo-text .go {
+  position: relative;
+  top: 0.05em;
 }
 .logo-text .go {
   font-family: 'Dancing Script', cursive;
