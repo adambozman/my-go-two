@@ -411,6 +411,17 @@ const MyGoTwo = () => {
     await createListFromTemplate(ct.name, ct.default_fields, undefined);
   };
 
+  const handleDeleteCustomTemplate = async (id: string) => {
+    if (!user) return;
+    const { error } = await supabase.from("custom_templates").delete().eq("id", id).eq("user_id", user.id);
+    if (error) {
+      toast({ title: "Failed to delete", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Template deleted" });
+      fetchTemplates();
+    }
+  };
+
   return (
     <AnimatePresence mode="wait">
       {coverFlowTemplate ? (
