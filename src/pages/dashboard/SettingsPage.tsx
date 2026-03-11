@@ -54,6 +54,9 @@ const SettingsPage = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
+  const [expandedConnection, setExpandedConnection] = useState<string | null>(null);
+  const [sharingPerms, setSharingPerms] = useState<Record<string, Record<string, boolean>>>({});
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // User settings state
   type SettingsKeys = 'gift_reminders' | 'partner_activity' | 'recommendations' | 'email_digests' | 'share_prefs' | 'share_wishlist' | 'visible_profile';
