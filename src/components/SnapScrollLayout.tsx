@@ -44,14 +44,12 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
       {/* Snap scroll container */}
       <div
         ref={containerRef}
-        className="w-full h-full overflow-y-auto scrollbar-hide"
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
+        className="w-full h-full overflow-y-auto"
         style={{
           scrollSnapType: "y mandatory",
           WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
         }}
       >
         {sections.map((section) => (
