@@ -364,17 +364,19 @@ const MyGoTwo = () => {
   return (
     <AnimatePresence mode="wait">
       {coverFlowState ? (
-        <TemplateCoverFlow
-          key="coverflow"
-          templateName={coverFlowState.name}
-          subtypes={coverFlowState.subtypes}
-          subcategories={coverFlowState.subcategories}
-          initialSubcategoryId={coverFlowState.initialSubcategoryId}
-          onBack={() => setCoverFlowState(null)}
-          onSelect={handleSubtypeSelect}
-          creating={creating !== null}
-          gender={gender}
-        />
+        <CoverFlowWithDots>
+          <TemplateCoverFlow
+            key="coverflow"
+            templateName={coverFlowState.name}
+            subtypes={coverFlowState.subtypes}
+            subcategories={coverFlowState.subcategories}
+            initialSubcategoryId={coverFlowState.initialSubcategoryId}
+            onBack={() => setCoverFlowState(null)}
+            onSelect={handleSubtypeSelect}
+            creating={creating !== null}
+            gender={gender}
+          />
+        </CoverFlowWithDots>
       ) : (
         <div className="h-full relative">
           {(loading || genderLoading) ? (
