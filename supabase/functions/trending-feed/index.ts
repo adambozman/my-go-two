@@ -7,6 +7,36 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+
+const cleanText = (value: unknown): string => {
+  if (typeof value !== "string") return "";
+  return value
+    .replace(/[^\x20-\x7E]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/,$/, "");
+};
+
+const ALLOWED_FEED_CATEGORIES = new Set(["trending_style", "store_pick", "gift_idea", "lifestyle"]);
+
+const sanitizeFeed = (rawFeed: unknown) => {
+  if (!Array.isArray(rawFeed)) return [];
+
+  return rawFeed
+    .map((item) => {
+      const f = item as Record<string, unknown>;
+      const category = cleanText(f.category).toLowerCase();
+      return {
+        title: cleanText(f.title),
+        description: cleanText(f.description),
+        category: ALLOWED_FEED_CATEGORIES.has(category) ? category : "lifestyle",
+        image_query: cleanText(f.image_query),
+        source_label: cleanText(f.source_label),
+      };
+    })
+    .filter((f) => f.title && f.description && f.image_query && f.source_label);
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 

@@ -7,6 +7,47 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+
+const cleanText = (value: unknown): string => {
+  if (typeof value !== "string") return "";
+  return value
+    .replace(/[^\x20-\x7E]/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s+,/g, ",")
+    .trim()
+    .replace(/,$/, "");
+};
+
+const ALLOWED_CATEGORIES = new Set([
+  "clothing",
+  "accessories",
+  "grooming",
+  "lifestyle",
+  "experiences",
+  "tech",
+  "home",
+  "fragrance",
+]);
+
+const sanitizeProducts = (rawProducts: unknown) => {
+  if (!Array.isArray(rawProducts)) return [];
+
+  return rawProducts
+    .map((item) => {
+      const p = item as Record<string, unknown>;
+      const category = cleanText(p.category).toLowerCase();
+      return {
+        name: cleanText(p.name),
+        brand: cleanText(p.brand),
+        price_range: cleanText(p.price_range),
+        category: ALLOWED_CATEGORIES.has(category) ? category : "lifestyle",
+        why_picked: cleanText(p.why_picked),
+        is_discovery: Boolean(p.is_discovery),
+      };
+    })
+    .filter((p) => p.name && p.brand && p.price_range && p.why_picked);
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
