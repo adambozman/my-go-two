@@ -59,7 +59,15 @@ const Questionnaires = () => {
   const fetchCategories = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("ai-quizzes");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Please log in to use Know Me.");
+        setLoading(false);
+        return;
+      }
+      const { data, error } = await supabase.functions.invoke("ai-quizzes", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
       if (error) throw error;
       if (data?.categories) setCategories(data.categories);
     } catch (e: any) {
