@@ -171,7 +171,8 @@ Use the provided tool to return the products.`;
     const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall) throw new Error("No tool call in AI response");
 
-    const { products } = JSON.parse(toolCall.function.arguments);
+    const parsed = JSON.parse(toolCall.function.arguments);
+    const products = sanitizeProducts(parsed?.products);
 
     return new Response(JSON.stringify({ products }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

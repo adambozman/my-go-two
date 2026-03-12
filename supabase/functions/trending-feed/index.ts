@@ -155,7 +155,8 @@ Use the provided tool to return the feed.`;
     const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall) throw new Error("No tool call in AI response");
 
-    const { feed } = JSON.parse(toolCall.function.arguments);
+    const parsed = JSON.parse(toolCall.function.arguments);
+    const feed = sanitizeFeed(parsed?.feed);
 
     return new Response(JSON.stringify({ feed }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
