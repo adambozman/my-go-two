@@ -250,10 +250,10 @@ const ConnectionsCoverFlow = ({
                 }}
               >
                 <div
-                  className={`overflow-hidden rounded-2xl transition-shadow duration-300 border-2 border-dashed border-white/30 flex flex-col items-center justify-center gap-2 ${
+                  className={`overflow-hidden transition-shadow duration-300 border-2 border-dashed border-white/30 flex flex-col items-center justify-center gap-2 ${
                     isActive ? "ring-2 ring-primary shadow-2xl" : ""
                   }`}
-                  style={{ width: cardW, height: cardH, background: "rgba(255,255,255,0.05)" }}
+                  style={{ width: cardW, height: cardH, borderRadius: CAROUSEL_LAYOUT.borderRadius, background: "rgba(255,255,255,0.05)" }}
                 >
                   <div
                     className="w-12 h-12 rounded-full flex items-center justify-center"
