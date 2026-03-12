@@ -214,7 +214,6 @@ const MyGoTwo = () => {
   const { toast } = useToast();
   const { profileAnswers, gender, loading: genderLoading } = usePersonalization();
   const navigate = useNavigate();
-  const navigate = useNavigate();
 
   const getTemplateImage = (name: string) => resolveTemplateImage(name, gender);
 
