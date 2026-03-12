@@ -40,7 +40,7 @@ const useSelectedGender = (answers: Record<string, string | string[]>) => {
   const identity = answers["identity"];
   if (!identity) return undefined;
   const val = Array.isArray(identity) ? identity[0] : identity;
-  return val as "male" | "female" | "non-binary" | "prefer-not" | undefined;
+  return normalizeGender(val);
 };
 
 // Accent color — always teal
