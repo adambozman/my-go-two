@@ -605,9 +605,18 @@ export default function PhotoGallery() {
   const markDeleted = (paths: string[]) => {
     setDeleted((prev) => {
       const next = new Set(prev);
-      paths.forEach((p) => next.add(p));
+      paths.forEach((p) => {
+        next.add(p);
+        console.info(`[PHOTO_DELETE_REQUEST] src/assets/${p}`);
+      });
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("photoGalleryDeleteQueue", JSON.stringify(Array.from(next)));
+      }
+
       return next;
     });
+
     // Also remove from selected
     setSelected((prev) => {
       const next = new Set(prev);
