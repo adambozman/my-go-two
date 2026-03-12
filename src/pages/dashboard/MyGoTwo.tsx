@@ -298,7 +298,7 @@ const MyGoTwo = () => {
     await createListFromTemplate(cardTitle, subtype.fields as any, undefined, subcategoryName);
   };
 
-  const createListFromTemplate = async (name: string, fields: any, templateId?: string) => {
+  const createListFromTemplate = async (name: string, fields: any, templateId?: string, subcategoryName?: string) => {
     if (!user) return;
     setCreating(name);
     try {
@@ -318,9 +318,12 @@ const MyGoTwo = () => {
           ...(templateId ? { template_id: templateId } : {}),
         });
         if (cardError) toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
-        // Persist cover flow name so it restores on browser back
-        if (coverFlowTemplate?.name) sessionStorage.setItem("gotwo_coverflow", coverFlowTemplate.name);
-        setCoverFlowTemplate(null);
+        // Persist cover flow + subcategory so it restores on browser back
+        if (coverFlowState?.name) {
+          const subId = subcategoryName ? coverFlowState.subcategories?.find(sc => sc.name === subcategoryName)?.id : undefined;
+          sessionStorage.setItem("gotwo_coverflow", JSON.stringify({ template: coverFlowState.name, subcategory: subId || null }));
+        }
+        setCoverFlowState(null);
         navigate(`/dashboard/lists/${newList.id}`);
       }
     } catch (e: any) {
