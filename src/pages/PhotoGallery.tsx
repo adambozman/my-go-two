@@ -696,29 +696,43 @@ export default function PhotoGallery() {
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-semibold text-destructive">Photos to Delete ({deleted.size})</h3>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => { setDeleted(new Set()); setShowDeletedList(false); }}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setDeleted(new Set());
+                  setShowDeletedList(false);
+                  if (typeof window !== "undefined") {
+                    localStorage.removeItem("photoGalleryDeleteQueue");
+                  }
+                }}
+              >
                 Undo All
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  const text = Array.from(deleted).map(p => `src/assets/${p}`).join('\n');
-                  navigator.clipboard.writeText(`Delete these photos:\n${text}`);
-                  alert('Copied to clipboard! Paste it in the chat to have me delete them.');
+                  const text = Array.from(deleted).map((p) => `src/assets/${p}`).join("\n");
+                  navigator.clipboard.writeText(`Delete these files:\n${text}`);
+                  alert("Copied! Paste in chat and I'll delete them from the codebase.");
                 }}
               >
                 Copy List
               </Button>
-            </div>
-          </div>
-          <div className="text-xs text-muted-foreground space-y-0.5 max-h-40 overflow-y-auto">
-            {Array.from(deleted).map(p => (
-              <div key={p} className="flex items-center justify-between group">
-                <span>src/assets/{p}</span>
+...
                 <button
                   className="text-muted-foreground hover:text-foreground text-xs"
-                  onClick={() => setDeleted(prev => { const n = new Set(prev); n.delete(p); return n; })}
+                  onClick={() =>
+                    setDeleted((prev) => {
+                      const n = new Set(prev);
+                      n.delete(p);
+                      if (typeof window !== "undefined") {
+                        localStorage.setItem("photoGalleryDeleteQueue", JSON.stringify(Array.from(n)));
+                      }
+                      return n;
+                    })
+                  }
                 >
                   undo
                 </button>
