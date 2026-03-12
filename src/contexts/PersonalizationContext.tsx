@@ -36,7 +36,7 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
   const { user } = useAuth();
   const [personalization, setPersonalization] = useState<Personalization | null>(null);
   const [profileAnswers, setProfileAnswers] = useState<Record<string, string | string[]> | null>(null);
-  const [gender, setGender] = useState<string>("neutral");
+  const [gender, setGender] = useState<Gender>("neutral");
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
