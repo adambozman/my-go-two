@@ -112,7 +112,7 @@ const CoverFlowCarousel = ({
   );
 };
 
-const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubcategoryId, onBack, onSelect, creating, gender = "male" }: TemplateCoverFlowProps) => {
+const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubcategoryId, onBack, onSelect, creating, gender = "neutral" }: TemplateCoverFlowProps) => {
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(() => {
     if (initialSubcategoryId && subcategories) {
       return subcategories.find(sc => sc.id === initialSubcategoryId) || null;
