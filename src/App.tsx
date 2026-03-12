@@ -43,6 +43,7 @@ const App = () => (
               <Route path="/reset-password" element={<Navigate to="/forgot-password" replace />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/connect" element={<Connect />} />
+              <Route path="/photo-gallery" element={<PhotoGallery />} />
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardHome />} />
                 <Route path="lists/:listId" element={<ListDetail />} />
