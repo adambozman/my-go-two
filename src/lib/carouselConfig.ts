@@ -16,8 +16,8 @@ export const DOT_LAYOUT = {
   size: 8,
   activeColor: "var(--swatch-teal)",
   inactiveColor: "#d0c9be",
-  /** Horizontal dots centered 24px below center-card bottom */
-  bottomTopOffset: `calc(50% + ${CAROUSEL_LAYOUT.cardHeight / 2 + 24}px)`,
+  /** Horizontal dots halfway between center-card bottom and bottom of section (nav bar) */
+  bottomTopOffset: `calc(75% + ${CAROUSEL_LAYOUT.cardHeight / 4}px)`,
   bottomTransform: "translateY(-50%)",
   /** Vertical dots 16px from right edge, centered with active card */
   rightOffset: 16,
