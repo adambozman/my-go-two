@@ -81,7 +81,7 @@ export const RightSectionDots = ({
           <button
             key={`right-${i}`}
             onClick={() => onSelect(i)}
-            className="rounded-full transition-all duration-300"
+            className="transition-all duration-300"
             style={commonStyle}
             aria-label={
               labels[i] ? `Go to ${labels[i]}` : `Go to section ${i + 1}`
