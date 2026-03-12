@@ -133,9 +133,14 @@ serve(async (req) => {
         const unanswered = quizData.filter((cat: any) =>
           cat.questions.some((q: any) => !allAnswers[q.id])
         );
-        return new Response(JSON.stringify({ categories: unanswered }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+
+        // If there are still unanswered questions, serve cached quizzes.
+        // If everything has been answered, generate a fresh adaptive set below.
+        if (unanswered.length > 0) {
+          return new Response(JSON.stringify({ categories: unanswered }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
       }
     }
 
