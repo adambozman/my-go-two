@@ -209,13 +209,7 @@ const DASHBOARD_CARD_TO_TEMPLATE: Record<string, string> = {
   "favorite moments": "Love Language",
 };
 
-const normalizeGenderForBanks = (gender: string): "male" | "female" | "non-binary" | "prefer-not" => {
-  const g = normalizeLabel(gender);
-  if (g === "male") return "male";
-  if (g === "female") return "female";
-  if (g === "prefer-not") return "prefer-not";
-  return "non-binary";
-};
+import { normalizeGender } from "@/lib/gender";
 
 /**
  * Global dashboard image resolver.
