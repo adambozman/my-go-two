@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { toast } from "sonner";
 
 interface Field {
