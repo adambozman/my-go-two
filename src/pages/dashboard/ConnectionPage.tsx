@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePersonalization } from "@/contexts/PersonalizationContext";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
 import { getTemplateImage as resolveTemplateImage } from "@/data/templateImageResolver";
