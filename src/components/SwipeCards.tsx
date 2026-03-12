@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform, AnimatePresence, PanInfo } from "
 import { Check, X, SkipForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { QUESTION_CARD } from "@/lib/carouselConfig";
 
 interface SwipeOption {
   id: string;
