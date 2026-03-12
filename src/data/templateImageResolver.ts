@@ -137,6 +137,8 @@ function same(img: string): ImageBank {
   return { male: img, female: img, neutral: img };
 }
 
+const normalizeKey = (value: string) => value.toLowerCase().trim();
+
 // ── Top-level template card images ──
 const templateImages: Record<string, ImageBank> = {
   "Clothing Sizes":      { male: maleClothingSizes, female: femaleClothingSizes, neutral: neutralClothingSizes },
@@ -215,21 +217,33 @@ const productImages: Record<string, ImageBank> = {
   "fragrance-oil":     same(imgScentOils),
 };
 
+const DEFAULT_TEMPLATE_IMAGE: ImageBank = {
+  male: maleSpecificProducts,
+  female: femaleSpecificProducts,
+  neutral: neutralSpecificProducts,
+};
+
 /**
  * Get the correct template card image based on gender.
+ * Unknown template names fall back to a bank-safe default image.
  */
 export function getTemplateImage(templateName: string, gender: Gender): string {
-  const entry = templateImages[templateName];
-  if (!entry) return "";
-  return entry[resolveGender(gender)];
+  const key = resolveGender(gender);
+  const entry = templateImages[templateName] ?? DEFAULT_TEMPLATE_IMAGE;
+  return entry[key];
 }
 
 /**
  * Get the correct product/subcategory image based on gender.
- * Falls back to the provided default if no override exists.
+ * Always resolves through bank-safe logic; legacy file fallbacks are only used as a last resort.
  */
-export function getProductImage(productId: string, gender: Gender, fallback: string): string {
-  const entry = productImages[productId];
-  if (!entry) return fallback;
-  return entry[resolveGender(gender)];
+export function getProductImage(productId: string, gender: Gender, fallback?: string): string {
+  const key = resolveGender(gender);
+  const entry = productImages[normalizeKey(productId)];
+
+  if (entry) {
+    return entry[key];
+  }
+
+  return fallback || DEFAULT_TEMPLATE_IMAGE[key];
 }

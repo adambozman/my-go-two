@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import CardEditButton from "@/components/CardEditButton";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
-import { getProductImage } from "@/data/templateImageResolver";
+import { getProductImage, getTemplateImage } from "@/data/templateImageResolver";
 import { CAROUSEL_LAYOUT, HEADER_LAYOUT } from "@/lib/carouselConfig";
 
 export interface SubtypeItem {
@@ -121,15 +121,16 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
   });
   const hasSubcategories = subcategories && subcategories.length > 0;
 
-  // Resolve images based on gender
-  const resolveImage = (id: string, fallback: string) => getProductImage(id, gender, fallback);
+  // Resolve images through centralized bank logic only
+  const templateBankFallback = getTemplateImage(templateName, gender);
+  const resolveImage = (id: string) => getProductImage(id, gender, templateBankFallback);
 
   // If we have subcategories and none is selected, show subcategory picker
   if (hasSubcategories && !activeSubcategory) {
     const items = subcategories.map((sc) => ({
       id: sc.id,
       name: sc.name,
-      image: resolveImage(sc.id, sc.image),
+      image: resolveImage(sc.id),
       subtitle: `${sc.products.length} products`,
     }));
 
@@ -160,7 +161,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
   const productItems = products.map((p) => ({
     id: p.id,
     name: p.name,
-    image: resolveImage(p.id, p.image),
+    image: resolveImage(p.id),
     subtitle: `${p.fields.length} fields`,
   }));
 
