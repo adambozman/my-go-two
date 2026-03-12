@@ -53,6 +53,7 @@ import coworker3 from "@/assets/stock/coworker-3.jpg";
 import coworker4 from "@/assets/stock/coworker-4.jpg";
 
 import { getTemplateImage } from "@/data/templateImageResolver";
+import { normalizeGender } from "@/lib/gender";
 
 export const STOCK_PHOTOS: Record<string, { id: string; url: string }[]> = {
   partner: [
