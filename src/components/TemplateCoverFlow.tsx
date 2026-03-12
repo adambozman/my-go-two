@@ -180,8 +180,9 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
                 onBack();
               }
             }}
+            className="-ml-8 mr-4 h-4 w-4 p-0 hover:bg-transparent"
           >
-            <ArrowLeft className="h-4 w-4" style={{ color: "#2D6870" }} />
+            <ArrowLeft className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
           </Button>
           <h1 className="section-header">{breadcrumb}</h1>
         </div>
