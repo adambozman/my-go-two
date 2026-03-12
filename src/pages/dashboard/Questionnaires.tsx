@@ -15,6 +15,7 @@ import SwipeCards from "@/components/SwipeCards";
 import { allTemplateSubtypes, templateSubcategories, filterSubtypesByGender, filterSubcategoriesByGender } from "@/data/templateSubtypes";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import { useToast } from "@/hooks/use-toast";
+import CoverFlowWithDots from "@/components/CoverFlowWithDots";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
 import KnowMeCarousel, { type KnowMeCard } from "@/components/KnowMeCarousel";
 
