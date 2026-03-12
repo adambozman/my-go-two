@@ -7,7 +7,6 @@ interface SnapSection {
   id: string;
   label: string;
   content: ReactNode;
-  labelStyle?: React.CSSProperties;
 }
 
 interface SnapScrollLayoutProps {
