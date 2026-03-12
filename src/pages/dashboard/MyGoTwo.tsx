@@ -67,7 +67,7 @@ const PreferencesSection = () => {
         .filter((src): src is string => Boolean(src));
 
       const uniqueCandidate = candidates.find((src) => !used.has(src));
-      const selected = uniqueCandidate || candidates[0] || getStyleImage("classic", gender as any, question.category);
+      const selected = uniqueCandidate || candidates[0] || getStyleImage("classic", gender, question.category);
 
       if (selected) used.add(selected);
       covers[question.id] = selected;
