@@ -13,30 +13,6 @@ interface SnapScrollLayoutProps {
   sections: SnapSection[];
 }
 
-const BottomDots = () => {
-  const carouselState = useCarouselDots();
-  if (!carouselState || carouselState.count <= 1) return null;
-
-  return (
-    <div
-      className="absolute left-0 right-0 flex justify-center gap-2 z-30"
-      style={{ bottom: "4%" }}
-    >
-      {Array.from({ length: carouselState.count }).map((_, i) => (
-        <button
-          key={i}
-          onClick={() => carouselState.setActiveIndex(i)}
-            className="rounded-full transition-all duration-300"
-            style={{
-              width: 8,
-              height: 8,
-              background: i === carouselState.activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
-            }}
-        />
-      ))}
-    </div>
-  );
-};
 
 const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
