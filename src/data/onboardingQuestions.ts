@@ -4,6 +4,7 @@ export interface QuestionOption {
   emoji?: string;
   image?: string; // unsplash photo ID — only for image-grid type
   localImage?: string; // local imported image path
+  gender?: ("male" | "female" | "non-binary")[]; // if set, only show for these genders
 }
 
 export type QuestionType = "image-grid" | "pill-select" | "single-select" | "free-input";
