@@ -390,10 +390,11 @@ export const onboardingQuestions: OnboardingQuestion[] = [
       { id: "sneakers", label: "Sneakers", image: "1542291026-7eec264c27ff" },
       { id: "boots", label: "Boots", image: "1520639888713-7851133b1ed0" },
       { id: "sandals", label: "Sandals", image: "1562183241-b937e95e8cd0" },
-      { id: "heels", label: "Heels", image: "1543163521-1bf539c55dd2" },
+      { id: "heels", label: "Heels", image: "1543163521-1bf539c55dd2", gender: ["female", "non-binary"] },
       { id: "loafers", label: "Loafers", image: "1614252235316-8c857d38b5f4" },
-      { id: "flats", label: "Flats", image: "1515347619252-60a4bf4fff4f" },
+      { id: "flats", label: "Flats", image: "1515347619252-60a4bf4fff4f", gender: ["female", "non-binary"] },
       { id: "athletic", label: "Athletic / running", image: "1571019614242-c5c5dee9f50b" },
+      { id: "dress-shoes", label: "Dress shoes", image: "1614252235316-8c857d38b5f4", gender: ["male"] },
     ],
   },
   {
