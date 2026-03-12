@@ -161,13 +161,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
   }));
 
   return (
-    <motion.div
-      key={activeSubcategory?.id || "flat"}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="max-w-5xl mx-auto"
-    >
+    <div className="max-w-5xl mx-auto">
       <div className="flex items-center gap-3 mb-8">
         <Button
           variant="ghost"
