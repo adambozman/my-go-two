@@ -22,16 +22,11 @@ interface Couple {
   display_label: string | null;
 }
 
-const SHARING_CATEGORIES = [
-  { key: "sizes", label: "Sizes", desc: "Clothing & shoe sizes" },
-  { key: "brands", label: "Brands", desc: "Favorite brands" },
-  { key: "saved_items", label: "Saved Items", desc: "Bookmarked products" },
-  { key: "food_preferences", label: "Food Preferences", desc: "Dietary info & favorites" },
-  { key: "gift_ideas", label: "Gift Ideas", desc: "Curated gift suggestions" },
-  { key: "wish_list", label: "Wish List", desc: "Items they want" },
-  { key: "occasions", label: "Occasions", desc: "Birthdays, anniversaries" },
-  { key: "memories", label: "Memories", desc: "Shared moments & milestones" },
-] as const;
+interface UserList {
+  id: string;
+  title: string;
+  is_shared: boolean;
+}
 
 const SettingsPage = () => {
   const { user } = useAuth();
