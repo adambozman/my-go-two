@@ -134,22 +134,21 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
     }));
 
     return (
-      <div className="max-w-5xl mx-auto h-full relative">
-        <div className="absolute top-0 left-0 right-0 z-20 flex items-center gap-3">
+      <div className="max-w-5xl mx-auto relative">
+        <div
+          className="absolute left-0 right-0 z-20 flex items-center gap-3"
+          style={{ top: -24, transform: "translateY(-100%)" }}
+        >
           <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-2xl font-bold text-primary">{templateName}</h1>
         </div>
 
-        <div className="h-full flex items-center justify-center">
-          <div className="w-full pt-14">
-            <CoverFlowCarousel
-              items={items}
-              onItemClick={(index) => setActiveSubcategory(subcategories[index])}
-            />
-          </div>
-        </div>
+        <CoverFlowCarousel
+          items={items}
+          onItemClick={(index) => setActiveSubcategory(subcategories[index])}
+        />
       </div>
     );
   }
