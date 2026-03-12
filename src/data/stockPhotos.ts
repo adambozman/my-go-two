@@ -53,7 +53,6 @@ import coworker3 from "@/assets/stock/coworker-3.jpg";
 import coworker4 from "@/assets/stock/coworker-4.jpg";
 
 import { getTemplateImage } from "@/data/templateImageResolver";
-import { getStyleImage } from "@/data/genderImages";
 
 export const STOCK_PHOTOS: Record<string, { id: string; url: string }[]> = {
   partner: [
@@ -188,9 +187,8 @@ export interface DashboardStockSection {
 }
 
 /**
- * Maps every dashboard card name to a bank-driven image.
- * Uses templateImageResolver (template bank) or genderImages (style bank).
- * NO standalone scene photos — everything resolves through gender-aware banks.
+ * Maps every dashboard card name to a template resolver key.
+ * This keeps all dashboard cards under one single gender-aware image policy.
  */
 const DASHBOARD_CARD_TO_TEMPLATE: Record<string, string> = {
   birthdays: "Birthday Preferences",
@@ -211,44 +209,23 @@ const DASHBOARD_CARD_TO_TEMPLATE: Record<string, string> = {
   "favorite moments": "Love Language",
 };
 
-const DASHBOARD_CARD_TO_STYLE: Record<string, string> = {
-  holidays: "events",
-  "new lists": "creative",
-  "updated cards": "brand",
-  "shared items": "thoughtful",
-  christmas: "events",
-  "father's day": "classic",
-};
-
 const normalizeGenderForBanks = (gender: string): "male" | "female" | "non-binary" | "prefer-not" => {
   const g = normalizeLabel(gender);
   if (g === "male") return "male";
   if (g === "female") return "female";
+  if (g === "prefer-not") return "prefer-not";
   return "non-binary";
 };
 
 /**
  * Global dashboard image resolver.
- * Every card resolves through the template bank or style bank — fully gender-aware.
+ * Every card uses one centralized template resolver path.
  */
 export function getDashboardCardImage(cardName: string, gender: string): string {
   const key = normalizeLabel(cardName);
   const g = normalizeGenderForBanks(gender);
-
-  // First try template bank (most specific)
-  const templateName = DASHBOARD_CARD_TO_TEMPLATE[key];
-  if (templateName) {
-    return getTemplateImage(templateName, g);
-  }
-
-  // Then try style bank
-  const styleId = DASHBOARD_CARD_TO_STYLE[key];
-  if (styleId) {
-    return getStyleImage(styleId, g);
-  }
-
-  // Ultimate fallback: classic style for the user's gender
-  return getStyleImage("classic", g);
+  const templateName = DASHBOARD_CARD_TO_TEMPLATE[key] || "Specific Product Versions";
+  return getTemplateImage(templateName, g);
 }
 
 /** Build dashboard sections from centralized global image rules */

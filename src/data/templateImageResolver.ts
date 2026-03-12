@@ -119,6 +119,8 @@ import imgScentCandles from "@/assets/templates/scent-candles.jpg";
 import imgScentOils from "@/assets/templates/scent-oils.jpg";
 import imgScentHome from "@/assets/templates/scent-home.jpg";
 
+import { getStyleImage } from "@/data/genderImages";
+
 type Gender = string;
 
 interface ImageBank {
@@ -127,17 +129,26 @@ interface ImageBank {
   neutral: string;
 }
 
+const normalizeKey = (value: string) => value.toLowerCase().trim();
+
 function resolveGender(gender: Gender): "male" | "female" | "neutral" {
-  if (gender === "male") return "male";
-  if (gender === "female") return "female";
+  const normalized = normalizeKey(gender || "");
+  if (normalized === "male") return "male";
+  if (normalized === "female") return "female";
   return "neutral";
+}
+
+function resolveStyleGender(gender: Gender): "male" | "female" | "non-binary" | "prefer-not" {
+  const normalized = normalizeKey(gender || "");
+  if (normalized === "male") return "male";
+  if (normalized === "female") return "female";
+  if (normalized === "prefer-not") return "prefer-not";
+  return "non-binary";
 }
 
 function same(img: string): ImageBank {
   return { male: img, female: img, neutral: img };
 }
-
-const normalizeKey = (value: string) => value.toLowerCase().trim();
 
 // ── Top-level template card images ──
 const templateImages: Record<string, ImageBank> = {
@@ -166,6 +177,20 @@ const templateImages: Record<string, ImageBank> = {
   "Travel Preferences":  same(imgTravelPreferences),
   "Love Language":       same(imgLoveLanguage),
   "Pet Peeves":          same(imgPetPeeves),
+};
+
+const templateImagesByKey: Record<string, ImageBank> = Object.fromEntries(
+  Object.entries(templateImages).map(([key, value]) => [normalizeKey(key), value])
+) as Record<string, ImageBank>;
+
+const TEMPLATE_STYLE_OVERRIDES: Record<string, string> = {
+  "anniversary gifts": "timeless",
+  "birthday preferences": "thoughtful",
+  "date ideas": "elegant",
+  "wish list items": "thoughtful",
+  "love language": "classic",
+  events: "events",
+  "travel preferences": "traveling",
 };
 
 // ── Product-level images (NO cross-bank references) ──
@@ -228,8 +253,13 @@ const DEFAULT_TEMPLATE_IMAGE: ImageBank = {
  * Unknown template names fall back to a bank-safe default image.
  */
 export function getTemplateImage(templateName: string, gender: Gender): string {
+  const styleOverride = TEMPLATE_STYLE_OVERRIDES[normalizeKey(templateName)];
+  if (styleOverride) {
+    return getStyleImage(styleOverride, resolveStyleGender(gender));
+  }
+
   const key = resolveGender(gender);
-  const entry = templateImages[templateName] ?? DEFAULT_TEMPLATE_IMAGE;
+  const entry = templateImagesByKey[normalizeKey(templateName)] ?? DEFAULT_TEMPLATE_IMAGE;
   return entry[key];
 }
 
