@@ -237,7 +237,13 @@ const MyGoTwo = () => {
   useEffect(() => {
     const state = location.state as { openTemplate?: string } | null;
     if (state?.openTemplate && allTemplateSubtypes[state.openTemplate]) {
-      setCoverFlowTemplate({ name: state.openTemplate, subtypes: allTemplateSubtypes[state.openTemplate] });
+      const rawSub = allTemplateSubtypes[state.openTemplate];
+      const rawSubcats = templateSubcategories[state.openTemplate];
+      setCoverFlowTemplate({
+        name: state.openTemplate,
+        subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
+        subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
+      });
       window.history.replaceState({}, document.title);
     }
   }, [location]);
