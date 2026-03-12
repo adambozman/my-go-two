@@ -136,65 +136,25 @@ const SettingsPage = () => {
 
   useEffect(() => { fetchConnections(); }, [user]);
 
-  // Fetch sharing permissions for a specific connection
-  const fetchSharingPerms = useCallback(async (coupleId: string) => {
+  // Fetch user's lists for sharing toggles
+  const fetchUserLists = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
-      .from("sharing_permissions")
-      .select("*")
-      .eq("couple_id", coupleId)
+      .from("lists")
+      .select("id, title, is_shared")
       .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (data) {
-      setSharingPerms(prev => ({
-        ...prev,
-        [coupleId]: {
-          sizes: data.sizes, brands: data.brands, saved_items: data.saved_items,
-          food_preferences: data.food_preferences, gift_ideas: data.gift_ideas,
-          wish_list: data.wish_list, occasions: data.occasions, memories: data.memories,
-        },
-      }));
-    } else {
-      // Default all to true for new sharing setup
-      const defaults: Record<string, boolean> = {};
-      SHARING_CATEGORIES.forEach(c => { defaults[c.key] = true; });
-      setSharingPerms(prev => ({ ...prev, [coupleId]: defaults }));
-    }
+      .order("created_at", { ascending: true });
+    setUserLists((data as UserList[]) ?? []);
   }, [user]);
 
-  const toggleSharingPerm = async (coupleId: string, key: string) => {
-    if (!user) return;
-    const current = sharingPerms[coupleId] || {};
-    const newVal = !current[key];
-    setSharingPerms(prev => ({
-      ...prev,
-      [coupleId]: { ...current, [key]: newVal },
-    }));
-
-    const couple = couples.find(c => c.id === coupleId);
-    if (!couple) return;
-
-    const partnerId = couple.inviter_id === user.id ? couple.invitee_id : couple.inviter_id;
-    const partnerEmail = couple.invitee_email || "";
-
-    const { error } = await supabase.from("sharing_permissions").upsert(
-      {
-        couple_id: coupleId,
-        user_id: user.id,
-        user_email: user.email || "",
-        partner_id: partnerId || "",
-        partner_email: partnerEmail,
-        [key]: newVal,
-      } as any,
-      { onConflict: "couple_id,user_id" as any }
-    );
-
+  const toggleListSharing = async (listId: string) => {
+    const list = userLists.find(l => l.id === listId);
+    if (!list) return;
+    const newVal = !list.is_shared;
+    setUserLists(prev => prev.map(l => l.id === listId ? { ...l, is_shared: newVal } : l));
+    const { error } = await supabase.from("lists").update({ is_shared: newVal }).eq("id", listId);
     if (error) {
-      setSharingPerms(prev => ({
-        ...prev,
-        [coupleId]: { ...current, [key]: !newVal },
-      }));
+      setUserLists(prev => prev.map(l => l.id === listId ? { ...l, is_shared: !newVal } : l));
       toast({ title: "Failed to update sharing", variant: "destructive" });
     }
   };
