@@ -59,9 +59,12 @@ export const RightSectionDots = ({
     >
       {Array.from({ length: count }).map((_, i) => {
         const interactive = typeof onSelect === "function";
-        const commonStyle = {
+        const commonStyle: React.CSSProperties = {
           width: DOT_LAYOUT.size,
           height: DOT_LAYOUT.size,
+          minWidth: DOT_LAYOUT.size,
+          minHeight: DOT_LAYOUT.size,
+          borderRadius: "50%",
           background:
             i === activeIndex
               ? DOT_LAYOUT.activeColor
@@ -70,7 +73,7 @@ export const RightSectionDots = ({
 
         if (!interactive) {
           return (
-            <div key={`right-${i}`} className="rounded-full" style={commonStyle} />
+            <div key={`right-${i}`} style={commonStyle} />
           );
         }
 
