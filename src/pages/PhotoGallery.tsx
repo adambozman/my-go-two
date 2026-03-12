@@ -896,6 +896,7 @@ export default function PhotoGallery() {
                     // Clipboard blocked in iframe — show in a prompt for manual copy
                     prompt("Copy this list and paste it in chat:", fullText);
                   }
+                }}
               >
                 Copy List
               </Button>
