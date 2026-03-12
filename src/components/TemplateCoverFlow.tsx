@@ -85,10 +85,10 @@ const CoverFlowCarousel = ({
                   }}
                 >
                   <div
-                    className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
+                    className={`overflow-hidden transition-shadow duration-300 ${
                       isActive ? "ring-2 ring-primary shadow-2xl" : ""
                     }`}
-                    style={{ width: cardW, height: cardH }}
+                    style={{ width: cardW, height: cardH, borderRadius: CAROUSEL_LAYOUT.borderRadius }}
                   >
                     <div className="relative w-full h-full overflow-hidden">
                       <CardEditButton title={item.name} />
@@ -136,11 +136,11 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
     return (
       <div className="max-w-5xl mx-auto relative">
         <div
-          className="absolute left-0 right-0 z-20 flex items-center gap-3 px-4"
-          style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
+          className="absolute z-20 flex items-center gap-2"
+          style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform, left: HEADER_LAYOUT.leftMargin - 16 }}
         >
           <Button variant="ghost" size="icon" onClick={onBack}>
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" style={{ color: "#2D6870" }} />
           </Button>
           <h1 className="section-header">{templateName}</h1>
         </div>
@@ -165,26 +165,26 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
   }));
 
   return (
-    <div className="max-w-5xl mx-auto relative">
-      <div
-        className="absolute left-0 right-0 z-20 flex items-center gap-3 px-4"
-        style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
-      >
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            if (activeSubcategory) {
-              setActiveSubcategory(null);
-            } else {
-              onBack();
-            }
-          }}
+      <div className="max-w-5xl mx-auto relative">
+        <div
+          className="absolute z-20 flex items-center gap-2"
+          style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform, left: HEADER_LAYOUT.leftMargin - 16 }}
         >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <h1 className="section-header">{breadcrumb}</h1>
-      </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              if (activeSubcategory) {
+                setActiveSubcategory(null);
+              } else {
+                onBack();
+              }
+            }}
+          >
+            <ArrowLeft className="h-4 w-4" style={{ color: "#2D6870" }} />
+          </Button>
+          <h1 className="section-header">{breadcrumb}</h1>
+        </div>
 
       <CoverFlowCarousel
         items={productItems}

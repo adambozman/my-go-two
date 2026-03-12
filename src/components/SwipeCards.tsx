@@ -166,15 +166,15 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
       </motion.div>
 
       {/* Card stack */}
-      <div className="relative w-full max-w-[300px] h-[400px] flex items-center justify-center">
+      <div className="relative flex items-center justify-center" style={{ width: 300, height: 420 }}>
         {/* Next card preview */}
         {currentOptionIdx < totalOptions - 1 && options[currentOptionIdx + 1] && (
           <div
             className="absolute card-design-neumorph overflow-hidden"
             style={{
               width: 260,
-              height: 360,
-              borderRadius: "1.5rem",
+              height: 380,
+              borderRadius: 16,
               opacity: 0.4,
               transform: "scale(0.92)",
             }}
@@ -287,7 +287,7 @@ const SwipeableCard = ({
     >
       <div
         className="card-design-neumorph overflow-hidden relative select-none"
-        style={{ width: 280, height: 380, borderRadius: "1.5rem" }}
+        style={{ width: 300, height: 420, borderRadius: 16 }}
       >
         {hasImage ? (
           <>

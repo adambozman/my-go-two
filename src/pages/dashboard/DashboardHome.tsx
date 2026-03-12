@@ -149,12 +149,13 @@ const ConnectionsCoverFlow = ({
                 }}
               >
                 <div
-                  className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
+                  className={`overflow-hidden transition-shadow duration-300 ${
                     isActive ? "ring-2 ring-primary shadow-2xl" : ""
                   } ${card.status === "placeholder" ? "border-2 border-dashed" : ""}`}
                   style={{
                     width: cardW,
                     height: cardH,
+                    borderRadius: CAROUSEL_LAYOUT.borderRadius,
                     ...(card.status === "placeholder" ? { borderColor: "var(--swatch-viridian-odyssey)", opacity: 0.85 } : {}),
                   }}
                 >
@@ -249,10 +250,10 @@ const ConnectionsCoverFlow = ({
                 }}
               >
                 <div
-                  className={`overflow-hidden rounded-2xl transition-shadow duration-300 border-2 border-dashed border-white/30 flex flex-col items-center justify-center gap-2 ${
+                  className={`overflow-hidden transition-shadow duration-300 border-2 border-dashed border-white/30 flex flex-col items-center justify-center gap-2 ${
                     isActive ? "ring-2 ring-primary shadow-2xl" : ""
                   }`}
-                  style={{ width: cardW, height: cardH, background: "rgba(255,255,255,0.05)" }}
+                  style={{ width: cardW, height: cardH, borderRadius: CAROUSEL_LAYOUT.borderRadius, background: "rgba(255,255,255,0.05)" }}
                 >
                   <div
                     className="w-12 h-12 rounded-full flex items-center justify-center"
@@ -313,10 +314,10 @@ const HomeCoverFlow = ({ cards }: { cards: PlaceholderCard[] }) => {
                 onClick={() => { if (!isActive) setActiveIndex(index); }}
               >
                 <div
-                  className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
+                  className={`overflow-hidden transition-shadow duration-300 ${
                     isActive ? "ring-2 ring-primary shadow-2xl" : ""
                   }`}
-                  style={{ width: cardW, height: cardH }}
+                  style={{ width: cardW, height: cardH, borderRadius: CAROUSEL_LAYOUT.borderRadius }}
                 >
                   <div className="relative w-full h-full overflow-hidden">
                     <CardEditButton title={card.name} />

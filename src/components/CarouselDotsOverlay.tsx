@@ -18,7 +18,10 @@ export const BottomCarouselDots = () => {
           style={{
             width: DOT_LAYOUT.size,
             height: DOT_LAYOUT.size,
-            background: i === carouselState.activeIndex ? DOT_LAYOUT.activeColor : DOT_LAYOUT.inactiveColor,
+            background:
+              i === carouselState.activeIndex
+                ? DOT_LAYOUT.activeColor
+                : DOT_LAYOUT.inactiveColor,
           }}
           aria-label={`Go to card ${i + 1}`}
         />
@@ -34,24 +37,38 @@ interface RightSectionDotsProps {
   labels?: string[];
 }
 
-export const RightSectionDots = ({ count, activeIndex, onSelect, labels = [] }: RightSectionDotsProps) => {
+export const RightSectionDots = ({
+  count,
+  activeIndex,
+  onSelect,
+  labels = [],
+}: RightSectionDotsProps) => {
   if (count <= 0) return null;
 
   return (
     <div
-      className={`absolute ${DOT_LAYOUT.rightOffsetClass} flex flex-col gap-2.5 z-30`}
-      style={{ top: DOT_LAYOUT.rightTopOffset, transform: "translateY(-50%)" }}
+      className="absolute flex flex-col gap-2.5 z-30"
+      style={{
+        right: DOT_LAYOUT.rightOffset,
+        top: DOT_LAYOUT.rightTopOffset,
+        transform: "translateY(-50%)",
+      }}
     >
       {Array.from({ length: count }).map((_, i) => {
         const interactive = typeof onSelect === "function";
         const commonStyle = {
           width: DOT_LAYOUT.size,
           height: DOT_LAYOUT.size,
-          background: i === activeIndex ? DOT_LAYOUT.activeColor : DOT_LAYOUT.inactiveColor,
+          background:
+            i === activeIndex
+              ? DOT_LAYOUT.activeColor
+              : DOT_LAYOUT.inactiveColor,
         };
 
         if (!interactive) {
-          return <div key={`right-${i}`} className="rounded-full" style={commonStyle} />;
+          return (
+            <div key={`right-${i}`} className="rounded-full" style={commonStyle} />
+          );
         }
 
         return (
@@ -60,7 +77,9 @@ export const RightSectionDots = ({ count, activeIndex, onSelect, labels = [] }: 
             onClick={() => onSelect(i)}
             className="rounded-full transition-all duration-300"
             style={commonStyle}
-            aria-label={labels[i] ? `Go to ${labels[i]}` : `Go to section ${i + 1}`}
+            aria-label={
+              labels[i] ? `Go to ${labels[i]}` : `Go to section ${i + 1}`
+            }
           />
         );
       })}
