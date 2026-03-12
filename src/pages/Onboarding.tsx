@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ChevronRight, ChevronLeft, Sparkles, Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
+import { normalizeGender } from "@/lib/gender";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
