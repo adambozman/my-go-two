@@ -33,7 +33,7 @@ const DEFAULT_IMAGE = getDefaultPhotoForLabel("friend");
 
 const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
   { id: "placeholder-wife", name: "Wife", image: "", email: "", status: "placeholder" },
-  { id: "placeholder-sig-other", name: "Significant Other", image: "", email: "", status: "placeholder" },
+  { id: "demo-sig-other", name: "Significant Other", image: "", email: "demo@example.com", status: "accepted" },
   { id: "placeholder-mom", name: "Mom", image: "", email: "", status: "placeholder" },
   { id: "placeholder-dad", name: "Dad", image: "", email: "", status: "placeholder" },
 ];
