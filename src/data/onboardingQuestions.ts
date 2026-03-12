@@ -444,7 +444,13 @@ export const onboardingQuestions: OnboardingQuestion[] = [
 
 export const getQuestionsForGender = (gender: string): OnboardingQuestion[] => {
   const normalizedGender = gender.toLowerCase() as "male" | "female" | "non-binary";
-  return onboardingQuestions.filter(
-    (q) => !q.gender || q.gender.includes(normalizedGender)
-  );
+  return onboardingQuestions
+    .filter((q) => !q.gender || q.gender.includes(normalizedGender))
+    .map((q) => {
+      if (!q.options) return q;
+      const filteredOptions = q.options.filter(
+        (opt) => !opt.gender || opt.gender.includes(normalizedGender)
+      );
+      return { ...q, options: filteredOptions };
+    });
 };
