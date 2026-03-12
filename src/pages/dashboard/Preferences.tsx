@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
@@ -25,22 +25,34 @@ const Preferences = () => {
     return saved;
   });
 
+  // Deduplicated cover images — each card gets a unique gendered image
+  const questionCoverImages = useMemo(() => {
+    const used = new Set<string>();
+    const covers: Record<string, string> = {};
+    for (const question of imageQuestions) {
+      const candidates = question.options
+        .map((opt) => getStyleImage(opt.id, gender as any))
+        .filter((src): src is string => Boolean(src));
+      const uniqueCandidate = candidates.find((src) => !used.has(src));
+      const selected = uniqueCandidate || candidates[0] || question.options[0]?.localImage || "";
+      if (selected) used.add(selected);
+      covers[question.id] = selected;
+    }
+    return covers;
+  }, [imageQuestions, gender]);
+
   if (genderLoading) return <p className="text-muted-foreground p-4">Loading...</p>;
 
   const goLeft = () => setActiveIndex((i) => (i - 1 + imageQuestions.length) % imageQuestions.length);
   const goRight = () => setActiveIndex((i) => (i + 1) % imageQuestions.length);
 
   const getQuestionCoverImage = (q: (typeof imageQuestions)[0]) => {
-    const firstOpt = q.options[0];
-    const genderImg = getStyleImage(firstOpt.id, gender as any);
-    if (genderImg) return genderImg;
-    return firstOpt.localImage || firstOpt.image || "";
+    return questionCoverImages[q.id] || q.options[0]?.localImage || "";
   };
 
   const getOptionImage = (optionId: string, fallbackLocal?: string, fallbackUrl?: string) => {
     const genderImg = getStyleImage(optionId, gender as any);
-    if (genderImg) return genderImg;
-    return fallbackLocal || fallbackUrl || "";
+    return genderImg || fallbackLocal || fallbackUrl || "";
   };
 
   const toggleOption = (questionId: string, optionId: string, multiSelect: boolean) => {

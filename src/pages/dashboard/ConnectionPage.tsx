@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePersonalization } from "@/contexts/PersonalizationContext";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
 import { getTemplateImage as resolveTemplateImage } from "@/data/templateImageResolver";
@@ -106,7 +107,8 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
     }
   }
 
-  const getTemplateImage = (name: string) => resolveTemplateImage(name, "neutral");
+  const { gender } = usePersonalization();
+  const getTemplateImage = (name: string) => resolveTemplateImage(name, gender);
 
   const grouped = categoryOrder
     .filter((cat) => permittedCategories.has(cat))
