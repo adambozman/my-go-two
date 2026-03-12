@@ -15,6 +15,7 @@ import GoTwoText from "@/components/GoTwoText";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import { allTemplateSubtypes, templateSubcategories, filterSubtypesByGender, filterSubcategoriesByGender } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
+import CoverFlowWithDots from "@/components/CoverFlowWithDots";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
 import { AnimatePresence } from "framer-motion";
 import { profileQuestions } from "@/data/profileQuestions";
