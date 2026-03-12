@@ -165,8 +165,11 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
   }));
 
   return (
-    <div className="max-w-5xl mx-auto h-full relative">
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-center gap-3">
+    <div className="max-w-5xl mx-auto relative">
+      <div
+        className="absolute left-0 right-0 z-20 flex items-center gap-3"
+        style={{ top: -24, transform: "translateY(-100%)" }}
+      >
         <Button
           variant="ghost"
           size="icon"
@@ -183,14 +186,10 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
         <h1 className="text-2xl font-bold text-primary">{breadcrumb}</h1>
       </div>
 
-      <div className="h-full flex items-center justify-center">
-        <div className="w-full pt-14">
-          <CoverFlowCarousel
-            items={productItems}
-            onItemClick={(index) => onSelect(products[index], activeSubcategory?.name)}
-          />
-        </div>
-      </div>
+      <CoverFlowCarousel
+        items={productItems}
+        onItemClick={(index) => onSelect(products[index], activeSubcategory?.name)}
+      />
     </div>
   );
 };
