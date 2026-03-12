@@ -149,12 +149,13 @@ const ConnectionsCoverFlow = ({
                 }}
               >
                 <div
-                  className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
+                  className={`overflow-hidden transition-shadow duration-300 ${
                     isActive ? "ring-2 ring-primary shadow-2xl" : ""
                   } ${card.status === "placeholder" ? "border-2 border-dashed" : ""}`}
                   style={{
                     width: cardW,
                     height: cardH,
+                    borderRadius: CAROUSEL_LAYOUT.borderRadius,
                     ...(card.status === "placeholder" ? { borderColor: "var(--swatch-viridian-odyssey)", opacity: 0.85 } : {}),
                   }}
                 >
