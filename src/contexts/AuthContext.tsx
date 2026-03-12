@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeGender } from "@/lib/gender";
 
 export const SUBSCRIPTION_TIERS = {
   premium: {
