@@ -89,7 +89,7 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
               }}
             >
               <div className="flex-1 flex items-center justify-center">
-                <div className="w-full relative" style={{ border: "2px solid red" }}>
+                <div className="w-full relative">
                   <h3
                     className="section-header absolute z-20"
                     style={{
