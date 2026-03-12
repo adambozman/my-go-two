@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCategoryImage } from "@/data/genderImages";
+import { getTemplateImage } from "@/data/templateImageResolver";
 import {
   onboardingCategories,
   onboardingQuestions,
