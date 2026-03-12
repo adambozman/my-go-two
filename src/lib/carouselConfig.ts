@@ -32,9 +32,13 @@ export const HEADER_LAYOUT = {
   leftMargin: 24,
 };
 
-/** Question card (SwipeCards) matches center card dimensions */
+/** Question card (SwipeCards) matches center card dimensions + positioning */
 export const QUESTION_CARD = {
   width: CAROUSEL_LAYOUT.cardWidth,
   height: CAROUSEL_LAYOUT.cardHeight,
   borderRadius: CAROUSEL_LAYOUT.borderRadius,
+  /** Question text & counter: 24px below header divider */
+  textTopOffset: 24,
+  /** Action buttons: 32px above bottom nav */
+  buttonsBottomOffset: 32,
 };
