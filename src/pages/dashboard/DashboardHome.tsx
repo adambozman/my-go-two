@@ -122,7 +122,7 @@ const ConnectionsCoverFlow = ({
             const isActive = offset === 0;
             const absOffset = Math.abs(offset);
 
-            if (absOffset > 2) return null;
+            if (absOffset > CAROUSEL_LAYOUT.maxVisibleOffset) return null;
 
             const xOffset = offset * X_GAP;
             const cardW = isActive ? CARD_W : FLANK_W;
