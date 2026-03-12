@@ -112,7 +112,7 @@ const ConnectionsCoverFlow = ({
 
   return (
     <div className="relative flex items-center justify-center py-4">
-      <div className="relative w-full h-[420px] overflow-hidden">
+      <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
         <div className="absolute inset-0 flex items-center justify-center">
           {cards.map((card, index) => {
             let offset = index - activeIndex;
