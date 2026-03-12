@@ -327,7 +327,7 @@ const Questionnaires = () => {
     const categoryQuestions = onboardingQuestions.filter((q) => q.category === selectedCategory);
 
     return (
-      <motion.div className="h-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <SwipeCards
           questions={categoryQuestions.map((q) => ({
             id: q.id,
