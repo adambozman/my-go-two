@@ -56,33 +56,40 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
   // Free-input questions get a clean input card
   if (currentQuestion.type === "free-input") {
     return (
-      <div className="flex flex-col items-center justify-center flex-1 px-6">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="card-design-neumorph p-8 w-full max-w-sm text-center"
-          style={{ borderRadius: "1.5rem" }}
-        >
-          <h3 className="text-xl font-bold text-primary mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+      <div className="relative w-full h-full">
+        {/* Question text — 24px below header divider */}
+        <div className="absolute left-0 right-0 text-center" style={{ top: QUESTION_CARD.textTopOffset }}>
+          <h3 className="text-lg font-bold text-primary" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
             {currentQuestion.title}
           </h3>
-          <p className="text-sm text-muted-foreground mb-6">{currentQuestion.subtitle}</p>
-          <Input
-            value={freeTextAnswers[currentQuestion.id] || ""}
-            onChange={(e) => setFreeTextAnswers(prev => ({ ...prev, [currentQuestion.id]: e.target.value }))}
-            placeholder={currentQuestion.placeholder}
-            className="rounded-xl border-0 bg-white/40 text-base h-12 placeholder:text-muted-foreground/60 mb-4"
-          />
-          <Button
-            className="rounded-full w-full h-11"
-            onClick={() => {
-              setCurrentQuestionIdx(i => i + 1);
-              setCurrentOptionIdx(0);
-            }}
+        </div>
+
+        {/* Card — centered */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="card-design-neumorph p-8 text-center"
+            style={{ width: QUESTION_CARD.width, borderRadius: QUESTION_CARD.borderRadius }}
           >
-            {freeTextAnswers[currentQuestion.id] ? "Next" : "Skip"}
-          </Button>
-        </motion.div>
+            <p className="text-sm text-muted-foreground mb-6">{currentQuestion.subtitle}</p>
+            <Input
+              value={freeTextAnswers[currentQuestion.id] || ""}
+              onChange={(e) => setFreeTextAnswers(prev => ({ ...prev, [currentQuestion.id]: e.target.value }))}
+              placeholder={currentQuestion.placeholder}
+              className="rounded-xl border-0 bg-white/40 text-base h-12 placeholder:text-muted-foreground/60 mb-4"
+            />
+            <Button
+              className="rounded-full w-full h-11"
+              onClick={() => {
+                setCurrentQuestionIdx(i => i + 1);
+                setCurrentOptionIdx(0);
+              }}
+            >
+              {freeTextAnswers[currentQuestion.id] ? "Next" : "Skip"}
+            </Button>
+          </motion.div>
+        </div>
       </div>
     );
   }
