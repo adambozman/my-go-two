@@ -19,13 +19,13 @@ import mom4 from "@/assets/stock/mom-4.jpg";
 import mom5 from "@/assets/stock/mom-5.jpg";
 import mom6 from "@/assets/stock/mom-6.jpg";
 
-import dad1 from "@/assets/stock/dad-5.jpg";
-import dad2 from "@/assets/stock/dad-5.jpg";
-import dad3 from "@/assets/stock/dad-5.jpg";
-import dad4 from "@/assets/stock/dad-5.jpg";
+import dad1 from "@/assets/stock/dad-1.jpg";
+import dad2 from "@/assets/stock/dad-2.jpg";
+import dad3 from "@/assets/stock/dad-3.jpg";
+import dad4 from "@/assets/stock/dad-4.jpg";
 import dad5 from "@/assets/stock/dad-5.jpg";
-import dad6 from "@/assets/stock/dad-5.jpg";
-import dad7 from "@/assets/stock/dad-5.jpg";
+import dad6 from "@/assets/stock/dad-6.jpg";
+import dad7 from "@/assets/stock/dad-7.jpg";
 
 import sister1 from "@/assets/stock/sister-1.jpg";
 import sister2 from "@/assets/stock/sister-2.jpg";
