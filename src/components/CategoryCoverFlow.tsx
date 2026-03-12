@@ -4,6 +4,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import { Button } from "@/components/ui/button";
 import CardEditButton from "@/components/CardEditButton";
+import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 interface CategoryCoverFlowProps {
   items: {

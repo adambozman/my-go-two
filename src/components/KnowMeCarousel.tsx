@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import CardEditButton from "@/components/CardEditButton";
+import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 
 export interface KnowMeCard {
