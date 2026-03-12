@@ -97,10 +97,10 @@ import imgDateIdeas from "@/assets/templates/date-ideas.jpg";
 import imgEvents from "@/assets/templates/events.jpg";
 import imgFavoriteRestaurants from "@/assets/templates/favorite-restaurants.jpg";
 import imgTravelPreferences from "@/assets/templates/travel-preferences.jpg";
-import imgBrandPreferences from "@/assets/templates/love-language.jpg";
+import imgBrandPreferences from "@/assets/templates/brand-preferences.jpg";
 import imgLoveLanguage from "@/assets/templates/love-language.jpg";
 import imgPetPeeves from "@/assets/templates/pet-peeves.jpg";
-import imgSpecificProducts from "@/assets/templates/wish-list.jpg";
+import imgSpecificProducts from "@/assets/templates/specific-products.jpg";
 
 // Shared neutral product images (same for all genders)
 import imgScentCandles from "@/assets/templates/scent-candles.jpg";

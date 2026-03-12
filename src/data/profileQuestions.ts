@@ -33,11 +33,11 @@ import outdoorsImg from "@/assets/styles/outdoors.jpg";
 import eventsImg from "@/assets/styles/events.jpg";
 import stayingInImg from "@/assets/styles/staying-in.jpg";
 import fitnessImg from "@/assets/styles/fitness.jpg";
-import practicalGiftImg from "@/assets/styles/dining.jpg";
-import thoughtfulGiftImg from "@/assets/styles/traveling.jpg";
-import luxuriousGiftImg from "@/assets/styles/luxury.jpg";
-import experienceGiftImg from "@/assets/styles/outdoors.jpg";
-import surpriseGiftImg from "@/assets/styles/events.jpg";
+import practicalGiftImg from "@/assets/styles/practical-gift.jpg";
+import thoughtfulGiftImg from "@/assets/styles/thoughtful-gift.jpg";
+import luxuriousGiftImg from "@/assets/styles/luxurious-gift.jpg";
+import experienceGiftImg from "@/assets/styles/experience-gift.jpg";
+import surpriseGiftImg from "@/assets/styles/surprise-gift.jpg";
 
 export const profileQuestions: OnboardingQuestion[] = [
   {

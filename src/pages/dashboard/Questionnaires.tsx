@@ -18,10 +18,10 @@ import SnapScrollLayout from "@/components/SnapScrollLayout";
 import KnowMeCarousel, { type KnowMeCard } from "@/components/KnowMeCarousel";
 
 // Template images for preferences category
-import imgBrandPreferences from "@/assets/templates/love-language.jpg";
+import imgBrandPreferences from "@/assets/templates/brand-preferences.jpg";
 import imgLoveLanguage from "@/assets/templates/love-language.jpg";
 import imgPetPeeves from "@/assets/templates/pet-peeves.jpg";
-import imgSpecificProducts from "@/assets/templates/wish-list.jpg";
+import imgSpecificProducts from "@/assets/templates/specific-products.jpg";
 
 interface AIQuizCategory {
   id: string;
