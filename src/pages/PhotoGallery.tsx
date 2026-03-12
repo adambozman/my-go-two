@@ -942,7 +942,7 @@ export default function PhotoGallery() {
 
       {/* Tabs */}
       <div className="p-4">
-        <Tabs defaultValue="stock">
+        <Tabs defaultValue="male">
           <TabsList className="w-full flex flex-wrap h-auto gap-1 bg-muted/50 p-1">
             {Object.keys(sections).map((key) => (
               <TabsTrigger key={key} value={key} className="text-xs px-3 py-1.5">
