@@ -464,7 +464,7 @@ const SettingsPage = () => {
                               setExpandedConnection(null);
                             } else {
                               setExpandedConnection(c.id);
-                              if (!sharingPerms[c.id]) fetchSharingPerms(c.id);
+                              if (userLists.length === 0) fetchUserLists();
                             }
                           }}
                         >
@@ -492,26 +492,29 @@ const SettingsPage = () => {
                           </div>
                         </button>
 
-                        {/* Expanded sharing permissions + delete */}
+                        {/* Expanded: your lists sharing toggles + delete */}
                         {isExpanded && (
                           <div className="px-4 pb-4 border-t" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>
                             <p className="text-xs font-semibold mt-3 mb-2 uppercase tracking-wider" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
-                              What you share with {displayName.split("@")[0]}
+                              Lists shared with your connections
                             </p>
-                            <div className="space-y-2">
-                              {SHARING_CATEGORIES.map((cat) => (
-                                <div key={cat.key} className="flex items-center justify-between py-1.5">
-                                  <div>
-                                    <p className="text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{cat.label}</p>
-                                    <p className="text-[11px]" style={{ color: 'var(--swatch-text-light)' }}>{cat.desc}</p>
+                            {userLists.length === 0 ? (
+                              <p className="text-xs py-2" style={{ color: 'var(--swatch-text-light)' }}>
+                                No lists yet. Create lists in My Go Two to share them.
+                              </p>
+                            ) : (
+                              <div className="space-y-2">
+                                {userLists.map((list) => (
+                                  <div key={list.id} className="flex items-center justify-between py-1.5">
+                                    <p className="text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{list.title}</p>
+                                    <Switch
+                                      checked={list.is_shared}
+                                      onCheckedChange={() => toggleListSharing(list.id)}
+                                    />
                                   </div>
-                                  <Switch
-                                    checked={sharingPerms[c.id]?.[cat.key] ?? true}
-                                    onCheckedChange={() => toggleSharingPerm(c.id, cat.key)}
-                                  />
-                                </div>
-                              ))}
-                            </div>
+                                ))}
+                              </div>
+                            )}
 
                             {/* Delete connection */}
                             <div className="mt-4 pt-3 border-t" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>
