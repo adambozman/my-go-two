@@ -167,8 +167,8 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
   return (
       <div className="max-w-5xl mx-auto relative">
         <div
-          className="absolute z-20 flex items-center gap-2"
-          style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform, left: HEADER_LAYOUT.leftMargin - 16 }}
+          className="absolute z-20 flex items-center"
+          style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform, left: HEADER_LAYOUT.leftMargin }}
         >
           <Button
             variant="ghost"
