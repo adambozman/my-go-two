@@ -107,7 +107,7 @@ const sanitizeCategory = (raw: any): AICategory | null => {
 
 const Questionnaires = () => {
   const { user } = useAuth();
-  const { profileAnswers, gender, loading: genderLoading, refetch } = usePersonalization();
+  const { profileAnswers, loading: genderLoading, refetch } = usePersonalization();
 
   const [categories, setCategories] = useState<AICategory[]>([]);
   const [loading, setLoading] = useState(true);
