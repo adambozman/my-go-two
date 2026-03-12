@@ -146,7 +146,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
           items={items}
           onItemClick={(index) => setActiveSubcategory(subcategories[index])}
         />
-      </motion.div>
+      </div>
     );
   }
 
