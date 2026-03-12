@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CardEditButton from "@/components/CardEditButton";
@@ -26,9 +26,9 @@ interface TemplateCoverFlowProps {
   gender?: string;
 }
 
-const CARD_W = 260;
-const CARD_H = 350;
-const FLANK_W = 200;
+const CARD_W = 280;
+const CARD_H = 380;
+const FLANK_W = 160;
 const FLANK_H = 260;
 const X_GAP = 180;
 const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
