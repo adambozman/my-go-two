@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ChevronRight, ChevronLeft, Sparkles, Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
+import { normalizeGender } from "@/lib/gender";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
@@ -39,7 +40,7 @@ const useSelectedGender = (answers: Record<string, string | string[]>) => {
   const identity = answers["identity"];
   if (!identity) return undefined;
   const val = Array.isArray(identity) ? identity[0] : identity;
-  return val as "male" | "female" | "non-binary" | "prefer-not" | undefined;
+  return normalizeGender(val);
 };
 
 // Accent color — always teal
@@ -477,10 +478,9 @@ const Onboarding = () => {
     // Save gender to profile
     if (user) {
       const identityAnswer = profileAnswerData["identity"];
-      const gender = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
-      if (gender && gender !== "prefer-not") {
-        await supabase.from("profiles").update({ gender }).eq("user_id", user.id);
-      }
+      const rawGender = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
+      const gender = normalizeGender(rawGender);
+      await supabase.from("profiles").update({ gender }).eq("user_id", user.id);
     }
 
     // Call AI personalization with a timeout to prevent infinite loading

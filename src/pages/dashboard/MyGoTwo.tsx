@@ -63,11 +63,11 @@ const PreferencesSection = () => {
 
     for (const question of imageQuestions) {
       const candidates = question.options
-        .map((opt) => getStyleImage(opt.id, gender as any, question.category))
+        .map((opt) => getStyleImage(opt.id, gender, question.category))
         .filter((src): src is string => Boolean(src));
 
       const uniqueCandidate = candidates.find((src) => !used.has(src));
-      const selected = uniqueCandidate || candidates[0] || getStyleImage("classic", gender as any, question.category);
+      const selected = uniqueCandidate || candidates[0] || getStyleImage("classic", gender, question.category);
 
       if (selected) used.add(selected);
       covers[question.id] = selected;
@@ -77,11 +77,11 @@ const PreferencesSection = () => {
   }, [imageQuestions, gender]);
 
   const getQuestionCoverImage = (q: (typeof imageQuestions)[0]) => {
-    return questionCoverImages[q.id] || getStyleImage("classic", gender as any, q.category);
+    return questionCoverImages[q.id] || getStyleImage("classic", gender, q.category);
   };
 
   const getOptionImage = (optionId: string, categoryId: string) => {
-    return getStyleImage(optionId, gender as any, categoryId);
+    return getStyleImage(optionId, gender, categoryId);
   };
 
   const toggleOption = (questionId: string, optionId: string, multiSelect: boolean) => {

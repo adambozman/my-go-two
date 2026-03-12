@@ -53,6 +53,7 @@ import coworker3 from "@/assets/stock/coworker-3.jpg";
 import coworker4 from "@/assets/stock/coworker-4.jpg";
 
 import { getTemplateImage } from "@/data/templateImageResolver";
+import { normalizeGender } from "@/lib/gender";
 
 export const STOCK_PHOTOS: Record<string, { id: string; url: string }[]> = {
   partner: [
@@ -209,13 +210,6 @@ const DASHBOARD_CARD_TO_TEMPLATE: Record<string, string> = {
   "favorite moments": "Love Language",
 };
 
-const normalizeGenderForBanks = (gender: string): "male" | "female" | "non-binary" | "prefer-not" => {
-  const g = normalizeLabel(gender);
-  if (g === "male") return "male";
-  if (g === "female") return "female";
-  if (g === "prefer-not") return "prefer-not";
-  return "non-binary";
-};
 
 /**
  * Global dashboard image resolver.
@@ -223,7 +217,7 @@ const normalizeGenderForBanks = (gender: string): "male" | "female" | "non-binar
  */
 export function getDashboardCardImage(cardName: string, gender: string): string {
   const key = normalizeLabel(cardName);
-  const g = normalizeGenderForBanks(gender);
+  const g = normalizeGender(gender);
   const templateName = DASHBOARD_CARD_TO_TEMPLATE[key] || "Specific Product Versions";
   return getTemplateImage(templateName, g);
 }

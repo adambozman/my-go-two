@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { type Gender, normalizeGender } from "@/lib/gender";
 
 export interface Personalization {
   recommended_brands: string[];
@@ -16,7 +17,7 @@ export interface Personalization {
 interface PersonalizationContextType {
   personalization: Personalization | null;
   profileAnswers: Record<string, string | string[]> | null;
-  gender: string;
+  gender: Gender;
   loading: boolean;
   refetch: () => Promise<void>;
 }
@@ -35,7 +36,7 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
   const { user } = useAuth();
   const [personalization, setPersonalization] = useState<Personalization | null>(null);
   const [profileAnswers, setProfileAnswers] = useState<Record<string, string | string[]> | null>(null);
-  const [gender, setGender] = useState<string>("neutral");
+  const [gender, setGender] = useState<Gender>("neutral");
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
@@ -56,7 +57,7 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
         .single();
 
       if (profileData?.gender) {
-        setGender(profileData.gender);
+        setGender(normalizeGender(profileData.gender));
       } else {
         setGender("neutral");
       }
@@ -75,7 +76,7 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
           const answers = data.profile_answers as any;
           const identity = answers?.identity;
           const resolved = Array.isArray(identity) ? identity[0] : identity;
-          if (resolved) setGender(resolved);
+          if (resolved) setGender(normalizeGender(resolved));
         }
 
         // Sanitize corrupted unicode characters from AI personalization data
@@ -118,8 +119,7 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
         { event: "UPDATE", schema: "public", table: "profiles", filter: `user_id=eq.${user.id}` },
         (payload) => {
           const newGender = (payload.new as any)?.gender;
-          if (newGender) setGender(newGender);
-          else setGender("neutral");
+          setGender(normalizeGender(newGender));
         }
       )
       .subscribe();

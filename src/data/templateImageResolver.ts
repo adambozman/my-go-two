@@ -120,8 +120,7 @@ import imgScentOils from "@/assets/templates/scent-oils.jpg";
 import imgScentHome from "@/assets/templates/scent-home.jpg";
 
 import { getStyleImage } from "@/data/genderImages";
-
-type Gender = string;
+import { type Gender, normalizeGender } from "@/lib/gender";
 
 interface ImageBank {
   male: string;
@@ -130,21 +129,6 @@ interface ImageBank {
 }
 
 const normalizeKey = (value: string) => value.toLowerCase().trim();
-
-function resolveGender(gender: Gender): "male" | "female" | "neutral" {
-  const normalized = normalizeKey(gender || "");
-  if (normalized === "male") return "male";
-  if (normalized === "female") return "female";
-  return "neutral";
-}
-
-function resolveStyleGender(gender: Gender): "male" | "female" | "non-binary" | "prefer-not" {
-  const normalized = normalizeKey(gender || "");
-  if (normalized === "male") return "male";
-  if (normalized === "female") return "female";
-  if (normalized === "prefer-not") return "prefer-not";
-  return "non-binary";
-}
 
 function same(img: string): ImageBank {
   return { male: img, female: img, neutral: img };
@@ -252,13 +236,13 @@ const DEFAULT_TEMPLATE_IMAGE: ImageBank = {
  * Get the correct template card image based on gender.
  * Unknown template names fall back to a bank-safe default image.
  */
-export function getTemplateImage(templateName: string, gender: Gender): string {
+export function getTemplateImage(templateName: string, gender: Gender | string): string {
   const styleOverride = TEMPLATE_STYLE_OVERRIDES[normalizeKey(templateName)];
   if (styleOverride) {
-    return getStyleImage(styleOverride, resolveStyleGender(gender));
+    return getStyleImage(styleOverride, normalizeGender(gender));
   }
 
-  const key = resolveGender(gender);
+  const key = normalizeGender(gender);
   const entry = templateImagesByKey[normalizeKey(templateName)] ?? DEFAULT_TEMPLATE_IMAGE;
   return entry[key];
 }
@@ -267,8 +251,8 @@ export function getTemplateImage(templateName: string, gender: Gender): string {
  * Get the correct product/subcategory image based on gender.
  * Always resolves through bank-safe logic; legacy file fallbacks are only used as a last resort.
  */
-export function getProductImage(productId: string, gender: Gender, fallback?: string): string {
-  const key = resolveGender(gender);
+export function getProductImage(productId: string, gender: Gender | string, fallback?: string): string {
+  const key = normalizeGender(gender);
   const entry = productImages[normalizeKey(productId)];
 
   if (entry) {

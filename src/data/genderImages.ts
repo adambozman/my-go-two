@@ -72,7 +72,7 @@ import femaleGifts from "@/assets/categories/female/gifts.jpg";
 import femaleLifestyle from "@/assets/categories/female/lifestyle.jpg";
 import femaleFitCat from "@/assets/categories/female/fit.jpg";
 
-type Gender = "male" | "female" | "non-binary" | "prefer-not";
+import { type Gender, normalizeGender } from "@/lib/gender";
 
 // Style images keyed by style ID then gender
 const styleImages: Record<string, Record<string, string>> = {
@@ -148,7 +148,7 @@ const CATEGORY_STYLE_FALLBACK: Record<string, string> = {
   profile: "classic",
 };
 
-const DEFAULT_STYLE_FALLBACK: Record<"male" | "female" | "neutral", string> = {
+const DEFAULT_STYLE_FALLBACK: Record<Gender, string> = {
   male: maleClassic,
   female: femaleClassic,
   neutral: neutralClassic,
@@ -156,14 +156,8 @@ const DEFAULT_STYLE_FALLBACK: Record<"male" | "female" | "neutral", string> = {
 
 const normalizeId = (value: string) => value.toLowerCase().trim();
 
-function resolveGender(gender: Gender | undefined): "male" | "female" | "neutral" {
-  if (gender === "male") return "male";
-  if (gender === "female") return "female";
-  return "neutral";
-}
-
 export function getStyleImage(styleId: string, gender?: Gender, categoryId?: string): string {
-  const g = resolveGender(gender);
+  const g = normalizeGender(gender);
   const normalizedStyle = normalizeId(styleId);
   const canonicalStyle = STYLE_ID_ALIASES[normalizedStyle] || normalizedStyle;
   const styleBank = styleImages[canonicalStyle];
@@ -190,7 +184,7 @@ export function getStyleImage(styleId: string, gender?: Gender, categoryId?: str
 }
 
 export function getCategoryImage(categoryId: string, gender?: Gender): string {
-  const g = resolveGender(gender);
+  const g = normalizeGender(gender);
   const bank = categoryImages[normalizeId(categoryId)];
   if (!bank) return DEFAULT_STYLE_FALLBACK[g];
   return bank[g] || bank.neutral || bank.male || DEFAULT_STYLE_FALLBACK[g];
