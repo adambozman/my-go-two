@@ -236,13 +236,13 @@ const DEFAULT_TEMPLATE_IMAGE: ImageBank = {
  * Get the correct template card image based on gender.
  * Unknown template names fall back to a bank-safe default image.
  */
-export function getTemplateImage(templateName: string, gender: Gender): string {
+export function getTemplateImage(templateName: string, gender: Gender | string): string {
   const styleOverride = TEMPLATE_STYLE_OVERRIDES[normalizeKey(templateName)];
   if (styleOverride) {
-    return getStyleImage(styleOverride, resolveStyleGender(gender));
+    return getStyleImage(styleOverride, normalizeGender(gender));
   }
 
-  const key = resolveGender(gender);
+  const key = normalizeGender(gender);
   const entry = templateImagesByKey[normalizeKey(templateName)] ?? DEFAULT_TEMPLATE_IMAGE;
   return entry[key];
 }
