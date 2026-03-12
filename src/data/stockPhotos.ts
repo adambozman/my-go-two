@@ -52,16 +52,8 @@ import coworker2 from "@/assets/stock/coworker-2.jpg";
 import coworker3 from "@/assets/stock/coworker-3.jpg";
 import coworker4 from "@/assets/stock/coworker-4.jpg";
 
-import birthdays from "@/assets/stock/birthdays.jpg";
-import anniversaries from "@/assets/stock/anniversaries.jpg";
-import holidays from "@/assets/stock/holidays.jpg";
-import dateNights from "@/assets/stock/date-nights.jpg";
-import newLists from "@/assets/stock/new-lists.jpg";
-import updatedCards from "@/assets/stock/updated-cards.jpg";
-import valentines from "@/assets/stock/valentines.jpg";
-import justBecause from "@/assets/stock/just-because.jpg";
-import firstDate from "@/assets/stock/first-date.jpg";
-import trips from "@/assets/stock/trips.jpg";
+import { getTemplateImage } from "@/data/templateImageResolver";
+import { getStyleImage } from "@/data/genderImages";
 
 export const STOCK_PHOTOS: Record<string, { id: string; url: string }[]> = {
   partner: [
