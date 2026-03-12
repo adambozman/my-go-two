@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trash2, RefreshCw } from "lucide-react";
@@ -764,6 +764,10 @@ export default function PhotoGallery() {
   const [deleted, setDeleted] = useState<Set<string>>(new Set());
   const [expandedImage, setExpandedImage] = useState<PhotoItem | null>(null);
   const [showDeletedList, setShowDeletedList] = useState(false);
+  const deleteListRef = useRef<HTMLTextAreaElement | null>(null);
+  const deleteListText = Array.from(deleted)
+    .map((p) => `src/assets/${p}`)
+    .join("\n");
 
   const toggleSelect = (path: string) => {
     setSelected((prev) => {
@@ -885,23 +889,20 @@ export default function PhotoGallery() {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  const text = Array.from(deleted)
-                    .map((p) => `src/assets/${p}`)
-                    .join("\n");
-                  const fullText = `Delete these files:\n${text}`;
-                  try {
-                    navigator.clipboard.writeText(fullText);
-                    alert("Copied! Paste in chat and I'll delete them from the codebase.");
-                  } catch {
-                    // Clipboard blocked in iframe — show in a prompt for manual copy
-                    prompt("Copy this list and paste it in chat:", fullText);
-                  }
+                  deleteListRef.current?.focus();
+                  deleteListRef.current?.select();
                 }}
               >
-                Copy List
+                Select List
               </Button>
             </div>
           </div>
+          <textarea
+            ref={deleteListRef}
+            readOnly
+            value={`Delete these files:\n${deleteListText}`}
+            className="mb-3 h-24 w-full rounded-md border border-border bg-background px-2 py-1 text-xs text-foreground"
+          />
           <div className="max-h-40 space-y-0.5 overflow-y-auto text-xs text-muted-foreground">
             {Array.from(deleted).map((p) => (
               <div key={p} className="group flex items-center justify-between">
