@@ -26,7 +26,7 @@ import maleGroomingHair from "@/assets/templates/male/grooming-hair.jpg";
 import maleGroomingSkin from "@/assets/templates/male/grooming-skin.jpg";
 import maleMeasurements from "@/assets/templates/male/measurements.jpg";
 import maleMeasureRing from "@/assets/templates/male/measure-ring.jpg";
-import maleFragrances from "@/assets/templates/neutral/fragrances.jpg";
+import maleFragrances from "@/assets/templates/male/fragrances.jpg";
 import maleJewelry from "@/assets/templates/male/jewelry.jpg";
 import maleJewelryNecklaces from "@/assets/templates/male/jewelry-necklaces.jpg";
 import maleJewelryBracelets from "@/assets/templates/male/jewelry-bracelets.jpg";
