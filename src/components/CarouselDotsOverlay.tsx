@@ -1,3 +1,4 @@
+import React from "react";
 import { DOT_LAYOUT } from "@/lib/carouselConfig";
 import { useCarouselDots } from "@/contexts/CarouselDotsContext";
 
