@@ -748,7 +748,6 @@ export default function PhotoGallery() {
           </div>
         </div>
       )}
-      )}
 
       {expandedImage && (
         <div
