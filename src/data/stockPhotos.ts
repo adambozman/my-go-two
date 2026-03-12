@@ -35,11 +35,11 @@ import sister5 from "@/assets/stock/sister-5.jpg";
 import sister6 from "@/assets/stock/sister-6.jpg";
 
 import brother1 from "@/assets/stock/brother-1.jpg";
-import brother2 from "@/assets/stock/brother-2.jpg";
-import brother3 from "@/assets/stock/brother-3.jpg";
-import brother4 from "@/assets/stock/brother-4.jpg";
+import brother2 from "@/assets/stock/brother-1.jpg";
+import brother3 from "@/assets/stock/brother-5.jpg";
+import brother4 from "@/assets/stock/brother-1.jpg";
 import brother5 from "@/assets/stock/brother-5.jpg";
-import brother6 from "@/assets/stock/brother-6.jpg";
+import brother6 from "@/assets/stock/brother-1.jpg";
 
 import friend1 from "@/assets/stock/friend-1.jpg";
 import friend2 from "@/assets/stock/friend-2.jpg";
