@@ -231,21 +231,23 @@ const MyGoTwo = () => {
   const [creating, setCreating] = useState<string | null>(null);
   const [createSheetOpen, setCreateSheetOpen] = useState(false);
   const [createSheetCategory, setCreateSheetCategory] = useState<{ key: string; label: string }>({ key: "", label: "" });
-  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(() => {
-    // Restore cover flow state from sessionStorage on mount (e.g. after browser back)
+  const [coverFlowState, setCoverFlowState] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[]; initialSubcategoryId?: string } | null>(() => {
     const saved = sessionStorage.getItem("gotwo_coverflow");
     if (saved) {
       sessionStorage.removeItem("gotwo_coverflow");
-      const templateName = saved;
-      const rawSub = allTemplateSubtypes[templateName];
-      const rawSubcats = templateSubcategories[templateName];
-      if (rawSub || rawSubcats) {
-        return {
-          name: templateName,
-          subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
-          subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
-        };
-      }
+      try {
+        const { template, subcategory } = JSON.parse(saved);
+        const rawSub = allTemplateSubtypes[template];
+        const rawSubcats = templateSubcategories[template];
+        if (rawSub || rawSubcats) {
+          return {
+            name: template,
+            subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
+            subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
+            initialSubcategoryId: subcategory || undefined,
+          };
+        }
+      } catch {}
     }
     return null;
   });
@@ -281,7 +283,7 @@ const MyGoTwo = () => {
     const subtypes = rawSubtypes ? filterSubtypesByGender(rawSubtypes, gender) : undefined;
     const subcategories = rawSubcategories ? filterSubcategoriesByGender(rawSubcategories, gender) : undefined;
     if (subtypes || subcategories) {
-      setCoverFlowTemplate({ name: template.name, subtypes: subtypes || [], subcategories });
+      setCoverFlowState({ name: template.name, subtypes: subtypes || [], subcategories });
       return;
     }
     await createListFromTemplate(template.name, template.default_fields, template.id);
@@ -289,14 +291,14 @@ const MyGoTwo = () => {
 
   const handleSubtypeSelect = async (subtype: SubtypeItem, subcategoryName?: string) => {
     if (!user) return;
-    const templateName = coverFlowTemplate?.name;
+    const templateName = coverFlowState?.name;
     const cardTitle = subcategoryName
       ? `${templateName} - ${subcategoryName} - ${subtype.name}`
       : `${templateName} - ${subtype.name}`;
-    await createListFromTemplate(cardTitle, subtype.fields as any, undefined);
+    await createListFromTemplate(cardTitle, subtype.fields as any, undefined, subcategoryName);
   };
 
-  const createListFromTemplate = async (name: string, fields: any, templateId?: string) => {
+  const createListFromTemplate = async (name: string, fields: any, templateId?: string, subcategoryName?: string) => {
     if (!user) return;
     setCreating(name);
     try {
@@ -316,9 +318,12 @@ const MyGoTwo = () => {
           ...(templateId ? { template_id: templateId } : {}),
         });
         if (cardError) toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
-        // Persist cover flow name so it restores on browser back
-        if (coverFlowTemplate?.name) sessionStorage.setItem("gotwo_coverflow", coverFlowTemplate.name);
-        setCoverFlowTemplate(null);
+        // Persist cover flow + subcategory so it restores on browser back
+        if (coverFlowState?.name) {
+          const subId = subcategoryName ? coverFlowState.subcategories?.find(sc => sc.name === subcategoryName)?.id : undefined;
+          sessionStorage.setItem("gotwo_coverflow", JSON.stringify({ template: coverFlowState.name, subcategory: subId || null }));
+        }
+        setCoverFlowState(null);
         navigate(`/dashboard/lists/${newList.id}`);
       }
     } catch (e: any) {
@@ -358,13 +363,14 @@ const MyGoTwo = () => {
 
   return (
     <AnimatePresence mode="wait">
-      {coverFlowTemplate ? (
+      {coverFlowState ? (
         <TemplateCoverFlow
           key="coverflow"
-          templateName={coverFlowTemplate.name}
-          subtypes={coverFlowTemplate.subtypes}
-          subcategories={coverFlowTemplate.subcategories}
-          onBack={() => setCoverFlowTemplate(null)}
+          templateName={coverFlowState.name}
+          subtypes={coverFlowState.subtypes}
+          subcategories={coverFlowState.subcategories}
+          initialSubcategoryId={coverFlowState.initialSubcategoryId}
+          onBack={() => setCoverFlowState(null)}
           onSelect={handleSubtypeSelect}
           creating={creating !== null}
           gender={gender}

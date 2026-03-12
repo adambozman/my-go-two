@@ -111,19 +111,23 @@ const Questionnaires = () => {
   // Preferences templates
   const [prefTemplates, setPrefTemplates] = useState<Template[]>([]);
   const [creating, setCreating] = useState<string | null>(null);
-  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(() => {
+  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[]; initialSubcategoryId?: string } | null>(() => {
     const saved = sessionStorage.getItem("knowme_coverflow");
     if (saved) {
       sessionStorage.removeItem("knowme_coverflow");
-      const rawSub = allTemplateSubtypes[saved];
-      const rawSubcats = templateSubcategories[saved];
-      if (rawSub || rawSubcats) {
-        return {
-          name: saved,
-          subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
-          subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
-        };
-      }
+      try {
+        const { template, subcategory } = JSON.parse(saved);
+        const rawSub = allTemplateSubtypes[template];
+        const rawSubcats = templateSubcategories[template];
+        if (rawSub || rawSubcats) {
+          return {
+            name: template,
+            subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
+            subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
+            initialSubcategoryId: subcategory || undefined,
+          };
+        }
+      } catch {}
     }
     return null;
   });
@@ -205,10 +209,10 @@ const Questionnaires = () => {
     const cardTitle = subcategoryName
       ? `${templateName} - ${subcategoryName} - ${subtype.name}`
       : `${templateName} - ${subtype.name}`;
-    await createListFromTemplate(cardTitle, subtype.fields as any, undefined);
+    await createListFromTemplate(cardTitle, subtype.fields as any, undefined, subcategoryName);
   };
 
-  const createListFromTemplate = async (name: string, fields: any, templateId?: string) => {
+  const createListFromTemplate = async (name: string, fields: any, templateId?: string, subcategoryName?: string) => {
     if (!user) return;
     setCreating(name);
     try {
@@ -228,7 +232,10 @@ const Questionnaires = () => {
           ...(templateId ? { template_id: templateId } : {}),
         });
         if (cardError) uiToast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
-        if (coverFlowTemplate?.name) sessionStorage.setItem("knowme_coverflow", coverFlowTemplate.name);
+        if (coverFlowTemplate?.name) {
+          const subId = subcategoryName ? coverFlowTemplate.subcategories?.find(sc => sc.name === subcategoryName)?.id : undefined;
+          sessionStorage.setItem("knowme_coverflow", JSON.stringify({ template: coverFlowTemplate.name, subcategory: subId || null }));
+        }
         setCoverFlowTemplate(null);
         navigate(`/dashboard/lists/${newList.id}`);
       }
@@ -302,6 +309,7 @@ const Questionnaires = () => {
         templateName={coverFlowTemplate.name}
         subtypes={coverFlowTemplate.subtypes}
         subcategories={coverFlowTemplate.subcategories}
+        initialSubcategoryId={coverFlowTemplate.initialSubcategoryId}
         onBack={() => setCoverFlowTemplate(null)}
         onSelect={handleSubtypeSelect}
         creating={creating !== null}
