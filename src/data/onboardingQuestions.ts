@@ -4,6 +4,7 @@ export interface QuestionOption {
   emoji?: string;
   image?: string; // unsplash photo ID — only for image-grid type
   localImage?: string; // local imported image path
+  gender?: ("male" | "female" | "non-binary")[]; // if set, only show for these genders
 }
 
 export type QuestionType = "image-grid" | "pill-select" | "single-select" | "free-input";
@@ -389,10 +390,11 @@ export const onboardingQuestions: OnboardingQuestion[] = [
       { id: "sneakers", label: "Sneakers", image: "1542291026-7eec264c27ff" },
       { id: "boots", label: "Boots", image: "1520639888713-7851133b1ed0" },
       { id: "sandals", label: "Sandals", image: "1562183241-b937e95e8cd0" },
-      { id: "heels", label: "Heels", image: "1543163521-1bf539c55dd2" },
+      { id: "heels", label: "Heels", image: "1543163521-1bf539c55dd2", gender: ["female", "non-binary"] },
       { id: "loafers", label: "Loafers", image: "1614252235316-8c857d38b5f4" },
-      { id: "flats", label: "Flats", image: "1515347619252-60a4bf4fff4f" },
+      { id: "flats", label: "Flats", image: "1515347619252-60a4bf4fff4f", gender: ["female", "non-binary"] },
       { id: "athletic", label: "Athletic / running", image: "1571019614242-c5c5dee9f50b" },
+      { id: "dress-shoes", label: "Dress shoes", image: "1614252235316-8c857d38b5f4", gender: ["male"] },
     ],
   },
   {
@@ -428,19 +430,27 @@ export const onboardingQuestions: OnboardingQuestion[] = [
     funnySubtext: "Every body is a good body",
     multiSelect: false,
     options: [
-      { id: "petite", label: "Petite", image: "1490114538077-0a7f8cb49891" },
+      { id: "petite", label: "Petite", image: "1490114538077-0a7f8cb49891", gender: ["female", "non-binary"] },
       { id: "regular", label: "Regular", image: "1507003211169-0a1dd7228f2d" },
       { id: "tall", label: "Tall", image: "1507679799987-c73779587ccf" },
       { id: "athletic", label: "Athletic", image: "1534438327276-14e5300c3a48" },
-      { id: "curvy", label: "Curvy", image: "1509631179647-0177331693ae" },
+      { id: "curvy", label: "Curvy", image: "1509631179647-0177331693ae", gender: ["female", "non-binary"] },
       { id: "plus", label: "Plus size", image: "1521572163474-6864f9cf17ab" },
+      { id: "slim", label: "Slim", image: "1507003211169-0a1dd7228f2d", gender: ["male"] },
+      { id: "stocky", label: "Stocky / Broad", image: "1534438327276-14e5300c3a48", gender: ["male"] },
     ],
   },
 ];
 
 export const getQuestionsForGender = (gender: string): OnboardingQuestion[] => {
   const normalizedGender = gender.toLowerCase() as "male" | "female" | "non-binary";
-  return onboardingQuestions.filter(
-    (q) => !q.gender || q.gender.includes(normalizedGender)
-  );
+  return onboardingQuestions
+    .filter((q) => !q.gender || q.gender.includes(normalizedGender))
+    .map((q) => {
+      if (!q.options) return q;
+      const filteredOptions = q.options.filter(
+        (opt) => !opt.gender || opt.gender.includes(normalizedGender)
+      );
+      return { ...q, options: filteredOptions };
+    });
 };
