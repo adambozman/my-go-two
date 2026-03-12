@@ -764,6 +764,10 @@ export default function PhotoGallery() {
   const [deleted, setDeleted] = useState<Set<string>>(new Set());
   const [expandedImage, setExpandedImage] = useState<PhotoItem | null>(null);
   const [showDeletedList, setShowDeletedList] = useState(false);
+  const deleteListRef = useRef<HTMLTextAreaElement | null>(null);
+  const deleteListText = Array.from(deleted)
+    .map((p) => `src/assets/${p}`)
+    .join("\n");
 
   const toggleSelect = (path: string) => {
     setSelected((prev) => {
