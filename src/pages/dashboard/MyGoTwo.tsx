@@ -317,9 +317,10 @@ const MyGoTwo = () => {
           ...(templateId ? { template_id: templateId } : {}),
         });
         if (cardError) toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
-        const fromTemplate = coverFlowTemplate?.name;
+        // Persist cover flow name so it restores on browser back
+        if (coverFlowTemplate?.name) sessionStorage.setItem("gotwo_coverflow", coverFlowTemplate.name);
         setCoverFlowTemplate(null);
-        navigate(`/dashboard/lists/${newList.id}`, { state: { fromTemplate } });
+        navigate(`/dashboard/lists/${newList.id}`);
       }
     } catch (e: any) {
       toast({ title: "Something went wrong", description: e.message, variant: "destructive" });
