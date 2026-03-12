@@ -32,9 +32,7 @@ interface GoTwoCard {
 const ListDetail = () => {
   const { listId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const { user } = useAuth();
-  const fromTemplate = (location.state as any)?.fromTemplate as string | undefined;
   const { toast } = useToast();
   const [listTitle, setListTitle] = useState("");
   const [cards, setCards] = useState<GoTwoCard[]>([]);
