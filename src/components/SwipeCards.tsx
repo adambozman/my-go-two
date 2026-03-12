@@ -166,7 +166,7 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
       </motion.div>
 
       {/* Card stack */}
-      <div className="relative w-full max-w-[300px] h-[400px] flex items-center justify-center">
+      <div className="relative flex items-center justify-center" style={{ width: 300, height: 420 }}>
         {/* Next card preview */}
         {currentOptionIdx < totalOptions - 1 && options[currentOptionIdx + 1] && (
           <div
