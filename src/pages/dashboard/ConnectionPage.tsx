@@ -51,6 +51,17 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
   // Fetch sharing permissions — what has the partner shared with me?
   useEffect(() => {
     if (!user) return;
+
+    // Demo card: show all categories
+    if (connection.id === "demo-sig-other") {
+      setPermissions({
+        sizes: true, brands: true, saved_items: true,
+        food_preferences: true, gift_ideas: true,
+        wish_list: true, occasions: true, memories: true,
+      });
+      return;
+    }
+
     const fetchPermissions = async () => {
       const { data } = await supabase
         .from("sharing_permissions")
@@ -71,7 +82,6 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
           memories: data.memories,
         });
       } else {
-        // No permissions row = nothing shared
         setPermissions({});
       }
     };
