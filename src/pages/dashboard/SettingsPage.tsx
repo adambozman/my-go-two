@@ -135,28 +135,6 @@ const SettingsPage = () => {
   useEffect(() => { fetchConnections(); }, [user]);
 
   // Fetch user's lists for sharing toggles
-  const fetchUserLists = useCallback(async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from("lists")
-      .select("id, title, is_shared")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: true });
-    setUserLists((data as UserList[]) ?? []);
-  }, [user]);
-
-  const toggleListSharing = async (listId: string) => {
-    const list = userLists.find(l => l.id === listId);
-    if (!list) return;
-    const newVal = !list.is_shared;
-    setUserLists(prev => prev.map(l => l.id === listId ? { ...l, is_shared: newVal } : l));
-    const { error } = await supabase.from("lists").update({ is_shared: newVal }).eq("id", listId);
-    if (error) {
-      setUserLists(prev => prev.map(l => l.id === listId ? { ...l, is_shared: !newVal } : l));
-      toast({ title: "Failed to update sharing", variant: "destructive" });
-    }
-  };
-
   const handleDeleteConnection = async (coupleId: string) => {
     if (!user) return;
     const { error } = await supabase.from("couples").delete().eq("id", coupleId);
@@ -166,7 +144,6 @@ const SettingsPage = () => {
       toast({ title: "Connection removed" });
       setCouples(prev => prev.filter(c => c.id !== coupleId));
       setDeleteConfirmId(null);
-      setExpandedConnection(null);
     }
   };
 
