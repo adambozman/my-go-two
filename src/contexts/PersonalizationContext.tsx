@@ -76,7 +76,7 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
           const answers = data.profile_answers as any;
           const identity = answers?.identity;
           const resolved = Array.isArray(identity) ? identity[0] : identity;
-          if (resolved) setGender(resolved);
+          if (resolved) setGender(normalizeGender(resolved));
         }
 
         // Sanitize corrupted unicode characters from AI personalization data
