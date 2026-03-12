@@ -1,11 +1,13 @@
 /**
  * Centralized gender-aware image resolver for ALL template images.
- * Three distinct banks: male, female, non-binary (neutral/product-focused).
+ * Three FULLY INDEPENDENT banks: male, female, non-binary (neutral/product-focused).
  *
  * Rules:
- * - Male: masculine product imagery (men's shoes, cologne, etc.)
- * - Female: feminine product imagery (heels, perfume, dresses, makeup, etc.)
- * - Non-binary / prefer-not / unset: neutral, product-focused imagery
+ * - Male bank:    src/assets/templates/male/    — masculine product imagery
+ * - Female bank:  src/assets/templates/         — feminine product imagery
+ * - Neutral bank: src/assets/templates/neutral/ — product-focused, no gender coding
+ *
+ * IMPORTANT: Banks must NEVER share assets. Each bank has its own file.
  */
 
 // ── Male product images ──
@@ -24,15 +26,20 @@ import maleScentBodycare from "@/assets/templates/male/scent-bodycare.jpg";
 import maleGrooming from "@/assets/templates/male/grooming.jpg";
 import maleGroomingHair from "@/assets/templates/male/grooming-hair.jpg";
 import maleGroomingSkin from "@/assets/templates/male/grooming-skin.jpg";
+import maleGroomingShaving from "@/assets/templates/male/grooming-shaving.jpg";
 import maleMeasurements from "@/assets/templates/male/measurements.jpg";
 import maleMeasureRing from "@/assets/templates/male/measure-ring.jpg";
+import maleMeasureBody from "@/assets/templates/male/measure-body.jpg";
 import maleFragrances from "@/assets/templates/male/fragrances.jpg";
 import maleJewelry from "@/assets/templates/male/jewelry.jpg";
 import maleJewelryNecklaces from "@/assets/templates/male/jewelry-necklaces.jpg";
 import maleJewelryBracelets from "@/assets/templates/male/jewelry-bracelets.jpg";
+import maleJewelryEarrings from "@/assets/templates/male/jewelry-earrings.jpg";
 import maleJewelryWatches from "@/assets/templates/male/jewelry-watches.jpg";
+import maleBrandPreferences from "@/assets/templates/male/brand-preferences.jpg";
+import maleSpecificProducts from "@/assets/templates/male/specific-products.jpg";
 
-// ── Female images (existing defaults – feminine-coded) ──
+// ── Female images (root templates folder = female bank) ──
 import femaleClothingSizes from "@/assets/templates/clothing-sizes.jpg";
 import femaleShoeSize from "@/assets/templates/shoe-size.jpg";
 import femaleScents from "@/assets/templates/scents.jpg";
@@ -48,16 +55,18 @@ import femaleScentPerfume from "@/assets/templates/scent-perfume.jpg";
 import femaleScentBodycare from "@/assets/templates/scent-bodycare.jpg";
 import femaleGroomingHair from "@/assets/templates/grooming-hair.jpg";
 import femaleGroomingSkin from "@/assets/templates/grooming-skin.jpg";
+import femaleGroomingShaving from "@/assets/templates/grooming-shaving.jpg";
 import femaleShoeSneakers from "@/assets/templates/shoe-sneakers.jpg";
 import femaleShoeBoots from "@/assets/templates/shoe-boots.jpg";
 import femaleShoeSandals from "@/assets/templates/shoe-sandals.jpg";
 import femaleMeasureRing from "@/assets/templates/measure-ring.jpg";
+import femaleMeasureBody from "@/assets/templates/measure-body.jpg";
 import femaleJewelryNecklaces from "@/assets/templates/jewelry-necklaces.jpg";
 import femaleJewelryBracelets from "@/assets/templates/jewelry-bracelets.jpg";
 import femaleJewelryEarrings from "@/assets/templates/jewelry-earrings.jpg";
 import femaleJewelryWatches from "@/assets/templates/jewelry-watches.jpg";
-import femaleGroomingShaving from "@/assets/templates/grooming-shaving.jpg";
-import femaleMeasureBody from "@/assets/templates/measure-body.jpg";
+import femaleBrandPreferences from "@/assets/templates/brand-preferences.jpg";
+import femaleSpecificProducts from "@/assets/templates/specific-products.jpg";
 
 // ── Non-binary / Neutral images (product-focused, no gender coding) ──
 import neutralShoeSize from "@/assets/templates/neutral/shoe-size.jpg";
@@ -75,15 +84,20 @@ import neutralScentBodycare from "@/assets/templates/neutral/scent-bodycare.jpg"
 import neutralGrooming from "@/assets/templates/neutral/grooming.jpg";
 import neutralGroomingHair from "@/assets/templates/neutral/grooming-hair.jpg";
 import neutralGroomingSkin from "@/assets/templates/neutral/grooming-skin.jpg";
+import neutralGroomingShaving from "@/assets/templates/neutral/grooming-shaving.jpg";
 import neutralMeasurements from "@/assets/templates/neutral/measurements.jpg";
 import neutralMeasureRing from "@/assets/templates/neutral/measure-ring.jpg";
+import neutralMeasureBody from "@/assets/templates/neutral/measure-body.jpg";
 import neutralFragrances from "@/assets/templates/neutral/fragrances.jpg";
 import neutralJewelry from "@/assets/templates/neutral/jewelry.jpg";
 import neutralJewelryNecklaces from "@/assets/templates/neutral/jewelry-necklaces.jpg";
 import neutralJewelryBracelets from "@/assets/templates/neutral/jewelry-bracelets.jpg";
+import neutralJewelryEarrings from "@/assets/templates/neutral/jewelry-earrings.jpg";
 import neutralJewelryWatches from "@/assets/templates/neutral/jewelry-watches.jpg";
+import neutralBrandPreferences from "@/assets/templates/neutral/brand-preferences.jpg";
+import neutralSpecificProducts from "@/assets/templates/neutral/specific-products.jpg";
 
-// ── Gender-neutral templates (same for everyone) ──
+// ── Truly gender-neutral templates (food, coffee, etc. — same photo is fine) ──
 import imgCoffeeOrder from "@/assets/templates/coffee-order.jpg";
 import imgDietaryRestrictions from "@/assets/templates/dietary-restrictions.jpg";
 import imgFastFoodOrder from "@/assets/templates/fast-food-order.jpg";
@@ -97,17 +111,15 @@ import imgDateIdeas from "@/assets/templates/date-ideas.jpg";
 import imgEvents from "@/assets/templates/events.jpg";
 import imgFavoriteRestaurants from "@/assets/templates/favorite-restaurants.jpg";
 import imgTravelPreferences from "@/assets/templates/travel-preferences.jpg";
-import imgBrandPreferences from "@/assets/templates/brand-preferences.jpg";
 import imgLoveLanguage from "@/assets/templates/love-language.jpg";
 import imgPetPeeves from "@/assets/templates/pet-peeves.jpg";
-import imgSpecificProducts from "@/assets/templates/specific-products.jpg";
 
-// Shared neutral product images (same for all genders)
+// Shared neutral product images (candles, oils, home — truly ungendered)
 import imgScentCandles from "@/assets/templates/scent-candles.jpg";
 import imgScentOils from "@/assets/templates/scent-oils.jpg";
 import imgScentHome from "@/assets/templates/scent-home.jpg";
 
-type Gender = string; // "male" | "female" | "non-binary" | "prefer-not" | "neutral"
+type Gender = string;
 
 interface ImageBank {
   male: string;
@@ -118,7 +130,7 @@ interface ImageBank {
 function resolveGender(gender: Gender): "male" | "female" | "neutral" {
   if (gender === "male") return "male";
   if (gender === "female") return "female";
-  return "neutral"; // non-binary, prefer-not, unset, etc.
+  return "neutral";
 }
 
 function same(img: string): ImageBank {
@@ -134,7 +146,9 @@ const templateImages: Record<string, ImageBank> = {
   "Measurements":        { male: maleMeasurements, female: femaleMeasurements, neutral: neutralMeasurements },
   "Fragrances":          { male: maleFragrances, female: femaleFragrances, neutral: neutralFragrances },
   "Jewelry":             { male: maleJewelry, female: femaleJewelry, neutral: neutralJewelry },
-  // Gender-neutral templates – same for everyone
+  "Brand Preferences":   { male: maleBrandPreferences, female: femaleBrandPreferences, neutral: neutralBrandPreferences },
+  "Specific Product Versions": { male: maleSpecificProducts, female: femaleSpecificProducts, neutral: neutralSpecificProducts },
+  // Truly gender-neutral templates – food, coffee, etc. (same image is appropriate)
   "Coffee Order":        same(imgCoffeeOrder),
   "Dietary Restrictions": same(imgDietaryRestrictions),
   "Fast Food Order":     same(imgFastFoodOrder),
@@ -148,13 +162,11 @@ const templateImages: Record<string, ImageBank> = {
   "Events":              same(imgEvents),
   "Favorite Restaurants": same(imgFavoriteRestaurants),
   "Travel Preferences":  same(imgTravelPreferences),
-  "Brand Preferences":   same(imgBrandPreferences),
   "Love Language":       same(imgLoveLanguage),
   "Pet Peeves":          same(imgPetPeeves),
-  "Specific Product Versions": same(imgSpecificProducts),
 };
 
-// ── Product-level images ──
+// ── Product-level images (NO cross-bank references) ──
 const productImages: Record<string, ImageBank> = {
   // Shoes
   "sneakers":       { male: maleShoeSneakers, female: femaleShoeSneakers, neutral: neutralShoeSneakers },
@@ -173,10 +185,10 @@ const productImages: Record<string, ImageBank> = {
   "body-wash":      { male: maleScentBodycare, female: femaleScentBodycare, neutral: neutralScentBodycare },
   "essential-oil":  same(imgScentOils),
   "room-spray":     same(imgScentHome),
-  // Grooming subcategories
+  // Grooming subcategories — each bank has its own
   "hair-care":      { male: maleGroomingHair, female: femaleGroomingHair, neutral: neutralGroomingHair },
   "skin-care":      { male: maleGroomingSkin, female: femaleGroomingSkin, neutral: neutralGroomingSkin },
-  "shaving":        { male: femaleGroomingShaving, female: femaleGroomingShaving, neutral: femaleGroomingShaving },
+  "shaving":        { male: maleGroomingShaving, female: femaleGroomingShaving, neutral: neutralGroomingShaving },
   // Grooming products
   "shampoo":        { male: maleGroomingHair, female: femaleGroomingHair, neutral: neutralGroomingHair },
   "conditioner":    { male: maleGroomingHair, female: femaleGroomingHair, neutral: neutralGroomingHair },
@@ -184,17 +196,17 @@ const productImages: Record<string, ImageBank> = {
   "moisturizer":    { male: maleGroomingSkin, female: femaleGroomingSkin, neutral: neutralGroomingSkin },
   "cleanser":       { male: maleGroomingSkin, female: femaleGroomingSkin, neutral: neutralGroomingSkin },
   "sunscreen":      { male: maleGroomingSkin, female: femaleGroomingSkin, neutral: neutralGroomingSkin },
-  "razor":          { male: femaleGroomingShaving, female: femaleGroomingShaving, neutral: femaleGroomingShaving },
-  "shaving-cream":  { male: femaleGroomingShaving, female: femaleGroomingShaving, neutral: femaleGroomingShaving },
-  "aftershave":     { male: femaleGroomingShaving, female: femaleGroomingShaving, neutral: femaleGroomingShaving },
-  "pre-shave":      { male: femaleGroomingShaving, female: femaleGroomingShaving, neutral: femaleGroomingShaving },
-  // Measurements
-  "body":           { male: femaleMeasureBody, female: femaleMeasureBody, neutral: femaleMeasureBody },
+  "razor":          { male: maleGroomingShaving, female: femaleGroomingShaving, neutral: neutralGroomingShaving },
+  "shaving-cream":  { male: maleGroomingShaving, female: femaleGroomingShaving, neutral: neutralGroomingShaving },
+  "aftershave":     { male: maleGroomingShaving, female: femaleGroomingShaving, neutral: neutralGroomingShaving },
+  "pre-shave":      { male: maleGroomingShaving, female: femaleGroomingShaving, neutral: neutralGroomingShaving },
+  // Measurements — each bank has its own
+  "body":           { male: maleMeasureBody, female: femaleMeasureBody, neutral: neutralMeasureBody },
   "ring":           { male: maleMeasureRing, female: femaleMeasureRing, neutral: neutralMeasureRing },
-  // Jewelry
+  // Jewelry — each bank has its own
   "necklaces":      { male: maleJewelryNecklaces, female: femaleJewelryNecklaces, neutral: neutralJewelryNecklaces },
   "bracelets":      { male: maleJewelryBracelets, female: femaleJewelryBracelets, neutral: neutralJewelryBracelets },
-  "earrings":       { male: femaleJewelryEarrings, female: femaleJewelryEarrings, neutral: femaleJewelryEarrings },
+  "earrings":       { male: maleJewelryEarrings, female: femaleJewelryEarrings, neutral: neutralJewelryEarrings },
   "watches":        { male: maleJewelryWatches, female: femaleJewelryWatches, neutral: neutralJewelryWatches },
   // Fragrance products
   "daily-fragrance":   { male: maleScentCologne, female: femaleScentPerfume, neutral: neutralScentCologne },
