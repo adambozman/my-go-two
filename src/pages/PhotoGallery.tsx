@@ -673,11 +673,12 @@ export default function PhotoGallery() {
                   alert(`🔄 Photos marked for replacement:\n\n• ${paths}\n\nTell Lovable what style you want for these photos!`);
                 }}
               >
-              <RefreshCw className="h-3.5 w-3.5" />
-              Replace ({selected.size})
-            </Button>
-          </div>
-        )}
+                <RefreshCw className="h-3.5 w-3.5" />
+                Replace ({selected.size})
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Expanded image overlay */}
