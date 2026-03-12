@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -57,13 +57,27 @@ const PreferencesSection = () => {
   const goLeft = () => setActiveIndex((i) => (i - 1 + imageQuestions.length) % imageQuestions.length);
   const goRight = () => setActiveIndex((i) => (i + 1) % imageQuestions.length);
 
-  const getQuestionCoverImage = (q: (typeof imageQuestions)[0]) => {
-    // Try each option until we find a gendered image — never fall back to neutral localImage
-    for (const opt of q.options) {
-      const genderImg = getStyleImage(opt.id, gender as any);
-      if (genderImg) return genderImg;
+  const questionCoverImages = useMemo(() => {
+    const used = new Set<string>();
+    const covers: Record<string, string> = {};
+
+    for (const question of imageQuestions) {
+      const candidates = question.options
+        .map((opt) => getStyleImage(opt.id, gender as any))
+        .filter((src): src is string => Boolean(src));
+
+      const uniqueCandidate = candidates.find((src) => !used.has(src));
+      const selected = uniqueCandidate || candidates[0] || question.options[0]?.localImage || question.options[0]?.image || "";
+
+      if (selected) used.add(selected);
+      covers[question.id] = selected;
     }
-    return q.options[0]?.localImage || "";
+
+    return covers;
+  }, [imageQuestions, gender]);
+
+  const getQuestionCoverImage = (q: (typeof imageQuestions)[0]) => {
+    return questionCoverImages[q.id] || q.options[0]?.localImage || q.options[0]?.image || "";
   };
 
   const getOptionImage = (optionId: string, fallbackLocal?: string, fallbackUrl?: string) => {
