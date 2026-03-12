@@ -9,12 +9,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import ConnectionPage from "./ConnectionPage";
 
-const CARD_W = 280;
-const CARD_H = 380;
-const FLANK_W = 160;
-const FLANK_H = 260;
-const X_GAP = 180;
-const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
+import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
+
+const CARD_W = CAROUSEL_LAYOUT.cardWidth;
+const CARD_H = CAROUSEL_LAYOUT.cardHeight;
+const FLANK_W = CAROUSEL_LAYOUT.flankWidth;
+const FLANK_H = CAROUSEL_LAYOUT.flankHeight;
+const X_GAP = CAROUSEL_LAYOUT.xGap;
+const SPRING = CAROUSEL_LAYOUT.spring;
 import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
 
 // Local category images
