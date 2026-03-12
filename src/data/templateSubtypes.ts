@@ -97,10 +97,10 @@ import imgAnniversaryGifts from "@/assets/templates/anniversary-gifts.jpg";
 import imgBirthdayPreferences from "@/assets/templates/birthday-preferences.jpg";
 import imgWishList from "@/assets/templates/wish-list.jpg";
 import imgDietaryRestrictions from "@/assets/templates/dietary-restrictions.jpg";
-import imgBrandPreferences from "@/assets/templates/brand-preferences.jpg";
+import imgBrandPreferences from "@/assets/templates/love-language.jpg";
 import imgLoveLanguage from "@/assets/templates/love-language.jpg";
 import imgPetPeeves from "@/assets/templates/pet-peeves.jpg";
-import imgSpecificProducts from "@/assets/templates/specific-products.jpg";
+import imgSpecificProducts from "@/assets/templates/wish-list.jpg";
 import imgFragrances from "@/assets/templates/fragrances.jpg";
 
 const tf = (label: string, type: "text" | "select" = "text", options?: string[]): SubtypeItem["fields"][0] => ({
