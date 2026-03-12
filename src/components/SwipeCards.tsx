@@ -156,23 +156,25 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
   const hasImage = !!optImage;
 
   return (
-    <div className="relative w-full h-full">
-      {/* Title — uses global HEADER_LAYOUT, centered above card */}
-      <motion.div
-        key={currentQuestion.id}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="absolute left-0 right-0 text-center z-20"
-        style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
-      >
-        <h3 className="section-header">{currentQuestion.title}</h3>
-        <p className="text-xs text-muted-foreground mt-1">
-          {currentOptionIdx + 1} / {totalOptions}
-        </p>
-      </motion.div>
+    <div className="w-full h-full flex flex-col">
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-full relative">
+          {/* Title — uses global HEADER_LAYOUT, centered above card */}
+          <motion.div
+            key={currentQuestion.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute left-0 right-0 text-center z-20"
+            style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
+          >
+            <h3 className="section-header">{currentQuestion.title}</h3>
+            <p className="text-xs text-muted-foreground mt-1">
+              {currentOptionIdx + 1} / {totalOptions}
+            </p>
+          </motion.div>
 
-      {/* Stage — same height & centering as global carousel */}
-      <div className="relative flex items-center justify-center">
+          {/* Stage — same height & centering as global carousel */}
+          <div className="relative flex items-center justify-center">
         <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative" style={{ width: CARD_W, height: CARD_H }}>
