@@ -12,6 +12,7 @@ export interface KnowMeCard {
   title: string;
   image: string;
   isDone?: boolean;
+  placeholderGradient?: string;
 }
 
 interface KnowMeCarouselProps {
