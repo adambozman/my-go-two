@@ -228,9 +228,9 @@ const Questionnaires = () => {
           ...(templateId ? { template_id: templateId } : {}),
         });
         if (cardError) uiToast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
-        const fromTemplate = coverFlowTemplate?.name;
+        if (coverFlowTemplate?.name) sessionStorage.setItem("knowme_coverflow", coverFlowTemplate.name);
         setCoverFlowTemplate(null);
-        navigate(`/dashboard/lists/${newList.id}`, { state: { fromTemplate } });
+        navigate(`/dashboard/lists/${newList.id}`);
       }
     } catch (e: any) {
       uiToast({ title: "Something went wrong", description: e.message, variant: "destructive" });
