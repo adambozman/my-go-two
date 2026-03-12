@@ -64,36 +64,40 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
   // Free-input uses a simplified card
   if (currentQuestion.type === "free-input") {
     return (
-      <div className="relative w-full h-full">
-        {/* Title — global header position */}
-        <h3
-          className="section-header absolute z-20 left-0 right-0 text-center"
-          style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
-        >
-          {currentQuestion.title}
-        </h3>
+      <div className="w-full h-full flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-full relative">
+            {/* Title — global header position */}
+            <h3
+              className="section-header absolute z-20 left-0 right-0 text-center"
+              style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
+            >
+              {currentQuestion.title}
+            </h3>
 
-        {/* Stage — same as global carousel */}
-        <div className="relative flex items-center justify-center">
-          <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="card-design-neumorph p-8 text-center"
-                style={{ width: CARD_W, borderRadius: BORDER_R }}
-              >
-                <p className="text-sm text-muted-foreground mb-6">{currentQuestion.subtitle}</p>
-                <Input
-                  value={freeTextAnswers[currentQuestion.id] || ""}
-                  onChange={(e) => setFreeTextAnswers(prev => ({ ...prev, [currentQuestion.id]: e.target.value }))}
-                  placeholder={currentQuestion.placeholder}
-                  className="rounded-xl border-0 bg-white/40 text-base h-12 placeholder:text-muted-foreground/60 mb-4"
-                />
-                <Button className="rounded-full w-full h-11" onClick={advanceToNext}>
-                  {freeTextAnswers[currentQuestion.id] ? "Next" : "Skip"}
-                </Button>
-              </motion.div>
+            {/* Stage — same as global carousel */}
+            <div className="relative flex items-center justify-center">
+              <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="card-design-neumorph p-8 text-center"
+                    style={{ width: CARD_W, borderRadius: BORDER_R }}
+                  >
+                    <p className="text-sm text-muted-foreground mb-6">{currentQuestion.subtitle}</p>
+                    <Input
+                      value={freeTextAnswers[currentQuestion.id] || ""}
+                      onChange={(e) => setFreeTextAnswers(prev => ({ ...prev, [currentQuestion.id]: e.target.value }))}
+                      placeholder={currentQuestion.placeholder}
+                      className="rounded-xl border-0 bg-white/40 text-base h-12 placeholder:text-muted-foreground/60 mb-4"
+                    />
+                    <Button className="rounded-full w-full h-11" onClick={advanceToNext}>
+                      {freeTextAnswers[currentQuestion.id] ? "Next" : "Skip"}
+                    </Button>
+                  </motion.div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -156,23 +160,25 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
   const hasImage = !!optImage;
 
   return (
-    <div className="relative w-full h-full">
-      {/* Title — uses global HEADER_LAYOUT, centered above card */}
-      <motion.div
-        key={currentQuestion.id}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="absolute left-0 right-0 text-center z-20"
-        style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
-      >
-        <h3 className="section-header">{currentQuestion.title}</h3>
-        <p className="text-xs text-muted-foreground mt-1">
-          {currentOptionIdx + 1} / {totalOptions}
-        </p>
-      </motion.div>
+    <div className="w-full h-full flex flex-col">
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-full relative">
+          {/* Title — uses global HEADER_LAYOUT, centered above card */}
+          <motion.div
+            key={currentQuestion.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute left-0 right-0 text-center z-20"
+            style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
+          >
+            <h3 className="section-header">{currentQuestion.title}</h3>
+            <p className="text-xs text-muted-foreground mt-1">
+              {currentOptionIdx + 1} / {totalOptions}
+            </p>
+          </motion.div>
 
-      {/* Stage — same height & centering as global carousel */}
-      <div className="relative flex items-center justify-center">
+          {/* Stage — same height & centering as global carousel */}
+          <div className="relative flex items-center justify-center">
         <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative" style={{ width: CARD_W, height: CARD_H }}>
@@ -237,49 +243,51 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
         </div>
       </div>
 
-      {/* Action buttons — positioned at global bottom dot level (halfway between card bottom and nav) */}
-      <div
-        className="absolute left-0 right-0 flex flex-col items-center z-10"
-        style={{ top: DOT_LAYOUT.bottomTopOffset, transform: "translateY(-50%)" }}
-      >
-        <div className="flex items-center justify-center gap-6">
-          <button
-            onClick={() => handleAction("no")}
-            className="w-14 h-14 rounded-full flex items-center justify-center transition-transform hover:scale-110"
-            style={{
-              background: "rgba(var(--swatch-gypsum-rose-rgb), 0.8)",
-              boxShadow: "4px 4px 10px rgba(0,0,0,0.08), -2px -2px 6px rgba(255,255,255,0.6)",
-            }}
+          {/* Action buttons — positioned at global bottom dot level */}
+          <div
+            className="absolute left-0 right-0 flex flex-col items-center z-10"
+            style={{ top: DOT_LAYOUT.bottomTopOffset, transform: "translateY(-50%)" }}
           >
-            <X className="w-6 h-6 text-muted-foreground" />
-          </button>
-          <button
-            onClick={advanceToNext}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-transform hover:scale-110"
-            style={{
-              background: "rgba(var(--swatch-gypsum-rose-rgb), 0.6)",
-              boxShadow: "3px 3px 8px rgba(0,0,0,0.06), -1px -1px 4px rgba(255,255,255,0.5)",
-            }}
-          >
-            <SkipForward className="w-4 h-4 text-muted-foreground" />
-          </button>
-          <button
-            onClick={() => handleAction("yes")}
-            className="w-14 h-14 rounded-full flex items-center justify-center transition-transform hover:scale-110"
-            style={{
-              background: "hsl(var(--primary))",
-              boxShadow: "4px 4px 10px rgba(0,0,0,0.08), -2px -2px 6px rgba(255,255,255,0.6)",
-            }}
-          >
-            <Check className="w-6 h-6 text-primary-foreground" />
-          </button>
-        </div>
+            <div className="flex items-center justify-center gap-6">
+              <button
+                onClick={() => handleAction("no")}
+                className="w-14 h-14 rounded-full flex items-center justify-center transition-transform hover:scale-110"
+                style={{
+                  background: "rgba(var(--swatch-gypsum-rose-rgb), 0.8)",
+                  boxShadow: "4px 4px 10px rgba(0,0,0,0.08), -2px -2px 6px rgba(255,255,255,0.6)",
+                }}
+              >
+                <X className="w-6 h-6 text-muted-foreground" />
+              </button>
+              <button
+                onClick={advanceToNext}
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-transform hover:scale-110"
+                style={{
+                  background: "rgba(var(--swatch-gypsum-rose-rgb), 0.6)",
+                  boxShadow: "3px 3px 8px rgba(0,0,0,0.06), -1px -1px 4px rgba(255,255,255,0.5)",
+                }}
+              >
+                <SkipForward className="w-4 h-4 text-muted-foreground" />
+              </button>
+              <button
+                onClick={() => handleAction("yes")}
+                className="w-14 h-14 rounded-full flex items-center justify-center transition-transform hover:scale-110"
+                style={{
+                  background: "hsl(var(--primary))",
+                  boxShadow: "4px 4px 10px rgba(0,0,0,0.08), -2px -2px 6px rgba(255,255,255,0.6)",
+                }}
+              >
+                <Check className="w-6 h-6 text-primary-foreground" />
+              </button>
+            </div>
 
-        {selectedForQuestion.length > 0 && (
-          <p className="text-xs text-muted-foreground mt-3">
-            {selectedForQuestion.length} selected
-          </p>
-        )}
+            {selectedForQuestion.length > 0 && (
+              <p className="text-xs text-muted-foreground mt-3">
+                {selectedForQuestion.length} selected
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
