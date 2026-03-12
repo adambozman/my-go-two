@@ -14,10 +14,13 @@ export const BottomCarouselDots = () => {
         <button
           key={i}
           onClick={() => carouselState.setActiveIndex(i)}
-          className="rounded-full transition-all duration-300"
+          className="transition-all duration-300"
           style={{
             width: DOT_LAYOUT.size,
             height: DOT_LAYOUT.size,
+            minWidth: DOT_LAYOUT.size,
+            minHeight: DOT_LAYOUT.size,
+            borderRadius: "50%",
             background:
               i === carouselState.activeIndex
                 ? DOT_LAYOUT.activeColor
