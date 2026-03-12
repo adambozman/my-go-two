@@ -117,7 +117,8 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
       if (img) return img;
     }
     if (opt.localImage) return opt.localImage;
-    if (opt.image) return `https://images.unsplash.com/photo-${opt.image}?w=400&h=500&fit=crop&q=80`;
+    // Know Me questions should only use curated/local imagery.
+    // If no local image is available, fall back to monogram card design.
     return null;
   };
 
