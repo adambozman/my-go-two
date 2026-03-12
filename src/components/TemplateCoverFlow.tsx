@@ -133,12 +133,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
     }));
 
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="max-w-5xl mx-auto"
-      >
+      <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
           <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="h-4 w-4" />
@@ -150,7 +145,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
           items={items}
           onItemClick={(index) => setActiveSubcategory(subcategories[index])}
         />
-      </motion.div>
+      </div>
     );
   }
 
@@ -166,13 +161,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
   }));
 
   return (
-    <motion.div
-      key={activeSubcategory?.id || "flat"}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="max-w-5xl mx-auto"
-    >
+    <div className="max-w-5xl mx-auto">
       <div className="flex items-center gap-3 mb-8">
         <Button
           variant="ghost"
@@ -194,7 +183,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
         items={productItems}
         onItemClick={(index) => onSelect(products[index], activeSubcategory?.name)}
       />
-    </motion.div>
+    </div>
   );
 };
 
