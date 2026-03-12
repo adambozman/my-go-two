@@ -209,7 +209,7 @@ const Questionnaires = () => {
     const cardTitle = subcategoryName
       ? `${templateName} - ${subcategoryName} - ${subtype.name}`
       : `${templateName} - ${subtype.name}`;
-    await createListFromTemplate(cardTitle, subtype.fields as any, undefined);
+    await createListFromTemplate(cardTitle, subtype.fields as any, undefined, subcategoryName);
   };
 
   const createListFromTemplate = async (name: string, fields: any, templateId?: string) => {
