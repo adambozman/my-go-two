@@ -136,7 +136,8 @@ function resolveGender(gender: Gender | undefined): string {
 
 export function getStyleImage(styleId: string, gender?: Gender): string {
   const g = resolveGender(gender);
-  return styleImages[styleId]?.[g] || styleImages[styleId]?.neutral || "";
+  // Always prefer gendered image, then neutral, never return empty for known styles
+  return styleImages[styleId]?.[g] || styleImages[styleId]?.neutral || styleImages[styleId]?.male || "";
 }
 
 export function getCategoryImage(categoryId: string, gender?: Gender): string {

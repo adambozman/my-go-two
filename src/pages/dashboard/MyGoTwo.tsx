@@ -58,16 +58,18 @@ const PreferencesSection = () => {
   const goRight = () => setActiveIndex((i) => (i + 1) % imageQuestions.length);
 
   const getQuestionCoverImage = (q: (typeof imageQuestions)[0]) => {
-    const firstOpt = q.options[0];
-    const genderImg = getStyleImage(firstOpt.id, gender as any);
-    if (genderImg) return genderImg;
-    return firstOpt.localImage || firstOpt.image || "";
+    // Try each option until we find a gendered image — never fall back to neutral localImage
+    for (const opt of q.options) {
+      const genderImg = getStyleImage(opt.id, gender as any);
+      if (genderImg) return genderImg;
+    }
+    return q.options[0]?.localImage || "";
   };
 
   const getOptionImage = (optionId: string, fallbackLocal?: string, fallbackUrl?: string) => {
     const genderImg = getStyleImage(optionId, gender as any);
-    if (genderImg) return genderImg;
-    return fallbackLocal || fallbackUrl || "";
+    // Only fall back to localImage if getStyleImage truly has no mapping at all
+    return genderImg || fallbackLocal || fallbackUrl || "";
   };
 
   const toggleOption = (questionId: string, optionId: string, multiSelect: boolean) => {
