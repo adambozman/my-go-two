@@ -324,7 +324,8 @@ const Questionnaires = () => {
   // Onboarding category swipe view
   if (selectedCategory) {
     const catName = onboardingCategories.find((c) => c.id === selectedCategory)?.name || "";
-    const categoryQuestions = onboardingQuestions.filter((q) => q.category === selectedCategory);
+    const genderQuestions = getQuestionsForGender(gender || "non-binary");
+    const categoryQuestions = genderQuestions.filter((q) => q.category === selectedCategory);
 
     return (
       <motion.div className="h-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
