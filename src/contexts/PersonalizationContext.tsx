@@ -57,7 +57,7 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
         .single();
 
       if (profileData?.gender) {
-        setGender(profileData.gender);
+        setGender(normalizeGender(profileData.gender));
       } else {
         setGender("neutral");
       }
