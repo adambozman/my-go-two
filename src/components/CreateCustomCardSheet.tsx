@@ -48,6 +48,7 @@ const CreateCustomCardSheet = ({
   onCreated,
 }: CreateCustomCardSheetProps) => {
   const { user } = useAuth();
+  const { gender } = usePersonalization();
   const [step, setStep] = useState<Step>("title");
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
