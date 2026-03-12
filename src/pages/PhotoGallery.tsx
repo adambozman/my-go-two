@@ -589,13 +589,29 @@ const tabLabels: Record<string, string> = {
 export default function PhotoGallery() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [deleted, setDeleted] = useState<Set<string>>(new Set());
   const [expandedImage, setExpandedImage] = useState<PhotoItem | null>(null);
+  const [showDeletedList, setShowDeletedList] = useState(false);
 
   const toggleSelect = (path: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(path)) next.delete(path);
       else next.add(path);
+      return next;
+    });
+  };
+
+  const markDeleted = (paths: string[]) => {
+    setDeleted((prev) => {
+      const next = new Set(prev);
+      paths.forEach((p) => next.add(p));
+      return next;
+    });
+    // Also remove from selected
+    setSelected((prev) => {
+      const next = new Set(prev);
+      paths.forEach((p) => next.delete(p));
       return next;
     });
   };
