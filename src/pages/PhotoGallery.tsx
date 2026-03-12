@@ -629,39 +629,50 @@ export default function PhotoGallery() {
             <p className="text-xs text-muted-foreground">
               {selected.size > 0
                 ? `${selected.size} selected`
+                : deleted.size > 0
+                ? `${deleted.size} photo(s) marked for deletion`
                 : "Click photos to select • Review your entire image bank"}
             </p>
           </div>
         </div>
-        {selected.size > 0 && (
-          <div className="flex gap-2">
+        <div className="flex gap-2">
+          {deleted.size > 0 && (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setSelected(new Set())}
-            >
-              Clear
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              className="gap-1.5"
-              onClick={() => {
-                const paths = Array.from(selected).join("\n• ");
-                alert(`🗑 Photos marked for deletion:\n\n• ${paths}\n\nTell Lovable which photos to delete or replace!`);
-              }}
+              className="gap-1.5 border-destructive text-destructive"
+              onClick={() => setShowDeletedList(!showDeletedList)}
             >
               <Trash2 className="h-3.5 w-3.5" />
-              Delete ({selected.size})
+              View Deleted ({deleted.size})
             </Button>
-            <Button
-              size="sm"
-              className="gap-1.5"
-              onClick={() => {
-                const paths = Array.from(selected).join("\n• ");
-                alert(`🔄 Photos marked for replacement:\n\n• ${paths}\n\nTell Lovable what style you want for these photos!`);
-              }}
-            >
+          )}
+          {selected.size > 0 && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelected(new Set())}
+              >
+                Clear
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="gap-1.5"
+                onClick={() => markDeleted(Array.from(selected))}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Delete ({selected.size})
+              </Button>
+              <Button
+                size="sm"
+                className="gap-1.5"
+                onClick={() => {
+                  const paths = Array.from(selected).join("\n• ");
+                  alert(`🔄 Photos marked for replacement:\n\n• ${paths}\n\nTell Lovable what style you want for these photos!`);
+                }}
+              >
               <RefreshCw className="h-3.5 w-3.5" />
               Replace ({selected.size})
             </Button>
