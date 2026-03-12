@@ -107,19 +107,6 @@ const CoverFlowCarousel = ({
         </div>
       </div>
 
-      {/* Active item info */}
-      <div className="text-center mt-6">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={items[activeIndex].id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            <h2 className="text-xl font-bold text-primary">{items[activeIndex].name}</h2>
-          </motion.div>
-        </AnimatePresence>
-      </div>
     </>
   );
 };
