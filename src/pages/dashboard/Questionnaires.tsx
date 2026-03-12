@@ -306,16 +306,18 @@ const Questionnaires = () => {
   // Subtype cover flow view
   if (coverFlowTemplate) {
     return (
-      <TemplateCoverFlow
-        templateName={coverFlowTemplate.name}
-        subtypes={coverFlowTemplate.subtypes}
-        subcategories={coverFlowTemplate.subcategories}
-        initialSubcategoryId={coverFlowTemplate.initialSubcategoryId}
-        onBack={() => setCoverFlowTemplate(null)}
-        onSelect={handleSubtypeSelect}
-        creating={creating !== null}
-        gender={gender}
-      />
+      <CoverFlowWithDots>
+        <TemplateCoverFlow
+          templateName={coverFlowTemplate.name}
+          subtypes={coverFlowTemplate.subtypes}
+          subcategories={coverFlowTemplate.subcategories}
+          initialSubcategoryId={coverFlowTemplate.initialSubcategoryId}
+          onBack={() => setCoverFlowTemplate(null)}
+          onSelect={handleSubtypeSelect}
+          creating={creating !== null}
+          gender={gender}
+        />
+      </CoverFlowWithDots>
     );
   }
 
