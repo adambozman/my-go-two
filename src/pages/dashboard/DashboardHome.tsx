@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import ConnectionPage from "./ConnectionPage";
-import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
+import { getDefaultPhotoForLabel, assignUniquePhotos, buildDashboardOtherCategories } from "@/data/stockPhotos";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
@@ -19,26 +19,7 @@ const FLANK_H = CAROUSEL_LAYOUT.flankHeight;
 const X_GAP = CAROUSEL_LAYOUT.xGap;
 const SPRING = CAROUSEL_LAYOUT.spring;
 
-// Local category images
-import imgBirthdays from "@/assets/stock/birthdays.jpg";
-import imgAnniversaries from "@/assets/stock/anniversaries.jpg";
-import imgHolidays from "@/assets/stock/holidays.jpg";
-import imgDateNights from "@/assets/stock/date-nights.jpg";
-import imgNewLists from "@/assets/stock/new-lists.jpg";
-import imgUpdatedCards from "@/assets/stock/updated-cards.jpg";
-import imgValentines from "@/assets/stock/valentines.jpg";
-import imgJustBecause from "@/assets/stock/just-because.jpg";
-import imgFirstDate from "@/assets/stock/first-date.jpg";
-import imgTrips from "@/assets/stock/trips.jpg";
-
 const DEFAULT_IMAGE = getDefaultPhotoForLabel("friend");
-
-const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
-  { id: "placeholder-wife", name: "Wife", image: "", email: "", status: "placeholder" },
-  { id: "demo-sig-other", name: "Significant Other", image: "", email: "demo@example.com", status: "accepted" },
-  { id: "placeholder-mom", name: "Mom", image: "", email: "", status: "placeholder" },
-  { id: "placeholder-dad", name: "Dad", image: "", email: "", status: "placeholder" },
-];
 
 interface ConnectionCard {
   id: string;
@@ -55,43 +36,12 @@ interface PlaceholderCard {
   image: string;
 }
 
-/** Build gender-aware dashboard categories */
-function buildOtherCategories(gender: string): { id: string; label: string; cards: PlaceholderCard[] }[] {
-  return [
-    {
-      id: "calendar", label: "Shared Calendar", cards: [
-        { id: "cal-1", name: "Birthdays", image: imgBirthdays },
-        { id: "cal-2", name: "Anniversaries", image: imgAnniversaries },
-        { id: "cal-3", name: "Holidays", image: imgHolidays },
-        { id: "cal-4", name: "Date Nights", image: imgDateNights },
-      ],
-    },
-    {
-      id: "activity", label: "Recent Activity", cards: [
-        { id: "act-1", name: "New Lists", image: imgNewLists },
-        { id: "act-2", name: "Updated Cards", image: imgUpdatedCards },
-        { id: "act-3", name: "Shared Items", image: gender === "female" ? getDefaultPhotoForLabel("friend") : getDefaultPhotoForLabel("brother") },
-      ],
-    },
-    {
-      id: "occasions", label: "Occasions", cards: [
-        { id: "occ-1", name: "Valentine's Day", image: imgValentines },
-        { id: "occ-2", name: "Christmas", image: imgHolidays },
-        { id: "occ-3", name: "Mother's Day", image: getDefaultPhotoForLabel("mom") },
-        { id: "occ-4", name: "Father's Day", image: getDefaultPhotoForLabel("dad") },
-        { id: "occ-5", name: "Just Because", image: imgJustBecause },
-      ],
-    },
-    {
-      id: "memories", label: "Memories", cards: [
-        { id: "mem-1", name: "First Date", image: imgFirstDate },
-        { id: "mem-2", name: "Trips Together", image: imgTrips },
-        { id: "mem-3", name: "Milestones", image: imgBirthdays },
-        { id: "mem-4", name: "Favorite Moments", image: getDefaultPhotoForLabel("partner") },
-      ],
-    },
-  ];
-}
+const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
+  { id: "placeholder-wife", name: "Wife", image: "", email: "", status: "placeholder" },
+  { id: "demo-sig-other", name: "Significant Other", image: "", email: "demo@example.com", status: "accepted" },
+  { id: "placeholder-mom", name: "Mom", image: "", email: "", status: "placeholder" },
+  { id: "placeholder-dad", name: "Dad", image: "", email: "", status: "placeholder" },
+];
 
 /* ═══════════════════════════════════════════
    CONNECTIONS CAROUSEL — backed by couples table
