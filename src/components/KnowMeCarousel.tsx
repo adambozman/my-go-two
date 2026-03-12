@@ -34,7 +34,7 @@ const KnowMeCarousel = ({ cards, onCardClick, loading }: KnowMeCarouselProps) =>
 
   if (cards.length === 0 && loading) {
     return (
-      <div className="flex items-center justify-center h-[420px]">
+      <div className="flex items-center justify-center" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
         <Loader2 className="h-5 w-5 animate-spin" style={{ color: "var(--swatch-teal)" }} />
         <span className="text-xs text-muted-foreground ml-2">Loading cards...</span>
       </div>

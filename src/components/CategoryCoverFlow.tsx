@@ -37,8 +37,6 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
   useRegisterCarousel(allCards.length, activeIndex, setActiveIndex);
   
 
-  const goLeft = () => setActiveIndex((i) => (i - 1 + allCards.length) % allCards.length);
-  const goRight = () => setActiveIndex((i) => (i + 1) % allCards.length);
 
   if (allCards.length === 0) return null;
 
