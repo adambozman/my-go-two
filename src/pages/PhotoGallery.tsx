@@ -888,8 +888,14 @@ export default function PhotoGallery() {
                   const text = Array.from(deleted)
                     .map((p) => `src/assets/${p}`)
                     .join("\n");
-                  navigator.clipboard.writeText(`Delete these files:\n${text}`);
-                  alert("Copied! Paste in chat and I'll delete them from the codebase.");
+                  const fullText = `Delete these files:\n${text}`;
+                  try {
+                    navigator.clipboard.writeText(fullText);
+                    alert("Copied! Paste in chat and I'll delete them from the codebase.");
+                  } catch {
+                    // Clipboard blocked in iframe — show in a prompt for manual copy
+                    prompt("Copy this list and paste it in chat:", fullText);
+                  }
                 }}
               >
                 Copy List
