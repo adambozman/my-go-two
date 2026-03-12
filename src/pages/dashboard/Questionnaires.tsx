@@ -111,7 +111,22 @@ const Questionnaires = () => {
   // Preferences templates
   const [prefTemplates, setPrefTemplates] = useState<Template[]>([]);
   const [creating, setCreating] = useState<string | null>(null);
-  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(null);
+  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(() => {
+    const saved = sessionStorage.getItem("knowme_coverflow");
+    if (saved) {
+      sessionStorage.removeItem("knowme_coverflow");
+      const rawSub = allTemplateSubtypes[saved];
+      const rawSubcats = templateSubcategories[saved];
+      if (rawSub || rawSubcats) {
+        return {
+          name: saved,
+          subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
+          subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
+        };
+      }
+    }
+    return null;
+  });
 
   // Load existing answers
   useEffect(() => {
