@@ -72,7 +72,7 @@ import femaleGifts from "@/assets/categories/female/gifts.jpg";
 import femaleLifestyle from "@/assets/categories/female/lifestyle.jpg";
 import femaleFitCat from "@/assets/categories/female/fit.jpg";
 
-type Gender = "male" | "female" | "non-binary" | "prefer-not";
+import { type Gender, normalizeGender } from "@/lib/gender";
 
 // Style images keyed by style ID then gender
 const styleImages: Record<string, Record<string, string>> = {
