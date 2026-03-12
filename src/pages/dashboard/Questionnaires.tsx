@@ -47,9 +47,67 @@ const PLACEHOLDER_GRADIENTS: Record<string, string> = {
   gifting: "linear-gradient(135deg, #d4543a 0%, #a84332 100%)",
 };
 
+const VALID_CATEGORY_TYPES = new Set(["style", "sizing", "lifestyle", "gifting", "products"]);
+
+const toSafeString = (value: unknown) => (typeof value === "string" ? value.trim() : "");
+
+const sanitizeCategory = (raw: any): AICategory | null => {
+  const category = toSafeString(raw?.category);
+  if (!VALID_CATEGORY_TYPES.has(category)) return null;
+
+  const name = toSafeString(raw?.name) || toSafeString(raw?.title);
+  const fallbackIdSource = toSafeString(raw?.id) || name;
+  const id = fallbackIdSource
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  const questions = (Array.isArray(raw?.questions) ? raw.questions : [])
+    .map((q: any) => {
+      const title = toSafeString(q?.title);
+      const subtitle = toSafeString(q?.subtitle);
+      const options = (Array.isArray(q?.options) ? q.options : [])
+        .map((opt: any) => {
+          const label = toSafeString(opt?.label) || toSafeString(opt?.title);
+          const optionIdSource = toSafeString(opt?.id) || label;
+          const optionId = optionIdSource
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, "");
+          if (!label || !optionId) return null;
+          return { id: optionId, label };
+        })
+        .filter(Boolean) as { id: string; label: string }[];
+
+      const type = q?.type === "single-select" ? "single-select" : "pill-select";
+      if (!title || options.length === 0) return null;
+
+      return {
+        id: toSafeString(q?.id) || title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        title,
+        subtitle: subtitle || "Pick what fits best.",
+        type,
+        multi_select: q?.multi_select !== false,
+        options,
+      };
+    })
+    .filter(Boolean) as AICategory["questions"];
+
+  if (!id || !name || questions.length === 0) return null;
+
+  return {
+    id,
+    name,
+    category,
+    image_url: toSafeString(raw?.image_url) || null,
+    image_prompt: toSafeString(raw?.image_prompt),
+    questions,
+  };
+};
+
 const Questionnaires = () => {
   const { user } = useAuth();
-  const { profileAnswers, gender, loading: genderLoading, refetch } = usePersonalization();
+  const { profileAnswers, loading: genderLoading, refetch } = usePersonalization();
 
   const [categories, setCategories] = useState<AICategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,28 +115,43 @@ const Questionnaires = () => {
 
   /* ── Fetch AI categories ─────────────────────────── */
   const fetchCategories = useCallback(async () => {
+    if (!user) {
+      setCategories([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        toast.error("Please log in to use Know Me.");
-        setLoading(false);
-        return;
-      }
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("AUTH_REQUIRED");
+
       const { data, error } = await supabase.functions.invoke("ai-quizzes", {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
       if (error) throw error;
-      if (data?.categories) setCategories(data.categories);
+
+      const normalized = (Array.isArray(data?.categories) ? data.categories : [])
+        .map(sanitizeCategory)
+        .filter(Boolean) as AICategory[];
+
+      setCategories(normalized);
+
+      if (!normalized.length) {
+        toast.message("No new Know Me quizzes yet — try again in a moment.");
+      }
     } catch (e: any) {
       console.error("AI quizzes error:", e);
+      if (e?.message === "AUTH_REQUIRED") return;
       if (e?.status === 429) toast.error("Rate limit reached. Try again shortly.");
       else if (e?.status === 402) toast.error("AI credits exhausted.");
       else toast.error("Failed to load questions.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchCategories();
@@ -87,7 +160,12 @@ const Questionnaires = () => {
   /* ── Handle card click → open swipe quiz ─────────── */
   const handleCardClick = (card: KnowMeCard) => {
     const cat = categories.find((c) => c.id === card.id);
-    if (cat) setSelectedCategory(cat);
+    if (!cat || !cat.questions.length) {
+      toast.error("That quiz is incomplete. Refreshing Know Me...");
+      fetchCategories();
+      return;
+    }
+    setSelectedCategory(cat);
   };
 
   /* ── Build cards for a section ───────────────────── */
