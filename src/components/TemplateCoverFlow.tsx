@@ -145,7 +145,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
           </Button>
           <h1 className="text-2xl font-bold text-primary">{templateName}</h1>
         </div>
-        <p className="text-muted-foreground text-center mb-6 text-sm">Choose a category</p>
+        
         <CoverFlowCarousel
           items={items}
           onItemClick={(index) => setActiveSubcategory(subcategories[index])}
