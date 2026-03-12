@@ -85,10 +85,10 @@ const CoverFlowCarousel = ({
                   }}
                 >
                   <div
-                    className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
+                    className={`overflow-hidden transition-shadow duration-300 ${
                       isActive ? "ring-2 ring-primary shadow-2xl" : ""
                     }`}
-                    style={{ width: cardW, height: cardH }}
+                    style={{ width: cardW, height: cardH, borderRadius: CAROUSEL_LAYOUT.borderRadius }}
                   >
                     <div className="relative w-full h-full overflow-hidden">
                       <CardEditButton title={item.name} />

@@ -79,10 +79,10 @@ const CategoryCoverFlow = ({ items, onSelect, onAdd, onDelete, disabled }: Categ
                 }}
               >
                 <div
-                  className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${
+                  className={`overflow-hidden transition-shadow duration-300 ${
                     isActive ? "ring-2 ring-primary shadow-2xl" : ""
                   }`}
-                  style={{ width: cardW, height: cardH }}
+                  style={{ width: cardW, height: cardH, borderRadius: CAROUSEL_LAYOUT.borderRadius }}
                 >
                   {item.isAdd ? (
                     <div

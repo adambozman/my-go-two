@@ -173,8 +173,8 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
             className="absolute card-design-neumorph overflow-hidden"
             style={{
               width: 260,
-              height: 360,
-              borderRadius: "1.5rem",
+              height: 380,
+              borderRadius: 16,
               opacity: 0.4,
               transform: "scale(0.92)",
             }}
