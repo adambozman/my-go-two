@@ -55,7 +55,7 @@ interface PlaceholderCard {
   image: string;
 }
 
-/** Build gender-aware categories */
+/** Build gender-aware dashboard categories */
 function buildOtherCategories(gender: string): { id: string; label: string; cards: PlaceholderCard[] }[] {
   return [
     {
