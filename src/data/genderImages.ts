@@ -85,7 +85,6 @@ const styleImages: Record<string, Record<string, string>> = {
   luxury: { male: maleLuxury, female: femaleLuxury, neutral: neutralLuxury },
   "laid-back": { male: maleLaidBack, female: femaleLaidBack, neutral: neutralLaidBack },
   "luxury-first": { male: maleLuxury, female: femaleLuxury, neutral: neutralLuxury },
-  // Map to closest male-appropriate image
   polished: { male: maleClassic, female: femaleClassic, neutral: neutralPolished },
   casual: { male: maleLaidBack, female: femaleLaidBack, neutral: neutralCasual },
   athletic: { male: maleSporty, female: femaleSporty, neutral: neutralSporty },
@@ -128,19 +127,71 @@ const categoryImages: Record<string, Record<string, string>> = {
   fit: { male: maleFitCat, female: femaleFitCat, neutral: maleFitCat },
 };
 
-function resolveGender(gender: Gender | undefined): string {
+const STYLE_ID_ALIASES: Record<string, string> = {
+  thoughtfulness: "thoughtful",
+  practicality: "practical",
+  physical: "practical",
+  big: "luxurious",
+  small: "thoughtful",
+  mix: "balanced",
+  mid: "balanced",
+  premium: "quality",
+};
+
+const CATEGORY_STYLE_FALLBACK: Record<string, string> = {
+  shopping: "brand",
+  style: "trend",
+  food: "dining",
+  gifts: "thoughtful",
+  lifestyle: "outdoors",
+  fit: "fit",
+  profile: "classic",
+};
+
+const DEFAULT_STYLE_FALLBACK: Record<"male" | "female" | "neutral", string> = {
+  male: maleClassic,
+  female: femaleClassic,
+  neutral: neutralClassic,
+};
+
+const normalizeId = (value: string) => value.toLowerCase().trim();
+
+function resolveGender(gender: Gender | undefined): "male" | "female" | "neutral" {
   if (gender === "male") return "male";
   if (gender === "female") return "female";
   return "neutral";
 }
 
-export function getStyleImage(styleId: string, gender?: Gender): string {
+export function getStyleImage(styleId: string, gender?: Gender, categoryId?: string): string {
   const g = resolveGender(gender);
-  // Always prefer gendered image, then neutral, never return empty for known styles
-  return styleImages[styleId]?.[g] || styleImages[styleId]?.neutral || styleImages[styleId]?.male || "";
+  const normalizedStyle = normalizeId(styleId);
+  const canonicalStyle = STYLE_ID_ALIASES[normalizedStyle] || normalizedStyle;
+  const styleBank = styleImages[canonicalStyle];
+
+  if (styleBank) {
+    return styleBank[g] || styleBank.neutral || styleBank.male || DEFAULT_STYLE_FALLBACK[g];
+  }
+
+  const normalizedCategory = categoryId ? normalizeId(categoryId) : "";
+  const categoryFallbackStyle = normalizedCategory ? CATEGORY_STYLE_FALLBACK[normalizedCategory] : undefined;
+  if (categoryFallbackStyle) {
+    const categoryStyleBank = styleImages[categoryFallbackStyle];
+    if (categoryStyleBank) {
+      return categoryStyleBank[g] || categoryStyleBank.neutral || categoryStyleBank.male || DEFAULT_STYLE_FALLBACK[g];
+    }
+  }
+
+  const categoryBank = normalizedCategory ? categoryImages[normalizedCategory] : undefined;
+  if (categoryBank) {
+    return categoryBank[g] || categoryBank.neutral || categoryBank.male || DEFAULT_STYLE_FALLBACK[g];
+  }
+
+  return DEFAULT_STYLE_FALLBACK[g];
 }
 
 export function getCategoryImage(categoryId: string, gender?: Gender): string {
   const g = resolveGender(gender);
-  return categoryImages[categoryId]?.[g] || categoryImages[categoryId]?.neutral || "";
+  const bank = categoryImages[normalizeId(categoryId)];
+  if (!bank) return DEFAULT_STYLE_FALLBACK[g];
+  return bank[g] || bank.neutral || bank.male || DEFAULT_STYLE_FALLBACK[g];
 }
