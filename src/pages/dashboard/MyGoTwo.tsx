@@ -77,7 +77,7 @@ const PreferencesSection = () => {
   }, [imageQuestions, gender]);
 
   const getQuestionCoverImage = (q: (typeof imageQuestions)[0]) => {
-    return questionCoverImages[q.id] || getStyleImage("classic", gender as any, q.category);
+    return questionCoverImages[q.id] || getStyleImage("classic", gender, q.category);
   };
 
   const getOptionImage = (optionId: string, categoryId: string) => {
