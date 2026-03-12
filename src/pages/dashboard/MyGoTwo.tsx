@@ -63,7 +63,7 @@ const PreferencesSection = () => {
 
     for (const question of imageQuestions) {
       const candidates = question.options
-        .map((opt) => getStyleImage(opt.id, gender as any, question.category))
+        .map((opt) => getStyleImage(opt.id, gender, question.category))
         .filter((src): src is string => Boolean(src));
 
       const uniqueCandidate = candidates.find((src) => !used.has(src));
