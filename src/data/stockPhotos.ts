@@ -210,7 +210,6 @@ const DASHBOARD_CARD_TO_TEMPLATE: Record<string, string> = {
   "favorite moments": "Love Language",
 };
 
-import { normalizeGender } from "@/lib/gender";
 
 /**
  * Global dashboard image resolver.
