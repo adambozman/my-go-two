@@ -185,6 +185,7 @@ export function getStyleImage(styleId: string, gender?: Gender, categoryId?: str
 
 export function getCategoryImage(categoryId: string, gender?: Gender): string {
   const g = normalizeGender(gender);
+  const bank = categoryImages[normalizeId(categoryId)];
   if (!bank) return DEFAULT_STYLE_FALLBACK[g];
   return bank[g] || bank.neutral || bank.male || DEFAULT_STYLE_FALLBACK[g];
 }
