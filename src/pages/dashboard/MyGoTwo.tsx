@@ -291,11 +291,11 @@ const MyGoTwo = () => {
 
   const handleSubtypeSelect = async (subtype: SubtypeItem, subcategoryName?: string) => {
     if (!user) return;
-    const templateName = coverFlowTemplate?.name;
+    const templateName = coverFlowState?.name;
     const cardTitle = subcategoryName
       ? `${templateName} - ${subcategoryName} - ${subtype.name}`
       : `${templateName} - ${subtype.name}`;
-    await createListFromTemplate(cardTitle, subtype.fields as any, undefined);
+    await createListFromTemplate(cardTitle, subtype.fields as any, undefined, subcategoryName);
   };
 
   const createListFromTemplate = async (name: string, fields: any, templateId?: string) => {
