@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { normalizeGender } from "@/lib/gender";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
