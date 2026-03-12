@@ -36,7 +36,7 @@ const Connect = () => {
           } else {
             toast({ title: "Connected!", description: "You're now linked with your partner." });
           }
-          navigate("/dashboard/collaborations");
+          navigate("/dashboard/settings");
         });
     }
   }, [user, inviteId, authLoading, navigate, toast]);
