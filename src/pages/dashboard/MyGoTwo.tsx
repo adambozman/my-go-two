@@ -363,13 +363,14 @@ const MyGoTwo = () => {
 
   return (
     <AnimatePresence mode="wait">
-      {coverFlowTemplate ? (
+      {coverFlowState ? (
         <TemplateCoverFlow
           key="coverflow"
-          templateName={coverFlowTemplate.name}
-          subtypes={coverFlowTemplate.subtypes}
-          subcategories={coverFlowTemplate.subcategories}
-          onBack={() => setCoverFlowTemplate(null)}
+          templateName={coverFlowState.name}
+          subtypes={coverFlowState.subtypes}
+          subcategories={coverFlowState.subcategories}
+          initialSubcategoryId={coverFlowState.initialSubcategoryId}
+          onBack={() => setCoverFlowState(null)}
           onSelect={handleSubtypeSelect}
           creating={creating !== null}
           gender={gender}
