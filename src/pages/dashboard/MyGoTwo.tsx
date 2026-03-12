@@ -145,7 +145,7 @@ const PreferencesSection = () => {
           <ChevronLeft className="h-5 w-5" />
         </Button>
 
-        <div className="relative w-full h-[420px] overflow-hidden">
+        <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
           <div className="absolute inset-0 flex items-center justify-center">
             {imageQuestions.map((q, index) => {
               let offset = index - activeIndex;
