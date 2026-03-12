@@ -7,7 +7,6 @@ interface SnapSection {
   id: string;
   label: string;
   content: ReactNode;
-  labelStyle?: React.CSSProperties;
 }
 
 interface SnapScrollLayoutProps {
@@ -97,7 +96,6 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
                       top: HEADER_LAYOUT.topOffset,
                       transform: HEADER_LAYOUT.transform,
                       left: HEADER_LAYOUT.leftMargin,
-                      ...section.labelStyle,
                     }}
                   >
                     {section.label}

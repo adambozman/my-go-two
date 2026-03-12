@@ -234,7 +234,6 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
             sections={grouped.map((group) => ({
               id: group.key,
               label: group.label,
-              labelStyle: { color: "#d4543a" },
               content: (
                 <CategoryCoverFlow
                   items={group.items.map((t: any) => ({

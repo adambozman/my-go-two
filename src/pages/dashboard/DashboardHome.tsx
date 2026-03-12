@@ -506,7 +506,6 @@ const DashboardHome = () => {
         sections={allSections.map((s) => ({
           id: s.id,
           label: s.label,
-          labelStyle: { color: "#d4543a" },
           content: s.content,
         }))}
       />

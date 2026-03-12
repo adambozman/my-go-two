@@ -21,6 +21,7 @@ import { AnimatePresence } from "framer-motion";
 import { profileQuestions } from "@/data/profileQuestions";
 import { getStyleImage } from "@/data/genderImages";
 import { getTemplateImage as resolveTemplateImage } from "@/data/templateImageResolver";
+import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 const categoryLabels: Record<string, string> = {
   personal: "Personal",
@@ -144,7 +145,7 @@ const PreferencesSection = () => {
           <ChevronLeft className="h-5 w-5" />
         </Button>
 
-        <div className="relative w-full h-[420px] overflow-hidden">
+        <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
           <div className="absolute inset-0 flex items-center justify-center">
             {imageQuestions.map((q, index) => {
               let offset = index - activeIndex;
@@ -153,29 +154,29 @@ const PreferencesSection = () => {
               if (offset < -half) offset += imageQuestions.length;
               const isActive = offset === 0;
               const absOffset = Math.abs(offset);
-              if (absOffset > 2) return null;
+              if (absOffset > CAROUSEL_LAYOUT.maxVisibleOffset) return null;
 
-              const xOffset = offset * 180;
-              const cardW = isActive ? 280 : 160;
-              const cardH = isActive ? 380 : 260;
+              const xOffset = offset * CAROUSEL_LAYOUT.xGap;
+              const cardW = isActive ? CAROUSEL_LAYOUT.cardWidth : CAROUSEL_LAYOUT.flankWidth;
+              const cardH = isActive ? CAROUSEL_LAYOUT.cardHeight : CAROUSEL_LAYOUT.flankHeight;
               const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
               const zIndex = 10 - absOffset;
-              const blur = isActive ? 0 : 1.8;
-              const opacity = isActive ? 1 : 0.5;
+              const blur = isActive ? 0 : CAROUSEL_LAYOUT.flankBlur;
+              const opacity = isActive ? 1 : CAROUSEL_LAYOUT.flankOpacity;
               const answered = (selections[q.id] || []).length > 0;
 
               return (
                 <motion.div
                   key={q.id}
                   animate={{ x: xOffset, scale, opacity, filter: `blur(${blur}px)` }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  transition={CAROUSEL_LAYOUT.spring}
                   className="absolute cursor-pointer"
                   style={{ zIndex }}
                   onClick={() => (isActive ? setSelectedQuestion(q.id) : setActiveIndex(index))}
                 >
                   <div
-                    className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${isActive ? "ring-2 ring-primary shadow-2xl" : ""}`}
-                    style={{ width: cardW, height: cardH }}
+                    className={`overflow-hidden transition-shadow duration-300 ${isActive ? "ring-2 ring-primary shadow-2xl" : ""}`}
+                    style={{ width: cardW, height: cardH, borderRadius: CAROUSEL_LAYOUT.borderRadius }}
                   >
                     <div className="relative w-full h-full overflow-hidden">
                       <img src={getQuestionCoverImage(q)} alt={q.title} className="w-full h-full object-cover" />
@@ -384,7 +385,7 @@ const MyGoTwo = () => {
             <p className="text-muted-foreground p-4">Loading templates...</p>
           ) : (
             <>
-            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "#2D6870", fontWeight: 400 }} className="absolute top-0 left-0 px-4 pt-1 z-10">Tap a card to view or edit your details.</p>
+            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "var(--swatch-teal)", fontWeight: 400 }} className="absolute top-0 left-0 px-4 pt-1 z-10">Tap a card to view or edit your details.</p>
             <SnapScrollLayout
               sections={[
                 ...grouped.map((group) => {

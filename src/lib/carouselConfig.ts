@@ -14,22 +14,25 @@ export const CAROUSEL_LAYOUT = {
 
 export const DOT_LAYOUT = {
   size: 8,
-  activeColor: "#2D6870",
+  activeColor: "var(--swatch-teal)",
   inactiveColor: "#d0c9be",
-  /** 24px below center card bottom */
-  bottomOffset: 16 + (CAROUSEL_LAYOUT.stageHeight - CAROUSEL_LAYOUT.cardHeight) / 2 - 24,
-  /** 16px from right edge */
+  /** Horizontal dots centered 24px below center-card bottom */
+  bottomTopOffset: `calc(50% + ${CAROUSEL_LAYOUT.cardHeight / 2 + 24}px)`,
+  bottomTransform: "translateY(-50%)",
+  /** Vertical dots 16px from right edge, centered with active card */
   rightOffset: 16,
-  /** Vertically centered with card */
   rightTopOffset: "50%",
 };
 
-/** Header row: 24px above center card top, flush left */
+/** Header row: 24px above center-card top, title starts at 24px from left */
 export const HEADER_LAYOUT = {
   topOffset:
     16 + (CAROUSEL_LAYOUT.stageHeight - CAROUSEL_LAYOUT.cardHeight) / 2 - 24,
   transform: "translateY(-100%)",
   leftMargin: 24,
+  backArrowSize: 16,
+  backArrowGap: 16,
+  backArrowLeftOffset: 32,
 };
 
 /** Question card (SwipeCards) matches center card dimensions + positioning */
