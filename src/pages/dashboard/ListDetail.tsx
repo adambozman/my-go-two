@@ -217,13 +217,7 @@ const ListDetail = () => {
   return (
     <div className="max-w-4xl">
       <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => {
-          if (fromTemplate) {
-            navigate("/dashboard/my-go-two", { state: { openTemplate: fromTemplate } });
-          } else {
-            navigate("/dashboard/my-go-two");
-          }
-        }}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
