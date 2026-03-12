@@ -7,6 +7,47 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+
+const cleanText = (value: unknown): string => {
+  if (typeof value !== "string") return "";
+  return value
+    .replace(/[^\x20-\x7E]/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s+,/g, ",")
+    .trim()
+    .replace(/,$/, "");
+};
+
+const ALLOWED_CATEGORIES = new Set([
+  "clothing",
+  "accessories",
+  "grooming",
+  "lifestyle",
+  "experiences",
+  "tech",
+  "home",
+  "fragrance",
+]);
+
+const sanitizeProducts = (rawProducts: unknown) => {
+  if (!Array.isArray(rawProducts)) return [];
+
+  return rawProducts
+    .map((item) => {
+      const p = item as Record<string, unknown>;
+      const category = cleanText(p.category).toLowerCase();
+      return {
+        name: cleanText(p.name),
+        brand: cleanText(p.brand),
+        price_range: cleanText(p.price_range),
+        category: ALLOWED_CATEGORIES.has(category) ? category : "lifestyle",
+        why_picked: cleanText(p.why_picked),
+        is_discovery: Boolean(p.is_discovery),
+      };
+    })
+    .filter((p) => p.name && p.brand && p.price_range && p.why_picked);
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -130,7 +171,8 @@ Use the provided tool to return the products.`;
     const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall) throw new Error("No tool call in AI response");
 
-    const { products } = JSON.parse(toolCall.function.arguments);
+    const parsed = JSON.parse(toolCall.function.arguments);
+    const products = sanitizeProducts(parsed?.products);
 
     return new Response(JSON.stringify({ products }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
