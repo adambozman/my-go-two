@@ -283,7 +283,7 @@ const MyGoTwo = () => {
     const subtypes = rawSubtypes ? filterSubtypesByGender(rawSubtypes, gender) : undefined;
     const subcategories = rawSubcategories ? filterSubcategoriesByGender(rawSubcategories, gender) : undefined;
     if (subtypes || subcategories) {
-      setCoverFlowTemplate({ name: template.name, subtypes: subtypes || [], subcategories });
+      setCoverFlowState({ name: template.name, subtypes: subtypes || [], subcategories });
       return;
     }
     await createListFromTemplate(template.name, template.default_fields, template.id);
