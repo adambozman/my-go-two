@@ -22,16 +22,11 @@ interface Couple {
   display_label: string | null;
 }
 
-const SHARING_CATEGORIES = [
-  { key: "sizes", label: "Sizes", desc: "Clothing & shoe sizes" },
-  { key: "brands", label: "Brands", desc: "Favorite brands" },
-  { key: "saved_items", label: "Saved Items", desc: "Bookmarked products" },
-  { key: "food_preferences", label: "Food Preferences", desc: "Dietary info & favorites" },
-  { key: "gift_ideas", label: "Gift Ideas", desc: "Curated gift suggestions" },
-  { key: "wish_list", label: "Wish List", desc: "Items they want" },
-  { key: "occasions", label: "Occasions", desc: "Birthdays, anniversaries" },
-  { key: "memories", label: "Memories", desc: "Shared moments & milestones" },
-] as const;
+interface UserList {
+  id: string;
+  title: string;
+  is_shared: boolean;
+}
 
 const SettingsPage = () => {
   const { user } = useAuth();
@@ -55,7 +50,7 @@ const SettingsPage = () => {
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
   const [expandedConnection, setExpandedConnection] = useState<string | null>(null);
-  const [sharingPerms, setSharingPerms] = useState<Record<string, Record<string, boolean>>>({});
+  const [userLists, setUserLists] = useState<UserList[]>([]);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // User settings state
@@ -141,65 +136,25 @@ const SettingsPage = () => {
 
   useEffect(() => { fetchConnections(); }, [user]);
 
-  // Fetch sharing permissions for a specific connection
-  const fetchSharingPerms = useCallback(async (coupleId: string) => {
+  // Fetch user's lists for sharing toggles
+  const fetchUserLists = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
-      .from("sharing_permissions")
-      .select("*")
-      .eq("couple_id", coupleId)
+      .from("lists")
+      .select("id, title, is_shared")
       .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (data) {
-      setSharingPerms(prev => ({
-        ...prev,
-        [coupleId]: {
-          sizes: data.sizes, brands: data.brands, saved_items: data.saved_items,
-          food_preferences: data.food_preferences, gift_ideas: data.gift_ideas,
-          wish_list: data.wish_list, occasions: data.occasions, memories: data.memories,
-        },
-      }));
-    } else {
-      // Default all to true for new sharing setup
-      const defaults: Record<string, boolean> = {};
-      SHARING_CATEGORIES.forEach(c => { defaults[c.key] = true; });
-      setSharingPerms(prev => ({ ...prev, [coupleId]: defaults }));
-    }
+      .order("created_at", { ascending: true });
+    setUserLists((data as UserList[]) ?? []);
   }, [user]);
 
-  const toggleSharingPerm = async (coupleId: string, key: string) => {
-    if (!user) return;
-    const current = sharingPerms[coupleId] || {};
-    const newVal = !current[key];
-    setSharingPerms(prev => ({
-      ...prev,
-      [coupleId]: { ...current, [key]: newVal },
-    }));
-
-    const couple = couples.find(c => c.id === coupleId);
-    if (!couple) return;
-
-    const partnerId = couple.inviter_id === user.id ? couple.invitee_id : couple.inviter_id;
-    const partnerEmail = couple.invitee_email || "";
-
-    const { error } = await supabase.from("sharing_permissions").upsert(
-      {
-        couple_id: coupleId,
-        user_id: user.id,
-        user_email: user.email || "",
-        partner_id: partnerId || "",
-        partner_email: partnerEmail,
-        [key]: newVal,
-      } as any,
-      { onConflict: "couple_id,user_id" as any }
-    );
-
+  const toggleListSharing = async (listId: string) => {
+    const list = userLists.find(l => l.id === listId);
+    if (!list) return;
+    const newVal = !list.is_shared;
+    setUserLists(prev => prev.map(l => l.id === listId ? { ...l, is_shared: newVal } : l));
+    const { error } = await supabase.from("lists").update({ is_shared: newVal }).eq("id", listId);
     if (error) {
-      setSharingPerms(prev => ({
-        ...prev,
-        [coupleId]: { ...current, [key]: !newVal },
-      }));
+      setUserLists(prev => prev.map(l => l.id === listId ? { ...l, is_shared: !newVal } : l));
       toast({ title: "Failed to update sharing", variant: "destructive" });
     }
   };
@@ -509,7 +464,7 @@ const SettingsPage = () => {
                               setExpandedConnection(null);
                             } else {
                               setExpandedConnection(c.id);
-                              if (!sharingPerms[c.id]) fetchSharingPerms(c.id);
+                              if (userLists.length === 0) fetchUserLists();
                             }
                           }}
                         >
@@ -537,26 +492,29 @@ const SettingsPage = () => {
                           </div>
                         </button>
 
-                        {/* Expanded sharing permissions + delete */}
+                        {/* Expanded: your lists sharing toggles + delete */}
                         {isExpanded && (
                           <div className="px-4 pb-4 border-t" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>
                             <p className="text-xs font-semibold mt-3 mb-2 uppercase tracking-wider" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
-                              What you share with {displayName.split("@")[0]}
+                              Lists shared with your connections
                             </p>
-                            <div className="space-y-2">
-                              {SHARING_CATEGORIES.map((cat) => (
-                                <div key={cat.key} className="flex items-center justify-between py-1.5">
-                                  <div>
-                                    <p className="text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{cat.label}</p>
-                                    <p className="text-[11px]" style={{ color: 'var(--swatch-text-light)' }}>{cat.desc}</p>
+                            {userLists.length === 0 ? (
+                              <p className="text-xs py-2" style={{ color: 'var(--swatch-text-light)' }}>
+                                No lists yet. Create lists in My Go Two to share them.
+                              </p>
+                            ) : (
+                              <div className="space-y-2">
+                                {userLists.map((list) => (
+                                  <div key={list.id} className="flex items-center justify-between py-1.5">
+                                    <p className="text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{list.title}</p>
+                                    <Switch
+                                      checked={list.is_shared}
+                                      onCheckedChange={() => toggleListSharing(list.id)}
+                                    />
                                   </div>
-                                  <Switch
-                                    checked={sharingPerms[c.id]?.[cat.key] ?? true}
-                                    onCheckedChange={() => toggleSharingPerm(c.id, cat.key)}
-                                  />
-                                </div>
-                              ))}
-                            </div>
+                                ))}
+                              </div>
+                            )}
 
                             {/* Delete connection */}
                             <div className="mt-4 pt-3 border-t" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>
