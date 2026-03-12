@@ -287,7 +287,7 @@ const SwipeableCard = ({
     >
       <div
         className="card-design-neumorph overflow-hidden relative select-none"
-        style={{ width: 280, height: 380, borderRadius: "1.5rem" }}
+        style={{ width: 300, height: 420, borderRadius: 16 }}
       >
         {hasImage ? (
           <>
