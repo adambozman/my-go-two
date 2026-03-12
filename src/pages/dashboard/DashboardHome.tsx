@@ -110,7 +110,7 @@ const ConnectionsCoverFlow = ({
   useRegisterCarousel(totalCount, activeIndex, setActiveIndex);
 
   return (
-    <div className="relative flex items-center justify-center py-4">
+    <div className="relative flex items-center justify-center">
       <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
         <div className="absolute inset-0 flex items-center justify-center">
           {cards.map((card, index) => {
