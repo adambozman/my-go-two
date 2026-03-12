@@ -1,3 +1,4 @@
+import React from "react";
 import { DOT_LAYOUT } from "@/lib/carouselConfig";
 import { useCarouselDots } from "@/contexts/CarouselDotsContext";
 
@@ -14,10 +15,13 @@ export const BottomCarouselDots = () => {
         <button
           key={i}
           onClick={() => carouselState.setActiveIndex(i)}
-          className="rounded-full transition-all duration-300"
+          className="transition-all duration-300"
           style={{
             width: DOT_LAYOUT.size,
             height: DOT_LAYOUT.size,
+            minWidth: DOT_LAYOUT.size,
+            minHeight: DOT_LAYOUT.size,
+            borderRadius: "50%",
             background:
               i === carouselState.activeIndex
                 ? DOT_LAYOUT.activeColor
@@ -56,9 +60,12 @@ export const RightSectionDots = ({
     >
       {Array.from({ length: count }).map((_, i) => {
         const interactive = typeof onSelect === "function";
-        const commonStyle = {
+        const commonStyle: React.CSSProperties = {
           width: DOT_LAYOUT.size,
           height: DOT_LAYOUT.size,
+          minWidth: DOT_LAYOUT.size,
+          minHeight: DOT_LAYOUT.size,
+          borderRadius: "50%",
           background:
             i === activeIndex
               ? DOT_LAYOUT.activeColor
@@ -67,7 +74,7 @@ export const RightSectionDots = ({
 
         if (!interactive) {
           return (
-            <div key={`right-${i}`} className="rounded-full" style={commonStyle} />
+            <div key={`right-${i}`} style={commonStyle} />
           );
         }
 
@@ -75,7 +82,7 @@ export const RightSectionDots = ({
           <button
             key={`right-${i}`}
             onClick={() => onSelect(i)}
-            className="rounded-full transition-all duration-300"
+            className="transition-all duration-300"
             style={commonStyle}
             aria-label={
               labels[i] ? `Go to ${labels[i]}` : `Go to section ${i + 1}`
