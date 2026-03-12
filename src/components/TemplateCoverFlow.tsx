@@ -6,6 +6,7 @@ import CardEditButton from "@/components/CardEditButton";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
 import { getProductImage } from "@/data/templateImageResolver";
+import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 export interface SubtypeItem {
   id: string;
@@ -26,12 +27,12 @@ interface TemplateCoverFlowProps {
   gender?: string;
 }
 
-const CARD_W = 280;
-const CARD_H = 380;
-const FLANK_W = 160;
-const FLANK_H = 260;
-const X_GAP = 180;
-const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
+const CARD_W = CAROUSEL_LAYOUT.cardWidth;
+const CARD_H = CAROUSEL_LAYOUT.cardHeight;
+const FLANK_W = CAROUSEL_LAYOUT.flankWidth;
+const FLANK_H = CAROUSEL_LAYOUT.flankHeight;
+const X_GAP = CAROUSEL_LAYOUT.xGap;
+const SPRING = CAROUSEL_LAYOUT.spring;
 
 const CoverFlowCarousel = ({
   items,
@@ -48,7 +49,7 @@ const CoverFlowCarousel = ({
   return (
     <>
       <div className="relative flex items-center justify-center py-4">
-        <div className="relative w-full h-[420px] overflow-hidden">
+        <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
           <div className="absolute inset-0 flex items-center justify-center">
             {items.map((item, index) => {
               let offset = index - activeIndex;
@@ -58,15 +59,15 @@ const CoverFlowCarousel = ({
               const isActive = offset === 0;
               const absOffset = Math.abs(offset);
 
-              if (absOffset > 2) return null;
+              if (absOffset > CAROUSEL_LAYOUT.maxVisibleOffset) return null;
 
               const xOffset = offset * X_GAP;
               const cardW = isActive ? CARD_W : FLANK_W;
               const cardH = isActive ? CARD_H : FLANK_H;
               const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
               const zIndex = 10 - absOffset;
-              const blur = isActive ? 0 : 1.8;
-              const opacity = isActive ? 1 : 0.5;
+              const blur = isActive ? 0 : CAROUSEL_LAYOUT.flankBlur;
+              const opacity = isActive ? 1 : CAROUSEL_LAYOUT.flankOpacity;
 
               return (
                 <motion.div
@@ -133,22 +134,21 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
     }));
 
     return (
-      <div className="max-w-5xl mx-auto h-full relative">
-        <div className="absolute top-0 left-0 right-0 z-20 flex items-center gap-3">
+      <div className="max-w-5xl mx-auto relative">
+        <div
+          className="absolute left-0 right-0 z-20 flex items-center gap-3"
+          style={{ top: -24, transform: "translateY(-100%)" }}
+        >
           <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-2xl font-bold text-primary">{templateName}</h1>
         </div>
 
-        <div className="h-full flex items-center justify-center">
-          <div className="w-full pt-14">
-            <CoverFlowCarousel
-              items={items}
-              onItemClick={(index) => setActiveSubcategory(subcategories[index])}
-            />
-          </div>
-        </div>
+        <CoverFlowCarousel
+          items={items}
+          onItemClick={(index) => setActiveSubcategory(subcategories[index])}
+        />
       </div>
     );
   }
@@ -165,8 +165,11 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
   }));
 
   return (
-    <div className="max-w-5xl mx-auto h-full relative">
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-center gap-3">
+    <div className="max-w-5xl mx-auto relative">
+      <div
+        className="absolute left-0 right-0 z-20 flex items-center gap-3"
+        style={{ top: -24, transform: "translateY(-100%)" }}
+      >
         <Button
           variant="ghost"
           size="icon"
@@ -183,14 +186,10 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
         <h1 className="text-2xl font-bold text-primary">{breadcrumb}</h1>
       </div>
 
-      <div className="h-full flex items-center justify-center">
-        <div className="w-full pt-14">
-          <CoverFlowCarousel
-            items={productItems}
-            onItemClick={(index) => onSelect(products[index], activeSubcategory?.name)}
-          />
-        </div>
-      </div>
+      <CoverFlowCarousel
+        items={productItems}
+        onItemClick={(index) => onSelect(products[index], activeSubcategory?.name)}
+      />
     </div>
   );
 };
