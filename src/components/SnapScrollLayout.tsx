@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback, type ReactNode } from "react";
-import { CarouselDotsContext, SectionIndexContext, useCarouselDotsProvider, useCarouselDots } from "@/contexts/CarouselDotsContext";
+import { CarouselDotsContext, SectionIndexContext, useCarouselDotsProvider } from "@/contexts/CarouselDotsContext";
+import { BottomCarouselDots, RightSectionDots } from "@/components/CarouselDotsOverlay";
 
 interface SnapSection {
   id: string;
