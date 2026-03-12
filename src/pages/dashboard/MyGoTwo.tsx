@@ -154,15 +154,15 @@ const PreferencesSection = () => {
               if (offset < -half) offset += imageQuestions.length;
               const isActive = offset === 0;
               const absOffset = Math.abs(offset);
-              if (absOffset > 2) return null;
+              if (absOffset > CAROUSEL_LAYOUT.maxVisibleOffset) return null;
 
-              const xOffset = offset * 180;
-              const cardW = isActive ? 280 : 160;
-              const cardH = isActive ? 380 : 260;
+              const xOffset = offset * CAROUSEL_LAYOUT.xGap;
+              const cardW = isActive ? CAROUSEL_LAYOUT.cardWidth : CAROUSEL_LAYOUT.flankWidth;
+              const cardH = isActive ? CAROUSEL_LAYOUT.cardHeight : CAROUSEL_LAYOUT.flankHeight;
               const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
               const zIndex = 10 - absOffset;
-              const blur = isActive ? 0 : 1.8;
-              const opacity = isActive ? 1 : 0.5;
+              const blur = isActive ? 0 : CAROUSEL_LAYOUT.flankBlur;
+              const opacity = isActive ? 1 : CAROUSEL_LAYOUT.flankOpacity;
               const answered = (selections[q.id] || []).length > 0;
 
               return (
