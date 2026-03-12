@@ -212,7 +212,7 @@ const Questionnaires = () => {
     await createListFromTemplate(cardTitle, subtype.fields as any, undefined, subcategoryName);
   };
 
-  const createListFromTemplate = async (name: string, fields: any, templateId?: string) => {
+  const createListFromTemplate = async (name: string, fields: any, templateId?: string, subcategoryName?: string) => {
     if (!user) return;
     setCreating(name);
     try {
@@ -232,7 +232,10 @@ const Questionnaires = () => {
           ...(templateId ? { template_id: templateId } : {}),
         });
         if (cardError) uiToast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
-        if (coverFlowTemplate?.name) sessionStorage.setItem("knowme_coverflow", coverFlowTemplate.name);
+        if (coverFlowTemplate?.name) {
+          const subId = subcategoryName ? coverFlowTemplate.subcategories?.find(sc => sc.name === subcategoryName)?.id : undefined;
+          sessionStorage.setItem("knowme_coverflow", JSON.stringify({ template: coverFlowTemplate.name, subcategory: subId || null }));
+        }
         setCoverFlowTemplate(null);
         navigate(`/dashboard/lists/${newList.id}`);
       }
