@@ -452,92 +452,39 @@ const SettingsPage = () => {
               ) : (
                 <div className="space-y-3">
                   {couples.map((c) => {
-                    const isExpanded = expandedConnection === c.id;
                     const displayName = c.display_label || c.invitee_email || "Connection";
                     return (
-                      <div key={c.id} className="card-design-neumorph overflow-hidden">
-                        {/* Connection header row */}
-                        <button
-                          className="w-full p-4 flex items-center justify-between text-left"
-                          onClick={() => {
-                            if (isExpanded) {
-                              setExpandedConnection(null);
-                            } else {
-                              setExpandedConnection(c.id);
-                              if (userLists.length === 0) fetchUserLists();
-                            }
-                          }}
-                        >
-                          <div className="flex items-center gap-3">
-                            {getStatusIcon(c.status)}
-                            <div>
-                              <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{displayName}</p>
-                              <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>
-                                {c.inviter_id === user?.id ? "You invited" : "Invited you"} · {new Date(c.created_at).toLocaleDateString()}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium px-2 py-1 rounded-full" style={{
-                              background: c.status === "accepted" ? 'rgba(157, 166, 79, 0.2)' : 'rgba(233, 203, 116, 0.2)',
-                              color: c.status === "accepted" ? 'var(--swatch-gothic-revival-green)' : 'var(--swatch-sonoma-chardonnay)',
-                            }}>
-                              {getStatusLabel(c.status)}
-                            </span>
-                            {isExpanded ? (
-                              <ChevronUp className="w-4 h-4" style={{ color: 'var(--swatch-text-light)' }} />
-                            ) : (
-                              <ChevronDown className="w-4 h-4" style={{ color: 'var(--swatch-text-light)' }} />
-                            )}
-                          </div>
-                        </button>
-
-                        {/* Expanded: your lists sharing toggles + delete */}
-                        {isExpanded && (
-                          <div className="px-4 pb-4 border-t" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>
-                            <p className="text-xs font-semibold mt-3 mb-2 uppercase tracking-wider" style={{ color: 'var(--swatch-viridian-odyssey)' }}>
-                              Lists shared with your connections
+                      <div key={c.id} className="card-design-neumorph p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          {getStatusIcon(c.status)}
+                          <div>
+                            <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{displayName}</p>
+                            <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>
+                              {c.inviter_id === user?.id ? "You invited" : "Invited you"} · {new Date(c.created_at).toLocaleDateString()}
                             </p>
-                            {userLists.length === 0 ? (
-                              <p className="text-xs py-2" style={{ color: 'var(--swatch-text-light)' }}>
-                                No lists yet. Create lists in My Go Two to share them.
-                              </p>
-                            ) : (
-                              <div className="space-y-2">
-                                {userLists.map((list) => (
-                                  <div key={list.id} className="flex items-center justify-between py-1.5">
-                                    <p className="text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{list.title}</p>
-                                    <Switch
-                                      checked={list.is_shared}
-                                      onCheckedChange={() => toggleListSharing(list.id)}
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Delete connection */}
-                            <div className="mt-4 pt-3 border-t" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>
-                              {deleteConfirmId === c.id ? (
-                                <div className="flex items-center justify-between">
-                                  <p className="text-xs text-destructive font-medium">Remove this connection?</p>
-                                  <div className="flex gap-2">
-                                    <Button size="sm" variant="outline" className="rounded-full text-xs h-7" onClick={() => setDeleteConfirmId(null)}>Cancel</Button>
-                                    <Button size="sm" variant="destructive" className="rounded-full text-xs h-7" onClick={() => handleDeleteConnection(c.id)}>Delete</Button>
-                                  </div>
-                                </div>
-                              ) : (
-                                <button
-                                  className="flex items-center gap-2 text-xs font-medium text-destructive hover:underline"
-                                  onClick={() => setDeleteConfirmId(c.id)}
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                  Remove Connection
-                                </button>
-                              )}
-                            </div>
                           </div>
-                        )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium px-2 py-1 rounded-full" style={{
+                            background: c.status === "accepted" ? 'rgba(157, 166, 79, 0.2)' : 'rgba(233, 203, 116, 0.2)',
+                            color: c.status === "accepted" ? 'var(--swatch-gothic-revival-green)' : 'var(--swatch-sonoma-chardonnay)',
+                          }}>
+                            {getStatusLabel(c.status)}
+                          </span>
+                          {deleteConfirmId === c.id ? (
+                            <div className="flex gap-1.5">
+                              <Button size="sm" variant="outline" className="rounded-full text-xs h-7 px-2" onClick={() => setDeleteConfirmId(null)}>Cancel</Button>
+                              <Button size="sm" variant="destructive" className="rounded-full text-xs h-7 px-2" onClick={() => handleDeleteConnection(c.id)}>Delete</Button>
+                            </div>
+                          ) : (
+                            <button
+                              className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-destructive/10 transition-colors"
+                              onClick={() => setDeleteConfirmId(c.id)}
+                            >
+                              <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
