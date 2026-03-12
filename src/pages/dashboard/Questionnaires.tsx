@@ -309,6 +309,7 @@ const Questionnaires = () => {
         templateName={coverFlowTemplate.name}
         subtypes={coverFlowTemplate.subtypes}
         subcategories={coverFlowTemplate.subcategories}
+        initialSubcategoryId={coverFlowTemplate.initialSubcategoryId}
         onBack={() => setCoverFlowTemplate(null)}
         onSelect={handleSubtypeSelect}
         creating={creating !== null}
