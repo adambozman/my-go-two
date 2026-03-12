@@ -26,8 +26,8 @@ export const DOT_LAYOUT = {
 
 /** Header row: 24px above center-card top, title starts at 24px from left */
 export const HEADER_LAYOUT = {
-  topOffset:
-    16 + (CAROUSEL_LAYOUT.stageHeight - CAROUSEL_LAYOUT.cardHeight) / 2 - 24,
+  /** Exactly 24px above center-card top edge */
+  topOffset: (CAROUSEL_LAYOUT.stageHeight - CAROUSEL_LAYOUT.cardHeight) / 2 - 24,
   transform: "translateY(-100%)",
   leftMargin: 24,
   backArrowSize: 16,
