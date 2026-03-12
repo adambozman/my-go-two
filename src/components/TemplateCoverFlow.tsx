@@ -130,7 +130,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
     const items = subcategories.map((sc) => ({
       id: sc.id,
       name: sc.name,
-      image: resolveImage(sc.id, sc.image),
+      image: resolveImage(sc.id),
       subtitle: `${sc.products.length} products`,
     }));
 
