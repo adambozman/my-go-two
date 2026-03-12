@@ -120,8 +120,7 @@ import imgScentOils from "@/assets/templates/scent-oils.jpg";
 import imgScentHome from "@/assets/templates/scent-home.jpg";
 
 import { getStyleImage } from "@/data/genderImages";
-
-type Gender = string;
+import { type Gender, normalizeGender } from "@/lib/gender";
 
 interface ImageBank {
   male: string;
@@ -130,21 +129,6 @@ interface ImageBank {
 }
 
 const normalizeKey = (value: string) => value.toLowerCase().trim();
-
-function resolveGender(gender: Gender): "male" | "female" | "neutral" {
-  const normalized = normalizeKey(gender || "");
-  if (normalized === "male") return "male";
-  if (normalized === "female") return "female";
-  return "neutral";
-}
-
-function resolveStyleGender(gender: Gender): "male" | "female" | "non-binary" | "prefer-not" {
-  const normalized = normalizeKey(gender || "");
-  if (normalized === "male") return "male";
-  if (normalized === "female") return "female";
-  if (normalized === "prefer-not") return "prefer-not";
-  return "non-binary";
-}
 
 function same(img: string): ImageBank {
   return { male: img, female: img, neutral: img };
