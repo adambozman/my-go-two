@@ -15,6 +15,7 @@ import SwipeCards from "@/components/SwipeCards";
 import { allTemplateSubtypes, templateSubcategories, filterSubtypesByGender, filterSubcategoriesByGender } from "@/data/templateSubtypes";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import { useToast } from "@/hooks/use-toast";
+import CoverFlowWithDots from "@/components/CoverFlowWithDots";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
 import KnowMeCarousel, { type KnowMeCard } from "@/components/KnowMeCarousel";
 
@@ -305,16 +306,18 @@ const Questionnaires = () => {
   // Subtype cover flow view
   if (coverFlowTemplate) {
     return (
-      <TemplateCoverFlow
-        templateName={coverFlowTemplate.name}
-        subtypes={coverFlowTemplate.subtypes}
-        subcategories={coverFlowTemplate.subcategories}
-        initialSubcategoryId={coverFlowTemplate.initialSubcategoryId}
-        onBack={() => setCoverFlowTemplate(null)}
-        onSelect={handleSubtypeSelect}
-        creating={creating !== null}
-        gender={gender}
-      />
+      <CoverFlowWithDots>
+        <TemplateCoverFlow
+          templateName={coverFlowTemplate.name}
+          subtypes={coverFlowTemplate.subtypes}
+          subcategories={coverFlowTemplate.subcategories}
+          initialSubcategoryId={coverFlowTemplate.initialSubcategoryId}
+          onBack={() => setCoverFlowTemplate(null)}
+          onSelect={handleSubtypeSelect}
+          creating={creating !== null}
+          gender={gender}
+        />
+      </CoverFlowWithDots>
     );
   }
 

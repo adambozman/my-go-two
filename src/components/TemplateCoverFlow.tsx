@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CardEditButton from "@/components/CardEditButton";
+import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
 import { getProductImage } from "@/data/templateImageResolver";
 
@@ -40,11 +41,9 @@ const CoverFlowCarousel = ({
   onItemClick: (index: number, isActive: boolean) => void;
 }) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(items.length / 2));
+  useRegisterCarousel(items.length, activeIndex, setActiveIndex);
 
   if (items.length === 0) return null;
-
-  const goLeft = () => setActiveIndex((i) => (i - 1 + items.length) % items.length);
-  const goRight = () => setActiveIndex((i) => (i + 1) % items.length);
 
   return (
     <>
@@ -108,19 +107,6 @@ const CoverFlowCarousel = ({
         </div>
       </div>
 
-      {/* Active item info */}
-      <div className="text-center mt-6">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={items[activeIndex].id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            <h2 className="text-xl font-bold text-primary">{items[activeIndex].name}</h2>
-          </motion.div>
-        </AnimatePresence>
-      </div>
     </>
   );
 };
@@ -159,7 +145,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
           </Button>
           <h1 className="text-2xl font-bold text-primary">{templateName}</h1>
         </div>
-        <p className="text-muted-foreground text-center mb-6 text-sm">Choose a category</p>
+        
         <CoverFlowCarousel
           items={items}
           onItemClick={(index) => setActiveSubcategory(subcategories[index])}
@@ -203,7 +189,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
         </Button>
         <h1 className="text-2xl font-bold text-primary">{breadcrumb}</h1>
       </div>
-      <p className="text-muted-foreground text-center mb-6 text-sm">Choose a product to get started</p>
+      
       <CoverFlowCarousel
         items={productItems}
         onItemClick={(index) => onSelect(products[index], activeSubcategory?.name)}

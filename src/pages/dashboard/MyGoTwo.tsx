@@ -15,6 +15,7 @@ import GoTwoText from "@/components/GoTwoText";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import { allTemplateSubtypes, templateSubcategories, filterSubtypesByGender, filterSubcategoriesByGender } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
+import CoverFlowWithDots from "@/components/CoverFlowWithDots";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
 import { AnimatePresence } from "framer-motion";
 import { profileQuestions } from "@/data/profileQuestions";
@@ -364,17 +365,19 @@ const MyGoTwo = () => {
   return (
     <AnimatePresence mode="wait">
       {coverFlowState ? (
-        <TemplateCoverFlow
-          key="coverflow"
-          templateName={coverFlowState.name}
-          subtypes={coverFlowState.subtypes}
-          subcategories={coverFlowState.subcategories}
-          initialSubcategoryId={coverFlowState.initialSubcategoryId}
-          onBack={() => setCoverFlowState(null)}
-          onSelect={handleSubtypeSelect}
-          creating={creating !== null}
-          gender={gender}
-        />
+        <CoverFlowWithDots>
+          <TemplateCoverFlow
+            key="coverflow"
+            templateName={coverFlowState.name}
+            subtypes={coverFlowState.subtypes}
+            subcategories={coverFlowState.subcategories}
+            initialSubcategoryId={coverFlowState.initialSubcategoryId}
+            onBack={() => setCoverFlowState(null)}
+            onSelect={handleSubtypeSelect}
+            creating={creating !== null}
+            gender={gender}
+          />
+        </CoverFlowWithDots>
       ) : (
         <div className="h-full relative">
           {(loading || genderLoading) ? (
