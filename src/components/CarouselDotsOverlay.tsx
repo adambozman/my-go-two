@@ -8,7 +8,7 @@ export const BottomCarouselDots = () => {
   return (
     <div
       className="absolute left-0 right-0 flex justify-center gap-2 z-30"
-      style={{ bottom: DOT_LAYOUT.bottomOffset }}
+      style={{ top: DOT_LAYOUT.bottomTopOffset, transform: DOT_LAYOUT.bottomTransform }}
     >
       {Array.from({ length: carouselState.count }).map((_, i) => (
         <button

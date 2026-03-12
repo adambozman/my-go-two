@@ -154,7 +154,7 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
   const hasImage = !!optImage;
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 40, background: 'var(--swatch-sand)' }}>
+    <div className="relative w-full h-full">
       {/* Question text & counter — 24px below header divider, horizontally centered */}
       <motion.div
         key={currentQuestion.id}
