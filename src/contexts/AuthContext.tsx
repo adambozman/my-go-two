@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { age, gender } = JSON.parse(raw);
       await supabase
         .from("profiles")
-        .update({ age, gender })
+        .update({ age, gender: normalizeGender(gender) })
         .eq("user_id", userId);
       localStorage.removeItem("gotwo_signup_data");
     } catch {}
