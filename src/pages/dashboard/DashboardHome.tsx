@@ -314,7 +314,9 @@ const DashboardHome = () => {
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [openConnection, setOpenConnection] = useState<{ card: ConnectionCard; rect: { x: number; y: number; width: number; height: number } } | null>(null);
 
-  const otherCategories = useMemo(() => buildDashboardOtherCategories(gender), [gender]);
+  const otherCategories = useMemo(() => {
+    return buildDashboardOtherCategories(gender);
+  }, [gender]);
 
   // Load connections from couples table (both as inviter and invitee)
   const loadConnections = useCallback(async () => {
