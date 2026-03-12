@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCategoryImage } from "@/data/genderImages";
+import { getTemplateImage } from "@/data/templateImageResolver";
 import {
   onboardingCategories,
   onboardingQuestions,
@@ -17,11 +18,9 @@ import { useToast } from "@/hooks/use-toast";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
 import KnowMeCarousel, { type KnowMeCard } from "@/components/KnowMeCarousel";
 
-// Template images for preferences category
-import imgBrandPreferences from "@/assets/templates/brand-preferences.jpg";
+// Template images for preferences category (gender-neutral ones that don't have gendered variants)
 import imgLoveLanguage from "@/assets/templates/love-language.jpg";
 import imgPetPeeves from "@/assets/templates/pet-peeves.jpg";
-import imgSpecificProducts from "@/assets/templates/specific-products.jpg";
 
 interface AIQuizCategory {
   id: string;
@@ -53,12 +52,19 @@ const categoryImageMap: Record<string, string> = {
   products: "shopping",
 };
 
-const templateImageMap: Record<string, string> = {
-  "Brand Preferences": imgBrandPreferences,
-  "Love Language": imgLoveLanguage,
-  "Pet Peeves": imgPetPeeves,
-  "Specific Product Versions": imgSpecificProducts,
-};
+// Gender-aware template image resolver — uses getTemplateImage for gendered templates,
+// falls back to static imports for gender-neutral ones
+function getTemplateImageForCard(templateName: string, gender: string): string {
+  // Try gendered resolver first
+  const gendered = getTemplateImage(templateName, gender);
+  if (gendered) return gendered;
+  // Static fallbacks for templates without gendered variants
+  const staticMap: Record<string, string> = {
+    "Love Language": imgLoveLanguage,
+    "Pet Peeves": imgPetPeeves,
+  };
+  return staticMap[templateName] || "";
+}
 
 // Which onboarding categories go in which section
 const SECTION_MAP: Record<string, string> = {
@@ -253,7 +259,7 @@ const Questionnaires = () => {
           id: t.id,
           kind: "template",
           title: t.name,
-          image: templateImageMap[t.name] || "",
+          image: getTemplateImageForCard(t.name, gender),
         });
       }
     }

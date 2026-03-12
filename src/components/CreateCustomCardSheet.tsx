@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { toast } from "sonner";
 
 interface Field {
@@ -47,6 +48,7 @@ const CreateCustomCardSheet = ({
   onCreated,
 }: CreateCustomCardSheetProps) => {
   const { user } = useAuth();
+  const { gender } = usePersonalization();
   const [step, setStep] = useState<Step>("title");
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -99,7 +101,7 @@ const CreateCustomCardSheet = ({
     setGeneratingImage(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-card-image", {
-        body: { prompt: name },
+        body: { prompt: name, gender },
       });
       if (error) throw error;
       if (data?.image_url) {
