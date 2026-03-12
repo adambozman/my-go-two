@@ -6,7 +6,7 @@ import CardEditButton from "@/components/CardEditButton";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
 import { getProductImage } from "@/data/templateImageResolver";
-import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
+import { CAROUSEL_LAYOUT, HEADER_LAYOUT } from "@/lib/carouselConfig";
 
 export interface SubtypeItem {
   id: string;

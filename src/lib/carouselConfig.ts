@@ -19,3 +19,11 @@ export const DOT_LAYOUT = {
   activeColor: "var(--swatch-teal)",
   inactiveColor: "rgba(200, 200, 200, 0.6)",
 };
+
+/** Global section-header positioning above carousel stage */
+export const HEADER_LAYOUT = {
+  /** px above the carousel wrapper's top edge */
+  topOffset: -24,
+  /** CSS transform to shift fully above */
+  transform: "translateY(-100%)",
+};
