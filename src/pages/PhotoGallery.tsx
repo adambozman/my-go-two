@@ -692,8 +692,8 @@ export default function PhotoGallery() {
 
       {/* Deleted photos summary panel */}
       {showDeletedList && deleted.size > 0 && (
-        <div className="mx-4 mt-2 p-4 rounded-lg bg-destructive/10 border border-destructive/30">
-          <div className="flex items-center justify-between mb-2">
+        <div className="mx-4 mt-2 rounded-lg border border-destructive/30 bg-destructive/10 p-4">
+          <div className="mb-2 flex items-center justify-between">
             <h3 className="text-sm font-semibold text-destructive">Photos to Delete ({deleted.size})</h3>
             <div className="flex gap-2">
               <Button
@@ -713,24 +713,31 @@ export default function PhotoGallery() {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  const text = Array.from(deleted).map((p) => `src/assets/${p}`).join("\n");
+                  const text = Array.from(deleted)
+                    .map((p) => `src/assets/${p}`)
+                    .join("\n");
                   navigator.clipboard.writeText(`Delete these files:\n${text}`);
                   alert("Copied! Paste in chat and I'll delete them from the codebase.");
                 }}
               >
                 Copy List
               </Button>
-...
+            </div>
+          </div>
+          <div className="max-h-40 space-y-0.5 overflow-y-auto text-xs text-muted-foreground">
+            {Array.from(deleted).map((p) => (
+              <div key={p} className="group flex items-center justify-between">
+                <span>src/assets/{p}</span>
                 <button
-                  className="text-muted-foreground hover:text-foreground text-xs"
+                  className="text-xs text-muted-foreground hover:text-foreground"
                   onClick={() =>
                     setDeleted((prev) => {
-                      const n = new Set(prev);
-                      n.delete(p);
+                      const next = new Set(prev);
+                      next.delete(p);
                       if (typeof window !== "undefined") {
-                        localStorage.setItem("photoGalleryDeleteQueue", JSON.stringify(Array.from(n)));
+                        localStorage.setItem("photoGalleryDeleteQueue", JSON.stringify(Array.from(next)));
                       }
-                      return n;
+                      return next;
                     })
                   }
                 >
@@ -740,6 +747,7 @@ export default function PhotoGallery() {
             ))}
           </div>
         </div>
+      )}
       )}
 
       {expandedImage && (
