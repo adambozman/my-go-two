@@ -225,7 +225,7 @@ const genderDefaultRelation = (gender: string): string =>
   normalizeLabel(gender) === "male" ? "brother" : "friend";
 
 const DASHBOARD_CARD_RULES: Record<string, DashboardCardRule> = {
-  birthdays: { scene: "birthdays" },
+  birthdays: { relation: (gender) => genderDefaultRelation(gender) },
   anniversaries: { relation: "partner" },
   holidays: { scene: "holidays" },
   "date nights": { scene: "date_nights" },

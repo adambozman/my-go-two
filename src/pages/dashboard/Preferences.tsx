@@ -31,10 +31,10 @@ const Preferences = () => {
     const covers: Record<string, string> = {};
     for (const question of imageQuestions) {
       const candidates = question.options
-        .map((opt) => getStyleImage(opt.id, gender as any))
+        .map((opt) => getStyleImage(opt.id, gender as any, question.category))
         .filter((src): src is string => Boolean(src));
       const uniqueCandidate = candidates.find((src) => !used.has(src));
-      const selected = uniqueCandidate || candidates[0] || question.options[0]?.localImage || "";
+      const selected = uniqueCandidate || candidates[0] || getStyleImage("classic", gender as any, question.category);
       if (selected) used.add(selected);
       covers[question.id] = selected;
     }
@@ -47,12 +47,11 @@ const Preferences = () => {
   const goRight = () => setActiveIndex((i) => (i + 1) % imageQuestions.length);
 
   const getQuestionCoverImage = (q: (typeof imageQuestions)[0]) => {
-    return questionCoverImages[q.id] || q.options[0]?.localImage || "";
+    return questionCoverImages[q.id] || getStyleImage("classic", gender as any, q.category);
   };
 
-  const getOptionImage = (optionId: string, fallbackLocal?: string, fallbackUrl?: string) => {
-    const genderImg = getStyleImage(optionId, gender as any);
-    return genderImg || fallbackLocal || fallbackUrl || "";
+  const getOptionImage = (optionId: string, categoryId: string) => {
+    return getStyleImage(optionId, gender as any, categoryId);
   };
 
   const toggleOption = (questionId: string, optionId: string, multiSelect: boolean) => {
@@ -101,7 +100,7 @@ const Preferences = () => {
                 style={{ borderRadius: "1.2rem" }}
               >
                 <div className="aspect-[4/5] relative">
-                  <img src={getOptionImage(opt.id, opt.localImage, opt.image)} alt={opt.label} className="w-full h-full object-cover" />
+                  <img src={getOptionImage(opt.id, question.category)} alt={opt.label} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
                     <span className="text-sm font-semibold text-white leading-tight drop-shadow">{opt.label}</span>
