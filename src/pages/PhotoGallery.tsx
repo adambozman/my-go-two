@@ -729,6 +729,16 @@ export default function PhotoGallery() {
                           >
                             {isSelected && "✓"}
                           </button>
+                          {/* Delete button */}
+                          <button
+                            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              alert(`🗑 Delete this photo:\n\nsrc/assets/${photo.path}\n\nTell Lovable to delete this file!`);
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
                           {/* Label */}
                           <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 pb-1 pt-4">
                             <p className="text-[10px] text-white truncate">{photo.label}</p>
