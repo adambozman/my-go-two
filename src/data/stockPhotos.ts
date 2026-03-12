@@ -1,7 +1,7 @@
 /**
- * Centralized local stock photo bank for connection cards.
+ * Centralized local stock photo bank for connection + dashboard cards.
  * All images are bundled locally — no external URLs.
- * Each relationship type has its own unique set — no cross-references.
+ * Relationship sets and dashboard scene rules are resolved from one place.
  */
 
 import partner1 from "@/assets/stock/partner-1.jpg";
@@ -51,6 +51,17 @@ import coworker1 from "@/assets/stock/coworker-1.jpg";
 import coworker2 from "@/assets/stock/coworker-2.jpg";
 import coworker3 from "@/assets/stock/coworker-3.jpg";
 import coworker4 from "@/assets/stock/coworker-4.jpg";
+
+import birthdays from "@/assets/stock/birthdays.jpg";
+import anniversaries from "@/assets/stock/anniversaries.jpg";
+import holidays from "@/assets/stock/holidays.jpg";
+import dateNights from "@/assets/stock/date-nights.jpg";
+import newLists from "@/assets/stock/new-lists.jpg";
+import updatedCards from "@/assets/stock/updated-cards.jpg";
+import valentines from "@/assets/stock/valentines.jpg";
+import justBecause from "@/assets/stock/just-because.jpg";
+import firstDate from "@/assets/stock/first-date.jpg";
+import trips from "@/assets/stock/trips.jpg";
 
 export const STOCK_PHOTOS: Record<string, { id: string; url: string }[]> = {
   partner: [
@@ -123,9 +134,11 @@ export const LABEL_TO_PHOTO_KEY: Record<string, string> = {
   "co-worker": "coworker", coworker: "coworker", colleague: "coworker", boss: "coworker",
 };
 
+const normalizeLabel = (value: string) => value.toLowerCase().trim();
+
 /** Get the stock photo set for a given display label */
 export function getPhotosForLabel(label: string): { id: string; url: string }[] {
-  const lower = label.toLowerCase().trim();
+  const lower = normalizeLabel(label);
   const key = LABEL_TO_PHOTO_KEY[lower];
   if (key && STOCK_PHOTOS[key]) return STOCK_PHOTOS[key];
   for (const [keyword, setKey] of Object.entries(LABEL_TO_PHOTO_KEY)) {
@@ -168,4 +181,142 @@ export function assignUniquePhotos<T extends { image: string; name: string }>(
     used.add(chosen);
     return { ...card, image: chosen };
   });
+}
+
+type DashboardSceneKey =
+  | "birthdays"
+  | "holidays"
+  | "date_nights"
+  | "new_lists"
+  | "valentines"
+  | "first_date"
+  | "trips";
+
+type DashboardRelationResolver = string | ((gender: string) => string);
+
+interface DashboardCardRule {
+  scene?: DashboardSceneKey;
+  relation?: DashboardRelationResolver;
+}
+
+export interface DashboardStockCard {
+  id: string;
+  name: string;
+  image: string;
+}
+
+export interface DashboardStockSection {
+  id: string;
+  label: string;
+  cards: DashboardStockCard[];
+}
+
+const DASHBOARD_SCENE_PHOTOS: Record<DashboardSceneKey, string> = {
+  birthdays,
+  holidays,
+  date_nights: dateNights,
+  new_lists: newLists,
+  valentines,
+  first_date: firstDate,
+  trips,
+};
+
+const genderDefaultRelation = (gender: string): string =>
+  normalizeLabel(gender) === "male" ? "brother" : "friend";
+
+const DASHBOARD_CARD_RULES: Record<string, DashboardCardRule> = {
+  birthdays: { scene: "birthdays" },
+  anniversaries: { relation: "partner" },
+  holidays: { scene: "holidays" },
+  "date nights": { scene: "date_nights" },
+  "new lists": { scene: "new_lists" },
+  "updated cards": { relation: (gender) => genderDefaultRelation(gender) },
+  "shared items": { relation: (gender) => genderDefaultRelation(gender) },
+  "valentine's day": { scene: "valentines" },
+  christmas: { scene: "holidays" },
+  "mother's day": { relation: "mom" },
+  "father's day": { relation: "dad" },
+  "just because": { relation: "partner" },
+  "first date": { scene: "first_date" },
+  "trips together": { scene: "trips" },
+  milestones: { relation: "partner" },
+  "favorite moments": { relation: "partner" },
+};
+
+const seededIndex = (seed: string, size: number): number => {
+  if (size <= 1) return 0;
+  const hash = [...seed].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  return hash % size;
+};
+
+const pickSeededPhotoForRelation = (relation: string, seed: string): string => {
+  const photos = getPhotosForLabel(relation);
+  if (photos.length === 0) return partner1;
+  return photos[seededIndex(seed, photos.length)]?.url || photos[0].url;
+};
+
+/**
+ * Global dashboard image resolver.
+ * Ensures dashboard cards follow centralized image rules instead of local per-page imports.
+ */
+export function getDashboardCardImage(cardName: string, gender: string): string {
+  const key = normalizeLabel(cardName);
+  const rule = DASHBOARD_CARD_RULES[key];
+
+  if (rule?.scene) {
+    return DASHBOARD_SCENE_PHOTOS[rule.scene];
+  }
+
+  if (rule?.relation) {
+    const relation = typeof rule.relation === "function" ? rule.relation(gender) : rule.relation;
+    return pickSeededPhotoForRelation(relation, key);
+  }
+
+  return pickSeededPhotoForRelation(genderDefaultRelation(gender), key);
+}
+
+/** Build dashboard sections from centralized global image rules */
+export function buildDashboardOtherCategories(gender: string): DashboardStockSection[] {
+  return [
+    {
+      id: "calendar",
+      label: "Shared Calendar",
+      cards: [
+        { id: "cal-1", name: "Birthdays", image: getDashboardCardImage("Birthdays", gender) },
+        { id: "cal-2", name: "Anniversaries", image: getDashboardCardImage("Anniversaries", gender) },
+        { id: "cal-3", name: "Holidays", image: getDashboardCardImage("Holidays", gender) },
+        { id: "cal-4", name: "Date Nights", image: getDashboardCardImage("Date Nights", gender) },
+      ],
+    },
+    {
+      id: "activity",
+      label: "Recent Activity",
+      cards: [
+        { id: "act-1", name: "New Lists", image: getDashboardCardImage("New Lists", gender) },
+        { id: "act-2", name: "Updated Cards", image: getDashboardCardImage("Updated Cards", gender) },
+        { id: "act-3", name: "Shared Items", image: getDashboardCardImage("Shared Items", gender) },
+      ],
+    },
+    {
+      id: "occasions",
+      label: "Occasions",
+      cards: [
+        { id: "occ-1", name: "Valentine's Day", image: getDashboardCardImage("Valentine's Day", gender) },
+        { id: "occ-2", name: "Christmas", image: getDashboardCardImage("Christmas", gender) },
+        { id: "occ-3", name: "Mother's Day", image: getDashboardCardImage("Mother's Day", gender) },
+        { id: "occ-4", name: "Father's Day", image: getDashboardCardImage("Father's Day", gender) },
+        { id: "occ-5", name: "Just Because", image: getDashboardCardImage("Just Because", gender) },
+      ],
+    },
+    {
+      id: "memories",
+      label: "Memories",
+      cards: [
+        { id: "mem-1", name: "First Date", image: getDashboardCardImage("First Date", gender) },
+        { id: "mem-2", name: "Trips Together", image: getDashboardCardImage("Trips Together", gender) },
+        { id: "mem-3", name: "Milestones", image: getDashboardCardImage("Milestones", gender) },
+        { id: "mem-4", name: "Favorite Moments", image: getDashboardCardImage("Favorite Moments", gender) },
+      ],
+    },
+  ];
 }
