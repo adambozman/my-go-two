@@ -253,8 +253,13 @@ const DEFAULT_TEMPLATE_IMAGE: ImageBank = {
  * Unknown template names fall back to a bank-safe default image.
  */
 export function getTemplateImage(templateName: string, gender: Gender): string {
+  const styleOverride = TEMPLATE_STYLE_OVERRIDES[normalizeKey(templateName)];
+  if (styleOverride) {
+    return getStyleImage(styleOverride, resolveStyleGender(gender));
+  }
+
   const key = resolveGender(gender);
-  const entry = templateImages[templateName] ?? DEFAULT_TEMPLATE_IMAGE;
+  const entry = templateImagesByKey[normalizeKey(templateName)] ?? DEFAULT_TEMPLATE_IMAGE;
   return entry[key];
 }
 
