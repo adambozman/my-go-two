@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeGender } from "@/lib/gender";
 
 export const SUBSCRIPTION_TIERS = {
   premium: {
@@ -43,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { age, gender } = JSON.parse(raw);
       await supabase
         .from("profiles")
-        .update({ age, gender })
+        .update({ age, gender: normalizeGender(gender) })
         .eq("user_id", userId);
       localStorage.removeItem("gotwo_signup_data");
     } catch {}

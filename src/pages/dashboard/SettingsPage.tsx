@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { normalizeGender } from "@/lib/gender";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -210,7 +211,7 @@ const SettingsPage = () => {
       setLoading(true);
       await supabase.from("profiles").update({ 
         display_name: displayName,
-        gender: gender || null,
+        gender: gender ? normalizeGender(gender) : null,
       } as any).eq("user_id", user.id);
       toast({ title: "Profile updated" });
     } catch {} finally {
