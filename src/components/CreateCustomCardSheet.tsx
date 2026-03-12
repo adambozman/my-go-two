@@ -101,7 +101,7 @@ const CreateCustomCardSheet = ({
     setGeneratingImage(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-card-image", {
-        body: { prompt: name },
+        body: { prompt: name, gender },
       });
       if (error) throw error;
       if (data?.image_url) {

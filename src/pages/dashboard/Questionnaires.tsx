@@ -259,7 +259,7 @@ const Questionnaires = () => {
           id: t.id,
           kind: "template",
           title: t.name,
-          image: templateImageMap[t.name] || "",
+          image: getTemplateImageForCard(t.name, gender),
         });
       }
     }
