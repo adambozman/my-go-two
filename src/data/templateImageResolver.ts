@@ -179,6 +179,20 @@ const templateImages: Record<string, ImageBank> = {
   "Pet Peeves":          same(imgPetPeeves),
 };
 
+const templateImagesByKey: Record<string, ImageBank> = Object.fromEntries(
+  Object.entries(templateImages).map(([key, value]) => [normalizeKey(key), value])
+) as Record<string, ImageBank>;
+
+const TEMPLATE_STYLE_OVERRIDES: Record<string, string> = {
+  "anniversary gifts": "timeless",
+  "birthday preferences": "thoughtful",
+  "date ideas": "elegant",
+  "wish list items": "thoughtful",
+  "love language": "classic",
+  events: "events",
+  "travel preferences": "traveling",
+};
+
 // ── Product-level images (NO cross-bank references) ──
 const productImages: Record<string, ImageBank> = {
   // Shoes
