@@ -23,15 +23,15 @@ import { getStyleImage, getCategoryImage } from "@/data/genderImages";
 type Phase = "intro" | "profile" | "personalizing" | "category-picker" | "category-questions";
 
 const INTRO_IMAGES = [
-  { id: "1469334031218-e382a71b716b", label: "Fashion" },
-  { id: "1414235077428-338989a2e8c0", label: "Dining" },
-  { id: "1509042239860-f550ce710b93", label: "Coffee" },
-  { id: "1502602898657-3e91760cbb34", label: "Travel" },
-  { id: "1490427712608-588e68359dbd", label: "Luxury" },
-  { id: "1568901346375-23c9450c58cd", label: "Food" },
-  { id: "1513885535751-8b9238bd345a", label: "Gifts" },
-  { id: "1555041469-a586c61ea9bc", label: "Home" },
-  { id: "1490481651871-ab68de25d43d", label: "Style" },
+  { id: "shopping", label: "Shopping" },
+  { id: "style", label: "Style" },
+  { id: "food", label: "Food" },
+  { id: "gifts", label: "Gifts" },
+  { id: "lifestyle", label: "Lifestyle" },
+  { id: "fit", label: "Fit" },
+  { id: "style", label: "Fashion" },
+  { id: "food", label: "Dining" },
+  { id: "gifts", label: "Occasions" },
 ];
 
 // Gender helper — reads the identity answer from state
