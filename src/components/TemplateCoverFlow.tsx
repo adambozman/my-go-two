@@ -183,7 +183,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
         items={productItems}
         onItemClick={(index) => onSelect(products[index], activeSubcategory?.name)}
       />
-    </motion.div>
+    </div>
   );
 };
 
