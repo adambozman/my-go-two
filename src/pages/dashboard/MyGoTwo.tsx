@@ -169,7 +169,7 @@ const PreferencesSection = () => {
                 <motion.div
                   key={q.id}
                   animate={{ x: xOffset, scale, opacity, filter: `blur(${blur}px)` }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  transition={CAROUSEL_LAYOUT.spring}
                   className="absolute cursor-pointer"
                   style={{ zIndex }}
                   onClick={() => (isActive ? setSelectedQuestion(q.id) : setActiveIndex(index))}
