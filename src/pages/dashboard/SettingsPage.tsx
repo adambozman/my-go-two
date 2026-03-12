@@ -22,11 +22,6 @@ interface Couple {
   display_label: string | null;
 }
 
-interface UserList {
-  id: string;
-  title: string;
-  is_shared: boolean;
-}
 
 const SettingsPage = () => {
   const { user } = useAuth();
