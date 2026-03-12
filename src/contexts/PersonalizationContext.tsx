@@ -17,7 +17,7 @@ export interface Personalization {
 interface PersonalizationContextType {
   personalization: Personalization | null;
   profileAnswers: Record<string, string | string[]> | null;
-  gender: string;
+  gender: Gender;
   loading: boolean;
   refetch: () => Promise<void>;
 }
