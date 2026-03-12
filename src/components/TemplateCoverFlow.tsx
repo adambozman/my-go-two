@@ -121,8 +121,9 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
   });
   const hasSubcategories = subcategories && subcategories.length > 0;
 
-  // Resolve images based on gender
-  const resolveImage = (id: string, fallback: string) => getProductImage(id, gender, fallback);
+  // Resolve images through centralized bank logic only
+  const templateBankFallback = getTemplateImage(templateName, gender);
+  const resolveImage = (id: string) => getProductImage(id, gender, templateBankFallback);
 
   // If we have subcategories and none is selected, show subcategory picker
   if (hasSubcategories && !activeSubcategory) {
