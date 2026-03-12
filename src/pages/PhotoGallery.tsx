@@ -605,9 +605,18 @@ export default function PhotoGallery() {
   const markDeleted = (paths: string[]) => {
     setDeleted((prev) => {
       const next = new Set(prev);
-      paths.forEach((p) => next.add(p));
+      paths.forEach((p) => {
+        next.add(p);
+        console.info(`[PHOTO_DELETE_REQUEST] src/assets/${p}`);
+      });
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("photoGalleryDeleteQueue", JSON.stringify(Array.from(next)));
+      }
+
       return next;
     });
+
     // Also remove from selected
     setSelected((prev) => {
       const next = new Set(prev);
@@ -683,33 +692,54 @@ export default function PhotoGallery() {
 
       {/* Deleted photos summary panel */}
       {showDeletedList && deleted.size > 0 && (
-        <div className="mx-4 mt-2 p-4 rounded-lg bg-destructive/10 border border-destructive/30">
-          <div className="flex items-center justify-between mb-2">
+        <div className="mx-4 mt-2 rounded-lg border border-destructive/30 bg-destructive/10 p-4">
+          <div className="mb-2 flex items-center justify-between">
             <h3 className="text-sm font-semibold text-destructive">Photos to Delete ({deleted.size})</h3>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => { setDeleted(new Set()); setShowDeletedList(false); }}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setDeleted(new Set());
+                  setShowDeletedList(false);
+                  if (typeof window !== "undefined") {
+                    localStorage.removeItem("photoGalleryDeleteQueue");
+                  }
+                }}
+              >
                 Undo All
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  const text = Array.from(deleted).map(p => `src/assets/${p}`).join('\n');
-                  navigator.clipboard.writeText(`Delete these photos:\n${text}`);
-                  alert('Copied to clipboard! Paste it in the chat to have me delete them.');
+                  const text = Array.from(deleted)
+                    .map((p) => `src/assets/${p}`)
+                    .join("\n");
+                  navigator.clipboard.writeText(`Delete these files:\n${text}`);
+                  alert("Copied! Paste in chat and I'll delete them from the codebase.");
                 }}
               >
                 Copy List
               </Button>
             </div>
           </div>
-          <div className="text-xs text-muted-foreground space-y-0.5 max-h-40 overflow-y-auto">
-            {Array.from(deleted).map(p => (
-              <div key={p} className="flex items-center justify-between group">
+          <div className="max-h-40 space-y-0.5 overflow-y-auto text-xs text-muted-foreground">
+            {Array.from(deleted).map((p) => (
+              <div key={p} className="group flex items-center justify-between">
                 <span>src/assets/{p}</span>
                 <button
-                  className="text-muted-foreground hover:text-foreground text-xs"
-                  onClick={() => setDeleted(prev => { const n = new Set(prev); n.delete(p); return n; })}
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() =>
+                    setDeleted((prev) => {
+                      const next = new Set(prev);
+                      next.delete(p);
+                      if (typeof window !== "undefined") {
+                        localStorage.setItem("photoGalleryDeleteQueue", JSON.stringify(Array.from(next)));
+                      }
+                      return next;
+                    })
+                  }
                 >
                   undo
                 </button>
@@ -751,69 +781,77 @@ export default function PhotoGallery() {
 
           {Object.entries(sections).map(([key, sects]) => (
             <TabsContent key={key} value={key} className="mt-4 space-y-8">
-              {sects.map((section) => (
-                <div key={section.title}>
-                  <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                    {section.title}
-                    <span className="text-xs font-normal text-muted-foreground">
-                      ({section.photos.length})
-                    </span>
-                  </h2>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
-                    {section.photos.map((photo) => {
-                      const isSelected = selected.has(photo.path);
-                      return (
-                        <div
-                          key={photo.path}
-                          className={`group relative rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
-                            isSelected
-                              ? "border-primary ring-2 ring-primary/30"
-                              : "border-transparent hover:border-muted-foreground/20"
-                          }`}
-                        >
-                          <div className="aspect-square">
-                            <img
-                              src={photo.src}
-                              alt={photo.label}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                              onClick={() => setExpandedImage(photo)}
-                            />
-                          </div>
-                          {/* Select checkbox overlay */}
-                          <button
-                            className={`absolute top-1 left-1 w-5 h-5 rounded-full border-2 flex items-center justify-center text-[10px] transition-all ${
+              {sects.map((section) => {
+                const visiblePhotos = section.photos.filter((photo) => !deleted.has(photo.path));
+
+                if (visiblePhotos.length === 0) {
+                  return null;
+                }
+
+                return (
+                  <div key={section.title}>
+                    <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+                      {section.title}
+                      <span className="text-xs font-normal text-muted-foreground">
+                        ({visiblePhotos.length}/{section.photos.length})
+                      </span>
+                    </h2>
+                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
+                      {visiblePhotos.map((photo) => {
+                        const isSelected = selected.has(photo.path);
+                        return (
+                          <div
+                            key={photo.path}
+                            className={`group relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all ${
                               isSelected
-                                ? "bg-primary border-primary text-primary-foreground"
-                                : "bg-background/80 border-muted-foreground/40 opacity-0 group-hover:opacity-100"
+                                ? "border-primary ring-2 ring-primary/30"
+                                : "border-transparent hover:border-muted-foreground/20"
                             }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleSelect(photo.path);
-                            }}
                           >
-                            {isSelected && "✓"}
-                          </button>
-                          {/* Delete button */}
-                          <button
-                            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              alert(`🗑 Delete this photo:\n\nsrc/assets/${photo.path}\n\nTell Lovable to delete this file!`);
-                            }}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                          {/* Label */}
-                          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 pb-1 pt-4">
-                            <p className="text-[10px] text-white truncate">{photo.label}</p>
+                            <div className="aspect-square">
+                              <img
+                                src={photo.src}
+                                alt={photo.label}
+                                className="h-full w-full object-cover"
+                                loading="lazy"
+                                onClick={() => setExpandedImage(photo)}
+                              />
+                            </div>
+                            {/* Select checkbox overlay */}
+                            <button
+                              className={`absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 text-[10px] transition-all ${
+                                isSelected
+                                  ? "border-primary bg-primary text-primary-foreground"
+                                  : "border-muted-foreground/40 bg-background/80 opacity-0 group-hover:opacity-100"
+                              }`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleSelect(photo.path);
+                              }}
+                            >
+                              {isSelected && "✓"}
+                            </button>
+                            {/* Delete button */}
+                            <button
+                              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground opacity-0 transition-all hover:scale-110 group-hover:opacity-100"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                markDeleted([photo.path]);
+                              }}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                            {/* Label */}
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 pb-1 pt-4">
+                              <p className="truncate text-[10px] text-white">{photo.label}</p>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </TabsContent>
           ))}
         </Tabs>
