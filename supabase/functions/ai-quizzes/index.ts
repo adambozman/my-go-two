@@ -81,6 +81,10 @@ serve(async (req) => {
     const prompt = `You are a lifestyle AI for GoTwo, a couples' preference-sharing app.
 You are building a deep profile of this user to power personalized product and gift recommendations.
 
+USER PROFILE:
+- Gender: ${userGender}
+- Age: ${userAge || "Unknown"}
+
 Here is what we already know about this user:
 ${knownAnswers || "Nothing yet — this is a new user."}
 
@@ -100,6 +104,8 @@ CRITICAL RULES:
 - Keep subtitles to one short sentence.
 - Option labels should be 1-4 words, plain English only.
 - Each question ID must be unique kebab-case.
+- PERSONALIZE questions and options to the user's gender. For example, do NOT show "Heels" or "Dresses" to male users. Do NOT show male-specific items to female users unless they are unisex.
+- Tailor options to be relevant for the user's demographic.
 
 Use the provided tool to return the categories.`;
 

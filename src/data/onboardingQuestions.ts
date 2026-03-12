@@ -430,12 +430,14 @@ export const onboardingQuestions: OnboardingQuestion[] = [
     funnySubtext: "Every body is a good body",
     multiSelect: false,
     options: [
-      { id: "petite", label: "Petite", image: "1490114538077-0a7f8cb49891" },
+      { id: "petite", label: "Petite", image: "1490114538077-0a7f8cb49891", gender: ["female", "non-binary"] },
       { id: "regular", label: "Regular", image: "1507003211169-0a1dd7228f2d" },
       { id: "tall", label: "Tall", image: "1507679799987-c73779587ccf" },
       { id: "athletic", label: "Athletic", image: "1534438327276-14e5300c3a48" },
-      { id: "curvy", label: "Curvy", image: "1509631179647-0177331693ae" },
+      { id: "curvy", label: "Curvy", image: "1509631179647-0177331693ae", gender: ["female", "non-binary"] },
       { id: "plus", label: "Plus size", image: "1521572163474-6864f9cf17ab" },
+      { id: "slim", label: "Slim", image: "1507003211169-0a1dd7228f2d", gender: ["male"] },
+      { id: "stocky", label: "Stocky / Broad", image: "1534438327276-14e5300c3a48", gender: ["male"] },
     ],
   },
 ];
