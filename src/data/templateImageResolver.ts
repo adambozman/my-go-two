@@ -137,6 +137,8 @@ function same(img: string): ImageBank {
   return { male: img, female: img, neutral: img };
 }
 
+const normalizeKey = (value: string) => value.toLowerCase().trim();
+
 // ── Top-level template card images ──
 const templateImages: Record<string, ImageBank> = {
   "Clothing Sizes":      { male: maleClothingSizes, female: femaleClothingSizes, neutral: neutralClothingSizes },

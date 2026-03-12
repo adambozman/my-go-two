@@ -161,7 +161,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
   const productItems = products.map((p) => ({
     id: p.id,
     name: p.name,
-    image: resolveImage(p.id, p.image),
+    image: resolveImage(p.id),
     subtitle: `${p.fields.length} fields`,
   }));
 
