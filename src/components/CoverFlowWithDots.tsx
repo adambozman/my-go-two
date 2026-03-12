@@ -26,15 +26,29 @@ const BottomDots = () => {
   );
 };
 
+const RightDot = () => (
+  <div
+    className="absolute right-3 z-30"
+    style={{ top: "25%", transform: "translateY(-50%)" }}
+  >
+    <div
+      className="rounded-full"
+      style={{ width: 8, height: 8, background: "#2D6870" }}
+      aria-label="Current section"
+    />
+  </div>
+);
+
 const CoverFlowWithDots = ({ children }: { children: ReactNode }) => {
   const dotsProvider = useCarouselDotsProvider();
 
   return (
     <CarouselDotsContext.Provider value={dotsProvider}>
       <SectionIndexContext.Provider value={0}>
-        <div className="h-full relative">
+        <div className="relative w-full h-full">
           {children}
           <BottomDots />
+          <RightDot />
         </div>
       </SectionIndexContext.Provider>
     </CarouselDotsContext.Provider>
