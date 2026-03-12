@@ -175,6 +175,18 @@ export function assignUniquePhotos<T extends { image: string; name: string }>(
   });
 }
 
+export interface DashboardStockCard {
+  id: string;
+  name: string;
+  image: string;
+}
+
+export interface DashboardStockSection {
+  id: string;
+  label: string;
+  cards: DashboardStockCard[];
+}
+
 /**
  * Maps every dashboard card name to a bank-driven image.
  * Uses templateImageResolver (template bank) or genderImages (style bank).
