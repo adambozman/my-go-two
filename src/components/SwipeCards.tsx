@@ -64,36 +64,40 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
   // Free-input uses a simplified card
   if (currentQuestion.type === "free-input") {
     return (
-      <div className="relative w-full h-full">
-        {/* Title — global header position */}
-        <h3
-          className="section-header absolute z-20 left-0 right-0 text-center"
-          style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
-        >
-          {currentQuestion.title}
-        </h3>
+      <div className="w-full h-full flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-full relative">
+            {/* Title — global header position */}
+            <h3
+              className="section-header absolute z-20 left-0 right-0 text-center"
+              style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
+            >
+              {currentQuestion.title}
+            </h3>
 
-        {/* Stage — same as global carousel */}
-        <div className="relative flex items-center justify-center">
-          <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="card-design-neumorph p-8 text-center"
-                style={{ width: CARD_W, borderRadius: BORDER_R }}
-              >
-                <p className="text-sm text-muted-foreground mb-6">{currentQuestion.subtitle}</p>
-                <Input
-                  value={freeTextAnswers[currentQuestion.id] || ""}
-                  onChange={(e) => setFreeTextAnswers(prev => ({ ...prev, [currentQuestion.id]: e.target.value }))}
-                  placeholder={currentQuestion.placeholder}
-                  className="rounded-xl border-0 bg-white/40 text-base h-12 placeholder:text-muted-foreground/60 mb-4"
-                />
-                <Button className="rounded-full w-full h-11" onClick={advanceToNext}>
-                  {freeTextAnswers[currentQuestion.id] ? "Next" : "Skip"}
-                </Button>
-              </motion.div>
+            {/* Stage — same as global carousel */}
+            <div className="relative flex items-center justify-center">
+              <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="card-design-neumorph p-8 text-center"
+                    style={{ width: CARD_W, borderRadius: BORDER_R }}
+                  >
+                    <p className="text-sm text-muted-foreground mb-6">{currentQuestion.subtitle}</p>
+                    <Input
+                      value={freeTextAnswers[currentQuestion.id] || ""}
+                      onChange={(e) => setFreeTextAnswers(prev => ({ ...prev, [currentQuestion.id]: e.target.value }))}
+                      placeholder={currentQuestion.placeholder}
+                      className="rounded-xl border-0 bg-white/40 text-base h-12 placeholder:text-muted-foreground/60 mb-4"
+                    />
+                    <Button className="rounded-full w-full h-11" onClick={advanceToNext}>
+                      {freeTextAnswers[currentQuestion.id] ? "Next" : "Skip"}
+                    </Button>
+                  </motion.div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
