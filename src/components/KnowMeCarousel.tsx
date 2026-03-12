@@ -61,8 +61,8 @@ const KnowMeCarousel = ({ cards, onCardClick, loading }: KnowMeCarouselProps) =>
             const cardH = isActive ? CARD_H : FLANK_H;
             const scale = isActive ? 1 : 0.7 - absOffset * 0.05;
             const zIndex = 10 - absOffset;
-            const blur = isActive ? 0 : 1.8;
-            const opacity = isActive ? 1 : 0.5;
+            const blur = isActive ? 0 : CAROUSEL_LAYOUT.flankBlur;
+            const opacity = isActive ? 1 : CAROUSEL_LAYOUT.flankOpacity;
 
             return (
               <motion.div
