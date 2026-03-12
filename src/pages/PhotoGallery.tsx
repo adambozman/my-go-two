@@ -781,69 +781,77 @@ export default function PhotoGallery() {
 
           {Object.entries(sections).map(([key, sects]) => (
             <TabsContent key={key} value={key} className="mt-4 space-y-8">
-              {sects.map((section) => (
-                <div key={section.title}>
-                  <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                    {section.title}
-                    <span className="text-xs font-normal text-muted-foreground">
-                      ({section.photos.length})
-                    </span>
-                  </h2>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
-                    {section.photos.map((photo) => {
-                      const isSelected = selected.has(photo.path);
-                      return (
-                        <div
-                          key={photo.path}
-                          className={`group relative rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
-                            isSelected
-                              ? "border-primary ring-2 ring-primary/30"
-                              : "border-transparent hover:border-muted-foreground/20"
-                          }`}
-                        >
-                          <div className="aspect-square">
-                            <img
-                              src={photo.src}
-                              alt={photo.label}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                              onClick={() => setExpandedImage(photo)}
-                            />
-                          </div>
-                          {/* Select checkbox overlay */}
-                          <button
-                            className={`absolute top-1 left-1 w-5 h-5 rounded-full border-2 flex items-center justify-center text-[10px] transition-all ${
+              {sects.map((section) => {
+                const visiblePhotos = section.photos.filter((photo) => !deleted.has(photo.path));
+
+                if (visiblePhotos.length === 0) {
+                  return null;
+                }
+
+                return (
+                  <div key={section.title}>
+                    <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+                      {section.title}
+                      <span className="text-xs font-normal text-muted-foreground">
+                        ({visiblePhotos.length}/{section.photos.length})
+                      </span>
+                    </h2>
+                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
+                      {visiblePhotos.map((photo) => {
+                        const isSelected = selected.has(photo.path);
+                        return (
+                          <div
+                            key={photo.path}
+                            className={`group relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all ${
                               isSelected
-                                ? "bg-primary border-primary text-primary-foreground"
-                                : "bg-background/80 border-muted-foreground/40 opacity-0 group-hover:opacity-100"
+                                ? "border-primary ring-2 ring-primary/30"
+                                : "border-transparent hover:border-muted-foreground/20"
                             }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleSelect(photo.path);
-                            }}
                           >
-                            {isSelected && "✓"}
-                          </button>
-                          {/* Delete button */}
-                          <button
-                            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              alert(`🗑 Delete this photo:\n\nsrc/assets/${photo.path}\n\nTell Lovable to delete this file!`);
-                            }}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                          {/* Label */}
-                          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 pb-1 pt-4">
-                            <p className="text-[10px] text-white truncate">{photo.label}</p>
+                            <div className="aspect-square">
+                              <img
+                                src={photo.src}
+                                alt={photo.label}
+                                className="h-full w-full object-cover"
+                                loading="lazy"
+                                onClick={() => setExpandedImage(photo)}
+                              />
+                            </div>
+                            {/* Select checkbox overlay */}
+                            <button
+                              className={`absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 text-[10px] transition-all ${
+                                isSelected
+                                  ? "border-primary bg-primary text-primary-foreground"
+                                  : "border-muted-foreground/40 bg-background/80 opacity-0 group-hover:opacity-100"
+                              }`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleSelect(photo.path);
+                              }}
+                            >
+                              {isSelected && "✓"}
+                            </button>
+                            {/* Delete button */}
+                            <button
+                              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground opacity-0 transition-all hover:scale-110 group-hover:opacity-100"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                markDeleted([photo.path]);
+                              }}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                            {/* Label */}
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 pb-1 pt-4">
+                              <p className="truncate text-[10px] text-white">{photo.label}</p>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </TabsContent>
           ))}
         </Tabs>
