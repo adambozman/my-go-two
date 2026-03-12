@@ -23,7 +23,6 @@ import SettingsPage from "./pages/dashboard/SettingsPage";
 
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
-import PhotoGallery from "./pages/PhotoGallery";
 
 const queryClient = new QueryClient();
 
@@ -43,17 +42,14 @@ const App = () => (
               <Route path="/reset-password" element={<Navigate to="/forgot-password" replace />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/connect" element={<Connect />} />
-              <Route path="/photo-gallery" element={<PhotoGallery />} />
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardHome />} />
                 <Route path="lists/:listId" element={<ListDetail />} />
                 <Route path="my-go-two" element={<MyGoTwo />} />
-                <Route path="collaborations" element={<Navigate to="/dashboard/settings" replace />} />
                 <Route path="recommendations" element={<Recommendations />} />
                 <Route path="questionnaires" element={<Questionnaires />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="notifications" element={<Notifications />} />
-                <Route path="preferences" element={<Navigate to="/dashboard/my-go-two" replace />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
