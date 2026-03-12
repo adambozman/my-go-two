@@ -175,8 +175,8 @@ const PreferencesSection = () => {
                   onClick={() => (isActive ? setSelectedQuestion(q.id) : setActiveIndex(index))}
                 >
                   <div
-                    className={`overflow-hidden rounded-2xl transition-shadow duration-300 ${isActive ? "ring-2 ring-primary shadow-2xl" : ""}`}
-                    style={{ width: cardW, height: cardH }}
+                    className={`overflow-hidden transition-shadow duration-300 ${isActive ? "ring-2 ring-primary shadow-2xl" : ""}`}
+                    style={{ width: cardW, height: cardH, borderRadius: CAROUSEL_LAYOUT.borderRadius }}
                   >
                     <div className="relative w-full h-full overflow-hidden">
                       <img src={getQuestionCoverImage(q)} alt={q.title} className="w-full h-full object-cover" />
