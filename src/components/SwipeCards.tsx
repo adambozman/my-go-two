@@ -56,7 +56,7 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
   // Free-input questions get a clean input card
   if (currentQuestion.type === "free-input") {
     return (
-      <div className="absolute inset-0" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 40, background: 'var(--swatch-sand)' }}>
+      <div className="relative w-full h-full">
         {/* Question text — 24px below header divider */}
         <div className="absolute left-0 right-0 text-center" style={{ top: QUESTION_CARD.textTopOffset }}>
           <h3 className="text-lg font-bold text-primary" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
