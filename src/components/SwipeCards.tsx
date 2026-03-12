@@ -154,15 +154,16 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
   const hasImage = !!optImage;
 
   return (
-    <div className="flex flex-col items-center flex-1 px-4 pt-2">
-      {/* Question title */}
+    <div className="relative w-full h-full">
+      {/* Question text & counter — 24px below header divider, horizontally centered */}
       <motion.div
         key={currentQuestion.id}
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-4"
+        className="absolute left-0 right-0 text-center z-10"
+        style={{ top: QUESTION_CARD.textTopOffset }}
       >
-        <h3 className="text-lg font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h3 className="text-lg font-bold text-primary" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
           {currentQuestion.title}
         </h3>
         <p className="text-xs text-muted-foreground mt-1">
@@ -173,83 +174,90 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
         </p>
       </motion.div>
 
-      {/* Card stack */}
-      <div className="relative flex items-center justify-center" style={{ width: 300, height: 420 }}>
-        {/* Next card preview */}
-        {currentOptionIdx < totalOptions - 1 && options[currentOptionIdx + 1] && (
-          <div
-            className="absolute card-design-neumorph overflow-hidden"
-            style={{
-              width: 260,
-              height: 380,
-              borderRadius: 16,
-              opacity: 0.4,
-              transform: "scale(0.92)",
-            }}
-          >
-            {(() => {
-              const nextOpt = options[currentOptionIdx + 1];
-              const nextImg = getOptionImage(nextOpt);
-              return nextImg ? (
-                <img src={nextImg} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center"
-                  style={{ background: "linear-gradient(158deg, rgba(232,198,174,0.25), rgba(107,109,98,0.08))" }}>
-                  <span className="text-lg font-semibold text-muted-foreground">{nextOpt.label}</span>
-                </div>
-              );
-            })()}
-          </div>
-        )}
-
-        {/* Active swipe card */}
-        <AnimatePresence mode="wait">
-          {currentOption && !exitDirection && (
-            <SwipeableCard
-              key={`${currentQuestion.id}-${currentOption.id}`}
-              option={currentOption}
-              image={optImage}
-              hasImage={hasImage}
-              onSwipe={handleSwipe}
-              isSelected={selectedForQuestion.includes(currentOption.id)}
-            />
+      {/* Card — centered horizontally and vertically */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative" style={{ width: QUESTION_CARD.width, height: QUESTION_CARD.height }}>
+          {/* Next card preview */}
+          {currentOptionIdx < totalOptions - 1 && options[currentOptionIdx + 1] && (
+            <div
+              className="absolute inset-0 m-auto card-design-neumorph overflow-hidden"
+              style={{
+                width: 260,
+                height: 380,
+                borderRadius: QUESTION_CARD.borderRadius,
+                opacity: 0.4,
+                transform: "scale(0.92)",
+              }}
+            >
+              {(() => {
+                const nextOpt = options[currentOptionIdx + 1];
+                const nextImg = getOptionImage(nextOpt);
+                return nextImg ? (
+                  <img src={nextImg} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center"
+                    style={{ background: "linear-gradient(158deg, rgba(232,198,174,0.25), rgba(107,109,98,0.08))" }}>
+                    <span className="text-lg font-semibold text-muted-foreground">{nextOpt.label}</span>
+                  </div>
+                );
+              })()}
+            </div>
           )}
-        </AnimatePresence>
+
+          {/* Active swipe card */}
+          <AnimatePresence mode="wait">
+            {currentOption && !exitDirection && (
+              <SwipeableCard
+                key={`${currentQuestion.id}-${currentOption.id}`}
+                option={currentOption}
+                image={optImage}
+                hasImage={hasImage}
+                onSwipe={handleSwipe}
+                isSelected={selectedForQuestion.includes(currentOption.id)}
+              />
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex items-center justify-center gap-6 mt-6">
-        <button
-          onClick={() => handleSwipe("left")}
-          className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
-          style={{ background: "rgba(var(--swatch-gypsum-rose-rgb), 0.8)", border: "2px solid rgba(var(--swatch-antique-coin-rgb), 0.3)" }}
-        >
-          <X className="w-6 h-6 text-muted-foreground" />
-        </button>
-        <button
-          onClick={() => {
-            setCurrentQuestionIdx(i => i + 1);
-            setCurrentOptionIdx(0);
-          }}
-          className="w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-transform hover:scale-110"
-          style={{ background: "rgba(var(--swatch-gypsum-rose-rgb), 0.6)" }}
-        >
-          <SkipForward className="w-4 h-4 text-muted-foreground" />
-        </button>
-        <button
-          onClick={() => handleSwipe("right")}
-          className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
-          style={{ background: "hsl(var(--primary))" }}
-        >
-          <Check className="w-6 h-6 text-primary-foreground" />
-        </button>
-      </div>
+      {/* Action buttons — 32px above bottom nav, horizontally centered */}
+      <div
+        className="absolute left-0 right-0 flex flex-col items-center z-10"
+        style={{ bottom: QUESTION_CARD.buttonsBottomOffset }}
+      >
+        <div className="flex items-center justify-center gap-6">
+          <button
+            onClick={() => handleSwipe("left")}
+            className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
+            style={{ background: "rgba(var(--swatch-gypsum-rose-rgb), 0.8)", border: "2px solid rgba(var(--swatch-antique-coin-rgb), 0.3)" }}
+          >
+            <X className="w-6 h-6 text-muted-foreground" />
+          </button>
+          <button
+            onClick={() => {
+              setCurrentQuestionIdx(i => i + 1);
+              setCurrentOptionIdx(0);
+            }}
+            className="w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-transform hover:scale-110"
+            style={{ background: "rgba(var(--swatch-gypsum-rose-rgb), 0.6)" }}
+          >
+            <SkipForward className="w-4 h-4 text-muted-foreground" />
+          </button>
+          <button
+            onClick={() => handleSwipe("right")}
+            className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
+            style={{ background: "hsl(var(--primary))" }}
+          >
+            <Check className="w-6 h-6 text-primary-foreground" />
+          </button>
+        </div>
 
-      {selectedForQuestion.length > 0 && (
-        <p className="text-xs text-muted-foreground mt-3">
-          {selectedForQuestion.length} selected
-        </p>
-      )}
+        {selectedForQuestion.length > 0 && (
+          <p className="text-xs text-muted-foreground mt-3">
+            {selectedForQuestion.length} selected
+          </p>
+        )}
+      </div>
     </div>
   );
 };
