@@ -50,7 +50,7 @@ const SettingsPage = () => {
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
   const [expandedConnection, setExpandedConnection] = useState<string | null>(null);
-  const [sharingPerms, setSharingPerms] = useState<Record<string, Record<string, boolean>>>({});
+  const [userLists, setUserLists] = useState<UserList[]>([]);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // User settings state
