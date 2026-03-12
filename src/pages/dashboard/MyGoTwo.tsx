@@ -21,6 +21,7 @@ import { AnimatePresence } from "framer-motion";
 import { profileQuestions } from "@/data/profileQuestions";
 import { getStyleImage } from "@/data/genderImages";
 import { getTemplateImage as resolveTemplateImage } from "@/data/templateImageResolver";
+import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 const categoryLabels: Record<string, string> = {
   personal: "Personal",
