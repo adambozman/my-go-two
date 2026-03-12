@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
@@ -25,11 +25,6 @@ const Preferences = () => {
     return saved;
   });
 
-  if (genderLoading) return <p className="text-muted-foreground p-4">Loading...</p>;
-
-  const goLeft = () => setActiveIndex((i) => (i - 1 + imageQuestions.length) % imageQuestions.length);
-  const goRight = () => setActiveIndex((i) => (i + 1) % imageQuestions.length);
-
   // Deduplicated cover images — each card gets a unique gendered image
   const questionCoverImages = useMemo(() => {
     const used = new Set<string>();
@@ -45,6 +40,11 @@ const Preferences = () => {
     }
     return covers;
   }, [imageQuestions, gender]);
+
+  if (genderLoading) return <p className="text-muted-foreground p-4">Loading...</p>;
+
+  const goLeft = () => setActiveIndex((i) => (i - 1 + imageQuestions.length) % imageQuestions.length);
+  const goRight = () => setActiveIndex((i) => (i + 1) % imageQuestions.length);
 
   const getQuestionCoverImage = (q: (typeof imageQuestions)[0]) => {
     return questionCoverImages[q.id] || q.options[0]?.localImage || "";

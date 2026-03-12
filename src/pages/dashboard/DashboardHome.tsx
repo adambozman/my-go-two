@@ -55,40 +55,43 @@ interface PlaceholderCard {
   image: string;
 }
 
-const otherCategories: { id: string; label: string; cards: PlaceholderCard[] }[] = [
-  {
-    id: "calendar", label: "Shared Calendar", cards: [
-      { id: "cal-1", name: "Birthdays", image: imgBirthdays },
-      { id: "cal-2", name: "Anniversaries", image: imgAnniversaries },
-      { id: "cal-3", name: "Holidays", image: imgHolidays },
-      { id: "cal-4", name: "Date Nights", image: imgDateNights },
-    ],
-  },
-  {
-    id: "activity", label: "Recent Activity", cards: [
-      { id: "act-1", name: "New Lists", image: imgNewLists },
-      { id: "act-2", name: "Updated Cards", image: imgUpdatedCards },
-      { id: "act-3", name: "Shared Items", image: getDefaultPhotoForLabel("friend") },
-    ],
-  },
-  {
-    id: "occasions", label: "Occasions", cards: [
-      { id: "occ-1", name: "Valentine's Day", image: imgValentines },
-      { id: "occ-2", name: "Christmas", image: imgHolidays },
-      { id: "occ-3", name: "Mother's Day", image: getDefaultPhotoForLabel("mom") },
-      { id: "occ-4", name: "Father's Day", image: getDefaultPhotoForLabel("dad") },
-      { id: "occ-5", name: "Just Because", image: imgJustBecause },
-    ],
-  },
-  {
-    id: "memories", label: "Memories", cards: [
-      { id: "mem-1", name: "First Date", image: imgFirstDate },
-      { id: "mem-2", name: "Trips Together", image: imgTrips },
-      { id: "mem-3", name: "Milestones", image: imgBirthdays },
-      { id: "mem-4", name: "Favorite Moments", image: getDefaultPhotoForLabel("partner") },
-    ],
-  },
-];
+/** Build gender-aware categories */
+function buildOtherCategories(gender: string): { id: string; label: string; cards: PlaceholderCard[] }[] {
+  return [
+    {
+      id: "calendar", label: "Shared Calendar", cards: [
+        { id: "cal-1", name: "Birthdays", image: imgBirthdays },
+        { id: "cal-2", name: "Anniversaries", image: imgAnniversaries },
+        { id: "cal-3", name: "Holidays", image: imgHolidays },
+        { id: "cal-4", name: "Date Nights", image: imgDateNights },
+      ],
+    },
+    {
+      id: "activity", label: "Recent Activity", cards: [
+        { id: "act-1", name: "New Lists", image: imgNewLists },
+        { id: "act-2", name: "Updated Cards", image: imgUpdatedCards },
+        { id: "act-3", name: "Shared Items", image: gender === "female" ? getDefaultPhotoForLabel("friend") : getDefaultPhotoForLabel("brother") },
+      ],
+    },
+    {
+      id: "occasions", label: "Occasions", cards: [
+        { id: "occ-1", name: "Valentine's Day", image: imgValentines },
+        { id: "occ-2", name: "Christmas", image: imgHolidays },
+        { id: "occ-3", name: "Mother's Day", image: getDefaultPhotoForLabel("mom") },
+        { id: "occ-4", name: "Father's Day", image: getDefaultPhotoForLabel("dad") },
+        { id: "occ-5", name: "Just Because", image: imgJustBecause },
+      ],
+    },
+    {
+      id: "memories", label: "Memories", cards: [
+        { id: "mem-1", name: "First Date", image: imgFirstDate },
+        { id: "mem-2", name: "Trips Together", image: imgTrips },
+        { id: "mem-3", name: "Milestones", image: imgBirthdays },
+        { id: "mem-4", name: "Favorite Moments", image: getDefaultPhotoForLabel("partner") },
+      ],
+    },
+  ];
+}
 
 /* ═══════════════════════════════════════════
    CONNECTIONS CAROUSEL — backed by couples table
