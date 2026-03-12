@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import ConnectionPage from "./ConnectionPage";
 import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
+import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 const CARD_W = CAROUSEL_LAYOUT.cardWidth;
