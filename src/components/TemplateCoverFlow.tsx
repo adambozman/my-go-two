@@ -18,6 +18,7 @@ interface TemplateCoverFlowProps {
   templateName: string;
   subtypes: SubtypeItem[];
   subcategories?: SubcategoryGroup[];
+  initialSubcategoryId?: string;
   onBack: () => void;
   onSelect: (subtype: SubtypeItem, subcategoryName?: string) => void;
   creating: boolean;
