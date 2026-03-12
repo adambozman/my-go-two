@@ -139,8 +139,8 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
           className="absolute z-20 flex items-center"
           style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform, left: HEADER_LAYOUT.leftMargin }}
         >
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <ArrowLeft className="h-4 w-4" style={{ color: "#2D6870" }} />
+          <Button variant="ghost" size="icon" onClick={onBack} className="-ml-8 mr-4 h-4 w-4 p-0 hover:bg-transparent">
+            <ArrowLeft className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
           </Button>
           <h1 className="section-header">{templateName}</h1>
         </div>
