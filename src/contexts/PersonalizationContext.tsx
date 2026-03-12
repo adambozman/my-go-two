@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { type Gender, normalizeGender } from "@/lib/gender";
 
 export interface Personalization {
   recommended_brands: string[];
