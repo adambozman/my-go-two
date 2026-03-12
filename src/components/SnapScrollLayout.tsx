@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useCallback, type ReactNode } from "react";
 import { CarouselDotsContext, SectionIndexContext, useCarouselDotsProvider } from "@/contexts/CarouselDotsContext";
 import { BottomCarouselDots, RightSectionDots } from "@/components/CarouselDotsOverlay";
+import { HEADER_LAYOUT } from "@/lib/carouselConfig";
 
 interface SnapSection {
   id: string;
@@ -90,7 +91,7 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
             >
               <div className="flex-1 flex items-center justify-center">
                 <div className="w-full relative">
-                  <h3 className="section-header text-center absolute left-0 right-0" style={{ top: -24, transform: "translateY(-100%)", ...section.labelStyle }}>{section.label}</h3>
+                  <h3 className="section-header text-center absolute left-0 right-0" style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform, ...section.labelStyle }}>{section.label}</h3>
                   <SectionIndexContext.Provider value={sectionIdx}>
                     {section.content}
                   </SectionIndexContext.Provider>

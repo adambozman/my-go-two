@@ -6,7 +6,7 @@ import CardEditButton from "@/components/CardEditButton";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
 import { getProductImage } from "@/data/templateImageResolver";
-import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
+import { CAROUSEL_LAYOUT, HEADER_LAYOUT } from "@/lib/carouselConfig";
 
 export interface SubtypeItem {
   id: string;
@@ -136,13 +136,13 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
     return (
       <div className="max-w-5xl mx-auto relative">
         <div
-          className="absolute left-0 right-0 z-20 flex items-center gap-3"
-          style={{ top: -24, transform: "translateY(-100%)" }}
+          className="absolute left-0 right-0 z-20 flex items-center gap-3 px-4"
+          style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
         >
           <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl font-bold text-primary">{templateName}</h1>
+          <h1 className="section-header">{templateName}</h1>
         </div>
 
         <CoverFlowCarousel
@@ -167,8 +167,8 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
   return (
     <div className="max-w-5xl mx-auto relative">
       <div
-        className="absolute left-0 right-0 z-20 flex items-center gap-3"
-        style={{ top: -24, transform: "translateY(-100%)" }}
+        className="absolute left-0 right-0 z-20 flex items-center gap-3 px-4"
+        style={{ top: HEADER_LAYOUT.topOffset, transform: HEADER_LAYOUT.transform }}
       >
         <Button
           variant="ghost"
@@ -183,7 +183,7 @@ const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubca
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-bold text-primary">{breadcrumb}</h1>
+        <h1 className="section-header">{breadcrumb}</h1>
       </div>
 
       <CoverFlowCarousel
