@@ -160,7 +160,12 @@ const Questionnaires = () => {
   /* ── Handle card click → open swipe quiz ─────────── */
   const handleCardClick = (card: KnowMeCard) => {
     const cat = categories.find((c) => c.id === card.id);
-    if (cat) setSelectedCategory(cat);
+    if (!cat || !cat.questions.length) {
+      toast.error("That quiz is incomplete. Refreshing Know Me...");
+      fetchCategories();
+      return;
+    }
+    setSelectedCategory(cat);
   };
 
   /* ── Build cards for a section ───────────────────── */
