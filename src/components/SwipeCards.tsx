@@ -243,10 +243,9 @@ const SwipeCards = ({ questions, categoryName, onComplete, onBack, getImage }: S
         </div>
       </div>
 
-          {/* Action buttons — positioned at global bottom dot level */}
+          {/* Action buttons — below the card stage */}
           <div
-            className="absolute left-0 right-0 flex flex-col items-center z-10"
-            style={{ top: DOT_LAYOUT.bottomTopOffset, transform: "translateY(-50%)" }}
+            className="flex flex-col items-center z-10 mt-6"
           >
             <div className="flex items-center justify-center gap-6">
               <button
