@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import ConnectionPage from "./ConnectionPage";
-
+import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
 import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 const CARD_W = CAROUSEL_LAYOUT.cardWidth;
@@ -17,7 +17,6 @@ const FLANK_W = CAROUSEL_LAYOUT.flankWidth;
 const FLANK_H = CAROUSEL_LAYOUT.flankHeight;
 const X_GAP = CAROUSEL_LAYOUT.xGap;
 const SPRING = CAROUSEL_LAYOUT.spring;
-import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
 
 // Local category images
 import imgBirthdays from "@/assets/stock/birthdays.jpg";
