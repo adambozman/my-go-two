@@ -116,7 +116,7 @@ import neutralBougie from "@/assets/styles/bougie.jpg";
 
 // ── Category images ──
 import maleShopping from "@/assets/categories/male/shopping.jpg";
-import maleStyleCat from "@/assets/categories/male/style.jpg";
+import maleStyleCat from "@/assets/categories/male/shopping.jpg";
 import maleFood from "@/assets/categories/male/food.jpg";
 import maleGifts from "@/assets/categories/male/gifts.jpg";
 import maleLifestyle from "@/assets/categories/male/lifestyle.jpg";
