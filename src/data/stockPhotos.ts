@@ -52,16 +52,8 @@ import coworker2 from "@/assets/stock/coworker-2.jpg";
 import coworker3 from "@/assets/stock/coworker-3.jpg";
 import coworker4 from "@/assets/stock/coworker-4.jpg";
 
-import birthdays from "@/assets/stock/birthdays.jpg";
-import anniversaries from "@/assets/stock/anniversaries.jpg";
-import holidays from "@/assets/stock/holidays.jpg";
-import dateNights from "@/assets/stock/date-nights.jpg";
-import newLists from "@/assets/stock/new-lists.jpg";
-import updatedCards from "@/assets/stock/updated-cards.jpg";
-import valentines from "@/assets/stock/valentines.jpg";
-import justBecause from "@/assets/stock/just-because.jpg";
-import firstDate from "@/assets/stock/first-date.jpg";
-import trips from "@/assets/stock/trips.jpg";
+import { getTemplateImage } from "@/data/templateImageResolver";
+import { getStyleImage } from "@/data/genderImages";
 
 export const STOCK_PHOTOS: Record<string, { id: string; url: string }[]> = {
   partner: [
@@ -183,22 +175,6 @@ export function assignUniquePhotos<T extends { image: string; name: string }>(
   });
 }
 
-type DashboardSceneKey =
-  | "birthdays"
-  | "holidays"
-  | "date_nights"
-  | "new_lists"
-  | "valentines"
-  | "first_date"
-  | "trips";
-
-type DashboardRelationResolver = string | ((gender: string) => string);
-
-interface DashboardCardRule {
-  scene?: DashboardSceneKey;
-  relation?: DashboardRelationResolver;
-}
-
 export interface DashboardStockCard {
   id: string;
   name: string;
@@ -211,68 +187,68 @@ export interface DashboardStockSection {
   cards: DashboardStockCard[];
 }
 
-const DASHBOARD_SCENE_PHOTOS: Record<DashboardSceneKey, string> = {
-  birthdays,
-  holidays,
-  date_nights: dateNights,
-  new_lists: newLists,
-  valentines,
-  first_date: firstDate,
-  trips,
+/**
+ * Maps every dashboard card name to a bank-driven image.
+ * Uses templateImageResolver (template bank) or genderImages (style bank).
+ * NO standalone scene photos — everything resolves through gender-aware banks.
+ */
+const DASHBOARD_CARD_TO_TEMPLATE: Record<string, string> = {
+  birthdays: "Birthday Preferences",
+  anniversaries: "Anniversary Gifts",
+  holidays: "Events",
+  "date nights": "Date Ideas",
+  "new lists": "Wish List Items",
+  "updated cards": "Brand Preferences",
+  "shared items": "Specific Product Versions",
+  "valentine's day": "Flowers",
+  christmas: "Events",
+  "mother's day": "Flowers",
+  "father's day": "Brand Preferences",
+  "just because": "Wish List Items",
+  "first date": "Date Ideas",
+  "trips together": "Travel Preferences",
+  milestones: "Anniversary Gifts",
+  "favorite moments": "Love Language",
 };
 
-const genderDefaultRelation = (gender: string): string =>
-  normalizeLabel(gender) === "male" ? "brother" : "friend";
-
-const DASHBOARD_CARD_RULES: Record<string, DashboardCardRule> = {
-  birthdays: { relation: (gender) => genderDefaultRelation(gender) },
-  anniversaries: { relation: "partner" },
-  holidays: { scene: "holidays" },
-  "date nights": { scene: "date_nights" },
-  "new lists": { scene: "new_lists" },
-  "updated cards": { relation: (gender) => genderDefaultRelation(gender) },
-  "shared items": { relation: (gender) => genderDefaultRelation(gender) },
-  "valentine's day": { scene: "valentines" },
-  christmas: { scene: "holidays" },
-  "mother's day": { relation: "mom" },
-  "father's day": { relation: "dad" },
-  "just because": { relation: "partner" },
-  "first date": { scene: "first_date" },
-  "trips together": { scene: "trips" },
-  milestones: { relation: "partner" },
-  "favorite moments": { relation: "partner" },
+const DASHBOARD_CARD_TO_STYLE: Record<string, string> = {
+  holidays: "events",
+  "new lists": "creative",
+  "updated cards": "brand",
+  "shared items": "thoughtful",
+  christmas: "events",
+  "father's day": "classic",
 };
 
-const seededIndex = (seed: string, size: number): number => {
-  if (size <= 1) return 0;
-  const hash = [...seed].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return hash % size;
-};
-
-const pickSeededPhotoForRelation = (relation: string, seed: string): string => {
-  const photos = getPhotosForLabel(relation);
-  if (photos.length === 0) return partner1;
-  return photos[seededIndex(seed, photos.length)]?.url || photos[0].url;
+const normalizeGenderForBanks = (gender: string): "male" | "female" | "non-binary" | "prefer-not" => {
+  const g = normalizeLabel(gender);
+  if (g === "male") return "male";
+  if (g === "female") return "female";
+  return "non-binary";
 };
 
 /**
  * Global dashboard image resolver.
- * Ensures dashboard cards follow centralized image rules instead of local per-page imports.
+ * Every card resolves through the template bank or style bank — fully gender-aware.
  */
 export function getDashboardCardImage(cardName: string, gender: string): string {
   const key = normalizeLabel(cardName);
-  const rule = DASHBOARD_CARD_RULES[key];
+  const g = normalizeGenderForBanks(gender);
 
-  if (rule?.scene) {
-    return DASHBOARD_SCENE_PHOTOS[rule.scene];
+  // First try template bank (most specific)
+  const templateName = DASHBOARD_CARD_TO_TEMPLATE[key];
+  if (templateName) {
+    return getTemplateImage(templateName, g);
   }
 
-  if (rule?.relation) {
-    const relation = typeof rule.relation === "function" ? rule.relation(gender) : rule.relation;
-    return pickSeededPhotoForRelation(relation, key);
+  // Then try style bank
+  const styleId = DASHBOARD_CARD_TO_STYLE[key];
+  if (styleId) {
+    return getStyleImage(styleId, g);
   }
 
-  return pickSeededPhotoForRelation(genderDefaultRelation(gender), key);
+  // Ultimate fallback: classic style for the user's gender
+  return getStyleImage("classic", g);
 }
 
 /** Build dashboard sections from centralized global image rules */
