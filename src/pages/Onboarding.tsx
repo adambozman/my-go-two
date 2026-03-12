@@ -478,10 +478,9 @@ const Onboarding = () => {
     // Save gender to profile
     if (user) {
       const identityAnswer = profileAnswerData["identity"];
-      const gender = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
-      if (gender && gender !== "prefer-not") {
-        await supabase.from("profiles").update({ gender }).eq("user_id", user.id);
-      }
+      const rawGender = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
+      const gender = normalizeGender(rawGender);
+      await supabase.from("profiles").update({ gender }).eq("user_id", user.id);
     }
 
     // Call AI personalization with a timeout to prevent infinite loading

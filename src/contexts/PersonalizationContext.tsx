@@ -119,8 +119,7 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
         { event: "UPDATE", schema: "public", table: "profiles", filter: `user_id=eq.${user.id}` },
         (payload) => {
           const newGender = (payload.new as any)?.gender;
-          if (newGender) setGender(newGender);
-          else setGender("neutral");
+          setGender(normalizeGender(newGender));
         }
       )
       .subscribe();

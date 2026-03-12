@@ -81,7 +81,7 @@ const PreferencesSection = () => {
   };
 
   const getOptionImage = (optionId: string, categoryId: string) => {
-    return getStyleImage(optionId, gender as any, categoryId);
+    return getStyleImage(optionId, gender, categoryId);
   };
 
   const toggleOption = (questionId: string, optionId: string, multiSelect: boolean) => {

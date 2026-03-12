@@ -251,8 +251,8 @@ export function getTemplateImage(templateName: string, gender: Gender | string):
  * Get the correct product/subcategory image based on gender.
  * Always resolves through bank-safe logic; legacy file fallbacks are only used as a last resort.
  */
-export function getProductImage(productId: string, gender: Gender, fallback?: string): string {
-  const key = resolveGender(gender);
+export function getProductImage(productId: string, gender: Gender | string, fallback?: string): string {
+  const key = normalizeGender(gender);
   const entry = productImages[normalizeKey(productId)];
 
   if (entry) {
