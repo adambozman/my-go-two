@@ -100,7 +100,7 @@ const Preferences = () => {
                 style={{ borderRadius: "1.2rem" }}
               >
                 <div className="aspect-[4/5] relative">
-                  <img src={getOptionImage(opt.id, opt.localImage, opt.image)} alt={opt.label} className="w-full h-full object-cover" />
+                  <img src={getOptionImage(opt.id, question.category)} alt={opt.label} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
                     <span className="text-sm font-semibold text-white leading-tight drop-shadow">{opt.label}</span>
