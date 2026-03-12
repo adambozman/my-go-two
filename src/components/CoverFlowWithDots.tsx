@@ -1,56 +1,31 @@
 import { type ReactNode } from "react";
-import { CarouselDotsContext, SectionIndexContext, useCarouselDotsProvider, useCarouselDots } from "@/contexts/CarouselDotsContext";
-
-const BottomDots = () => {
-  const carouselState = useCarouselDots();
-  if (!carouselState || carouselState.count <= 1) return null;
-
-  return (
-    <div
-      className="absolute left-0 right-0 flex justify-center gap-2 z-30"
-      style={{ bottom: "4%" }}
-    >
-      {Array.from({ length: carouselState.count }).map((_, i) => (
-        <button
-          key={i}
-          onClick={() => carouselState.setActiveIndex(i)}
-          className="rounded-full transition-all duration-300"
-          style={{
-            width: 8,
-            height: 8,
-            background: i === carouselState.activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
-          }}
-        />
-      ))}
-    </div>
-  );
-};
-
-const RightDot = () => (
-  <div
-    className="absolute right-3 z-30"
-    style={{ top: "25%", transform: "translateY(-50%)" }}
-  >
-    <div
-      className="rounded-full"
-      style={{ width: 8, height: 8, background: "#2D6870" }}
-      aria-label="Current section"
-    />
-  </div>
-);
+import { CarouselDotsContext, SectionIndexContext, useCarouselDotsProvider } from "@/contexts/CarouselDotsContext";
+import { BottomCarouselDots, RightSectionDots } from "@/components/CarouselDotsOverlay";
 
 const CoverFlowWithDots = ({ children }: { children: ReactNode }) => {
   const dotsProvider = useCarouselDotsProvider();
 
   return (
     <CarouselDotsContext.Provider value={dotsProvider}>
-      <SectionIndexContext.Provider value={0}>
-        <div className="relative w-full h-full">
-          {children}
-          <BottomDots />
-          <RightDot />
+      <div className="relative w-full h-full">
+        <div className="w-full h-full">
+          <div
+            className="w-full flex flex-col"
+            style={{ height: "100%", minHeight: "100%" }}
+          >
+            <div className="flex-1 flex items-center justify-center">
+              <div className="w-full relative">
+                <SectionIndexContext.Provider value={0}>
+                  {children}
+                </SectionIndexContext.Provider>
+              </div>
+            </div>
+          </div>
         </div>
-      </SectionIndexContext.Provider>
+
+        <BottomCarouselDots />
+        <RightSectionDots count={1} activeIndex={0} />
+      </div>
     </CarouselDotsContext.Provider>
   );
 };
