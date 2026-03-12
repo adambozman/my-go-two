@@ -212,7 +212,7 @@ const Onboarding = () => {
                     style={{ borderRadius: "1.4rem" }}
                   >
                     <img
-                      src={`https://images.unsplash.com/photo-${img.id}?w=400&h=500&fit=crop&q=80`}
+                      src={getCategoryImage(img.id, selectedGender)}
                       alt={img.label}
                       className="w-full h-full object-cover"
                     />

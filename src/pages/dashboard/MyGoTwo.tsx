@@ -63,11 +63,11 @@ const PreferencesSection = () => {
 
     for (const question of imageQuestions) {
       const candidates = question.options
-        .map((opt) => getStyleImage(opt.id, gender as any))
+        .map((opt) => getStyleImage(opt.id, gender as any, question.category))
         .filter((src): src is string => Boolean(src));
 
       const uniqueCandidate = candidates.find((src) => !used.has(src));
-      const selected = uniqueCandidate || candidates[0] || question.options[0]?.localImage || question.options[0]?.image || "";
+      const selected = uniqueCandidate || candidates[0] || getStyleImage("classic", gender as any, question.category);
 
       if (selected) used.add(selected);
       covers[question.id] = selected;
@@ -77,13 +77,11 @@ const PreferencesSection = () => {
   }, [imageQuestions, gender]);
 
   const getQuestionCoverImage = (q: (typeof imageQuestions)[0]) => {
-    return questionCoverImages[q.id] || q.options[0]?.localImage || q.options[0]?.image || "";
+    return questionCoverImages[q.id] || getStyleImage("classic", gender as any, q.category);
   };
 
-  const getOptionImage = (optionId: string, fallbackLocal?: string, fallbackUrl?: string) => {
-    const genderImg = getStyleImage(optionId, gender as any);
-    // Only fall back to localImage if getStyleImage truly has no mapping at all
-    return genderImg || fallbackLocal || fallbackUrl || "";
+  const getOptionImage = (optionId: string, categoryId: string) => {
+    return getStyleImage(optionId, gender as any, categoryId);
   };
 
   const toggleOption = (questionId: string, optionId: string, multiSelect: boolean) => {
