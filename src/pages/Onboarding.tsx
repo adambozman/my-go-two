@@ -544,7 +544,7 @@ const Onboarding = () => {
         <SwipeCards
           questions={categoryQuestions}
           categoryName={catName}
-          getImage={(optionId) => getStyleImage(optionId, selectedGender) || ""}
+          getImage={(optionId) => getStyleImage(optionId, selectedGender, selectedCategory || undefined)}
           onBack={() => setPhase("category-picker")}
           onComplete={(catSelections) => {
             // Merge selections into answers
