@@ -101,28 +101,16 @@ const SnapScrollLayout = ({ sections }: SnapScrollLayoutProps) => {
         </div>
 
         {/* Bottom dots — fixed, controls cards left/right */}
-        <BottomDots />
+        <BottomCarouselDots />
 
         {/* Dot pagination — right side, controls sections up/down */}
         {sections.length > 1 && (
-          <div
-            className="absolute right-3 flex flex-col gap-2.5 z-30"
-            style={{ top: "25%", transform: "translateY(-50%)" }}
-          >
-            {sections.map((section, i) => (
-              <button
-                key={`right-${section.id}`}
-                onClick={() => scrollTo(i)}
-                className="rounded-full transition-all duration-300"
-                style={{
-                  width: 8,
-                  height: 8,
-                  background: i === activeIndex ? "#2D6870" : "rgba(200, 200, 200, 0.6)",
-                }}
-                aria-label={`Go to ${section.label}`}
-              />
-            ))}
-          </div>
+          <RightSectionDots
+            count={sections.length}
+            activeIndex={activeIndex}
+            onSelect={scrollTo}
+            labels={sections.map((section) => section.label)}
+          />
         )}
       </div>
     </CarouselDotsContext.Provider>
