@@ -18,11 +18,9 @@ import { useToast } from "@/hooks/use-toast";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
 import KnowMeCarousel, { type KnowMeCard } from "@/components/KnowMeCarousel";
 
-// Template images for preferences category
-import imgBrandPreferences from "@/assets/templates/brand-preferences.jpg";
+// Template images for preferences category (gender-neutral ones that don't have gendered variants)
 import imgLoveLanguage from "@/assets/templates/love-language.jpg";
 import imgPetPeeves from "@/assets/templates/pet-peeves.jpg";
-import imgSpecificProducts from "@/assets/templates/specific-products.jpg";
 
 interface AIQuizCategory {
   id: string;
