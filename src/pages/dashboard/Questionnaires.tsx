@@ -111,7 +111,22 @@ const Questionnaires = () => {
   // Preferences templates
   const [prefTemplates, setPrefTemplates] = useState<Template[]>([]);
   const [creating, setCreating] = useState<string | null>(null);
-  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(null);
+  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(() => {
+    const saved = sessionStorage.getItem("knowme_coverflow");
+    if (saved) {
+      sessionStorage.removeItem("knowme_coverflow");
+      const rawSub = allTemplateSubtypes[saved];
+      const rawSubcats = templateSubcategories[saved];
+      if (rawSub || rawSubcats) {
+        return {
+          name: saved,
+          subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
+          subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
+        };
+      }
+    }
+    return null;
+  });
 
   // Load existing answers
   useEffect(() => {
@@ -213,9 +228,9 @@ const Questionnaires = () => {
           ...(templateId ? { template_id: templateId } : {}),
         });
         if (cardError) uiToast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
-        const fromTemplate = coverFlowTemplate?.name;
+        if (coverFlowTemplate?.name) sessionStorage.setItem("knowme_coverflow", coverFlowTemplate.name);
         setCoverFlowTemplate(null);
-        navigate(`/dashboard/lists/${newList.id}`, { state: { fromTemplate } });
+        navigate(`/dashboard/lists/${newList.id}`);
       }
     } catch (e: any) {
       uiToast({ title: "Something went wrong", description: e.message, variant: "destructive" });

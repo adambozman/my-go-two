@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -214,7 +214,6 @@ const MyGoTwo = () => {
   const { toast } = useToast();
   const { profileAnswers, gender, loading: genderLoading } = usePersonalization();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const getTemplateImage = (name: string) => resolveTemplateImage(name, gender);
 
@@ -232,21 +231,24 @@ const MyGoTwo = () => {
   const [creating, setCreating] = useState<string | null>(null);
   const [createSheetOpen, setCreateSheetOpen] = useState(false);
   const [createSheetCategory, setCreateSheetCategory] = useState<{ key: string; label: string }>({ key: "", label: "" });
-  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(null);
-
-  useEffect(() => {
-    const state = location.state as { openTemplate?: string } | null;
-    if (state?.openTemplate && allTemplateSubtypes[state.openTemplate]) {
-      const rawSub = allTemplateSubtypes[state.openTemplate];
-      const rawSubcats = templateSubcategories[state.openTemplate];
-      setCoverFlowTemplate({
-        name: state.openTemplate,
-        subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
-        subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
-      });
-      window.history.replaceState({}, document.title);
+  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(() => {
+    // Restore cover flow state from sessionStorage on mount (e.g. after browser back)
+    const saved = sessionStorage.getItem("gotwo_coverflow");
+    if (saved) {
+      sessionStorage.removeItem("gotwo_coverflow");
+      const templateName = saved;
+      const rawSub = allTemplateSubtypes[templateName];
+      const rawSubcats = templateSubcategories[templateName];
+      if (rawSub || rawSubcats) {
+        return {
+          name: templateName,
+          subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
+          subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
+        };
+      }
     }
-  }, [location]);
+    return null;
+  });
 
   const fetchTemplates = () => {
     supabase.from("card_templates").select("*").then(({ data }) => {
@@ -314,9 +316,10 @@ const MyGoTwo = () => {
           ...(templateId ? { template_id: templateId } : {}),
         });
         if (cardError) toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
-        const fromTemplate = coverFlowTemplate?.name;
+        // Persist cover flow name so it restores on browser back
+        if (coverFlowTemplate?.name) sessionStorage.setItem("gotwo_coverflow", coverFlowTemplate.name);
         setCoverFlowTemplate(null);
-        navigate(`/dashboard/lists/${newList.id}`, { state: { fromTemplate } });
+        navigate(`/dashboard/lists/${newList.id}`);
       }
     } catch (e: any) {
       toast({ title: "Something went wrong", description: e.message, variant: "destructive" });

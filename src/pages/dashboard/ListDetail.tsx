@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,9 +32,7 @@ interface GoTwoCard {
 const ListDetail = () => {
   const { listId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const { user } = useAuth();
-  const fromTemplate = (location.state as any)?.fromTemplate as string | undefined;
   const { toast } = useToast();
   const [listTitle, setListTitle] = useState("");
   const [cards, setCards] = useState<GoTwoCard[]>([]);
