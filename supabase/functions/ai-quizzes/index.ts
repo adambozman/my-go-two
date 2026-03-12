@@ -40,6 +40,14 @@ serve(async (req) => {
       .eq("user_id", user.id)
       .single();
 
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("gender, age")
+      .eq("user_id", user.id)
+      .single();
+
+    const userGender = profile?.gender || "unknown";
+    const userAge = profile?.age || null;
     const profileAnswers = (prefs?.profile_answers as Record<string, any>) || {};
 
     if (cached) {
