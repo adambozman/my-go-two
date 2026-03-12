@@ -7,6 +7,7 @@ import { getCategoryImage } from "@/data/genderImages";
 import { getTemplateImage } from "@/data/templateImageResolver";
 import {
   onboardingCategories,
+  onboardingQuestions,
   getQuestionsForGender,
 } from "@/data/onboardingQuestions";
 import { supabase } from "@/integrations/supabase/client";
