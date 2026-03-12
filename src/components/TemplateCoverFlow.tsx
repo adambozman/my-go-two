@@ -125,8 +125,13 @@ const CoverFlowCarousel = ({
   );
 };
 
-const TemplateCoverFlow = ({ templateName, subtypes, subcategories, onBack, onSelect, creating, gender = "male" }: TemplateCoverFlowProps) => {
-  const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
+const TemplateCoverFlow = ({ templateName, subtypes, subcategories, initialSubcategoryId, onBack, onSelect, creating, gender = "male" }: TemplateCoverFlowProps) => {
+  const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(() => {
+    if (initialSubcategoryId && subcategories) {
+      return subcategories.find(sc => sc.id === initialSubcategoryId) || null;
+    }
+    return null;
+  });
   const hasSubcategories = subcategories && subcategories.length > 0;
 
   // Resolve images based on gender
