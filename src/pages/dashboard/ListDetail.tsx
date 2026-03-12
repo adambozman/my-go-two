@@ -220,8 +220,6 @@ const ListDetail = () => {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
         <div>
           <h1 className="text-3xl font-bold text-primary">{listTitle}</h1>
         </div>
