@@ -41,11 +41,9 @@ const CoverFlowCarousel = ({
   onItemClick: (index: number, isActive: boolean) => void;
 }) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(items.length / 2));
+  useRegisterCarousel(items.length, activeIndex, setActiveIndex);
 
   if (items.length === 0) return null;
-
-  const goLeft = () => setActiveIndex((i) => (i - 1 + items.length) % items.length);
-  const goRight = () => setActiveIndex((i) => (i + 1) % items.length);
 
   return (
     <>
