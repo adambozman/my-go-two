@@ -107,7 +107,8 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
     }
   }
 
-  const getTemplateImage = (name: string) => resolveTemplateImage(name, "neutral");
+  const { gender } = usePersonalization();
+  const getTemplateImage = (name: string) => resolveTemplateImage(name, gender);
 
   const grouped = categoryOrder
     .filter((cat) => permittedCategories.has(cat))
