@@ -60,9 +60,9 @@ import updatedCards from "@/assets/stock/updated-cards.jpg";
 import valentines from "@/assets/stock/valentines.jpg";
 
 // ── Style images ──
-import maleMinimal from "@/assets/styles/minimal.jpg";
-import maleClassic from "@/assets/styles/classic.jpg";
-import maleSporty from "@/assets/styles/sporty.jpg";
+import maleMinimal from "@/assets/styles/male/minimal.jpg";
+import maleClassic from "@/assets/styles/male/classic.jpg";
+import maleSporty from "@/assets/styles/male/sporty.jpg";
 import maleTrendy from "@/assets/styles/male/trendy.jpg";
 import maleEdgy from "@/assets/styles/male/edgy.jpg";
 import maleBoho from "@/assets/styles/male/boho.jpg";
