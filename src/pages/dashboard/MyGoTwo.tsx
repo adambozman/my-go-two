@@ -232,21 +232,24 @@ const MyGoTwo = () => {
   const [creating, setCreating] = useState<string | null>(null);
   const [createSheetOpen, setCreateSheetOpen] = useState(false);
   const [createSheetCategory, setCreateSheetCategory] = useState<{ key: string; label: string }>({ key: "", label: "" });
-  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(null);
-
-  useEffect(() => {
-    const state = location.state as { openTemplate?: string } | null;
-    if (state?.openTemplate && allTemplateSubtypes[state.openTemplate]) {
-      const rawSub = allTemplateSubtypes[state.openTemplate];
-      const rawSubcats = templateSubcategories[state.openTemplate];
-      setCoverFlowTemplate({
-        name: state.openTemplate,
-        subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
-        subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
-      });
-      window.history.replaceState({}, document.title);
+  const [coverFlowTemplate, setCoverFlowTemplate] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[] } | null>(() => {
+    // Restore cover flow state from sessionStorage on mount (e.g. after browser back)
+    const saved = sessionStorage.getItem("gotwo_coverflow");
+    if (saved) {
+      sessionStorage.removeItem("gotwo_coverflow");
+      const templateName = saved;
+      const rawSub = allTemplateSubtypes[templateName];
+      const rawSubcats = templateSubcategories[templateName];
+      if (rawSub || rawSubcats) {
+        return {
+          name: templateName,
+          subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
+          subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
+        };
+      }
     }
-  }, [location]);
+    return null;
+  });
 
   const fetchTemplates = () => {
     supabase.from("card_templates").select("*").then(({ data }) => {
