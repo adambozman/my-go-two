@@ -49,8 +49,6 @@ const SettingsPage = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
-  const [expandedConnection, setExpandedConnection] = useState<string | null>(null);
-  const [userLists, setUserLists] = useState<UserList[]>([]);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // User settings state
