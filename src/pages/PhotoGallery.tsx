@@ -154,8 +154,8 @@ import maleMeasurements from "@/assets/templates/male/measurements.jpg";
 import maleMeasureRing from "@/assets/templates/male/measure-ring.jpg";
 import maleFragrances from "@/assets/templates/male/fragrances.jpg";
 import maleJewelry from "@/assets/templates/male/jewelry.jpg";
-import maleJewelryNecklaces from "@/assets/templates/neutral/jewelry-necklaces.jpg";
-import maleJewelryBracelets from "@/assets/templates/neutral/jewelry-bracelets.jpg";
+import maleJewelryNecklaces from "@/assets/templates/male/jewelry-necklaces.jpg";
+import maleJewelryBracelets from "@/assets/templates/male/jewelry-bracelets.jpg";
 import maleJewelryWatches from "@/assets/templates/male/jewelry-watches.jpg";
 
 // Female templates
