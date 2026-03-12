@@ -1,7 +1,7 @@
 // Male style images
-import maleMinimal from "@/assets/styles/minimal.jpg";
-import maleClassic from "@/assets/styles/classic.jpg";
-import maleSporty from "@/assets/styles/sporty.jpg";
+import maleMinimal from "@/assets/styles/male/minimal.jpg";
+import maleClassic from "@/assets/styles/male/classic.jpg";
+import maleSporty from "@/assets/styles/male/sporty.jpg";
 import maleTrendy from "@/assets/styles/male/trendy.jpg";
 import maleEdgy from "@/assets/styles/male/edgy.jpg";
 import maleBoho from "@/assets/styles/male/boho.jpg";
@@ -46,11 +46,11 @@ import neutralOutdoors from "@/assets/styles/outdoors.jpg";
 import neutralEvents from "@/assets/styles/events.jpg";
 import neutralStayingIn from "@/assets/styles/staying-in.jpg";
 import neutralFitness from "@/assets/styles/fitness.jpg";
-import neutralPracticalGift from "@/assets/styles/dining.jpg";
-import neutralThoughtfulGift from "@/assets/styles/traveling.jpg";
-import neutralLuxuriousGift from "@/assets/styles/luxury.jpg";
-import neutralExperienceGift from "@/assets/styles/outdoors.jpg";
-import neutralSurpriseGift from "@/assets/styles/events.jpg";
+import neutralPracticalGift from "@/assets/styles/practical-gift.jpg";
+import neutralThoughtfulGift from "@/assets/styles/thoughtful-gift.jpg";
+import neutralLuxuriousGift from "@/assets/styles/luxurious-gift.jpg";
+import neutralExperienceGift from "@/assets/styles/experience-gift.jpg";
+import neutralSurpriseGift from "@/assets/styles/surprise-gift.jpg";
 import neutralHippy from "@/assets/styles/hippy.jpg";
 import neutralPreppy from "@/assets/styles/preppy.jpg";
 import neutralStreet from "@/assets/styles/street.jpg";
@@ -59,7 +59,7 @@ import neutralBougie from "@/assets/styles/bougie.jpg";
 
 // Category images
 import maleShopping from "@/assets/categories/male/shopping.jpg";
-import maleStyle from "@/assets/categories/male/shopping.jpg";
+import maleStyle from "@/assets/categories/male/style.jpg";
 import maleFood from "@/assets/categories/male/food.jpg";
 import maleGifts from "@/assets/categories/male/gifts.jpg";
 import maleLifestyle from "@/assets/categories/male/lifestyle.jpg";
