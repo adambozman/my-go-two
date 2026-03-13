@@ -51,7 +51,7 @@ const GoTwoCard = ({ image, label, isActive = true, onClick }: GoTwoCardProps) =
               fontSize: 15,
               letterSpacing: "0.02em",
               color: "#fff",
-              background: "rgba(45,104,112,0.72)",
+              background: "rgba(45,104,112,0.45)",
               borderRadius: 999,
               backdropFilter: "blur(6px)",
               maxWidth: 220,
