@@ -1,8 +1,9 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, X, Undo2 } from "lucide-react";
+import { ArrowLeft, X, Undo2, ImagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   isPathBlocked,
   addToBlocklist,
@@ -62,8 +63,10 @@ function globToImages(glob: Record<string, string>): GalleryImage[] {
 export default function PhotoGallery() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabName>("Male");
-  const [version, setVersion] = useState(0); // bump to force re-filter after DB write
+  const [version, setVersion] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [genProgress, setGenProgress] = useState({ completed: 0, total: 0 });
 
   // Load blocklist from DB on mount
   useEffect(() => {
@@ -71,6 +74,57 @@ export default function PhotoGallery() {
       setLoading(false);
       setVersion((v) => v + 1);
     });
+  }, []);
+
+  const handleBulkGenerate = useCallback(async () => {
+    setGenerating(true);
+    setGenProgress({ completed: 0, total: 0 });
+    try {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const resp = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/bulk-generate-category-images`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!resp.ok) {
+        toast.error("Bulk generation failed: " + resp.status);
+        setGenerating(false);
+        return;
+      }
+
+      const reader = resp.body?.getReader();
+      if (!reader) { setGenerating(false); return; }
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const msg = JSON.parse(line);
+            if (msg.type === "progress") {
+              setGenProgress({ completed: msg.completed, total: msg.total });
+            } else if (msg.type === "done") {
+              toast.success(`Done! ${msg.total_success} generated, ${msg.total_failed} failed`);
+            }
+          } catch {}
+        }
+      }
+    } catch (e: any) {
+      toast.error("Bulk generation error: " + e.message);
+    }
+    setGenerating(false);
   }, []);
 
   const allImages = useMemo<Record<TabName, GalleryImage[]>>(
@@ -130,8 +184,23 @@ export default function PhotoGallery() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {/* Bulk generate bar */}
+      <div className="sticky top-0 z-40 bg-background border-b border-border px-4 py-2 flex items-center gap-3">
+        <Button
+          onClick={handleBulkGenerate}
+          disabled={generating}
+          size="sm"
+          className="gap-2"
+        >
+          <ImagePlus className="w-4 h-4" />
+          {generating
+            ? `Generating... ${genProgress.completed}/${genProgress.total}`
+            : "Generate All Category Images"}
+        </Button>
+      </div>
+
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-background/90 backdrop-blur border-b border-border px-4 py-3 flex items-center gap-3">
+      <div className="sticky top-[49px] z-30 bg-background/90 backdrop-blur border-b border-border px-4 py-3 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
@@ -142,7 +211,7 @@ export default function PhotoGallery() {
       </div>
 
       {/* Gender tabs */}
-      <div className="sticky top-[57px] z-20 bg-background/90 backdrop-blur border-b border-border px-4 py-2 flex gap-2">
+      <div className="sticky top-[98px] z-20 bg-background/90 backdrop-blur border-b border-border px-4 py-2 flex gap-2">
         {TABS.map((tab) => (
           <button
             key={tab}
