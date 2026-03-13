@@ -63,8 +63,10 @@ function globToImages(glob: Record<string, string>): GalleryImage[] {
 export default function PhotoGallery() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabName>("Male");
-  const [version, setVersion] = useState(0); // bump to force re-filter after DB write
+  const [version, setVersion] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [genProgress, setGenProgress] = useState({ completed: 0, total: 0 });
 
   // Load blocklist from DB on mount
   useEffect(() => {
@@ -72,6 +74,57 @@ export default function PhotoGallery() {
       setLoading(false);
       setVersion((v) => v + 1);
     });
+  }, []);
+
+  const handleBulkGenerate = useCallback(async () => {
+    setGenerating(true);
+    setGenProgress({ completed: 0, total: 0 });
+    try {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const resp = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/bulk-generate-category-images`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!resp.ok) {
+        toast.error("Bulk generation failed: " + resp.status);
+        setGenerating(false);
+        return;
+      }
+
+      const reader = resp.body?.getReader();
+      if (!reader) { setGenerating(false); return; }
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const msg = JSON.parse(line);
+            if (msg.type === "progress") {
+              setGenProgress({ completed: msg.completed, total: msg.total });
+            } else if (msg.type === "done") {
+              toast.success(`Done! ${msg.total_success} generated, ${msg.total_failed} failed`);
+            }
+          } catch {}
+        }
+      }
+    } catch (e: any) {
+      toast.error("Bulk generation error: " + e.message);
+    }
+    setGenerating(false);
   }, []);
 
   const allImages = useMemo<Record<TabName, GalleryImage[]>>(
