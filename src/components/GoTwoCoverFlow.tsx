@@ -34,8 +34,24 @@ const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
     .map((item, index) => ({ ...item, index }))
     .filter(({ index }) => Math.abs(index - activeIndex) <= maxVisibleOffset);
 
+  const activeLabel = items[activeIndex]?.label ?? "";
+
   return (
     <div className="relative w-full flex flex-col items-center">
+      {/* Centered title above active card */}
+      <p
+        className="text-center font-semibold mb-3 truncate"
+        style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: 18,
+          letterSpacing: "0.03em",
+          color: "var(--swatch-teal)",
+          height: LABEL_HEIGHT,
+          lineHeight: `${LABEL_HEIGHT}px`,
+        }}
+      >
+        {activeLabel}
+      </p>
       <div
         className="relative w-full overflow-hidden"
         style={{ height: stageHeight }}

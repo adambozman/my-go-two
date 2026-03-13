@@ -270,7 +270,7 @@ const MyGoTwo = () => {
           </p>
           {orderedSections.map((section) => (
             <div key={section.key} className="mt-8 first:mt-4">
-              <h2 className="section-header px-4 md:px-8 mb-4">{section.label}</h2>
+              <h2 className="section-header text-center mb-4">{section.label}</h2>
               <GoTwoCoverFlow items={section.items} onSelect={handleSelect} />
             </div>
           ))}
