@@ -48,8 +48,6 @@ const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
 
   const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
-  const activeItem = items[activeIndex];
-
   return (
     <div
       className="relative w-full flex flex-col items-center"
@@ -64,26 +62,8 @@ const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
         touchStartX.current = null;
       }}
     >
-      {/* Stage */}
+      {/* Stage — shifted down slightly */}
       <div className="relative w-full" style={{ height: stageHeight, marginTop: 16 }}>
-        {/* Active label — floats just above center card */}
-        <div
-          className="absolute left-1/2 flex items-center justify-center pointer-events-none"
-          style={{ transform: "translate(-50%, -100%)", top: (stageHeight - cardHeight) / 2, paddingBottom: 10, zIndex: 20 }}
-        >
-          <span
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 18,
-              fontWeight: 500,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-              color: "#2D6870",
-            }}
-          >
-            {activeItem.label}
-          </span>
-        </div>
         <div className="absolute inset-0 flex items-center justify-center">
           {slots.map((offset) => {
             const itemIndex = (activeIndex + offset + n) % n;

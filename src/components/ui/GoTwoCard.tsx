@@ -92,7 +92,24 @@ const GoTwoCard = ({
           </div>
         )}
 
-
+        {/* Bottom-left pill label */}
+        <div className="absolute bottom-3 left-3">
+          <span
+            className="px-3 py-1 font-semibold truncate block"
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 15,
+              letterSpacing: "0.02em",
+              color: "#fff",
+              background: "rgba(45,104,112,0.45)",
+              borderRadius: 999,
+              backdropFilter: "blur(6px)",
+              maxWidth: 220,
+            }}
+          >
+            {label}
+          </span>
+        </div>
       </div>
     </div>
   );
