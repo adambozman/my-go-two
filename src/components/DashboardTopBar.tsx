@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Bell, Settings, Camera, Upload, Trash2, Database } from "lucide-react";
+import { Bell, Settings, Camera, Upload, Trash2, Database, ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
@@ -127,7 +127,16 @@ export function DashboardTopBar() {
   return (
     <header className="px-4 md:px-8 pt-4 md:pt-7">
       <div className="relative flex items-center justify-between gap-2 md:gap-4">
-        {/* Profile circle with dropdown — left */}
+        {/* Back button or Profile circle — left */}
+        {location.pathname !== "/dashboard/my-go-two" && location.pathname.startsWith("/dashboard") && ![ "/dashboard", "/dashboard/recommendations", "/dashboard/questionnaires", "/dashboard/search", "/dashboard/settings", "/dashboard/notifications", "/dashboard/data-sync", "/dashboard/connection" ].includes(location.pathname) ? (
+          <button
+            onClick={() => navigate(-1)}
+            className="relative shrink-0 focus:outline-none flex items-center gap-2"
+            style={{ color: 'var(--swatch-teal)' }}
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+        ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="relative shrink-0 focus:outline-none">
@@ -171,6 +180,7 @@ export function DashboardTopBar() {
             )}
           </DropdownMenuContent>
         </DropdownMenu>
+        )}
 
         <input
           ref={fileInputRef}
