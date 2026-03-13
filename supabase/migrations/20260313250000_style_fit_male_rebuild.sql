@@ -329,7 +329,7 @@ VALUES (
 -- ─── 2. SHOES ───────────────────────────────────────────────
 INSERT INTO category_registry (key, label, section, page, genders, sort_order, is_active, fields, subcategories)
 VALUES (
-  'shoes-male', 'Shoes', 'style-fit', 'mygotwo', ARRAY['male'], 20, true, '[]'::jsonb,
+  'shoes-male', 'Footwear', 'style-fit', 'mygotwo', ARRAY['male'], 20, true, '[]'::jsonb,
   '[
     {
       "id": "sneakers-casual",

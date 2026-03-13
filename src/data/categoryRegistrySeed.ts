@@ -1237,7 +1237,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
   },
   {
     "key": "shoes-male",
-    "label": "Shoes",
+    "label": "Footwear",
     "section": "style-fit",
     "page": "mygotwo",
     "genders": [
@@ -4774,7 +4774,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
   },
   {
     "key": "shoes-female",
-    "label": "Shoes",
+    "label": "Footwear",
     "section": "style-fit",
     "page": "mygotwo",
     "genders": [
@@ -7295,7 +7295,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
   },
   {
     "key": "shoes-nb",
-    "label": "Shoes",
+    "label": "Footwear",
     "section": "style-fit",
     "page": "mygotwo",
     "genders": [
