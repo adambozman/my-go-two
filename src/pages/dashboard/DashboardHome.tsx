@@ -60,7 +60,7 @@ const ConnectionsCoverFlow = ({
   // Include a virtual "add" card at the end
   const totalCount = cards.length + 1;
   const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
-  useRegisterCarousel(totalCount, activeIndex, setActiveIndex);
+  
 
   return (
     <div className="relative flex items-center justify-center">
