@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CardEditButton from "@/components/CardEditButton";
-import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
+
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
 import { getProductImage, getTemplateImage } from "@/lib/imageResolver";
 import { CAROUSEL_LAYOUT, HEADER_LAYOUT } from "@/lib/carouselConfig";
