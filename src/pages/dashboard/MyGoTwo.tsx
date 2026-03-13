@@ -5,15 +5,27 @@ import { useCategoryRegistry } from "@/hooks/useCategoryRegistry";
 import GoTwoCoverFlow from "@/components/GoTwoCoverFlow";
 import { Loader2 } from "lucide-react";
 
+// Canonical display labels — keys come from the DB, labels are display names
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
   "food-drink": "Food & Drink",
   "gifts-wishlist": "Gifts & Wishlist",
   "home-living": "Home & Living",
   "entertainment": "Entertainment & Interests",
+  "health-wellness": "Health & Wellness",
+  "travel": "Travel",
 };
 
-const sectionOrder = ["style-fit", "food-drink", "gifts-wishlist", "home-living", "entertainment"];
+// Preferred section render order — DB sections not in this list appear at end
+const sectionOrder = [
+  "style-fit",
+  "food-drink",
+  "gifts-wishlist",
+  "home-living",
+  "entertainment",
+  "health-wellness",
+  "travel",
+];
 
 const MyGoTwo = () => {
   const { user } = useAuth();
@@ -23,7 +35,6 @@ const MyGoTwo = () => {
   const { sections, loading: registryLoading } = useCategoryRegistry(gender, "mygotwo");
 
   const handleSelect = (categoryKey: string) => {
-    // Navigate or drill down into the selected category
     console.log("Selected category:", categoryKey);
   };
 
@@ -35,11 +46,19 @@ const MyGoTwo = () => {
     );
   }
 
-  const orderedSections = sectionOrder
+  // Merge DB section keys with preferred order — unknown sections append at end
+  const dbSectionKeys = Object.keys(sections);
+  const unknownKeys = dbSectionKeys.filter((k) => !sectionOrder.includes(k));
+  const mergedOrder = [...sectionOrder, ...unknownKeys];
+
+  const orderedSections = mergedOrder
     .filter((key) => sections[key] && sections[key].length > 0)
     .map((key) => ({
       key,
-      label: sectionLabels[key] ?? key,
+      label: sectionLabels[key] ?? key
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" & "),
       items: sections[key].map((cat) => ({
         id: cat.key,
         label: cat.label,
@@ -48,16 +67,24 @@ const MyGoTwo = () => {
     }));
 
   return (
-    <div className="h-full overflow-y-auto pb-12">
+    <div className="h-full overflow-y-auto pb-20">
       {orderedSections.map((section) => (
-        <div key={section.key} className="mt-8 first:mt-4">
-          <h2 className="section-header px-4 md:px-8 mb-4">{section.label}</h2>
+        <div key={section.key} className="mt-6 first:mt-4">
+          {/* Section label centered above the coverflow */}
+          <h2
+            className="section-header text-center mb-5"
+            style={{ letterSpacing: "0.12em", fontSize: 11 }}
+          >
+            {section.label}
+          </h2>
           <GoTwoCoverFlow items={section.items} onSelect={handleSelect} />
         </div>
       ))}
 
       {orderedSections.length === 0 && (
-        <p className="text-muted-foreground text-center mt-12">No categories found.</p>
+        <p className="text-muted-foreground text-center mt-16 text-sm">
+          No categories found. Check back soon.
+        </p>
       )}
     </div>
   );
