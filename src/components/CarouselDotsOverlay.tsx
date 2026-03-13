@@ -45,11 +45,7 @@ interface RightSectionDotsProps {
   labels?: string[];
 }
 
-export const RightSectionDots = ({
-  count,
-  activeIndex,
-  onSelect,
-}: RightSectionDotsProps) => {
+export const RightSectionDots = ({ count, activeIndex, onSelect }: RightSectionDotsProps) => {
   if (count <= 1) return null;
 
   return (
