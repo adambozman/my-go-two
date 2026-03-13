@@ -131,7 +131,7 @@ export function DashboardTopBar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="relative shrink-0 focus:outline-none">
-              <Avatar className="w-9 h-9 md:w-[44px] md:h-[44px] cursor-pointer">
+              <Avatar className="w-9 h-9 md:w-[52px] md:h-[52px] cursor-pointer">
                 {avatarUrl ? <AvatarImage src={avatarUrl} alt="Profile" /> : null}
                 <AvatarFallback
                   className="text-xs md:text-sm font-semibold"
