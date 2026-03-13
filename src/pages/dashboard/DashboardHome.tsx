@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
-import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
-import SnapScrollLayout from "@/components/SnapScrollLayout";
 import CardEditButton from "@/components/CardEditButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
