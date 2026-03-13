@@ -98,7 +98,7 @@ const SettingsPage = () => {
         setEmail(user.email ?? "");
         const { data } = await supabase.from("profiles").select("display_name, gender").eq("user_id", user.id).single();
         setDisplayName(data?.display_name ?? "");
-        setGender((data as any)?.gender ?? "");
+        setGender(data?.gender ? normalizeGender(data.gender) : "");
       } catch {}
     };
     fetchProfile();

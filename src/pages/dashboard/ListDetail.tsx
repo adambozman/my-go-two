@@ -56,7 +56,7 @@ const ListDetail = () => {
       supabase.from("profiles").select("gender").eq("user_id", user.id).single(),
     ]);
     setListTitle(list?.title ?? "");
-    setUserGender((profile as any)?.gender ?? null);
+    setUserGender(profile?.gender ? normalizeGender(profile.gender) : null);
     setCards(
       (cardsData ?? []).map((c) => ({
         ...c,
