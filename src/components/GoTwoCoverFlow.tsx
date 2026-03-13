@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import CoverFlowCarousel from "@/components/ui/CoverFlowCarousel";
 
 interface GoTwoCoverFlowProps {
@@ -5,8 +6,12 @@ interface GoTwoCoverFlowProps {
   onSelect: (id: string) => void;
 }
 
-const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => (
-  <CoverFlowCarousel items={items} onSelect={onSelect} />
+const GoTwoCoverFlow = forwardRef<HTMLDivElement, GoTwoCoverFlowProps>(
+  ({ items, onSelect }, ref) => (
+    <CoverFlowCarousel ref={ref} items={items} onSelect={onSelect} />
+  )
 );
+
+GoTwoCoverFlow.displayName = "GoTwoCoverFlow";
 
 export default GoTwoCoverFlow;
