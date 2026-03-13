@@ -268,12 +268,18 @@ const MyGoTwo = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="h-full overflow-y-auto pb-12"
+          className="h-full overflow-y-auto snap-y snap-mandatory"
+          style={{ scrollbarWidth: 'none' }}
         >
           {orderedSections.map((section) => (
-            <div key={section.key} className="mt-8 first:mt-4">
-              <h2 className="section-header text-center mb-4">{section.label}</h2>
-              <GoTwoCoverFlow items={section.items} onSelect={handleSelect} />
+            <div
+              key={section.key}
+              className="snap-start h-full flex flex-col items-center justify-center"
+            >
+              <h2 className="section-header text-center mb-6">{section.label}</h2>
+              <div className="gotwo-coverflow-scale">
+                <GoTwoCoverFlow items={section.items} onSelect={handleSelect} />
+              </div>
             </div>
           ))}
           {orderedSections.length === 0 && (
