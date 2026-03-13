@@ -175,7 +175,7 @@ export function DashboardTopBar() {
         />
 
         {/* GoTwo logo — absolute center */}
-        <GoTwoText className="text-[38px] md:text-[58px] [&_.two]:text-[48px] md:[&_.two]:text-[72px] absolute left-1/2 -translate-x-1/2" />
+        <GoTwoText className="text-[38px] md:text-[72px] [&_.two]:text-[48px] md:[&_.two]:text-[88px] absolute left-1/2 -translate-x-1/2" />
 
         {/* Settings + Bell — right */}
         <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0">
