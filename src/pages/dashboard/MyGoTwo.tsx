@@ -363,7 +363,7 @@ const MyGoTwo = () => {
   return (
     <AnimatePresence mode="wait">
       {coverFlowState ? (
-        <CoverFlowWithDots>
+        <div className="relative w-full h-full">
           <TemplateCoverFlow
             key="coverflow"
             templateName={coverFlowState.name}
@@ -375,7 +375,7 @@ const MyGoTwo = () => {
             creating={creating !== null}
             gender={gender}
           />
-        </CoverFlowWithDots>
+        </div>
       ) : (
         <div className="h-full relative">
           {registryLoading || genderLoading ? (
