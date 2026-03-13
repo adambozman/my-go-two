@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
+
 import CardEditButton from "@/components/CardEditButton";
 import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
@@ -30,7 +30,7 @@ const SPRING = CAROUSEL_LAYOUT.spring;
 
 const KnowMeCarousel = ({ cards, onCardClick, loading }: KnowMeCarouselProps) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
-  useRegisterCarousel(cards.length, activeIndex, setActiveIndex);
+  
   
 
   if (cards.length === 0 && loading) {

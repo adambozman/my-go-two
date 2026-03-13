@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
-import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
-import SnapScrollLayout from "@/components/SnapScrollLayout";
 import CardEditButton from "@/components/CardEditButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -62,7 +60,7 @@ const ConnectionsCoverFlow = ({
   // Include a virtual "add" card at the end
   const totalCount = cards.length + 1;
   const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
-  useRegisterCarousel(totalCount, activeIndex, setActiveIndex);
+  
 
   return (
     <div className="relative flex items-center justify-center">
@@ -233,7 +231,7 @@ const ConnectionsCoverFlow = ({
 
 const HomeCoverFlow = ({ cards }: { cards: PlaceholderCard[] }) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
-  useRegisterCarousel(cards.length, activeIndex, setActiveIndex);
+  
 
   if (cards.length === 0) return null;
 
@@ -479,13 +477,12 @@ const DashboardHome = () => {
 
   return (
     <div className="h-full relative">
-      <SnapScrollLayout
-        sections={allSections.map((s) => ({
-          id: s.id,
-          label: s.label,
-          content: s.content,
-        }))}
-      />
+      {allSections.map((s) => (
+          <div key={s.id} className="w-full">
+            <h3 className="section-header text-center py-2">{s.label}</h3>
+            {s.content}
+          </div>
+        ))}
       <AnimatePresence>
         {openConnection && (
           <ConnectionPage

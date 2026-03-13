@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CardEditButton from "@/components/CardEditButton";
-import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
+
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
 import { getProductImage, getTemplateImage } from "@/lib/imageResolver";
 import { CAROUSEL_LAYOUT, HEADER_LAYOUT } from "@/lib/carouselConfig";
@@ -42,7 +42,7 @@ const CoverFlowCarousel = ({
   onItemClick: (index: number, isActive: boolean) => void;
 }) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(items.length / 2));
-  useRegisterCarousel(items.length, activeIndex, setActiveIndex);
+  
 
   if (items.length === 0) return null;
 

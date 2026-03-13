@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import CreateCustomCardSheet from "@/components/CreateCustomCardSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,8 +11,6 @@ import { usePersonalization } from "@/contexts/PersonalizationContext";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
-import CoverFlowWithDots from "@/components/CoverFlowWithDots";
-import SnapScrollLayout from "@/components/SnapScrollLayout";
 import { AnimatePresence } from "framer-motion";
 import { profileQuestions } from "@/data/profileQuestions";
 import { getStyleImage } from "@/lib/imageResolver";
@@ -36,7 +33,7 @@ const PreferencesSection = () => {
   const imageQuestions = profileQuestions.filter((q) => q.type === "image-grid");
 
   const [activeIndex, setActiveIndex] = useState(Math.floor(imageQuestions.length / 2));
-  useRegisterCarousel(imageQuestions.length, activeIndex, setActiveIndex);
+  
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [selections, setSelections] = useState<Record<string, string[]>>(() => {
     const saved: Record<string, string[]> = {};
@@ -367,7 +364,7 @@ const MyGoTwo = () => {
   return (
     <AnimatePresence mode="wait">
       {coverFlowState ? (
-        <CoverFlowWithDots>
+        <div className="relative w-full h-full">
           <TemplateCoverFlow
             key="coverflow"
             templateName={coverFlowState.name}
@@ -379,7 +376,7 @@ const MyGoTwo = () => {
             creating={creating !== null}
             gender={gender}
           />
-        </CoverFlowWithDots>
+        </div>
       ) : (
         <div className="h-full relative">
           {registryLoading || genderLoading ? (
@@ -397,8 +394,7 @@ const MyGoTwo = () => {
               >
                 Tap a card to view or edit your details.
               </p>
-              <SnapScrollLayout
-                sections={[
+              {[
                   ...grouped.map((group) => {
                     const allItems = [
                       ...group.items.map((cat) => ({
@@ -443,8 +439,12 @@ const MyGoTwo = () => {
                     label: "My Preferences",
                     content: <PreferencesSection />,
                   },
-                ]}
-              />
+                ].map((section) => (
+                  <div key={section.id} className="w-full">
+                    <h3 className="section-header text-center py-2">{section.label}</h3>
+                    {section.content}
+                  </div>
+                ))}
             </>
           )}
 

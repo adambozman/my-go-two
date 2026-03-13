@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SwipeCards from "@/components/SwipeCards";
-import SnapScrollLayout from "@/components/SnapScrollLayout";
+
 import KnowMeCarousel, { type KnowMeCard } from "@/components/KnowMeCarousel";
 
 /* ── Types ─────────────────────────────────────────── */
@@ -233,19 +233,16 @@ const Questionnaires = () => {
       >
         Tap a card to view or edit your details.
       </p>
-      <SnapScrollLayout
-        sections={SECTIONS.map((section) => ({
-          id: section.id,
-          label: section.label,
-          content: (
+      {SECTIONS.map((section) => (
+          <div key={section.id} className="w-full">
+            <h3 className="section-header text-center py-2">{section.label}</h3>
             <KnowMeCarousel
               cards={buildSectionCards(section.id)}
               onCardClick={handleCardClick}
               loading={loading}
             />
-          ),
-        }))}
-      />
+          </div>
+        ))}
     </div>
   );
 };
