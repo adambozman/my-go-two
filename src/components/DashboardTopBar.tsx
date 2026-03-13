@@ -138,10 +138,7 @@ export function DashboardTopBar() {
             style={{ color: 'var(--swatch-teal)' }}
           >
             <ArrowLeft className="w-5 h-5" />
-            <span
-              className="font-semibold tracking-widest uppercase hidden sm:block"
-              style={{ fontSize: 13, fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.12em' }}
-            >
+            <span className="section-header hidden sm:block">
               {backState.label}
             </span>
           </button>
