@@ -290,12 +290,12 @@ const MyGoTwo = () => {
             <p className="text-muted-foreground text-center mt-12">No categories found.</p>
           )}
 
-          {/* Right-side vertical dots */}
+          {/* Right-side vertical dots — centered to card stage */}
           <div
             className="fixed flex flex-col items-center gap-2"
             style={{
               right: 18,
-              top: 'calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2)',
+              top: 'calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2 + 23px)',
               transform: 'translateY(-50%)',
               zIndex: 50,
             }}
