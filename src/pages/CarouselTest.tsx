@@ -13,10 +13,10 @@ const TEST_ITEMS = [
 ];
 
 const DESKTOP = [
-  { w: 480, h: 300, radius: 36  },
-  { w: 130, h: 260, radius: 999 },
-  { w: 80,  h: 200, radius: 999 },
-  { w: 40,  h: 145, radius: 999 },
+  { w: 480, h: 420, radius: 36  },
+  { w: 130, h: 360, radius: 999 },
+  { w: 80,  h: 290, radius: 999 },
+  { w: 40,  h: 210, radius: 999 },
 ];
 
 const MOBILE = [
@@ -77,7 +77,7 @@ const PillCarousel = () => {
         const item = TEST_ITEMS[itemIndex];
         const abs = Math.min(Math.abs(offset), cards.length - 1);
         const { w, h, radius } = cards[abs];
-        const opacity = [1, 0.85, 0.65, 0.4][abs];
+        const opacity = 1;
         const z = 10 - abs;
         const isActive = offset === 0;
         const x = getX(offset, cards, gap);
