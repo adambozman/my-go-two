@@ -61,6 +61,11 @@ export function useCategoryRegistry(
         let imageMap = new Map<string, string>();
         try {
           imageMap = await preloadImages(keys, gender);
+          // DEBUG: log every key and its resolved image URL
+          console.log("[useCategoryRegistry] preloadImages result for gender:", gender);
+          for (const [k, url] of imageMap.entries()) {
+            console.log(`  [img] ${k} → ${url || "(empty)"}`);
+          }
         } catch (imgErr) {
           console.warn("Image preload failed, continuing without images:", imgErr);
         }
