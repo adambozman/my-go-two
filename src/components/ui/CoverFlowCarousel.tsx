@@ -72,7 +72,7 @@ const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
             const isActive = offset === 0;
             return (
               <motion.div
-                key={item.id}
+                key={`slot-${offset}`}
                 initial={false}
                 animate={{
                   x: offset * xGap,
