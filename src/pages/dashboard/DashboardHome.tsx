@@ -231,7 +231,7 @@ const ConnectionsCoverFlow = ({
 
 const HomeCoverFlow = ({ cards }: { cards: PlaceholderCard[] }) => {
   const [activeIndex, setActiveIndex] = useState(Math.floor(cards.length / 2));
-  useRegisterCarousel(cards.length, activeIndex, setActiveIndex);
+  
 
   if (cards.length === 0) return null;
 
