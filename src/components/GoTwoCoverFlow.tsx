@@ -40,8 +40,11 @@ const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
 
   return (
     <div className="relative w-full flex flex-col items-center">
-      {/* Stage */}
-      <div className="relative w-full overflow-hidden" style={{ height: 440 }}>
+      {/* Stage — CSS custom property handles responsive gap */}
+      <div
+        className="relative w-full overflow-hidden [--coverflow-gap:150px] md:[--coverflow-gap:190px]"
+        style={{ height: 440 }}
+      >
         <div className="absolute inset-0 flex items-center justify-center">
           <AnimatePresence mode="popLayout">
             {visibleItems.map(({ id, label, image, index }) => {
@@ -62,14 +65,6 @@ const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
                   }}
                   transition={SPRING}
                   className="absolute"
-                  style={
-                    {
-                      "--coverflow-gap": `${MOBILE_GAP}px`,
-                      ...(typeof window !== "undefined" && window.innerWidth >= 768
-                        ? { "--coverflow-gap": `${DESKTOP_GAP}px` }
-                        : {}),
-                    } as React.CSSProperties
-                  }
                 >
                   <GoTwoCard
                     image={image}
