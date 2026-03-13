@@ -1,7 +1,18 @@
 /**
- * TEST PAGE — completely isolated from the real app.
- * Nothing in this file or its imports touches shared components.
- * AppSidebar and DashboardTopBar are layout-only and read-only — safe to import.
+ * ============================================================
+ * TEST PAGE — src/pages/test/CarouselTest.tsx
+ * ============================================================
+ * ALL changes stay in THIS FILE ONLY.
+ * The following are READ-ONLY and must NEVER be modified:
+ *   - src/components/*
+ *   - src/lib/*
+ *   - src/layouts/*
+ *   - src/pages/dashboard/*
+ *   - src/pages/*.tsx
+ *   - src/App.tsx
+ *   - src/index.css
+ *   - Any file outside src/pages/test/
+ * ============================================================
  */
 
 import React, { useState, useEffect, useRef } from "react";
