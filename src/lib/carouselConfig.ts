@@ -12,18 +12,18 @@ export const CAROUSEL_LAYOUT = {
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
 };
 
-/** Desktop card dimensions — used by CoverFlowCarousel on md+ screens */
+/** Desktop card dimensions — Figma originals × 1.4, website view only (≥768px) */
 export const CAROUSEL_LAYOUT_DESKTOP = {
-  cardWidth: 420,
-  cardHeight: 560,
-  flankWidth: 220,
-  flankHeight: 340,
+  cardWidth: 725,
+  cardHeight: 490,
+  flankWidth: 125,
+  flankHeight: 405,
   xGap: 260,
-  stageHeight: 640,
+  stageHeight: 560,
   maxVisibleOffset: 2,
   flankBlur: 0.2,
   flankOpacity: 0.5,
-  borderRadius: 16,
+  borderRadius: 36,
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
 };
 
