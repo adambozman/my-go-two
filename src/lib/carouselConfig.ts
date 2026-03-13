@@ -6,7 +6,7 @@ export const CAROUSEL_LAYOUT = {
   xGap: 190,
   stageHeight: 480,
   maxVisibleOffset: 2,
-  flankBlur: 1.8,
+  flankBlur: 0.2,
   flankOpacity: 0.5,
   borderRadius: 16,
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
