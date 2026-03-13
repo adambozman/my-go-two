@@ -54,6 +54,7 @@ import coworker4 from "@/assets/stock/coworker-4.jpg";
 
 import { getTemplateImage } from "@/data/templateImageResolver";
 import { normalizeGender } from "@/lib/gender";
+import { isBlocked } from "@/data/imageBlocklist";
 
 export const STOCK_PHOTOS: Record<string, { id: string; url: string }[]> = {
   partner: [
