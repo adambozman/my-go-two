@@ -21,13 +21,14 @@ import { useCategoryRegistry, type CategoryItem } from "@/hooks/useCategoryRegis
 import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 const sectionLabels: Record<string, string> = {
-  personal: "Personal",
+  "style-fit": "Style & Fit",
   "food-drink": "Food & Drink",
-  "gifts-occasions": "Gifts & Occasions",
-  experiences: "Experiences",
+  "gifts-wishlist": "Gifts & Wishlist",
+  "home-living": "Home & Living",
+  "entertainment": "Entertainment & Interests",
 };
 
-const sectionOrder = ["personal", "food-drink", "gifts-occasions", "experiences"];
+const sectionOrder = ["style-fit", "food-drink", "gifts-wishlist", "home-living", "entertainment"];
 
 // ── Preferences Section (profile questions cover flow) ──
 const PreferencesSection = () => {
