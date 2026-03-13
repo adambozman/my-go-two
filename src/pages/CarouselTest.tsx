@@ -13,10 +13,10 @@ const TEST_ITEMS = [
 ];
 
 const DESKTOP = [
-  { w: 480, h: 420, radius: 36  },
-  { w: 130, h: 360, radius: 999 },
-  { w: 80,  h: 290, radius: 999 },
-  { w: 40,  h: 210, radius: 999 },
+  { w: 680, h: 480, radius: 36  }, // center — very wide, tallest
+  { w: 160, h: 400, radius: 999 }, // ±1 — dramatic width drop, slightly shorter
+  { w: 90,  h: 320, radius: 999 }, // ±2
+  { w: 44,  h: 240, radius: 999 }, // ±3
 ];
 
 const MOBILE = [
