@@ -17,7 +17,7 @@ interface CoverFlowCarouselProps {
 const VISIBLE = 2;
 
 function useLayout() {
-  const get = () => window.innerWidth >= 768 ? CAROUSEL_LAYOUT_DESKTOP : CAROUSEL_LAYOUT;
+  const get = () => window.innerWidth >= 1024 ? CAROUSEL_LAYOUT_DESKTOP : CAROUSEL_LAYOUT;
   const [layout, setLayout] = useState(get);
   useEffect(() => {
     const handler = () => setLayout(get());
