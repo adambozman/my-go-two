@@ -10,25 +10,25 @@ const TEST_ITEMS = [
   { id: "6", label: "Accessories", color: "#744210", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80" },
 ];
 
-// Layout constants — tune these
-const ACTIVE_W = 340;
-const ACTIVE_H = 460;
+// ── Layout constants — tune these ──
+const ACTIVE_W  = 320;
+const ACTIVE_H  = 380;
 
-const NEAR_W = 110;   // offset ±1
-const NEAR_H = 380;
+const NEAR_W    = 200;  // offset ±1 — wide-ish pill
+const NEAR_H    = 280;
 
-const FAR_W = 72;     // offset ±2
-const FAR_H = 290;
+const FAR_W     = 100;  // offset ±2 — narrow pill
+const FAR_H     = 200;
 
-const X_GAP = 220;    // horizontal spacing between centers
+const X_GAP     = 240;  // center-to-center spacing
 
 const SPRING = { type: "spring", stiffness: 320, damping: 32 };
 
 function getCardSize(offset: number) {
   const abs = Math.abs(offset);
-  if (abs === 0) return { w: ACTIVE_W, h: ACTIVE_H, radius: 24, opacity: 1, z: 10 };
-  if (abs === 1) return { w: NEAR_W,   h: NEAR_H,   radius: 999, opacity: 0.85, z: 5 };
-  return           { w: FAR_W,    h: FAR_H,    radius: 999, opacity: 0.6,  z: 2 };
+  if (abs === 0) return { w: ACTIVE_W, h: ACTIVE_H, radius: 28,  opacity: 1,    z: 10 };
+  if (abs === 1) return { w: NEAR_W,   h: NEAR_H,   radius: 999, opacity: 0.9,  z: 5  };
+  return           { w: FAR_W,    h: FAR_H,    radius: 999, opacity: 0.65, z: 2  };
 }
 
 const PillCarousel = () => {
@@ -42,7 +42,7 @@ const PillCarousel = () => {
   return (
     <div
       className="relative flex items-center justify-center"
-      style={{ height: ACTIVE_H + 80, width: "100%" }}
+      style={{ height: ACTIVE_H + 60, width: "100%" }}
       onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={(e) => {
         if (touchStartX.current === null) return;
