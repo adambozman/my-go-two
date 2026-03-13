@@ -3,39 +3,38 @@ import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react"
 import { DOT_LAYOUT } from "@/lib/carouselConfig";
 import { useCarouselDots } from "@/contexts/CarouselDotsContext";
 
-const ARROW_COLOR = "#2d6870";
+const CHEVRON_SIZE = 28;
+const CHEVRON_COLOR = DOT_LAYOUT.activeColor;
 
 export const BottomCarouselDots = () => {
   const carouselState = useCarouselDots();
   if (!carouselState || carouselState.count <= 1) return null;
 
-  const isFirst = carouselState.activeIndex === 0;
-  const isLast = carouselState.activeIndex === carouselState.count - 1;
+  const { activeIndex, setActiveIndex, count } = carouselState;
 
   return (
-    <div
-      className="absolute left-0 right-0 flex justify-center items-center gap-6 z-30"
-      style={{ top: DOT_LAYOUT.bottomTopOffset, transform: DOT_LAYOUT.bottomTransform }}
-    >
-      {!isFirst && (
+    <>
+      {activeIndex > 0 && (
         <button
-          onClick={() => carouselState.setActiveIndex(carouselState.activeIndex - 1)}
-          className="transition-opacity duration-300"
+          onClick={() => setActiveIndex(activeIndex - 1)}
+          className="absolute z-30 transition-all duration-300"
+          style={{ top: "50%", left: 12, transform: "translateY(-50%)" }}
           aria-label="Previous card"
         >
-          <ChevronLeft size={24} color={ARROW_COLOR} strokeWidth={2.5} />
+          <ChevronLeft style={{ color: CHEVRON_COLOR, width: CHEVRON_SIZE, height: CHEVRON_SIZE }} />
         </button>
       )}
-      {!isLast && (
+      {activeIndex < count - 1 && (
         <button
-          onClick={() => carouselState.setActiveIndex(carouselState.activeIndex + 1)}
-          className="transition-opacity duration-300"
+          onClick={() => setActiveIndex(activeIndex + 1)}
+          className="absolute z-30 transition-all duration-300"
+          style={{ top: "50%", right: 12, transform: "translateY(-50%)" }}
           aria-label="Next card"
         >
-          <ChevronRight size={24} color={ARROW_COLOR} strokeWidth={2.5} />
+          <ChevronRight style={{ color: CHEVRON_COLOR, width: CHEVRON_SIZE, height: CHEVRON_SIZE }} />
         </button>
       )}
-    </div>
+    </>
   );
 };
 
@@ -50,41 +49,31 @@ export const RightSectionDots = ({
   count,
   activeIndex,
   onSelect,
-  labels = [],
 }: RightSectionDotsProps) => {
   if (count <= 1) return null;
 
-  const isFirst = activeIndex === 0;
-  const isLast = activeIndex === count - 1;
-  const interactive = typeof onSelect === "function";
-
   return (
-    <div
-      className="absolute flex flex-col items-center gap-2 z-30"
-      style={{
-        right: DOT_LAYOUT.rightOffset,
-        top: DOT_LAYOUT.rightTopOffset,
-        transform: "translateY(-50%)",
-      }}
-    >
-      {!isFirst && (
+    <>
+      {activeIndex > 0 && (
         <button
-          onClick={() => interactive && onSelect(activeIndex - 1)}
-          className="transition-opacity duration-300"
-          aria-label={labels[activeIndex - 1] ? `Go to ${labels[activeIndex - 1]}` : "Previous section"}
+          onClick={() => onSelect?.(activeIndex - 1)}
+          className="absolute z-30 transition-all duration-300"
+          style={{ top: 12, left: "50%", transform: "translateX(-50%)" }}
+          aria-label="Previous section"
         >
-          <ChevronUp size={24} color={ARROW_COLOR} strokeWidth={2.5} />
+          <ChevronUp style={{ color: CHEVRON_COLOR, width: CHEVRON_SIZE, height: CHEVRON_SIZE }} />
         </button>
       )}
-      {!isLast && (
+      {activeIndex < count - 1 && (
         <button
-          onClick={() => interactive && onSelect(activeIndex + 1)}
-          className="transition-opacity duration-300"
-          aria-label={labels[activeIndex + 1] ? `Go to ${labels[activeIndex + 1]}` : "Next section"}
+          onClick={() => onSelect?.(activeIndex + 1)}
+          className="absolute z-30 transition-all duration-300"
+          style={{ bottom: 12, left: "50%", transform: "translateX(-50%)" }}
+          aria-label="Next section"
         >
-          <ChevronDown size={24} color={ARROW_COLOR} strokeWidth={2.5} />
+          <ChevronDown style={{ color: CHEVRON_COLOR, width: CHEVRON_SIZE, height: CHEVRON_SIZE }} />
         </button>
       )}
-    </div>
+    </>
   );
 };
