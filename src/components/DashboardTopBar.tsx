@@ -186,12 +186,10 @@ export function DashboardTopBar() {
                 Data Sync
               </DropdownMenuItem>
             )}
-            {user?.email === "adambozman@gmail.com" && (
-              <DropdownMenuItem onClick={() => navigate("/carousel-test")}>
-                <Sparkles className="mr-2 h-4 w-4" />
-                Carousel Test
-              </DropdownMenuItem>
-            )}
+            <DropdownMenuItem onClick={() => navigate("/carousel-test")}>
+              <Sparkles className="mr-2 h-4 w-4" />
+              Carousel Test
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         )}
