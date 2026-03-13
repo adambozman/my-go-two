@@ -28,6 +28,22 @@ function useLayout() {
   return layout;
 }
 
+// Compute x position for each slot when per-offset pill sizes are defined
+function getXFromPills(offset: number, pills: { w: number; h: number; r: number }[], gap: number): number {
+  if (offset === 0) return 0;
+  const dir = offset > 0 ? 1 : -1;
+  const abs = Math.abs(offset);
+  let x = 0;
+  for (let i = 0; i < abs; i++) {
+    const a = pills[Math.min(i, pills.length - 1)];
+    const b = pills[Math.min(i + 1, pills.length - 1)];
+    x += a.w / 2 + gap + b.w / 2;
+  }
+  return x * dir;
+}
+
+const PILL_GAP = 20; // spacing between cards
+
 const CoverFlowCarousel = ({ items, onSelect, layoutOverride }: CoverFlowCarouselProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const defaultLayout = useLayout();
@@ -73,19 +89,19 @@ const CoverFlowCarousel = ({ items, onSelect, layoutOverride }: CoverFlowCarouse
             const absOffset = Math.abs(offset);
             const isActive = offset === 0;
 
-            // If layout has per-offset pills, use them. Otherwise scale.
             const pills = (layout as any).pills;
             const pill = pills ? pills[Math.min(absOffset, pills.length - 1)] : null;
             const w = pill ? pill.w : cardWidth;
             const h = pill ? pill.h : (isActive ? cardHeight : cardHeight * 0.6);
             const r = pill ? pill.r : borderRadius;
+            const x = pills ? getXFromPills(offset, pills, PILL_GAP) : offset * xGap;
 
             return (
               <motion.div
                 key={`slot-${offset}`}
                 initial={false}
                 animate={{
-                  x: offset * xGap,
+                  x,
                   scale: pill ? 1 : (isActive ? 1 : 0.6),
                   opacity: isActive ? 1 : flankOpacity,
                   zIndex: VISIBLE + 1 - absOffset,

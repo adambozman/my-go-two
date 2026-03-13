@@ -18,7 +18,7 @@ export const CAROUSEL_LAYOUT_TEST_DESKTOP = {
   cardHeight: 490,
   flankWidth: 125,
   flankHeight: 405,
-  xGap: 440,
+  xGap: 0, // unused when pills array present — x is computed per-offset
   stageHeight: 540,
   maxVisibleOffset: 2,
   flankBlur: 0.2,
