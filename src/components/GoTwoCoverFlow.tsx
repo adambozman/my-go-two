@@ -9,32 +9,28 @@ interface GoTwoCoverFlowProps {
   onSelect: (id: string) => void;
 }
 
-const { xGap, stageHeight, maxVisibleOffset, flankOpacity, spring } = CAROUSEL_LAYOUT;
+const { xGap, stageHeight, flankOpacity, spring } = CAROUSEL_LAYOUT;
 const SCALE_ACTIVE = 1;
 const SCALE_FLANK = 0.6;
-// Label sits above card — add its height + margin so it doesn't clip
-const LABEL_HEIGHT = 32;
+const VISIBLE = 2; // cards on each side
 
 const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
-  // Fix 1: Start centered, not at index 0
-  const [activeIndex, setActiveIndex] = useState(Math.floor(items.length / 2));
+  const [activeIndex, setActiveIndex] = useState(0);
+  const n = items.length;
 
-  const handlePrev = () => setActiveIndex((i) => Math.max(0, i - 1));
-  const handleNext = () => setActiveIndex((i) => Math.min(items.length - 1, i + 1));
+  const handlePrev = () => setActiveIndex((i) => (i - 1 + n) % n);
+  const handleNext = () => setActiveIndex((i) => (i + 1) % n);
 
-  const handleCardClick = (index: number) => {
-    if (index === activeIndex) {
+  const handleCardClick = (offset: number) => {
+    if (offset === 0) {
       onSelect(items[activeIndex].id);
     } else {
-      setActiveIndex(index);
+      setActiveIndex((activeIndex + offset + n) % n);
     }
   };
 
-  const visibleItems = items
-    .map((item, index) => ({ ...item, index }))
-    .filter(({ index }) => Math.abs(index - activeIndex) <= maxVisibleOffset);
-
-  const activeLabel = items[activeIndex]?.label ?? "";
+  // Build the 5 slots: -2, -1, 0, +1, +2
+  const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
   return (
     <div className="relative w-full flex flex-col items-center">
@@ -44,31 +40,31 @@ const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
       >
         <div className="absolute inset-0 flex items-center justify-center">
           <AnimatePresence mode="popLayout">
-            {visibleItems.map(({ id, label, image, index }) => {
-              const offset = index - activeIndex;
-              const isActive = offset === 0;
+            {slots.map((offset) => {
+              const itemIndex = (activeIndex + offset + n) % n;
+              const item = items[itemIndex];
               const absOffset = Math.abs(offset);
+              const isActive = offset === 0;
 
               return (
                 <motion.div
-                  key={id}
+                  key={`${offset}`}
                   layout
                   initial={false}
                   animate={{
-                    // Fix 2: numeric pixels, not CSS variable — Framer Motion can animate these
                     x: offset * xGap,
                     scale: isActive ? SCALE_ACTIVE : SCALE_FLANK,
                     opacity: isActive ? 1 : flankOpacity,
-                    zIndex: items.length - absOffset,
+                    zIndex: VISIBLE + 1 - absOffset,
                   }}
                   transition={spring}
                   className="absolute"
                 >
                   <GoTwoCard
-                    image={image}
-                    label={label}
+                    image={item.image}
+                    label={item.label}
                     isActive={isActive}
-                    onClick={() => handleCardClick(index)}
+                    onClick={() => handleCardClick(offset)}
                   />
                 </motion.div>
               );
@@ -77,26 +73,22 @@ const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
         </div>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation — always both visible since it wraps */}
       <div className="flex items-center gap-6 mt-4">
-        {activeIndex > 0 && (
-          <button
-            onClick={handlePrev}
-            className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-            aria-label="Previous"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-        )}
-        {activeIndex < items.length - 1 && (
-          <button
-            onClick={handleNext}
-            className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-            aria-label="Next"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        )}
+        <button
+          onClick={handlePrev}
+          className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+          aria-label="Previous"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        <button
+          onClick={handleNext}
+          className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+          aria-label="Next"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
       </div>
     </div>
   );
