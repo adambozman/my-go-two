@@ -47,7 +47,7 @@ const TemplateCoverFlow = ({
     }));
 
     return (
-      <div className="max-w-5xl mx-auto relative">
+      <div className="max-w-5xl mx-auto relative" style={{ paddingTop: 100 }}>
         <div className="absolute z-20 flex items-center gap-3" style={headerStyle}>
           <Button variant="ghost" size="icon" onClick={onBack} className="h-6 w-6 p-0 hover:bg-transparent">
             <ArrowLeft className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
@@ -80,7 +80,7 @@ const TemplateCoverFlow = ({
   }));
 
   return (
-    <div className="max-w-5xl mx-auto relative">
+    <div className="max-w-5xl mx-auto relative" style={{ paddingTop: 100 }}>
       <div className="absolute z-20 flex items-center gap-3" style={headerStyle}>
         <Button
           variant="ghost"
