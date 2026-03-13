@@ -196,10 +196,20 @@ const TemplateCoverFlow = ({
   }
 
   // Level 3b / Level 4 — product picker
-  const products = activeSubcategory ? activeSubcategory.products : subtypes;
+  // Some subcategories have nested `products`, others have `fields` directly (acting as leaf items)
+  const products = activeSubcategory
+    ? (activeSubcategory.products ?? [])
+    : subtypes;
   const breadcrumb = activeSubcategory
     ? `${templateName} › ${activeSubcategory.name}`
     : templateName;
+
+  // If an active subcategory has fields directly (no products), treat it as a leaf item
+  if (activeSubcategory && products.length === 0 && (activeSubcategory as any).fields) {
+    // This subcategory IS the leaf item — select it directly
+    onSelect(activeSubcategory as unknown as SubtypeItem, templateName);
+    return null;
+  }
 
   const productItems = products.map((p) => ({
     id: p.id,
