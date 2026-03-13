@@ -10,25 +10,25 @@ const TEST_ITEMS = [
   { id: "6", label: "Accessories", color: "#744210", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80" },
 ];
 
-// ── Layout constants — tune these ──
-const ACTIVE_W  = 280;
-const ACTIVE_H  = 380;
+// ── Layout constants matching Figma exactly ──
+const ACTIVE_W  = 360;  // wide landscape center
+const ACTIVE_H  = 240;  // shorter height — landscape
 
-const NEAR_W    = 180;  // offset ±1
-const NEAR_H    = 300;
+const NEAR_W    = 90;   // ±1 — tall narrow pill
+const NEAR_H    = 300;  // taller than center
 
-const FAR_W     = 100;  // offset ±2
-const FAR_H     = 220;
+const FAR_W     = 70;   // ±2 — shorter narrow pill  
+const FAR_H     = 200;  // shorter than ±1
 
-const X_GAP     = 200;  // equal center-to-center spacing
+const X_GAP     = 190;  // equal center-to-center
 
 const SPRING = { type: "spring", stiffness: 320, damping: 32 };
 
 function getCardSize(offset: number) {
   const abs = Math.abs(offset);
-  if (abs === 0) return { w: ACTIVE_W, h: ACTIVE_H, radius: 999, opacity: 1,    z: 10 };
-  if (abs === 1) return { w: NEAR_W,   h: NEAR_H,   radius: 999, opacity: 0.85, z: 5  };
-  return           { w: FAR_W,    h: FAR_H,    radius: 999, opacity: 0.65, z: 2  };
+  if (abs === 0) return { w: ACTIVE_W, h: ACTIVE_H, radius: 32,  opacity: 1,    z: 10 };
+  if (abs === 1) return { w: NEAR_W,   h: NEAR_H,   radius: 999, opacity: 0.9,  z: 5  };
+  return           { w: FAR_W,    h: FAR_H,    radius: 999, opacity: 0.7,  z: 2  };
 }
 
 const PillCarousel = () => {
@@ -42,7 +42,7 @@ const PillCarousel = () => {
   return (
     <div
       className="relative flex items-center justify-center"
-      style={{ height: ACTIVE_H + 60, width: "100%" }}
+      style={{ height: NEAR_H + 60, width: "100%" }}
       onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={(e) => {
         if (touchStartX.current === null) return;
