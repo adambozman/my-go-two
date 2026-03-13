@@ -204,6 +204,12 @@ body {
   text-transform: uppercase;
 }
 @media (min-width: 768px) {
+  :root {
+    --header-height: 205px;
+    --header-icons-row-height: 72px;
+    --header-divider-margin-top: 18px;
+    --header-tagline-margin-top: 22px;
+  }
   .header-tagline-quote {
     font-size: 20px;
   }
