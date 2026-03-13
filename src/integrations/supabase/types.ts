@@ -143,49 +143,70 @@ export type Database = {
       category_registry: {
         Row: {
           created_at: string
+          created_by: string | null
           fields: Json
+          fill_in_fields: Json | null
           genders: string[]
           id: string
           image_prompt_female: string | null
           image_prompt_male: string | null
           image_prompt_nonbinary: string | null
           is_active: boolean
+          is_shared: boolean
+          is_system: boolean
           key: string
           label: string
+          level: number
           page: string
+          parent_key: string | null
           section: string
+          shared_count: number
           sort_order: number
           subcategories: Json | null
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           fields?: Json
+          fill_in_fields?: Json | null
           genders: string[]
           id?: string
           image_prompt_female?: string | null
           image_prompt_male?: string | null
           image_prompt_nonbinary?: string | null
           is_active?: boolean
+          is_shared?: boolean
+          is_system?: boolean
           key: string
           label: string
+          level?: number
           page: string
+          parent_key?: string | null
           section: string
+          shared_count?: number
           sort_order?: number
           subcategories?: Json | null
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           fields?: Json
+          fill_in_fields?: Json | null
           genders?: string[]
           id?: string
           image_prompt_female?: string | null
           image_prompt_male?: string | null
           image_prompt_nonbinary?: string | null
           is_active?: boolean
+          is_shared?: boolean
+          is_system?: boolean
           key?: string
           label?: string
+          level?: number
           page?: string
+          parent_key?: string | null
           section?: string
+          shared_count?: number
           sort_order?: number
           subcategories?: Json | null
         }
