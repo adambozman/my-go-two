@@ -229,7 +229,7 @@ const SettingsPage = () => {
     { key: "subscription", icon: CreditCard, title: "Subscription", description: "Your plan and billing details" },
     { key: "help", icon: HelpCircle, title: "Help & Support", description: "Get help, contact us, FAQs" },
     { key: "about", icon: Info, title: "About GoTwo", description: "Version, terms, and privacy policy" },
-    ...(user?.email === "adambozman@gmail.com" ? [{ key: "data-sync", icon: Database, title: "Data Sync", description: "Sync category registry to Supabase" }] : []),
+    { key: "data-sync", icon: Database, title: "Data Sync", description: "Sync category registry to Supabase" },
   ];
 
   return (
