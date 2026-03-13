@@ -116,6 +116,81 @@ export type Database = {
           },
         ]
       }
+      category_images: {
+        Row: {
+          category_key: string
+          created_at: string
+          gender: string
+          id: string
+          image_url: string
+        }
+        Insert: {
+          category_key: string
+          created_at?: string
+          gender: string
+          id?: string
+          image_url: string
+        }
+        Update: {
+          category_key?: string
+          created_at?: string
+          gender?: string
+          id?: string
+          image_url?: string
+        }
+        Relationships: []
+      }
+      category_registry: {
+        Row: {
+          created_at: string
+          fields: Json
+          genders: string[]
+          id: string
+          image_prompt_female: string | null
+          image_prompt_male: string | null
+          image_prompt_nonbinary: string | null
+          is_active: boolean
+          key: string
+          label: string
+          page: string
+          section: string
+          sort_order: number
+          subcategories: Json | null
+        }
+        Insert: {
+          created_at?: string
+          fields?: Json
+          genders: string[]
+          id?: string
+          image_prompt_female?: string | null
+          image_prompt_male?: string | null
+          image_prompt_nonbinary?: string | null
+          is_active?: boolean
+          key: string
+          label: string
+          page: string
+          section: string
+          sort_order?: number
+          subcategories?: Json | null
+        }
+        Update: {
+          created_at?: string
+          fields?: Json
+          genders?: string[]
+          id?: string
+          image_prompt_female?: string | null
+          image_prompt_male?: string | null
+          image_prompt_nonbinary?: string | null
+          is_active?: boolean
+          key?: string
+          label?: string
+          page?: string
+          section?: string
+          sort_order?: number
+          subcategories?: Json | null
+        }
+        Relationships: []
+      }
       couples: {
         Row: {
           created_at: string

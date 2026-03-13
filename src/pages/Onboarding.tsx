@@ -19,7 +19,7 @@ import {
   OnboardingQuestion,
 } from "@/data/onboardingQuestions";
 import { profileQuestions } from "@/data/profileQuestions";
-import { getStyleImage, getCategoryImage } from "@/data/genderImages";
+import { getStyleImage, getCategoryImage } from "@/lib/imageResolver";
 
 type Phase = "intro" | "profile" | "personalizing" | "category-picker" | "category-questions";
 

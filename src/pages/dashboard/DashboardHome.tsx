@@ -315,9 +315,26 @@ const DashboardHome = () => {
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [openConnection, setOpenConnection] = useState<{ card: ConnectionCard; rect: { x: number; y: number; width: number; height: number } } | null>(null);
 
+  const { sections: dashboardSections, loading: registryLoading } = useCategoryRegistry(gender, 'dashboard');
+
+  const SECTION_LABELS: Record<string, string> = {
+    calendar: "Shared Calendar",
+    activity: "Recent Activity",
+    occasions: "Occasions",
+    memories: "Memories",
+  };
+
   const otherCategories = useMemo(() => {
-    return buildDashboardOtherCategories(gender);
-  }, [gender]);
+    return Object.entries(dashboardSections).map(([sectionId, items]) => ({
+      id: sectionId,
+      label: SECTION_LABELS[sectionId] || sectionId,
+      cards: items.map(item => ({
+        id: item.key,
+        name: item.label,
+        image: item.image,
+      })),
+    }));
+  }, [dashboardSections]);
 
   // Load connections from couples table (both as inviter and invitee)
   const loadConnections = useCallback(async () => {

@@ -1,7 +1,10 @@
 /**
- * Centralized local stock photo bank for connection + dashboard cards.
+ * Centralized local stock photo bank for connection cards.
  * All images are bundled locally — no external URLs.
- * Relationship sets and dashboard scene rules are resolved from one place.
+ * Relationship sets are resolved from one place.
+ *
+ * Dashboard category images are now handled by the category_registry
+ * and category_images tables via useCategoryRegistry hook.
  */
 
 import partner1 from "@/assets/stock/partner-1.jpg";
@@ -52,8 +55,6 @@ import coworker2 from "@/assets/stock/coworker-2.jpg";
 import coworker3 from "@/assets/stock/coworker-3.jpg";
 import coworker4 from "@/assets/stock/coworker-4.jpg";
 
-import { getTemplateImage } from "@/data/templateImageResolver";
-import { normalizeGender } from "@/lib/gender";
 import { isBlocked } from "@/data/imageBlocklist";
 
 export const STOCK_PHOTOS: Record<string, { id: string; url: string }[]> = {
@@ -149,23 +150,19 @@ export function getDefaultPhotoForLabel(label: string): string {
 /**
  * Assign a unique photo to each card in a list so no two cards
  * in the same carousel share the same image.
- * Cards that already have a user-set photo keep it; only cards
- * using fallback/stock photos get de-duplicated.
  */
 export function assignUniquePhotos<T extends { image: string; name: string }>(
   cards: T[],
-  isUserPhoto?: (card: T) => boolean
+  isUserPhoto?: (card: T) => boolean,
 ): T[] {
   const used = new Set<string>();
 
-  // First pass: lock in user-uploaded photos
   for (const card of cards) {
     if (isUserPhoto?.(card)) {
       used.add(card.image);
     }
   }
 
-  // Second pass: assign unique stock photos
   return cards.map((card) => {
     if (isUserPhoto?.(card)) return card;
 
@@ -175,98 +172,4 @@ export function assignUniquePhotos<T extends { image: string; name: string }>(
     used.add(chosen);
     return { ...card, image: chosen };
   });
-}
-
-export interface DashboardStockCard {
-  id: string;
-  name: string;
-  image: string;
-}
-
-export interface DashboardStockSection {
-  id: string;
-  label: string;
-  cards: DashboardStockCard[];
-}
-
-/**
- * Maps every dashboard card name to a template resolver key.
- * This keeps all dashboard cards under one single gender-aware image policy.
- */
-const DASHBOARD_CARD_TO_TEMPLATE: Record<string, string> = {
-  birthdays: "Birthday Preferences",
-  anniversaries: "Anniversary Gifts",
-  holidays: "Events",
-  "date nights": "Date Ideas",
-  "new lists": "Wish List Items",
-  "updated cards": "Brand Preferences",
-  "shared items": "Specific Product Versions",
-  "valentine's day": "Flowers",
-  christmas: "Events",
-  "mother's day": "Flowers",
-  "father's day": "Brand Preferences",
-  "just because": "Wish List Items",
-  "first date": "Date Ideas",
-  "trips together": "Travel Preferences",
-  milestones: "Anniversary Gifts",
-  "favorite moments": "Love Language",
-};
-
-
-/**
- * Global dashboard image resolver.
- * Every card uses one centralized template resolver path.
- */
-export function getDashboardCardImage(cardName: string, gender: string): string {
-  const key = normalizeLabel(cardName);
-  const g = normalizeGender(gender);
-  const templateName = DASHBOARD_CARD_TO_TEMPLATE[key] || "Specific Product Versions";
-  const result = getTemplateImage(templateName, g);
-  return isBlocked(result) ? "" : result;
-}
-
-/** Build dashboard sections from centralized global image rules */
-export function buildDashboardOtherCategories(gender: string): DashboardStockSection[] {
-  return [
-    {
-      id: "calendar",
-      label: "Shared Calendar",
-      cards: [
-        { id: "cal-1", name: "Birthdays", image: getDashboardCardImage("Birthdays", gender) },
-        { id: "cal-2", name: "Anniversaries", image: getDashboardCardImage("Anniversaries", gender) },
-        { id: "cal-3", name: "Holidays", image: getDashboardCardImage("Holidays", gender) },
-        { id: "cal-4", name: "Date Nights", image: getDashboardCardImage("Date Nights", gender) },
-      ],
-    },
-    {
-      id: "activity",
-      label: "Recent Activity",
-      cards: [
-        { id: "act-1", name: "New Lists", image: getDashboardCardImage("New Lists", gender) },
-        { id: "act-2", name: "Updated Cards", image: getDashboardCardImage("Updated Cards", gender) },
-        { id: "act-3", name: "Shared Items", image: getDashboardCardImage("Shared Items", gender) },
-      ],
-    },
-    {
-      id: "occasions",
-      label: "Occasions",
-      cards: [
-        { id: "occ-1", name: "Valentine's Day", image: getDashboardCardImage("Valentine's Day", gender) },
-        { id: "occ-2", name: "Christmas", image: getDashboardCardImage("Christmas", gender) },
-        { id: "occ-3", name: "Mother's Day", image: getDashboardCardImage("Mother's Day", gender) },
-        { id: "occ-4", name: "Father's Day", image: getDashboardCardImage("Father's Day", gender) },
-        { id: "occ-5", name: "Just Because", image: getDashboardCardImage("Just Because", gender) },
-      ],
-    },
-    {
-      id: "memories",
-      label: "Memories",
-      cards: [
-        { id: "mem-1", name: "First Date", image: getDashboardCardImage("First Date", gender) },
-        { id: "mem-2", name: "Trips Together", image: getDashboardCardImage("Trips Together", gender) },
-        { id: "mem-3", name: "Milestones", image: getDashboardCardImage("Milestones", gender) },
-        { id: "mem-4", name: "Favorite Moments", image: getDashboardCardImage("Favorite Moments", gender) },
-      ],
-    },
-  ];
 }
