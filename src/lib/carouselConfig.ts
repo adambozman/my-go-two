@@ -18,13 +18,19 @@ export const CAROUSEL_LAYOUT_DESKTOP = {
   cardHeight: 490,
   flankWidth: 125,
   flankHeight: 405,
-  xGap: 260,
+  xGap: 0,
   stageHeight: 560,
   maxVisibleOffset: 2,
   flankBlur: 0.2,
-  flankOpacity: 0.5,
+  flankOpacity: 1,
   borderRadius: 36,
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
+  pills: [
+    { w: 725, h: 490, r: 36  }, // center
+    { w: 125, h: 405, r: 999 }, // ±1
+    { w: 74,  h: 333, r: 999 }, // ±2
+    { w: 27,  h: 242, r: 999 }, // ±3
+  ],
 };
 
 export const DOT_LAYOUT = {

@@ -27,11 +27,27 @@ function useLayout() {
   return layout;
 }
 
+const PILL_GAP = 20;
+
+function getPillX(offset: number, pills: { w: number; h: number; r: number }[]): number {
+  if (offset === 0) return 0;
+  const dir = offset > 0 ? 1 : -1;
+  const abs = Math.abs(offset);
+  let x = 0;
+  for (let i = 0; i < abs; i++) {
+    const a = pills[Math.min(i, pills.length - 1)];
+    const b = pills[Math.min(i + 1, pills.length - 1)];
+    x += a.w / 2 + PILL_GAP + b.w / 2;
+  }
+  return x * dir;
+}
+
 const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
   ({ items, onSelect }, ref) => {
     const [activeIndex, setActiveIndex] = useState(0);
     const layout = useLayout();
     const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
+    const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
     const n = items.length;
     const touchStartX = useRef<number | null>(null);
 
@@ -64,7 +80,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
           touchStartX.current = null;
         }}
       >
-        {/* Stage — shifted down slightly */}
+        {/* Stage */}
         <div className="relative w-full" style={{ height: stageHeight, marginTop: 16 }}>
           <div className="absolute inset-0 flex items-center justify-center">
             {slots.map((offset) => {
@@ -72,6 +88,54 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
               const item = items[itemIndex];
               const absOffset = Math.abs(offset);
               const isActive = offset === 0;
+
+              // Desktop pill path
+              if (pills) {
+                const pill = pills[Math.min(absOffset, pills.length - 1)];
+                const x = getPillX(offset, pills);
+                return (
+                  <motion.div
+                    key={`slot-${offset}`}
+                    initial={false}
+                    animate={{ x, zIndex: VISIBLE + 1 - absOffset, opacity: 1 }}
+                    transition={spring}
+                    className="absolute overflow-hidden cursor-pointer"
+                    style={{
+                      width: pill.w, height: pill.h, borderRadius: pill.r,
+                      boxShadow: isActive
+                        ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
+                        : "0 4px 16px rgba(0,0,0,0.12)",
+                    }}
+                    onClick={() => {
+                      if (isActive) onSelect(item.id);
+                      else setActiveIndex((activeIndex + offset + n) % n);
+                    }}
+                  >
+                    <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
+                    {isActive && (
+                      <div className="absolute bottom-3 left-3">
+                        <span
+                          className="px-3 py-1 font-semibold truncate block"
+                          style={{
+                            fontFamily: "'Cormorant Garamond', serif",
+                            fontSize: 15,
+                            letterSpacing: "0.02em",
+                            color: "#fff",
+                            background: "rgba(45,104,112,0.45)",
+                            borderRadius: 999,
+                            backdropFilter: "blur(6px)",
+                            maxWidth: 220,
+                          }}
+                        >
+                          {item.label}
+                        </span>
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              }
+
+              // Mobile/tablet path — completely untouched
               return (
                 <motion.div
                   key={`slot-${offset}`}
