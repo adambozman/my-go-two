@@ -36,8 +36,8 @@ html::-webkit-scrollbar {
     --header-icons-row-height: 60px;
     --header-divider-margin-top: 14px;
     --header-tagline-margin-top: 28px;
-    --header-avatar-size: 56px;
-    --header-icon-btn-size: 42px;
+    --header-avatar-size: 44px;
+    --header-icon-btn-size: 36px;
 
     --background: 28 36% 87%;
     --foreground: 195 15% 35%;
@@ -237,7 +237,7 @@ body {
   display: inline-flex;
   align-items: baseline;
   gap: 0;
-  font-size: 38px;
+  font-size: 46px;
 }
 .logo-text .go {
   position: relative;
@@ -255,7 +255,7 @@ body {
 }
 @media (min-width: 768px) {
   .logo-text {
-    font-size: 56px;
+    font-size: 68px;
   }
 }
 
