@@ -26,10 +26,10 @@ export const CAROUSEL_LAYOUT_DESKTOP = {
   borderRadius: 36,
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
   pills: [
-    { w: 725, h: 490, r: 36  }, // center
-    { w: 125, h: 405, r: 999 }, // ±1
-    { w: 74,  h: 333, r: 999 }, // ±2
-    { w: 27,  h: 242, r: 999 }, // ±3
+    { w: 1015, h: 686, r: 36  }, // center
+    { w: 175,  h: 567, r: 999 }, // ±1
+    { w: 104,  h: 466, r: 999 }, // ±2
+    { w: 38,   h: 339, r: 999 }, // ±3
   ],
 };
 
