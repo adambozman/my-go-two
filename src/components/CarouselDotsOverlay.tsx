@@ -1,35 +1,40 @@
 import React from "react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
 import { DOT_LAYOUT } from "@/lib/carouselConfig";
 import { useCarouselDots } from "@/contexts/CarouselDotsContext";
+
+const ARROW_COLOR = "#2d6870";
 
 export const BottomCarouselDots = () => {
   const carouselState = useCarouselDots();
   if (!carouselState || carouselState.count <= 1) return null;
 
+  const isFirst = carouselState.activeIndex === 0;
+  const isLast = carouselState.activeIndex === carouselState.count - 1;
+
   return (
     <div
-      className="absolute left-0 right-0 flex justify-center gap-2 z-30"
+      className="absolute left-0 right-0 flex justify-center items-center gap-6 z-30"
       style={{ top: DOT_LAYOUT.bottomTopOffset, transform: DOT_LAYOUT.bottomTransform }}
     >
-      {Array.from({ length: carouselState.count }).map((_, i) => (
+      {!isFirst && (
         <button
-          key={i}
-          onClick={() => carouselState.setActiveIndex(i)}
-          className="transition-all duration-300"
-          style={{
-            width: DOT_LAYOUT.size,
-            height: DOT_LAYOUT.size,
-            minWidth: DOT_LAYOUT.size,
-            minHeight: DOT_LAYOUT.size,
-            borderRadius: "50%",
-            background:
-              i === carouselState.activeIndex
-                ? DOT_LAYOUT.activeColor
-                : DOT_LAYOUT.inactiveColor,
-          }}
-          aria-label={`Go to card ${i + 1}`}
-        />
-      ))}
+          onClick={() => carouselState.setActiveIndex(carouselState.activeIndex - 1)}
+          className="transition-opacity duration-300"
+          aria-label="Previous card"
+        >
+          <ChevronLeft size={24} color={ARROW_COLOR} strokeWidth={2.5} />
+        </button>
+      )}
+      {!isLast && (
+        <button
+          onClick={() => carouselState.setActiveIndex(carouselState.activeIndex + 1)}
+          className="transition-opacity duration-300"
+          aria-label="Next card"
+        >
+          <ChevronRight size={24} color={ARROW_COLOR} strokeWidth={2.5} />
+        </button>
+      )}
     </div>
   );
 };
@@ -47,49 +52,39 @@ export const RightSectionDots = ({
   onSelect,
   labels = [],
 }: RightSectionDotsProps) => {
-  if (count <= 0) return null;
+  if (count <= 1) return null;
+
+  const isFirst = activeIndex === 0;
+  const isLast = activeIndex === count - 1;
+  const interactive = typeof onSelect === "function";
 
   return (
     <div
-      className="absolute flex flex-col gap-2.5 z-30"
+      className="absolute flex flex-col items-center gap-2 z-30"
       style={{
         right: DOT_LAYOUT.rightOffset,
         top: DOT_LAYOUT.rightTopOffset,
         transform: "translateY(-50%)",
       }}
     >
-      {Array.from({ length: count }).map((_, i) => {
-        const interactive = typeof onSelect === "function";
-        const commonStyle: React.CSSProperties = {
-          width: DOT_LAYOUT.size,
-          height: DOT_LAYOUT.size,
-          minWidth: DOT_LAYOUT.size,
-          minHeight: DOT_LAYOUT.size,
-          borderRadius: "50%",
-          background:
-            i === activeIndex
-              ? DOT_LAYOUT.activeColor
-              : DOT_LAYOUT.inactiveColor,
-        };
-
-        if (!interactive) {
-          return (
-            <div key={`right-${i}`} style={commonStyle} />
-          );
-        }
-
-        return (
-          <button
-            key={`right-${i}`}
-            onClick={() => onSelect(i)}
-            className="transition-all duration-300"
-            style={commonStyle}
-            aria-label={
-              labels[i] ? `Go to ${labels[i]}` : `Go to section ${i + 1}`
-            }
-          />
-        );
-      })}
+      {!isFirst && (
+        <button
+          onClick={() => interactive && onSelect(activeIndex - 1)}
+          className="transition-opacity duration-300"
+          aria-label={labels[activeIndex - 1] ? `Go to ${labels[activeIndex - 1]}` : "Previous section"}
+        >
+          <ChevronUp size={24} color={ARROW_COLOR} strokeWidth={2.5} />
+        </button>
+      )}
+      {!isLast && (
+        <button
+          onClick={() => interactive && onSelect(activeIndex + 1)}
+          className="transition-opacity duration-300"
+          aria-label={labels[activeIndex + 1] ? `Go to ${labels[activeIndex + 1]}` : "Next section"}
+        >
+          <ChevronDown size={24} color={ARROW_COLOR} strokeWidth={2.5} />
+        </button>
+      )}
     </div>
   );
 };
