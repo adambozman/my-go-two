@@ -121,6 +121,7 @@ import imgScentHome from "@/assets/templates/scent-home.jpg";
 
 import { getStyleImage } from "@/data/genderImages";
 import { type Gender, normalizeGender } from "@/lib/gender";
+import { isBlocked } from "@/data/imageBlocklist";
 
 interface ImageBank {
   male: string;
