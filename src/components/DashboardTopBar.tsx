@@ -206,7 +206,7 @@ export function DashboardTopBar() {
       <div className="mt-5 md:mt-7 border-b border-border/30" />
 
       <p
-        className="italic text-center text-[13px] md:text-[18px] mt-3"
+        className="italic text-center text-[13px] md:text-[22px] mt-3"
         style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontWeight: 500,
