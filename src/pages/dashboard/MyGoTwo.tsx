@@ -257,13 +257,14 @@ const MyGoTwo = () => {
           className="h-full overflow-y-auto pb-12"
         >
           <p
-            className="w-full text-center pt-3 pb-1"
+            className="px-4 md:px-8 pt-3 pb-1 text-left"
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 18,
+              fontSize: 15,
               color: "var(--swatch-teal)",
               fontStyle: "italic",
               letterSpacing: "0.02em",
+              opacity: 0.7,
             }}
           >
             Select a card to explore its contents.
