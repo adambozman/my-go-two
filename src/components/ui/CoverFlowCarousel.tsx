@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
@@ -15,18 +15,41 @@ interface CoverFlowCarouselProps {
   onSelect: (id: string) => void;
 }
 
-const { xGap, stageHeight, flankOpacity, spring } = CAROUSEL_LAYOUT;
+const { xGap, stageHeight, flankOpacity, spring, desktopScale } = CAROUSEL_LAYOUT;
 const VISIBLE = 2;
+
+function useCarouselScale() {
+  const getScale = () => {
+    const w = window.innerWidth;
+    if (w >= 1200) return desktopScale.xl;
+    if (w >= 768) return desktopScale.md;
+    return 1;
+  };
+  const [scale, setScale] = useState(getScale);
+  useEffect(() => {
+    const handler = () => setScale(getScale());
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return scale;
+}
 
 const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const scale = useCarouselScale();
   const n = items.length;
   if (n === 0) return null;
 
   const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
   return (
-    <div className="relative w-full flex flex-col items-center">
+    <div
+      className="relative w-full flex flex-col items-center"
+      style={{
+        transform: `scale(${scale})`,
+        transformOrigin: "center center",
+      }}
+    >
       <div className="relative w-full" style={{ height: stageHeight }}>
         <div className="absolute inset-0 flex items-center justify-center">
           {slots.map((offset) => {
@@ -62,10 +85,18 @@ const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
         </div>
       </div>
       <div className="flex items-center gap-6 mt-4">
-        <button onClick={() => setActiveIndex((i) => (i - 1 + n) % n)} className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-accent transition-colors" aria-label="Previous">
+        <button
+          onClick={() => setActiveIndex((i) => (i - 1 + n) % n)}
+          className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-accent transition-colors"
+          aria-label="Previous"
+        >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <button onClick={() => setActiveIndex((i) => (i + 1) % n)} className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-accent transition-colors" aria-label="Next">
+        <button
+          onClick={() => setActiveIndex((i) => (i + 1) % n)}
+          className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-accent transition-colors"
+          aria-label="Next"
+        >
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>

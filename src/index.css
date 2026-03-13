@@ -242,12 +242,6 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-
-/* Desktop coverflow scale — cards grow on larger screens */
-.gotwo-coverflow-scale {
-  transform-origin: center center;
-  transform: scale(1);
-}
 @media (min-width: 768px) {
   .gotwo-coverflow-scale {
     transform: scale(1.35);

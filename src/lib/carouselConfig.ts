@@ -10,6 +10,8 @@ export const CAROUSEL_LAYOUT = {
   flankOpacity: 0.5,
   borderRadius: 16,
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
+  /** Responsive scale applied to the entire carousel stage — global for all coverfows */
+  desktopScale: { md: 1.35, xl: 1.6 },
 };
 
 export const DOT_LAYOUT = {

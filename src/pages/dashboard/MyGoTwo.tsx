@@ -277,9 +277,7 @@ const MyGoTwo = () => {
               className="snap-start h-full flex flex-col items-center justify-center"
             >
               <h2 className="section-header text-center mb-6">{section.label}</h2>
-              <div className="gotwo-coverflow-scale">
-                <GoTwoCoverFlow items={section.items} onSelect={handleSelect} />
-              </div>
+              <GoTwoCoverFlow items={section.items} onSelect={handleSelect} />
             </div>
           ))}
           {orderedSections.length === 0 && (
