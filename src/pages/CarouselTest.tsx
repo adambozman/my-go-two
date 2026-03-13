@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { DashboardTopBar } from "@/components/DashboardTopBar";
 import GoTwoCoverFlow from "@/components/GoTwoCoverFlow";
-import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_TEST_DESKTOP } from "@/lib/carouselConfig";
+import PillCarousel from "@/components/ui/PillCarousel";
 
 const TEST_ITEMS = [
   { id: "1", label: "Clothing",  image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80" },
@@ -22,8 +22,6 @@ const CarouselTest = () => {
     return () => window.removeEventListener("resize", handler);
   }, []);
 
-  const layout = isDesktop ? CAROUSEL_LAYOUT_TEST_DESKTOP : CAROUSEL_LAYOUT;
-
   return (
     <div className="app-page h-screen flex flex-col overflow-hidden">
       <DashboardTopBar />
@@ -32,11 +30,10 @@ const CarouselTest = () => {
         style={{ paddingBottom: "var(--footer-height)" }}
       >
         <p className="section-header text-center">Style & Fit</p>
-        <GoTwoCoverFlow
-          items={TEST_ITEMS}
-          onSelect={(id) => console.log("selected", id)}
-          layoutOverride={layout}
-        />
+        {isDesktop
+          ? <PillCarousel items={TEST_ITEMS} onSelect={(id) => console.log("selected", id)} />
+          : <GoTwoCoverFlow items={TEST_ITEMS} onSelect={(id) => console.log("selected", id)} />
+        }
       </main>
       <AppSidebar />
     </div>
