@@ -240,12 +240,16 @@ const DEFAULT_TEMPLATE_IMAGE: ImageBank = {
 export function getTemplateImage(templateName: string, gender: Gender | string): string {
   const styleOverride = TEMPLATE_STYLE_OVERRIDES[normalizeKey(templateName)];
   if (styleOverride) {
-    return getStyleImage(styleOverride, normalizeGender(gender));
+    const result = getStyleImage(styleOverride, normalizeGender(gender));
+    if (result && !isBlocked(result)) return result;
+    // Fall through to template bank if style image is blocked
   }
 
   const key = normalizeGender(gender);
   const entry = templateImagesByKey[normalizeKey(templateName)] ?? DEFAULT_TEMPLATE_IMAGE;
-  return entry[key];
+  const result = entry[key];
+  if (isBlocked(result)) return isBlocked(DEFAULT_TEMPLATE_IMAGE[key]) ? "" : DEFAULT_TEMPLATE_IMAGE[key];
+  return result;
 }
 
 /**
