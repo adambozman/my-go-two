@@ -4,20 +4,9 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getProductImage, getTemplateImage } from "@/lib/imageResolver";
 import { CAROUSEL_LAYOUT, HEADER_LAYOUT } from "@/lib/carouselConfig";
+import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 
-export interface SubtypeItem {
-  id: string;
-  name: string;
-  image: string;
-  fields: { label: string; type: "text" | "select"; value: string; options?: string[] }[];
-}
-
-export interface SubcategoryGroup {
-  id: string;
-  name: string;
-  image: string;
-  products: SubtypeItem[];
-}
+export type { SubtypeItem, SubcategoryGroup };
 
 interface TemplateCoverFlowProps {
   templateName: string;

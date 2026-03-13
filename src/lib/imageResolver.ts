@@ -1,11 +1,11 @@
 /**
  * Unified image resolver for the entire app.
  *
- * - Async DB-backed resolution (category_images table) for registry-driven pages
- * - Sync static-asset resolution (import.meta.glob) for onboarding, preferences, legacy
+ * Three FULLY INDEPENDENT banks: male, female, non-binary.
+ * - male   → /src/assets/.../male/
+ * - female → /src/assets/.../female/ (or root for templates)
+ * - non-binary → /src/assets/.../non-binary/
  *
- * Three FULLY INDEPENDENT banks: male, female, neutral.
- * Male always reads from male. Female from female. Neutral from neutral.
  * No bank ever crosses into another.
  */
 
@@ -23,7 +23,9 @@ const allModules = import.meta.glob<string>(
 const imageCache = new Map<string, string>();
 
 function genderToDb(g: Gender): string {
-  return g === "male" ? "male" : g === "female" ? "female" : "non-binary";
+  if (g === "male") return "male";
+  if (g === "female") return "female";
+  return "non-binary";
 }
 
 // ── Path resolution helpers ──
@@ -31,19 +33,19 @@ function genderToDb(g: Gender): string {
 function getStylePaths(key: string, gender: Gender): string[] {
   if (gender === "male") return [`/src/assets/styles/male/${key}.jpg`];
   if (gender === "female") return [`/src/assets/styles/female/${key}.jpg`];
-  return [`/src/assets/styles/${key}.jpg`];
+  return [`/src/assets/styles/non-binary/${key}.jpg`, `/src/assets/styles/male/${key}.jpg`];
 }
 
 function getCategoryPaths(key: string, gender: Gender): string[] {
   if (gender === "male") return [`/src/assets/categories/male/${key}.jpg`];
   if (gender === "female") return [`/src/assets/categories/female/${key}.jpg`];
-  return [`/src/assets/categories/male/${key}.jpg`]; // neutral fallback
+  return [`/src/assets/categories/non-binary/${key}.jpg`, `/src/assets/categories/male/${key}.jpg`];
 }
 
 function getTemplatePaths(key: string, gender: Gender): string[] {
   if (gender === "male") return [`/src/assets/templates/male/${key}.jpg`];
   if (gender === "female") return [`/src/assets/templates/${key}.jpg`];
-  return [`/src/assets/templates/neutral/${key}.jpg`];
+  return [`/src/assets/templates/non-binary/${key}.jpg`, `/src/assets/templates/male/${key}.jpg`];
 }
 
 function resolveFromGlob(paths: string[]): string {
@@ -54,42 +56,28 @@ function resolveFromGlob(paths: string[]): string {
   return "";
 }
 
-// ── Sync resolvers (onboarding, preferences, legacy components) ──
+// ── Sync resolvers ──
 
-/** Sync style image resolver — used by onboarding and preferences section */
 export function getStyleImage(styleId: string, gender?: Gender | string, _categoryId?: string): string {
   const g = normalizeGender(gender as string);
   const key = styleId.toLowerCase().trim();
-  const result = resolveFromGlob(getStylePaths(key, g));
-  if (result) return result;
-  // Try neutral fallback for styles that only exist in root
-  if (g !== "neutral") {
-    const neutralResult = resolveFromGlob([`/src/assets/styles/${key}.jpg`]);
-    if (neutralResult) return neutralResult;
-  }
-  return "";
+  return resolveFromGlob(getStylePaths(key, g));
 }
 
-/** Sync category image resolver — used by onboarding */
 export function getCategoryImage(categoryId: string, gender?: Gender | string): string {
   const g = normalizeGender(gender as string);
   const key = categoryId.toLowerCase().trim();
   return resolveFromGlob(getCategoryPaths(key, g));
 }
 
-/** Sync template image resolver — used by ConnectionPage, TemplateCoverFlow */
 export function getTemplateImage(templateName: string, gender: Gender | string): string {
   const g = normalizeGender(gender as string);
   const key = templateName.toLowerCase().trim().replace(/\s+/g, "-");
   const result = resolveFromGlob(getTemplatePaths(key, g));
   if (result) return result;
-  // Try style override for some templates
-  const styleResult = resolveFromGlob(getStylePaths(key, g));
-  if (styleResult) return styleResult;
-  return "";
+  return resolveFromGlob(getStylePaths(key, g));
 }
 
-/** Sync product image resolver — used by TemplateCoverFlow */
 export function getProductImage(productId: string, gender: Gender | string, fallback?: string): string {
   const g = normalizeGender(gender as string);
   const key = productId.toLowerCase().trim();
@@ -97,9 +85,8 @@ export function getProductImage(productId: string, gender: Gender | string, fall
   return result || fallback || "";
 }
 
-// ── Async DB-backed resolver (registry-driven pages) ──
+// ── Async DB-backed resolver ──
 
-/** Primary async resolver — checks category_images table first, then static fallback */
 export async function getImage(categoryKey: string, gender: Gender): Promise<string> {
   const g = genderToDb(gender);
   const cacheKey = `${categoryKey}:${g}`;
@@ -118,7 +105,6 @@ export async function getImage(categoryKey: string, gender: Gender): Promise<str
     return (data as any).image_url;
   }
 
-  // Static fallback — never crosses gender banks
   const key = categoryKey.toLowerCase().trim();
   const fallback = resolveFromGlob([
     ...getTemplatePaths(key, gender),
@@ -129,7 +115,6 @@ export async function getImage(categoryKey: string, gender: Gender): Promise<str
   return fallback;
 }
 
-/** Batch preload images for an entire page */
 export async function preloadImages(
   categoryKeys: string[],
   gender: Gender,

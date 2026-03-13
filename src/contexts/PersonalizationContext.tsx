@@ -25,7 +25,7 @@ interface PersonalizationContextType {
 const PersonalizationContext = createContext<PersonalizationContextType>({
   personalization: null,
   profileAnswers: null,
-  gender: "neutral",
+  gender: "non-binary",
   loading: true,
   refetch: async () => {},
 });
@@ -36,14 +36,14 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
   const { user } = useAuth();
   const [personalization, setPersonalization] = useState<Personalization | null>(null);
   const [profileAnswers, setProfileAnswers] = useState<Record<string, string | string[]> | null>(null);
-  const [gender, setGender] = useState<Gender>("neutral");
+  const [gender, setGender] = useState<Gender>("non-binary");
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     if (!user) {
       setPersonalization(null);
       setProfileAnswers(null);
-      setGender("neutral");
+      setGender("non-binary");
       setLoading(false);
       return;
     }
@@ -59,7 +59,21 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
       if (profileData?.gender) {
         setGender(normalizeGender(profileData.gender));
       } else {
-        setGender("neutral");
+        // Fall back to profile_answers.identity before defaulting
+        const { data: prefData } = await supabase
+          .from("user_preferences")
+          .select("profile_answers")
+          .eq("user_id", user.id)
+          .single();
+
+        if (prefData?.profile_answers) {
+          const answers = prefData.profile_answers as any;
+          const identity = answers?.identity;
+          const resolved = Array.isArray(identity) ? identity[0] : identity;
+          setGender(normalizeGender(resolved));
+        } else {
+          setGender("non-binary");
+        }
       }
 
       const { data } = await supabase
@@ -70,14 +84,6 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
 
       if (data) {
         setProfileAnswers(data.profile_answers as any);
-
-        // If gender not in profiles, fall back to profile_answers.identity
-        if (!profileData?.gender && data.profile_answers) {
-          const answers = data.profile_answers as any;
-          const identity = answers?.identity;
-          const resolved = Array.isArray(identity) ? identity[0] : identity;
-          if (resolved) setGender(normalizeGender(resolved));
-        }
 
         // Sanitize corrupted unicode characters from AI personalization data
         const raw = data.ai_personalization as any;
