@@ -25,6 +25,7 @@ import SettingsPage from "./pages/dashboard/SettingsPage";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import PhotoGallery from "./pages/PhotoGallery";
+import Search from "./pages/Search";
 import { initBlocklist, isBlocklistReady } from "@/data/imageBlocklist";
 
 const queryClient = new QueryClient();
@@ -66,6 +67,7 @@ const App = () => {
                 <Route path="questionnaires" element={<Questionnaires />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="notifications" element={<Notifications />} />
+                <Route path="search" element={<Search />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

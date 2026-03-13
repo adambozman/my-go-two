@@ -2,36 +2,32 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRegisterCarousel } from "@/contexts/CarouselDotsContext";
 import CreateCustomCardSheet from "@/components/CreateCustomCardSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
-import GoTwoText from "@/components/GoTwoText";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
-import { allTemplateSubtypes, templateSubcategories, filterSubtypesByGender, filterSubcategoriesByGender } from "@/data/templateSubtypes";
+import type { SubcategoryGroup } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
 import CoverFlowWithDots from "@/components/CoverFlowWithDots";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
 import { AnimatePresence } from "framer-motion";
 import { profileQuestions } from "@/data/profileQuestions";
-import { getStyleImage } from "@/data/genderImages";
-import { getTemplateImage as resolveTemplateImage } from "@/data/templateImageResolver";
+import { getStyleImage } from "@/lib/imageResolver";
+import { useCategoryRegistry, type CategoryItem } from "@/hooks/useCategoryRegistry";
 import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
-const categoryLabels: Record<string, string> = {
+const sectionLabels: Record<string, string> = {
   personal: "Personal",
   "food-drink": "Food & Drink",
   "gifts-occasions": "Gifts & Occasions",
   experiences: "Experiences",
-  preferences: "Preferences",
 };
 
-const categoryOrder = ["personal", "food-drink", "gifts-occasions", "experiences"];
+const sectionOrder = ["personal", "food-drink", "gifts-occasions", "experiences"];
 
 // ── Preferences Section (profile questions cover flow) ──
 const PreferencesSection = () => {
@@ -228,60 +224,36 @@ const PreferencesSection = () => {
 const MyGoTwo = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { profileAnswers, gender, loading: genderLoading } = usePersonalization();
+  const { gender, loading: genderLoading } = usePersonalization();
   const navigate = useNavigate();
 
-  const getTemplateImage = (name: string) => resolveTemplateImage(name, gender);
+  const { sections, loading: registryLoading } = useCategoryRegistry(gender, "mygotwo");
 
-  interface Template {
-    id: string;
-    name: string;
-    icon: string | null;
-    category: string;
-    default_fields: any;
-  }
-
-  const [templates, setTemplates] = useState<Template[]>([]);
   const [customTemplates, setCustomTemplates] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState<string | null>(null);
   const [createSheetOpen, setCreateSheetOpen] = useState(false);
   const [createSheetCategory, setCreateSheetCategory] = useState<{ key: string; label: string }>({ key: "", label: "" });
-  const [coverFlowState, setCoverFlowState] = useState<{ name: string; subtypes: SubtypeItem[]; subcategories?: import("@/data/templateSubtypes").SubcategoryGroup[]; initialSubcategoryId?: string } | null>(() => {
-    const saved = sessionStorage.getItem("gotwo_coverflow");
-    if (saved) {
-      sessionStorage.removeItem("gotwo_coverflow");
-      try {
-        const { template, subcategory } = JSON.parse(saved);
-        const rawSub = allTemplateSubtypes[template];
-        const rawSubcats = templateSubcategories[template];
-        if (rawSub || rawSubcats) {
-          return {
-            name: template,
-            subtypes: rawSub ? filterSubtypesByGender(rawSub, gender) : [],
-            subcategories: rawSubcats ? filterSubcategoriesByGender(rawSubcats, gender) : undefined,
-            initialSubcategoryId: subcategory || undefined,
-          };
-        }
-      } catch {}
-    }
-    return null;
-  });
+  const [coverFlowState, setCoverFlowState] = useState<{
+    name: string;
+    subtypes: SubtypeItem[];
+    subcategories?: SubcategoryGroup[];
+    initialSubcategoryId?: string;
+  } | null>(null);
 
-  const fetchTemplates = () => {
-    supabase.from("card_templates").select("*").then(({ data }) => {
-      setTemplates(data ?? []);
-      setLoading(false);
-    });
+  const fetchCustomTemplates = () => {
     if (user) {
-      supabase.from("custom_templates").select("*").eq("user_id", user.id).then(({ data }) => {
-        setCustomTemplates(data ?? []);
-      });
+      supabase
+        .from("custom_templates")
+        .select("*")
+        .eq("user_id", user.id)
+        .then(({ data }) => {
+          setCustomTemplates(data ?? []);
+        });
     }
   };
 
   useEffect(() => {
-    fetchTemplates();
+    fetchCustomTemplates();
   }, [user]);
 
   const openCreateSheet = (categoryKey: string, categoryLabel: string) => {
@@ -289,20 +261,26 @@ const MyGoTwo = () => {
     setCreateSheetOpen(true);
   };
 
-  const handleTemplateClick = async (template: Template) => {
+  const handleCategoryClick = (item: CategoryItem) => {
     if (!user) {
       toast({ title: "Please log in first", variant: "destructive" });
       return;
     }
-    const rawSubtypes = allTemplateSubtypes[template.name];
-    const rawSubcategories = templateSubcategories[template.name];
-    const subtypes = rawSubtypes ? filterSubtypesByGender(rawSubtypes, gender) : undefined;
-    const subcategories = rawSubcategories ? filterSubcategoriesByGender(rawSubcategories, gender) : undefined;
-    if (subtypes || subcategories) {
-      setCoverFlowState({ name: template.name, subtypes: subtypes || [], subcategories });
+
+    const subtypes = item.fields || [];
+    const subcategories = item.subcategories;
+
+    if (subtypes.length > 0 || (subcategories && subcategories.length > 0)) {
+      setCoverFlowState({
+        name: item.label,
+        subtypes,
+        subcategories,
+      });
       return;
     }
-    await createListFromTemplate(template.name, template.default_fields, template.id);
+
+    // No subtypes — create list directly
+    createListFromTemplate(item.label, []);
   };
 
   const handleSubtypeSelect = async (subtype: SubtypeItem, subcategoryName?: string) => {
@@ -314,31 +292,38 @@ const MyGoTwo = () => {
     await createListFromTemplate(cardTitle, subtype.fields as any, undefined, subcategoryName);
   };
 
-  const createListFromTemplate = async (name: string, fields: any, templateId?: string, subcategoryName?: string) => {
+  const createListFromTemplate = async (
+    name: string,
+    fields: any,
+    templateId?: string,
+    subcategoryName?: string,
+  ) => {
     if (!user) return;
     setCreating(name);
     try {
       const { data: newList, error: listError } = await supabase
         .from("lists")
-        .insert({ title: name, description: `Created from template`, user_id: user.id })
+        .insert({ title: name, description: "Created from template", user_id: user.id })
         .select()
         .single();
+
       if (listError) {
         toast({ title: "Error creating list", description: listError.message, variant: "destructive" });
         setCreating(null);
         return;
       }
+
       if (newList) {
         const { error: cardError } = await supabase.from("cards").insert({
-          title: name, fields, list_id: newList.id, user_id: user.id,
+          title: name,
+          fields,
+          list_id: newList.id,
+          user_id: user.id,
           ...(templateId ? { template_id: templateId } : {}),
         });
-        if (cardError) toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
-        // Persist cover flow + subcategory so it restores on browser back
-        if (coverFlowState?.name) {
-          const subId = subcategoryName ? coverFlowState.subcategories?.find(sc => sc.name === subcategoryName)?.id : undefined;
-          sessionStorage.setItem("gotwo_coverflow", JSON.stringify({ template: coverFlowState.name, subcategory: subId || null }));
-        }
+        if (cardError)
+          toast({ title: "List created but card failed", description: cardError.message, variant: "destructive" });
+
         setCoverFlowState(null);
         navigate(`/dashboard/lists/${newList.id}`);
       }
@@ -348,22 +333,9 @@ const MyGoTwo = () => {
     setCreating(null);
   };
 
-  const grouped = categoryOrder
-    .map((cat) => {
-      const systemItems = templates.filter((t) => t.category === cat);
-      const customItems = customTemplates.filter((ct) => ct.category === cat);
-      return {
-        key: cat,
-        label: categoryLabels[cat] ?? cat,
-        items: systemItems,
-        customItems,
-      };
-    })
-    .filter((g) => g.items.length > 0 || g.customItems.length > 0);
-
   const handleCustomTemplateClick = async (ct: any) => {
     if (!user) return;
-    await createListFromTemplate(ct.name, ct.default_fields, undefined);
+    await createListFromTemplate(ct.name, ct.default_fields);
   };
 
   const handleDeleteCustomTemplate = async (id: string) => {
@@ -373,9 +345,23 @@ const MyGoTwo = () => {
       toast({ title: "Failed to delete", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Template deleted" });
-      fetchTemplates();
+      fetchCustomTemplates();
     }
   };
+
+  // Build grouped sections from registry data
+  const grouped = sectionOrder
+    .map((sectionKey) => {
+      const items = sections[sectionKey] || [];
+      const customItems = customTemplates.filter((ct) => ct.category === sectionKey);
+      return {
+        key: sectionKey,
+        label: sectionLabels[sectionKey] ?? sectionKey,
+        items,
+        customItems,
+      };
+    })
+    .filter((g) => g.items.length > 0 || g.customItems.length > 0);
 
   return (
     <AnimatePresence mode="wait">
@@ -395,59 +381,69 @@ const MyGoTwo = () => {
         </CoverFlowWithDots>
       ) : (
         <div className="h-full relative">
-          {(loading || genderLoading) ? (
+          {registryLoading || genderLoading ? (
             <p className="text-muted-foreground p-4">Loading templates...</p>
           ) : (
             <>
-            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "var(--swatch-teal)", fontWeight: 400 }} className="absolute top-0 left-0 px-4 pt-1 z-10">Tap a card to view or edit your details.</p>
-            <SnapScrollLayout
-              sections={[
-                ...grouped.map((group) => {
-                  const allItems = [
-                    ...group.items.map((t) => ({
-                      id: t.id,
-                      name: t.name,
-                      image: getTemplateImage(t.name),
-                      fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
-                      isCustom: false,
-                    })),
-                    ...group.customItems.map((ct) => ({
-                      id: ct.id,
-                      name: ct.name,
-                      image: ct.image_url || "",
-                      fieldCount: Array.isArray(ct.default_fields) ? ct.default_fields.length : 0,
-                      isCustom: true,
-                    })),
-                  ];
-                  return {
-                    id: group.key,
-                    label: group.label,
-                    content: (
-                      <CategoryCoverFlow
-                        items={allItems}
-                        onSelect={(id) => {
-                          const t = templates.find((tpl) => tpl.id === id);
-                          if (t) {
-                            handleTemplateClick(t);
-                            return;
-                          }
-                          const ct = customTemplates.find((c) => c.id === id);
-                          if (ct) handleCustomTemplateClick(ct);
-                        }}
-                        onAdd={() => openCreateSheet(group.key, group.label)}
-                        onDelete={handleDeleteCustomTemplate}
-                        disabled={creating !== null}
-                      />
-                    ),
-                  };
-                }),
-                {
-                  id: "preferences",
-                  label: "My Preferences",
-                  content: <PreferencesSection />,
-                },
-              ]}
-            />
+              <p
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "16px",
+                  color: "var(--swatch-teal)",
+                  fontWeight: 400,
+                }}
+                className="absolute top-0 left-0 px-4 pt-1 z-10"
+              >
+                Tap a card to view or edit your details.
+              </p>
+              <SnapScrollLayout
+                sections={[
+                  ...grouped.map((group) => {
+                    const allItems = [
+                      ...group.items.map((cat) => ({
+                        id: cat.key,
+                        name: cat.label,
+                        image: cat.image,
+                        fieldCount: cat.fields?.length || 0,
+                        isCustom: false,
+                      })),
+                      ...group.customItems.map((ct) => ({
+                        id: ct.id,
+                        name: ct.name,
+                        image: ct.image_url || "",
+                        fieldCount: Array.isArray(ct.default_fields) ? ct.default_fields.length : 0,
+                        isCustom: true,
+                      })),
+                    ];
+                    return {
+                      id: group.key,
+                      label: group.label,
+                      content: (
+                        <CategoryCoverFlow
+                          items={allItems}
+                          onSelect={(id) => {
+                            const cat = group.items.find((c) => c.key === id);
+                            if (cat) {
+                              handleCategoryClick(cat);
+                              return;
+                            }
+                            const ct = customTemplates.find((c) => c.id === id);
+                            if (ct) handleCustomTemplateClick(ct);
+                          }}
+                          onAdd={() => openCreateSheet(group.key, group.label)}
+                          onDelete={handleDeleteCustomTemplate}
+                          disabled={creating !== null}
+                        />
+                      ),
+                    };
+                  }),
+                  {
+                    id: "preferences",
+                    label: "My Preferences",
+                    content: <PreferencesSection />,
+                  },
+                ]}
+              />
             </>
           )}
 
@@ -456,7 +452,7 @@ const MyGoTwo = () => {
             onOpenChange={setCreateSheetOpen}
             category={createSheetCategory.key}
             categoryLabel={createSheetCategory.label}
-            onCreated={fetchTemplates}
+            onCreated={fetchCustomTemplates}
           />
         </div>
       )}

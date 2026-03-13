@@ -92,11 +92,11 @@ serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token);
-    const userId = claimsData?.claims?.sub;
+    const { data: { user }, error: authError } = await authClient.auth.getUser();
+    const userId = user?.id;
 
-    if (claimsError || !userId) {
-      console.error("ai-quizzes auth error:", claimsError);
+    if (authError || !userId) {
+      console.error("ai-quizzes auth error:", authError);
       throw new Error("Unauthorized");
     }
 

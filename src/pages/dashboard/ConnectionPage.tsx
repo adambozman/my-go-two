@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import SnapScrollLayout from "@/components/SnapScrollLayout";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
-import { getTemplateImage as resolveTemplateImage } from "@/data/templateImageResolver";
+import { getTemplateImage as resolveTemplateImage } from "@/lib/imageResolver";
 
 interface ConnectionPageProps {
   connection: {
