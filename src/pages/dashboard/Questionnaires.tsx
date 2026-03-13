@@ -233,19 +233,16 @@ const Questionnaires = () => {
       >
         Tap a card to view or edit your details.
       </p>
-      <SnapScrollLayout
-        sections={SECTIONS.map((section) => ({
-          id: section.id,
-          label: section.label,
-          content: (
+      {SECTIONS.map((section) => (
+          <div key={section.id} className="w-full">
+            <h3 className="section-header text-center py-2">{section.label}</h3>
             <KnowMeCarousel
               cards={buildSectionCards(section.id)}
               onCardClick={handleCardClick}
               loading={loading}
             />
-          ),
-        }))}
-      />
+          </div>
+        ))}
     </div>
   );
 };

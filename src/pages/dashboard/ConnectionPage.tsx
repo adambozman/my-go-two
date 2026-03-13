@@ -232,11 +232,10 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
             </p>
           </div>
         ) : (
-          <SnapScrollLayout
-            sections={grouped.map((group) => ({
-              id: group.key,
-              label: group.label,
-              content: (
+          <div className="w-full h-full overflow-y-auto">
+            {grouped.map((group) => (
+              <div key={group.key} className="w-full">
+                <h3 className="section-header text-center py-2">{group.label}</h3>
                 <CategoryCoverFlow
                   items={group.items.map((t: any) => ({
                     id: t.id,
@@ -248,9 +247,9 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
                   onSelect={() => {}}
                   disabled={false}
                 />
-              ),
-            }))}
-          />
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </motion.div>

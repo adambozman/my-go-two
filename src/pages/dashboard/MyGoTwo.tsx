@@ -393,8 +393,7 @@ const MyGoTwo = () => {
               >
                 Tap a card to view or edit your details.
               </p>
-              <SnapScrollLayout
-                sections={[
+              {[
                   ...grouped.map((group) => {
                     const allItems = [
                       ...group.items.map((cat) => ({
@@ -439,8 +438,12 @@ const MyGoTwo = () => {
                     label: "My Preferences",
                     content: <PreferencesSection />,
                   },
-                ]}
-              />
+                ].map((section) => (
+                  <div key={section.id} className="w-full">
+                    <h3 className="section-header text-center py-2">{section.label}</h3>
+                    {section.content}
+                  </div>
+                ))}
             </>
           )}
 
