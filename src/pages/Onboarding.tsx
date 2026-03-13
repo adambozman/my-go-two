@@ -634,7 +634,7 @@ const Onboarding = () => {
                       >
                         <div className="aspect-[4/5] overflow-hidden relative">
                           <img
-                            src={getStyleImage(opt.id, selectedGender, currentQuestion.category)}
+                            src={getStyleImage(opt.id, selectedGender)}
                             alt={opt.label}
                             className={`w-full h-full object-cover transition-transform duration-300 ${
                               isSelected ? "scale-105" : "group-hover:scale-105"
