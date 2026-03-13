@@ -28,7 +28,7 @@ import Onboarding from "./pages/Onboarding";
 import PhotoGallery from "./pages/PhotoGallery";
 import Search from "./pages/Search";
 import CategorySync from "./pages/admin/CategorySync";
-import CarouselTest from "./pages/test/CarouselTest";
+import CarouselTest from "./pages/CarouselTest";
 import { initBlocklist, isBlocklistReady } from "@/data/imageBlocklist";
 
 const queryClient = new QueryClient();

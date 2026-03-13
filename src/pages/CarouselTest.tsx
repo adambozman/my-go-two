@@ -22,7 +22,7 @@ const FAR_H = 290;
 
 const X_GAP = 220;    // horizontal spacing between centers
 
-const SPRING = { type: "spring", stiffness: 320, damping: 32 };
+const SPRING = { type: "spring" as const, stiffness: 320, damping: 32 };
 
 function getCardSize(offset: number) {
   const abs = Math.abs(offset);
