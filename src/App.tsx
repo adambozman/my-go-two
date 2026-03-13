@@ -25,6 +25,7 @@ import SettingsPage from "./pages/dashboard/SettingsPage";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import PhotoGallery from "./pages/PhotoGallery";
+import { initBlocklist } from "@/data/imageBlocklist";
 
 const queryClient = new QueryClient();
 
