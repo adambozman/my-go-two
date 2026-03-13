@@ -157,6 +157,7 @@ const MyGoTwo = () => {
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [fieldState, setFieldState] = useState<FieldState | null>(null);
   const [saving, setSaving] = useState(false);
+  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
 
   // Sync back button to top bar
   useEffect(() => {
@@ -268,8 +269,13 @@ const MyGoTwo = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="h-full overflow-y-auto snap-y snap-mandatory"
+          className="h-full overflow-y-auto snap-y snap-mandatory relative"
           style={{ scrollbarWidth: 'none' }}
+          onScroll={(e) => {
+            const el = e.currentTarget;
+            const idx = Math.round(el.scrollTop / el.clientHeight);
+            setActiveSectionIndex(Math.min(idx, orderedSections.length - 1));
+          }}
         >
           {orderedSections.map((section) => (
             <div
@@ -283,6 +289,54 @@ const MyGoTwo = () => {
           {orderedSections.length === 0 && (
             <p className="text-muted-foreground text-center mt-12">No categories found.</p>
           )}
+
+          {/* Bottom-center dots */}
+          <div
+            className="fixed flex flex-row items-center gap-2"
+            style={{
+              bottom: 'calc(var(--footer-height) + 14px)',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 50,
+            }}
+          >
+            {orderedSections.map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  width: i === activeSectionIndex ? 20 : 7,
+                  height: 7,
+                  borderRadius: 4,
+                  background: i === activeSectionIndex ? '#2d6870' : 'rgba(45,104,112,0.28)',
+                  transition: 'all 0.3s ease',
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Right-side vertical dots */}
+          <div
+            className="fixed flex flex-col items-center gap-2"
+            style={{
+              right: 18,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 50,
+            }}
+          >
+            {orderedSections.map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  width: 7,
+                  height: i === activeSectionIndex ? 20 : 7,
+                  borderRadius: 4,
+                  background: i === activeSectionIndex ? '#2d6870' : 'rgba(45,104,112,0.28)',
+                  transition: 'all 0.3s ease',
+                }}
+              />
+            ))}
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

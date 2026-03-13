@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import GoTwoCard from "@/components/ui/GoTwoCard";
 
@@ -33,13 +32,38 @@ const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
   const layout = useLayout();
   const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
   const n = items.length;
+  const touchStartX = useRef<number | null>(null);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") setActiveIndex((i) => (i - 1 + n) % n);
+      if (e.key === "ArrowRight") setActiveIndex((i) => (i + 1) % n);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [n]);
+
   if (n === 0) return null;
 
   const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
   return (
-    <div className="relative w-full flex flex-col items-center">
-      <div className="relative w-full" style={{ height: stageHeight }}>
+    <div
+      className="relative w-full flex flex-col items-center"
+      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+      onTouchEnd={(e) => {
+        if (touchStartX.current === null) return;
+        const diff = touchStartX.current - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) {
+          if (diff > 0) setActiveIndex((i) => (i + 1) % n);
+          else setActiveIndex((i) => (i - 1 + n) % n);
+        }
+        touchStartX.current = null;
+      }}
+    >
+      {/* Stage — shifted down slightly */}
+      <div className="relative w-full" style={{ height: stageHeight, marginTop: 16 }}>
         <div className="absolute inset-0 flex items-center justify-center">
           {slots.map((offset) => {
             const itemIndex = (activeIndex + offset + n) % n;
@@ -75,22 +99,6 @@ const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
             );
           })}
         </div>
-      </div>
-      <div className="flex items-center gap-6 mt-4">
-        <button
-          onClick={() => setActiveIndex((i) => (i - 1 + n) % n)}
-          className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-accent transition-colors"
-          aria-label="Previous"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => setActiveIndex((i) => (i + 1) % n)}
-          className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-accent transition-colors"
-          aria-label="Next"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
       </div>
     </div>
   );
