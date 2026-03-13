@@ -181,18 +181,18 @@ body {
 /* Global section header label */
 .header-tagline {
   font-family: 'Cormorant Garamond', serif;
-  font-weight: 500;
+  font-weight: 600;
   font-style: italic;
   letter-spacing: 0.02em;
   color: #2D6870;
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.4;
   min-height: 1.4em;
 }
 @media (min-width: 768px) {
   .header-tagline {
-    font-size: 18px;
+    font-size: 21px;
   }
 }
 
