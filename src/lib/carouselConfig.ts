@@ -12,27 +12,6 @@ export const CAROUSEL_LAYOUT = {
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
 };
 
-/** Test page desktop layout — Figma originals × 1.4, each offset has its own pill size */
-export const CAROUSEL_LAYOUT_TEST_DESKTOP = {
-  cardWidth: 725,
-  cardHeight: 490,
-  flankWidth: 125,
-  flankHeight: 405,
-  xGap: 0, // unused when pills array present — x is computed per-offset
-  stageHeight: 540,
-  maxVisibleOffset: 2,
-  flankBlur: 0.2,
-  flankOpacity: 1,
-  borderRadius: 36,
-  spring: { type: "spring" as const, stiffness: 300, damping: 30 },
-  pills: [
-    { w: 725, h: 490, r: 36  },
-    { w: 125, h: 405, r: 999 },
-    { w: 74,  h: 333, r: 999 },
-    { w: 27,  h: 242, r: 999 },
-  ],
-};
-
 /** Desktop card dimensions — used by CoverFlowCarousel on md+ screens */
 export const CAROUSEL_LAYOUT_DESKTOP = {
   cardWidth: 420,
