@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import CreateCustomCardSheet from "@/components/CreateCustomCardSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -149,9 +149,6 @@ const PreferencesSection = () => {
       <p className="text-muted-foreground text-xs text-center mb-4">Tap a card to review your preferences.</p>
 
       <div className="relative flex items-center justify-center py-4">
-        <Button variant="ghost" size="icon" onClick={goLeft} className="absolute left-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md">
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
 
         <div className="relative w-full overflow-hidden" style={{ height: CAROUSEL_LAYOUT.stageHeight }}>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -209,10 +206,6 @@ const PreferencesSection = () => {
             })}
           </div>
         </div>
-
-        <Button variant="ghost" size="icon" onClick={goRight} className="absolute right-4 z-20 rounded-full bg-background/80 backdrop-blur shadow-md">
-          <ChevronRight className="h-5 w-5" />
-        </Button>
       </div>
     </div>
   );
