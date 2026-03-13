@@ -73,6 +73,7 @@ import femaleLifestyle from "@/assets/categories/female/lifestyle.jpg";
 import femaleFitCat from "@/assets/categories/female/fit.jpg";
 
 import { type Gender, normalizeGender } from "@/lib/gender";
+import { isBlocked } from "@/data/imageBlocklist";
 
 // Style images keyed by style ID then gender
 const styleImages: Record<string, Record<string, string>> = {
