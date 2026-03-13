@@ -28,6 +28,7 @@ import Onboarding from "./pages/Onboarding";
 import PhotoGallery from "./pages/PhotoGallery";
 import Search from "./pages/Search";
 import CategorySync from "./pages/admin/CategorySync";
+import CarouselTest from "./pages/CarouselTest";
 import { initBlocklist, isBlocklistReady } from "@/data/imageBlocklist";
 
 const queryClient = new QueryClient();
@@ -74,6 +75,7 @@ const App = () => {
                 <Route path="data-sync" element={<CategorySync />} />
               </Route>
               <Route path="*" element={<NotFound />} />
+              <Route path="/carousel-test" element={<CarouselTest />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
