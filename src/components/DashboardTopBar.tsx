@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Bell, Settings, Camera, Upload, Trash2, Database, ArrowLeft, Sparkles } from "lucide-react";
+import { Bell, Settings, Camera, Upload, Trash2, Database, ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
@@ -186,10 +186,6 @@ export function DashboardTopBar() {
                 Data Sync
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem onClick={() => navigate("/carousel-test")}>
-              <Sparkles className="mr-2 h-4 w-4" />
-              Carousel Test
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         )}
