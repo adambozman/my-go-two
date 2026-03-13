@@ -97,7 +97,7 @@ const PillCarousel = () => {
               >
                 <span
                   className="text-white text-sm font-semibold px-3 py-1.5 rounded-full self-start"
-                  style={{ background: "rgba(45,104,112,0.85)", backdropFilter: "blur(8px)", letterSpacing: "0.04em" }}
+                  style={{ background: "rgba(45,104,112,0.85)", letterSpacing: "0.04em" }}
                 >
                   {item.label}
                 </span>
