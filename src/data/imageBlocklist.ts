@@ -1,34 +1,110 @@
 /**
- * Permanent image blocklist.
- * Add source paths here to remove images from all resolvers app-wide.
- * Paths are relative to the project root, matching import.meta.glob keys.
+ * Image blocklist — backed by the database.
  *
- * Example:
- *   "/src/assets/styles/male/minimal.jpg"
- *   "/src/assets/templates/neutral/shoe-size.jpg"
+ * On app boot, `initBlocklist()` loads all blocked paths from the
+ * `image_blocklist` table into a module-level Set.  Resolvers call
+ * `isBlocked(url)` synchronously against that cache.
+ *
+ * The gallery calls `addToBlocklist(path)` which writes to the DB
+ * and updates the local cache in one step.
  */
-const BLOCKLISTED_PATHS: string[] = [
-  // Add paths here — images will be hidden from all resolvers and the gallery
-];
 
-/* ── Build-time resolution ──
- * Glob every asset once at module load, then map blocklisted source paths
- * to their Vite-resolved runtime URLs so resolvers can do a fast Set lookup.
- */
+import { supabase } from "@/integrations/supabase/client";
+
+/* ── Build-time glob for mapping source paths → runtime URLs ── */
 const allAssets = import.meta.glob<string>(
   "/src/assets/**/*.{jpg,jpeg,png,webp,svg}",
   { eager: true, import: "default" },
 );
 
-/** Runtime-resolved URLs that resolvers check before returning an image */
-export const blockedUrls = new Set<string>(
-  BLOCKLISTED_PATHS.map((p) => allAssets[p]).filter(Boolean),
-);
+/** Cached set of blocked runtime URLs (for resolver checks) */
+let blockedUrls = new Set<string>();
 
-/** Source paths for the gallery to filter raw glob results */
-export const blockedPaths = new Set<string>(BLOCKLISTED_PATHS);
+/** Cached set of blocked source paths (for gallery checks) */
+let blockedPaths = new Set<string>();
 
-/** Check if a resolved image URL is blocklisted */
+/** Whether the cache has been initialised at least once */
+let initialised = false;
+
+/**
+ * Load all blocked paths from the DB and rebuild the caches.
+ * Called once at app startup and again after every delete.
+ */
+export async function initBlocklist(): Promise<void> {
+  const { data, error } = await supabase
+    .from("image_blocklist" as any)
+    .select("path");
+
+  if (error) {
+    console.warn("[imageBlocklist] Failed to load blocklist:", error.message);
+    initialised = true;
+    return;
+  }
+
+  const paths: string[] = (data as any[])?.map((r: any) => r.path) ?? [];
+  blockedPaths = new Set(paths);
+  blockedUrls = new Set(
+    paths.map((p) => allAssets[p]).filter(Boolean),
+  );
+  initialised = true;
+}
+
+/** Synchronous check used by all resolvers */
 export function isBlocked(url: string): boolean {
   return blockedUrls.has(url);
 }
+
+/** Check by source path (used by gallery) */
+export function isPathBlocked(path: string): boolean {
+  return blockedPaths.has(path);
+}
+
+/**
+ * Permanently block an image path.
+ * Writes to DB, then refreshes both caches.
+ */
+export async function addToBlocklist(path: string): Promise<boolean> {
+  const { error } = await supabase
+    .from("image_blocklist" as any)
+    .insert({ path } as any);
+
+  if (error) {
+    // duplicate path is fine (unique constraint)
+    if (error.code === "23505") {
+      blockedPaths.add(path);
+      const url = allAssets[path];
+      if (url) blockedUrls.add(url);
+      return true;
+    }
+    console.error("[imageBlocklist] Insert failed:", error.message);
+    return false;
+  }
+
+  // Update local caches immediately
+  blockedPaths.add(path);
+  const url = allAssets[path];
+  if (url) blockedUrls.add(url);
+  return true;
+}
+
+/**
+ * Remove a path from the blocklist (undo).
+ */
+export async function removeFromBlocklist(path: string): Promise<boolean> {
+  const { error } = await supabase
+    .from("image_blocklist" as any)
+    .delete()
+    .eq("path", path);
+
+  if (error) {
+    console.error("[imageBlocklist] Delete failed:", error.message);
+    return false;
+  }
+
+  blockedPaths.delete(path);
+  const url = allAssets[path];
+  if (url) blockedUrls.delete(url);
+  return true;
+}
+
+export { blockedPaths, blockedUrls, initialised };

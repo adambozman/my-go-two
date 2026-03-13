@@ -1,9 +1,14 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, X, ClipboardCopy } from "lucide-react";
+import { ArrowLeft, X, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { blockedPaths } from "@/data/imageBlocklist";
+import {
+  isPathBlocked,
+  addToBlocklist,
+  removeFromBlocklist,
+  initBlocklist,
+} from "@/data/imageBlocklist";
 
 /* ─── Glob each gender bank at build time ─── */
 
@@ -28,8 +33,8 @@ const neutralGlob = import.meta.glob<string>(
 /* ─── Types ─── */
 
 interface GalleryImage {
-  path: string; // glob key = source path
-  url: string; // Vite-resolved runtime URL
+  path: string;
+  url: string;
   filename: string;
   subfolder: string;
 }
@@ -43,11 +48,11 @@ function globToImages(glob: Record<string, string>): GalleryImage[] {
   return Object.entries(glob).map(([path, url]) => {
     const parts = path.split("/");
     const filename = parts[parts.length - 1];
-    // Group by the parent folder (e.g. "styles/male", "templates", "categories/female")
     const assetIdx = parts.indexOf("assets");
-    const subfolder = assetIdx >= 0
-      ? parts.slice(assetIdx + 1, parts.length - 1).join("/")
-      : "other";
+    const subfolder =
+      assetIdx >= 0
+        ? parts.slice(assetIdx + 1, parts.length - 1).join("/")
+        : "other";
     return { path, url, filename, subfolder };
   });
 }
@@ -57,52 +62,71 @@ function globToImages(glob: Record<string, string>): GalleryImage[] {
 export default function PhotoGallery() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabName>("Male");
-  const [sessionBlocked, setSessionBlocked] = useState<Set<string>>(new Set());
+  const [version, setVersion] = useState(0); // bump to force re-filter after DB write
+  const [loading, setLoading] = useState(true);
 
-  const allImages = useMemo<Record<TabName, GalleryImage[]>>(() => ({
-    Male: globToImages(maleGlob),
-    Female: globToImages(femaleGlob),
-    Neutral: globToImages(neutralGlob),
-  }), []);
+  // Load blocklist from DB on mount
+  useEffect(() => {
+    initBlocklist().then(() => {
+      setLoading(false);
+      setVersion((v) => v + 1);
+    });
+  }, []);
 
-  // Combined blocked: persisted blocklist + session deletions
-  const isHidden = useCallback(
-    (path: string) => blockedPaths.has(path) || sessionBlocked.has(path),
-    [sessionBlocked],
+  const allImages = useMemo<Record<TabName, GalleryImage[]>>(
+    () => ({
+      Male: globToImages(maleGlob),
+      Female: globToImages(femaleGlob),
+      Neutral: globToImages(neutralGlob),
+    }),
+    [],
   );
 
   const filtered = useMemo(() => {
-    const images = allImages[activeTab].filter((img) => !isHidden(img.path));
-    // Group by subfolder
+    // version dependency forces recalculation after blocklist change
+    void version;
+    const images = allImages[activeTab].filter(
+      (img) => !isPathBlocked(img.path),
+    );
     const groups: Record<string, GalleryImage[]> = {};
     for (const img of images) {
       (groups[img.subfolder] ??= []).push(img);
     }
     return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
-  }, [allImages, activeTab, isHidden]);
+  }, [allImages, activeTab, version]);
 
   const totalVisible = useMemo(
     () => filtered.reduce((sum, [, imgs]) => sum + imgs.length, 0),
     [filtered],
   );
 
-  const handleDelete = useCallback((img: GalleryImage) => {
-    // Add to session block
-    setSessionBlocked((prev) => new Set(prev).add(img.path));
-    // Copy path to clipboard for pasting into imageBlocklist.ts
-    const pathStr = `"${img.path}",`;
-    navigator.clipboard.writeText(pathStr).then(() => {
-      toast.success("Path copied — paste into imageBlocklist.ts", {
-        description: img.path,
-        duration: 5000,
+  const handleDelete = useCallback(async (img: GalleryImage) => {
+    const ok = await addToBlocklist(img.path);
+    if (ok) {
+      setVersion((v) => v + 1);
+      toast.success("Image permanently blocked", {
+        description: img.filename,
+        action: {
+          label: "Undo",
+          onClick: async () => {
+            await removeFromBlocklist(img.path);
+            setVersion((v) => v + 1);
+            toast.info("Image restored");
+          },
+        },
       });
-    }).catch(() => {
-      toast.info("Add to imageBlocklist.ts:", {
-        description: pathStr,
-        duration: 8000,
-      });
-    });
+    } else {
+      toast.error("Failed to block image");
+    }
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading blocklist…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -129,7 +153,8 @@ export default function PhotoGallery() {
                 : "bg-muted text-muted-foreground hover:bg-accent"
             }`}
           >
-            {tab} ({allImages[tab].filter((i) => !isHidden(i.path)).length})
+            {tab} (
+            {allImages[tab].filter((i) => !isPathBlocked(i.path)).length})
           </button>
         ))}
       </div>
@@ -140,7 +165,9 @@ export default function PhotoGallery() {
           <section key={subfolder}>
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               {subfolder}
-              <span className="ml-2 text-xs font-normal">({images.length})</span>
+              <span className="ml-2 text-xs font-normal">
+                ({images.length})
+              </span>
             </h2>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
               {images.map((img) => (
@@ -154,7 +181,7 @@ export default function PhotoGallery() {
                     loading="lazy"
                     className="w-full h-full object-cover"
                   />
-                  {/* Hover overlay with filename + delete */}
+                  {/* Hover overlay with delete */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex flex-col items-center justify-center opacity-0 group-hover:opacity-100">
                     <button
                       onClick={() => handleDelete(img)}
