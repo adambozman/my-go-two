@@ -72,13 +72,21 @@ const CoverFlowCarousel = ({ items, onSelect, layoutOverride }: CoverFlowCarouse
             const item = items[itemIndex];
             const absOffset = Math.abs(offset);
             const isActive = offset === 0;
+
+            // If layout has per-offset pills, use them. Otherwise scale.
+            const pills = (layout as any).pills;
+            const pill = pills ? pills[Math.min(absOffset, pills.length - 1)] : null;
+            const w = pill ? pill.w : cardWidth;
+            const h = pill ? pill.h : (isActive ? cardHeight : cardHeight * 0.6);
+            const r = pill ? pill.r : borderRadius;
+
             return (
               <motion.div
                 key={`slot-${offset}`}
                 initial={false}
                 animate={{
                   x: offset * xGap,
-                  scale: isActive ? 1 : 0.6,
+                  scale: pill ? 1 : (isActive ? 1 : 0.6),
                   opacity: isActive ? 1 : flankOpacity,
                   zIndex: VISIBLE + 1 - absOffset,
                 }}
@@ -89,9 +97,9 @@ const CoverFlowCarousel = ({ items, onSelect, layoutOverride }: CoverFlowCarouse
                   image={item.image}
                   label={item.label}
                   isActive={isActive}
-                  cardWidth={cardWidth}
-                  cardHeight={cardHeight}
-                  borderRadius={borderRadius}
+                  cardWidth={w}
+                  cardHeight={h}
+                  borderRadius={r}
                   onClick={() => {
                     if (isActive) onSelect(item.id);
                     else setActiveIndex((activeIndex + offset + n) % n);
