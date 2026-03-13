@@ -127,9 +127,7 @@ export function DashboardTopBar() {
   };
 
   const isMyGoTwo = location.pathname === "/dashboard/my-go-two";
-  const activeTagline = isMyGoTwo
-    ? `"${rotatingQuote.text}" — ${rotatingQuote.author}`
-    : (taglines[location.pathname] ?? taglines["/dashboard"]);
+  const activeTagline = taglines[location.pathname] ?? taglines["/dashboard"];
 
   return (
     <header className="px-4 md:px-8 shrink-0 flex flex-col" style={{ height: "var(--header-height)", paddingTop: "var(--header-top-padding)" }}>
@@ -233,16 +231,24 @@ export function DashboardTopBar() {
 
       <div className="border-b border-border/30" style={{ marginTop: "var(--header-divider-margin-top)" }} />
 
-      <p
-        className="header-tagline"
+      <div
+        className="header-tagline-wrapper"
         style={{
           marginTop: "var(--header-tagline-margin-top)",
           opacity: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? 0 : 1,
           transition: `opacity ${isMyGoTwo ? "0.8s" : "0s"} ease`,
+          textAlign: "center",
         }}
       >
-        {backState ? "" : activeTagline}
-      </p>
+        {!backState && (isMyGoTwo ? (
+          <>
+            <p className="header-tagline-quote">"{rotatingQuote.text}"</p>
+            <p className="header-tagline-author">— {rotatingQuote.author}</p>
+          </>
+        ) : (
+          <p className="header-tagline-quote" style={{ fontStyle: "normal" }}>{activeTagline}</p>
+        ))}
+      </div>
     </header>
   );
 }

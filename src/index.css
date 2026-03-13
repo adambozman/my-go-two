@@ -29,7 +29,7 @@ html::-webkit-scrollbar {
 @layer base {
   :root {
     /* ── Layout: single source of truth for header/footer heights ── */
-    --header-height: 124px;
+    --header-height: 142px;
     --footer-height: 72px;
     /* Header internal zones — these never change */
     --header-top-padding: 14px;
@@ -179,20 +179,34 @@ body {
 }
 
 /* Global section header label */
-.header-tagline {
+.header-tagline-quote {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 600;
   font-style: italic;
   letter-spacing: 0.02em;
   color: #2D6870;
-  text-align: center;
   font-size: 15px;
-  line-height: 1.4;
-  min-height: 1.4em;
+  line-height: 1.3;
+  margin: 0;
+}
+.header-tagline-author {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  color: #2D6870;
+  font-size: 12px;
+  opacity: 0.75;
+  margin-top: 3px;
+  text-transform: uppercase;
 }
 @media (min-width: 768px) {
-  .header-tagline {
-    font-size: 21px;
+  .header-tagline-quote {
+    font-size: 20px;
+  }
+  .header-tagline-author {
+    font-size: 13px;
+    margin-top: 4px;
   }
 }
 
