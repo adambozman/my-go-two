@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import GoTwoCard from "@/components/ui/GoTwoCard";
 import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
@@ -12,7 +12,7 @@ interface GoTwoCoverFlowProps {
 const { xGap, stageHeight, flankOpacity, spring } = CAROUSEL_LAYOUT;
 const SCALE_ACTIVE = 1;
 const SCALE_FLANK = 0.6;
-const VISIBLE = 2; // cards on each side
+const VISIBLE = 2;
 
 const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -29,51 +29,43 @@ const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
     }
   };
 
-  // Build the 5 slots: -2, -1, 0, +1, +2
   const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
   return (
     <div className="relative w-full flex flex-col items-center">
-      <div
-        className="relative w-full overflow-hidden"
-        style={{ height: stageHeight }}
-      >
+      <div className="relative w-full overflow-hidden" style={{ height: stageHeight }}>
         <div className="absolute inset-0 flex items-center justify-center">
-          <AnimatePresence mode="popLayout">
-            {slots.map((offset) => {
-              const itemIndex = (activeIndex + offset + n) % n;
-              const item = items[itemIndex];
-              const absOffset = Math.abs(offset);
-              const isActive = offset === 0;
+          {slots.map((offset) => {
+            const itemIndex = (activeIndex + offset + n) % n;
+            const item = items[itemIndex];
+            const absOffset = Math.abs(offset);
+            const isActive = offset === 0;
 
-              return (
-                <motion.div
-                  key={`${offset}`}
-                  layout
-                  initial={false}
-                  animate={{
-                    x: offset * xGap,
-                    scale: isActive ? SCALE_ACTIVE : SCALE_FLANK,
-                    opacity: isActive ? 1 : flankOpacity,
-                    zIndex: VISIBLE + 1 - absOffset,
-                  }}
-                  transition={spring}
-                  className="absolute"
-                >
-                  <GoTwoCard
-                    image={item.image}
-                    label={item.label}
-                    isActive={isActive}
-                    onClick={() => handleCardClick(offset)}
-                  />
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+            return (
+              <motion.div
+                key={item.id}
+                initial={false}
+                animate={{
+                  x: offset * xGap,
+                  scale: isActive ? SCALE_ACTIVE : SCALE_FLANK,
+                  opacity: isActive ? 1 : flankOpacity,
+                  zIndex: VISIBLE + 1 - absOffset,
+                }}
+                transition={spring}
+                className="absolute"
+              >
+                <GoTwoCard
+                  image={item.image}
+                  label={item.label}
+                  isActive={isActive}
+                  onClick={() => handleCardClick(offset)}
+                />
+              </motion.div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Navigation — always both visible since it wraps */}
       <div className="flex items-center gap-6 mt-4">
         <button
           onClick={handlePrev}
