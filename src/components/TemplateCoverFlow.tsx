@@ -36,7 +36,7 @@ const TemplateCoverFlow = ({
     }));
 
     return (
-      <div className="max-w-5xl mx-auto" style={{ paddingTop: 100 }}>
+      <div className="h-full flex items-center justify-center">
         <CoverFlowCarousel
           items={items}
           onSelect={(id) => {
@@ -62,7 +62,7 @@ const TemplateCoverFlow = ({
   }));
 
   return (
-    <div className="max-w-5xl mx-auto" style={{ paddingTop: 100 }}>
+    <div className="h-full flex items-center justify-center">
       <CoverFlowCarousel
         items={productItems}
         onSelect={(id) => {

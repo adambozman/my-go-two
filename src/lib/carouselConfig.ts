@@ -10,8 +10,21 @@ export const CAROUSEL_LAYOUT = {
   flankOpacity: 0.5,
   borderRadius: 16,
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
-  /** Responsive scale applied to the entire carousel stage — global for all coverfows */
-  desktopScale: { md: 1.35, xl: 1.6 },
+};
+
+/** Desktop card dimensions — used by CoverFlowCarousel on md+ screens */
+export const CAROUSEL_LAYOUT_DESKTOP = {
+  cardWidth: 420,
+  cardHeight: 560,
+  flankWidth: 220,
+  flankHeight: 340,
+  xGap: 260,
+  stageHeight: 640,
+  maxVisibleOffset: 2,
+  flankBlur: 0.2,
+  flankOpacity: 0.5,
+  borderRadius: 16,
+  spring: { type: "spring" as const, stiffness: 300, damping: 30 },
 };
 
 export const DOT_LAYOUT = {

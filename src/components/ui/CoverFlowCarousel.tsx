@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
+import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import GoTwoCard from "@/components/ui/GoTwoCard";
 
 export interface CoverFlowItem {
@@ -15,41 +15,30 @@ interface CoverFlowCarouselProps {
   onSelect: (id: string) => void;
 }
 
-const { xGap, stageHeight, flankOpacity, spring, desktopScale } = CAROUSEL_LAYOUT;
 const VISIBLE = 2;
 
-function useCarouselScale() {
-  const getScale = () => {
-    const w = window.innerWidth;
-    if (w >= 1200) return desktopScale.xl;
-    if (w >= 768) return desktopScale.md;
-    return 1;
-  };
-  const [scale, setScale] = useState(getScale);
+function useLayout() {
+  const get = () => window.innerWidth >= 768 ? CAROUSEL_LAYOUT_DESKTOP : CAROUSEL_LAYOUT;
+  const [layout, setLayout] = useState(get);
   useEffect(() => {
-    const handler = () => setScale(getScale());
+    const handler = () => setLayout(get());
     window.addEventListener("resize", handler);
     return () => window.removeEventListener("resize", handler);
   }, []);
-  return scale;
+  return layout;
 }
 
 const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const scale = useCarouselScale();
+  const layout = useLayout();
+  const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
   const n = items.length;
   if (n === 0) return null;
 
   const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
   return (
-    <div
-      className="relative w-full flex flex-col items-center"
-      style={{
-        transform: `scale(${scale})`,
-        transformOrigin: "center center",
-      }}
-    >
+    <div className="relative w-full flex flex-col items-center">
       <div className="relative w-full" style={{ height: stageHeight }}>
         <div className="absolute inset-0 flex items-center justify-center">
           {slots.map((offset) => {
@@ -74,6 +63,9 @@ const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
                   image={item.image}
                   label={item.label}
                   isActive={isActive}
+                  cardWidth={cardWidth}
+                  cardHeight={cardHeight}
+                  borderRadius={borderRadius}
                   onClick={() => {
                     if (isActive) onSelect(item.id);
                     else setActiveIndex((activeIndex + offset + n) % n);

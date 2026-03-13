@@ -6,9 +6,20 @@ interface GoTwoCardProps {
   label: string;
   isActive?: boolean;
   onClick?: () => void;
+  cardWidth?: number;
+  cardHeight?: number;
+  borderRadius?: number;
 }
 
-const GoTwoCard = ({ image, label, isActive = true, onClick }: GoTwoCardProps) => {
+const GoTwoCard = ({
+  image,
+  label,
+  isActive = true,
+  onClick,
+  cardWidth = CAROUSEL_LAYOUT.cardWidth,
+  cardHeight = CAROUSEL_LAYOUT.cardHeight,
+  borderRadius = CAROUSEL_LAYOUT.borderRadius,
+}: GoTwoCardProps) => {
   const [hintVisible, setHintVisible] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -30,31 +41,24 @@ const GoTwoCard = ({ image, label, isActive = true, onClick }: GoTwoCardProps) =
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className="flex flex-col items-center cursor-pointer"
-      style={{ width: CAROUSEL_LAYOUT.cardWidth }}
+      style={{ width: cardWidth }}
     >
-      {/* Card image with label pill overlay */}
       <div
         className="relative flex-shrink-0 overflow-hidden w-full"
         style={{
-          height: CAROUSEL_LAYOUT.cardHeight,
-          borderRadius: CAROUSEL_LAYOUT.borderRadius,
+          height: cardHeight,
+          borderRadius,
           boxShadow: isActive
             ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
             : "0 4px 16px rgba(0,0,0,0.12)",
         }}
       >
         {image ? (
-          <img
-            src={image}
-            alt={label}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          <img src={image} alt={label} className="absolute inset-0 w-full h-full object-cover" />
         ) : (
           <div
             className="absolute inset-0"
-            style={{
-              background: "linear-gradient(160deg, #c8bfb4 0%, #a89d92 100%)",
-            }}
+            style={{ background: "linear-gradient(160deg, #c8bfb4 0%, #a89d92 100%)" }}
           />
         )}
 
@@ -66,7 +70,7 @@ const GoTwoCard = ({ image, label, isActive = true, onClick }: GoTwoCardProps) =
               opacity: hintVisible ? 1 : 0,
               transition: "opacity 0.4s ease",
               background: "rgba(0,0,0,0.18)",
-              borderRadius: CAROUSEL_LAYOUT.borderRadius,
+              borderRadius,
             }}
           >
             <span
