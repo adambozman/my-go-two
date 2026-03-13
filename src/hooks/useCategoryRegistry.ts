@@ -78,12 +78,12 @@ export function useCategoryRegistry(
 
         // Filter subtypes/subcategories by the user's gender
         for (const item of items) {
-          if (item.fields) {
+          if (Array.isArray(item.fields)) {
             item.fields = item.fields.filter(
               (f) => !f.gender || f.gender.includes(gender),
             );
           }
-          if (item.subcategories) {
+          if (Array.isArray(item.subcategories)) {
             item.subcategories = item.subcategories.filter(
               (sc) => !sc.gender || sc.gender.includes(gender),
             );
