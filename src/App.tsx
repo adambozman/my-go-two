@@ -68,6 +68,7 @@ const App = () => {
       </PersonalizationProvider>
     </AuthProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
