@@ -10,8 +10,6 @@ import { usePersonalization } from "@/contexts/PersonalizationContext";
 import TemplateCoverFlow, { type SubtypeItem } from "@/components/TemplateCoverFlow";
 import type { SubcategoryGroup } from "@/data/templateSubtypes";
 import CategoryCoverFlow from "@/components/CategoryCoverFlow";
-import CoverFlowWithDots from "@/components/CoverFlowWithDots";
-import SnapScrollLayout from "@/components/SnapScrollLayout";
 import { AnimatePresence } from "framer-motion";
 import { profileQuestions } from "@/data/profileQuestions";
 import { getStyleImage } from "@/lib/imageResolver";
