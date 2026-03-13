@@ -60,7 +60,6 @@ const App = () => {
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/connect" element={<Connect />} />
               <Route path="/photo-gallery" element={<PhotoGallery />} />
-              <Route path="/admin/category-sync" element={<CategorySync />} />
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardHome />} />
                 <Route path="lists/:listId" element={<ListDetail />} />
@@ -70,6 +69,7 @@ const App = () => {
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="search" element={<Search />} />
+                <Route path="data-sync" element={<CategorySync />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
