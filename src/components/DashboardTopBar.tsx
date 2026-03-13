@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const taglines: Record<string, string> = {
   "/dashboard": "The people who matter most.",
@@ -18,9 +19,31 @@ export function DashboardTopBar() {
   const location = useLocation();
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [initials, setInitials] = useState("?");
 
   useEffect(() => {
     if (!user) return;
+
+    const fetchProfile = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url, display_name")
+        .eq("user_id", user.id)
+        .single();
+      if (data) {
+        setAvatarUrl(data.avatar_url);
+        const name = data.display_name || user.user_metadata?.display_name || user.email || "";
+        const parts = name.trim().split(/\s+/);
+        setInitials(
+          parts.length >= 2
+            ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+            : (name[0] || "?").toUpperCase()
+        );
+      }
+    };
+
+    fetchProfile();
 
     const fetchCount = async () => {
       const { count } = await supabase
@@ -49,24 +72,24 @@ export function DashboardTopBar() {
 
   return (
     <header className="px-8" style={{ paddingTop: 28, paddingBottom: 0 }}>
-      <div className="flex items-center justify-between gap-4">
-        <GoTwoText className="text-[58px] [&_.two]:text-[72px] shrink-0" />
+      <div className="relative flex items-center justify-between gap-4">
+        {/* Profile circle — left */}
+        <Avatar className="w-[44px] h-[44px] shrink-0 cursor-pointer" onClick={() => navigate("/dashboard/my-go-two")}>
+          {avatarUrl ? (
+            <AvatarImage src={avatarUrl} alt="Profile" />
+          ) : null}
+          <AvatarFallback
+            className="text-sm font-semibold"
+            style={{ background: 'var(--swatch-viridian-odyssey)', color: '#fff' }}
+          >
+            {initials}
+          </AvatarFallback>
+        </Avatar>
 
-        <p
-          className="flex-1 text-center italic truncate"
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 26,
-            fontWeight: 500,
-            letterSpacing: "0.02em",
-            color: "#2D6870",
-            paddingLeft: 16,
-            paddingRight: 16,
-          }}
-        >
-          {activeTagline}
-        </p>
+        {/* GoTwo logo — absolute center */}
+        <GoTwoText className="text-[58px] [&_.two]:text-[72px] absolute left-1/2 -translate-x-1/2" />
 
+        {/* Settings + Bell — right */}
         <div className="flex items-center gap-2.5 shrink-0">
           <button
             onClick={() => navigate("/dashboard/settings")}
@@ -93,6 +116,20 @@ export function DashboardTopBar() {
       </div>
 
       <div style={{ marginTop: 28 }} className="border-b border-border/30" />
+
+      <p
+        className="italic"
+        style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: 26,
+          fontWeight: 500,
+          letterSpacing: "0.02em",
+          color: "#2D6870",
+          marginTop: 12,
+        }}
+      >
+        {activeTagline}
+      </p>
     </header>
   );
 }
