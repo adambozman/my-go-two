@@ -11,23 +11,23 @@ const TEST_ITEMS = [
 ];
 
 // ── Layout constants — tune these ──
-const ACTIVE_W  = 320;
+const ACTIVE_W  = 280;
 const ACTIVE_H  = 380;
 
-const NEAR_W    = 200;  // offset ±1 — wide-ish pill
-const NEAR_H    = 280;
+const NEAR_W    = 180;  // offset ±1
+const NEAR_H    = 300;
 
-const FAR_W     = 100;  // offset ±2 — narrow pill
-const FAR_H     = 200;
+const FAR_W     = 100;  // offset ±2
+const FAR_H     = 220;
 
-const X_GAP     = 240;  // center-to-center spacing
+const X_GAP     = 200;  // equal center-to-center spacing
 
 const SPRING = { type: "spring", stiffness: 320, damping: 32 };
 
 function getCardSize(offset: number) {
   const abs = Math.abs(offset);
-  if (abs === 0) return { w: ACTIVE_W, h: ACTIVE_H, radius: 28,  opacity: 1,    z: 10 };
-  if (abs === 1) return { w: NEAR_W,   h: NEAR_H,   radius: 999, opacity: 0.9,  z: 5  };
+  if (abs === 0) return { w: ACTIVE_W, h: ACTIVE_H, radius: 999, opacity: 1,    z: 10 };
+  if (abs === 1) return { w: NEAR_W,   h: NEAR_H,   radius: 999, opacity: 0.85, z: 5  };
   return           { w: FAR_W,    h: FAR_H,    radius: 999, opacity: 0.65, z: 2  };
 }
 
