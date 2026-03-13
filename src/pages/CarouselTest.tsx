@@ -11,24 +11,21 @@ const TEST_ITEMS = [
 ];
 
 // ── Layout constants matching Figma exactly ──
-const ACTIVE_W  = 360;  // wide landscape center
-const ACTIVE_H  = 240;  // shorter height — landscape
+const PILL_W    = 110;  // all cards same width
 
-const NEAR_W    = 90;   // ±1 — tall narrow pill
-const NEAR_H    = 300;  // taller than center
+const ACTIVE_H  = 380;  // center — tallest
+const NEAR_H    = 300;  // ±1 — medium
+const FAR_H     = 220;  // ±2 — shortest
 
-const FAR_W     = 70;   // ±2 — shorter narrow pill  
-const FAR_H     = 200;  // shorter than ±1
-
-const X_GAP     = 190;  // equal center-to-center
+const X_GAP     = 140;  // equal center-to-center gap
 
 const SPRING = { type: "spring", stiffness: 320, damping: 32 };
 
 function getCardSize(offset: number) {
   const abs = Math.abs(offset);
-  if (abs === 0) return { w: ACTIVE_W, h: ACTIVE_H, radius: 32,  opacity: 1,    z: 10 };
-  if (abs === 1) return { w: NEAR_W,   h: NEAR_H,   radius: 999, opacity: 0.9,  z: 5  };
-  return           { w: FAR_W,    h: FAR_H,    radius: 999, opacity: 0.7,  z: 2  };
+  if (abs === 0) return { w: PILL_W, h: ACTIVE_H, radius: 999, opacity: 1,   z: 10 };
+  if (abs === 1) return { w: PILL_W, h: NEAR_H,   radius: 999, opacity: 0.9, z: 5  };
+  return           { w: PILL_W, h: FAR_H,    radius: 999, opacity: 0.7, z: 2  };
 }
 
 const PillCarousel = () => {
@@ -42,7 +39,7 @@ const PillCarousel = () => {
   return (
     <div
       className="relative flex items-center justify-center"
-      style={{ height: NEAR_H + 60, width: "100%" }}
+      style={{ height: ACTIVE_H + 60, width: "100%" }}
       onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={(e) => {
         if (touchStartX.current === null) return;
