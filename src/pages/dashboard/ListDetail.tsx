@@ -43,7 +43,7 @@ const ListDetail = () => {
   const [cardTitle, setCardTitle] = useState("");
   const [fields, setFields] = useState<CardField[]>([{ label: "", type: "text", value: "" }]);
   const [templates, setTemplates] = useState<any[]>([]);
-  const [userGender, setUserGender] = useState<string | null>(null);
+  const [userGender, setUserGender] = useState<Gender | null>(null);
   const [saving, setSaving] = useState(false);
   const [autofillingCardId, setAutofillingCardId] = useState<string | null>(null);
 
