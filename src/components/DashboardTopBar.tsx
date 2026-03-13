@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 
+import { useTopBar } from "@/contexts/TopBarContext";
+
 const taglines: Record<string, string> = {
   "/dashboard": "The people who matter most.",
   "/dashboard/my-go-two": "Everything about you, in one place.",
@@ -26,6 +28,7 @@ export function DashboardTopBar() {
   const location = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { backState } = useTopBar();
   const [unreadCount, setUnreadCount] = useState(0);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [initials, setInitials] = useState("?");
@@ -128,13 +131,19 @@ export function DashboardTopBar() {
     <header className="px-4 md:px-8 pt-4 md:pt-7">
       <div className="relative flex items-center justify-between gap-2 md:gap-4">
         {/* Back button or Profile circle — left */}
-        {location.pathname !== "/dashboard/my-go-two" && location.pathname.startsWith("/dashboard") && ![ "/dashboard", "/dashboard/recommendations", "/dashboard/questionnaires", "/dashboard/search", "/dashboard/settings", "/dashboard/notifications", "/dashboard/data-sync", "/dashboard/connection" ].includes(location.pathname) ? (
+        {backState ? (
           <button
-            onClick={() => navigate(-1)}
+            onClick={backState.onBack}
             className="relative shrink-0 focus:outline-none flex items-center gap-2"
             style={{ color: 'var(--swatch-teal)' }}
           >
             <ArrowLeft className="w-5 h-5" />
+            <span
+              className="font-semibold tracking-widest uppercase hidden sm:block"
+              style={{ fontSize: 13, fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.12em' }}
+            >
+              {backState.label}
+            </span>
           </button>
         ) : (
         <DropdownMenu>

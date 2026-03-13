@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, ArrowLeft, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
+import { useTopBar } from "@/contexts/TopBarContext";
 import { useCategoryRegistry, type CategoryItem } from "@/hooks/useCategoryRegistry";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -151,9 +152,22 @@ const MyGoTwo = () => {
   const { toast } = useToast();
   const { sections, loading: registryLoading } = useCategoryRegistry(gender, "mygotwo");
 
+  const { setBackState } = useTopBar();
+
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [fieldState, setFieldState] = useState<FieldState | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // Sync back button to top bar
+  useEffect(() => {
+    if (fieldState) {
+      setBackState({ label: fieldState.subtype.name, onBack: () => setFieldState(null) });
+    } else if (coverFlowState) {
+      setBackState({ label: coverFlowState.name, onBack: () => setCoverFlowState(null) });
+    } else {
+      setBackState(null);
+    }
+  }, [coverFlowState, fieldState, setBackState]);
 
   const handleSelect = (categoryKey: string) => {
     for (const sectionKey of sectionOrder) {
@@ -257,7 +271,7 @@ const MyGoTwo = () => {
           className="h-full overflow-y-auto pb-12"
         >
           <p
-            className="px-4 md:px-8 pt-3 pb-1 text-left"
+            className="hidden md:block px-4 md:px-8 pt-3 pb-1 text-left"
             style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontSize: 15,
