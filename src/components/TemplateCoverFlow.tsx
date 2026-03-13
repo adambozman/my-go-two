@@ -10,6 +10,7 @@ interface TemplateCoverFlowProps {
   subcategories?: SubcategoryGroup[];
   activeSubcategory: SubcategoryGroup | null;
   onSubcategorySelect: (sc: SubcategoryGroup) => void;
+  onBack?: () => void;
   onSelect: (subtype: SubtypeItem, subcategoryName?: string) => void;
   creating: boolean;
   gender?: string;
