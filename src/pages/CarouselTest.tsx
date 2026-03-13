@@ -91,12 +91,9 @@ const PillCarousel = () => {
               transition={SPRING}
             />
             {isActive && (
-              <div
-                className="absolute inset-0 flex flex-col justify-end p-5"
-                style={{ background: "linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 55%)" }}
-              >
+              <div className="absolute bottom-5 left-5">
                 <span
-                  className="text-white text-sm font-semibold px-3 py-1.5 rounded-full self-start"
+                  className="text-white text-sm font-semibold px-3 py-1.5 rounded-full"
                   style={{ background: "rgba(45,104,112,0.85)", letterSpacing: "0.04em" }}
                 >
                   {item.label}
