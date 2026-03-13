@@ -270,19 +270,6 @@ const MyGoTwo = () => {
           exit={{ opacity: 0 }}
           className="h-full overflow-y-auto pb-12"
         >
-          <p
-            className="hidden md:block px-4 md:px-8 pt-3 pb-1 text-left"
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 15,
-              color: "var(--swatch-teal)",
-              fontStyle: "italic",
-              letterSpacing: "0.02em",
-              opacity: 0.7,
-            }}
-          >
-            Select a card to explore its contents.
-          </p>
           {orderedSections.map((section) => (
             <div key={section.key} className="mt-8 first:mt-4">
               <h2 className="section-header text-center mb-4">{section.label}</h2>

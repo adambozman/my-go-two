@@ -1,3 +1,4 @@
+import { useState, useRef } from "react";
 import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 interface GoTwoCardProps {
@@ -8,9 +9,26 @@ interface GoTwoCardProps {
 }
 
 const GoTwoCard = ({ image, label, isActive = true, onClick }: GoTwoCardProps) => {
+  const [hintVisible, setHintVisible] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMouseEnter = () => {
+    if (!isActive) return;
+    setHintVisible(true);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setHintVisible(false), 3000);
+  };
+
+  const handleMouseLeave = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setHintVisible(false);
+  };
+
   return (
     <div
       onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className="flex flex-col items-center cursor-pointer"
       style={{ width: CAROUSEL_LAYOUT.cardWidth }}
     >
@@ -40,10 +58,38 @@ const GoTwoCard = ({ image, label, isActive = true, onClick }: GoTwoCardProps) =
           />
         )}
 
+        {/* Hover hint — desktop only, active card only */}
+        {isActive && (
+          <div
+            className="hidden md:flex absolute inset-0 items-center justify-center pointer-events-none"
+            style={{
+              opacity: hintVisible ? 1 : 0,
+              transition: "opacity 0.4s ease",
+              background: "rgba(0,0,0,0.18)",
+              borderRadius: CAROUSEL_LAYOUT.borderRadius,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 17,
+                fontStyle: "italic",
+                letterSpacing: "0.03em",
+                color: "#fff",
+                textShadow: "0 1px 8px rgba(0,0,0,0.4)",
+                padding: "10px 20px",
+                background: "rgba(45,104,112,0.38)",
+                borderRadius: 999,
+                backdropFilter: "blur(8px)",
+              }}
+            >
+              Select to explore
+            </span>
+          </div>
+        )}
+
         {/* Bottom-left pill label */}
-        <div
-          className="absolute bottom-3 left-3"
-        >
+        <div className="absolute bottom-3 left-3">
           <span
             className="px-3 py-1 font-semibold truncate block"
             style={{
