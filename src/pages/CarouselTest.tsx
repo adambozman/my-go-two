@@ -12,10 +12,12 @@ const TEST_ITEMS = [
   { id: "6", label: "Taste",       img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80" },
 ];
 
+// Center: 518x350. ±1: 89x289. Width drops 83%, height drops 17%.
+// Applying same ratios proportionally at our scale.
 const DESKTOP = [
-  { w: 680, h: 480, radius: 36  }, // center — very wide, tallest
-  { w: 160, h: 400, radius: 999 }, // ±1 — dramatic width drop, slightly shorter
-  { w: 90,  h: 320, radius: 999 }, // ±2
+  { w: 620, h: 420, radius: 36  }, // center
+  { w: 106, h: 348, radius: 999 }, // ±1 — 83% width drop, 17% height drop
+  { w: 68,  h: 289, radius: 999 }, // ±2 — same ratio again
   { w: 44,  h: 240, radius: 999 }, // ±3
 ];
 
