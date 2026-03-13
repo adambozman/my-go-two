@@ -477,13 +477,12 @@ const DashboardHome = () => {
 
   return (
     <div className="h-full relative">
-      <SnapScrollLayout
-        sections={allSections.map((s) => ({
-          id: s.id,
-          label: s.label,
-          content: s.content,
-        }))}
-      />
+      {allSections.map((s) => (
+          <div key={s.id} className="w-full">
+            <h3 className="section-header text-center py-2">{s.label}</h3>
+            {s.content}
+          </div>
+        ))}
       <AnimatePresence>
         {openConnection && (
           <ConnectionPage
