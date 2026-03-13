@@ -290,36 +290,12 @@ const MyGoTwo = () => {
             <p className="text-muted-foreground text-center mt-12">No categories found.</p>
           )}
 
-          {/* Bottom-center dots */}
-          <div
-            className="fixed flex flex-row items-center gap-2"
-            style={{
-              bottom: 'calc(var(--footer-height) + 14px)',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 50,
-            }}
-          >
-            {orderedSections.map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  width: i === activeSectionIndex ? 20 : 7,
-                  height: 7,
-                  borderRadius: 4,
-                  background: i === activeSectionIndex ? '#2d6870' : 'rgba(45,104,112,0.28)',
-                  transition: 'all 0.3s ease',
-                }}
-              />
-            ))}
-          </div>
-
           {/* Right-side vertical dots */}
           <div
             className="fixed flex flex-col items-center gap-2"
             style={{
               right: 18,
-              top: '50%',
+              top: 'calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2)',
               transform: 'translateY(-50%)',
               zIndex: 50,
             }}
