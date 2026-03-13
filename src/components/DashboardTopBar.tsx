@@ -1,10 +1,17 @@
-import { useEffect, useState } from "react";
-import { Bell, Settings } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Bell, Settings, Camera, Upload, Trash2 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 
 const taglines: Record<string, string> = {
   "/dashboard": "The people who matter most.",
@@ -18,9 +25,11 @@ export function DashboardTopBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { toast } = useToast();
   const [unreadCount, setUnreadCount] = useState(0);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [initials, setInitials] = useState("?");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -68,23 +77,104 @@ export function DashboardTopBar() {
     return () => { supabase.removeChannel(channel); };
   }, [user]);
 
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    const ext = file.name.split(".").pop();
+    const path = `${user.id}/avatar.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" });
+      return;
+    }
+
+    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
+    const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ avatar_url: publicUrl })
+      .eq("user_id", user.id);
+
+    if (!updateError) {
+      setAvatarUrl(publicUrl);
+      toast({ title: "Photo updated!" });
+    }
+
+    // Reset file input
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleRemovePhoto = async () => {
+    if (!user) return;
+
+    // List and remove existing avatar files
+    const { data: files } = await supabase.storage.from("avatars").list(user.id);
+    if (files?.length) {
+      await supabase.storage.from("avatars").remove(files.map((f) => `${user.id}/${f.name}`));
+    }
+
+    await supabase.from("profiles").update({ avatar_url: null }).eq("user_id", user.id);
+    setAvatarUrl(null);
+    toast({ title: "Photo removed" });
+  };
+
   const activeTagline = taglines[location.pathname] ?? taglines["/dashboard"];
 
   return (
     <header className="px-8" style={{ paddingTop: 28, paddingBottom: 0 }}>
       <div className="relative flex items-center justify-between gap-4">
-        {/* Profile circle — left */}
-        <Avatar className="w-[44px] h-[44px] shrink-0 cursor-pointer" onClick={() => navigate("/dashboard/my-go-two")}>
-          {avatarUrl ? (
-            <AvatarImage src={avatarUrl} alt="Profile" />
-          ) : null}
-          <AvatarFallback
-            className="text-sm font-semibold"
-            style={{ background: 'var(--swatch-viridian-odyssey)', color: '#fff' }}
-          >
-            {initials}
-          </AvatarFallback>
-        </Avatar>
+        {/* Profile circle with dropdown — left */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="relative shrink-0 focus:outline-none">
+              <Avatar className="w-[44px] h-[44px] cursor-pointer">
+                {avatarUrl ? <AvatarImage src={avatarUrl} alt="Profile" /> : null}
+                <AvatarFallback
+                  className="text-sm font-semibold"
+                  style={{ background: 'var(--swatch-viridian-odyssey)', color: '#fff' }}
+                >
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              {/* Camera icon overlay */}
+              <span
+                className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center border-2"
+                style={{
+                  background: 'var(--swatch-viridian-odyssey)',
+                  borderColor: 'var(--swatch-cream-light)',
+                }}
+              >
+                <Camera className="w-[10px] h-[10px] text-white" />
+              </span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-44">
+            <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
+              <Upload className="mr-2 h-4 w-4" />
+              Upload Photo
+            </DropdownMenuItem>
+            {avatarUrl && (
+              <DropdownMenuItem onClick={handleRemovePhoto}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Remove Photo
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleUpload}
+        />
 
         {/* GoTwo logo — absolute center */}
         <GoTwoText className="text-[58px] [&_.two]:text-[72px] absolute left-1/2 -translate-x-1/2" />
@@ -118,10 +208,10 @@ export function DashboardTopBar() {
       <div style={{ marginTop: 28 }} className="border-b border-border/30" />
 
       <p
-        className="italic"
+        className="italic text-center"
         style={{
           fontFamily: "'Cormorant Garamond', serif",
-          fontSize: 26,
+          fontSize: 18,
           fontWeight: 500,
           letterSpacing: "0.02em",
           color: "#2D6870",
