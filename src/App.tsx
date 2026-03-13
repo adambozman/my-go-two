@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,10 +25,17 @@ import SettingsPage from "./pages/dashboard/SettingsPage";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import PhotoGallery from "./pages/PhotoGallery";
+import { initBlocklist } from "@/data/imageBlocklist";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  // Load image blocklist from DB on app startup so resolvers can check synchronously
+  useEffect(() => {
+    initBlocklist();
+  }, []);
+
+  return (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <PersonalizationProvider>
@@ -60,6 +68,7 @@ const App = () => (
       </PersonalizationProvider>
     </AuthProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

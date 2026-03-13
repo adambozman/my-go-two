@@ -182,6 +182,24 @@ export type Database = {
         }
         Relationships: []
       }
+      image_blocklist: {
+        Row: {
+          created_at: string
+          id: string
+          path: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          path: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          path?: string
+        }
+        Relationships: []
+      }
       lists: {
         Row: {
           created_at: string
