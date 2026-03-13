@@ -29,7 +29,13 @@ import { initBlocklist } from "@/data/imageBlocklist";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  // Load image blocklist from DB on app startup so resolvers can check synchronously
+  useEffect(() => {
+    initBlocklist();
+  }, []);
+
+  return (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <PersonalizationProvider>
