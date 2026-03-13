@@ -155,20 +155,32 @@ const MyGoTwo = () => {
   const { setBackState } = useTopBar();
 
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
+  const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const [fieldState, setFieldState] = useState<FieldState | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
 
-  // Sync back button to top bar
+  // Clear subcategory when leaving the coverflow entirely
+  const clearCoverFlow = () => {
+    setCoverFlowState(null);
+    setActiveSubcategory(null);
+  };
+
+  // Sync back button to top bar — full 4-level chain
   useEffect(() => {
     if (fieldState) {
+      // Level 4 → back to Level 3 (item list inside subcategory)
       setBackState({ label: fieldState.subtype.name, onBack: () => setFieldState(null) });
+    } else if (activeSubcategory && coverFlowState) {
+      // Level 3 (items) → back to Level 2 (subcategory selector)
+      setBackState({ label: activeSubcategory.name, onBack: () => setActiveSubcategory(null) });
     } else if (coverFlowState) {
-      setBackState({ label: coverFlowState.name, onBack: () => setCoverFlowState(null) });
+      // Level 2 (subcategory selector) → back to Level 1 (main scroll)
+      setBackState({ label: coverFlowState.name, onBack: clearCoverFlow });
     } else {
       setBackState(null);
     }
-  }, [coverFlowState, fieldState, setBackState]);
+  }, [coverFlowState, activeSubcategory, fieldState, setBackState]);
 
   const handleSelect = (categoryKey: string) => {
     for (const sectionKey of sectionOrder) {
@@ -258,7 +270,9 @@ const MyGoTwo = () => {
           templateName={coverFlowState.name}
           subtypes={coverFlowState.subtypes}
           subcategories={coverFlowState.subcategories}
-          onBack={() => setCoverFlowState(null)}
+          activeSubcategory={activeSubcategory}
+          onSubcategorySelect={setActiveSubcategory}
+          onBack={clearCoverFlow}
           onSelect={handleSubtypeSelect}
           creating={false}
           gender={gender}

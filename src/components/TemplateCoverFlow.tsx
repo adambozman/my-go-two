@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { getProductImage, getTemplateImage } from "@/lib/imageResolver";
 import CoverFlowCarousel from "@/components/ui/CoverFlowCarousel";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
@@ -9,7 +8,8 @@ interface TemplateCoverFlowProps {
   templateName: string;
   subtypes: SubtypeItem[];
   subcategories?: SubcategoryGroup[];
-  onBack: () => void;
+  activeSubcategory: SubcategoryGroup | null;
+  onSubcategorySelect: (sc: SubcategoryGroup) => void;
   onSelect: (subtype: SubtypeItem, subcategoryName?: string) => void;
   creating: boolean;
   gender?: string;
@@ -19,15 +19,16 @@ const TemplateCoverFlow = ({
   templateName,
   subtypes,
   subcategories,
+  activeSubcategory,
+  onSubcategorySelect,
   onSelect,
   gender = "non-binary",
 }: TemplateCoverFlowProps) => {
-  const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const hasSubcategories = subcategories && subcategories.length > 0;
-
   const templateFallback = getTemplateImage(templateName, gender);
   const resolveImage = (id: string) => getProductImage(id, gender, templateFallback);
 
+  // Level 3 — subcategory coverflow (e.g. Tops, Bottoms, Outerwear)
   if (hasSubcategories && !activeSubcategory) {
     const items = subcategories.map((sc) => ({
       id: sc.id,
@@ -41,19 +42,17 @@ const TemplateCoverFlow = ({
           items={items}
           onSelect={(id) => {
             const sc = subcategories.find((s) => s.id === id);
-            if (sc) setActiveSubcategory(sc);
+            if (sc) onSubcategorySelect(sc);
           }}
         />
       </div>
     );
   }
 
-  const products = activeSubcategory ? (activeSubcategory.products ?? []) : subtypes;
-
-  if (activeSubcategory && products.length === 0 && (activeSubcategory as any).fields) {
-    onSelect(activeSubcategory as unknown as SubtypeItem, templateName);
-    return null;
-  }
+  // Level 4 — individual item coverflow (e.g. T-Shirt, Jeans)
+  const products = activeSubcategory
+    ? (activeSubcategory.products ?? [])
+    : subtypes;
 
   const productItems = products.map((p) => ({
     id: p.id,
