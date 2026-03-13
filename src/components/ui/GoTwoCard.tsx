@@ -14,21 +14,7 @@ const GoTwoCard = ({ image, label, isActive = true, onClick }: GoTwoCardProps) =
       className="flex flex-col items-center cursor-pointer"
       style={{ width: CAROUSEL_LAYOUT.cardWidth }}
     >
-      {/* Label above card */}
-      <p
-        className="w-full text-center font-semibold mb-2 truncate px-1"
-        style={{
-          fontFamily: "'Cormorant Garamond', serif",
-          fontSize: 16,
-          letterSpacing: "0.02em",
-          color: isActive ? "var(--swatch-teal)" : "rgba(45,104,112,0.5)",
-          transition: "color 0.2s",
-        }}
-      >
-        {label}
-      </p>
-
-      {/* Card image */}
+      {/* Card image with label pill overlay */}
       <div
         className="relative flex-shrink-0 overflow-hidden w-full"
         style={{
@@ -53,6 +39,27 @@ const GoTwoCard = ({ image, label, isActive = true, onClick }: GoTwoCardProps) =
             }}
           />
         )}
+
+        {/* Bottom-left pill label */}
+        <div
+          className="absolute bottom-3 left-3"
+        >
+          <span
+            className="px-3 py-1 font-semibold truncate block"
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 15,
+              letterSpacing: "0.02em",
+              color: "#fff",
+              background: "rgba(45,104,112,0.72)",
+              borderRadius: 999,
+              backdropFilter: "blur(6px)",
+              maxWidth: 220,
+            }}
+          >
+            {label}
+          </span>
+        </div>
       </div>
     </div>
   );
