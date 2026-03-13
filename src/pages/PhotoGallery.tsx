@@ -21,13 +21,13 @@ const femaleGlob = import.meta.glob<string>(
   [
     "/src/assets/styles/female/**/*.{jpg,jpeg,png,webp}",
     "/src/assets/categories/female/**/*.{jpg,jpeg,png,webp}",
-    "/src/assets/templates/!(male|neutral)/**/*.{jpg,jpeg,png,webp}",
+    "/src/assets/templates/!(male|non-binary)/**/*.{jpg,jpeg,png,webp}",
     "/src/assets/templates/*.{jpg,jpeg,png,webp}",
   ],
   { eager: true, import: "default" },
 );
-const neutralGlob = import.meta.glob<string>(
-  "/src/assets/**/neutral/**/*.{jpg,jpeg,png,webp}",
+const nonBinaryGlob = import.meta.glob<string>(
+  "/src/assets/**/non-binary/**/*.{jpg,jpeg,png,webp}",
   { eager: true, import: "default" },
 );
 
@@ -40,7 +40,7 @@ interface GalleryImage {
   subfolder: string;
 }
 
-const TABS = ["Male", "Female", "Neutral"] as const;
+const TABS = ["Male", "Female", "Non-Binary"] as const;
 type TabName = (typeof TABS)[number];
 
 /* ─── Helpers ─── */
@@ -131,7 +131,7 @@ export default function PhotoGallery() {
     () => ({
       Male: globToImages(maleGlob),
       Female: globToImages(femaleGlob),
-      Neutral: globToImages(neutralGlob),
+      "Non-Binary": globToImages(nonBinaryGlob),
     }),
     [],
   );
