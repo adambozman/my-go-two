@@ -27,7 +27,7 @@ const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
 
   return (
     <div className="relative w-full flex flex-col items-center">
-      <div className="relative w-full overflow-hidden" style={{ height: stageHeight }}>
+      <div className="relative w-full" style={{ height: stageHeight }}>
         <div className="absolute inset-0 flex items-center justify-center">
           {slots.map((offset) => {
             const itemIndex = (activeIndex + offset + n) % n;
