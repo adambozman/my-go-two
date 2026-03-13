@@ -211,7 +211,7 @@ export default function PhotoGallery() {
       </div>
 
       {/* Gender tabs */}
-      <div className="sticky top-[57px] z-20 bg-background/90 backdrop-blur border-b border-border px-4 py-2 flex gap-2">
+      <div className="sticky top-[98px] z-20 bg-background/90 backdrop-blur border-b border-border px-4 py-2 flex gap-2">
         {TABS.map((tab) => (
           <button
             key={tab}
