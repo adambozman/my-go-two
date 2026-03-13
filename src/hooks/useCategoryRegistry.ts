@@ -57,9 +57,14 @@ export function useCategoryRegistry(
           return;
         }
 
-        // Preload all images in a single batch query
+        // Preload all images in a single batch query (non-fatal if it fails)
         const keys = (rows as any[]).map((r: any) => r.key);
-        const imageMap = await preloadImages(keys, gender);
+        let imageMap = new Map<string, string>();
+        try {
+          imageMap = await preloadImages(keys, gender);
+        } catch (imgErr) {
+          console.warn("Image preload failed, continuing without images:", imgErr);
+        }
         if (cancelled) return;
 
         const items: CategoryItem[] = (rows as any[]).map((r: any) => ({
