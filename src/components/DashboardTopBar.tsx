@@ -14,10 +14,10 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 import { useTopBar } from "@/contexts/TopBarContext";
+import { useRotatingQuote } from "@/hooks/useRotatingQuote";
 
 const taglines: Record<string, string> = {
   "/dashboard": "The people who matter most.",
-  "/dashboard/my-go-two": "Everything about you, in one place.",
   "/dashboard/recommendations": "AI-curated picks, just for you.",
   "/dashboard/questionnaires": "The more you share, the better they know you.",
   "/dashboard/search": "Find anything, for anyone.",
@@ -29,6 +29,7 @@ export function DashboardTopBar() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { backState } = useTopBar();
+  const rotatingQuote = useRotatingQuote();
   const [unreadCount, setUnreadCount] = useState(0);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [initials, setInitials] = useState("?");
@@ -125,7 +126,10 @@ export function DashboardTopBar() {
     toast({ title: "Photo removed" });
   };
 
-  const activeTagline = taglines[location.pathname] ?? taglines["/dashboard"];
+  const isMyGoTwo = location.pathname === "/dashboard/my-go-two";
+  const activeTagline = isMyGoTwo
+    ? `"${rotatingQuote.text}" — ${rotatingQuote.author}`
+    : (taglines[location.pathname] ?? taglines["/dashboard"]);
 
   return (
     <header className="px-4 md:px-8 shrink-0 flex flex-col" style={{ height: "var(--header-height)", paddingTop: "var(--header-top-padding)" }}>
@@ -229,7 +233,14 @@ export function DashboardTopBar() {
 
       <div className="border-b border-border/30" style={{ marginTop: "var(--header-divider-margin-top)" }} />
 
-      <p className="header-tagline" style={{ marginTop: "var(--header-tagline-margin-top)" }}>
+      <p
+        className="header-tagline"
+        style={{
+          marginTop: "var(--header-tagline-margin-top)",
+          opacity: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? 0 : 1,
+          transition: `opacity ${isMyGoTwo ? "0.8s" : "0s"} ease`,
+        }}
+      >
         {backState ? "" : activeTagline}
       </p>
     </header>
