@@ -106,14 +106,12 @@ export function DashboardTopBar() {
       toast({ title: "Photo updated!" });
     }
 
-    // Reset file input
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleRemovePhoto = async () => {
     if (!user) return;
 
-    // List and remove existing avatar files
     const { data: files } = await supabase.storage.from("avatars").list(user.id);
     if (files?.length) {
       await supabase.storage.from("avatars").remove(files.map((f) => `${user.id}/${f.name}`));
@@ -127,16 +125,16 @@ export function DashboardTopBar() {
   const activeTagline = taglines[location.pathname] ?? taglines["/dashboard"];
 
   return (
-    <header className="px-8" style={{ paddingTop: 28, paddingBottom: 0 }}>
-      <div className="relative flex items-center justify-between gap-4">
+    <header className="px-4 md:px-8 pt-4 md:pt-7">
+      <div className="relative flex items-center justify-between gap-2 md:gap-4">
         {/* Profile circle with dropdown — left */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="relative shrink-0 focus:outline-none">
-              <Avatar className="w-[44px] h-[44px] cursor-pointer">
+              <Avatar className="w-9 h-9 md:w-[44px] md:h-[44px] cursor-pointer">
                 {avatarUrl ? <AvatarImage src={avatarUrl} alt="Profile" /> : null}
                 <AvatarFallback
-                  className="text-sm font-semibold"
+                  className="text-xs md:text-sm font-semibold"
                   style={{ background: 'var(--swatch-viridian-odyssey)', color: '#fff' }}
                 >
                   {initials}
@@ -144,13 +142,13 @@ export function DashboardTopBar() {
               </Avatar>
               {/* Camera icon overlay */}
               <span
-                className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center border-2"
+                className="absolute -bottom-0.5 -right-0.5 w-[16px] h-[16px] md:w-[18px] md:h-[18px] rounded-full flex items-center justify-center border-2"
                 style={{
                   background: 'var(--swatch-viridian-odyssey)',
                   borderColor: 'var(--swatch-cream-light)',
                 }}
               >
-                <Camera className="w-[10px] h-[10px] text-white" />
+                <Camera className="w-[8px] h-[8px] md:w-[10px] md:h-[10px] text-white" />
               </span>
             </button>
           </DropdownMenuTrigger>
@@ -177,22 +175,22 @@ export function DashboardTopBar() {
         />
 
         {/* GoTwo logo — absolute center */}
-        <GoTwoText className="text-[58px] [&_.two]:text-[72px] absolute left-1/2 -translate-x-1/2" />
+        <GoTwoText className="text-[38px] md:text-[58px] [&_.two]:text-[48px] md:[&_.two]:text-[72px] absolute left-1/2 -translate-x-1/2" />
 
         {/* Settings + Bell — right */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0">
           <button
             onClick={() => navigate("/dashboard/settings")}
-            className="relative w-10 h-10 rounded-full card-design-neumorph flex items-center justify-center"
+            className="relative w-8 h-8 md:w-10 md:h-10 rounded-full card-design-neumorph flex items-center justify-center"
           >
-            <Settings className="h-4 w-4 text-muted-foreground" />
+            <Settings className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground" />
           </button>
 
           <button
             onClick={() => navigate("/dashboard/notifications")}
-            className="relative w-10 h-10 rounded-full card-design-neumorph flex items-center justify-center"
+            className="relative w-8 h-8 md:w-10 md:h-10 rounded-full card-design-neumorph flex items-center justify-center"
           >
-            <Bell className="h-4 w-4 text-muted-foreground" />
+            <Bell className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground" />
             {unreadCount > 0 && (
               <span
                 className="absolute -top-1 -right-1 w-5 h-5 text-[10px] font-bold rounded-full flex items-center justify-center"
@@ -205,17 +203,15 @@ export function DashboardTopBar() {
         </div>
       </div>
 
-      <div style={{ marginTop: 28 }} className="border-b border-border/30" />
+      <div className="mt-5 md:mt-7 border-b border-border/30" />
 
       <p
-        className="italic text-center"
+        className="italic text-center text-[13px] md:text-[18px] mt-3"
         style={{
           fontFamily: "'Cormorant Garamond', serif",
-          fontSize: 18,
           fontWeight: 500,
           letterSpacing: "0.02em",
           color: "#2D6870",
-          marginTop: 12,
         }}
       >
         {activeTagline}
