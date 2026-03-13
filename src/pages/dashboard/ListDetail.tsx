@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { type Gender, normalizeGender } from "@/lib/gender";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
