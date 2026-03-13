@@ -8,9 +8,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import ConnectionPage from "./ConnectionPage";
-import { getDefaultPhotoForLabel, assignUniquePhotos, buildDashboardOtherCategories } from "@/data/stockPhotos";
+import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
+import { useCategoryRegistry } from "@/hooks/useCategoryRegistry";
 
 const CARD_W = CAROUSEL_LAYOUT.cardWidth;
 const CARD_H = CAROUSEL_LAYOUT.cardHeight;
