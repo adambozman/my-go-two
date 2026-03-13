@@ -4,13 +4,11 @@ import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
-
-import CategoryCoverFlow from "@/components/CategoryCoverFlow";
 import { getTemplateImage as resolveTemplateImage } from "@/lib/imageResolver";
 
 interface ConnectionPageProps {
   connection: {
-    id: string; // couple_id
+    id: string;
     name: string;
     image: string;
     partnerId?: string;
@@ -28,7 +26,6 @@ const categoryLabels: Record<string, string> = {
 
 const categoryOrder = ["personal", "food-drink", "gifts-occasions", "experiences"];
 
-// Map sharing permission keys to template categories
 const permissionToCategoryMap: Record<string, string[]> = {
   sizes: ["personal"],
   brands: ["personal"],
@@ -49,11 +46,9 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
   const touchStartY = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Fetch sharing permissions — what has the partner shared with me?
   useEffect(() => {
     if (!user) return;
 
-    // Demo card: show all categories
     if (connection.id === "demo-sig-other") {
       setPermissions({
         sizes: true, brands: true, saved_items: true,
@@ -89,7 +84,6 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
     fetchPermissions();
   }, [user, connection.id]);
 
-  // Fetch templates
   useEffect(() => {
     supabase.from("card_templates").select("*").then(({ data }) => {
       setTemplates(data ?? []);
@@ -97,7 +91,6 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
     });
   }, []);
 
-  // Determine which categories are permitted
   const permittedCategories = new Set<string>();
   if (permissions) {
     for (const [permKey, cats] of Object.entries(permissionToCategoryMap)) {
@@ -127,7 +120,6 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
     setTimeout(onClose, 350);
   }, [onClose]);
 
-  // Swipe down to close
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
   }, []);
@@ -156,10 +148,7 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
       }
       animate={
         isExpanded
-          ? {
-              clipPath: "inset(0px 0px 0px 0px round 0px)",
-              opacity: 1,
-            }
+          ? { clipPath: "inset(0px 0px 0px 0px round 0px)", opacity: 1 }
           : cardRect
           ? {
               clipPath: `inset(${cardRect.y}px ${window.innerWidth - cardRect.x - cardRect.width}px ${window.innerHeight - cardRect.y - cardRect.height}px ${cardRect.x}px round 16px)`,
@@ -179,7 +168,6 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* Close button */}
       <button
         onClick={handleClose}
         className="absolute top-4 right-4 z-50 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur"
@@ -188,17 +176,12 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
         <X className="w-5 h-5" style={{ color: "#2D6870" }} />
       </button>
 
-      {/* Header */}
       <div className="flex flex-col items-center pt-8 pb-2 px-4">
         <div
-        className="w-16 h-16 rounded-full overflow-hidden mb-2 ring-2"
-        style={{ "--tw-ring-color": "#2D6870" } as React.CSSProperties}
+          className="w-16 h-16 rounded-full overflow-hidden mb-2 ring-2"
+          style={{ "--tw-ring-color": "#2D6870" } as React.CSSProperties}
         >
-          <img
-            src={connection.image}
-            alt={connection.name}
-            className="w-full h-full object-cover"
-          />
+          <img src={connection.image} alt={connection.name} className="w-full h-full object-cover" />
         </div>
         <h2
           className="text-xl font-semibold"
@@ -208,17 +191,12 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
         </h2>
         <span
           className="mt-1 px-3 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider"
-          style={{
-            background: "rgba(45,104,112,0.1)",
-            color: "#2D6870",
-            letterSpacing: "0.08em",
-          }}
+          style={{ background: "rgba(45,104,112,0.1)", color: "#2D6870", letterSpacing: "0.08em" }}
         >
           Shared with you
         </span>
       </div>
 
-      {/* Content */}
       <div className="flex-1 overflow-hidden">
         {loading || permissions === null ? (
           <p className="text-muted-foreground p-4 text-center text-sm">Loading...</p>
@@ -233,22 +211,8 @@ const ConnectionPage = ({ connection, cardRect, onClose }: ConnectionPageProps) 
           </div>
         ) : (
           <div className="w-full h-full overflow-y-auto">
-            {grouped.map((group) => (
-              <div key={group.key} className="w-full">
-                <h3 className="section-header text-center py-2">{group.label}</h3>
-                <CategoryCoverFlow
-                  items={group.items.map((t: any) => ({
-                    id: t.id,
-                    name: t.name,
-                    image: getTemplateImage(t.name),
-                    fieldCount: Array.isArray(t.default_fields) ? t.default_fields.length : 0,
-                    isCustom: false,
-                  }))}
-                  onSelect={() => {}}
-                  disabled={false}
-                />
-              </div>
-            ))}
+            {/* Data is loaded and ready. New card UI goes here. */}
+            {/* grouped: {grouped.map(g => g.label).join(', ')} */}
           </div>
         )}
       </div>
