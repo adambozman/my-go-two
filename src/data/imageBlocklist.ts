@@ -23,8 +23,8 @@ let blockedUrls = new Set<string>();
 /** Cached set of blocked source paths (for gallery checks) */
 let blockedPaths = new Set<string>();
 
-/** Whether the cache has been initialised at least once */
-let initialised = false;
+/** Whether the blocklist has finished loading from the DB */
+let blocklistReady = false;
 
 /**
  * Load all blocked paths from the DB and rebuild the caches.
@@ -37,7 +37,7 @@ export async function initBlocklist(): Promise<void> {
 
   if (error) {
     console.warn("[imageBlocklist] Failed to load blocklist:", error.message);
-    initialised = true;
+    blocklistReady = true;
     return;
   }
 
@@ -46,7 +46,12 @@ export async function initBlocklist(): Promise<void> {
   blockedUrls = new Set(
     paths.map((p) => allAssets[p]).filter(Boolean),
   );
-  initialised = true;
+  blocklistReady = true;
+}
+
+/** Check if the blocklist cache has been loaded */
+export function isBlocklistReady(): boolean {
+  return blocklistReady;
 }
 
 /** Synchronous check used by all resolvers */
@@ -69,7 +74,6 @@ export async function addToBlocklist(path: string): Promise<boolean> {
     .insert({ path } as any);
 
   if (error) {
-    // duplicate path is fine (unique constraint)
     if (error.code === "23505") {
       blockedPaths.add(path);
       const url = allAssets[path];
@@ -80,7 +84,6 @@ export async function addToBlocklist(path: string): Promise<boolean> {
     return false;
   }
 
-  // Update local caches immediately
   blockedPaths.add(path);
   const url = allAssets[path];
   if (url) blockedUrls.add(url);
@@ -107,4 +110,4 @@ export async function removeFromBlocklist(path: string): Promise<boolean> {
   return true;
 }
 
-export { blockedPaths, blockedUrls, initialised };
+export { blockedPaths, blockedUrls };

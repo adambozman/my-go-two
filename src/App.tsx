@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,15 +25,21 @@ import SettingsPage from "./pages/dashboard/SettingsPage";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import PhotoGallery from "./pages/PhotoGallery";
-import { initBlocklist } from "@/data/imageBlocklist";
+import { initBlocklist, isBlocklistReady } from "@/data/imageBlocklist";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Load image blocklist from DB on app startup so resolvers can check synchronously
+  const [ready, setReady] = useState(isBlocklistReady());
+
   useEffect(() => {
-    initBlocklist();
-  }, []);
+    if (ready) return;
+    initBlocklist().then(() => setReady(true));
+  }, [ready]);
+
+  if (!ready) {
+    return null; // Nothing renders until blocklist cache is warm
+  }
 
   return (
   <QueryClientProvider client={queryClient}>

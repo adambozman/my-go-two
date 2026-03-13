@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { type Gender, normalizeGender } from "@/lib/gender";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,7 +43,7 @@ const ListDetail = () => {
   const [cardTitle, setCardTitle] = useState("");
   const [fields, setFields] = useState<CardField[]>([{ label: "", type: "text", value: "" }]);
   const [templates, setTemplates] = useState<any[]>([]);
-  const [userGender, setUserGender] = useState<string | null>(null);
+  const [userGender, setUserGender] = useState<Gender | null>(null);
   const [saving, setSaving] = useState(false);
   const [autofillingCardId, setAutofillingCardId] = useState<string | null>(null);
 
@@ -55,7 +56,7 @@ const ListDetail = () => {
       supabase.from("profiles").select("gender").eq("user_id", user.id).single(),
     ]);
     setListTitle(list?.title ?? "");
-    setUserGender((profile as any)?.gender ?? null);
+    setUserGender(profile?.gender ? normalizeGender(profile.gender) : null);
     setCards(
       (cardsData ?? []).map((c) => ({
         ...c,
