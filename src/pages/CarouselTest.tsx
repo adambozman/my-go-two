@@ -12,13 +12,16 @@ const TEST_ITEMS = [
   { id: "6", label: "Taste",       img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80" },
 ];
 
-// Center: 518x350. ±1: 89x289. Width drops 83%, height drops 17%.
-// Applying same ratios proportionally at our scale.
+// Figma originals × 1.4:
+// Center: 518×350 → 725×490
+// ±1:      89×289 → 125×405
+// ±2:      53×238 →  74×333
+// ±3:      19×173 →  27×242
 const DESKTOP = [
-  { w: 620, h: 420, radius: 36  }, // center
-  { w: 106, h: 348, radius: 999 }, // ±1 — 83% width drop, 17% height drop
-  { w: 68,  h: 289, radius: 999 }, // ±2 — same ratio again
-  { w: 44,  h: 240, radius: 999 }, // ±3
+  { w: 725, h: 490, radius: 36  }, // center
+  { w: 125, h: 405, radius: 999 }, // ±1
+  { w: 74,  h: 333, radius: 999 }, // ±2
+  { w: 27,  h: 242, radius: 999 }, // ±3
 ];
 
 const MOBILE = [
