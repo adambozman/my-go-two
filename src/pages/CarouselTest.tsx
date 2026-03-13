@@ -18,7 +18,7 @@ const CARDS = [
   { w: 19,  h: 173, radius: 42 }, // ±3
 ];
 
-const GAP = 10;
+const GAP = 30;
 const SPRING = { type: "spring", stiffness: 320, damping: 32 };
 
 function getCard(offset: number) {
