@@ -147,6 +147,27 @@ const DesktopPillCarousel = ({ items }: { items: typeof TEST_ITEMS }) => {
                 onClick={() => !isActive && setActiveIndex((activeIndex + offset + n) % n)}
               >
                 <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
+                {isActive && (
+                  <div className="absolute bottom-3 left-3">
+                    <span style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: 15,
+                      fontWeight: 500,
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase" as const,
+                      color: "#fff",
+                      background: "rgba(255,255,255,0.18)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      border: "1px solid rgba(255,255,255,0.35)",
+                      borderRadius: 999,
+                      padding: "6px 14px",
+                      display: "inline-block",
+                    }}>
+                      {item.label}
+                    </span>
+                  </div>
+                )}
               </motion.div>
             );
           })}
@@ -229,6 +250,27 @@ const MobileCarousel = ({ items }: { items: typeof TEST_ITEMS }) => {
                 onClick={() => !isActive && setActiveIndex((activeIndex + offset + n) % n)}
               >
                 <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
+                {isActive && (
+                  <div className="absolute bottom-3 left-3">
+                    <span style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: 15,
+                      fontWeight: 500,
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase" as const,
+                      color: "#fff",
+                      background: "rgba(255,255,255,0.18)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      border: "1px solid rgba(255,255,255,0.35)",
+                      borderRadius: 999,
+                      padding: "6px 14px",
+                      display: "inline-block",
+                    }}>
+                      {item.label}
+                    </span>
+                  </div>
+                )}
               </motion.div>
             );
           })}
