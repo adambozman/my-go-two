@@ -12,14 +12,14 @@ export const CAROUSEL_LAYOUT = {
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
 };
 
-/** Desktop card dimensions — Figma originals × 1.4, website view only (≥768px) */
+/** Desktop card dimensions — Figma originals × 1.4 × 1.4, website view only (≥1024px) */
 export const CAROUSEL_LAYOUT_DESKTOP = {
-  cardWidth: 725,
-  cardHeight: 490,
-  flankWidth: 125,
-  flankHeight: 405,
+  cardWidth: 1015,
+  cardHeight: 686,
+  flankWidth: 175,
+  flankHeight: 567,
   xGap: 0,
-  stageHeight: 560,
+  stageHeight: 686,
   maxVisibleOffset: 2,
   flankBlur: 0.2,
   flankOpacity: 1,
