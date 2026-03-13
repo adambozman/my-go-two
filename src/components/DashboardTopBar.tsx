@@ -146,7 +146,7 @@ export function DashboardTopBar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="relative shrink-0 focus:outline-none">
-              <Avatar className="w-9 h-9 md:w-[52px] md:h-[52px] cursor-pointer">
+              <Avatar className="cursor-pointer" style={{ width: "var(--header-avatar-size)", height: "var(--header-avatar-size)" }}>
                 {avatarUrl ? <AvatarImage src={avatarUrl} alt="Profile" /> : null}
                 <AvatarFallback
                   className="text-xs md:text-sm font-semibold"
@@ -203,14 +203,16 @@ export function DashboardTopBar() {
         <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0">
           <button
             onClick={() => navigate("/dashboard/settings")}
-            className="relative w-8 h-8 md:w-10 md:h-10 rounded-full card-design-neumorph flex items-center justify-center"
+            className="relative rounded-full card-design-neumorph flex items-center justify-center"
+            style={{ width: "var(--header-icon-btn-size)", height: "var(--header-icon-btn-size)" }}
           >
             <Settings className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground" />
           </button>
 
           <button
             onClick={() => navigate("/dashboard/notifications")}
-            className="relative w-8 h-8 md:w-10 md:h-10 rounded-full card-design-neumorph flex items-center justify-center"
+            className="relative rounded-full card-design-neumorph flex items-center justify-center"
+            style={{ width: "var(--header-icon-btn-size)", height: "var(--header-icon-btn-size)" }}
           >
             <Bell className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground" />
             {unreadCount > 0 && (

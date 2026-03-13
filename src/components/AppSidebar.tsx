@@ -43,8 +43,8 @@ export function AppSidebar() {
                   )}
                   style={isActive ? { background: 'rgba(232,198,174,0.4)' } : undefined}
                 >
-                  <item.icon className="h-5 w-5" />
-                  <span className="text-[10px] font-medium leading-none">{item.label}</span>
+                  <item.icon className="h-6 w-6" />
+                  <span className="text-[11px] font-medium leading-none">{item.label}</span>
                 </NavLink>
               </TooltipTrigger>
               <TooltipContent side="top" sideOffset={8}>
