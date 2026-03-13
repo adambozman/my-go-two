@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 interface GoTwoCardProps {
   image: string;
@@ -7,17 +7,17 @@ interface GoTwoCardProps {
   onClick?: () => void;
 }
 
+// Fix 6: Card has fixed dimensions — Framer Motion in GoTwoCoverFlow handles
+// all scaling. No more fighting between CSS classes and motion transforms.
 const GoTwoCard = ({ image, label, isActive = true, onClick }: GoTwoCardProps) => {
   return (
     <div
       onClick={onClick}
-      className={cn(
-        "relative flex-shrink-0 overflow-hidden rounded-[16px] cursor-pointer transition-all duration-300",
-        isActive
-          ? "w-[260px] h-[360px] md:w-[300px] md:h-[420px] opacity-100"
-          : "w-[120px] h-[200px] md:w-[160px] md:h-[260px] opacity-50"
-      )}
+      className="relative flex-shrink-0 overflow-hidden cursor-pointer"
       style={{
+        width: CAROUSEL_LAYOUT.cardWidth,
+        height: CAROUSEL_LAYOUT.cardHeight,
+        borderRadius: CAROUSEL_LAYOUT.borderRadius,
         boxShadow: isActive
           ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
           : "0 4px 16px rgba(0,0,0,0.12)",
@@ -28,6 +28,7 @@ const GoTwoCard = ({ image, label, isActive = true, onClick }: GoTwoCardProps) =
         alt={label}
         className="absolute inset-0 w-full h-full object-cover"
       />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
       {/* Frosted glass pill */}
       <div

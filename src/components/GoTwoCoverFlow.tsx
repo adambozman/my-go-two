@@ -2,28 +2,23 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import GoTwoCard from "@/components/ui/GoTwoCard";
+import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 interface GoTwoCoverFlowProps {
   items: { id: string; label: string; image: string }[];
   onSelect: (id: string) => void;
 }
 
-const SPRING = { type: "spring" as const, stiffness: 300, damping: 30 };
-const DESKTOP_GAP = 190;
-const MOBILE_GAP = 150;
-const SCALE_STEP = 0.15;
-const MAX_VISIBLE = 2;
+const { xGap, stageHeight, maxVisibleOffset, flankOpacity, spring } = CAROUSEL_LAYOUT;
+const SCALE_ACTIVE = 1;
+const SCALE_FLANK = 0.6;
 
 const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  // Fix 1: Start centered, not at index 0
+  const [activeIndex, setActiveIndex] = useState(Math.floor(items.length / 2));
 
-  const handlePrev = () => {
-    if (activeIndex > 0) setActiveIndex((i) => i - 1);
-  };
-
-  const handleNext = () => {
-    if (activeIndex < items.length - 1) setActiveIndex((i) => i + 1);
-  };
+  const handlePrev = () => setActiveIndex((i) => Math.max(0, i - 1));
+  const handleNext = () => setActiveIndex((i) => Math.min(items.length - 1, i + 1));
 
   const handleCardClick = (index: number) => {
     if (index === activeIndex) {
@@ -33,17 +28,15 @@ const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
     }
   };
 
-  // Only render cards within MAX_VISIBLE range
   const visibleItems = items
     .map((item, index) => ({ ...item, index }))
-    .filter(({ index }) => Math.abs(index - activeIndex) <= MAX_VISIBLE);
+    .filter(({ index }) => Math.abs(index - activeIndex) <= maxVisibleOffset);
 
   return (
     <div className="relative w-full flex flex-col items-center">
-      {/* Stage — CSS custom property handles responsive gap */}
       <div
-        className="relative w-full overflow-hidden [--coverflow-gap:150px] md:[--coverflow-gap:190px]"
-        style={{ height: 440 }}
+        className="relative w-full overflow-hidden"
+        style={{ height: stageHeight }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
           <AnimatePresence mode="popLayout">
@@ -58,12 +51,13 @@ const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
                   layout
                   initial={false}
                   animate={{
-                    x: `calc(${offset} * var(--coverflow-gap))`,
-                    scale: isActive ? 1 : Math.max(0.55, 1 - absOffset * SCALE_STEP),
-                    opacity: isActive ? 1 : 0.5,
+                    // Fix 2: numeric pixels, not CSS variable — Framer Motion can animate these
+                    x: offset * xGap,
+                    scale: isActive ? SCALE_ACTIVE : SCALE_FLANK,
+                    opacity: isActive ? 1 : flankOpacity,
                     zIndex: items.length - absOffset,
                   }}
-                  transition={SPRING}
+                  transition={spring}
                   className="absolute"
                 >
                   <GoTwoCard
@@ -79,7 +73,7 @@ const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
         </div>
       </div>
 
-      {/* Navigation buttons */}
+      {/* Navigation */}
       <div className="flex items-center gap-6 mt-4">
         {activeIndex > 0 && (
           <button
