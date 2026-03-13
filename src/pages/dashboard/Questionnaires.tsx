@@ -6,13 +6,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SwipeCards from "@/components/SwipeCards";
 
-import KnowMeCarousel, { type KnowMeCard } from "@/components/KnowMeCarousel";
-
 /* ── Types ─────────────────────────────────────────── */
 interface AICategory {
   id: string;
   name: string;
-  category: string; // style | sizing | lifestyle | gifting | products
+  category: string;
   image_url: string | null;
   image_prompt: string;
   questions: {
@@ -38,7 +36,6 @@ const SECTIONS = [
   { id: "lifestyle-gifts", label: "Lifestyle & Gifts" },
 ];
 
-/* ── Placeholder gradient for cards without AI image ── */
 const PLACEHOLDER_GRADIENTS: Record<string, string> = {
   style: "linear-gradient(135deg, #d4a574 0%, #8b6f5a 100%)",
   sizing: "linear-gradient(135deg, #a3b18a 0%, #6b7f5c 100%)",
@@ -113,7 +110,6 @@ const Questionnaires = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<AICategory | null>(null);
 
-  /* ── Fetch AI categories ─────────────────────────── */
   const fetchCategories = useCallback(async () => {
     if (!user) {
       setCategories([]);
@@ -157,9 +153,8 @@ const Questionnaires = () => {
     fetchCategories();
   }, [fetchCategories]);
 
-  /* ── Handle card click → open swipe quiz ─────────── */
-  const handleCardClick = (card: KnowMeCard) => {
-    const cat = categories.find((c) => c.id === card.id);
+  const handleCardClick = (cardId: string) => {
+    const cat = categories.find((c) => c.id === cardId);
     if (!cat || !cat.questions.length) {
       toast.error("That quiz is incomplete. Refreshing Know Me...");
       fetchCategories();
@@ -168,14 +163,12 @@ const Questionnaires = () => {
     setSelectedCategory(cat);
   };
 
-  /* ── Build cards for a section ───────────────────── */
-  const buildSectionCards = (sectionId: string): KnowMeCard[] => {
+  const buildSectionCards = (sectionId: string) => {
     const filters = SECTION_FILTERS[sectionId] || [];
     return categories
       .filter((cat) => filters.includes(cat.category))
       .map((cat) => ({
         id: cat.id,
-        kind: "ai" as const,
         title: cat.name,
         image: cat.image_url || "",
         placeholderGradient: !cat.image_url ? PLACEHOLDER_GRADIENTS[cat.category] : undefined,
@@ -207,7 +200,6 @@ const Questionnaires = () => {
               if (error) throw error;
               toast.success("Answers saved!");
               await refetch();
-              // Remove completed category from local state
               setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
             } catch {
               toast.error("Failed to save answers");
@@ -220,29 +212,14 @@ const Questionnaires = () => {
     );
   }
 
-  /* ── Main view ───────────────────────────────────── */
   if (genderLoading) {
     return <p className="text-muted-foreground p-4">Loading...</p>;
   }
 
   return (
     <div className="h-full relative">
-      <p
-        style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "#2D6870", fontWeight: 400 }}
-        className="absolute top-0 left-0 px-4 pt-1 z-10"
-      >
-        Tap a card to view or edit your details.
-      </p>
-      {SECTIONS.map((section) => (
-          <div key={section.id} className="w-full">
-            <h3 className="section-header text-center py-2">{section.label}</h3>
-            <KnowMeCarousel
-              cards={buildSectionCards(section.id)}
-              onCardClick={handleCardClick}
-              loading={loading}
-            />
-          </div>
-        ))}
+      {/* Data is loaded and ready. New card UI goes here. */}
+      {/* categories: {categories.length}, sections: {SECTIONS.length} */}
     </div>
   );
 };

@@ -4,7 +4,13 @@
  * This file only exports types and filter utilities.
  */
 
-import type { SubtypeItem } from "@/components/TemplateCoverFlow";
+export interface SubtypeItem {
+  id: string;
+  name: string;
+  image: string;
+  gender?: string[];
+  fields: { label: string; type: "text" | "select"; value: string; options?: string[] }[];
+}
 
 export interface SubcategoryGroup {
   id: string;
