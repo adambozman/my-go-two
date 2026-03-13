@@ -131,7 +131,7 @@ export function DashboardTopBar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="relative shrink-0 focus:outline-none">
-              <Avatar className="w-9 h-9 md:w-[44px] md:h-[44px] cursor-pointer">
+              <Avatar className="w-9 h-9 md:w-[52px] md:h-[52px] cursor-pointer">
                 {avatarUrl ? <AvatarImage src={avatarUrl} alt="Profile" /> : null}
                 <AvatarFallback
                   className="text-xs md:text-sm font-semibold"
@@ -175,7 +175,7 @@ export function DashboardTopBar() {
         />
 
         {/* GoTwo logo — absolute center */}
-        <GoTwoText className="text-[38px] md:text-[58px] [&_.two]:text-[48px] md:[&_.two]:text-[72px] absolute left-1/2 -translate-x-1/2" />
+        <GoTwoText className="text-[38px] md:text-[72px] [&_.two]:text-[48px] md:[&_.two]:text-[88px] absolute left-1/2 -translate-x-1/2" />
 
         {/* Settings + Bell — right */}
         <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0">
@@ -206,7 +206,7 @@ export function DashboardTopBar() {
       <div className="mt-5 md:mt-7 border-b border-border/30" />
 
       <p
-        className="italic text-center text-[13px] md:text-[18px] mt-3"
+        className="italic text-center text-[13px] md:text-[22px] mt-3"
         style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontWeight: 500,
