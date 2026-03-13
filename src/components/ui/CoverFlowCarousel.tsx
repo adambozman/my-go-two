@@ -48,6 +48,8 @@ const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
 
   const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
+  const activeItem = items[activeIndex];
+
   return (
     <div
       className="relative w-full flex flex-col items-center"
@@ -62,7 +64,12 @@ const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
         touchStartX.current = null;
       }}
     >
-      {/* Stage — shifted down slightly */}
+      {/* Active card label — sits between section title and card */}
+      <p className="section-header text-center" style={{ marginBottom: 20 }}>
+        {activeItem.label}
+      </p>
+
+      {/* Stage */}
       <div className="relative w-full" style={{ height: stageHeight, marginTop: 16 }}>
         <div className="absolute inset-0 flex items-center justify-center">
           {slots.map((offset) => {
