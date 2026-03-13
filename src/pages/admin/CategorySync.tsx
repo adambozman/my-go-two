@@ -13,12 +13,20 @@ const CategorySync = () => {
     setStatus("running");
     setMessage("");
     try {
-      const { error } = await supabase
+      // Delete all existing rows then re-insert
+      const { error: delError } = await supabase
         .from("category_registry")
-        .upsert(CATEGORY_REGISTRY_SEED as any, { onConflict: "key,page" });
-      if (error) throw error;
+        .delete()
+        .neq("key", "");
+      if (delError) throw delError;
+
+      const { error: insError } = await supabase
+        .from("category_registry")
+        .insert(CATEGORY_REGISTRY_SEED as any);
+      if (insError) throw insError;
+
       setStatus("done");
-      setMessage(`${CATEGORY_REGISTRY_SEED.length} rows pushed successfully.`);
+      setMessage(`${CATEGORY_REGISTRY_SEED.length} rows pushed.`);
     } catch (err: any) {
       setStatus("error");
       setMessage(err.message ?? "Something went wrong.");
