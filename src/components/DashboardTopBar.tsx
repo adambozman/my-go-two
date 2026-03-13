@@ -128,7 +128,7 @@ export function DashboardTopBar() {
   const activeTagline = taglines[location.pathname] ?? taglines["/dashboard"];
 
   return (
-    <header className="px-4 md:px-8 pt-4 md:pt-7">
+    <header className="px-4 md:px-8 shrink-0 flex flex-col justify-center" style={{ height: "var(--header-height)" }}>
       <div className="relative flex items-center justify-between gap-2 md:gap-4">
         {/* Back button or Profile circle — left */}
         {backState ? (
@@ -227,16 +227,8 @@ export function DashboardTopBar() {
 
       <div className="mt-5 md:mt-7 border-b border-border/30" />
 
-      <p
-        className="italic text-center text-[13px] md:text-[22px] mt-3"
-        style={{
-          fontFamily: "'Cormorant Garamond', serif",
-          fontWeight: 500,
-          letterSpacing: "0.02em",
-          color: "#2D6870",
-        }}
-      >
-        {activeTagline}
+      <p className="header-tagline">
+        {backState ? "" : activeTagline}
       </p>
     </header>
   );

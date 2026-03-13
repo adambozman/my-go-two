@@ -17,8 +17,9 @@ export function AppSidebar() {
   return (
     <TooltipProvider delayDuration={200}>
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-2 py-2"
+        className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-2"
         style={{
+          height: "var(--footer-height)",
           background: "var(--swatch-sand)",
           borderTop: "1px solid rgba(74, 96, 104, 0.12)",
           boxShadow: "0 -2px 12px rgba(0,0,0,0.04)",

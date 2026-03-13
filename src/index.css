@@ -28,6 +28,10 @@ html::-webkit-scrollbar {
 
 @layer base {
   :root {
+    /* ── Layout: single source of truth for header/footer heights ── */
+    --header-height: 110px;
+    --footer-height: 64px;
+
     --background: 28 36% 87%;
     --foreground: 195 15% 35%;
     --heading: 192 46% 22%;
@@ -168,6 +172,29 @@ body {
 }
 
 /* Global section header label */
+.header-tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  color: #2D6870;
+  text-align: center;
+  font-size: 13px;
+  /* Fixed height so header never shifts between main and drill-down */
+  height: 24px;
+  line-height: 24px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+@media (min-width: 768px) {
+  .header-tagline {
+    font-size: 22px;
+    height: 36px;
+    line-height: 36px;
+    margin-top: 16px;
+  }
+}
+
 .section-header {
   font-size: 18px;
   font-weight: 500;
