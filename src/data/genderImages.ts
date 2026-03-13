@@ -73,6 +73,7 @@ import femaleLifestyle from "@/assets/categories/female/lifestyle.jpg";
 import femaleFitCat from "@/assets/categories/female/fit.jpg";
 
 import { type Gender, normalizeGender } from "@/lib/gender";
+import { isBlocked } from "@/data/imageBlocklist";
 
 // Style images keyed by style ID then gender
 const styleImages: Record<string, Record<string, string>> = {
@@ -156,14 +157,24 @@ const DEFAULT_STYLE_FALLBACK: Record<Gender, string> = {
 
 const normalizeId = (value: string) => value.toLowerCase().trim();
 
+/** Pick the first non-blocked candidate, or the final fallback */
+function firstAvailable(...candidates: (string | undefined)[]): string {
+  for (const c of candidates) {
+    if (c && !isBlocked(c)) return c;
+  }
+  return "";
+}
+
 export function getStyleImage(styleId: string, gender?: Gender, categoryId?: string): string {
   const g = normalizeGender(gender);
+  const fallback = DEFAULT_STYLE_FALLBACK[g];
   const normalizedStyle = normalizeId(styleId);
   const canonicalStyle = STYLE_ID_ALIASES[normalizedStyle] || normalizedStyle;
   const styleBank = styleImages[canonicalStyle];
 
   if (styleBank) {
-    return styleBank[g] || styleBank.neutral || styleBank.male || DEFAULT_STYLE_FALLBACK[g];
+    const result = firstAvailable(styleBank[g], styleBank.neutral, styleBank.male);
+    return result || (isBlocked(fallback) ? "" : fallback);
   }
 
   const normalizedCategory = categoryId ? normalizeId(categoryId) : "";
@@ -171,21 +182,25 @@ export function getStyleImage(styleId: string, gender?: Gender, categoryId?: str
   if (categoryFallbackStyle) {
     const categoryStyleBank = styleImages[categoryFallbackStyle];
     if (categoryStyleBank) {
-      return categoryStyleBank[g] || categoryStyleBank.neutral || categoryStyleBank.male || DEFAULT_STYLE_FALLBACK[g];
+      const result = firstAvailable(categoryStyleBank[g], categoryStyleBank.neutral, categoryStyleBank.male);
+      return result || (isBlocked(fallback) ? "" : fallback);
     }
   }
 
   const categoryBank = normalizedCategory ? categoryImages[normalizedCategory] : undefined;
   if (categoryBank) {
-    return categoryBank[g] || categoryBank.neutral || categoryBank.male || DEFAULT_STYLE_FALLBACK[g];
+    const result = firstAvailable(categoryBank[g], categoryBank.neutral, categoryBank.male);
+    return result || (isBlocked(fallback) ? "" : fallback);
   }
 
-  return DEFAULT_STYLE_FALLBACK[g];
+  return isBlocked(fallback) ? "" : fallback;
 }
 
 export function getCategoryImage(categoryId: string, gender?: Gender): string {
   const g = normalizeGender(gender);
+  const fallback = DEFAULT_STYLE_FALLBACK[g];
   const bank = categoryImages[normalizeId(categoryId)];
-  if (!bank) return DEFAULT_STYLE_FALLBACK[g];
-  return bank[g] || bank.neutral || bank.male || DEFAULT_STYLE_FALLBACK[g];
+  if (!bank) return isBlocked(fallback) ? "" : fallback;
+  const result = firstAvailable(bank[g], bank.neutral, bank.male);
+  return result || (isBlocked(fallback) ? "" : fallback);
 }

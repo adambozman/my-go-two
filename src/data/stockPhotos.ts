@@ -54,6 +54,7 @@ import coworker4 from "@/assets/stock/coworker-4.jpg";
 
 import { getTemplateImage } from "@/data/templateImageResolver";
 import { normalizeGender } from "@/lib/gender";
+import { isBlocked } from "@/data/imageBlocklist";
 
 export const STOCK_PHOTOS: Record<string, { id: string; url: string }[]> = {
   partner: [
@@ -128,15 +129,16 @@ export const LABEL_TO_PHOTO_KEY: Record<string, string> = {
 
 const normalizeLabel = (value: string) => value.toLowerCase().trim();
 
-/** Get the stock photo set for a given display label */
+/** Get the stock photo set for a given display label (blocklist-filtered) */
 export function getPhotosForLabel(label: string): { id: string; url: string }[] {
   const lower = normalizeLabel(label);
   const key = LABEL_TO_PHOTO_KEY[lower];
-  if (key && STOCK_PHOTOS[key]) return STOCK_PHOTOS[key];
-  for (const [keyword, setKey] of Object.entries(LABEL_TO_PHOTO_KEY)) {
-    if (lower.includes(keyword)) return STOCK_PHOTOS[setKey];
-  }
-  return STOCK_PHOTOS.partner;
+  const raw = (key && STOCK_PHOTOS[key])
+    ? STOCK_PHOTOS[key]
+    : Object.entries(LABEL_TO_PHOTO_KEY).find(([kw]) => lower.includes(kw))?.[1]
+      ? STOCK_PHOTOS[Object.entries(LABEL_TO_PHOTO_KEY).find(([kw]) => lower.includes(kw))![1]]
+      : STOCK_PHOTOS.partner;
+  return raw.filter((p) => !isBlocked(p.url));
 }
 
 /** Get the default (first) stock photo for a label */
@@ -219,7 +221,8 @@ export function getDashboardCardImage(cardName: string, gender: string): string 
   const key = normalizeLabel(cardName);
   const g = normalizeGender(gender);
   const templateName = DASHBOARD_CARD_TO_TEMPLATE[key] || "Specific Product Versions";
-  return getTemplateImage(templateName, g);
+  const result = getTemplateImage(templateName, g);
+  return isBlocked(result) ? "" : result;
 }
 
 /** Build dashboard sections from centralized global image rules */

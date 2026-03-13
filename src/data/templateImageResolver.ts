@@ -121,6 +121,7 @@ import imgScentHome from "@/assets/templates/scent-home.jpg";
 
 import { getStyleImage } from "@/data/genderImages";
 import { type Gender, normalizeGender } from "@/lib/gender";
+import { isBlocked } from "@/data/imageBlocklist";
 
 interface ImageBank {
   male: string;
@@ -239,12 +240,16 @@ const DEFAULT_TEMPLATE_IMAGE: ImageBank = {
 export function getTemplateImage(templateName: string, gender: Gender | string): string {
   const styleOverride = TEMPLATE_STYLE_OVERRIDES[normalizeKey(templateName)];
   if (styleOverride) {
-    return getStyleImage(styleOverride, normalizeGender(gender));
+    const result = getStyleImage(styleOverride, normalizeGender(gender));
+    if (result && !isBlocked(result)) return result;
+    // Fall through to template bank if style image is blocked
   }
 
   const key = normalizeGender(gender);
   const entry = templateImagesByKey[normalizeKey(templateName)] ?? DEFAULT_TEMPLATE_IMAGE;
-  return entry[key];
+  const result = entry[key];
+  if (isBlocked(result)) return isBlocked(DEFAULT_TEMPLATE_IMAGE[key]) ? "" : DEFAULT_TEMPLATE_IMAGE[key];
+  return result;
 }
 
 /**
@@ -256,8 +261,10 @@ export function getProductImage(productId: string, gender: Gender | string, fall
   const entry = productImages[normalizeKey(productId)];
 
   if (entry) {
-    return entry[key];
+    const result = entry[key];
+    if (!isBlocked(result)) return result;
   }
 
-  return fallback || DEFAULT_TEMPLATE_IMAGE[key];
+  const fb = fallback || DEFAULT_TEMPLATE_IMAGE[key];
+  return (fb && !isBlocked(fb)) ? fb : "";
 }
