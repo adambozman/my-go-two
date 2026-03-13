@@ -8,8 +8,7 @@ import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { type Gender } from "@/lib/gender";
 import { preloadImages } from "@/lib/imageResolver";
-import type { SubtypeItem } from "@/components/TemplateCoverFlow";
-import type { SubcategoryGroup } from "@/data/templateSubtypes";
+import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 
 export interface CategoryItem {
   key: string;

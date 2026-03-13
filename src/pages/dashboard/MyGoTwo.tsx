@@ -5,8 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
-import type { SubtypeItem } from "@/components/TemplateCoverFlow";
-import type { SubcategoryGroup } from "@/data/templateSubtypes";
+import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 import CreateCustomCardSheet from "@/components/CreateCustomCardSheet";
 import { useCategoryRegistry, type CategoryItem } from "@/hooks/useCategoryRegistry";
 
