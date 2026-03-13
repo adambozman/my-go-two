@@ -7,8 +7,25 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { type Gender } from "@/lib/gender";
-import { preloadImages } from "@/lib/imageResolver";
+import { getTemplateImage } from "@/lib/imageResolver";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
+
+/** Pull the image key out of a registry row's subcategories JSONB.
+ *  Each subtype has an `image` string (e.g. "clothing-tops").
+ *  We grab the first non-empty one to use as the card cover. */
+function extractImageKey(row: any): string {
+  // subcategories is an array of SubtypeItem objects at Level 3
+  const subtypes: any[] = Array.isArray(row.subcategories) ? row.subcategories : [];
+  for (const s of subtypes) {
+    if (s?.image && typeof s.image === "string") return s.image;
+  }
+  // fields fallback (older schema)
+  const fields: any[] = Array.isArray(row.fields) ? row.fields : [];
+  for (const f of fields) {
+    if (f?.image && typeof f.image === "string") return f.image;
+  }
+  return "";
+}
 
 export interface CategoryItem {
   key: string;
@@ -56,30 +73,22 @@ export function useCategoryRegistry(
           return;
         }
 
-        // Preload all images in a single batch query (non-fatal if it fails)
-        const keys = (rows as any[]).map((r: any) => r.key);
-        let imageMap = new Map<string, string>();
-        try {
-          imageMap = await preloadImages(keys, gender);
-          // DEBUG: log every key and its resolved image URL
-          console.log("[useCategoryRegistry] preloadImages result for gender:", gender);
-          for (const [k, url] of imageMap.entries()) {
-            console.log(`  [img] ${k} → ${url || "(empty)"}`);
-          }
-        } catch (imgErr) {
-          console.warn("Image preload failed, continuing without images:", imgErr);
-        }
         if (cancelled) return;
 
-        const items: CategoryItem[] = (rows as any[]).map((r: any) => ({
-          key: r.key,
-          label: r.label,
-          section: r.section,
-          image: imageMap.get(r.key) || "",
-          sort_order: r.sort_order,
-          fields: (r.fields as SubtypeItem[]) || [],
-          subcategories: (r.subcategories as SubcategoryGroup[]) || undefined,
-        }));
+        // Resolve each card's cover image from its first subtype's image key
+        const items: CategoryItem[] = (rows as any[]).map((r: any) => {
+          const imageKey = extractImageKey(r);
+          const resolvedImage = imageKey ? getTemplateImage(imageKey, gender) : "";
+          return {
+            key: r.key,
+            label: r.label,
+            section: r.section,
+            image: resolvedImage,
+            sort_order: r.sort_order,
+            fields: (r.fields as SubtypeItem[]) || [],
+            subcategories: (r.subcategories as SubcategoryGroup[]) || undefined,
+          };
+        });
 
         // Filter subtypes/subcategories by the user's gender
         for (const item of items) {

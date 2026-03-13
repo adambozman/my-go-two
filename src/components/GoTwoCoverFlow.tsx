@@ -12,6 +12,8 @@ interface GoTwoCoverFlowProps {
 const { xGap, stageHeight, maxVisibleOffset, flankOpacity, spring } = CAROUSEL_LAYOUT;
 const SCALE_ACTIVE = 1;
 const SCALE_FLANK = 0.6;
+// Label sits above card — add its height + margin so it doesn't clip
+const LABEL_HEIGHT = 32;
 
 const GoTwoCoverFlow = ({ items, onSelect }: GoTwoCoverFlowProps) => {
   // Fix 1: Start centered, not at index 0

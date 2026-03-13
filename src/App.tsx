@@ -26,6 +26,7 @@ import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import PhotoGallery from "./pages/PhotoGallery";
 import Search from "./pages/Search";
+import CategorySync from "./pages/admin/CategorySync";
 import { initBlocklist, isBlocklistReady } from "@/data/imageBlocklist";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ const App = () => {
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/connect" element={<Connect />} />
               <Route path="/photo-gallery" element={<PhotoGallery />} />
+              <Route path="/admin/category-sync" element={<CategorySync />} />
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardHome />} />
                 <Route path="lists/:listId" element={<ListDetail />} />
