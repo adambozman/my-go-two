@@ -37,28 +37,15 @@ const MyGoTwo = () => {
 
   const orderedSections = sectionOrder
     .filter((key) => sections[key] && sections[key].length > 0)
-    .map((key) => {
-      const registryRows = sections[key];
-
-      // Flatten subcategories + fields from all registry rows into individual coverflow cards.
-      // e.g. "Style & Fit" contains rows like "Clothing" (subcategories: Shirts, Pants...)
-      // Those subcategory items become the cards, not "Clothing" itself.
-      const items: { id: string; label: string; image: string }[] = [];
-
-      for (const row of registryRows) {
-        if (row.subcategories && row.subcategories.length > 0) {
-          for (const sub of row.subcategories) {
-            items.push({ id: `${row.key}__${sub.id}`, label: sub.name, image: sub.image || row.image });
-          }
-        } else {
-          // Row has flat fields or no children — show the row itself as a card
-          items.push({ id: row.key, label: row.label, image: row.image });
-        }
-      }
-
-      return { key, label: sectionLabels[key] ?? key, items };
-    })
-    .filter((s) => s.items.length > 0);
+    .map((key) => ({
+      key,
+      label: sectionLabels[key] ?? key,
+      items: sections[key].map((cat) => ({
+        id: cat.key,
+        label: cat.label,
+        image: cat.image,
+      })),
+    }));
 
   return (
     <div className="h-full overflow-y-auto pb-12">
