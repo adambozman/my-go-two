@@ -4,7 +4,7 @@
  * AppSidebar and DashboardTopBar are layout-only and read-only — safe to import.
  */
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppSidebar } from "@/components/AppSidebar";
 import { DashboardTopBar } from "@/components/DashboardTopBar";
@@ -20,7 +20,19 @@ const TEST_ITEMS = [
   { id: "6", label: "Taste",     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80" },
 ];
 
-// ─── Mobile carousel (matches real page behavior) ─────────────────────────────
+// ─── Shared label/category style — used for both "Style & Fit" and "Clothing" ─
+
+const LABEL_STYLE: React.CSSProperties = {
+  fontFamily: "'Cormorant Garamond', serif",
+  fontSize: 22,
+  fontWeight: 700,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  color: "#2D6870",
+  lineHeight: 1,
+};
+
+const LABEL_GAP = 16; // fixed gap between label and top of card, all breakpoints
 
 const MOBILE_LAYOUT = {
   cardWidth: 300, cardHeight: 420, borderRadius: 16,
@@ -83,7 +95,7 @@ const DesktopPillCarousel = ({ items }: { items: typeof TEST_ITEMS }) => {
       }}
     >
       {/* Label above center card */}
-      <div style={{ marginBottom: 16, height: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ marginBottom: LABEL_GAP, height: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <AnimatePresence mode="wait">
           <motion.span
             key={items[activeIndex].label}
@@ -91,14 +103,7 @@ const DesktopPillCarousel = ({ items }: { items: typeof TEST_ITEMS }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2 }}
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 18,
-              fontWeight: 500,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase" as const,
-              color: "#2D6870",
-            }}
+            style={LABEL_STYLE}
           >
             {items[activeIndex].label}
           </motion.span>
@@ -170,7 +175,7 @@ const MobileCarousel = ({ items }: { items: typeof TEST_ITEMS }) => {
       }}
     >
       {/* Label above center card */}
-      <div style={{ marginBottom: 16, height: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ marginBottom: LABEL_GAP, height: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <AnimatePresence mode="wait">
           <motion.span
             key={items[activeIndex].label}
@@ -178,20 +183,14 @@ const MobileCarousel = ({ items }: { items: typeof TEST_ITEMS }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2 }}
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 18, fontWeight: 500,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase" as const,
-              color: "#2D6870",
-            }}
+            style={LABEL_STYLE}
           >
             {items[activeIndex].label}
           </motion.span>
         </AnimatePresence>
       </div>
 
-      <div className="relative w-full" style={{ height: stageHeight, marginTop: 16 }}>
+      <div className="relative w-full" style={{ height: stageHeight }}>
         <div className="absolute inset-0 flex items-center justify-center">
           {slots.map(offset => {
             const itemIndex = (activeIndex + offset + n) % n;
@@ -245,7 +244,7 @@ const CarouselTest = () => {
         className="flex-1 min-h-0 px-8 flex flex-col items-center justify-center gap-6"
         style={{ paddingBottom: "var(--footer-height)" }}
       >
-        <p className="section-header text-center">Style & Fit</p>
+        <p style={{ ...LABEL_STYLE, marginBottom: 0 }}>Style & Fit</p>
         {isDesktop
           ? <DesktopPillCarousel items={TEST_ITEMS} />
           : <MobileCarousel items={TEST_ITEMS} />
