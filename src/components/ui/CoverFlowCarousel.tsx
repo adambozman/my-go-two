@@ -12,6 +12,7 @@ export interface CoverFlowItem {
 interface CoverFlowCarouselProps {
   items: CoverFlowItem[];
   onSelect: (id: string) => void;
+  layoutOverride?: typeof CAROUSEL_LAYOUT;
 }
 
 const VISIBLE = 2;
@@ -27,9 +28,10 @@ function useLayout() {
   return layout;
 }
 
-const CoverFlowCarousel = ({ items, onSelect }: CoverFlowCarouselProps) => {
+const CoverFlowCarousel = ({ items, onSelect, layoutOverride }: CoverFlowCarouselProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const layout = useLayout();
+  const defaultLayout = useLayout();
+  const layout = layoutOverride ?? defaultLayout;
   const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
   const n = items.length;
   const touchStartX = useRef<number | null>(null);

@@ -12,6 +12,21 @@ export const CAROUSEL_LAYOUT = {
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
 };
 
+/** Test page desktop layout — Figma originals × 1.4, pill shape flanks */
+export const CAROUSEL_LAYOUT_TEST_DESKTOP = {
+  cardWidth: 725,
+  cardHeight: 490,
+  flankWidth: 125,
+  flankHeight: 405,
+  xGap: 440,
+  stageHeight: 540,
+  maxVisibleOffset: 2,
+  flankBlur: 0.2,
+  flankOpacity: 1,
+  borderRadius: 36,
+  spring: { type: "spring" as const, stiffness: 300, damping: 30 },
+};
+
 /** Desktop card dimensions — used by CoverFlowCarousel on md+ screens */
 export const CAROUSEL_LAYOUT_DESKTOP = {
   cardWidth: 420,
