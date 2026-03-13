@@ -261,8 +261,10 @@ export function getProductImage(productId: string, gender: Gender | string, fall
   const entry = productImages[normalizeKey(productId)];
 
   if (entry) {
-    return entry[key];
+    const result = entry[key];
+    if (!isBlocked(result)) return result;
   }
 
-  return fallback || DEFAULT_TEMPLATE_IMAGE[key];
+  const fb = fallback || DEFAULT_TEMPLATE_IMAGE[key];
+  return (fb && !isBlocked(fb)) ? fb : "";
 }

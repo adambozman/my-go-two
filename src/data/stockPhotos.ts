@@ -221,7 +221,8 @@ export function getDashboardCardImage(cardName: string, gender: string): string 
   const key = normalizeLabel(cardName);
   const g = normalizeGender(gender);
   const templateName = DASHBOARD_CARD_TO_TEMPLATE[key] || "Specific Product Versions";
-  return getTemplateImage(templateName, g);
+  const result = getTemplateImage(templateName, g);
+  return isBlocked(result) ? "" : result;
 }
 
 /** Build dashboard sections from centralized global image rules */
