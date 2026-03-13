@@ -31,10 +31,11 @@ html::-webkit-scrollbar {
     /* ── Layout: single source of truth for header/footer heights ── */
     --header-height: 110px;
     --footer-height: 64px;
-    /* Header internal spacing */
-    --header-top-padding: 16px;
-    --header-divider-margin-top: 16px;
-    --header-tagline-margin-top: 10px;
+    /* Header internal zones — these never change */
+    --header-top-padding: 12px;
+    --header-icons-row-height: 52px;
+    --header-divider-margin-top: 10px;
+    --header-tagline-margin-top: 8px;
 
     --background: 28 36% 87%;
     --foreground: 195 15% 35%;

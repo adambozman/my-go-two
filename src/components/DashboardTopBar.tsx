@@ -129,7 +129,7 @@ export function DashboardTopBar() {
 
   return (
     <header className="px-4 md:px-8 shrink-0 flex flex-col" style={{ height: "var(--header-height)", paddingTop: "var(--header-top-padding)" }}>
-      <div className="relative flex items-center justify-between gap-2 md:gap-4">
+      <div className="relative flex items-center justify-between gap-2 md:gap-4" style={{ height: "var(--header-icons-row-height)" }}>
         {/* Back button or Profile circle — left */}
         {backState ? (
           <button
