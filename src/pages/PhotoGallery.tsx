@@ -16,13 +16,23 @@ import { toast } from "sonner";
 import type { Gender } from "@/lib/gender";
 
 // ─── Spare bank glob ─────────────────────────────────────────────────────────
-
+// Spare photos named: {image-key}-{n}.jpg e.g. clothing-tshirt-1.jpg
 const spareGlob = import.meta.glob<string>(
   "/src/assets/spare/*.{jpg,jpeg,png,webp}",
   { eager: true, import: "default" },
 );
 
-const SPARE_PHOTOS = Object.entries(spareGlob).map(([path, url]) => ({
+// Group spare photos by their base image key (strip trailing -N)
+const SPARE_BY_KEY: Record<string, { path: string; url: string; name: string }[]> = {};
+for (const [path, url] of Object.entries(spareGlob)) {
+  const filename = path.split("/").pop()?.replace(/\.[^.]+$/, "") ?? "";
+  // Strip trailing -1, -2, -3 etc to get base key
+  const baseKey = filename.replace(/-\d+$/, "");
+  if (!SPARE_BY_KEY[baseKey]) SPARE_BY_KEY[baseKey] = [];
+  SPARE_BY_KEY[baseKey].push({ path, url, name: filename });
+}
+
+const ALL_SPARE_PHOTOS = Object.entries(spareGlob).map(([path, url]) => ({
   path,
   url,
   name: path.split("/").pop()?.replace(/\.[^.]+$/, "") ?? path,
@@ -92,7 +102,11 @@ const SparePicker = ({ slot, onPick, onClose }: {
   slot: ImageSlot;
   onPick: (url: string) => void;
   onClose: () => void;
-}) => (
+}) => {
+  const keyMatch = SPARE_BY_KEY[slot.imageKey]?.filter(p => !isPathBlocked(p.path)) ?? [];
+  const others = ALL_SPARE_PHOTOS.filter(p => !isPathBlocked(p.path) && !p.name.startsWith(slot.imageKey));
+
+  return (
   <div
     className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
     onClick={onClose}
@@ -109,31 +123,45 @@ const SparePicker = ({ slot, onPick, onClose }: {
         <button onClick={onClose}><X className="w-5 h-5" /></button>
       </div>
       <div className="flex-1 overflow-y-auto p-4">
-        {SPARE_PHOTOS.length === 0 ? (
+        {keyMatch.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Matching: {slot.imageKey}</p>
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
+              {keyMatch.map(photo => (
+                <button key={photo.path} onClick={() => onPick(photo.url)}
+                  className="group relative rounded-xl overflow-hidden border-2 border-transparent hover:border-primary transition-all"
+                  style={{ aspectRatio: "3/4" }}>
+                  <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {others.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">All spares</p>
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
+              {others.map(photo => (
+                <button key={photo.path} onClick={() => onPick(photo.url)}
+                  className="group relative rounded-xl overflow-hidden border-2 border-transparent hover:border-primary transition-all"
+                  style={{ aspectRatio: "3/4" }}>
+                  <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {keyMatch.length === 0 && others.length === 0 && (
           <div className="flex flex-col items-center justify-center h-40 gap-3 text-muted-foreground">
             <ImagePlus className="w-10 h-10 opacity-40" />
-            <p className="text-sm">No spare photos yet.</p>
-            <p className="text-xs text-center max-w-xs">Tell Lovable: "Download 100 warm editorial lifestyle photos to src/assets/spare/ named spare-001.jpg through spare-100.jpg"</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
-            {SPARE_PHOTOS.map(photo => (
-              <button
-                key={photo.path}
-                onClick={() => onPick(photo.url)}
-                className="group relative rounded-xl overflow-hidden border-2 border-transparent hover:border-primary transition-all"
-                style={{ aspectRatio: "3/4" }}
-              >
-                <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-              </button>
-            ))}
+            <p className="text-sm">No spare photos available.</p>
           </div>
         )}
       </div>
     </div>
   </div>
-);
+  );
+};
 
 // ─── Image card ───────────────────────────────────────────────────────────────
 
@@ -368,7 +396,7 @@ export default function PhotoGallery() {
               }`}
             >
               {tab}
-              {tab === "Spare Bank" && ` (${SPARE_PHOTOS.length})`}
+              {tab === "Spare Bank" && ` (${ALL_SPARE_PHOTOS.filter(p => !isPathBlocked(p.path)).length})`}
             </button>
           ))}
         </div>
@@ -376,24 +404,63 @@ export default function PhotoGallery() {
 
       {/* Spare Bank tab */}
       {activeTab === "Spare Bank" && (
-        <div className="p-4">
-          <div className="mb-4 p-4 rounded-xl border border-border bg-muted/30">
-            <p className="text-sm font-medium mb-1">How to fill the spare bank</p>
-            <p className="text-xs text-muted-foreground">Tell Lovable: <span className="font-mono bg-muted px-1 rounded">"Download 100 warm editorial lifestyle photos to src/assets/spare/ named spare-001.jpg through spare-100.jpg. Use the GoTwo brand aesthetic — warm tones, lifestyle, editorial."</span></p>
+        <div className="p-4 space-y-4">
+          {/* Lovable prompt */}
+          <div className="p-4 rounded-xl border border-border bg-muted/30">
+            <p className="text-sm font-medium mb-2">Fill the spare bank</p>
+            <p className="text-xs text-muted-foreground mb-2">Tell Lovable to download alternate photos for each image key. Name them <span className="font-mono bg-muted px-1 rounded">{"{image-key}-1.jpg"}</span>, <span className="font-mono bg-muted px-1 rounded">{"{image-key}-2.jpg"}</span> etc. into <span className="font-mono bg-muted px-1 rounded">src/assets/spare/</span></p>
+            <button
+              onClick={() => {
+                const keys = ["clothing-tshirt","clothing-button-up","clothing-polo","clothing-hoodie","clothing-sweatshirt","clothing-sweater","clothing-jeans","clothing-chinos","clothing-shorts","clothing-sweatpants","clothing-dress-pants","clothing-jacket","clothing-coat","clothing-puffer","clothing-windbreaker","clothing-fleece","clothing-rain-jacket","clothing-basics","clothing-underwear","clothing-socks","clothing-undershirt","clothing-loungewear","clothing-pajamas","clothing-formal","clothing-suit","clothing-dress-shirt","clothing-blazer","clothing-tie","clothing-pocket-square","shoe-low-top","shoe-high-top","shoe-slip-on","shoe-running","shoe-training","shoe-basketball","shoe-athletic","shoe-chelsea","shoe-work-boots","shoe-chukka","shoe-loafers","shoe-casual","shoe-moccasins","shoe-dress","shoe-boots","shoe-sandals","shoe-heels","shoe-flats","shoe-sneakers","grooming-shampoo","grooming-conditioner","grooming-styling","grooming-hair-tools","grooming-hair-color","grooming-face-wash","grooming-moisturizer","grooming-serum","grooming-eye-cream","grooming-sunscreen","grooming-razor","grooming-shave-cream","grooming-beard-oil","grooming-beard-trimmer","grooming-aftershave","grooming-fragrance","grooming-deodorant","grooming-body-wash","grooming-lotion","grooming-soap","grooming-makeup","vibe-streetwear","vibe-smart-casual","vibe-heritage","vibe-old-money","vibe-minimalist","vibe-vintage","vibe-techwear","vibe-bohemian","vibe-athletic","vibe-rocker","vibe-coastal","vibe-business","vibe-aesthetic","accessory-sunglasses","accessory-watches","jewelry","jewelry-bracelets","jewelry-earrings","jewelry-necklaces","jewelry-watches","food-asian","food-burgers","food-chicken","food-mexican","food-pizza","favorite-restaurants","favorite-meals","coffee-hot","coffee-iced","coffee-espresso","coffee-tea","meal-breakfast","meal-lunch","meal-dinner","meal-dessert","scent-cologne","scent-perfume","scent-candles","scent-bodycare","anniversary-gifts","birthday-preferences","wish-list","event-concerts","event-sports","event-theater","travel-preferences"];
+                const msg = `Please download 2 alternate spare photos for each of the following image keys into src/assets/spare/. Name them {key}-1.jpg and {key}-2.jpg. Use warm editorial GoTwo-brand lifestyle photography — no generic stock, no trees, no random nature. Each photo must be clearly relevant to its key name.\n\n${keys.map(k => `${k}-1.jpg, ${k}-2.jpg`).join("\n")}`;
+                navigator.clipboard.writeText(msg).then(() => toast.success("Copied Lovable prompt"));
+              }}
+              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-primary-foreground"
+            >
+              Copy Lovable Prompt
+            </button>
           </div>
-          {SPARE_PHOTOS.length === 0 ? (
+
+          {ALL_SPARE_PHOTOS.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 gap-3 text-muted-foreground">
               <ImagePlus className="w-12 h-12 opacity-30" />
-              <p>No spare photos yet — tell Lovable to fill this bank.</p>
+              <p>No spare photos yet — copy the prompt above and paste into Lovable.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-3">
-              {SPARE_PHOTOS.map(photo => (
-                <div key={photo.path} className="flex flex-col gap-1">
-                  <div className="rounded-xl overflow-hidden" style={{ aspectRatio: "3/4" }}>
-                    <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
+            <div className="space-y-6">
+              {Object.entries(SPARE_BY_KEY).sort(([a], [b]) => a.localeCompare(b)).map(([key, photos]) => (
+                <div key={key}>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">{key}</p>
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+                    {photos.filter(p => !isPathBlocked(p.path)).map(photo => (
+                      <div key={photo.path} className="flex flex-col gap-1 group">
+                        <div className="relative rounded-xl overflow-hidden" style={{ aspectRatio: "3/4" }}>
+                          <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <button
+                              onClick={async () => {
+                                await addToBlocklist(photo.path);
+                                setVersion(v => v + 1);
+                                toast.success(`Blocked spare: ${photo.name}`);
+                              }}
+                              className="flex items-center gap-1 px-2 py-1 bg-red-600 text-white rounded-md text-[10px] font-medium"
+                            >
+                              <X className="w-3 h-3" /> Delete
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground truncate">{photo.name}</p>
+                      </div>
+                    ))}
+                    {photos.filter(p => isPathBlocked(p.path)).map(photo => (
+                      <div key={photo.path} className="flex flex-col gap-1 opacity-40">
+                        <div className="rounded-xl overflow-hidden bg-muted flex items-center justify-center" style={{ aspectRatio: "3/4" }}>
+                          <span className="text-[10px] text-muted-foreground">Blocked</span>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground truncate">{photo.name}</p>
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-[10px] text-muted-foreground truncate">{photo.name}</p>
                 </div>
               ))}
             </div>
