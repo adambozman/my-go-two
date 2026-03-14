@@ -1,4 +1,4 @@
-import { getProductImage, getTemplateImage } from "@/lib/imageResolver";
+import { getProductImage } from "@/lib/imageResolver";
 import CoverFlowCarousel from "@/components/ui/CoverFlowCarousel";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 
@@ -19,7 +19,6 @@ interface TemplateCoverFlowProps {
 }
 
 const TemplateCoverFlow = ({
-  templateName,
   subtypes,
   subcategories,
   activeSubcategory,
@@ -33,7 +32,7 @@ const TemplateCoverFlow = ({
   const resolveImage = (imageKey: string, subcategoryId = "") =>
     getProductImage(imageKey, gender, "", section, categoryId, subcategoryId);
 
-  // Level 3 — subcategory coverflow (e.g. Tops, Bottoms, Outerwear)
+  // Level 3 — subcategory picker (e.g. Tops, Bottoms / Asian, Italian)
   if (hasSubcategories && !activeSubcategory) {
     const items = subcategories.map((sc) => ({
       id: sc.id,
@@ -47,24 +46,25 @@ const TemplateCoverFlow = ({
           items={items}
           onSelect={(id) => {
             const sc = subcategories.find((s) => s.id === id);
-            if (sc) onSubcategorySelect(sc);
+            if (sc) {
+              // If subcategory has products, drill into them
+              if (sc.products && sc.products.length > 0) {
+                onSubcategorySelect(sc);
+              } else {
+                // Subcategory IS the final card — go straight to form
+                onSelect(sc as unknown as SubtypeItem, sc.name);
+              }
+            }
           }}
         />
       </div>
     );
   }
 
-  // Level 4 — individual item coverflow (e.g. T-Shirt, Jeans)
+  // Level 4 — product picker (e.g. T-Shirt, Jeans)
   const products = activeSubcategory
     ? (activeSubcategory.products ?? [])
     : subtypes;
-
-  // If activeSubcategory has no products, treat the subcategory itself as the item
-  if (activeSubcategory && products.length === 0) {
-    const asItem = activeSubcategory as unknown as SubtypeItem;
-    onSelect(asItem, activeSubcategory.name);
-    return null;
-  }
 
   const productItems = products.map((p) => ({
     id: p.id,
