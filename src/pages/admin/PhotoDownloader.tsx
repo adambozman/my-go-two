@@ -20,6 +20,7 @@ interface Product {
   imageKey: string;
   subcategory: string;
   category: string;
+  section: string;
 }
 
 interface UnsplashPhoto {
