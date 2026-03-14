@@ -14,7 +14,7 @@ import { getOverride } from "@/lib/imageOverrides";
 
 // Eager glob of ALL images in the new hierarchy
 const allModules = import.meta.glob<string>(
-  "/src/assets/{male,female,non-binary}/**/*.jpg",
+  "/src/assets/**/*.jpg",
   { eager: true, import: "default" },
 );
 
