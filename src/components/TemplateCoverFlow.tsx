@@ -32,36 +32,27 @@ const TemplateCoverFlow = ({
   const resolveImage = (imageKey: string, subcategoryId = "") =>
     getProductImage(imageKey, gender, "", section, categoryId, subcategoryId);
 
-  // Level 3 — subcategory picker (e.g. Tops, Bottoms / Asian, Italian)
+  // Level 3 — subcategory picker
   if (hasSubcategories && !activeSubcategory) {
     const items = subcategories.map((sc) => ({
       id: sc.id,
       label: sc.name,
       image: resolveImage(sc.image || sc.id, sc.id),
     }));
-
     return (
       <div className="h-full flex items-center justify-center">
         <CoverFlowCarousel
           items={items}
           onSelect={(id) => {
             const sc = subcategories.find((s) => s.id === id);
-            if (sc) {
-              // If subcategory has products, drill into them
-              if (sc.products && sc.products.length > 0) {
-                onSubcategorySelect(sc);
-              } else {
-                // Subcategory IS the final card — go straight to form
-                onSelect(sc as unknown as SubtypeItem, sc.name);
-              }
-            }
+            if (sc) onSubcategorySelect(sc);
           }}
         />
       </div>
     );
   }
 
-  // Level 4 — product picker (e.g. T-Shirt, Jeans)
+  // Level 4 — product picker
   const products = activeSubcategory
     ? (activeSubcategory.products ?? [])
     : subtypes;
