@@ -75,12 +75,10 @@ function makeSlot(label: string, imageKey: string, gender: Gender, fallback = ""
 const ImageCard = ({
   slot,
   onDelete,
-  onGet,
   blocked,
 }: {
   slot: ImageSlot;
   onDelete: () => void;
-  onGet: () => void;
   blocked: boolean;
 }) => (
   <div className="flex flex-col gap-1">
@@ -94,23 +92,16 @@ const ImageCard = ({
           </span>
         </div>
       )}
-      {/* Action overlay */}
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex flex-col items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100">
-        {!blocked && slot.resolvedUrl && (
+      {!blocked && slot.resolvedUrl && (
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
           <button
             onClick={onDelete}
             className="flex items-center gap-1 px-2 py-1 bg-red-600 text-white rounded-md text-[10px] font-medium"
           >
             <X className="w-3 h-3" /> Delete
           </button>
-        )}
-        <button
-          onClick={onGet}
-          className="flex items-center gap-1 px-2 py-1 bg-teal-700 text-white rounded-md text-[10px] font-medium"
-        >
-          <RefreshCw className="w-3 h-3" /> Get Photo
-        </button>
-      </div>
+        </div>
+      )}
     </div>
     <p className="text-[11px] font-medium text-foreground truncate">{slot.label}</p>
     <p className="text-[10px] text-muted-foreground truncate">{slot.imageKey}</p>
@@ -208,20 +199,28 @@ export default function PhotoGallery() {
     load();
   }, [gender, version]);
 
+  const [deletedKeys, setDeletedKeys] = useState<Set<string>>(new Set());
+
   const handleDelete = useCallback(async (path: string, key: string) => {
     await addToBlocklist(path);
     setBlocked(prev => new Set([...prev, path]));
-    toast.success(`Deleted: ${key}`, { description: "Tell Lovable to replace this image key." });
+    setDeletedKeys(prev => new Set([...prev, key]));
+    toast.success(`Deleted: ${key}`);
   }, []);
 
-  const handleGet = useCallback((slot: ImageSlot) => {
-    const msg = `Please download a new photo for image key "${slot.imageKey}" and save it to src/assets/templates/${slot.imageKey}.jpg (and src/assets/templates/male/${slot.imageKey}.jpg for male). Use warm editorial lifestyle photography matching the GoTwo brand aesthetic.`;
+  const handleGetAll = useCallback(() => {
+    if (deletedKeys.size === 0) {
+      toast.info("No deleted photos yet.");
+      return;
+    }
+    const keyList = [...deletedKeys].join(", ");
+    const msg = `Please download new replacement photos for the following image keys and save them as .jpg files in both src/assets/templates/ and src/assets/templates/male/. Use warm, editorial, on-brand lifestyle photography matching the existing GoTwo aesthetic. Do NOT reuse any previously downloaded photos for these keys.\n\nKeys to replace:\n${[...deletedKeys].map(k => `- ${k}`).join("\n")}`;
     navigator.clipboard.writeText(msg).then(() => {
-      toast.success("Copied to clipboard — paste into Lovable");
+      toast.success(`Copied ${deletedKeys.size} keys to clipboard — paste into Lovable`);
     }).catch(() => {
-      toast.info(`Image key: ${slot.imageKey}`);
+      toast.info(`Keys: ${keyList}`);
     });
-  }, []);
+  }, [deletedKeys]);
 
   const isBlocked = (slot: ImageSlot) => blocked.has(slot.resolvedPath) || isPathBlocked(slot.resolvedPath);
 
@@ -233,6 +232,17 @@ export default function PhotoGallery() {
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <h1 className="text-lg font-semibold">Image Bank</h1>
+        {deletedKeys.size > 0 && (
+          <Button
+            onClick={handleGetAll}
+            size="sm"
+            className="gap-2 ml-2"
+            style={{ background: "var(--swatch-teal)", color: "#fff" }}
+          >
+            <RefreshCw className="w-4 h-4" />
+            Get Photos ({deletedKeys.size})
+          </Button>
+        )}
         <div className="flex gap-2 ml-auto">
           {GENDERS.map(g => (
             <button
@@ -266,7 +276,6 @@ export default function PhotoGallery() {
                           slot={cat.coverSlot}
                           blocked={isBlocked(cat.coverSlot)}
                           onDelete={() => handleDelete(cat.coverSlot.resolvedPath, cat.coverSlot.imageKey)}
-                          onGet={() => handleGet(cat.coverSlot)}
                         />
                       </div>
                     </div>
@@ -282,7 +291,6 @@ export default function PhotoGallery() {
                                 slot={sc.slot}
                                 blocked={isBlocked(sc.slot)}
                                 onDelete={() => handleDelete(sc.slot.resolvedPath, sc.slot.imageKey)}
-                                onGet={() => handleGet(sc.slot)}
                               />
                             </div>
                           </div>
@@ -297,7 +305,6 @@ export default function PhotoGallery() {
                                     slot={p}
                                     blocked={isBlocked(p)}
                                     onDelete={() => handleDelete(p.resolvedPath, p.imageKey)}
-                                    onGet={() => handleGet(p)}
                                   />
                                 ))}
                               </div>
