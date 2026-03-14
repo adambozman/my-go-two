@@ -178,7 +178,7 @@ const ImageCard = ({
 }) => {
   // Always resolve live — never use stale baked-in URL
   const override = getOverride(slot.imageKey);
-  const liveUrl = override || getProductImage(slot.imageKey, gender, "");
+  const liveUrl = override || slot.resolvedUrl;
   const livePath = urlToPath(liveUrl);
   const blocked = isPathBlocked(livePath);
   const hasOverride = !!override;
