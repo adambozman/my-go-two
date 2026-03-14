@@ -78,7 +78,10 @@ export function useCategoryRegistry(
         // Resolve each card's cover image from its first subtype's image key
         const items: CategoryItem[] = (rows as any[]).map((r: any) => {
           const imageKey = extractImageKey(r);
-          const resolvedImage = imageKey ? getTemplateImage(imageKey, gender) : "";
+          const categoryId = r.key.replace(/-male$|-female$|-nb$/, "");
+          const firstSub = Array.isArray(r.subcategories) ? r.subcategories[0] : null;
+          const firstSubId = firstSub?.id || "";
+          const resolvedImage = imageKey ? getTemplateImage(imageKey, gender, r.section, categoryId, firstSubId) : "";
           return {
             key: r.key,
             label: r.label,

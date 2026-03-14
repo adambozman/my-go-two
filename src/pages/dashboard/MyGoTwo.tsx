@@ -26,6 +26,8 @@ interface CoverFlowState {
   name: string;
   subtypes: SubtypeItem[];
   subcategories?: SubcategoryGroup[];
+  section: string;
+  categoryId: string;
 }
 
 interface FieldState {
@@ -231,7 +233,7 @@ const MyGoTwo = () => {
     const subcategories = item.subcategories as unknown as SubcategoryGroup[] | undefined;
 
     if (subtypes.length > 0 || (subcategories && subcategories.length > 0)) {
-      setCoverFlowState({ name: item.label, subtypes, subcategories });
+      setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
     }
   };
 
@@ -309,6 +311,8 @@ const MyGoTwo = () => {
           onSelect={handleSubtypeSelect}
           creating={false}
           gender={gender}
+          section={coverFlowState.section}
+          categoryId={coverFlowState.categoryId}
         />
       ) : (
         <motion.div

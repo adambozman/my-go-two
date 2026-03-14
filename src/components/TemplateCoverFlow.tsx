@@ -14,6 +14,8 @@ interface TemplateCoverFlowProps {
   onSelect: (subtype: SubtypeItem, subcategoryName?: string) => void;
   creating: boolean;
   gender: string;
+  section?: string;
+  categoryId?: string;
 }
 
 const TemplateCoverFlow = ({
@@ -24,17 +26,19 @@ const TemplateCoverFlow = ({
   onSubcategorySelect,
   onSelect,
   gender,
+  section = "",
+  categoryId = "",
 }: TemplateCoverFlowProps) => {
   const hasSubcategories = subcategories && subcategories.length > 0;
-  const templateFallback = getTemplateImage(templateName, gender);
-  const resolveImage = (id: string) => getProductImage(id, gender, templateFallback);
+  const resolveImage = (imageKey: string, subcategoryId = "") =>
+    getProductImage(imageKey, gender, "", section, categoryId, subcategoryId);
 
   // Level 3 — subcategory coverflow (e.g. Tops, Bottoms, Outerwear)
   if (hasSubcategories && !activeSubcategory) {
     const items = subcategories.map((sc) => ({
       id: sc.id,
       label: sc.name,
-      image: resolveImage(sc.image || sc.id),
+      image: resolveImage(sc.image || sc.id, sc.id),
     }));
 
     return (
@@ -65,7 +69,7 @@ const TemplateCoverFlow = ({
   const productItems = products.map((p) => ({
     id: p.id,
     label: p.name,
-    image: resolveImage((p as any).image || p.id),
+    image: resolveImage((p as any).image || p.id, activeSubcategory?.id || ""),
   }));
 
   return (
