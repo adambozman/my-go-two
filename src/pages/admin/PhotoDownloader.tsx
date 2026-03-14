@@ -179,7 +179,7 @@ function ProductRow({ product }: { product: Product }) {
               className="text-sm"
               onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
             />
-            <Button size="sm" onClick={fetchPhotos} disabled={loading}>
+            <Button size="sm" onClick={() => fetchPhotos(1, false)} disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               Fetch
             </Button>
