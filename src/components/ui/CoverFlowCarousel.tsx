@@ -117,16 +117,16 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                         <span
                           style={{
                             fontFamily: "'Cormorant Garamond', serif",
-                            fontSize: 30,
+                            fontSize: 20,
                             letterSpacing: "0.02em",
                             fontWeight: 600,
-                            color: "#d4543a",
+                            color: "#2d6870",
                             background: "rgba(255,255,255,0.18)",
                             borderRadius: 999,
                             backdropFilter: "blur(12px)",
                             WebkitBackdropFilter: "blur(12px)",
                             border: "1px solid rgba(255,255,255,0.35)",
-                            padding: "12px 28px",
+                            padding: "8px 20px",
                             display: "inline-block",
                           }}
                         >
