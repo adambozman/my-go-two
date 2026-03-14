@@ -188,7 +188,7 @@ const ImageCard = ({
     <div className="flex flex-col gap-1">
       <div className="relative rounded-xl overflow-hidden bg-muted group cursor-pointer" style={{ aspectRatio: "3/4" }} onClick={onPick}>
         {showImage ? (
-          <img src={liveUrl} alt={slot.label} className="w-full h-full object-cover" />
+          <img src={liveUrl} alt={slot.label} className="w-full h-full object-contain" />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-muted/60">
             <ImagePlus className="w-6 h-6 text-muted-foreground opacity-50" />
