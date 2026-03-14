@@ -110,6 +110,11 @@ function ProductRow({ product }: { product: Product }) {
         <Button size="sm" onClick={search} disabled={loading} style={{ height: 30, padding: "0 10px" }}>
           {loading ? <Loader2 style={{ width: 12, height: 12 }} className="animate-spin" /> : <Search style={{ width: 12, height: 12 }} />}
         </Button>
+        {override && (
+          <Button size="sm" variant="ghost" onClick={handleDelete} disabled={deleting} style={{ height: 30, padding: "0 8px", color: "#ef4444" }}>
+            {deleting ? <Loader2 style={{ width: 12, height: 12 }} className="animate-spin" /> : <Trash2 style={{ width: 12, height: 12 }} />}
+          </Button>
+        )}
       </div>
       {photos.length > 0 && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6, marginTop: 8 }}>
