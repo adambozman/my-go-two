@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { setOverride, getOverride } from "@/lib/imageOverrides";
+import { setOverride, getOverride, clearOverride } from "@/lib/imageOverrides";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Loader2, Check } from "lucide-react";
+import { Search, Loader2, Check, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const UNSPLASH_KEY = "qrGolQ1Yn5Fn3HCqDQfFWRcwjVBrLwVYLBKjaMyxJfY";
@@ -40,7 +40,22 @@ function ProductRow({ product }: { product: Product }) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
   const [saved, setSaved] = useState(!!getOverride(product.imageKey));
+  const [deleting, setDeleting] = useState(false);
   const override = getOverride(product.imageKey);
+
+  const handleDelete = useCallback(async () => {
+    if (!override) return;
+    setDeleting(true);
+    try {
+      const filename = `${product.imageKey}.jpg`;
+      await supabase.storage.from("category-images").remove([filename]);
+      clearOverride(product.imageKey);
+      setSaved(false);
+      toast({ title: "Deleted", description: product.name });
+    } catch (e: any) {
+      toast({ title: "Delete failed", description: e.message, variant: "destructive" });
+    } finally { setDeleting(false); }
+  }, [override, product, toast]);
 
   const search = useCallback(async () => {
     setLoading(true);
@@ -95,6 +110,11 @@ function ProductRow({ product }: { product: Product }) {
         <Button size="sm" onClick={search} disabled={loading} style={{ height: 30, padding: "0 10px" }}>
           {loading ? <Loader2 style={{ width: 12, height: 12 }} className="animate-spin" /> : <Search style={{ width: 12, height: 12 }} />}
         </Button>
+        {override && (
+          <Button size="sm" variant="ghost" onClick={handleDelete} disabled={deleting} style={{ height: 30, padding: "0 8px", color: "#ef4444" }}>
+            {deleting ? <Loader2 style={{ width: 12, height: 12 }} className="animate-spin" /> : <Trash2 style={{ width: 12, height: 12 }} />}
+          </Button>
+        )}
       </div>
       {photos.length > 0 && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6, marginTop: 8 }}>
