@@ -65,13 +65,13 @@ export function getTemplateImage(key: string, gender: Gender | string): string {
   return resolveKey(key, g);
 }
 
-export function getStyleImage(styleId: string, gender?: Gender | string): string {
-  const g = normalizeGender((gender ?? "non-binary") as string);
+export function getStyleImage(styleId: string, gender: Gender | string): string {
+  const g = normalizeGender(gender as string);
   return resolveKey(styleId, g);
 }
 
-export function getCategoryImage(categoryId: string, gender?: Gender | string): string {
-  const g = normalizeGender((gender ?? "non-binary") as string);
+export function getCategoryImage(categoryId: string, gender: Gender | string): string {
+  const g = normalizeGender(gender as string);
   return resolveKey(categoryId, g);
 }
 

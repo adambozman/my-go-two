@@ -13,7 +13,7 @@ interface TemplateCoverFlowProps {
   onBack?: () => void;
   onSelect: (subtype: SubtypeItem, subcategoryName?: string) => void;
   creating: boolean;
-  gender?: string;
+  gender: string;
 }
 
 const TemplateCoverFlow = ({
@@ -23,7 +23,7 @@ const TemplateCoverFlow = ({
   activeSubcategory,
   onSubcategorySelect,
   onSelect,
-  gender = "non-binary",
+  gender,
 }: TemplateCoverFlowProps) => {
   const hasSubcategories = subcategories && subcategories.length > 0;
   const templateFallback = getTemplateImage(templateName, gender);
