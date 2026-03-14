@@ -34,7 +34,7 @@ const TemplateCoverFlow = ({
     const items = subcategories.map((sc) => ({
       id: sc.id,
       label: sc.name,
-      image: resolveImage(sc.id),
+      image: resolveImage(sc.image || sc.id),
     }));
 
     return (
@@ -58,7 +58,7 @@ const TemplateCoverFlow = ({
   const productItems = products.map((p) => ({
     id: p.id,
     label: p.name,
-    image: resolveImage(p.id),
+    image: resolveImage((p as any).image || p.id),
   }));
 
   return (
