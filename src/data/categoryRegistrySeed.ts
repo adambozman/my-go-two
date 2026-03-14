@@ -35,7 +35,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "tshirt",
             "name": "T-Shirt",
-            "image": "clothing-tops",
+            "image": "clothing-tshirt",
             "fields": [
               {
                 "label": "Size",
@@ -77,7 +77,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "button-up",
             "name": "Button-Up Shirt",
-            "image": "clothing-tops",
+            "image": "clothing-button-up",
             "fields": [
               {
                 "label": "Size",
@@ -130,7 +130,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "polo",
             "name": "Polo",
-            "image": "clothing-tops",
+            "image": "clothing-polo",
             "fields": [
               {
                 "label": "Size",
@@ -171,7 +171,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "hoodie",
             "name": "Hoodie",
-            "image": "clothing-tops",
+            "image": "clothing-hoodie",
             "fields": [
               {
                 "label": "Size",
@@ -212,7 +212,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "sweatshirt",
             "name": "Sweatshirt",
-            "image": "clothing-tops",
+            "image": "clothing-sweatshirt",
             "fields": [
               {
                 "label": "Size",
@@ -252,7 +252,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "sweater",
             "name": "Sweater",
-            "image": "clothing-tops",
+            "image": "clothing-sweater",
             "fields": [
               {
                 "label": "Size",
@@ -302,7 +302,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "jeans",
             "name": "Jeans",
-            "image": "clothing-bottoms",
+            "image": "clothing-jeans",
             "fields": [
               {
                 "label": "Waist",
@@ -341,7 +341,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "chinos",
             "name": "Chinos / Pants",
-            "image": "clothing-bottoms",
+            "image": "clothing-chinos",
             "fields": [
               {
                 "label": "Waist",
@@ -379,7 +379,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "shorts",
             "name": "Shorts",
-            "image": "clothing-bottoms",
+            "image": "clothing-shorts",
             "fields": [
               {
                 "label": "Waist",
@@ -424,7 +424,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "sweatpants",
             "name": "Sweatpants / Joggers",
-            "image": "clothing-bottoms",
+            "image": "clothing-sweatpants",
             "fields": [
               {
                 "label": "Size",
@@ -466,7 +466,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "dress-pants",
             "name": "Dress Pants",
-            "image": "clothing-bottoms",
+            "image": "clothing-dress-pants",
             "fields": [
               {
                 "label": "Waist",
@@ -552,7 +552,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "jacket",
             "name": "Jacket",
-            "image": "clothing-outerwear",
+            "image": "clothing-jacket",
             "fields": [
               {
                 "label": "Size",
@@ -596,7 +596,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "coat",
             "name": "Coat",
-            "image": "clothing-outerwear",
+            "image": "clothing-coat",
             "fields": [
               {
                 "label": "Size",
@@ -639,7 +639,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "puffer",
             "name": "Puffer / Down",
-            "image": "clothing-outerwear",
+            "image": "clothing-puffer",
             "fields": [
               {
                 "label": "Size",
@@ -680,7 +680,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "windbreaker",
             "name": "Windbreaker",
-            "image": "clothing-outerwear",
+            "image": "clothing-windbreaker",
             "fields": [
               {
                 "label": "Size",
@@ -711,7 +711,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "fleece",
             "name": "Fleece / Vest",
-            "image": "clothing-outerwear",
+            "image": "clothing-fleece",
             "fields": [
               {
                 "label": "Size",
@@ -753,7 +753,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "rain-jacket",
             "name": "Rain Jacket",
-            "image": "clothing-outerwear",
+            "image": "clothing-rain-jacket",
             "fields": [
               {
                 "label": "Size",
@@ -786,12 +786,12 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "basics",
         "name": "Basics",
-        "image": "clothing-tops",
+        "image": "clothing-basics",
         "products": [
           {
             "id": "underwear",
             "name": "Underwear / Boxers",
-            "image": "clothing-tops",
+            "image": "clothing-underwear",
             "fields": [
               {
                 "label": "Size",
@@ -834,7 +834,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "socks",
             "name": "Socks",
-            "image": "clothing-tops",
+            "image": "clothing-socks",
             "fields": [
               {
                 "label": "Size",
@@ -869,7 +869,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "undershirt",
             "name": "Undershirt",
-            "image": "clothing-tops",
+            "image": "clothing-undershirt",
             "fields": [
               {
                 "label": "Size",
@@ -910,7 +910,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "loungewear",
             "name": "Loungewear",
-            "image": "clothing-tops",
+            "image": "clothing-loungewear",
             "fields": [
               {
                 "label": "Size",
@@ -941,7 +941,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "pajamas",
             "name": "Pajamas",
-            "image": "clothing-tops",
+            "image": "clothing-pajamas",
             "fields": [
               {
                 "label": "Size",
@@ -1027,12 +1027,12 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "formal",
         "name": "Formal",
-        "image": "clothing-tops",
+        "image": "clothing-formal",
         "products": [
           {
             "id": "suit",
             "name": "Suit",
-            "image": "clothing-tops",
+            "image": "clothing-suit",
             "fields": [
               {
                 "label": "Jacket Size",
@@ -1074,7 +1074,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "dress-shirt",
             "name": "Dress Shirt",
-            "image": "clothing-tops",
+            "image": "clothing-dress-shirt",
             "fields": [
               {
                 "label": "Neck Size",
@@ -1111,7 +1111,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "blazer",
             "name": "Blazer / Sport Coat",
-            "image": "clothing-tops",
+            "image": "clothing-blazer",
             "fields": [
               {
                 "label": "Jacket Size",
@@ -1154,7 +1154,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "tie",
             "name": "Tie",
-            "image": "clothing-tops",
+            "image": "clothing-tie",
             "fields": [
               {
                 "label": "Style",
@@ -1177,7 +1177,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "dress-shoes-formal",
             "name": "Dress Shoes",
-            "image": "clothing-tops",
+            "image": "shoe-dress",
             "fields": [
               {
                 "label": "US Size",
@@ -1222,7 +1222,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "pocket-square",
             "name": "Pocket Square / Tie Bar",
-            "image": "clothing-tops",
+            "image": "clothing-pocket-square",
             "fields": [
               {
                 "label": "Notes",
@@ -1255,7 +1255,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "low-top",
             "name": "Low Top",
-            "image": "shoe-sneakers",
+            "image": "shoe-low-top",
             "fields": [
               {
                 "label": "US Size",
@@ -1300,7 +1300,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "high-top",
             "name": "High Top",
-            "image": "shoe-sneakers",
+            "image": "shoe-high-top",
             "fields": [
               {
                 "label": "US Size",
@@ -1333,7 +1333,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "slip-on",
             "name": "Slip-On",
-            "image": "shoe-sneakers",
+            "image": "shoe-slip-on",
             "fields": [
               {
                 "label": "US Size",
@@ -1357,12 +1357,12 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "athletic-shoes",
         "name": "Athletic",
-        "image": "shoe-sneakers",
+        "image": "shoe-athletic",
         "products": [
           {
             "id": "running-shoes",
             "name": "Running Shoes",
-            "image": "shoe-sneakers",
+            "image": "shoe-running",
             "fields": [
               {
                 "label": "US Size",
@@ -1405,7 +1405,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "training-shoes",
             "name": "Training Shoes",
-            "image": "shoe-sneakers",
+            "image": "shoe-training",
             "fields": [
               {
                 "label": "US Size",
@@ -1438,7 +1438,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "basketball-shoes",
             "name": "Basketball Shoes",
-            "image": "shoe-sneakers",
+            "image": "shoe-basketball",
             "fields": [
               {
                 "label": "US Size",
@@ -1467,7 +1467,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "chelsea-boots",
             "name": "Chelsea Boots",
-            "image": "shoe-boots",
+            "image": "shoe-chelsea",
             "fields": [
               {
                 "label": "US Size",
@@ -1499,7 +1499,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "work-boots",
             "name": "Work / Hiking Boots",
-            "image": "shoe-boots",
+            "image": "shoe-work-boots",
             "fields": [
               {
                 "label": "US Size",
@@ -1543,7 +1543,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "chukka-boots",
             "name": "Chukka Boots",
-            "image": "shoe-boots",
+            "image": "shoe-chukka",
             "fields": [
               {
                 "label": "US Size",
@@ -1567,12 +1567,12 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "casual-shoes",
         "name": "Casual",
-        "image": "shoe-sneakers",
+        "image": "shoe-casual",
         "products": [
           {
             "id": "loafers-casual",
             "name": "Loafers",
-            "image": "shoe-sneakers",
+            "image": "shoe-loafers",
             "fields": [
               {
                 "label": "US Size",
@@ -1638,7 +1638,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "moccasins",
             "name": "Moccasins / Boat Shoes",
-            "image": "shoe-sneakers",
+            "image": "shoe-moccasins",
             "fields": [
               {
                 "label": "US Size",
@@ -1681,7 +1681,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "shampoo",
             "name": "Shampoo",
-            "image": "grooming-hair",
+            "image": "grooming-shampoo",
             "fields": [
               {
                 "label": "Hair Type",
@@ -1724,7 +1724,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "conditioner",
             "name": "Conditioner",
-            "image": "grooming-hair",
+            "image": "grooming-conditioner",
             "fields": [
               {
                 "label": "Hair Type",
@@ -1754,7 +1754,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "styling-product",
             "name": "Styling Product",
-            "image": "grooming-hair",
+            "image": "grooming-styling",
             "fields": [
               {
                 "label": "Product Type",
@@ -1809,7 +1809,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "hair-tools",
             "name": "Hair Tools",
-            "image": "grooming-hair",
+            "image": "grooming-hair-tools",
             "fields": [
               {
                 "label": "Tools Used",
@@ -1838,7 +1838,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "hair-color",
             "name": "Hair Color / Treatment",
-            "image": "grooming-hair",
+            "image": "grooming-hair-color",
             "fields": [
               {
                 "label": "Treatment",
@@ -1863,7 +1863,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "hair-loss",
             "name": "Hair Loss / Thinning",
-            "image": "grooming-hair",
+            "image": "grooming-hair-loss",
             "fields": [
               {
                 "label": "Concern",
@@ -1899,7 +1899,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "face-wash",
             "name": "Face Wash",
-            "image": "grooming-skin",
+            "image": "grooming-face-wash",
             "fields": [
               {
                 "label": "Skin Type",
@@ -1928,7 +1928,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "moisturizer",
             "name": "Moisturizer",
-            "image": "grooming-skin",
+            "image": "grooming-moisturizer",
             "fields": [
               {
                 "label": "Skin Type",
@@ -1968,7 +1968,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "serum",
             "name": "Serum / Treatment",
-            "image": "grooming-skin",
+            "image": "grooming-serum",
             "fields": [
               {
                 "label": "Concern",
@@ -1998,7 +1998,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "eye-cream",
             "name": "Eye Cream",
-            "image": "grooming-skin",
+            "image": "grooming-eye-cream",
             "fields": [
               {
                 "label": "Concern",
@@ -2026,7 +2026,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "sunscreen",
             "name": "Sunscreen",
-            "image": "grooming-skin",
+            "image": "grooming-sunscreen",
             "fields": [
               {
                 "label": "SPF",
@@ -2065,7 +2065,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "lip-balm",
             "name": "Lip Balm",
-            "image": "grooming-skin",
+            "image": "grooming-lip-balm",
             "fields": [
               {
                 "label": "Preferred Brands",
@@ -2089,7 +2089,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "razor",
             "name": "Razor",
-            "image": "grooming-shaving",
+            "image": "grooming-razor",
             "fields": [
               {
                 "label": "Type",
@@ -2118,7 +2118,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "shave-cream",
             "name": "Shave Cream / Gel",
-            "image": "grooming-shaving",
+            "image": "grooming-shave-cream",
             "fields": [
               {
                 "label": "Format",
@@ -2148,7 +2148,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "beard-oil",
             "name": "Beard Oil / Balm",
-            "image": "grooming-shaving",
+            "image": "grooming-beard-oil",
             "fields": [
               {
                 "label": "Beard Length",
@@ -2190,7 +2190,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "aftershave",
             "name": "Aftershave",
-            "image": "grooming-shaving",
+            "image": "grooming-aftershave",
             "fields": [
               {
                 "label": "Format",
@@ -2218,7 +2218,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "beard-trimmer",
             "name": "Beard Trimmer",
-            "image": "grooming-shaving",
+            "image": "grooming-beard-trimmer",
             "fields": [
               {
                 "label": "Preferred Brands",
@@ -2235,7 +2235,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "mustache-wax",
             "name": "Mustache Wax",
-            "image": "grooming-shaving",
+            "image": "grooming-mustache",
             "fields": [
               {
                 "label": "Hold",
@@ -2264,7 +2264,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "fragrance",
         "name": "Fragrance",
-        "image": "scent-cologne",
+        "image": "grooming-fragrance",
         "products": [
           {
             "id": "cologne",
@@ -2323,7 +2323,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "deodorant",
             "name": "Deodorant",
-            "image": "scent-cologne",
+            "image": "grooming-deodorant",
             "fields": [
               {
                 "label": "Format",
@@ -2363,7 +2363,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "body-wash",
             "name": "Body Wash",
-            "image": "scent-bodycare",
+            "image": "grooming-body-wash",
             "fields": [
               {
                 "label": "Scent",
@@ -2404,7 +2404,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "lotion",
             "name": "Body Lotion",
-            "image": "scent-bodycare",
+            "image": "grooming-lotion",
             "fields": [
               {
                 "label": "Scent",
@@ -2432,7 +2432,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "room-scent",
             "name": "Room / Home Scent",
-            "image": "scent-cologne",
+            "image": "scent-home",
             "fields": [
               {
                 "label": "Format",
@@ -2474,7 +2474,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "bar-soap",
             "name": "Bar Soap",
-            "image": "scent-bodycare",
+            "image": "grooming-soap",
             "fields": [
               {
                 "label": "Scent",
@@ -2519,12 +2519,12 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "aesthetic",
         "name": "Aesthetic",
-        "image": "brand-preferences",
+        "image": "vibe-aesthetic",
         "products": [
           {
             "id": "streetwear",
             "name": "Streetwear",
-            "image": "brand-preferences",
+            "image": "vibe-streetwear",
             "fields": [
               {
                 "label": "Vibe",
@@ -2554,7 +2554,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "smart-casual",
             "name": "Smart Casual",
-            "image": "brand-preferences",
+            "image": "vibe-smart-casual",
             "fields": [
               {
                 "label": "Lean",
@@ -2582,7 +2582,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "heritage-workwear",
             "name": "Heritage / Workwear",
-            "image": "brand-preferences",
+            "image": "vibe-heritage",
             "fields": [
               {
                 "label": "Style",
@@ -2612,7 +2612,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "old-money",
             "name": "Old Money / Prep",
-            "image": "brand-preferences",
+            "image": "vibe-old-money",
             "fields": [
               {
                 "label": "Style",
@@ -2641,7 +2641,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "minimalist",
             "name": "Minimalist",
-            "image": "brand-preferences",
+            "image": "vibe-minimalist",
             "fields": [
               {
                 "label": "Palette Lean",
@@ -2669,7 +2669,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "vintage-thrift",
             "name": "Vintage / Thrift",
-            "image": "brand-preferences",
+            "image": "vibe-vintage",
             "fields": [
               {
                 "label": "Era",
@@ -2701,12 +2701,12 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "fit-personality",
         "name": "Fit Personality",
-        "image": "brand-preferences",
+        "image": "vibe-personality",
         "products": [
           {
             "id": "techwear",
             "name": "Techwear / Utility",
-            "image": "brand-preferences",
+            "image": "vibe-techwear",
             "fields": [
               {
                 "label": "Vibe",
@@ -2735,7 +2735,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "bohemian",
             "name": "Bohemian / Eclectic",
-            "image": "brand-preferences",
+            "image": "vibe-bohemian",
             "fields": [
               {
                 "label": "Style",
@@ -2759,7 +2759,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "sporty-athleisure",
             "name": "Sporty / Athleisure",
-            "image": "brand-preferences",
+            "image": "vibe-athletic",
             "fields": [
               {
                 "label": "Lean",
@@ -2787,7 +2787,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "rocker-edgy",
             "name": "Rock / Edgy",
-            "image": "brand-preferences",
+            "image": "vibe-rocker",
             "fields": [
               {
                 "label": "Style",
@@ -2812,7 +2812,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "coastal-outdoor",
             "name": "Coastal / Outdoor",
-            "image": "brand-preferences",
+            "image": "vibe-coastal",
             "fields": [
               {
                 "label": "Style",
@@ -2842,7 +2842,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "business-formal",
             "name": "Business / Formal",
-            "image": "brand-preferences",
+            "image": "vibe-business",
             "fields": [
               {
                 "label": "Dress Code",
@@ -3451,7 +3451,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           {
             "id": "sunglasses",
             "name": "Sunglasses",
-            "image": "brand-preferences",
+            "image": "accessory-sunglasses",
             "fields": [
               {
                 "label": "Frame Shape",
@@ -4229,7 +4229,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "tshirt",
         "name": "T-Shirt",
-        "image": "clothing-tops",
+        "image": "clothing-tshirt",
         "fields": [
           {
             "label": "Size",
@@ -4315,7 +4315,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "sweater",
         "name": "Sweater",
-        "image": "clothing-tops",
+        "image": "clothing-sweater",
         "fields": [
           {
             "label": "Size",
@@ -4358,7 +4358,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "jeans",
         "name": "Jeans",
-        "image": "clothing-bottoms",
+        "image": "clothing-jeans",
         "fields": [
           {
             "label": "Waist",
@@ -4514,7 +4514,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "shorts",
         "name": "Shorts",
-        "image": "clothing-bottoms",
+        "image": "clothing-shorts",
         "fields": [
           {
             "label": "Size",
@@ -4557,7 +4557,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "jacket",
         "name": "Jacket",
-        "image": "clothing-outerwear",
+        "image": "clothing-jacket",
         "fields": [
           {
             "label": "Size",
@@ -4601,7 +4601,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "coat",
         "name": "Coat",
-        "image": "clothing-outerwear",
+        "image": "clothing-coat",
         "fields": [
           {
             "label": "Size",
@@ -4731,7 +4731,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "hoodie",
         "name": "Hoodie",
-        "image": "clothing-tops",
+        "image": "clothing-hoodie",
         "fields": [
           {
             "label": "Size",
@@ -4989,7 +4989,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "running-shoes",
         "name": "Running Shoes",
-        "image": "shoe-sneakers",
+        "image": "shoe-running",
         "fields": [
           {
             "label": "US Size",
@@ -5067,7 +5067,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "shampoo",
         "name": "Shampoo",
-        "image": "grooming-hair",
+        "image": "grooming-shampoo",
         "fields": [
           {
             "label": "Brand",
@@ -5109,7 +5109,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "conditioner",
         "name": "Conditioner",
-        "image": "grooming-hair",
+        "image": "grooming-conditioner",
         "fields": [
           {
             "label": "Brand",
@@ -5190,7 +5190,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "face-wash",
         "name": "Face Wash",
-        "image": "grooming-skin",
+        "image": "grooming-face-wash",
         "fields": [
           {
             "label": "Brand",
@@ -5229,7 +5229,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "moisturizer",
         "name": "Moisturizer",
-        "image": "grooming-skin",
+        "image": "grooming-moisturizer",
         "fields": [
           {
             "label": "Brand",
@@ -5279,7 +5279,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "serum",
         "name": "Serum",
-        "image": "grooming-skin",
+        "image": "grooming-serum",
         "fields": [
           {
             "label": "Brand",
@@ -5319,7 +5319,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "sunscreen",
         "name": "Sunscreen",
-        "image": "grooming-skin",
+        "image": "grooming-sunscreen",
         "fields": [
           {
             "label": "Brand",
@@ -5708,7 +5708,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "body-wash",
         "name": "Body Wash",
-        "image": "scent-bodycare",
+        "image": "grooming-body-wash",
         "fields": [
           {
             "label": "Brand",
@@ -5751,7 +5751,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "deodorant",
         "name": "Deodorant",
-        "image": "scent-bodycare",
+        "image": "grooming-deodorant",
         "fields": [
           {
             "label": "Brand",
@@ -6810,7 +6810,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "tshirt",
         "name": "T-Shirt",
-        "image": "clothing-tops",
+        "image": "clothing-tshirt",
         "fields": [
           {
             "label": "Size",
@@ -6855,7 +6855,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "button-up",
         "name": "Button-Up",
-        "image": "clothing-tops",
+        "image": "clothing-button-up",
         "fields": [
           {
             "label": "Size",
@@ -6899,7 +6899,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "sweater",
         "name": "Sweater",
-        "image": "clothing-tops",
+        "image": "clothing-sweater",
         "fields": [
           {
             "label": "Size",
@@ -6944,7 +6944,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "hoodie",
         "name": "Hoodie",
-        "image": "clothing-tops",
+        "image": "clothing-hoodie",
         "fields": [
           {
             "label": "Size",
@@ -6987,7 +6987,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "jeans",
         "name": "Jeans",
-        "image": "clothing-bottoms",
+        "image": "clothing-jeans",
         "fields": [
           {
             "label": "Waist",
@@ -7028,7 +7028,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "shorts",
         "name": "Shorts",
-        "image": "clothing-bottoms",
+        "image": "clothing-shorts",
         "fields": [
           {
             "label": "Size",
@@ -7073,7 +7073,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "jacket",
         "name": "Jacket",
-        "image": "clothing-outerwear",
+        "image": "clothing-jacket",
         "fields": [
           {
             "label": "Size",
@@ -7119,7 +7119,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "coat",
         "name": "Coat",
-        "image": "clothing-outerwear",
+        "image": "clothing-coat",
         "fields": [
           {
             "label": "Size",
@@ -7251,7 +7251,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "sweatpants",
         "name": "Sweatpants",
-        "image": "clothing-bottoms",
+        "image": "clothing-sweatpants",
         "fields": [
           {
             "label": "Size",
@@ -7346,7 +7346,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "running-shoes",
         "name": "Running Shoes",
-        "image": "shoe-sneakers",
+        "image": "shoe-running",
         "fields": [
           {
             "label": "US Size",
@@ -7580,7 +7580,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "shampoo",
         "name": "Shampoo",
-        "image": "grooming-hair",
+        "image": "grooming-shampoo",
         "fields": [
           {
             "label": "Brand",
@@ -7622,7 +7622,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "conditioner",
         "name": "Conditioner",
-        "image": "grooming-hair",
+        "image": "grooming-conditioner",
         "fields": [
           {
             "label": "Brand",
@@ -7664,7 +7664,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "styling-product",
         "name": "Styling Product",
-        "image": "grooming-hair",
+        "image": "grooming-styling",
         "fields": [
           {
             "label": "Brand",
@@ -7705,7 +7705,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "face-wash",
         "name": "Face Wash",
-        "image": "grooming-skin",
+        "image": "grooming-face-wash",
         "fields": [
           {
             "label": "Brand",
@@ -7744,7 +7744,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "moisturizer",
         "name": "Moisturizer",
-        "image": "grooming-skin",
+        "image": "grooming-moisturizer",
         "fields": [
           {
             "label": "Brand",
@@ -7794,7 +7794,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "serum",
         "name": "Serum",
-        "image": "grooming-skin",
+        "image": "grooming-serum",
         "fields": [
           {
             "label": "Brand",
@@ -7833,7 +7833,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "sunscreen",
         "name": "Sunscreen",
-        "image": "grooming-skin",
+        "image": "grooming-sunscreen",
         "fields": [
           {
             "label": "Brand",
@@ -7881,7 +7881,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "body-wash",
         "name": "Body Wash",
-        "image": "scent-bodycare",
+        "image": "grooming-body-wash",
         "fields": [
           {
             "label": "Brand",
@@ -7927,7 +7927,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "fragrance",
         "name": "Fragrance",
-        "image": "fragrances",
+        "image": "grooming-fragrance",
         "fields": [
           {
             "label": "Brand",
@@ -7990,7 +7990,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "body-wash",
         "name": "Body Wash",
-        "image": "scent-bodycare",
+        "image": "grooming-body-wash",
         "fields": [
           {
             "label": "Brand",
@@ -8022,7 +8022,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "deodorant",
         "name": "Deodorant",
-        "image": "scent-bodycare",
+        "image": "grooming-deodorant",
         "fields": [
           {
             "label": "Brand",
@@ -15750,7 +15750,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "sunglasses",
         "name": "Sunglasses",
-        "image": "specific-products",
+        "image": "accessory-sunglasses",
         "fields": [
           {
             "label": "Style",
@@ -15821,7 +15821,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "watches",
         "name": "Watches",
-        "image": "jewelry-watches",
+        "image": "accessory-watches",
         "fields": [
           {
             "label": "Style",
@@ -17552,7 +17552,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "sunglasses",
         "name": "Sunglasses",
-        "image": "specific-products",
+        "image": "accessory-sunglasses",
         "fields": [
           {
             "label": "Style",
@@ -17623,7 +17623,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "watches",
         "name": "Watches",
-        "image": "jewelry-watches",
+        "image": "accessory-watches",
         "fields": [
           {
             "label": "Style",
@@ -19366,7 +19366,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "sunglasses",
         "name": "Sunglasses",
-        "image": "specific-products",
+        "image": "accessory-sunglasses",
         "fields": [
           {
             "label": "Style",
@@ -19437,7 +19437,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "watches",
         "name": "Watches",
-        "image": "jewelry-watches",
+        "image": "accessory-watches",
         "fields": [
           {
             "label": "Style",
@@ -27312,7 +27312,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "cooking",
         "name": "Cooking",
-        "image": "favorite-meals",
+        "image": "meal-dinner",
         "fields": [
           {
             "label": "Favorite Cuisines to Cook",
@@ -28567,7 +28567,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "cooking",
         "name": "Cooking",
-        "image": "favorite-meals",
+        "image": "meal-dinner",
         "fields": [
           {
             "label": "Favorite Cuisines to Cook",
@@ -30515,7 +30515,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "cooking",
         "name": "Cooking",
-        "image": "favorite-meals",
+        "image": "meal-dinner",
         "fields": [
           {
             "label": "Favorite Cuisines to Cook",
