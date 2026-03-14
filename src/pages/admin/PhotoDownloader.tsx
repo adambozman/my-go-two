@@ -40,7 +40,22 @@ function ProductRow({ product }: { product: Product }) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
   const [saved, setSaved] = useState(!!getOverride(product.imageKey));
+  const [deleting, setDeleting] = useState(false);
   const override = getOverride(product.imageKey);
+
+  const handleDelete = useCallback(async () => {
+    if (!override) return;
+    setDeleting(true);
+    try {
+      const filename = `${product.imageKey}.jpg`;
+      await supabase.storage.from("category-images").remove([filename]);
+      clearOverride(product.imageKey);
+      setSaved(false);
+      toast({ title: "Deleted", description: product.name });
+    } catch (e: any) {
+      toast({ title: "Delete failed", description: e.message, variant: "destructive" });
+    } finally { setDeleting(false); }
+  }, [override, product, toast]);
 
   const search = useCallback(async () => {
     setLoading(true);
