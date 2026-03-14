@@ -20,6 +20,7 @@ interface Product {
   imageKey: string;
   subcategory: string;
   category: string;
+  section: string;
 }
 
 interface UnsplashPhoto {
@@ -280,6 +281,32 @@ function ProductRow({ product }: { product: Product }) {
   );
 }
 
+interface GroupedProducts {
+  [section: string]: {
+    [category: string]: Product[];
+  };
+}
+
+function groupProducts(products: Product[]): GroupedProducts {
+  const grouped: GroupedProducts = {};
+  for (const p of products) {
+    const section = p.section || "Other";
+    const category = p.category || "Uncategorized";
+    if (!grouped[section]) grouped[section] = {};
+    if (!grouped[section][category]) grouped[section][category] = [];
+    grouped[section][category].push(p);
+  }
+  return grouped;
+}
+
+const sectionLabels: Record<string, string> = {
+  "style-fit": "Style & Fit",
+  "food-drink": "Food & Drink",
+  "gifts-wishlist": "Gifts & Wishlist",
+  "home-living": "Home & Living",
+  "entertainment": "Entertainment",
+};
+
 export default function PhotoDownloader() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -313,6 +340,7 @@ export default function PhotoDownloader() {
                 imageKey: p.image,
                 subcategory: sub.name || sub.id,
                 category: row.label,
+                section: row.section,
               });
             }
           }
@@ -325,12 +353,14 @@ export default function PhotoDownloader() {
     load();
   }, []);
 
+  const grouped = groupProducts(products);
+
   return (
     <div className="min-h-screen bg-background p-6 max-w-4xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Photo Downloader</h1>
         <p className="text-sm text-muted-foreground">
-          Search Unsplash and assign photos to products · Male / Style & Fit ·{" "}
+          Search Unsplash / Pexels and assign photos to products · Male / Style & Fit ·{" "}
           {products.length} products
         </p>
       </div>
@@ -340,9 +370,30 @@ export default function PhotoDownloader() {
           <Loader2 className="h-4 w-4 animate-spin" /> Loading products…
         </div>
       ) : (
-        <div className="space-y-2">
-          {products.map((p) => (
-            <ProductRow key={p.id} product={p} />
+        <div className="space-y-8">
+          {Object.entries(grouped).map(([section, categories]) => (
+            <div key={section}>
+              <h2 className="text-lg font-semibold text-foreground mb-4 border-b border-border pb-2">
+                {sectionLabels[section] || section}
+              </h2>
+              <div className="space-y-6 pl-2">
+                {Object.entries(categories).map(([category, prods]) => (
+                  <div key={category}>
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                      {category}
+                      <span className="ml-2 text-xs font-normal normal-case tracking-normal">
+                        ({prods.length})
+                      </span>
+                    </h3>
+                    <div className="space-y-2">
+                      {prods.map((p) => (
+                        <ProductRow key={p.id} product={p} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       )}
