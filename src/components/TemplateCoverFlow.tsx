@@ -55,6 +55,13 @@ const TemplateCoverFlow = ({
     ? (activeSubcategory.products ?? [])
     : subtypes;
 
+  // If activeSubcategory has no products, treat the subcategory itself as the item
+  if (activeSubcategory && products.length === 0) {
+    const asItem = activeSubcategory as unknown as SubtypeItem;
+    onSelect(asItem, activeSubcategory.name);
+    return null;
+  }
+
   const productItems = products.map((p) => ({
     id: p.id,
     label: p.name,
