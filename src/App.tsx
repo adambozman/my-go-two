@@ -77,6 +77,7 @@ const App = () => {
               </Route>
               <Route path="*" element={<NotFound />} />
               <Route path="/carousel-test" element={<CarouselTest />} />
+              <Route path="/admin/photo-downloader" element={<PhotoDownloader />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
