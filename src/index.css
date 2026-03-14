@@ -313,9 +313,11 @@ body {
 @media (min-width: 1024px) {
   :root {
     --header-tagline-margin-top: 90px;
-    --header-height: 120px;
   }
   .section-header {
     font-size: 29px;
+  }
+  .logo-text {
+    font-size: 90px;
   }
 }
