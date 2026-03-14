@@ -16,6 +16,5550 @@ export interface CategoryRegistryRow {
 export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] = 
 [
   {
+    "key": "restaurants-male",
+    "label": "Restaurants",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 10,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "cuisines",
+        "name": "Cuisines",
+        "image": "food-restaurants",
+        "products": [
+          {
+            "id": "asian",
+            "name": "Asian",
+            "image": "food-asian",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "italian",
+            "name": "Italian",
+            "image": "food-italian",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "mexican",
+            "name": "Mexican",
+            "image": "food-mexican",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "american",
+            "name": "American",
+            "image": "food-american",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "mediterranean",
+            "name": "Mediterranean",
+            "image": "food-mediterranean",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sushi",
+            "name": "Sushi",
+            "image": "food-sushi",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Roll",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Soy Sauce",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Regular",
+                  "Low Sodium",
+                  "None"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "indian",
+            "name": "Indian",
+            "image": "food-indian",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "thai",
+            "name": "Thai",
+            "image": "food-thai",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "bbq",
+            "name": "BBQ",
+            "image": "food-bbq",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Meat",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sauce",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Sweet",
+                  "Spicy",
+                  "Vinegar",
+                  "Dry Rub",
+                  "None"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "greek",
+            "name": "Greek",
+            "image": "food-greek",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "middle-eastern",
+            "name": "Middle Eastern",
+            "image": "food-middle-eastern",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "french",
+            "name": "French",
+            "image": "food-french",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "coffee-male",
+    "label": "Coffee",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 20,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "orders",
+        "name": "Orders",
+        "image": "coffee-hot",
+        "products": [
+          {
+            "id": "hot-coffee",
+            "name": "Hot Coffee",
+            "image": "coffee-hot",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim",
+                  "None"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Sugar",
+                  "Honey",
+                  "Stevia",
+                  "Splenda"
+                ]
+              },
+              {
+                "label": "Shots",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "iced-coffee",
+            "name": "Iced Coffee",
+            "image": "coffee-iced",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim",
+                  "None"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Sugar",
+                  "Honey",
+                  "Stevia",
+                  "Splenda"
+                ]
+              },
+              {
+                "label": "Shots",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "espresso",
+            "name": "Espresso",
+            "image": "coffee-espresso",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Shots",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cold-brew",
+            "name": "Cold Brew",
+            "image": "coffee-iced",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Black",
+                  "With Milk",
+                  "Sweetened",
+                  "Nitro"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Sugar",
+                  "Vanilla",
+                  "Caramel"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "latte",
+            "name": "Latte",
+            "image": "coffee-hot",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim"
+                ]
+              },
+              {
+                "label": "Flavor",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "tea",
+            "name": "Tea",
+            "image": "coffee-tea",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Green",
+                  "Black",
+                  "Herbal",
+                  "Chai",
+                  "Oolong",
+                  "White"
+                ]
+              },
+              {
+                "label": "Temperature",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Hot",
+                  "Iced"
+                ]
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Whole",
+                  "Oat",
+                  "Almond"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Honey",
+                  "Sugar",
+                  "Stevia"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "matcha",
+            "name": "Matcha",
+            "image": "coffee-tea",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Hot",
+                  "Iced",
+                  "Latte"
+                ]
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Oat",
+                  "Almond",
+                  "Whole",
+                  "Skim"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Honey",
+                  "Sugar",
+                  "Vanilla"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "juice-smoothie",
+            "name": "Juice / Smoothie",
+            "image": "coffee-order",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Juice",
+                  "Smoothie",
+                  "Protein Shake"
+                ]
+              },
+              {
+                "label": "Favorite Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "grocery-male",
+    "label": "Grocery",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 30,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "categories",
+        "name": "Categories",
+        "image": "grocery-produce",
+        "products": [
+          {
+            "id": "produce",
+            "name": "Produce",
+            "image": "grocery-produce",
+            "fields": [
+              {
+                "label": "Favorite Fruits",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Vegetables",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "dairy",
+            "name": "Dairy",
+            "image": "grocery-dairy",
+            "fields": [
+              {
+                "label": "Milk Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim",
+                  "2%"
+                ]
+              },
+              {
+                "label": "Favorite Cheese",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Yogurt",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "pantry",
+            "name": "Pantry",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Favorite Snacks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "proteins",
+            "name": "Proteins",
+            "image": "grocery-proteins",
+            "fields": [
+              {
+                "label": "Preferred Protein",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Chicken",
+                  "Beef",
+                  "Fish",
+                  "Pork",
+                  "Plant-Based",
+                  "Turkey"
+                ]
+              },
+              {
+                "label": "Favorite Cut",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "snacks",
+            "name": "Snacks",
+            "image": "grocery-snacks",
+            "fields": [
+              {
+                "label": "Salty Snacks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sweet Snacks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "beverages",
+            "name": "Beverages",
+            "image": "grocery-beverages",
+            "fields": [
+              {
+                "label": "Favorite Drinks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sparkling or Still",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Still",
+                  "Sparkling",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Favorite Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "frozen",
+            "name": "Frozen",
+            "image": "grocery-frozen",
+            "fields": [
+              {
+                "label": "Favorite Frozen Meals",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "bread-bakery",
+            "name": "Bread & Bakery",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Bread Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Bakery Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "meals-male",
+    "label": "Meal Preferences",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 40,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "meals",
+        "name": "Meals",
+        "image": "meal-breakfast",
+        "products": [
+          {
+            "id": "breakfast",
+            "name": "Breakfast",
+            "image": "meal-breakfast",
+            "fields": [
+              {
+                "label": "Go-To Breakfast",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Coffee or Tea",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Coffee",
+                  "Tea",
+                  "Neither",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "brunch",
+            "name": "Brunch",
+            "image": "meal-breakfast",
+            "fields": [
+              {
+                "label": "Go-To Brunch Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "lunch",
+            "name": "Lunch",
+            "image": "meal-lunch",
+            "fields": [
+              {
+                "label": "Go-To Lunch",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Prefer",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Eat Out",
+                  "Cook at Home",
+                  "Takeout",
+                  "Meal Prep"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "dinner",
+            "name": "Dinner",
+            "image": "meal-dinner",
+            "fields": [
+              {
+                "label": "Go-To Dinner",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Prefer",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Eat Out",
+                  "Cook at Home",
+                  "Takeout"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "dessert",
+            "name": "Dessert",
+            "image": "meal-dessert",
+            "fields": [
+              {
+                "label": "Favorite Dessert",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sweet Tooth",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Low",
+                  "Medium",
+                  "High",
+                  "Extreme"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "late-night",
+            "name": "Late Night",
+            "image": "meal-dinner",
+            "fields": [
+              {
+                "label": "Go-To Late Night",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "snack-time",
+            "name": "Snacks",
+            "image": "grocery-snacks",
+            "fields": [
+              {
+                "label": "Go-To Snack",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sweet or Salty",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Sweet",
+                  "Salty",
+                  "Both",
+                  "Neither"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "comfort-food",
+            "name": "Comfort Food",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "All-Time Comfort Food",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Where to Get It",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "dietary-male",
+    "label": "Dietary",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 50,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "preferences",
+        "name": "Preferences",
+        "image": "dietary-restrictions",
+        "products": [
+          {
+            "id": "diet-type",
+            "name": "Diet Type",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Diet",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "No Restrictions",
+                  "Vegetarian",
+                  "Vegan",
+                  "Keto",
+                  "Paleo",
+                  "Gluten-Free",
+                  "Halal",
+                  "Kosher",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "allergies",
+            "name": "Allergies",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Allergies",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Severity",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Moderate",
+                  "Severe / EpiPen"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "intolerances",
+            "name": "Intolerances",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Intolerances",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Examples",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "foods-i-avoid",
+            "name": "Foods I Avoid",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Foods I Avoid",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Reason",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "preferred-cuisines",
+            "name": "Preferred Cuisines",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Top Cuisines",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cheat-meal",
+            "name": "Cheat Meal",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Go-To Cheat Meal",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Where to Get It",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "health-goals",
+            "name": "Health Goals",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Goal",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Lose Weight",
+                  "Gain Muscle",
+                  "Maintain",
+                  "Eat Cleaner",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "fast-food-male",
+    "label": "Fast Food",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 60,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "chains",
+        "name": "Chains",
+        "image": "food-burgers",
+        "products": [
+          {
+            "id": "burgers",
+            "name": "Burgers",
+            "image": "food-burgers",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "chicken",
+            "name": "Chicken",
+            "image": "food-chicken",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Fried",
+                  "Grilled",
+                  "Crispy",
+                  "Spicy"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "mexican-fast",
+            "name": "Mexican",
+            "image": "food-mexican",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "pizza",
+            "name": "Pizza",
+            "image": "food-pizza",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Crust",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Thin",
+                  "Thick",
+                  "Stuffed",
+                  "Cauliflower"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "asian-fast",
+            "name": "Asian Fast Food",
+            "image": "food-asian",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sandwiches",
+            "name": "Sandwiches",
+            "image": "food-burgers",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Bread",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "my-usual",
+            "name": "My Usual Order",
+            "image": "fast-food-order",
+            "fields": [
+              {
+                "label": "Restaurant",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Exact Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "cooking-male",
+    "label": "Cooking",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 70,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "style",
+        "name": "Style",
+        "image": "favorite-meals",
+        "products": [
+          {
+            "id": "skill-level",
+            "name": "Skill Level",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Skill Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Beginner",
+                  "Home Cook",
+                  "Intermediate",
+                  "Advanced",
+                  "Chef Level"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "favorite-meals",
+            "name": "Favorite Meals to Cook",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "All-Time Favorite",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Comfort Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "go-to-recipes",
+            "name": "Go-To Recipes",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Quick Weeknight Meal",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Impressive Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "kitchen-tools",
+            "name": "Kitchen Tools",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Favorite Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Appliance",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "meal-prep",
+            "name": "Meal Prep",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Do You Meal Prep",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Yes",
+                  "No",
+                  "Sometimes"
+                ]
+              },
+              {
+                "label": "Favorite Prep Meals",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cuisines-i-cook",
+            "name": "Cuisines I Cook",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Cuisines to Cook",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Want to Learn",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "comfort-dishes",
+            "name": "Comfort Dishes",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Guilty Pleasure Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Family Recipe",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "restaurants-female",
+    "label": "Restaurants",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 10,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "cuisines",
+        "name": "Cuisines",
+        "image": "food-restaurants",
+        "products": [
+          {
+            "id": "asian",
+            "name": "Asian",
+            "image": "food-asian",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "italian",
+            "name": "Italian",
+            "image": "food-italian",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "mexican",
+            "name": "Mexican",
+            "image": "food-mexican",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "american",
+            "name": "American",
+            "image": "food-american",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "mediterranean",
+            "name": "Mediterranean",
+            "image": "food-mediterranean",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sushi",
+            "name": "Sushi",
+            "image": "food-sushi",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Roll",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Soy Sauce",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Regular",
+                  "Low Sodium",
+                  "None"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "indian",
+            "name": "Indian",
+            "image": "food-indian",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "thai",
+            "name": "Thai",
+            "image": "food-thai",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "bbq",
+            "name": "BBQ",
+            "image": "food-bbq",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Meat",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sauce",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Sweet",
+                  "Spicy",
+                  "Vinegar",
+                  "Dry Rub",
+                  "None"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "greek",
+            "name": "Greek",
+            "image": "food-greek",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "middle-eastern",
+            "name": "Middle Eastern",
+            "image": "food-middle-eastern",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "french",
+            "name": "French",
+            "image": "food-french",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "coffee-female",
+    "label": "Coffee",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 20,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "orders",
+        "name": "Orders",
+        "image": "coffee-hot",
+        "products": [
+          {
+            "id": "hot-coffee",
+            "name": "Hot Coffee",
+            "image": "coffee-hot",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim",
+                  "None"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Sugar",
+                  "Honey",
+                  "Stevia",
+                  "Splenda"
+                ]
+              },
+              {
+                "label": "Shots",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "iced-coffee",
+            "name": "Iced Coffee",
+            "image": "coffee-iced",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim",
+                  "None"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Sugar",
+                  "Honey",
+                  "Stevia",
+                  "Splenda"
+                ]
+              },
+              {
+                "label": "Shots",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "espresso",
+            "name": "Espresso",
+            "image": "coffee-espresso",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Shots",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cold-brew",
+            "name": "Cold Brew",
+            "image": "coffee-iced",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Black",
+                  "With Milk",
+                  "Sweetened",
+                  "Nitro"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Sugar",
+                  "Vanilla",
+                  "Caramel"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "latte",
+            "name": "Latte",
+            "image": "coffee-hot",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim"
+                ]
+              },
+              {
+                "label": "Flavor",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "tea",
+            "name": "Tea",
+            "image": "coffee-tea",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Green",
+                  "Black",
+                  "Herbal",
+                  "Chai",
+                  "Oolong",
+                  "White"
+                ]
+              },
+              {
+                "label": "Temperature",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Hot",
+                  "Iced"
+                ]
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Whole",
+                  "Oat",
+                  "Almond"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Honey",
+                  "Sugar",
+                  "Stevia"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "matcha",
+            "name": "Matcha",
+            "image": "coffee-tea",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Hot",
+                  "Iced",
+                  "Latte"
+                ]
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Oat",
+                  "Almond",
+                  "Whole",
+                  "Skim"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Honey",
+                  "Sugar",
+                  "Vanilla"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "juice-smoothie",
+            "name": "Juice / Smoothie",
+            "image": "coffee-order",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Juice",
+                  "Smoothie",
+                  "Protein Shake"
+                ]
+              },
+              {
+                "label": "Favorite Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "grocery-female",
+    "label": "Grocery",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 30,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "categories",
+        "name": "Categories",
+        "image": "grocery-produce",
+        "products": [
+          {
+            "id": "produce",
+            "name": "Produce",
+            "image": "grocery-produce",
+            "fields": [
+              {
+                "label": "Favorite Fruits",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Vegetables",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "dairy",
+            "name": "Dairy",
+            "image": "grocery-dairy",
+            "fields": [
+              {
+                "label": "Milk Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim",
+                  "2%"
+                ]
+              },
+              {
+                "label": "Favorite Cheese",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Yogurt",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "pantry",
+            "name": "Pantry",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Favorite Snacks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "proteins",
+            "name": "Proteins",
+            "image": "grocery-proteins",
+            "fields": [
+              {
+                "label": "Preferred Protein",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Chicken",
+                  "Beef",
+                  "Fish",
+                  "Pork",
+                  "Plant-Based",
+                  "Turkey"
+                ]
+              },
+              {
+                "label": "Favorite Cut",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "snacks",
+            "name": "Snacks",
+            "image": "grocery-snacks",
+            "fields": [
+              {
+                "label": "Salty Snacks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sweet Snacks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "beverages",
+            "name": "Beverages",
+            "image": "grocery-beverages",
+            "fields": [
+              {
+                "label": "Favorite Drinks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sparkling or Still",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Still",
+                  "Sparkling",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Favorite Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "frozen",
+            "name": "Frozen",
+            "image": "grocery-frozen",
+            "fields": [
+              {
+                "label": "Favorite Frozen Meals",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "bread-bakery",
+            "name": "Bread & Bakery",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Bread Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Bakery Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "meals-female",
+    "label": "Meal Preferences",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 40,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "meals",
+        "name": "Meals",
+        "image": "meal-breakfast",
+        "products": [
+          {
+            "id": "breakfast",
+            "name": "Breakfast",
+            "image": "meal-breakfast",
+            "fields": [
+              {
+                "label": "Go-To Breakfast",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Coffee or Tea",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Coffee",
+                  "Tea",
+                  "Neither",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "brunch",
+            "name": "Brunch",
+            "image": "meal-breakfast",
+            "fields": [
+              {
+                "label": "Go-To Brunch Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "lunch",
+            "name": "Lunch",
+            "image": "meal-lunch",
+            "fields": [
+              {
+                "label": "Go-To Lunch",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Prefer",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Eat Out",
+                  "Cook at Home",
+                  "Takeout",
+                  "Meal Prep"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "dinner",
+            "name": "Dinner",
+            "image": "meal-dinner",
+            "fields": [
+              {
+                "label": "Go-To Dinner",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Prefer",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Eat Out",
+                  "Cook at Home",
+                  "Takeout"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "dessert",
+            "name": "Dessert",
+            "image": "meal-dessert",
+            "fields": [
+              {
+                "label": "Favorite Dessert",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sweet Tooth",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Low",
+                  "Medium",
+                  "High",
+                  "Extreme"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "late-night",
+            "name": "Late Night",
+            "image": "meal-dinner",
+            "fields": [
+              {
+                "label": "Go-To Late Night",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "snack-time",
+            "name": "Snacks",
+            "image": "grocery-snacks",
+            "fields": [
+              {
+                "label": "Go-To Snack",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sweet or Salty",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Sweet",
+                  "Salty",
+                  "Both",
+                  "Neither"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "comfort-food",
+            "name": "Comfort Food",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "All-Time Comfort Food",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Where to Get It",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "dietary-female",
+    "label": "Dietary",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 50,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "preferences",
+        "name": "Preferences",
+        "image": "dietary-restrictions",
+        "products": [
+          {
+            "id": "diet-type",
+            "name": "Diet Type",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Diet",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "No Restrictions",
+                  "Vegetarian",
+                  "Vegan",
+                  "Keto",
+                  "Paleo",
+                  "Gluten-Free",
+                  "Halal",
+                  "Kosher",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "allergies",
+            "name": "Allergies",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Allergies",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Severity",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Moderate",
+                  "Severe / EpiPen"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "intolerances",
+            "name": "Intolerances",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Intolerances",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Examples",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "foods-i-avoid",
+            "name": "Foods I Avoid",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Foods I Avoid",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Reason",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "preferred-cuisines",
+            "name": "Preferred Cuisines",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Top Cuisines",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cheat-meal",
+            "name": "Cheat Meal",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Go-To Cheat Meal",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Where to Get It",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "health-goals",
+            "name": "Health Goals",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Goal",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Lose Weight",
+                  "Gain Muscle",
+                  "Maintain",
+                  "Eat Cleaner",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "fast-food-female",
+    "label": "Fast Food",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 60,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "chains",
+        "name": "Chains",
+        "image": "food-burgers",
+        "products": [
+          {
+            "id": "burgers",
+            "name": "Burgers",
+            "image": "food-burgers",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "chicken",
+            "name": "Chicken",
+            "image": "food-chicken",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Fried",
+                  "Grilled",
+                  "Crispy",
+                  "Spicy"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "mexican-fast",
+            "name": "Mexican",
+            "image": "food-mexican",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "pizza",
+            "name": "Pizza",
+            "image": "food-pizza",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Crust",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Thin",
+                  "Thick",
+                  "Stuffed",
+                  "Cauliflower"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "asian-fast",
+            "name": "Asian Fast Food",
+            "image": "food-asian",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sandwiches",
+            "name": "Sandwiches",
+            "image": "food-burgers",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Bread",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "my-usual",
+            "name": "My Usual Order",
+            "image": "fast-food-order",
+            "fields": [
+              {
+                "label": "Restaurant",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Exact Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "cooking-female",
+    "label": "Cooking",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 70,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "style",
+        "name": "Style",
+        "image": "favorite-meals",
+        "products": [
+          {
+            "id": "skill-level",
+            "name": "Skill Level",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Skill Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Beginner",
+                  "Home Cook",
+                  "Intermediate",
+                  "Advanced",
+                  "Chef Level"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "favorite-meals",
+            "name": "Favorite Meals to Cook",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "All-Time Favorite",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Comfort Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "go-to-recipes",
+            "name": "Go-To Recipes",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Quick Weeknight Meal",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Impressive Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "kitchen-tools",
+            "name": "Kitchen Tools",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Favorite Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Appliance",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "meal-prep",
+            "name": "Meal Prep",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Do You Meal Prep",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Yes",
+                  "No",
+                  "Sometimes"
+                ]
+              },
+              {
+                "label": "Favorite Prep Meals",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cuisines-i-cook",
+            "name": "Cuisines I Cook",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Cuisines to Cook",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Want to Learn",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "comfort-dishes",
+            "name": "Comfort Dishes",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Guilty Pleasure Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Family Recipe",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "restaurants-nb",
+    "label": "Restaurants",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "non-binary"
+    ],
+    "sort_order": 10,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "cuisines",
+        "name": "Cuisines",
+        "image": "food-restaurants",
+        "products": [
+          {
+            "id": "asian",
+            "name": "Asian",
+            "image": "food-asian",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "italian",
+            "name": "Italian",
+            "image": "food-italian",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "mexican",
+            "name": "Mexican",
+            "image": "food-mexican",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "american",
+            "name": "American",
+            "image": "food-american",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "mediterranean",
+            "name": "Mediterranean",
+            "image": "food-mediterranean",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sushi",
+            "name": "Sushi",
+            "image": "food-sushi",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Roll",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Soy Sauce",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Regular",
+                  "Low Sodium",
+                  "None"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "indian",
+            "name": "Indian",
+            "image": "food-indian",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "thai",
+            "name": "Thai",
+            "image": "food-thai",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Spice Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Medium",
+                  "Hot",
+                  "Extra Hot"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "bbq",
+            "name": "BBQ",
+            "image": "food-bbq",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Meat",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sauce",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Sweet",
+                  "Spicy",
+                  "Vinegar",
+                  "Dry Rub",
+                  "None"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "greek",
+            "name": "Greek",
+            "image": "food-greek",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "middle-eastern",
+            "name": "Middle Eastern",
+            "image": "food-middle-eastern",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "french",
+            "name": "French",
+            "image": "food-french",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "coffee-nb",
+    "label": "Coffee",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "non-binary"
+    ],
+    "sort_order": 20,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "orders",
+        "name": "Orders",
+        "image": "coffee-hot",
+        "products": [
+          {
+            "id": "hot-coffee",
+            "name": "Hot Coffee",
+            "image": "coffee-hot",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim",
+                  "None"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Sugar",
+                  "Honey",
+                  "Stevia",
+                  "Splenda"
+                ]
+              },
+              {
+                "label": "Shots",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "iced-coffee",
+            "name": "Iced Coffee",
+            "image": "coffee-iced",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim",
+                  "None"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Sugar",
+                  "Honey",
+                  "Stevia",
+                  "Splenda"
+                ]
+              },
+              {
+                "label": "Shots",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "espresso",
+            "name": "Espresso",
+            "image": "coffee-espresso",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Shots",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cold-brew",
+            "name": "Cold Brew",
+            "image": "coffee-iced",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Black",
+                  "With Milk",
+                  "Sweetened",
+                  "Nitro"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Sugar",
+                  "Vanilla",
+                  "Caramel"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "latte",
+            "name": "Latte",
+            "image": "coffee-hot",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim"
+                ]
+              },
+              {
+                "label": "Flavor",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "tea",
+            "name": "Tea",
+            "image": "coffee-tea",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Green",
+                  "Black",
+                  "Herbal",
+                  "Chai",
+                  "Oolong",
+                  "White"
+                ]
+              },
+              {
+                "label": "Temperature",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Hot",
+                  "Iced"
+                ]
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Whole",
+                  "Oat",
+                  "Almond"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Honey",
+                  "Sugar",
+                  "Stevia"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "matcha",
+            "name": "Matcha",
+            "image": "coffee-tea",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Hot",
+                  "Iced",
+                  "Latte"
+                ]
+              },
+              {
+                "label": "Milk",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Oat",
+                  "Almond",
+                  "Whole",
+                  "Skim"
+                ]
+              },
+              {
+                "label": "Sweetener",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "None",
+                  "Honey",
+                  "Sugar",
+                  "Vanilla"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "juice-smoothie",
+            "name": "Juice / Smoothie",
+            "image": "coffee-order",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Juice",
+                  "Smoothie",
+                  "Protein Shake"
+                ]
+              },
+              {
+                "label": "Favorite Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "grocery-nb",
+    "label": "Grocery",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "non-binary"
+    ],
+    "sort_order": 30,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "categories",
+        "name": "Categories",
+        "image": "grocery-produce",
+        "products": [
+          {
+            "id": "produce",
+            "name": "Produce",
+            "image": "grocery-produce",
+            "fields": [
+              {
+                "label": "Favorite Fruits",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Vegetables",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "dairy",
+            "name": "Dairy",
+            "image": "grocery-dairy",
+            "fields": [
+              {
+                "label": "Milk Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Whole",
+                  "Oat",
+                  "Almond",
+                  "Skim",
+                  "2%"
+                ]
+              },
+              {
+                "label": "Favorite Cheese",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Yogurt",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "pantry",
+            "name": "Pantry",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Favorite Snacks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "proteins",
+            "name": "Proteins",
+            "image": "grocery-proteins",
+            "fields": [
+              {
+                "label": "Preferred Protein",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Chicken",
+                  "Beef",
+                  "Fish",
+                  "Pork",
+                  "Plant-Based",
+                  "Turkey"
+                ]
+              },
+              {
+                "label": "Favorite Cut",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "snacks",
+            "name": "Snacks",
+            "image": "grocery-snacks",
+            "fields": [
+              {
+                "label": "Salty Snacks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sweet Snacks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "beverages",
+            "name": "Beverages",
+            "image": "grocery-beverages",
+            "fields": [
+              {
+                "label": "Favorite Drinks",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sparkling or Still",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Still",
+                  "Sparkling",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Favorite Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "frozen",
+            "name": "Frozen",
+            "image": "grocery-frozen",
+            "fields": [
+              {
+                "label": "Favorite Frozen Meals",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "bread-bakery",
+            "name": "Bread & Bakery",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Bread Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Bakery Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "meals-nb",
+    "label": "Meal Preferences",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "non-binary"
+    ],
+    "sort_order": 40,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "meals",
+        "name": "Meals",
+        "image": "meal-breakfast",
+        "products": [
+          {
+            "id": "breakfast",
+            "name": "Breakfast",
+            "image": "meal-breakfast",
+            "fields": [
+              {
+                "label": "Go-To Breakfast",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Coffee or Tea",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Coffee",
+                  "Tea",
+                  "Neither",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "brunch",
+            "name": "Brunch",
+            "image": "meal-breakfast",
+            "fields": [
+              {
+                "label": "Go-To Brunch Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "lunch",
+            "name": "Lunch",
+            "image": "meal-lunch",
+            "fields": [
+              {
+                "label": "Go-To Lunch",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Prefer",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Eat Out",
+                  "Cook at Home",
+                  "Takeout",
+                  "Meal Prep"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "dinner",
+            "name": "Dinner",
+            "image": "meal-dinner",
+            "fields": [
+              {
+                "label": "Go-To Dinner",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Prefer",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Eat Out",
+                  "Cook at Home",
+                  "Takeout"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "dessert",
+            "name": "Dessert",
+            "image": "meal-dessert",
+            "fields": [
+              {
+                "label": "Favorite Dessert",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sweet Tooth",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Low",
+                  "Medium",
+                  "High",
+                  "Extreme"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "late-night",
+            "name": "Late Night",
+            "image": "meal-dinner",
+            "fields": [
+              {
+                "label": "Go-To Late Night",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "snack-time",
+            "name": "Snacks",
+            "image": "grocery-snacks",
+            "fields": [
+              {
+                "label": "Go-To Snack",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sweet or Salty",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Sweet",
+                  "Salty",
+                  "Both",
+                  "Neither"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "comfort-food",
+            "name": "Comfort Food",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "All-Time Comfort Food",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Where to Get It",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "dietary-nb",
+    "label": "Dietary",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "non-binary"
+    ],
+    "sort_order": 50,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "preferences",
+        "name": "Preferences",
+        "image": "dietary-restrictions",
+        "products": [
+          {
+            "id": "diet-type",
+            "name": "Diet Type",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Diet",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "No Restrictions",
+                  "Vegetarian",
+                  "Vegan",
+                  "Keto",
+                  "Paleo",
+                  "Gluten-Free",
+                  "Halal",
+                  "Kosher",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "allergies",
+            "name": "Allergies",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Allergies",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Severity",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Mild",
+                  "Moderate",
+                  "Severe / EpiPen"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "intolerances",
+            "name": "Intolerances",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Intolerances",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Examples",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "foods-i-avoid",
+            "name": "Foods I Avoid",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Foods I Avoid",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Reason",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "preferred-cuisines",
+            "name": "Preferred Cuisines",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Top Cuisines",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cheat-meal",
+            "name": "Cheat Meal",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Go-To Cheat Meal",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Where to Get It",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "health-goals",
+            "name": "Health Goals",
+            "image": "dietary-restrictions",
+            "fields": [
+              {
+                "label": "Goal",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Lose Weight",
+                  "Gain Muscle",
+                  "Maintain",
+                  "Eat Cleaner",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "fast-food-nb",
+    "label": "Fast Food",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "non-binary"
+    ],
+    "sort_order": 60,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "chains",
+        "name": "Chains",
+        "image": "food-burgers",
+        "products": [
+          {
+            "id": "burgers",
+            "name": "Burgers",
+            "image": "food-burgers",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "chicken",
+            "name": "Chicken",
+            "image": "food-chicken",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Fried",
+                  "Grilled",
+                  "Crispy",
+                  "Spicy"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "mexican-fast",
+            "name": "Mexican",
+            "image": "food-mexican",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "pizza",
+            "name": "Pizza",
+            "image": "food-pizza",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Crust",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Thin",
+                  "Thick",
+                  "Stuffed",
+                  "Cauliflower"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "asian-fast",
+            "name": "Asian Fast Food",
+            "image": "food-asian",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sandwiches",
+            "name": "Sandwiches",
+            "image": "food-burgers",
+            "fields": [
+              {
+                "label": "Favorite Chain",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Go-To Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Bread",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "my-usual",
+            "name": "My Usual Order",
+            "image": "fast-food-order",
+            "fields": [
+              {
+                "label": "Restaurant",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Exact Order",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Customizations",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "cooking-nb",
+    "label": "Cooking",
+    "section": "food-drink",
+    "page": "mygotwo",
+    "genders": [
+      "non-binary"
+    ],
+    "sort_order": 70,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "style",
+        "name": "Style",
+        "image": "favorite-meals",
+        "products": [
+          {
+            "id": "skill-level",
+            "name": "Skill Level",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Skill Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Beginner",
+                  "Home Cook",
+                  "Intermediate",
+                  "Advanced",
+                  "Chef Level"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "favorite-meals",
+            "name": "Favorite Meals to Cook",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "All-Time Favorite",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Comfort Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "go-to-recipes",
+            "name": "Go-To Recipes",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Quick Weeknight Meal",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Impressive Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "kitchen-tools",
+            "name": "Kitchen Tools",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Favorite Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Appliance",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "meal-prep",
+            "name": "Meal Prep",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Do You Meal Prep",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Yes",
+                  "No",
+                  "Sometimes"
+                ]
+              },
+              {
+                "label": "Favorite Prep Meals",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cuisines-i-cook",
+            "name": "Cuisines I Cook",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Cuisines to Cook",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Want to Learn",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "comfort-dishes",
+            "name": "Comfort Dishes",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Guilty Pleasure Dish",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Family Recipe",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
     "key": "everyday-male",
     "label": "Everyday",
     "section": "style-fit",
@@ -3580,5673 +9124,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "name": "Underwear",
         "image": "style-underwear",
         "products": []
-      }
-    ]
-  },
-  {
-    "key": "restaurants-male",
-    "label": "Restaurants",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "male"
-    ],
-    "sort_order": 10,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "asian",
-        "name": "Asian",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "italian",
-        "name": "Italian",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mexican",
-        "name": "Mexican",
-        "image": "food-mexican",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "american",
-        "name": "American",
-        "image": "food-burgers",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mediterranean",
-        "name": "Mediterranean",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sushi",
-        "name": "Sushi",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Roll",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Soy Sauce",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Regular",
-              "Low Sodium",
-              "None"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "indian",
-        "name": "Indian",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "thai",
-        "name": "Thai",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bbq",
-        "name": "BBQ",
-        "image": "food-chicken",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Meat",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Brisket",
-              "Ribs",
-              "Pulled Pork",
-              "Chicken",
-              "Sausage",
-              "All"
-            ]
-          },
-          {
-            "label": "Sauce",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Kansas City",
-              "Texas",
-              "Carolina",
-              "Memphis",
-              "No Sauce"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "greek",
-        "name": "Greek",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "middle-eastern",
-        "name": "Middle Eastern",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "french",
-        "name": "French",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "coffee-male",
-    "label": "Coffee",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "male"
-    ],
-    "sort_order": 20,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "hot-coffee",
-        "name": "Hot Coffee",
-        "image": "coffee-hot",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Skim",
-              "None",
-              "Black"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Sugar",
-              "Honey",
-              "Stevia",
-              "Simple Syrup"
-            ]
-          },
-          {
-            "label": "Shots",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Single",
-              "Double",
-              "Triple",
-              "Quad"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "iced-coffee",
-        "name": "Iced Coffee",
-        "image": "coffee-iced",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Skim",
-              "None",
-              "Black"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Sugar",
-              "Honey",
-              "Stevia",
-              "Vanilla",
-              "Caramel"
-            ]
-          },
-          {
-            "label": "Shots",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Single",
-              "Double",
-              "Triple",
-              "Quad"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "espresso",
-        "name": "Espresso",
-        "image": "coffee-espresso",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Espresso",
-              "Americano",
-              "Macchiato",
-              "Cortado",
-              "Ristretto"
-            ]
-          },
-          {
-            "label": "Shots",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Single",
-              "Double",
-              "Triple"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cold-brew",
-        "name": "Cold Brew",
-        "image": "coffee-iced",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Black",
-              "With Milk",
-              "Nitro",
-              "Float",
-              "Sweet Cream"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Simple Syrup",
-              "Vanilla",
-              "Caramel"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "latte",
-        "name": "Latte",
-        "image": "coffee-hot",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hot",
-              "Iced",
-              "Blended"
-            ]
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Skim"
-            ]
-          },
-          {
-            "label": "Flavor",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Vanilla",
-              "Caramel",
-              "Hazelnut",
-              "Lavender",
-              "Brown Sugar"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "tea",
-        "name": "Tea",
-        "image": "coffee-tea",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Green",
-              "Black",
-              "Oolong",
-              "Herbal",
-              "Chai",
-              "White",
-              "Rooibos"
-            ]
-          },
-          {
-            "label": "Temperature",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hot",
-              "Iced"
-            ]
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Honey",
-              "Sugar",
-              "Stevia"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "matcha",
-        "name": "Matcha",
-        "image": "coffee-tea",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hot",
-              "Iced",
-              "Latte",
-              "Ceremonial"
-            ]
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Oat",
-              "Almond",
-              "Whole",
-              "Soy"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Honey",
-              "Simple Syrup",
-              "Vanilla"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "juice-smoothie",
-        "name": "Juice / Smoothie",
-        "image": "coffee-order",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fresh Juice",
-              "Smoothie",
-              "Protein Shake",
-              "Green Juice",
-              "Acai Bowl"
-            ]
-          },
-          {
-            "label": "Favorite Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "grocery-male",
-    "label": "Grocery",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "male"
-    ],
-    "sort_order": 30,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "produce",
-        "name": "Produce",
-        "image": "grocery-produce",
-        "fields": [
-          {
-            "label": "Favorite Fruits",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Vegetables",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dairy",
-        "name": "Dairy",
-        "image": "grocery-dairy",
-        "fields": [
-          {
-            "label": "Milk Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "2%",
-              "Skim",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Coconut"
-            ]
-          },
-          {
-            "label": "Favorite Cheese",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Yogurt",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "pantry",
-        "name": "Pantry",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Favorite Snacks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Brands",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "proteins",
-        "name": "Proteins",
-        "image": "food-chicken",
-        "fields": [
-          {
-            "label": "Preferred Protein",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Chicken",
-              "Beef",
-              "Fish",
-              "Pork",
-              "Lamb",
-              "Turkey",
-              "Plant-Based",
-              "Eggs"
-            ]
-          },
-          {
-            "label": "Favorite Cut",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "snacks",
-        "name": "Snacks",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Salty Snacks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sweet Snacks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "beverages",
-        "name": "Beverages",
-        "image": "coffee-order",
-        "fields": [
-          {
-            "label": "Favorite Drinks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sparkling or Still",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Still Water",
-              "Sparkling",
-              "Both",
-              "Neither"
-            ]
-          },
-          {
-            "label": "Favorite Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "frozen",
-        "name": "Frozen",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Favorite Frozen Meals",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bread-bakery",
-        "name": "Bread & Bakery",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Bread Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "White",
-              "Wheat",
-              "Sourdough",
-              "Multigrain",
-              "Gluten-Free",
-              "Rye"
-            ]
-          },
-          {
-            "label": "Favorite Bakery Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "meals-male",
-    "label": "Meal Preferences",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "male"
-    ],
-    "sort_order": 40,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "breakfast",
-        "name": "Breakfast",
-        "image": "meal-breakfast",
-        "fields": [
-          {
-            "label": "Go-To Breakfast",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Coffee or Tea",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Coffee",
-              "Tea",
-              "Both",
-              "Neither"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "brunch",
-        "name": "Brunch",
-        "image": "meal-breakfast",
-        "fields": [
-          {
-            "label": "Go-To Brunch Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Coffee",
-              "Mimosa",
-              "Bloody Mary",
-              "Juice",
-              "Water"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "lunch",
-        "name": "Lunch",
-        "image": "meal-lunch",
-        "fields": [
-          {
-            "label": "Go-To Lunch",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Prefer",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Eat Out",
-              "Cook",
-              "Meal Prep",
-              "Order In",
-              "Varies"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dinner",
-        "name": "Dinner",
-        "image": "meal-dinner",
-        "fields": [
-          {
-            "label": "Go-To Dinner",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Prefer",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Eat Out",
-              "Cook",
-              "Order In",
-              "Varies"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dessert",
-        "name": "Dessert",
-        "image": "meal-dessert",
-        "fields": [
-          {
-            "label": "Favorite Dessert",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sweet Tooth",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Rarely",
-              "Sometimes",
-              "Often",
-              "Always"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "late-night",
-        "name": "Late Night",
-        "image": "meal-dinner",
-        "fields": [
-          {
-            "label": "Go-To Late Night",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "snack-time",
-        "name": "Snacks",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Go-To Snack",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sweet or Salty",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Sweet",
-              "Salty",
-              "Both",
-              "Depends"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comfort-food",
-        "name": "Comfort Food",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "All-Time Comfort Food",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Get It",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "dietary-male",
-    "label": "Dietary",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "male"
-    ],
-    "sort_order": 50,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "diet-type",
-        "name": "Diet Type",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Diet",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Vegan",
-              "Vegetarian",
-              "Pescatarian",
-              "Keto",
-              "Paleo",
-              "Gluten-Free",
-              "Halal",
-              "Kosher",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "allergies",
-        "name": "Allergies",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Allergies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Severity",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Moderate",
-              "Severe / EpiPen"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "intolerances",
-        "name": "Intolerances",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Intolerances",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Examples",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Lactose",
-              "Gluten",
-              "Fructose",
-              "Histamine",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "foods-i-avoid",
-        "name": "Foods I Avoid",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Foods I Avoid",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Reason",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Dislike",
-              "Religious",
-              "Ethical",
-              "Health",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "preferred-cuisines",
-        "name": "Preferred Cuisines",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Top Cuisines",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cheat-meal",
-        "name": "Cheat Meal",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Go-To Cheat Meal",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Get It",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "health-goals",
-        "name": "Health Goals",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Goal",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Weight Loss",
-              "Muscle Gain",
-              "Maintenance",
-              "Heart Health",
-              "Energy",
-              "General Wellness"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "fast-food-male",
-    "label": "Fast Food",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "male"
-    ],
-    "sort_order": 60,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "burgers",
-        "name": "Burgers",
-        "image": "food-burgers",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "chicken",
-        "name": "Chicken",
-        "image": "food-chicken",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fried",
-              "Grilled",
-              "Spicy",
-              "Tenders",
-              "Sandwich",
-              "Wings"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mexican-fast",
-        "name": "Mexican",
-        "image": "food-mexican",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "pizza",
-        "name": "Pizza",
-        "image": "food-pizza",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Crust",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Thin",
-              "Regular",
-              "Thick",
-              "Stuffed",
-              "Gluten-Free"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "asian-fast",
-        "name": "Asian Fast Food",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sandwiches",
-        "name": "Sandwiches",
-        "image": "food-burgers",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Bread",
-            "type": "select",
-            "value": "",
-            "options": [
-              "White",
-              "Wheat",
-              "Sourdough",
-              "Wrap",
-              "Sub",
-              "Croissant"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "my-usual",
-        "name": "My Usual Order",
-        "image": "fast-food-order",
-        "fields": [
-          {
-            "label": "Restaurant",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Exact Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "cooking-male",
-    "label": "Cooking",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "male"
-    ],
-    "sort_order": 70,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "skill-level",
-        "name": "Skill Level",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Intermediate",
-              "Advanced",
-              "Chef-Level"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "favorite-meals",
-        "name": "Favorite Meals to Cook",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "All-Time Favorite",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Comfort Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "go-to-recipes",
-        "name": "Go-To Recipes",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Quick Weeknight Meal",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Impressive Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "kitchen-tools",
-        "name": "Kitchen Tools",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Favorite Tool",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Appliance",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "meal-prep",
-        "name": "Meal Prep",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Do You Meal Prep",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Yes - Weekly",
-              "Yes - Sometimes",
-              "No",
-              "Want to Start"
-            ]
-          },
-          {
-            "label": "Favorite Prep Meals",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cuisines-i-cook",
-        "name": "Cuisines I Cook",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Cuisines to Cook",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Want to Learn",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comfort-dishes",
-        "name": "Comfort Dishes",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Guilty Pleasure Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Grandma Recipe",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "restaurants-female",
-    "label": "Restaurants",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "female"
-    ],
-    "sort_order": 10,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "asian",
-        "name": "Asian",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "italian",
-        "name": "Italian",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mexican",
-        "name": "Mexican",
-        "image": "food-mexican",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "american",
-        "name": "American",
-        "image": "food-burgers",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mediterranean",
-        "name": "Mediterranean",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sushi",
-        "name": "Sushi",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Roll",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Soy Sauce",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Regular",
-              "Low Sodium",
-              "None"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "indian",
-        "name": "Indian",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "thai",
-        "name": "Thai",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bbq",
-        "name": "BBQ",
-        "image": "food-chicken",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Meat",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Brisket",
-              "Ribs",
-              "Pulled Pork",
-              "Chicken",
-              "Sausage",
-              "All"
-            ]
-          },
-          {
-            "label": "Sauce",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Kansas City",
-              "Texas",
-              "Carolina",
-              "Memphis",
-              "No Sauce"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "greek",
-        "name": "Greek",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "middle-eastern",
-        "name": "Middle Eastern",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "french",
-        "name": "French",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "coffee-female",
-    "label": "Coffee",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "female"
-    ],
-    "sort_order": 20,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "hot-coffee",
-        "name": "Hot Coffee",
-        "image": "coffee-hot",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Skim",
-              "None",
-              "Black"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Sugar",
-              "Honey",
-              "Stevia",
-              "Simple Syrup",
-              "Vanilla",
-              "Caramel"
-            ]
-          },
-          {
-            "label": "Shots",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Single",
-              "Double",
-              "Triple",
-              "Quad"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "iced-coffee",
-        "name": "Iced Coffee",
-        "image": "coffee-iced",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Skim",
-              "None",
-              "Black"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Sugar",
-              "Honey",
-              "Stevia",
-              "Vanilla",
-              "Caramel"
-            ]
-          },
-          {
-            "label": "Shots",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Single",
-              "Double",
-              "Triple",
-              "Quad"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "espresso",
-        "name": "Espresso",
-        "image": "coffee-espresso",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Espresso",
-              "Americano",
-              "Macchiato",
-              "Cortado",
-              "Ristretto"
-            ]
-          },
-          {
-            "label": "Shots",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Single",
-              "Double",
-              "Triple"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cold-brew",
-        "name": "Cold Brew",
-        "image": "coffee-iced",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Black",
-              "With Milk",
-              "Nitro",
-              "Sweet Cream",
-              "Float"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Simple Syrup",
-              "Vanilla",
-              "Caramel"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "latte",
-        "name": "Latte",
-        "image": "coffee-hot",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hot",
-              "Iced",
-              "Blended"
-            ]
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Skim"
-            ]
-          },
-          {
-            "label": "Flavor",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Vanilla",
-              "Caramel",
-              "Hazelnut",
-              "Lavender",
-              "Brown Sugar",
-              "Pumpkin Spice"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "tea",
-        "name": "Tea",
-        "image": "coffee-tea",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Green",
-              "Black",
-              "Oolong",
-              "Herbal",
-              "Chai",
-              "White",
-              "Rooibos"
-            ]
-          },
-          {
-            "label": "Temperature",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hot",
-              "Iced"
-            ]
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Honey",
-              "Sugar",
-              "Stevia"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "matcha",
-        "name": "Matcha",
-        "image": "coffee-tea",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hot",
-              "Iced",
-              "Latte",
-              "Ceremonial"
-            ]
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Oat",
-              "Almond",
-              "Whole",
-              "Soy"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Honey",
-              "Simple Syrup",
-              "Vanilla"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "juice-smoothie",
-        "name": "Juice / Smoothie",
-        "image": "coffee-order",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fresh Juice",
-              "Smoothie",
-              "Protein Shake",
-              "Green Juice",
-              "Acai Bowl"
-            ]
-          },
-          {
-            "label": "Favorite Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "grocery-female",
-    "label": "Grocery",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "female"
-    ],
-    "sort_order": 30,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "produce",
-        "name": "Produce",
-        "image": "grocery-produce",
-        "fields": [
-          {
-            "label": "Favorite Fruits",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Vegetables",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dairy",
-        "name": "Dairy",
-        "image": "grocery-dairy",
-        "fields": [
-          {
-            "label": "Milk Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "2%",
-              "Skim",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Coconut"
-            ]
-          },
-          {
-            "label": "Favorite Cheese",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Yogurt",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "pantry",
-        "name": "Pantry",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Favorite Snacks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Brands",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "proteins",
-        "name": "Proteins",
-        "image": "food-chicken",
-        "fields": [
-          {
-            "label": "Preferred Protein",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Chicken",
-              "Beef",
-              "Fish",
-              "Pork",
-              "Lamb",
-              "Turkey",
-              "Plant-Based",
-              "Eggs"
-            ]
-          },
-          {
-            "label": "Favorite Cut",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "snacks",
-        "name": "Snacks",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Salty Snacks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sweet Snacks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "beverages",
-        "name": "Beverages",
-        "image": "coffee-order",
-        "fields": [
-          {
-            "label": "Favorite Drinks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sparkling or Still",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Still Water",
-              "Sparkling",
-              "Both",
-              "Neither"
-            ]
-          },
-          {
-            "label": "Favorite Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "frozen",
-        "name": "Frozen",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Favorite Frozen Meals",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bread-bakery",
-        "name": "Bread & Bakery",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Bread Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "White",
-              "Wheat",
-              "Sourdough",
-              "Multigrain",
-              "Gluten-Free",
-              "Rye"
-            ]
-          },
-          {
-            "label": "Favorite Bakery Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "meals-female",
-    "label": "Meal Preferences",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "female"
-    ],
-    "sort_order": 40,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "breakfast",
-        "name": "Breakfast",
-        "image": "meal-breakfast",
-        "fields": [
-          {
-            "label": "Go-To Breakfast",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Coffee or Tea",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Coffee",
-              "Tea",
-              "Both",
-              "Neither"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "brunch",
-        "name": "Brunch",
-        "image": "meal-breakfast",
-        "fields": [
-          {
-            "label": "Go-To Brunch Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Coffee",
-              "Mimosa",
-              "Bloody Mary",
-              "Juice",
-              "Water"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "lunch",
-        "name": "Lunch",
-        "image": "meal-lunch",
-        "fields": [
-          {
-            "label": "Go-To Lunch",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Prefer",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Eat Out",
-              "Cook",
-              "Meal Prep",
-              "Order In",
-              "Varies"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dinner",
-        "name": "Dinner",
-        "image": "meal-dinner",
-        "fields": [
-          {
-            "label": "Go-To Dinner",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Prefer",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Eat Out",
-              "Cook",
-              "Order In",
-              "Varies"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dessert",
-        "name": "Dessert",
-        "image": "meal-dessert",
-        "fields": [
-          {
-            "label": "Favorite Dessert",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sweet Tooth",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Rarely",
-              "Sometimes",
-              "Often",
-              "Always"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "late-night",
-        "name": "Late Night",
-        "image": "meal-dinner",
-        "fields": [
-          {
-            "label": "Go-To Late Night",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "snack-time",
-        "name": "Snacks",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Go-To Snack",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sweet or Salty",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Sweet",
-              "Salty",
-              "Both",
-              "Depends"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comfort-food",
-        "name": "Comfort Food",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "All-Time Comfort Food",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Get It",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "dietary-female",
-    "label": "Dietary",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "female"
-    ],
-    "sort_order": 50,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "diet-type",
-        "name": "Diet Type",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Diet",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Vegan",
-              "Vegetarian",
-              "Pescatarian",
-              "Keto",
-              "Paleo",
-              "Gluten-Free",
-              "Halal",
-              "Kosher",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "allergies",
-        "name": "Allergies",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Allergies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Severity",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Moderate",
-              "Severe / EpiPen"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "intolerances",
-        "name": "Intolerances",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Intolerances",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Examples",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Lactose",
-              "Gluten",
-              "Fructose",
-              "Histamine",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "foods-i-avoid",
-        "name": "Foods I Avoid",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Foods I Avoid",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Reason",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Dislike",
-              "Religious",
-              "Ethical",
-              "Health",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "preferred-cuisines",
-        "name": "Preferred Cuisines",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Top Cuisines",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cheat-meal",
-        "name": "Cheat Meal",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Go-To Cheat Meal",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Get It",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "health-goals",
-        "name": "Health Goals",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Goal",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Weight Loss",
-              "Muscle Gain",
-              "Maintenance",
-              "Heart Health",
-              "Energy",
-              "General Wellness"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "fast-food-female",
-    "label": "Fast Food",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "female"
-    ],
-    "sort_order": 60,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "burgers",
-        "name": "Burgers",
-        "image": "food-burgers",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "chicken",
-        "name": "Chicken",
-        "image": "food-chicken",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fried",
-              "Grilled",
-              "Spicy",
-              "Tenders",
-              "Sandwich",
-              "Wings"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mexican-fast",
-        "name": "Mexican",
-        "image": "food-mexican",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "pizza",
-        "name": "Pizza",
-        "image": "food-pizza",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Crust",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Thin",
-              "Regular",
-              "Thick",
-              "Stuffed",
-              "Gluten-Free"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "asian-fast",
-        "name": "Asian Fast Food",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sandwiches",
-        "name": "Sandwiches",
-        "image": "food-burgers",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Bread",
-            "type": "select",
-            "value": "",
-            "options": [
-              "White",
-              "Wheat",
-              "Sourdough",
-              "Wrap",
-              "Sub",
-              "Croissant"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "my-usual",
-        "name": "My Usual Order",
-        "image": "fast-food-order",
-        "fields": [
-          {
-            "label": "Restaurant",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Exact Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "cooking-female",
-    "label": "Cooking",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "female"
-    ],
-    "sort_order": 70,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "skill-level",
-        "name": "Skill Level",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Intermediate",
-              "Advanced",
-              "Chef-Level"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "favorite-meals",
-        "name": "Favorite Meals to Cook",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "All-Time Favorite",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Comfort Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "go-to-recipes",
-        "name": "Go-To Recipes",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Quick Weeknight Meal",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Impressive Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "kitchen-tools",
-        "name": "Kitchen Tools",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Favorite Tool",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Appliance",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "meal-prep",
-        "name": "Meal Prep",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Do You Meal Prep",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Yes - Weekly",
-              "Yes - Sometimes",
-              "No",
-              "Want to Start"
-            ]
-          },
-          {
-            "label": "Favorite Prep Meals",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cuisines-i-cook",
-        "name": "Cuisines I Cook",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Cuisines to Cook",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Want to Learn",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comfort-dishes",
-        "name": "Comfort Dishes",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Guilty Pleasure Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Family Recipe",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "restaurants-nb",
-    "label": "Restaurants",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "non-binary"
-    ],
-    "sort_order": 10,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "asian",
-        "name": "Asian",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "italian",
-        "name": "Italian",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mexican",
-        "name": "Mexican",
-        "image": "food-mexican",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "american",
-        "name": "American",
-        "image": "food-burgers",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mediterranean",
-        "name": "Mediterranean",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sushi",
-        "name": "Sushi",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Roll",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Soy Sauce",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Regular",
-              "Low Sodium",
-              "None"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "indian",
-        "name": "Indian",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "thai",
-        "name": "Thai",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Spice Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Medium",
-              "Hot",
-              "Extra Hot"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bbq",
-        "name": "BBQ",
-        "image": "food-chicken",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Meat",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Brisket",
-              "Ribs",
-              "Pulled Pork",
-              "Chicken",
-              "Sausage",
-              "All"
-            ]
-          },
-          {
-            "label": "Sauce",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Kansas City",
-              "Texas",
-              "Carolina",
-              "Memphis",
-              "No Sauce"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "greek",
-        "name": "Greek",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "middle-eastern",
-        "name": "Middle Eastern",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "french",
-        "name": "French",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "coffee-nb",
-    "label": "Coffee",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "non-binary"
-    ],
-    "sort_order": 20,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "hot-coffee",
-        "name": "Hot Coffee",
-        "image": "coffee-hot",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Skim",
-              "None",
-              "Black"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Sugar",
-              "Honey",
-              "Stevia",
-              "Simple Syrup"
-            ]
-          },
-          {
-            "label": "Shots",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Single",
-              "Double",
-              "Triple",
-              "Quad"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "iced-coffee",
-        "name": "Iced Coffee",
-        "image": "coffee-iced",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Skim",
-              "None",
-              "Black"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Sugar",
-              "Honey",
-              "Stevia",
-              "Vanilla",
-              "Caramel"
-            ]
-          },
-          {
-            "label": "Shots",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Single",
-              "Double",
-              "Triple",
-              "Quad"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "espresso",
-        "name": "Espresso",
-        "image": "coffee-espresso",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Espresso",
-              "Americano",
-              "Macchiato",
-              "Cortado",
-              "Ristretto"
-            ]
-          },
-          {
-            "label": "Shots",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Single",
-              "Double",
-              "Triple"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cold-brew",
-        "name": "Cold Brew",
-        "image": "coffee-iced",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Black",
-              "With Milk",
-              "Nitro",
-              "Sweet Cream",
-              "Float"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Simple Syrup",
-              "Vanilla",
-              "Caramel"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "latte",
-        "name": "Latte",
-        "image": "coffee-hot",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hot",
-              "Iced",
-              "Blended"
-            ]
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Skim"
-            ]
-          },
-          {
-            "label": "Flavor",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Vanilla",
-              "Caramel",
-              "Hazelnut",
-              "Lavender",
-              "Brown Sugar"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "tea",
-        "name": "Tea",
-        "image": "coffee-tea",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Green",
-              "Black",
-              "Oolong",
-              "Herbal",
-              "Chai",
-              "White",
-              "Rooibos"
-            ]
-          },
-          {
-            "label": "Temperature",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hot",
-              "Iced"
-            ]
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Whole",
-              "Oat",
-              "Almond",
-              "Soy"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Honey",
-              "Sugar",
-              "Stevia"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "matcha",
-        "name": "Matcha",
-        "image": "coffee-tea",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hot",
-              "Iced",
-              "Latte",
-              "Ceremonial"
-            ]
-          },
-          {
-            "label": "Milk",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Oat",
-              "Almond",
-              "Whole",
-              "Soy"
-            ]
-          },
-          {
-            "label": "Sweetener",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Honey",
-              "Simple Syrup",
-              "Vanilla"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "juice-smoothie",
-        "name": "Juice / Smoothie",
-        "image": "coffee-order",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fresh Juice",
-              "Smoothie",
-              "Protein Shake",
-              "Green Juice",
-              "Acai Bowl"
-            ]
-          },
-          {
-            "label": "Favorite Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "grocery-nb",
-    "label": "Grocery",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "non-binary"
-    ],
-    "sort_order": 30,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "produce",
-        "name": "Produce",
-        "image": "grocery-produce",
-        "fields": [
-          {
-            "label": "Favorite Fruits",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Vegetables",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dairy",
-        "name": "Dairy",
-        "image": "grocery-dairy",
-        "fields": [
-          {
-            "label": "Milk Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whole",
-              "2%",
-              "Skim",
-              "Oat",
-              "Almond",
-              "Soy",
-              "Coconut"
-            ]
-          },
-          {
-            "label": "Favorite Cheese",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Yogurt",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "pantry",
-        "name": "Pantry",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Favorite Snacks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Brands",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "proteins",
-        "name": "Proteins",
-        "image": "food-chicken",
-        "fields": [
-          {
-            "label": "Preferred Protein",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Chicken",
-              "Beef",
-              "Fish",
-              "Pork",
-              "Lamb",
-              "Turkey",
-              "Plant-Based",
-              "Eggs"
-            ]
-          },
-          {
-            "label": "Favorite Cut",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "snacks",
-        "name": "Snacks",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Salty Snacks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sweet Snacks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "beverages",
-        "name": "Beverages",
-        "image": "coffee-order",
-        "fields": [
-          {
-            "label": "Favorite Drinks",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sparkling or Still",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Still Water",
-              "Sparkling",
-              "Both",
-              "Neither"
-            ]
-          },
-          {
-            "label": "Favorite Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "frozen",
-        "name": "Frozen",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Favorite Frozen Meals",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bread-bakery",
-        "name": "Bread & Bakery",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Bread Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "White",
-              "Wheat",
-              "Sourdough",
-              "Multigrain",
-              "Gluten-Free",
-              "Rye"
-            ]
-          },
-          {
-            "label": "Favorite Bakery Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Store",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "meals-nb",
-    "label": "Meal Preferences",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "non-binary"
-    ],
-    "sort_order": 40,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "breakfast",
-        "name": "Breakfast",
-        "image": "meal-breakfast",
-        "fields": [
-          {
-            "label": "Go-To Breakfast",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Coffee or Tea",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Coffee",
-              "Tea",
-              "Both",
-              "Neither"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "brunch",
-        "name": "Brunch",
-        "image": "meal-breakfast",
-        "fields": [
-          {
-            "label": "Go-To Brunch Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Drink",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Coffee",
-              "Mimosa",
-              "Bloody Mary",
-              "Juice",
-              "Water"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "lunch",
-        "name": "Lunch",
-        "image": "meal-lunch",
-        "fields": [
-          {
-            "label": "Go-To Lunch",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Prefer",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Eat Out",
-              "Cook",
-              "Meal Prep",
-              "Order In",
-              "Varies"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dinner",
-        "name": "Dinner",
-        "image": "meal-dinner",
-        "fields": [
-          {
-            "label": "Go-To Dinner",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Prefer",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Eat Out",
-              "Cook",
-              "Order In",
-              "Varies"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dessert",
-        "name": "Dessert",
-        "image": "meal-dessert",
-        "fields": [
-          {
-            "label": "Favorite Dessert",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sweet Tooth",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Rarely",
-              "Sometimes",
-              "Often",
-              "Always"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "late-night",
-        "name": "Late Night",
-        "image": "meal-dinner",
-        "fields": [
-          {
-            "label": "Go-To Late Night",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "snack-time",
-        "name": "Snacks",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Go-To Snack",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sweet or Salty",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Sweet",
-              "Salty",
-              "Both",
-              "Depends"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comfort-food",
-        "name": "Comfort Food",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "All-Time Comfort Food",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Get It",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "dietary-nb",
-    "label": "Dietary",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "non-binary"
-    ],
-    "sort_order": 50,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "diet-type",
-        "name": "Diet Type",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Diet",
-            "type": "select",
-            "value": "",
-            "options": [
-              "None",
-              "Vegan",
-              "Vegetarian",
-              "Pescatarian",
-              "Keto",
-              "Paleo",
-              "Gluten-Free",
-              "Halal",
-              "Kosher",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "allergies",
-        "name": "Allergies",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Allergies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Severity",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Mild",
-              "Moderate",
-              "Severe / EpiPen"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "intolerances",
-        "name": "Intolerances",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Intolerances",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Examples",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Lactose",
-              "Gluten",
-              "Fructose",
-              "Histamine",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "foods-i-avoid",
-        "name": "Foods I Avoid",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Foods I Avoid",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Reason",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Dislike",
-              "Religious",
-              "Ethical",
-              "Health",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "preferred-cuisines",
-        "name": "Preferred Cuisines",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Top Cuisines",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cheat-meal",
-        "name": "Cheat Meal",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Go-To Cheat Meal",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Get It",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "health-goals",
-        "name": "Health Goals",
-        "image": "dietary-restrictions",
-        "fields": [
-          {
-            "label": "Goal",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Weight Loss",
-              "Muscle Gain",
-              "Maintenance",
-              "Heart Health",
-              "Energy",
-              "General Wellness"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "fast-food-nb",
-    "label": "Fast Food",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "non-binary"
-    ],
-    "sort_order": 60,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "burgers",
-        "name": "Burgers",
-        "image": "food-burgers",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "chicken",
-        "name": "Chicken",
-        "image": "food-chicken",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fried",
-              "Grilled",
-              "Spicy",
-              "Tenders",
-              "Sandwich",
-              "Wings"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mexican-fast",
-        "name": "Mexican",
-        "image": "food-mexican",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "pizza",
-        "name": "Pizza",
-        "image": "food-pizza",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Crust",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Thin",
-              "Regular",
-              "Thick",
-              "Stuffed",
-              "Gluten-Free"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "asian-fast",
-        "name": "Asian Fast Food",
-        "image": "food-asian",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sandwiches",
-        "name": "Sandwiches",
-        "image": "food-burgers",
-        "fields": [
-          {
-            "label": "Favorite Chain",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Go-To Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Bread",
-            "type": "select",
-            "value": "",
-            "options": [
-              "White",
-              "Wheat",
-              "Sourdough",
-              "Wrap",
-              "Sub",
-              "Croissant"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "my-usual",
-        "name": "My Usual Order",
-        "image": "fast-food-order",
-        "fields": [
-          {
-            "label": "Restaurant",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Exact Order",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Customizations",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "cooking-nb",
-    "label": "Cooking",
-    "section": "food-drink",
-    "page": "mygotwo",
-    "genders": [
-      "non-binary"
-    ],
-    "sort_order": 70,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "skill-level",
-        "name": "Skill Level",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Intermediate",
-              "Advanced",
-              "Chef-Level"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "favorite-meals",
-        "name": "Favorite Meals to Cook",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "All-Time Favorite",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Comfort Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "go-to-recipes",
-        "name": "Go-To Recipes",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Quick Weeknight Meal",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Impressive Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "kitchen-tools",
-        "name": "Kitchen Tools",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Favorite Tool",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Appliance",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "meal-prep",
-        "name": "Meal Prep",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Do You Meal Prep",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Yes - Weekly",
-              "Yes - Sometimes",
-              "No",
-              "Want to Start"
-            ]
-          },
-          {
-            "label": "Favorite Prep Meals",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cuisines-i-cook",
-        "name": "Cuisines I Cook",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Cuisines to Cook",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Want to Learn",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comfort-dishes",
-        "name": "Comfort Dishes",
-        "image": "favorite-meals",
-        "fields": [
-          {
-            "label": "Guilty Pleasure Dish",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Family Recipe",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
       }
     ]
   },
