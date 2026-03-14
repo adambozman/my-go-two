@@ -82,7 +82,7 @@ async function cropAndResize(imageUrl: string): Promise<Blob> {
 function ProductRow({ product }: { product: Product }) {
   const { toast } = useToast();
   const [query, setQuery] = useState(buildSearchQuery(product.name));
-  const [results, setResults] = useState<UnsplashPhoto[]>([]);
+  const [results, setResults] = useState<(UnsplashPhoto | PexelsPhoto)[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -90,43 +90,75 @@ function ProductRow({ product }: { product: Product }) {
   const [expanded, setExpanded] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+  const [source, setSource] = useState<ImageSource>("pexels");
   const currentOverride = getOverride(product.imageKey);
 
   const fetchPhotos = useCallback(async (pageNum = 1, append = false) => {
     append ? setLoadingMore(true) : setLoading(true);
     if (!append) setResults([]);
     try {
-      const params = new URLSearchParams({
-        query,
-        per_page: "15",
-        page: String(pageNum),
-        orientation: "landscape",
-      });
-      const res = await fetch(
-        `https://api.unsplash.com/search/photos?${params}`,
-        { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } },
-      );
-      if (!res.ok) throw new Error(`Unsplash ${res.status}`);
-      const data = await res.json();
-      const newResults = data.results ?? [];
+      let newResults: (UnsplashPhoto | PexelsPhoto)[] = [];
+
+      if (source === "unsplash") {
+        const params = new URLSearchParams({
+          query,
+          per_page: "15",
+          page: String(pageNum),
+          orientation: "landscape",
+        });
+        const res = await fetch(
+          `https://api.unsplash.com/search/photos?${params}`,
+          { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } },
+        );
+        if (!res.ok) throw new Error(`Unsplash ${res.status}`);
+        const data = await res.json();
+        newResults = data.results ?? [];
+      } else {
+        const params = new URLSearchParams({
+          query,
+          per_page: "15",
+          page: String(pageNum),
+          orientation: "landscape",
+        });
+        const res = await fetch(
+          `https://api.pexels.com/v1/search?${params}`,
+          { headers: { Authorization: PEXELS_API_KEY } },
+        );
+        if (!res.ok) throw new Error(`Pexels ${res.status}`);
+        const data = await res.json();
+        newResults = data.photos ?? [];
+      }
+
       setResults(prev => append ? [...prev, ...newResults] : newResults);
       setPage(pageNum);
       setHasMore(newResults.length === 15);
       setExpanded(true);
     } catch (e: any) {
-      toast({ title: "Unsplash error", description: e.message, variant: "destructive" });
+      toast({ title: `${source} error`, description: e.message, variant: "destructive" });
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [query, toast]);
+  }, [query, source, toast]);
+
+  const getPhotoUrl = (photo: UnsplashPhoto | PexelsPhoto, size: "thumb" | "full") => {
+    if ("urls" in photo) {
+      return size === "thumb" ? photo.urls.small : `${photo.urls.raw}&w=${TARGET_W * 2}&h=${TARGET_H * 2}&fit=crop&auto=format&q=90`;
+    }
+    return size === "thumb" ? photo.src.small : photo.src.large;
+  };
+
+  const getPhotoAlt = (photo: UnsplashPhoto | PexelsPhoto) =>
+    "urls" in photo ? photo.alt_description : photo.alt;
+
+  const getPhotoCredit = (photo: UnsplashPhoto | PexelsPhoto) =>
+    "urls" in photo ? photo.user.name : photo.photographer;
 
   const selectPhoto = useCallback(
-    async (photo: UnsplashPhoto) => {
+    async (photo: UnsplashPhoto | PexelsPhoto) => {
       setSaving(true);
       try {
-        // Use raw URL with fit/crop params for best quality
-        const downloadUrl = `${photo.urls.raw}&w=${TARGET_W * 2}&h=${TARGET_H * 2}&fit=crop&auto=format&q=90`;
+        const downloadUrl = getPhotoUrl(photo, "full");
         const blob = await cropAndResize(downloadUrl);
 
         const filename = `${product.imageKey}.jpg`;
