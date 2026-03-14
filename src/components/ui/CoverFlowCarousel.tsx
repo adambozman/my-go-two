@@ -113,20 +113,21 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                   >
                     <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
                     {isActive && (
-                      <div className="absolute bottom-3 left-3">
+                      <div className="absolute bottom-6 left-6">
                         <span
-                          className="px-3 py-1 font-semibold truncate block"
                           style={{
                             fontFamily: "'Cormorant Garamond', serif",
-                            fontSize: 15,
+                            fontSize: 30,
                             letterSpacing: "0.02em",
-                            color: "#fff",
+                            fontWeight: 600,
+                            color: "#d4543a",
                             background: "rgba(255,255,255,0.18)",
                             borderRadius: 999,
                             backdropFilter: "blur(12px)",
                             WebkitBackdropFilter: "blur(12px)",
                             border: "1px solid rgba(255,255,255,0.35)",
-                            maxWidth: 220,
+                            padding: "12px 28px",
+                            display: "inline-block",
                           }}
                         >
                           {item.label}
