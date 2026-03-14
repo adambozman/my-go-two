@@ -223,6 +223,14 @@ function ProductRow({ product }: { product: Product }) {
               className="text-sm"
               onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
             />
+            <Button
+              size="sm"
+              variant={source === "pexels" ? "default" : "outline"}
+              onClick={() => setSource(s => s === "pexels" ? "unsplash" : "pexels")}
+              className="text-xs shrink-0"
+            >
+              {source === "pexels" ? "Pexels" : "Unsplash"}
+            </Button>
             <Button size="sm" onClick={() => fetchPhotos(1, false)} disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               Fetch
@@ -241,8 +249,8 @@ function ProductRow({ product }: { product: Product }) {
                   style={{ aspectRatio: "1015/686" }}
                 >
                   <img
-                    src={photo.urls.small}
-                    alt={photo.alt_description ?? ""}
+                    src={getPhotoUrl(photo, "thumb")}
+                    alt={getPhotoAlt(photo) ?? ""}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
@@ -253,7 +261,7 @@ function ProductRow({ product }: { product: Product }) {
                     )}
                   </div>
                   <span className="absolute bottom-0.5 right-1 text-[9px] text-white/70">
-                    {photo.user.name}
+                    {getPhotoCredit(photo)}
                   </span>
                 </button>
               ))}
