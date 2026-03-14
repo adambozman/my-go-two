@@ -188,7 +188,8 @@ export default function PhotoDownloader() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--color-background-primary)", padding: "24px 32px", maxWidth: 900, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", background: "var(--color-background-primary)" }}>
+    <div style={{ padding: "24px 32px", maxWidth: 900, margin: "0 auto" }}>
       <h1 style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>Photo Downloader</h1>
       <p style={{ fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 16 }}>{products.length} slots · Male</p>
       <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
