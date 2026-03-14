@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { getTemplateImage, getProductImage } from "@/lib/imageResolver";
 import { getOverride, setOverride, clearOverride } from "@/lib/imageOverrides";
 import { supabase } from "@/integrations/supabase/client";
-import { addToBlocklist, isPathBlocked, initBlocklist } from "@/data/imageBlocklist";
+import { addToBlocklist, removeFromBlocklist, isPathBlocked, initBlocklist } from "@/data/imageBlocklist";
 import { toast } from "sonner";
 import type { Gender } from "@/lib/gender";
 
@@ -231,6 +231,7 @@ export default function PhotoGallery() {
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletedKeys, setDeletedKeys] = useState<Set<string>>(new Set());
+  const [deletedPaths, setDeletedPaths] = useState<Map<string, string>>(new Map()); // key -> path
   const [version, setVersion] = useState(0);
   const [pickerSlot, setPickerSlot] = useState<ImageSlot | null>(null);
 
@@ -300,9 +301,21 @@ export default function PhotoGallery() {
   const handleDelete = useCallback(async (path: string, key: string) => {
     await addToBlocklist(path);
     setDeletedKeys(prev => new Set([...prev, key]));
+    setDeletedPaths(prev => new Map([...prev, [key, path]]));
     setVersion(v => v + 1);
     toast.success(`Deleted: ${key}`);
   }, []);
+
+  const handlePhotosReplaced = useCallback(async () => {
+    // Remove all blocked paths for deleted keys so new downloads show
+    for (const [, path] of deletedPaths) {
+      await removeFromBlocklist(path);
+    }
+    setDeletedKeys(new Set());
+    setDeletedPaths(new Map());
+    setVersion(v => v + 1);
+    toast.success("Blocklist cleared — new photos will now show");
+  }, [deletedPaths]);
 
   const handleGetAll = useCallback(() => {
     if (deletedKeys.size === 0) { toast.info("No deleted photos yet."); return; }
@@ -335,10 +348,15 @@ export default function PhotoGallery() {
         </Button>
         <h1 className="text-lg font-semibold">Image Bank</h1>
         {deletedKeys.size > 0 && (
-          <Button onClick={handleGetAll} size="sm" className="gap-2 ml-2" style={{ background: "var(--swatch-teal)", color: "#fff" }}>
-            <RefreshCw className="w-4 h-4" />
-            Get Photos ({deletedKeys.size})
-          </Button>
+          <>
+            <Button onClick={handleGetAll} size="sm" className="gap-2 ml-2" style={{ background: "var(--swatch-teal)", color: "#fff" }}>
+              <RefreshCw className="w-4 h-4" />
+              Get Photos ({deletedKeys.size})
+            </Button>
+            <Button onClick={handlePhotosReplaced} size="sm" variant="outline" className="gap-2">
+              ✓ Photos Replaced
+            </Button>
+          </>
         )}
         <div className="flex gap-2 ml-auto">
           {MAIN_TABS.map(tab => (
