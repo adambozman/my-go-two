@@ -28,6 +28,7 @@ import Onboarding from "./pages/Onboarding";
 import PhotoGallery from "./pages/PhotoGallery";
 import Search from "./pages/Search";
 import CategorySync from "./pages/admin/CategorySync";
+import PhotoDownloader from "./pages/admin/PhotoDownloader";
 import CarouselTest from "./pages/CarouselTest";
 import { initBlocklist, isBlocklistReady } from "@/data/imageBlocklist";
 
@@ -76,6 +77,7 @@ const App = () => {
               </Route>
               <Route path="*" element={<NotFound />} />
               <Route path="/carousel-test" element={<CarouselTest />} />
+              <Route path="/admin/photo-downloader" element={<PhotoDownloader />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
