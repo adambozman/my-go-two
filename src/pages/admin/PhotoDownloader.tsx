@@ -213,6 +213,13 @@ function ProductRow({ product }: { product: Product }) {
                 </button>
               ))}
             </div>
+            {hasMore && (
+              <Button size="sm" variant="outline" className="w-full" onClick={() => fetchPhotos(page + 1, true)} disabled={loadingMore}>
+                {loadingMore ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Load More
+              </Button>
+            )}
+          </>
           )}
         </CardContent>
       )}
