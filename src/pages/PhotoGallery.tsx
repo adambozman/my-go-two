@@ -131,7 +131,7 @@ const SparePicker = ({ slot, onPick, onClose }: {
                 <button key={photo.path} onClick={() => onPick(photo.url)}
                   className="group relative rounded-xl overflow-hidden border-2 border-transparent hover:border-primary transition-all"
                   style={{ aspectRatio: "3/4" }}>
-                  <img src={photo.url} alt={photo.name} className="w-full h-full object-contain" />
+                  <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -145,7 +145,7 @@ const SparePicker = ({ slot, onPick, onClose }: {
                 <button key={photo.path} onClick={() => onPick(photo.url)}
                   className="group relative rounded-xl overflow-hidden border-2 border-transparent hover:border-primary transition-all"
                   style={{ aspectRatio: "3/4" }}>
-                  <img src={photo.url} alt={photo.name} className="w-full h-full object-contain" />
+                  <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -188,7 +188,7 @@ const ImageCard = ({
     <div className="flex flex-col gap-1">
       <div className="relative rounded-xl overflow-hidden bg-muted group cursor-pointer" style={{ aspectRatio: "3/4" }} onClick={onPick}>
         {showImage ? (
-          <img src={liveUrl} alt={slot.label} className="w-full h-full object-contain" />
+          <img src={liveUrl} alt={slot.label} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-muted/60">
             <ImagePlus className="w-6 h-6 text-muted-foreground opacity-50" />
@@ -438,7 +438,7 @@ export default function PhotoGallery() {
                     {photos.filter(p => !isPathBlocked(p.path)).map(photo => (
                       <div key={photo.path} className="flex flex-col gap-1 group">
                         <div className="relative rounded-xl overflow-hidden" style={{ aspectRatio: "3/4" }}>
-                          <img src={photo.url} alt={photo.name} className="w-full h-full object-contain" />
+                          <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                             <button
                               onClick={async () => {
