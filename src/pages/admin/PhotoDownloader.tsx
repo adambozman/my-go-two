@@ -8,8 +8,11 @@ import { Search, Download, Check, Loader2, ChevronDown, ChevronUp } from "lucide
 import { useToast } from "@/hooks/use-toast";
 
 const UNSPLASH_ACCESS_KEY = "qrGolQ1Yn5Fn3HCqDQfFWRcwjVBrLwVYLBKjaMyxJfY";
+const PEXELS_API_KEY = "psTr2m0l2jCIzAiXOVMN6aKVFSxfPvXDg4DonTB8TaHV06z2WxP3qgmZ";
 const TARGET_W = 1015;
 const TARGET_H = 686;
+
+type ImageSource = "unsplash" | "pexels";
 
 interface Product {
   id: string;
