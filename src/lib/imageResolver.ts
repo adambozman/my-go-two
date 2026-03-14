@@ -26,6 +26,11 @@ const maleModules = import.meta.glob<string>(
   { eager: true, import: "default" },
 );
 
+const nonBinaryModules = import.meta.glob<string>(
+  "/src/assets/templates/non-binary/*.jpg",
+  { eager: true, import: "default" },
+);
+
 function resolveKey(key: string, gender: Gender): string {
   const k = key.toLowerCase().trim().replace(/\s+/g, "-");
 
@@ -34,7 +39,6 @@ function resolveKey(key: string, gender: Gender): string {
   if (override) return override;
 
   if (gender === "male") {
-    // male/ first, then root fallback
     const m = maleModules[`/src/assets/templates/male/${k}.jpg`];
     if (m) return m;
     const r = rootModules[`/src/assets/templates/${k}.jpg`];
@@ -42,11 +46,15 @@ function resolveKey(key: string, gender: Gender): string {
     return "";
   }
 
-  // female and non-binary: root first, then male/
+  if (gender === "non-binary") {
+    const nb = nonBinaryModules[`/src/assets/templates/non-binary/${k}.jpg`];
+    if (nb) return nb;
+    return "";
+  }
+
+  // female: root folder
   const r = rootModules[`/src/assets/templates/${k}.jpg`];
   if (r) return r;
-  const m = maleModules[`/src/assets/templates/male/${k}.jpg`];
-  if (m) return m;
   return "";
 }
 
