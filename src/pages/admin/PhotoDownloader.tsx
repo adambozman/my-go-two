@@ -8,8 +8,11 @@ import { Search, Download, Check, Loader2, ChevronDown, ChevronUp } from "lucide
 import { useToast } from "@/hooks/use-toast";
 
 const UNSPLASH_ACCESS_KEY = "qrGolQ1Yn5Fn3HCqDQfFWRcwjVBrLwVYLBKjaMyxJfY";
+const PEXELS_API_KEY = "psTr2m0l2jCIzAiXOVMN6aKVFSxfPvXDg4DonTB8TaHV06z2WxP3qgmZ";
 const TARGET_W = 1015;
 const TARGET_H = 686;
+
+type ImageSource = "unsplash" | "pexels";
 
 interface Product {
   id: string;
@@ -26,6 +29,15 @@ interface UnsplashPhoto {
   width: number;
   height: number;
   user: { name: string };
+}
+
+interface PexelsPhoto {
+  id: number;
+  src: { small: string; large: string; original: string };
+  alt: string | null;
+  width: number;
+  height: number;
+  photographer: string;
 }
 
 function buildSearchQuery(productName: string): string {
@@ -70,7 +82,7 @@ async function cropAndResize(imageUrl: string): Promise<Blob> {
 function ProductRow({ product }: { product: Product }) {
   const { toast } = useToast();
   const [query, setQuery] = useState(buildSearchQuery(product.name));
-  const [results, setResults] = useState<UnsplashPhoto[]>([]);
+  const [results, setResults] = useState<(UnsplashPhoto | PexelsPhoto)[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -78,43 +90,75 @@ function ProductRow({ product }: { product: Product }) {
   const [expanded, setExpanded] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+  const [source, setSource] = useState<ImageSource>("pexels");
   const currentOverride = getOverride(product.imageKey);
 
   const fetchPhotos = useCallback(async (pageNum = 1, append = false) => {
     append ? setLoadingMore(true) : setLoading(true);
     if (!append) setResults([]);
     try {
-      const params = new URLSearchParams({
-        query,
-        per_page: "15",
-        page: String(pageNum),
-        orientation: "landscape",
-      });
-      const res = await fetch(
-        `https://api.unsplash.com/search/photos?${params}`,
-        { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } },
-      );
-      if (!res.ok) throw new Error(`Unsplash ${res.status}`);
-      const data = await res.json();
-      const newResults = data.results ?? [];
+      let newResults: (UnsplashPhoto | PexelsPhoto)[] = [];
+
+      if (source === "unsplash") {
+        const params = new URLSearchParams({
+          query,
+          per_page: "15",
+          page: String(pageNum),
+          orientation: "landscape",
+        });
+        const res = await fetch(
+          `https://api.unsplash.com/search/photos?${params}`,
+          { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } },
+        );
+        if (!res.ok) throw new Error(`Unsplash ${res.status}`);
+        const data = await res.json();
+        newResults = data.results ?? [];
+      } else {
+        const params = new URLSearchParams({
+          query,
+          per_page: "15",
+          page: String(pageNum),
+          orientation: "landscape",
+        });
+        const res = await fetch(
+          `https://api.pexels.com/v1/search?${params}`,
+          { headers: { Authorization: PEXELS_API_KEY } },
+        );
+        if (!res.ok) throw new Error(`Pexels ${res.status}`);
+        const data = await res.json();
+        newResults = data.photos ?? [];
+      }
+
       setResults(prev => append ? [...prev, ...newResults] : newResults);
       setPage(pageNum);
       setHasMore(newResults.length === 15);
       setExpanded(true);
     } catch (e: any) {
-      toast({ title: "Unsplash error", description: e.message, variant: "destructive" });
+      toast({ title: `${source} error`, description: e.message, variant: "destructive" });
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [query, toast]);
+  }, [query, source, toast]);
+
+  const getPhotoUrl = (photo: UnsplashPhoto | PexelsPhoto, size: "thumb" | "full") => {
+    if ("urls" in photo) {
+      return size === "thumb" ? photo.urls.small : `${photo.urls.raw}&w=${TARGET_W * 2}&h=${TARGET_H * 2}&fit=crop&auto=format&q=90`;
+    }
+    return size === "thumb" ? photo.src.small : photo.src.large;
+  };
+
+  const getPhotoAlt = (photo: UnsplashPhoto | PexelsPhoto) =>
+    "urls" in photo ? photo.alt_description : photo.alt;
+
+  const getPhotoCredit = (photo: UnsplashPhoto | PexelsPhoto) =>
+    "urls" in photo ? photo.user.name : photo.photographer;
 
   const selectPhoto = useCallback(
-    async (photo: UnsplashPhoto) => {
+    async (photo: UnsplashPhoto | PexelsPhoto) => {
       setSaving(true);
       try {
-        // Use raw URL with fit/crop params for best quality
-        const downloadUrl = `${photo.urls.raw}&w=${TARGET_W * 2}&h=${TARGET_H * 2}&fit=crop&auto=format&q=90`;
+        const downloadUrl = getPhotoUrl(photo, "full");
         const blob = await cropAndResize(downloadUrl);
 
         const filename = `${product.imageKey}.jpg`;
@@ -179,6 +223,14 @@ function ProductRow({ product }: { product: Product }) {
               className="text-sm"
               onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
             />
+            <Button
+              size="sm"
+              variant={source === "pexels" ? "default" : "outline"}
+              onClick={() => setSource(s => s === "pexels" ? "unsplash" : "pexels")}
+              className="text-xs shrink-0"
+            >
+              {source === "pexels" ? "Pexels" : "Unsplash"}
+            </Button>
             <Button size="sm" onClick={() => fetchPhotos(1, false)} disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               Fetch
@@ -197,8 +249,8 @@ function ProductRow({ product }: { product: Product }) {
                   style={{ aspectRatio: "1015/686" }}
                 >
                   <img
-                    src={photo.urls.small}
-                    alt={photo.alt_description ?? ""}
+                    src={getPhotoUrl(photo, "thumb")}
+                    alt={getPhotoAlt(photo) ?? ""}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
@@ -209,7 +261,7 @@ function ProductRow({ product }: { product: Product }) {
                     )}
                   </div>
                   <span className="absolute bottom-0.5 right-1 text-[9px] text-white/70">
-                    {photo.user.name}
+                    {getPhotoCredit(photo)}
                   </span>
                 </button>
               ))}
