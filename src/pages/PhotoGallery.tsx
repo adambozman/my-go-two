@@ -90,9 +90,9 @@ function urlToPath(url: string): string {
   return match ? "/" + match[0] : url;
 }
 
-function makeSlot(label: string, imageKey: string, gender: Gender, fallback = ""): ImageSlot {
+function makeSlot(label: string, imageKey: string, gender: Gender, fallback = "", section = "", categoryId = "", subcategoryId = ""): ImageSlot {
   const override = getOverride(imageKey);
-  const url = override || getProductImage(imageKey, gender, fallback);
+  const url = override || getProductImage(imageKey, gender, fallback, section, categoryId, subcategoryId);
   return { label, imageKey, resolvedUrl: url, resolvedPath: urlToPath(url) };
 }
 
@@ -293,17 +293,20 @@ export default function PhotoGallery() {
 
       for (const row of rows as any[]) {
         const rawSubs: any[] = row.subcategories || [];
+        const section = row.section;
+        const categoryId = row.key.replace(/-male$|-female$|-nb$/, "");
         const subcategories: Subcategory[] = rawSubs.map((sc: any) => {
-          const scSlot = makeSlot(sc.name, sc.image || sc.id, gender);
+          const scSlot = makeSlot(sc.name, sc.image || sc.id, gender, "", section, categoryId, sc.id);
           const rawProducts: any[] = sc.products || [];
           const products: ImageSlot[] = rawProducts.map((p: any) =>
-            makeSlot(p.name, p.image || p.id, gender, scSlot.resolvedUrl)
+            makeSlot(p.name, p.image || p.id, gender, "", section, categoryId, sc.id)
           );
           return { id: sc.id, name: sc.name, slot: scSlot, products };
         });
 
         const coverKey = rawSubs[0]?.image || rawSubs[0]?.id || "";
-        const coverUrl = coverKey ? getTemplateImage(coverKey, gender) : "";
+        const firstSubId = rawSubs[0]?.id || "";
+        const coverUrl = coverKey ? getTemplateImage(coverKey, gender, section, categoryId, firstSubId) : "";
 
         sectionMap[row.section] = sectionMap[row.section] || [];
         sectionMap[row.section].push({

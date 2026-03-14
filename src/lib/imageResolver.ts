@@ -1,88 +1,91 @@
 /**
  * Unified image resolver for the entire app.
  *
- * Asset banks:
- *   female  → /src/assets/templates/          (root, largest set)
- *   male    → /src/assets/templates/male/
- *   non-binary → no dedicated folder; falls back to root then male
+ * Path: /src/assets/{gender}/{section}/{categoryId}/{subcategoryId}/{imageKey}.jpg
  *
- * Fallback chain per gender:
- *   male:        male/ → root → (empty)
- *   female:      root  → male/ → (empty)
- *   non-binary:  root  → male/ → (empty)
+ * Rules:
+ * - Follow the exact path. If the file does not exist at that path, return "".
+ * - No cross-gender fallback. No cross-section fallback. Empty is empty.
+ * - User override (spare bank assignment) is checked first.
  */
 
 import { type Gender, normalizeGender } from "@/lib/gender";
 import { getOverride } from "@/lib/imageOverrides";
 
-// ── Eager glob of ALL template .jpg assets ──
-const rootModules = import.meta.glob<string>(
-  "/src/assets/templates/*.jpg",
+// Eager glob of ALL images in the new hierarchy
+const allModules = import.meta.glob<string>(
+  "/src/assets/{male,female,non-binary}/**/*.jpg",
   { eager: true, import: "default" },
 );
 
-const maleModules = import.meta.glob<string>(
-  "/src/assets/templates/male/*.jpg",
-  { eager: true, import: "default" },
-);
-
-const nonBinaryModules = import.meta.glob<string>(
-  "/src/assets/templates/non-binary/*.jpg",
-  { eager: true, import: "default" },
-);
-
-function resolveKey(key: string, gender: Gender): string {
-  const k = key.toLowerCase().trim().replace(/\s+/g, "-");
+function resolveKey(
+  imageKey: string,
+  gender: Gender,
+  section: string,
+  categoryId: string,
+  subcategoryId: string,
+): string {
+  const k = imageKey.toLowerCase().trim().replace(/\s+/g, "-");
 
   // Check user override first (spare bank assignment)
   const override = getOverride(k);
   if (override) return override;
 
-  if (gender === "male") {
-    const m = maleModules[`/src/assets/templates/male/${k}.jpg`];
-    if (m) return m;
-    const r = rootModules[`/src/assets/templates/${k}.jpg`];
-    if (r) return r;
-    return "";
-  }
+  const genderFolder = gender === "non-binary" ? "non-binary" : gender;
+  const path = `/src/assets/${genderFolder}/${section}/${categoryId}/${subcategoryId}/${k}.jpg`;
 
-  if (gender === "non-binary") {
-    const nb = nonBinaryModules[`/src/assets/templates/non-binary/${k}.jpg`];
-    if (nb) return nb;
-    return "";
-  }
-
-  // female: root folder
-  const r = rootModules[`/src/assets/templates/${k}.jpg`];
-  if (r) return r;
-  return "";
+  return allModules[path] ?? "";
 }
 
 // ── Public API ──
 
-export function getTemplateImage(key: string, gender: Gender | string): string {
+export function getTemplateImage(
+  imageKey: string,
+  gender: Gender | string,
+  section = "",
+  categoryId = "",
+  subcategoryId = "",
+): string {
   const g = normalizeGender(gender as string);
-  return resolveKey(key, g);
+  return resolveKey(imageKey, g, section, categoryId, subcategoryId);
 }
 
 export function getStyleImage(styleId: string, gender: Gender | string): string {
-  const g = normalizeGender(gender as string);
-  return resolveKey(styleId, g);
+  // Style images don't follow the hierarchy — not used in new arch
+  return "";
 }
 
-export function getCategoryImage(categoryId: string, gender: Gender | string): string {
+export function getCategoryImage(
+  categoryId: string,
+  gender: Gender | string,
+  section = "",
+  subcategoryId = "",
+): string {
   const g = normalizeGender(gender as string);
-  return resolveKey(categoryId, g);
+  return resolveKey(categoryId, g, section, categoryId, subcategoryId);
 }
 
-export function getProductImage(productId: string, gender: Gender | string, fallback?: string): string {
+export function getProductImage(
+  productId: string,
+  gender: Gender | string,
+  fallback?: string,
+  section = "",
+  categoryId = "",
+  subcategoryId = "",
+): string {
   const g = normalizeGender(gender as string);
-  return resolveKey(productId, g) || fallback || "";
+  return resolveKey(productId, g, section, categoryId, subcategoryId) || fallback || "";
 }
 
-// Async shim — kept for API compatibility, resolves synchronously now
-export async function getImage(categoryKey: string, gender: Gender): Promise<string> {
-  return resolveKey(categoryKey, gender);
+// Async shim — kept for API compatibility
+export async function getImage(
+  imageKey: string,
+  gender: Gender,
+  section = "",
+  categoryId = "",
+  subcategoryId = "",
+): Promise<string> {
+  return resolveKey(imageKey, gender, section, categoryId, subcategoryId);
 }
 
 export async function preloadImages(
@@ -91,7 +94,7 @@ export async function preloadImages(
 ): Promise<Map<string, string>> {
   const results = new Map<string, string>();
   for (const key of categoryKeys) {
-    results.set(key, resolveKey(key, gender));
+    results.set(key, "");
   }
   return results;
 }
