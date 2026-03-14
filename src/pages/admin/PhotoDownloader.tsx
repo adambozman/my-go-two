@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { setOverride, getOverride } from "@/lib/imageOverrides";
+import { setOverride, getOverride, clearOverride } from "@/lib/imageOverrides";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Loader2, Check } from "lucide-react";
+import { Search, Loader2, Check, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const UNSPLASH_KEY = "qrGolQ1Yn5Fn3HCqDQfFWRcwjVBrLwVYLBKjaMyxJfY";
