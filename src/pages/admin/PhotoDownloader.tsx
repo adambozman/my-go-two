@@ -31,6 +31,15 @@ interface UnsplashPhoto {
   user: { name: string };
 }
 
+interface PexelsPhoto {
+  id: number;
+  src: { small: string; large: string; original: string };
+  alt: string | null;
+  width: number;
+  height: number;
+  photographer: string;
+}
+
 function buildSearchQuery(productName: string): string {
   return productName.replace(/-/g, " ");
 }
