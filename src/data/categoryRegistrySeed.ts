@@ -30,38 +30,1080 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "tops",
         "name": "Tops",
-        "image": "style-tops",
-        "products": []
+        "image": "everyday-tops",
+        "products": [
+          {
+            "id": "classic-crew",
+            "name": "Classic Crew-Neck",
+            "image": "everyday-classic-crew",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "boxy-tee",
+            "name": "Oversized Boxy Tee",
+            "image": "everyday-boxy-tee",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "henley",
+            "name": "Henley",
+            "image": "everyday-henley",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Sleeve",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Short",
+                  "Long"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "textured-tee",
+            "name": "Textured T-Shirt",
+            "image": "everyday-textured-tee",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Texture",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Waffle-Knit",
+                  "Popcorn",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "tank-top",
+            "name": "Tank Top",
+            "image": "everyday-tank-top",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "pocket-tee",
+            "name": "Pocket Tee",
+            "image": "everyday-pocket-tee",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "bottoms",
         "name": "Bottoms",
-        "image": "style-bottoms",
-        "products": []
+        "image": "everyday-bottoms",
+        "products": [
+          {
+            "id": "relaxed-chinos",
+            "name": "Relaxed-Fit Chinos",
+            "image": "everyday-relaxed-chinos",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "straight-denim",
+            "name": "Straight-Leg Denim",
+            "image": "everyday-straight-denim",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Wash",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Medium",
+                  "Vintage",
+                  "Raw",
+                  "Light",
+                  "Black"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "linen-trousers",
+            "name": "Linen Trousers",
+            "image": "everyday-linen-trousers",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "corduroy-pants",
+            "name": "Corduroy Pants",
+            "image": "everyday-corduroy-pants",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cargo-pants",
+            "name": "Refined Cargo Pants",
+            "image": "everyday-cargo-pants",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "knit-trousers",
+            "name": "Knit Drawstring Trousers",
+            "image": "everyday-knit-trousers",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "footwear",
         "name": "Footwear",
-        "image": "style-footwear",
-        "products": []
+        "image": "everyday-footwear",
+        "products": [
+          {
+            "id": "leather-sneaker",
+            "name": "Minimalist Leather Sneaker",
+            "image": "everyday-leather-sneaker",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Width",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Narrow",
+                  "Regular",
+                  "Wide"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "suede-chukka",
+            "name": "Suede Chukka Boot",
+            "image": "everyday-suede-chukka",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "retro-runner",
+            "name": "Retro Slim Runner",
+            "image": "everyday-retro-runner",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "canvas-slip-on",
+            "name": "Canvas Slip-On",
+            "image": "everyday-canvas-slip-on",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "artisan-boot",
+            "name": "Artisan Low Boot",
+            "image": "everyday-artisan-boot",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "casual-chelsea",
+            "name": "Casual Chelsea Boot",
+            "image": "everyday-casual-chelsea",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "outerwear",
         "name": "Outerwear",
-        "image": "style-outerwear",
-        "products": []
+        "image": "everyday-outerwear",
+        "products": [
+          {
+            "id": "barn-coat",
+            "name": "Barn Coat",
+            "image": "everyday-barn-coat",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "harrington",
+            "name": "Harrington Jacket",
+            "image": "everyday-harrington",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "denim-trucker",
+            "name": "Denim Trucker Jacket",
+            "image": "everyday-denim-trucker",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Wash",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Vintage",
+                  "Indigo",
+                  "Washed",
+                  "Raw"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "quilted-liner",
+            "name": "Quilted Liner Jacket",
+            "image": "everyday-quilted-liner",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sherpa-fleece",
+            "name": "Sherpa-Lined Fleece",
+            "image": "everyday-sherpa-fleece",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "bomber",
+            "name": "Bomber Jacket",
+            "image": "everyday-bomber",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Nylon",
+                  "Twill",
+                  "Satin",
+                  "Leather"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "accessories",
         "name": "Accessories",
-        "image": "style-accessories",
-        "products": []
+        "image": "everyday-accessories",
+        "products": [
+          {
+            "id": "leather-watch",
+            "name": "Leather Strap Watch",
+            "image": "everyday-leather-watch",
+            "fields": [
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "slim-wallet",
+            "name": "Minimalist Slim Wallet",
+            "image": "everyday-slim-wallet",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Leather",
+                  "Metal",
+                  "Carbon Fiber"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "wayfarer-shades",
+            "name": "Classic Wayfarer Sunglasses",
+            "image": "everyday-wayfarer-shades",
+            "fields": [
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "beaded-bracelet",
+            "name": "Beaded or Leather Bracelet",
+            "image": "everyday-beaded-bracelet",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Beaded",
+                  "Leather",
+                  "Braided Cord",
+                  "Lava Rock"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "canvas-weekender",
+            "name": "Canvas Weekender Bag",
+            "image": "everyday-canvas-weekender",
+            "fields": [
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "casual-belt",
+            "name": "Casual Leather Belt",
+            "image": "everyday-casual-belt",
+            "fields": [
+              {
+                "label": "Waist Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "underwear",
         "name": "Underwear",
-        "image": "style-underwear",
-        "products": []
+        "image": "everyday-underwear",
+        "products": [
+          {
+            "id": "cotton-boxer-brief",
+            "name": "Cotton-Stretch Boxer Brief",
+            "image": "everyday-cotton-boxer-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "micromodal-trunk",
+            "name": "MicroModal Trunk",
+            "image": "everyday-micromodal-trunk",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "woven-boxer",
+            "name": "Woven Boxer Shorts",
+            "image": "everyday-woven-boxer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "low-rise-brief",
+            "name": "Low-Rise Brief",
+            "image": "everyday-low-rise-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "seamless-boxer-brief",
+            "name": "Seamless Boxer Brief",
+            "image": "everyday-seamless-boxer-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "bamboo-trunk",
+            "name": "Bamboo Viscose Trunk",
+            "image": "everyday-bamboo-trunk",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -80,38 +1122,1105 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "tops",
         "name": "Tops",
-        "image": "style-tops",
-        "products": []
+        "image": "dress-tops",
+        "products": [
+          {
+            "id": "ocbd",
+            "name": "Oxford Button-Down (OCBD)",
+            "image": "dress-ocbd",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Fit",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Slim",
+                  "Regular",
+                  "Relaxed"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "linen-shirt",
+            "name": "Linen Shirt",
+            "image": "dress-linen-shirt",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cuban-collar",
+            "name": "Cuban Collar Shirt",
+            "image": "dress-cuban-collar",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "poplin-dress-shirt",
+            "name": "Poplin Dress Shirt",
+            "image": "dress-poplin-dress-shirt",
+            "fields": [
+              {
+                "label": "Neck Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sleeve Length",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Fit",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Slim",
+                  "Regular",
+                  "Relaxed"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "merino-sweater",
+            "name": "Merino Wool Sweater",
+            "image": "dress-merino-sweater",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Crewneck",
+                  "V-Neck",
+                  "Turtleneck"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "knitted-polo",
+            "name": "Knitted Polo",
+            "image": "dress-knitted-polo",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "bottoms",
         "name": "Bottoms",
-        "image": "style-bottoms",
-        "products": []
+        "image": "dress-bottoms",
+        "products": [
+          {
+            "id": "wool-trousers",
+            "name": "Tailored Wool Trousers",
+            "image": "dress-wool-trousers",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "smart-chinos",
+            "name": "Creased Smart Chinos",
+            "image": "dress-smart-chinos",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "flannel-trousers",
+            "name": "Flannel Trousers",
+            "image": "dress-flannel-trousers",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "pleated-pants",
+            "name": "Pleated Dress Pants",
+            "image": "dress-pleated-pants",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "linen-wool-trousers",
+            "name": "Linen-Wool Blend Trousers",
+            "image": "dress-linen-wool-trousers",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "velvet-trousers",
+            "name": "Velvet Evening Trousers",
+            "image": "dress-velvet-trousers",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "footwear",
         "name": "Footwear",
-        "image": "style-footwear",
-        "products": []
+        "image": "dress-footwear",
+        "products": [
+          {
+            "id": "oxford-wingtip",
+            "name": "Oxford Wingtip",
+            "image": "dress-oxford-wingtip",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Width",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Narrow",
+                  "Regular",
+                  "Wide"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "penny-loafer",
+            "name": "Penny Loafer",
+            "image": "dress-penny-loafer",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Leather",
+                  "Suede"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "plain-toe-derby",
+            "name": "Plain-Toe Derby",
+            "image": "dress-plain-toe-derby",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "monk-strap",
+            "name": "Monk Strap Shoe",
+            "image": "dress-monk-strap",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Single Monk",
+                  "Double Monk"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "hybrid-dress-sneaker",
+            "name": "Hybrid Dress-Sneaker",
+            "image": "dress-hybrid-dress-sneaker",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "polished-chelsea",
+            "name": "Polished Chelsea Boot",
+            "image": "dress-polished-chelsea",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "outerwear",
         "name": "Outerwear",
-        "image": "style-outerwear",
-        "products": []
+        "image": "dress-outerwear",
+        "products": [
+          {
+            "id": "wool-overcoat",
+            "name": "Wool Overcoat",
+            "image": "dress-wool-overcoat",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Color",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Camel",
+                  "Charcoal",
+                  "Navy",
+                  "Black",
+                  "Grey"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "trench-coat",
+            "name": "Trench Coat",
+            "image": "dress-trench-coat",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "mac-coat",
+            "name": "Mac Coat",
+            "image": "dress-mac-coat",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "peacoat",
+            "name": "Peacoat",
+            "image": "dress-peacoat",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "chesterfield",
+            "name": "Chesterfield Coat",
+            "image": "dress-chesterfield",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "suede-racer",
+            "name": "Suede Racer Jacket",
+            "image": "dress-suede-racer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "accessories",
         "name": "Accessories",
-        "image": "style-accessories",
-        "products": []
+        "image": "dress-accessories",
+        "products": [
+          {
+            "id": "dress-watch",
+            "name": "Dress Watch",
+            "image": "dress-watch",
+            "fields": [
+              {
+                "label": "Strap",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Metal Link",
+                  "Black Leather",
+                  "Brown Leather"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "silk-tie",
+            "name": "Silk or Knit Tie",
+            "image": "dress-silk-tie",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Silk",
+                  "Knit",
+                  "Grenadine"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "pocket-square",
+            "name": "White Linen Pocket Square",
+            "image": "dress-pocket-square",
+            "fields": [
+              {
+                "label": "Fold Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Flat",
+                  "Puff",
+                  "One-Point",
+                  "TV Fold"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cufflinks",
+            "name": "Polished Cufflinks",
+            "image": "dress-cufflinks",
+            "fields": [
+              {
+                "label": "Metal",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Silver",
+                  "Gold",
+                  "Onyx",
+                  "Rose Gold"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "dress-belt",
+            "name": "Slim Dress Belt",
+            "image": "dress-belt",
+            "fields": [
+              {
+                "label": "Waist Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "tie-bar",
+            "name": "Tie Bar",
+            "image": "dress-tie-bar",
+            "fields": [
+              {
+                "label": "Metal",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Silver",
+                  "Gold",
+                  "Matte Black"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "underwear",
         "name": "Underwear",
-        "image": "style-underwear",
-        "products": []
+        "image": "dress-underwear",
+        "products": [
+          {
+            "id": "luxury-modal-brief",
+            "name": "Luxury MicroModal Boxer Brief",
+            "image": "dress-luxury-modal-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "contour-trunk",
+            "name": "Contour-Pouch Trunk",
+            "image": "dress-contour-trunk",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "high-rise-brief",
+            "name": "High-Rise Dress Brief",
+            "image": "dress-high-rise-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "silver-boxer-brief",
+            "name": "Silver-Infused Boxer Brief",
+            "image": "dress-silver-boxer-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "air-mesh-brief",
+            "name": "Ultra-Thin Air-Mesh Brief",
+            "image": "dress-air-mesh-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "tapered-knit-boxer",
+            "name": "Tapered Knit Boxer",
+            "image": "dress-tapered-knit-boxer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -130,38 +2239,1047 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       {
         "id": "tops",
         "name": "Tops",
-        "image": "style-tops",
-        "products": []
+        "image": "athletic-tops",
+        "products": [
+          {
+            "id": "performance-tee",
+            "name": "Performance Tee",
+            "image": "athletic-performance-tee",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "pullover-hoodie",
+            "name": "Pullover Hoodie",
+            "image": "athletic-pullover-hoodie",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "crewneck-sweatshirt",
+            "name": "Crewneck Sweatshirt",
+            "image": "athletic-crewneck-sweatshirt",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "quarter-zip",
+            "name": "Quarter-Zip Pullover",
+            "image": "athletic-quarter-zip",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sleeveless-top",
+            "name": "Sleeveless Training Top",
+            "image": "athletic-sleeveless-top",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "compression-layer",
+            "name": "Compression Base Layer",
+            "image": "athletic-compression-layer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "bottoms",
         "name": "Bottoms",
-        "image": "style-bottoms",
-        "products": []
+        "image": "athletic-bottoms",
+        "products": [
+          {
+            "id": "performance-joggers",
+            "name": "Performance Joggers",
+            "image": "athletic-performance-joggers",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "running-shorts",
+            "name": "7\" Running Shorts",
+            "image": "athletic-running-shorts",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "track-pants",
+            "name": "Tech-Fleece Track Pants",
+            "image": "athletic-track-pants",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "training-pants",
+            "name": "Stretch Woven Training Pants",
+            "image": "athletic-training-pants",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "fleece-shorts",
+            "name": "Heavyweight Fleece Shorts",
+            "image": "athletic-fleece-shorts",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "hybrid-shorts",
+            "name": "Hybrid Shorts",
+            "image": "athletic-hybrid-shorts",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "footwear",
         "name": "Footwear",
-        "image": "style-footwear",
-        "products": []
+        "image": "athletic-footwear",
+        "products": [
+          {
+            "id": "trail-runner",
+            "name": "Technical Trail Runner",
+            "image": "athletic-trail-runner",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Width",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Narrow",
+                  "Regular",
+                  "Wide"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "training-shoe",
+            "name": "Performance Training Shoe",
+            "image": "athletic-training-shoe",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "tech-runner",
+            "name": "Modern Tech-Runner",
+            "image": "athletic-tech-runner",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "slip-in",
+            "name": "Hands-Free Slip-In",
+            "image": "athletic-slip-in",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "tech-utility-boot",
+            "name": "Tech-Utility Boot",
+            "image": "athletic-tech-utility-boot",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "road-runner",
+            "name": "High-Performance Road Runner",
+            "image": "athletic-road-runner",
+            "fields": [
+              {
+                "label": "US Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Arch Support",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Neutral",
+                  "Stability",
+                  "Motion Control"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "outerwear",
         "name": "Outerwear",
-        "image": "style-outerwear",
-        "products": []
+        "image": "athletic-outerwear",
+        "products": [
+          {
+            "id": "tech-shell",
+            "name": "Technical Shell",
+            "image": "athletic-tech-shell",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "down-puffer",
+            "name": "Down Puffer Jacket",
+            "image": "athletic-down-puffer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "softshell-windbreaker",
+            "name": "Softshell Windbreaker",
+            "image": "athletic-softshell-windbreaker",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "insulated-parka",
+            "name": "Insulated Parka",
+            "image": "athletic-insulated-parka",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "rain-anorak",
+            "name": "Packable Rain Anorak",
+            "image": "athletic-rain-anorak",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "hybrid-trekking",
+            "name": "Hybrid Trekking Jacket",
+            "image": "athletic-hybrid-trekking",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "accessories",
         "name": "Accessories",
-        "image": "style-accessories",
-        "products": []
+        "image": "athletic-accessories",
+        "products": [
+          {
+            "id": "smartwatch",
+            "name": "Smartwatch / Fitness Tracker",
+            "image": "athletic-smartwatch",
+            "fields": [
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "performance-cap",
+            "name": "Performance Baseball Cap",
+            "image": "athletic-performance-cap",
+            "fields": [
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sport-sunglasses",
+            "name": "Polarized Sport Sunglasses",
+            "image": "athletic-sport-sunglasses",
+            "fields": [
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "gym-bag",
+            "name": "Technical Gym Bag",
+            "image": "athletic-gym-bag",
+            "fields": [
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "water-bottle",
+            "name": "Insulated Water Bottle",
+            "image": "athletic-water-bottle",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "16oz",
+                  "24oz",
+                  "32oz",
+                  "40oz"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sweatband",
+            "name": "Smart Sweatband",
+            "image": "athletic-sweatband",
+            "fields": [
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "underwear",
         "name": "Underwear",
-        "image": "style-underwear",
-        "products": []
+        "image": "athletic-underwear",
+        "products": [
+          {
+            "id": "compression-short",
+            "name": "Performance Compression Short",
+            "image": "athletic-compression-short",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "hammock-boxer",
+            "name": "Hammock-Pouch Boxer Brief",
+            "image": "athletic-hammock-boxer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "long-leg-boxer",
+            "name": "Long-Leg Tech Boxer Brief",
+            "image": "athletic-long-leg-boxer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "merino-boxer",
+            "name": "Active Merino Wool Boxer Brief",
+            "image": "athletic-merino-boxer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "jockstrap",
+            "name": "Ventilated Mesh Jockstrap",
+            "image": "athletic-jockstrap",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "microfiber-trunk",
+            "name": "Quick-Dry Microfiber Trunk",
+            "image": "athletic-microfiber-trunk",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
       }
     ]
   },
