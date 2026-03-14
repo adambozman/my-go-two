@@ -186,6 +186,7 @@ function ProductRow({ product }: { product: Product }) {
           </div>
 
           {results.length > 0 && (
+            <>
             <div className="grid grid-cols-3 gap-2">
               {results.map((photo) => (
                 <button
