@@ -111,7 +111,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                       else setActiveIndex((activeIndex + offset + n) % n);
                     }}
                   >
-                    <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
+                    <img src={item.image} alt={item.label} className="w-full h-full object-contain" />
                     {isActive && (
                       <div className="absolute bottom-6 left-6">
                         <span

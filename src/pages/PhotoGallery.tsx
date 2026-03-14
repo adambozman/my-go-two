@@ -131,7 +131,7 @@ const SparePicker = ({ slot, onPick, onClose }: {
                 <button key={photo.path} onClick={() => onPick(photo.url)}
                   className="group relative rounded-xl overflow-hidden border-2 border-transparent hover:border-primary transition-all"
                   style={{ aspectRatio: "3/4" }}>
-                  <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
+                  <img src={photo.url} alt={photo.name} className="w-full h-full object-contain" />
                 </button>
               ))}
             </div>
@@ -145,7 +145,7 @@ const SparePicker = ({ slot, onPick, onClose }: {
                 <button key={photo.path} onClick={() => onPick(photo.url)}
                   className="group relative rounded-xl overflow-hidden border-2 border-transparent hover:border-primary transition-all"
                   style={{ aspectRatio: "3/4" }}>
-                  <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
+                  <img src={photo.url} alt={photo.name} className="w-full h-full object-contain" />
                 </button>
               ))}
             </div>
@@ -438,7 +438,7 @@ export default function PhotoGallery() {
                     {photos.filter(p => !isPathBlocked(p.path)).map(photo => (
                       <div key={photo.path} className="flex flex-col gap-1 group">
                         <div className="relative rounded-xl overflow-hidden" style={{ aspectRatio: "3/4" }}>
-                          <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
+                          <img src={photo.url} alt={photo.name} className="w-full h-full object-contain" />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                             <button
                               onClick={async () => {
