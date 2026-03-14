@@ -72,18 +72,22 @@ function ProductRow({ product }: { product: Product }) {
   const [query, setQuery] = useState(buildSearchQuery(product.name));
   const [results, setResults] = useState<UnsplashPhoto[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
   const currentOverride = getOverride(product.imageKey);
 
-  const fetchPhotos = useCallback(async () => {
-    setLoading(true);
-    setResults([]);
+  const fetchPhotos = useCallback(async (pageNum = 1, append = false) => {
+    append ? setLoadingMore(true) : setLoading(true);
+    if (!append) setResults([]);
     try {
       const params = new URLSearchParams({
         query,
-        per_page: "6",
+        per_page: "15",
+        page: String(pageNum),
         orientation: "landscape",
       });
       const res = await fetch(
@@ -92,12 +96,16 @@ function ProductRow({ product }: { product: Product }) {
       );
       if (!res.ok) throw new Error(`Unsplash ${res.status}`);
       const data = await res.json();
-      setResults(data.results ?? []);
+      const newResults = data.results ?? [];
+      setResults(prev => append ? [...prev, ...newResults] : newResults);
+      setPage(pageNum);
+      setHasMore(newResults.length === 15);
       setExpanded(true);
     } catch (e: any) {
       toast({ title: "Unsplash error", description: e.message, variant: "destructive" });
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, [query, toast]);
 
