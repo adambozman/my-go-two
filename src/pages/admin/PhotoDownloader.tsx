@@ -29,7 +29,7 @@ interface UnsplashPhoto {
 }
 
 function buildSearchQuery(productName: string): string {
-  return `man ${productName.toLowerCase().replace(/-/g, " ")} street style editorial`;
+  return productName.replace(/-/g, " ");
 }
 
 /** Fetch image, crop center to 1015×686, return as Blob */
