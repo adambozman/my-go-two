@@ -59,77 +59,110 @@ const FieldForm = ({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -40 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="h-full flex flex-col overflow-y-auto"
+      className="h-full flex flex-col items-center justify-start overflow-y-auto py-8 px-4 md:px-8"
+      style={{ scrollbarWidth: "none" }}
     >
-      {/* Header */}
-      <div className="flex items-center gap-3 px-4 md:px-8 pt-4 pb-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onBack}
-          className="h-8 w-8 p-0 hover:bg-transparent"
-        >
-          <ArrowLeft className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
-        </Button>
-        <div>
-          <h2 className="section-header">{fieldState.subtype.name}</h2>
-          {fieldState.subcategoryName && (
-            <p className="text-xs" style={{ color: "var(--swatch-teal)", fontStyle: "italic" }}>
-              {fieldState.subcategoryName}
-            </p>
-          )}
+      {/* Card */}
+      <div
+        className="w-full max-w-xl rounded-3xl flex flex-col gap-6 p-8"
+        style={{
+          background: "rgba(255,255,255,0.6)",
+          backdropFilter: "blur(12px)",
+          boxShadow: "0 8px 40px rgba(45,104,112,0.10), 0 1px 0 rgba(255,255,255,0.8) inset",
+          border: "1px solid rgba(45,104,112,0.10)",
+        }}
+      >
+        {/* Card header */}
+        <div className="flex flex-col gap-1">
+          <p
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 13,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "var(--swatch-teal)",
+              opacity: 0.7,
+            }}
+          >
+            {fieldState.subcategoryName || "Preferences"}
+          </p>
+          <h2
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 28,
+              fontWeight: 700,
+              letterSpacing: "0.04em",
+              color: "var(--swatch-viridian-odyssey)",
+              lineHeight: 1.1,
+            }}
+          >
+            {fieldState.subtype.name}
+          </h2>
         </div>
-      </div>
 
-      {/* Fields */}
-      <div className="flex-1 px-4 md:px-8 py-4 space-y-4 max-w-lg">
-        {fieldState.subtype.fields.map((field) => (
-          <div key={field.label} className="space-y-1.5">
-            <label
-              className="text-sm font-medium"
-              style={{ color: "var(--swatch-viridian-odyssey)" }}
-            >
-              {field.label}
-            </label>
-            {field.type === "select" && field.options ? (
-              <div className="flex flex-wrap gap-2">
-                {field.options.map((opt) => {
-                  const isSelected = values[field.label] === opt;
-                  return (
-                    <button
-                      key={opt}
-                      onClick={() => handleChange(field.label, isSelected ? "" : opt)}
-                      className="px-4 py-2 rounded-full text-sm font-medium transition-all"
-                      style={{
-                        background: isSelected ? "var(--swatch-teal)" : "rgba(45,104,112,0.08)",
-                        color: isSelected ? "#fff" : "var(--swatch-teal)",
-                        border: `1.5px solid ${isSelected ? "var(--swatch-teal)" : "rgba(45,104,112,0.2)"}`,
-                      }}
-                    >
-                      {opt}
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <Input
-                value={values[field.label] || ""}
-                onChange={(e) => handleChange(field.label, e.target.value)}
-                placeholder={`Enter ${field.label.toLowerCase()}`}
-                className="rounded-xl h-11"
-              />
-            )}
-          </div>
-        ))}
-      </div>
+        {/* Divider */}
+        <div style={{ height: 1, background: "rgba(45,104,112,0.12)" }} />
 
-      {/* Save button */}
-      <div className="px-4 md:px-8 pb-8 pt-2">
+        {/* Fields */}
+        <div className="flex flex-col gap-6">
+          {fieldState.subtype.fields.map((field) => (
+            <div key={field.label} className="flex flex-col gap-2">
+              <label
+                style={{
+                  fontFamily: "'Jost', sans-serif",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: "var(--swatch-teal)",
+                }}
+              >
+                {field.label}
+              </label>
+              {field.type === "select" && field.options ? (
+                <div className="flex flex-wrap gap-2">
+                  {field.options.map((opt) => {
+                    const isSelected = values[field.label] === opt;
+                    return (
+                      <button
+                        key={opt}
+                        onClick={() => handleChange(field.label, isSelected ? "" : opt)}
+                        className="transition-all"
+                        style={{
+                          padding: "8px 18px",
+                          borderRadius: 999,
+                          fontFamily: "'Jost', sans-serif",
+                          fontSize: 13,
+                          fontWeight: 500,
+                          background: isSelected ? "var(--swatch-teal)" : "rgba(45,104,112,0.06)",
+                          color: isSelected ? "#fff" : "var(--swatch-teal)",
+                          border: `1.5px solid ${isSelected ? "var(--swatch-teal)" : "rgba(45,104,112,0.18)"}`,
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <Input
+                  value={values[field.label] || ""}
+                  onChange={(e) => handleChange(field.label, e.target.value)}
+                  placeholder={`Enter ${field.label.toLowerCase()}`}
+                  className="rounded-xl h-11"
+                  style={{ background: "rgba(45,104,112,0.04)", border: "1.5px solid rgba(45,104,112,0.15)" }}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Save button */}
         <Button
           onClick={() => onSave(values)}
           disabled={saving}
-          className="w-full max-w-lg h-12 rounded-full text-base font-semibold"
-          style={{ background: "#d4543a" }}
+          className="w-full h-12 rounded-full text-base font-semibold mt-2"
+          style={{ background: "#d4543a", fontFamily: "'Jost', sans-serif", letterSpacing: "0.08em" }}
         >
           {saving ? (
             <Loader2 className="w-5 h-5 animate-spin" />
