@@ -29,7 +29,7 @@ interface UnsplashPhoto {
 }
 
 function buildSearchQuery(productName: string): string {
-  return `man ${productName.toLowerCase().replace(/-/g, " ")} street style editorial`;
+  return productName.replace(/-/g, " ");
 }
 
 /** Fetch image, crop center to 1015×686, return as Blob */
@@ -72,18 +72,22 @@ function ProductRow({ product }: { product: Product }) {
   const [query, setQuery] = useState(buildSearchQuery(product.name));
   const [results, setResults] = useState<UnsplashPhoto[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
   const currentOverride = getOverride(product.imageKey);
 
-  const fetchPhotos = useCallback(async () => {
-    setLoading(true);
-    setResults([]);
+  const fetchPhotos = useCallback(async (pageNum = 1, append = false) => {
+    append ? setLoadingMore(true) : setLoading(true);
+    if (!append) setResults([]);
     try {
       const params = new URLSearchParams({
         query,
-        per_page: "6",
+        per_page: "15",
+        page: String(pageNum),
         orientation: "landscape",
       });
       const res = await fetch(
@@ -92,12 +96,16 @@ function ProductRow({ product }: { product: Product }) {
       );
       if (!res.ok) throw new Error(`Unsplash ${res.status}`);
       const data = await res.json();
-      setResults(data.results ?? []);
+      const newResults = data.results ?? [];
+      setResults(prev => append ? [...prev, ...newResults] : newResults);
+      setPage(pageNum);
+      setHasMore(newResults.length === 15);
       setExpanded(true);
     } catch (e: any) {
       toast({ title: "Unsplash error", description: e.message, variant: "destructive" });
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, [query, toast]);
 
@@ -171,13 +179,14 @@ function ProductRow({ product }: { product: Product }) {
               className="text-sm"
               onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
             />
-            <Button size="sm" onClick={fetchPhotos} disabled={loading}>
+            <Button size="sm" onClick={() => fetchPhotos(1, false)} disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               Fetch
             </Button>
           </div>
 
           {results.length > 0 && (
+            <>
             <div className="grid grid-cols-3 gap-2">
               {results.map((photo) => (
                 <button
@@ -205,6 +214,13 @@ function ProductRow({ product }: { product: Product }) {
                 </button>
               ))}
             </div>
+            {hasMore && (
+              <Button size="sm" variant="outline" className="w-full" onClick={() => fetchPhotos(page + 1, true)} disabled={loadingMore}>
+                {loadingMore ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Load More
+              </Button>
+            )}
+          </>
           )}
         </CardContent>
       )}
