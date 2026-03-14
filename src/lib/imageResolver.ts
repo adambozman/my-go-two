@@ -13,6 +13,7 @@
  */
 
 import { type Gender, normalizeGender } from "@/lib/gender";
+import { getOverride } from "@/lib/imageOverrides";
 
 // ── Eager glob of ALL template .jpg assets ──
 const rootModules = import.meta.glob<string>(
@@ -27,6 +28,10 @@ const maleModules = import.meta.glob<string>(
 
 function resolveKey(key: string, gender: Gender): string {
   const k = key.toLowerCase().trim().replace(/\s+/g, "-");
+
+  // Check user override first (spare bank assignment)
+  const override = getOverride(k);
+  if (override) return override;
 
   if (gender === "male") {
     // male/ first, then root fallback
