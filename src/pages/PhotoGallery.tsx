@@ -1,294 +1,270 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+/**
+ * Photo Gallery — mirrors the app's exact image resolution logic.
+ * Structure: Gender → Section → Category → Subcategory → Product
+ * Each node shows the actual image the app resolves for it.
+ */
+
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, X, Undo2, ImagePlus } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { getTemplateImage, getProductImage } from "@/lib/imageResolver";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  isPathBlocked,
-  addToBlocklist,
-  removeFromBlocklist,
-  initBlocklist,
-} from "@/data/imageBlocklist";
+import type { Gender } from "@/lib/gender";
 
-/* ─── Glob each gender bank at build time ─── */
+// ─── Types ───────────────────────────────────────────────────────────────────
 
-const maleTemplateGlob = import.meta.glob<string>(
-  "/src/assets/templates/male/*.{jpg,jpeg,png,webp}",
-  { eager: true, import: "default" },
-);
-const rootTemplateGlob = import.meta.glob<string>(
-  "/src/assets/templates/*.{jpg,jpeg,png,webp}",
-  { eager: true, import: "default" },
-);
-const maleGlob = import.meta.glob<string>(
-  "/src/assets/**/male/**/*.{jpg,jpeg,png,webp}",
-  { eager: true, import: "default" },
-);
-const femaleGlob = import.meta.glob<string>(
-  [
-    "/src/assets/styles/female/**/*.{jpg,jpeg,png,webp}",
-    "/src/assets/categories/female/**/*.{jpg,jpeg,png,webp}",
-  ],
-  { eager: true, import: "default" },
-);
-const nonBinaryGlob = import.meta.glob<string>(
-  "/src/assets/**/non-binary/**/*.{jpg,jpeg,png,webp}",
-  { eager: true, import: "default" },
-);
+interface Product {
+  id: string;
+  name: string;
+  image: string;
+  resolvedImage: string;
+}
 
-/* ─── Category prefix map ─── */
+interface Subcategory {
+  id: string;
+  name: string;
+  image: string;
+  resolvedImage: string;
+  products: Product[];
+}
 
-const PREFIX_GROUPS: { prefix: string; label: string }[] = [
-  { prefix: "clothing-", label: "Clothing" },
-  { prefix: "shoe-", label: "Footwear" },
-  { prefix: "grooming-", label: "Grooming" },
-  { prefix: "scent-", label: "Scents & Fragrance" },
-  { prefix: "vibe-", label: "Vibe" },
-  { prefix: "accessory-", label: "Accessories" },
-  { prefix: "jewelry-", label: "Jewelry" },
-  { prefix: "food-", label: "Food" },
-  { prefix: "coffee-", label: "Coffee & Drinks" },
-  { prefix: "grocery-", label: "Grocery" },
-  { prefix: "meal-", label: "Meals" },
-  { prefix: "fast-food-", label: "Fast Food" },
-  { prefix: "favorite-", label: "Favorites" },
-  { prefix: "dietary-", label: "Dietary" },
-  { prefix: "event-", label: "Entertainment & Events" },
-  { prefix: "flowers-", label: "Flowers & Plants" },
-  { prefix: "home-", label: "Home & Living" },
-  { prefix: "kitchen-", label: "Kitchen" },
-  { prefix: "tech-", label: "Tech & Gadgets" },
-  { prefix: "gaming-", label: "Gaming" },
-  { prefix: "sports-", label: "Sports" },
-  { prefix: "travel-", label: "Travel" },
-  { prefix: "wellness-", label: "Wellness" },
-  { prefix: "nightlife-", label: "Nightlife & Social" },
-  { prefix: "music-", label: "Music" },
-  { prefix: "books-", label: "Books & Podcasts" },
-  { prefix: "garage-", label: "Garage & Tools" },
-  { prefix: "measure-", label: "Measurements" },
-  { prefix: "anniversary-", label: "Special Occasions" },
-  { prefix: "birthday-", label: "Special Occasions" },
-  { prefix: "brand-", label: "Brand Preferences" },
-  { prefix: "specific-", label: "Specific Products" },
-  { prefix: "wish-", label: "Wishlist" },
-  { prefix: "date-", label: "Date Ideas" },
+interface Category {
+  key: string;
+  label: string;
+  section: string;
+  resolvedImage: string;
+  subcategories: Subcategory[];
+}
+
+interface Section {
+  key: string;
+  label: string;
+  categories: Category[];
+}
+
+const SECTION_LABELS: Record<string, string> = {
+  "style-fit": "Style & Fit",
+  "food-drink": "Food & Drink",
+  "gifts-wishlist": "Gifts & Wishlist",
+  "home-living": "Home & Living",
+  "entertainment": "Entertainment & Interests",
+};
+
+const SECTION_ORDER = ["style-fit", "food-drink", "gifts-wishlist", "home-living", "entertainment"];
+
+const GENDERS: { label: string; value: Gender }[] = [
+  { label: "Male", value: "male" },
+  { label: "Female", value: "female" },
+  { label: "Non-Binary", value: "non-binary" },
 ];
 
-function getCategory(filename: string): string {
-  const name = filename.replace(/\.[^.]+$/, ""); // strip extension
-  for (const { prefix, label } of PREFIX_GROUPS) {
-    if (name.startsWith(prefix)) return label;
-  }
-  return "Other";
-}
+// ─── Image card ───────────────────────────────────────────────────────────────
 
-/* ─── Types ─── */
+const ImageCard = ({ label, imageKey, src }: { label: string; imageKey: string; src: string }) => (
+  <div className="flex flex-col gap-1">
+    <div
+      className="relative rounded-xl overflow-hidden bg-muted"
+      style={{ aspectRatio: "3/4" }}
+    >
+      {src ? (
+        <img src={src} alt={label} className="w-full h-full object-cover" />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center">
+          <span className="text-xs text-muted-foreground text-center px-2">No image</span>
+        </div>
+      )}
+    </div>
+    <p className="text-[11px] font-medium text-foreground truncate">{label}</p>
+    <p className="text-[10px] text-muted-foreground truncate">{imageKey}</p>
+  </div>
+);
 
-interface GalleryImage {
-  path: string;
-  url: string;
-  filename: string;
-  key: string; // image key without extension
-  category: string;
-}
+// ─── Collapsible section ──────────────────────────────────────────────────────
 
-const TABS = ["Male", "Female / Shared", "Non-Binary"] as const;
-type TabName = (typeof TABS)[number];
+const Collapsible = ({ title, count, children, defaultOpen = false }: {
+  title: string;
+  count: number;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border border-border rounded-xl overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-muted/40 hover:bg-muted/70 transition-colors text-left"
+      >
+        <div className="flex items-center gap-2">
+          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          <span className="font-semibold text-sm">{title}</span>
+          <span className="text-xs text-muted-foreground">({count})</span>
+        </div>
+      </button>
+      {open && <div className="p-4">{children}</div>}
+    </div>
+  );
+};
 
-/* ─── Helpers ─── */
-
-function globToImages(glob: Record<string, string>): GalleryImage[] {
-  return Object.entries(glob).map(([path, url]) => {
-    const parts = path.split("/");
-    const filename = parts[parts.length - 1];
-    const key = filename.replace(/\.[^.]+$/, "");
-    return { path, url, filename, key, category: getCategory(filename) };
-  });
-}
-
-/* ─── Component ─── */
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export default function PhotoGallery() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabName>("Male");
-  const [version, setVersion] = useState(0);
+  const [gender, setGender] = useState<Gender>("male");
+  const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
-  const [genProgress, setGenProgress] = useState({ completed: 0, total: 0 });
 
   useEffect(() => {
-    initBlocklist().then(() => {
-      setLoading(false);
-      setVersion((v) => v + 1);
-    });
-  }, []);
+    async function load() {
+      setLoading(true);
 
-  const handleBulkGenerate = useCallback(async () => {
-    setGenerating(true);
-    setGenProgress({ completed: 0, total: 0 });
-    try {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const resp = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/bulk-generate-category-images`,
-        { method: "POST", headers: { "Content-Type": "application/json" } }
-      );
-      if (!resp.ok) { toast.error("Bulk generation failed: " + resp.status); setGenerating(false); return; }
-      const reader = resp.body?.getReader();
-      if (!reader) { setGenerating(false); return; }
-      const decoder = new TextDecoder();
-      let buffer = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-        for (const line of lines) {
-          if (!line.trim()) continue;
-          try {
-            const msg = JSON.parse(line);
-            if (msg.type === "progress") setGenProgress({ completed: msg.completed, total: msg.total });
-            else if (msg.type === "done") toast.success(`Done! ${msg.total_success} generated, ${msg.total_failed} failed`);
-          } catch {}
-        }
+      const dbGender = gender === "male" ? "male" : gender === "female" ? "female" : "non-binary";
+
+      const { data: rows } = await supabase
+        .from("category_registry" as any)
+        .select("*")
+        .eq("page", "mygotwo")
+        .eq("is_active", true)
+        .contains("genders", [dbGender])
+        .order("sort_order");
+
+      if (!rows) { setLoading(false); return; }
+
+      // Build section → category → subcategory → product tree
+      const sectionMap: Record<string, Category[]> = {};
+
+      for (const row of rows as any[]) {
+        const subcategories: Subcategory[] = (row.subcategories || []).map((sc: any) => {
+          const scResolved = getProductImage(sc.image || sc.id, gender, "");
+          const products: Product[] = (sc.products || []).map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            image: p.image || p.id,
+            resolvedImage: getProductImage(p.image || p.id, gender, scResolved),
+          }));
+          return {
+            id: sc.id,
+            name: sc.name,
+            image: sc.image || sc.id,
+            resolvedImage: scResolved,
+            products,
+          };
+        });
+
+        // Category image comes from first subcategory image
+        const catImageKey = subcategories[0]?.image || "";
+        const catResolved = catImageKey ? getTemplateImage(catImageKey, gender) : "";
+
+        const cat: Category = {
+          key: row.key,
+          label: row.label,
+          section: row.section,
+          resolvedImage: catResolved,
+          subcategories,
+        };
+
+        if (!sectionMap[row.section]) sectionMap[row.section] = [];
+        sectionMap[row.section].push(cat);
       }
-    } catch (e: any) { toast.error("Bulk generation error: " + e.message); }
-    setGenerating(false);
-  }, []);
 
-  const allImages = useMemo<Record<TabName, GalleryImage[]>>(() => ({
-    "Male": [
-      ...globToImages(maleGlob),
-      ...globToImages(maleTemplateGlob),
-    ],
-    "Female / Shared": [
-      ...globToImages(femaleGlob),
-      ...globToImages(rootTemplateGlob),
-    ],
-    "Non-Binary": globToImages(nonBinaryGlob),
-  }), []);
+      const built: Section[] = SECTION_ORDER
+        .filter(k => sectionMap[k])
+        .map(k => ({
+          key: k,
+          label: SECTION_LABELS[k] ?? k,
+          categories: sectionMap[k],
+        }));
 
-  const filtered = useMemo(() => {
-    void version;
-    const images = allImages[activeTab].filter((img) => !isPathBlocked(img.path));
-    // Deduplicate by path
-    const seen = new Set<string>();
-    const unique = images.filter(img => { if (seen.has(img.path)) return false; seen.add(img.path); return true; });
-    const groups: Record<string, GalleryImage[]> = {};
-    for (const img of unique) {
-      (groups[img.category] ??= []).push(img);
+      setSections(built);
+      setLoading(false);
     }
-    return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
-  }, [allImages, activeTab, version]);
 
-  const totalVisible = useMemo(
-    () => filtered.reduce((sum, [, imgs]) => sum + imgs.length, 0),
-    [filtered],
-  );
-
-  const handleDelete = useCallback(async (img: GalleryImage) => {
-    const ok = await addToBlocklist(img.path);
-    if (ok) {
-      setVersion((v) => v + 1);
-      toast.success("Image permanently blocked", {
-        description: img.filename,
-        action: {
-          label: "Undo",
-          onClick: async () => {
-            await removeFromBlocklist(img.path);
-            setVersion((v) => v + 1);
-            toast.info("Image restored");
-          },
-        },
-      });
-    } else {
-      toast.error("Failed to block image");
-    }
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading blocklist…</p>
-      </div>
-    );
-  }
+    load();
+  }, [gender]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Bulk generate bar */}
-      <div className="sticky top-0 z-40 bg-background border-b border-border px-4 py-2 flex items-center gap-3">
-        <Button onClick={handleBulkGenerate} disabled={generating} size="sm" className="gap-2">
-          <ImagePlus className="w-4 h-4" />
-          {generating ? `Generating... ${genProgress.completed}/${genProgress.total}` : "Generate All Category Images"}
-        </Button>
-      </div>
-
       {/* Header */}
-      <div className="sticky top-[49px] z-30 bg-background/90 backdrop-blur border-b border-border px-4 py-3 flex items-center gap-3">
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border px-4 py-3 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <h1 className="text-lg font-semibold">Image Bank</h1>
-        <span className="text-sm text-muted-foreground ml-auto">
-          {totalVisible} images · {activeTab}
-        </span>
+        <div className="flex gap-2 ml-auto">
+          {GENDERS.map(g => (
+            <button
+              key={g.value}
+              onClick={() => setGender(g.value)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                gender === g.value
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-accent"
+              }`}
+            >
+              {g.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="sticky top-[98px] z-20 bg-background/90 backdrop-blur border-b border-border px-4 py-2 flex gap-2">
-        {TABS.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-              activeTab === tab
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-accent"
-            }`}
-          >
-            {tab} ({allImages[tab].filter((i) => !isPathBlocked(i.path)).length})
-          </button>
-        ))}
-      </div>
+      {/* Content */}
+      <div className="p-4 space-y-6">
+        {loading && (
+          <p className="text-center text-muted-foreground py-16">Loading image bank…</p>
+        )}
 
-      {/* Grouped image grid */}
-      <div className="p-4 space-y-8">
-        {filtered.map(([category, images]) => (
-          <section key={category}>
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-              {category}
-              <span className="ml-2 text-xs font-normal">({images.length})</span>
-            </h2>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
-              {images.map((img) => (
-                <div
-                  key={img.path}
-                  className="group relative aspect-square rounded-lg overflow-hidden border border-border hover:border-destructive/50 transition-colors"
-                >
-                  <img src={img.url} alt={img.key} loading="lazy" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex flex-col items-center justify-center opacity-0 group-hover:opacity-100">
-                    <button
-                      onClick={() => handleDelete(img)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-destructive text-destructive-foreground rounded-md text-xs font-medium hover:bg-destructive/90 transition-colors"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                      Delete
-                    </button>
+        {!loading && sections.map(section => (
+          <Collapsible key={section.key} title={section.label} count={section.categories.length} defaultOpen={true}>
+            <div className="space-y-6">
+              {section.categories.map(cat => (
+                <Collapsible key={cat.key} title={cat.label} count={cat.subcategories.length} defaultOpen={false}>
+                  <div className="space-y-6">
+                    {/* Category level image */}
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                        Category Cover
+                      </p>
+                      <div className="w-32">
+                        <ImageCard label={cat.label} imageKey={cat.subcategories[0]?.image || "—"} src={cat.resolvedImage} />
+                      </div>
+                    </div>
+
+                    {/* Subcategories */}
+                    {cat.subcategories.map(sc => (
+                      <Collapsible key={sc.id} title={sc.name} count={sc.products.length} defaultOpen={false}>
+                        <div className="space-y-4">
+                          {/* Subcategory image */}
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                              Subcategory Image
+                            </p>
+                            <div className="w-28">
+                              <ImageCard label={sc.name} imageKey={sc.image} src={sc.resolvedImage} />
+                            </div>
+                          </div>
+
+                          {/* Products */}
+                          {sc.products.length > 0 && (
+                            <div>
+                              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                                Products
+                              </p>
+                              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                                {sc.products.map(p => (
+                                  <ImageCard key={p.id} label={p.name} imageKey={p.image} src={p.resolvedImage} />
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </Collapsible>
+                    ))}
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-1.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="text-[10px] text-white leading-tight block truncate">{img.key}</span>
-                  </div>
-                </div>
+                </Collapsible>
               ))}
             </div>
-          </section>
+          </Collapsible>
         ))}
-        {totalVisible === 0 && (
-          <p className="text-center text-muted-foreground py-16">No images in this bank.</p>
-        )}
       </div>
     </div>
   );
