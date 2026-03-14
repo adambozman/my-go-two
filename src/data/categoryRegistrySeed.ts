@@ -9140,196 +9140,173 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "amazon-list",
-        "name": "Amazon List",
+        "id": "items",
+        "name": "Items",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Amazon List URL",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "general-wishlist",
-        "name": "General Wishlist",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Buy",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Price Range",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $25",
-              "$25-$50",
-              "$50-$100",
-              "$100-$250",
-              "$250+"
+            "id": "amazon-list",
+            "name": "Amazon List",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Amazon List URL",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "splurge-items",
-        "name": "Splurge Items",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Buy",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "practical-items",
-        "name": "Practical Items",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Buy",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Price Range",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $25",
-              "$25-$50",
-              "$50-$100",
-              "$100+"
+            "id": "general-wishlist",
+            "name": "General Wishlist",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item 1",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item 2",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item 3",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sentimental-items",
-        "name": "Sentimental Items",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Meaning",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "gift-cards",
-        "name": "Gift Cards",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Preferred Store / Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Amount",
-            "type": "select",
-            "value": "",
-            "options": [
-              "$25",
-              "$50",
-              "$100",
-              "$150",
-              "$200",
-              "Any"
+            "id": "splurge-items",
+            "name": "Splurge Items",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Dream Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Price Range",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "subscriptions",
-        "name": "Subscriptions",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Service",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Streaming",
-              "Gaming",
-              "Food",
-              "Fitness",
-              "Music",
-              "News",
-              "Other"
+            "id": "practical-items",
+            "name": "Practical Items",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Where to Buy",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Price Range",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "sentimental-items",
+            "name": "Sentimental Items",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Why It Matters",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "gift-cards",
+            "name": "Gift Cards",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Stores",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Amount",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "subscriptions",
+            "name": "Subscriptions",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Service",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Plan",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -9348,209 +9325,179 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "concerts-shows",
-        "name": "Concerts & Shows",
+        "id": "types",
+        "name": "Types",
         "image": "event-concerts",
-        "fields": [
+        "products": [
           {
-            "label": "Favorite Artists / Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Venue",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sports-events",
-        "name": "Sports Events",
-        "image": "event-sports",
-        "fields": [
-          {
-            "label": "Favorite Sport",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Team",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Seat",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Field / Floor",
-              "Lower Bowl",
-              "Upper Bowl",
-              "Suite",
-              "Any"
+            "id": "concerts-shows",
+            "name": "Concerts & Shows",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Artists",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Venue Preference",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dining-out",
-        "name": "Dining Out",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Restaurant",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Cuisine",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Casual",
-              "Mid-Range",
-              "Fine Dining",
-              "Any"
+            "id": "sports-events",
+            "name": "Sports Events",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Favorite Teams",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Seat Preference",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "travel",
-        "name": "Travel",
-        "image": "travel-preferences",
-        "fields": [
-          {
-            "label": "Dream Destination",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Travel Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Adventure",
-              "Relaxation",
-              "Cultural",
-              "Road Trip",
-              "City Break",
-              "Beach",
-              "All"
+            "id": "dining-out",
+            "name": "Dining Out",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Restaurant",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Cuisine",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Occasion",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "spa-wellness",
-        "name": "Spa & Wellness",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Preferred Treatment",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Massage",
-              "Facial",
-              "Float Tank",
-              "Sauna",
-              "Steam Room",
-              "Full Day Spa"
+            "id": "travel",
+            "name": "Travel",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Dream Destination",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Travel Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Adventure",
+                  "Relaxation",
+                  "Cultural",
+                  "Food-Focused"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "classes-workshops",
-        "name": "Classes & Workshops",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cooking",
-              "Fitness",
-              "Art",
-              "Music",
-              "Woodworking",
-              "Martial Arts",
-              "Other"
+            "id": "spa-wellness",
+            "name": "Spa & Wellness",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Treatment",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Specific Interest",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "adventure",
-        "name": "Adventure Activities",
-        "image": "travel-preferences",
-        "fields": [
-          {
-            "label": "Activity",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Skydiving",
-              "Bungee Jumping",
-              "Surfing",
-              "Rock Climbing",
-              "Kayaking",
-              "Hiking",
-              "Other"
+            "id": "classes-workshops",
+            "name": "Classes & Workshops",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Interested In",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Skill Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Beginner",
+                  "Intermediate",
+                  "Advanced"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "adventure",
+            "name": "Adventure Activities",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -9569,273 +9516,223 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "phone-accessories",
-        "name": "Phone Accessories",
+        "id": "categories",
+        "name": "Categories",
         "image": "specific-products",
-        "fields": [
+        "products": [
           {
-            "label": "Phone Model",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Case",
-              "Screen Protector",
-              "Charger",
-              "MagSafe",
-              "Pop Socket",
-              "Stand",
-              "Other"
+            "id": "phone-accessories",
+            "name": "Phone Accessories",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Phone Model",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessory Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "headphones",
-        "name": "Headphones",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Over-Ear",
-              "On-Ear",
-              "In-Ear / Earbuds",
-              "True Wireless"
+            "id": "headphones",
+            "name": "Headphones",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Over-Ear",
+                  "In-Ear",
+                  "On-Ear",
+                  "Earbuds"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Wireless or Wired",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wireless",
+                  "Wired",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "smart-home",
+            "name": "Smart Home",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Device Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "smart-home",
-        "name": "Smart Home",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Smart Speaker",
-              "Smart Bulbs",
-              "Smart Plug",
-              "Security Camera",
-              "Thermostat",
-              "Doorbell",
-              "Robot Vacuum",
-              "Other"
+            "id": "wearables",
+            "name": "Wearables",
+            "image": "jewelry-watches",
+            "fields": [
+              {
+                "label": "Device",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "wearables",
-        "name": "Wearables",
-        "image": "jewelry-watches",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Smart Watch",
-              "Fitness Tracker",
-              "Ring",
-              "AR Glasses",
-              "Other"
+            "id": "gaming",
+            "name": "Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "PlayStation",
+                  "Xbox",
+                  "Nintendo",
+                  "PC",
+                  "Mobile"
+                ]
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $100",
-              "$100-$250",
-              "$250-$500",
-              "$500+"
+            "id": "cameras",
+            "name": "Cameras",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Camera Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "DSLR",
+                  "Mirrorless",
+                  "Film",
+                  "Action Cam",
+                  "Drone"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "gaming",
-        "name": "Gaming",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "PlayStation",
-              "Xbox",
-              "Nintendo",
-              "PC",
-              "Mobile",
-              "All"
+            "id": "laptop-tablets",
+            "name": "Laptop & Tablets",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Laptop",
+                  "Tablet",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Use Case",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Favorite Games / Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Game",
-              "Controller",
-              "Headset",
-              "Console",
-              "Gift Card",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cameras",
-        "name": "Cameras",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "DSLR",
-              "Mirrorless",
-              "Point & Shoot",
-              "Action Camera",
-              "Instant",
-              "Drone"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $200",
-              "$200-$500",
-              "$500-$1000",
-              "$1000+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "laptop-tablets",
-        "name": "Laptop & Tablets",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Laptop",
-              "Tablet",
-              "iPad",
-              "Chromebook",
-              "E-Reader"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $500",
-              "$500-$1000",
-              "$1000-$2000",
-              "$2000+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -9854,206 +9751,183 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "kitchen-items",
-        "name": "Kitchen Items",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bar-entertaining",
-        "name": "Bar & Entertaining",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Whiskey Glasses",
-              "Wine Glasses",
-              "Cocktail Kit",
-              "Decanter",
-              "Bar Tools",
-              "Beer Steins",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "decor",
-        "name": "Decor",
+        "id": "categories",
+        "name": "Categories",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Industrial",
-              "Minimalist",
-              "Rustic",
-              "Eclectic",
-              "Other"
+            "id": "kitchen-items",
+            "name": "Kitchen Items",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bedding-bath",
-        "name": "Bedding & Bath",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "books",
-        "name": "Books",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Authors",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Format",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hardcover",
-              "Paperback",
-              "E-Book",
-              "Audiobook"
+            "id": "bar-entertaining",
+            "name": "Bar & Entertaining",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "candles-scents",
-        "name": "Candles & Scents",
-        "image": "scent-candles",
-        "fields": [
-          {
-            "label": "Favorite Scents",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "plants",
-        "name": "Plants",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Plant Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Care Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Low Maintenance",
-              "Medium",
-              "High Maintenance",
-              "Any"
+            "id": "decor",
+            "name": "Decor",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "bedding-bath",
+            "name": "Bedding & Bath",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "books",
+            "name": "Books",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Genre",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Reading",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "candles-scents",
+            "name": "Candles & Scents",
+            "image": "scent-candles",
+            "fields": [
+              {
+                "label": "Favorite Scent",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "plants",
+            "name": "Plants",
+            "image": "flowers",
+            "fields": [
+              {
+                "label": "Favorite Plant",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Indoor or Outdoor",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Indoor",
+                  "Outdoor",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -10072,253 +9946,218 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "clothing",
-        "name": "Clothing",
+        "id": "categories",
+        "name": "Categories",
         "image": "clothing-tops",
-        "fields": [
+        "products": [
           {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "XS",
-              "S",
-              "M",
-              "L",
-              "XL",
-              "XXL",
-              "XXXL"
+            "id": "clothing",
+            "name": "Clothing",
+            "image": "clothing-tops",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "shoes",
-        "name": "Shoes",
-        "image": "shoe-sneakers",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "US Size",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "jewelry",
-        "name": "Jewelry",
-        "image": "jewelry",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Metal Preference",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Gold",
-              "Silver",
-              "Rose Gold",
-              "Platinum",
-              "Titanium",
-              "Mixed"
+            "id": "shoes",
+            "name": "Shoes",
+            "image": "shoe-sneakers",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bags-wallets",
-        "name": "Bags & Wallets",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wallet",
-              "Backpack",
-              "Duffel Bag",
-              "Tote",
-              "Crossbody",
-              "Briefcase",
-              "Other"
+            "id": "jewelry",
+            "name": "Jewelry",
+            "image": "jewelry",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Metal",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Gold",
+                  "Silver",
+                  "Rose Gold",
+                  "Platinum"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "bags-wallets",
+            "name": "Bags & Wallets",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sunglasses",
-        "name": "Sunglasses",
-        "image": "accessory-sunglasses",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wayfarer",
-              "Aviator",
-              "Round",
-              "Square",
-              "Sport",
-              "Other"
+            "id": "sunglasses",
+            "name": "Sunglasses",
+            "image": "accessory-sunglasses",
+            "fields": [
+              {
+                "label": "Frame Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Lens Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "hats",
+            "name": "Hats",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Baseball Cap",
+                  "Beanie",
+                  "Bucket Hat",
+                  "Snapback",
+                  "Dad Hat"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "hats",
-        "name": "Hats",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Baseball Cap",
-              "Beanie",
-              "Bucket Hat",
-              "Snapback",
-              "Dad Hat",
-              "Other"
+            "id": "watches",
+            "name": "Watches",
+            "image": "accessory-watches",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Dress",
+                  "Sport",
+                  "Smart",
+                  "Casual"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Strap",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Leather",
+                  "Metal",
+                  "Rubber",
+                  "NATO"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "watches",
-        "name": "Watches",
-        "image": "accessory-watches",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Dress",
-              "Sport",
-              "Casual",
-              "Luxury",
-              "Smart Watch"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $100",
-              "$100-$300",
-              "$300-$1000",
-              "$1000+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -10337,230 +10176,200 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "gym-fitness",
-        "name": "Gym & Fitness",
-        "image": "clothing-activewear",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Equipment",
-              "Apparel",
-              "Supplements",
-              "Accessories",
-              "Gym Bag",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "outdoor-gear",
-        "name": "Outdoor Gear",
-        "image": "travel-preferences",
-        "fields": [
-          {
-            "label": "Activity",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hiking",
-              "Camping",
-              "Fishing",
-              "Hunting",
-              "Cycling",
-              "Climbing",
-              "Water Sports",
-              "Other"
-            ]
-          },
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sports-gear",
-        "name": "Sports Gear",
+        "id": "categories",
+        "name": "Categories",
         "image": "event-sports",
-        "fields": [
+        "products": [
           {
-            "label": "Sport",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "fan-gear",
-        "name": "Fan Gear",
-        "image": "event-sports",
-        "fields": [
-          {
-            "label": "Team / League",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Jersey",
-              "Hat",
-              "T-Shirt",
-              "Hoodie",
-              "Flag",
-              "Signed Memorabilia",
-              "Other"
+            "id": "gym-fitness",
+            "name": "Gym & Fitness",
+            "image": "clothing-activewear",
+            "fields": [
+              {
+                "label": "Gym Name",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Workout Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Equipment Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Player",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "golf",
-        "name": "Golf",
-        "image": "event-sports",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Handicap",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cycling",
-        "name": "Cycling",
-        "image": "travel-preferences",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Road",
-              "Mountain",
-              "Gravel",
-              "BMX",
-              "E-Bike",
-              "Accessories"
+            "id": "outdoor-gear",
+            "name": "Outdoor Gear",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gear Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "water-sports",
-        "name": "Water Sports",
-        "image": "travel-preferences",
-        "fields": [
-          {
-            "label": "Activity",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Surfing",
-              "Kayaking",
-              "Paddleboarding",
-              "Fishing",
-              "Swimming",
-              "Scuba",
-              "Other"
+            "id": "sports-gear",
+            "name": "Sports Gear",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gear Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Item",
-            "type": "text",
-            "value": ""
+            "id": "fan-gear",
+            "name": "Fan Gear",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Team",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "golf",
+            "name": "Golf",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Handicap",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Course",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Equipment Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cycling",
+            "name": "Cycling",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Bike Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Road",
+                  "Mountain",
+                  "Hybrid",
+                  "BMX",
+                  "Electric"
+                ]
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "water-sports",
+            "name": "Water Sports",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gear Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -10579,189 +10388,171 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "birthday",
-        "name": "Birthday",
+        "id": "occasions",
+        "name": "Occasions",
         "image": "birthday-preferences",
-        "fields": [
+        "products": [
           {
-            "label": "Birthday",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Gift Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Dream Birthday",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "anniversary",
-        "name": "Anniversary",
-        "image": "anniversary-gifts",
-        "fields": [
-          {
-            "label": "Anniversary Date",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Gift Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Experiences",
-              "Jewelry",
-              "Travel",
-              "Sentimental",
-              "Practical",
-              "Surprise Me"
+            "id": "birthday",
+            "name": "Birthday",
+            "image": "birthday-preferences",
+            "fields": [
+              {
+                "label": "Birthday",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Way to Celebrate",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gift Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Experiences",
+                  "Things",
+                  "Both",
+                  "Surprise Me"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "holidays",
-        "name": "Holidays",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Holiday",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Christmas",
-              "Hanukkah",
-              "Kwanzaa",
-              "New Year",
-              "Easter",
-              "Other"
+            "id": "anniversary",
+            "name": "Anniversary",
+            "image": "anniversary-gifts",
+            "fields": [
+              {
+                "label": "Anniversary Date",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Way to Celebrate",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Gift Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "valentines",
-        "name": "Valentine''s Day",
-        "image": "anniversary-gifts",
-        "fields": [
-          {
-            "label": "Preferred Gift Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Experiences",
-              "Jewelry",
-              "Tech",
-              "Food & Drink",
-              "Sentimental",
-              "Surprise Me"
+            "id": "holidays",
+            "name": "Holidays",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Holiday",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Traditions",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "just-because",
-        "name": "Just Because",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Spontaneous Gift",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $25",
-              "$25-$50",
-              "$50-$100",
-              "$100+"
+            "id": "valentines",
+            "name": "Valentine's Day",
+            "image": "anniversary-gifts",
+            "fields": [
+              {
+                "label": "Favorite Way to Celebrate",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "graduation",
-        "name": "Graduation",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Preferred Gift Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "housewarming",
-        "name": "Housewarming",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Home Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Industrial",
-              "Minimalist",
-              "Rustic",
-              "Eclectic",
-              "Other"
+            "id": "just-because",
+            "name": "Just Because",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Surprise",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Love Language",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Words of Affirmation",
+                  "Acts of Service",
+                  "Receiving Gifts",
+                  "Quality Time",
+                  "Physical Touch"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Preferred Gift Type",
-            "type": "text",
-            "value": ""
+            "id": "graduation",
+            "name": "Graduation",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Program",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "housewarming",
+            "name": "Housewarming",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "New Place",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "What They Need",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -10780,134 +10571,126 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "favorite-charities",
-        "name": "Favorite Charities",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Charity Name",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Website",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
         "id": "causes",
-        "name": "Causes I Care About",
+        "name": "Causes",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Cause",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Environment",
-              "Education",
-              "Health",
-              "Hunger",
-              "Animal Welfare",
-              "Social Justice",
-              "Veterans",
-              "Other"
+            "id": "favorite-charities",
+            "name": "Favorite Charities",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Charity Name",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Website",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "preferred-orgs",
-        "name": "Preferred Organizations",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Organization",
-            "type": "text",
-            "value": ""
+            "id": "causes",
+            "name": "Causes I Care About",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Cause",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Category",
-            "type": "text",
-            "value": ""
+            "id": "preferred-orgs",
+            "name": "Preferred Organizations",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Organization",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Website",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "local-causes",
-        "name": "Local Causes",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Local Organization",
-            "type": "text",
-            "value": ""
+            "id": "local-causes",
+            "name": "Local Causes",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Cause",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Organization",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "How to Donate",
-            "type": "text",
-            "value": ""
+            "id": "political",
+            "name": "Political",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Party / Movement",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "political",
-        "name": "Political",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Party / Affiliation",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Candidate / Cause",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "religious",
-        "name": "Religious",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Organization",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "religious",
+            "name": "Religious",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Faith",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -10926,196 +10709,173 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "amazon-list",
-        "name": "Amazon List",
+        "id": "items",
+        "name": "Items",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Amazon List URL",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "general-wishlist",
-        "name": "General Wishlist",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Buy",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Price Range",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $25",
-              "$25-$50",
-              "$50-$100",
-              "$100-$250",
-              "$250+"
+            "id": "amazon-list",
+            "name": "Amazon List",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Amazon List URL",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "splurge-items",
-        "name": "Splurge Items",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Buy",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "practical-items",
-        "name": "Practical Items",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Buy",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Price Range",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $25",
-              "$25-$50",
-              "$50-$100",
-              "$100+"
+            "id": "general-wishlist",
+            "name": "General Wishlist",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item 1",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item 2",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item 3",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sentimental-items",
-        "name": "Sentimental Items",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Meaning",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "gift-cards",
-        "name": "Gift Cards",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Preferred Store / Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Amount",
-            "type": "select",
-            "value": "",
-            "options": [
-              "$25",
-              "$50",
-              "$100",
-              "$150",
-              "$200",
-              "Any"
+            "id": "splurge-items",
+            "name": "Splurge Items",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Dream Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Price Range",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "subscriptions",
-        "name": "Subscriptions",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Service",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Streaming",
-              "Beauty Box",
-              "Food",
-              "Fitness",
-              "Books",
-              "Fashion",
-              "Other"
+            "id": "practical-items",
+            "name": "Practical Items",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Where to Buy",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Price Range",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "sentimental-items",
+            "name": "Sentimental Items",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Why It Matters",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "gift-cards",
+            "name": "Gift Cards",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Stores",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Amount",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "subscriptions",
+            "name": "Subscriptions",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Service",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Plan",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -11134,215 +10894,179 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "concerts-shows",
-        "name": "Concerts & Shows",
+        "id": "types",
+        "name": "Types",
         "image": "event-concerts",
-        "fields": [
+        "products": [
           {
-            "label": "Favorite Artists / Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Venue",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sports-events",
-        "name": "Sports Events",
-        "image": "event-sports",
-        "fields": [
-          {
-            "label": "Favorite Sport",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Team",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Seat",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Field / Floor",
-              "Lower Bowl",
-              "Upper Bowl",
-              "Suite",
-              "Any"
+            "id": "concerts-shows",
+            "name": "Concerts & Shows",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Artists",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Venue Preference",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dining-out",
-        "name": "Dining Out",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Restaurant",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Cuisine",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Casual",
-              "Mid-Range",
-              "Fine Dining",
-              "Any"
+            "id": "sports-events",
+            "name": "Sports Events",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Favorite Teams",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Seat Preference",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "travel",
-        "name": "Travel",
-        "image": "travel-preferences",
-        "fields": [
-          {
-            "label": "Dream Destination",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Travel Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Adventure",
-              "Relaxation",
-              "Cultural",
-              "Road Trip",
-              "City Break",
-              "Beach",
-              "All"
+            "id": "dining-out",
+            "name": "Dining Out",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Restaurant",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Cuisine",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Occasion",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "spa-wellness",
-        "name": "Spa & Wellness",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Preferred Treatment",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Massage",
-              "Facial",
-              "Mani-Pedi",
-              "Float Tank",
-              "Sauna",
-              "Full Day Spa",
-              "Couples Spa"
+            "id": "travel",
+            "name": "Travel",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Dream Destination",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Travel Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Adventure",
+                  "Relaxation",
+                  "Cultural",
+                  "Food-Focused"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "classes-workshops",
-        "name": "Classes & Workshops",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cooking",
-              "Pottery",
-              "Painting",
-              "Yoga",
-              "Dance",
-              "Floral Design",
-              "Other"
+            "id": "spa-wellness",
+            "name": "Spa & Wellness",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Treatment",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Specific Interest",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "theater",
-        "name": "Theater & Arts",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Broadway",
-              "Ballet",
-              "Opera",
-              "Comedy Show",
-              "Film Festival",
-              "Art Exhibition",
-              "Other"
+            "id": "classes-workshops",
+            "name": "Classes & Workshops",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Interested In",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Skill Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Beginner",
+                  "Intermediate",
+                  "Advanced"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Shows / Artists",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "adventure",
+            "name": "Adventure Activities",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -11361,272 +11085,223 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "phone-accessories",
-        "name": "Phone Accessories",
+        "id": "categories",
+        "name": "Categories",
         "image": "specific-products",
-        "fields": [
+        "products": [
           {
-            "label": "Phone Model",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Case",
-              "Screen Protector",
-              "Charger",
-              "MagSafe",
-              "Pop Socket",
-              "Stand",
-              "Other"
+            "id": "phone-accessories",
+            "name": "Phone Accessories",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Phone Model",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessory Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "headphones",
-        "name": "Headphones",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Over-Ear",
-              "On-Ear",
-              "In-Ear / Earbuds",
-              "True Wireless"
+            "id": "headphones",
+            "name": "Headphones",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Over-Ear",
+                  "In-Ear",
+                  "On-Ear",
+                  "Earbuds"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Wireless or Wired",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wireless",
+                  "Wired",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "smart-home",
+            "name": "Smart Home",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Device Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "smart-home",
-        "name": "Smart Home",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Smart Speaker",
-              "Smart Bulbs",
-              "Smart Plug",
-              "Security Camera",
-              "Thermostat",
-              "Doorbell",
-              "Robot Vacuum",
-              "Other"
+            "id": "wearables",
+            "name": "Wearables",
+            "image": "jewelry-watches",
+            "fields": [
+              {
+                "label": "Device",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "wearables",
-        "name": "Wearables",
-        "image": "jewelry-watches",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Smart Watch",
-              "Fitness Tracker",
-              "Ring",
-              "AR Glasses",
-              "Other"
+            "id": "gaming",
+            "name": "Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "PlayStation",
+                  "Xbox",
+                  "Nintendo",
+                  "PC",
+                  "Mobile"
+                ]
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $100",
-              "$100-$250",
-              "$250-$500",
-              "$500+"
+            "id": "cameras",
+            "name": "Cameras",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Camera Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "DSLR",
+                  "Mirrorless",
+                  "Film",
+                  "Action Cam",
+                  "Drone"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "beauty-tech",
-        "name": "Beauty Tech",
-        "image": "grooming-skin",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hair Dryer",
-              "Curling Iron",
-              "Straightener",
-              "Gua Sha Tool",
-              "LED Mask",
-              "Microcurrent Device",
-              "Other"
+            "id": "laptop-tablets",
+            "name": "Laptop & Tablets",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Laptop",
+                  "Tablet",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Use Case",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cameras",
-        "name": "Cameras",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "DSLR",
-              "Mirrorless",
-              "Point & Shoot",
-              "Action Camera",
-              "Instant",
-              "Drone"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $200",
-              "$200-$500",
-              "$500-$1000",
-              "$1000+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "laptop-tablets",
-        "name": "Laptop & Tablets",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Laptop",
-              "Tablet",
-              "iPad",
-              "Chromebook",
-              "E-Reader"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $500",
-              "$500-$1000",
-              "$1000-$2000",
-              "$2000+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -11645,218 +11320,183 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "kitchen-items",
-        "name": "Kitchen Items",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "candles-scents",
-        "name": "Candles & Scents",
-        "image": "scent-candles",
-        "fields": [
-          {
-            "label": "Favorite Scents",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Candle",
-              "Reed Diffuser",
-              "Wax Melt",
-              "Room Spray",
-              "Incense"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "decor",
-        "name": "Decor",
+        "id": "categories",
+        "name": "Categories",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Boho",
-              "Minimalist",
-              "Coastal",
-              "Farmhouse",
-              "Eclectic",
-              "Other"
+            "id": "kitchen-items",
+            "name": "Kitchen Items",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bedding-bath",
-        "name": "Bedding & Bath",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "books",
-        "name": "Books",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Authors",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Format",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hardcover",
-              "Paperback",
-              "E-Book",
-              "Audiobook"
+            "id": "bar-entertaining",
+            "name": "Bar & Entertaining",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bar-entertaining",
-        "name": "Bar & Entertaining",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wine Glasses",
-              "Cocktail Kit",
-              "Champagne Flutes",
-              "Serving Board",
-              "Bar Cart",
-              "Other"
+            "id": "decor",
+            "name": "Decor",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "plants",
-        "name": "Plants",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Favorite Plant Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Care Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Low Maintenance",
-              "Medium",
-              "High Maintenance",
-              "Any"
+            "id": "bedding-bath",
+            "name": "Bedding & Bath",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "books",
+            "name": "Books",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Genre",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Reading",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "candles-scents",
+            "name": "Candles & Scents",
+            "image": "scent-candles",
+            "fields": [
+              {
+                "label": "Favorite Scent",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "plants",
+            "name": "Plants",
+            "image": "flowers",
+            "fields": [
+              {
+                "label": "Favorite Plant",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Indoor or Outdoor",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Indoor",
+                  "Outdoor",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -11875,260 +11515,226 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "clothing",
-        "name": "Clothing",
+        "id": "categories",
+        "name": "Categories",
         "image": "clothing-tops",
-        "fields": [
+        "products": [
           {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "XXS",
-              "XS",
-              "S",
-              "M",
-              "L",
-              "XL",
-              "XXL"
+            "id": "clothing",
+            "name": "Clothing",
+            "image": "clothing-tops",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "shoes",
-        "name": "Shoes",
-        "image": "shoe-heels",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "US Size",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "jewelry",
-        "name": "Jewelry",
-        "image": "jewelry",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Metal Preference",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Gold",
-              "Silver",
-              "Rose Gold",
-              "Platinum",
-              "Mixed"
+            "id": "shoes",
+            "name": "Shoes",
+            "image": "shoe-sneakers",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bags",
-        "name": "Bags",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Handbag",
-              "Tote",
-              "Crossbody",
-              "Clutch",
-              "Backpack",
-              "Belt Bag",
-              "Other"
+            "id": "jewelry",
+            "name": "Jewelry",
+            "image": "jewelry",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Metal",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Gold",
+                  "Silver",
+                  "Rose Gold",
+                  "Platinum"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $100",
-              "$100-$300",
-              "$300-$1000",
-              "$1000+"
+            "id": "bags-wallets",
+            "name": "Bags & Wallets",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sunglasses",
-        "name": "Sunglasses",
-        "image": "accessory-sunglasses",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cat Eye",
-              "Round",
-              "Oversized",
-              "Aviator",
-              "Square",
-              "Other"
+            "id": "sunglasses",
+            "name": "Sunglasses",
+            "image": "accessory-sunglasses",
+            "fields": [
+              {
+                "label": "Frame Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Lens Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "hats",
+            "name": "Hats",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Baseball Cap",
+                  "Beanie",
+                  "Bucket Hat",
+                  "Snapback",
+                  "Dad Hat"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "hats",
-        "name": "Hats",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Baseball Cap",
-              "Beanie",
-              "Bucket Hat",
-              "Wide Brim",
-              "Beret",
-              "Other"
+            "id": "watches",
+            "name": "Watches",
+            "image": "accessory-watches",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Dress",
+                  "Sport",
+                  "Smart",
+                  "Casual"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Strap",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Leather",
+                  "Metal",
+                  "Rubber",
+                  "NATO"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "watches",
-        "name": "Watches",
-        "image": "accessory-watches",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Dress",
-              "Minimalist",
-              "Casual",
-              "Luxury",
-              "Smart Watch"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $100",
-              "$100-$300",
-              "$300-$1000",
-              "$1000+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
     ]
   },
   {
-    "key": "flowers-plants-female",
-    "label": "Flowers & Plants",
+    "key": "sports-outdoors-female",
+    "label": "Sports & Outdoors",
     "section": "gifts-wishlist",
     "page": "mygotwo",
     "genders": [
@@ -12139,240 +11745,200 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "roses",
-        "name": "Roses",
-        "image": "flowers-roses",
-        "fields": [
+        "id": "categories",
+        "name": "Categories",
+        "image": "event-sports",
+        "products": [
           {
-            "label": "Favorite Color",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Red",
-              "Pink",
-              "White",
-              "Yellow",
-              "Orange",
-              "Purple",
-              "Mixed"
+            "id": "gym-fitness",
+            "name": "Gym & Fitness",
+            "image": "clothing-activewear",
+            "fields": [
+              {
+                "label": "Gym Name",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Workout Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Equipment Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Preferred Quantity",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Single Stem",
-              "6",
-              "12",
-              "24",
-              "36",
-              "50+"
+            "id": "outdoor-gear",
+            "name": "Outdoor Gear",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gear Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Preferred Florist",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sunflowers",
-        "name": "Sunflowers",
-        "image": "flowers-sunflowers",
-        "fields": [
-          {
-            "label": "Preferred Quantity",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Single Stem",
-              "6",
-              "12",
-              "24",
-              "Mixed Bouquet"
+            "id": "sports-gear",
+            "name": "Sports Gear",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gear Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Preferred Florist",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "tulips",
-        "name": "Tulips",
-        "image": "flowers-tulips",
-        "fields": [
-          {
-            "label": "Favorite Color",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Red",
-              "Pink",
-              "White",
-              "Yellow",
-              "Purple",
-              "Mixed"
+            "id": "fan-gear",
+            "name": "Fan Gear",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Team",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Preferred Quantity",
-            "type": "select",
-            "value": "",
-            "options": [
-              "6",
-              "12",
-              "24",
-              "Mixed Bouquet"
+            "id": "golf",
+            "name": "Golf",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Handicap",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Course",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Equipment Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Preferred Florist",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "lilies",
-        "name": "Lilies",
-        "image": "flowers-lilies",
-        "fields": [
-          {
-            "label": "Favorite Color",
-            "type": "select",
-            "value": "",
-            "options": [
-              "White",
-              "Pink",
-              "Orange",
-              "Yellow",
-              "Mixed"
+            "id": "cycling",
+            "name": "Cycling",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Bike Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Road",
+                  "Mountain",
+                  "Hybrid",
+                  "BMX",
+                  "Electric"
+                ]
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Preferred Florist",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "orchids",
-        "name": "Orchids",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Favorite Color",
-            "type": "select",
-            "value": "",
-            "options": [
-              "White",
-              "Pink",
-              "Purple",
-              "Yellow",
-              "Mixed"
+            "id": "water-sports",
+            "name": "Water Sports",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gear Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Preferred Florist",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "custom-arrangement",
-        "name": "Custom Arrangement",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Favorite Flowers",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Color Palette",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Florist",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$100",
-              "$100-$200",
-              "$200+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "plants",
-        "name": "Plants",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Favorite Plant Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Care Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Low Maintenance",
-              "Medium",
-              "High Maintenance",
-              "Any"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -12391,191 +11957,171 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "birthday",
-        "name": "Birthday",
+        "id": "occasions",
+        "name": "Occasions",
         "image": "birthday-preferences",
-        "fields": [
+        "products": [
           {
-            "label": "Birthday",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Gift Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Dream Birthday",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "anniversary",
-        "name": "Anniversary",
-        "image": "anniversary-gifts",
-        "fields": [
-          {
-            "label": "Anniversary Date",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Gift Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Experiences",
-              "Jewelry",
-              "Travel",
-              "Flowers",
-              "Sentimental",
-              "Surprise Me"
+            "id": "birthday",
+            "name": "Birthday",
+            "image": "birthday-preferences",
+            "fields": [
+              {
+                "label": "Birthday",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Way to Celebrate",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gift Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Experiences",
+                  "Things",
+                  "Both",
+                  "Surprise Me"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "holidays",
-        "name": "Holidays",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Holiday",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Christmas",
-              "Hanukkah",
-              "Kwanzaa",
-              "New Year",
-              "Easter",
-              "Other"
+            "id": "anniversary",
+            "name": "Anniversary",
+            "image": "anniversary-gifts",
+            "fields": [
+              {
+                "label": "Anniversary Date",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Way to Celebrate",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Gift Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "valentines",
-        "name": "Valentine''s Day",
-        "image": "anniversary-gifts",
-        "fields": [
-          {
-            "label": "Preferred Gift Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Flowers",
-              "Jewelry",
-              "Experiences",
-              "Chocolate",
-              "Spa",
-              "Sentimental",
-              "Surprise Me"
+            "id": "holidays",
+            "name": "Holidays",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Holiday",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Traditions",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "just-because",
-        "name": "Just Because",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Spontaneous Gift",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $25",
-              "$25-$50",
-              "$50-$100",
-              "$100+"
+            "id": "valentines",
+            "name": "Valentine's Day",
+            "image": "anniversary-gifts",
+            "fields": [
+              {
+                "label": "Favorite Way to Celebrate",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "graduation",
-        "name": "Graduation",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Preferred Gift Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "housewarming",
-        "name": "Housewarming",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Home Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Boho",
-              "Minimalist",
-              "Coastal",
-              "Farmhouse",
-              "Eclectic",
-              "Other"
+            "id": "just-because",
+            "name": "Just Because",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Surprise",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Love Language",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Words of Affirmation",
+                  "Acts of Service",
+                  "Receiving Gifts",
+                  "Quality Time",
+                  "Physical Touch"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Preferred Gift Type",
-            "type": "text",
-            "value": ""
+            "id": "graduation",
+            "name": "Graduation",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Program",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "housewarming",
+            "name": "Housewarming",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "New Place",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "What They Need",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -12594,134 +12140,126 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "favorite-charities",
-        "name": "Favorite Charities",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Charity Name",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Website",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
         "id": "causes",
-        "name": "Causes I Care About",
+        "name": "Causes",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Cause",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Environment",
-              "Education",
-              "Health",
-              "Hunger",
-              "Animal Welfare",
-              "Social Justice",
-              "Women''s Rights",
-              "Other"
+            "id": "favorite-charities",
+            "name": "Favorite Charities",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Charity Name",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Website",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "preferred-orgs",
-        "name": "Preferred Organizations",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Organization",
-            "type": "text",
-            "value": ""
+            "id": "causes",
+            "name": "Causes I Care About",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Cause",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Category",
-            "type": "text",
-            "value": ""
+            "id": "preferred-orgs",
+            "name": "Preferred Organizations",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Organization",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Website",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "local-causes",
-        "name": "Local Causes",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Local Organization",
-            "type": "text",
-            "value": ""
+            "id": "local-causes",
+            "name": "Local Causes",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Cause",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Organization",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "How to Donate",
-            "type": "text",
-            "value": ""
+            "id": "political",
+            "name": "Political",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Party / Movement",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "political",
-        "name": "Political",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Party / Affiliation",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Candidate / Cause",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "religious",
-        "name": "Religious",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Organization",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "religious",
+            "name": "Religious",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Faith",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -12740,196 +12278,173 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "amazon-list",
-        "name": "Amazon List",
+        "id": "items",
+        "name": "Items",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Amazon List URL",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "general-wishlist",
-        "name": "General Wishlist",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Buy",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Price Range",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $25",
-              "$25-$50",
-              "$50-$100",
-              "$100-$250",
-              "$250+"
+            "id": "amazon-list",
+            "name": "Amazon List",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Amazon List URL",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "splurge-items",
-        "name": "Splurge Items",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Buy",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "practical-items",
-        "name": "Practical Items",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where to Buy",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Price Range",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $25",
-              "$25-$50",
-              "$50-$100",
-              "$100+"
+            "id": "general-wishlist",
+            "name": "General Wishlist",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item 1",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item 2",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item 3",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sentimental-items",
-        "name": "Sentimental Items",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Meaning",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "gift-cards",
-        "name": "Gift Cards",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Preferred Store / Brand",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Amount",
-            "type": "select",
-            "value": "",
-            "options": [
-              "$25",
-              "$50",
-              "$100",
-              "$150",
-              "$200",
-              "Any"
+            "id": "splurge-items",
+            "name": "Splurge Items",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Dream Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Price Range",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "subscriptions",
-        "name": "Subscriptions",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Service",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Streaming",
-              "Gaming",
-              "Food",
-              "Fitness",
-              "Music",
-              "Books",
-              "Other"
+            "id": "practical-items",
+            "name": "Practical Items",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Where to Buy",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Price Range",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "sentimental-items",
+            "name": "Sentimental Items",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Why It Matters",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "gift-cards",
+            "name": "Gift Cards",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Stores",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Amount",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "subscriptions",
+            "name": "Subscriptions",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Service",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Plan",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -12948,215 +12463,179 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "concerts-shows",
-        "name": "Concerts & Shows",
+        "id": "types",
+        "name": "Types",
         "image": "event-concerts",
-        "fields": [
+        "products": [
           {
-            "label": "Favorite Artists / Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Venue",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sports-events",
-        "name": "Sports Events",
-        "image": "event-sports",
-        "fields": [
-          {
-            "label": "Favorite Sport",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Team",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Seat",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Field / Floor",
-              "Lower Bowl",
-              "Upper Bowl",
-              "Suite",
-              "Any"
+            "id": "concerts-shows",
+            "name": "Concerts & Shows",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Artists",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Venue Preference",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dining-out",
-        "name": "Dining Out",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Restaurant",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Cuisine",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Casual",
-              "Mid-Range",
-              "Fine Dining",
-              "Any"
+            "id": "sports-events",
+            "name": "Sports Events",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Favorite Teams",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Seat Preference",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "travel",
-        "name": "Travel",
-        "image": "travel-preferences",
-        "fields": [
-          {
-            "label": "Dream Destination",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Travel Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Adventure",
-              "Relaxation",
-              "Cultural",
-              "Road Trip",
-              "City Break",
-              "Beach",
-              "All"
+            "id": "dining-out",
+            "name": "Dining Out",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Restaurant",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Cuisine",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Occasion",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "spa-wellness",
-        "name": "Spa & Wellness",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Preferred Treatment",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Massage",
-              "Facial",
-              "Float Tank",
-              "Sauna",
-              "Steam Room",
-              "Full Day Spa",
-              "Couples Spa"
+            "id": "travel",
+            "name": "Travel",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Dream Destination",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Travel Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Adventure",
+                  "Relaxation",
+                  "Cultural",
+                  "Food-Focused"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "classes-workshops",
-        "name": "Classes & Workshops",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cooking",
-              "Pottery",
-              "Painting",
-              "Fitness",
-              "Music",
-              "Woodworking",
-              "Other"
+            "id": "spa-wellness",
+            "name": "Spa & Wellness",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Treatment",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Specific Interest",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "theater",
-        "name": "Theater & Arts",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Broadway",
-              "Ballet",
-              "Opera",
-              "Comedy Show",
-              "Film Festival",
-              "Art Exhibition",
-              "Other"
+            "id": "classes-workshops",
+            "name": "Classes & Workshops",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Interested In",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Skill Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Beginner",
+                  "Intermediate",
+                  "Advanced"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Shows / Artists",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "adventure",
+            "name": "Adventure Activities",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -13175,273 +12654,223 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "phone-accessories",
-        "name": "Phone Accessories",
+        "id": "categories",
+        "name": "Categories",
         "image": "specific-products",
-        "fields": [
+        "products": [
           {
-            "label": "Phone Model",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Case",
-              "Screen Protector",
-              "Charger",
-              "MagSafe",
-              "Pop Socket",
-              "Stand",
-              "Other"
+            "id": "phone-accessories",
+            "name": "Phone Accessories",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Phone Model",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessory Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "headphones",
-        "name": "Headphones",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Over-Ear",
-              "On-Ear",
-              "In-Ear / Earbuds",
-              "True Wireless"
+            "id": "headphones",
+            "name": "Headphones",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Over-Ear",
+                  "In-Ear",
+                  "On-Ear",
+                  "Earbuds"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Wireless or Wired",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wireless",
+                  "Wired",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "smart-home",
+            "name": "Smart Home",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Device Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "smart-home",
-        "name": "Smart Home",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Smart Speaker",
-              "Smart Bulbs",
-              "Smart Plug",
-              "Security Camera",
-              "Thermostat",
-              "Doorbell",
-              "Robot Vacuum",
-              "Other"
+            "id": "wearables",
+            "name": "Wearables",
+            "image": "jewelry-watches",
+            "fields": [
+              {
+                "label": "Device",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "wearables",
-        "name": "Wearables",
-        "image": "jewelry-watches",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Smart Watch",
-              "Fitness Tracker",
-              "Ring",
-              "AR Glasses",
-              "Other"
+            "id": "gaming",
+            "name": "Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "PlayStation",
+                  "Xbox",
+                  "Nintendo",
+                  "PC",
+                  "Mobile"
+                ]
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $100",
-              "$100-$250",
-              "$250-$500",
-              "$500+"
+            "id": "cameras",
+            "name": "Cameras",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Camera Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "DSLR",
+                  "Mirrorless",
+                  "Film",
+                  "Action Cam",
+                  "Drone"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "gaming",
-        "name": "Gaming",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "PlayStation",
-              "Xbox",
-              "Nintendo",
-              "PC",
-              "Mobile",
-              "All"
+            "id": "laptop-tablets",
+            "name": "Laptop & Tablets",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Laptop",
+                  "Tablet",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Use Case",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Favorite Games / Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Game",
-              "Controller",
-              "Headset",
-              "Console",
-              "Gift Card",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cameras",
-        "name": "Cameras",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "DSLR",
-              "Mirrorless",
-              "Point & Shoot",
-              "Action Camera",
-              "Instant",
-              "Drone"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $200",
-              "$200-$500",
-              "$500-$1000",
-              "$1000+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "laptop-tablets",
-        "name": "Laptop & Tablets",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Laptop",
-              "Tablet",
-              "iPad",
-              "Chromebook",
-              "E-Reader"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $500",
-              "$500-$1000",
-              "$1000-$2000",
-              "$2000+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -13460,216 +12889,183 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "kitchen-items",
-        "name": "Kitchen Items",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "candles-scents",
-        "name": "Candles & Scents",
-        "image": "scent-candles",
-        "fields": [
-          {
-            "label": "Favorite Scents",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Candle",
-              "Reed Diffuser",
-              "Wax Melt",
-              "Room Spray",
-              "Incense"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "decor",
-        "name": "Decor",
+        "id": "categories",
+        "name": "Categories",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Minimalist",
-              "Industrial",
-              "Boho",
-              "Eclectic",
-              "Other"
+            "id": "kitchen-items",
+            "name": "Kitchen Items",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bedding-bath",
-        "name": "Bedding & Bath",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "books",
-        "name": "Books",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Authors",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Format",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hardcover",
-              "Paperback",
-              "E-Book",
-              "Audiobook"
+            "id": "bar-entertaining",
+            "name": "Bar & Entertaining",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bar-entertaining",
-        "name": "Bar & Entertaining",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Glasses",
-              "Cocktail Kit",
-              "Serving Board",
-              "Bar Cart",
-              "Other"
+            "id": "decor",
+            "name": "Decor",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "plants",
-        "name": "Plants",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Plant Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Care Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Low Maintenance",
-              "Medium",
-              "High Maintenance",
-              "Any"
+            "id": "bedding-bath",
+            "name": "Bedding & Bath",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "books",
+            "name": "Books",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Genre",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Reading",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "candles-scents",
+            "name": "Candles & Scents",
+            "image": "scent-candles",
+            "fields": [
+              {
+                "label": "Favorite Scent",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "plants",
+            "name": "Plants",
+            "image": "flowers",
+            "fields": [
+              {
+                "label": "Favorite Plant",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Indoor or Outdoor",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Indoor",
+                  "Outdoor",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -13688,253 +13084,430 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "clothing",
-        "name": "Clothing",
+        "id": "categories",
+        "name": "Categories",
         "image": "clothing-tops",
-        "fields": [
+        "products": [
           {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "XXS",
-              "XS",
-              "S",
-              "M",
-              "L",
-              "XL",
-              "XXL",
-              "XXXL"
+            "id": "clothing",
+            "name": "Clothing",
+            "image": "clothing-tops",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
+            "id": "shoes",
+            "name": "Shoes",
+            "image": "shoe-sneakers",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "jewelry",
+            "name": "Jewelry",
+            "image": "jewelry",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Metal",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Gold",
+                  "Silver",
+                  "Rose Gold",
+                  "Platinum"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "bags-wallets",
+            "name": "Bags & Wallets",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sunglasses",
+            "name": "Sunglasses",
+            "image": "accessory-sunglasses",
+            "fields": [
+              {
+                "label": "Frame Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Lens Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "hats",
+            "name": "Hats",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Baseball Cap",
+                  "Beanie",
+                  "Bucket Hat",
+                  "Snapback",
+                  "Dad Hat"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "watches",
+            "name": "Watches",
+            "image": "accessory-watches",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Dress",
+                  "Sport",
+                  "Smart",
+                  "Casual"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Strap",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Leather",
+                  "Metal",
+                  "Rubber",
+                  "NATO"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    "key": "sports-outdoors-nb",
+    "label": "Sports & Outdoors",
+    "section": "gifts-wishlist",
+    "page": "mygotwo",
+    "genders": [
+      "non-binary"
+    ],
+    "sort_order": 60,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
       {
-        "id": "shoes",
-        "name": "Shoes",
-        "image": "shoe-sneakers",
-        "fields": [
+        "id": "categories",
+        "name": "Categories",
+        "image": "event-sports",
+        "products": [
           {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "US Size",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "jewelry",
-        "name": "Jewelry",
-        "image": "jewelry",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Metal Preference",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Gold",
-              "Silver",
-              "Rose Gold",
-              "Platinum",
-              "Mixed"
+            "id": "gym-fitness",
+            "name": "Gym & Fitness",
+            "image": "clothing-activewear",
+            "fields": [
+              {
+                "label": "Gym Name",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Workout Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Equipment Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bags-wallets",
-        "name": "Bags & Wallets",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wallet",
-              "Backpack",
-              "Tote",
-              "Crossbody",
-              "Duffel",
-              "Belt Bag",
-              "Other"
+            "id": "outdoor-gear",
+            "name": "Outdoor Gear",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gear Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $100",
-              "$100-$300",
-              "$300-$1000",
-              "$1000+"
+            "id": "sports-gear",
+            "name": "Sports Gear",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gear Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sunglasses",
-        "name": "Sunglasses",
-        "image": "accessory-sunglasses",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Round",
-              "Square",
-              "Oversized",
-              "Aviator",
-              "Cat Eye",
-              "Other"
+            "id": "fan-gear",
+            "name": "Fan Gear",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Team",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "golf",
+            "name": "Golf",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Handicap",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Course",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Equipment Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "hats",
-        "name": "Hats",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Baseball Cap",
-              "Beanie",
-              "Bucket Hat",
-              "Beret",
-              "Wide Brim",
-              "Other"
+            "id": "cycling",
+            "name": "Cycling",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Bike Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Road",
+                  "Mountain",
+                  "Hybrid",
+                  "BMX",
+                  "Electric"
+                ]
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "watches",
-        "name": "Watches",
-        "image": "accessory-watches",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Minimalist",
-              "Casual",
-              "Sport",
-              "Luxury",
-              "Smart Watch"
+            "id": "water-sports",
+            "name": "Water Sports",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gear Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $100",
-              "$100-$300",
-              "$300-$1000",
-              "$1000+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -13948,194 +13521,176 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "genders": [
       "non-binary"
     ],
-    "sort_order": 60,
+    "sort_order": 70,
     "is_active": true,
     "fields": [],
     "subcategories": [
       {
-        "id": "birthday",
-        "name": "Birthday",
+        "id": "occasions",
+        "name": "Occasions",
         "image": "birthday-preferences",
-        "fields": [
+        "products": [
           {
-            "label": "Birthday",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Gift Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Dream Birthday",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "anniversary",
-        "name": "Anniversary",
-        "image": "anniversary-gifts",
-        "fields": [
-          {
-            "label": "Anniversary Date",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Gift Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Experiences",
-              "Jewelry",
-              "Travel",
-              "Sentimental",
-              "Practical",
-              "Surprise Me"
+            "id": "birthday",
+            "name": "Birthday",
+            "image": "birthday-preferences",
+            "fields": [
+              {
+                "label": "Birthday",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Way to Celebrate",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gift Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Experiences",
+                  "Things",
+                  "Both",
+                  "Surprise Me"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "holidays",
-        "name": "Holidays",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Holiday",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Christmas",
-              "Hanukkah",
-              "Kwanzaa",
-              "New Year",
-              "Easter",
-              "Other"
+            "id": "anniversary",
+            "name": "Anniversary",
+            "image": "anniversary-gifts",
+            "fields": [
+              {
+                "label": "Anniversary Date",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Way to Celebrate",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Gift Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "valentines",
-        "name": "Valentine''s Day",
-        "image": "anniversary-gifts",
-        "fields": [
-          {
-            "label": "Preferred Gift Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Experiences",
-              "Jewelry",
-              "Tech",
-              "Food & Drink",
-              "Sentimental",
-              "Surprise Me"
+            "id": "holidays",
+            "name": "Holidays",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Holiday",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Traditions",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "just-because",
-        "name": "Just Because",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Spontaneous Gift",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $25",
-              "$25-$50",
-              "$50-$100",
-              "$100+"
+            "id": "valentines",
+            "name": "Valentine's Day",
+            "image": "anniversary-gifts",
+            "fields": [
+              {
+                "label": "Favorite Way to Celebrate",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "graduation",
-        "name": "Graduation",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Preferred Gift Type",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "housewarming",
-        "name": "Housewarming",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Home Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Minimalist",
-              "Industrial",
-              "Boho",
-              "Eclectic",
-              "Other"
+            "id": "just-because",
+            "name": "Just Because",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Surprise",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Love Language",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Words of Affirmation",
+                  "Acts of Service",
+                  "Receiving Gifts",
+                  "Quality Time",
+                  "Physical Touch"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Preferred Gift Type",
-            "type": "text",
-            "value": ""
+            "id": "graduation",
+            "name": "Graduation",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Program",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "housewarming",
+            "name": "Housewarming",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "New Place",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "What They Need",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -14149,139 +13704,131 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "genders": [
       "non-binary"
     ],
-    "sort_order": 70,
+    "sort_order": 80,
     "is_active": true,
     "fields": [],
     "subcategories": [
       {
-        "id": "favorite-charities",
-        "name": "Favorite Charities",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Charity Name",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Website",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
         "id": "causes",
-        "name": "Causes I Care About",
+        "name": "Causes",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Cause",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Environment",
-              "Education",
-              "Health",
-              "Hunger",
-              "Animal Welfare",
-              "Social Justice",
-              "LGBTQ+ Rights",
-              "Other"
+            "id": "favorite-charities",
+            "name": "Favorite Charities",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Charity Name",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Website",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "preferred-orgs",
-        "name": "Preferred Organizations",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Organization",
-            "type": "text",
-            "value": ""
+            "id": "causes",
+            "name": "Causes I Care About",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Cause",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Category",
-            "type": "text",
-            "value": ""
+            "id": "preferred-orgs",
+            "name": "Preferred Organizations",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Organization",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Website",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "local-causes",
-        "name": "Local Causes",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Local Organization",
-            "type": "text",
-            "value": ""
+            "id": "local-causes",
+            "name": "Local Causes",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Cause",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Organization",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "How to Donate",
-            "type": "text",
-            "value": ""
+            "id": "political",
+            "name": "Political",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Party / Movement",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "political",
-        "name": "Political",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Party / Affiliation",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Candidate / Cause",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "religious",
-        "name": "Religious",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Organization",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "religious",
+            "name": "Religious",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Faith",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -14300,307 +13847,217 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "sofa",
-        "name": "Sofa",
+        "id": "pieces",
+        "name": "Pieces",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Sectional",
-              "Mid-Century",
-              "Industrial",
-              "Minimalist",
-              "Other"
+            "id": "sofa",
+            "name": "Sofa",
+            "image": "home-sofa",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fabric",
-              "Leather",
-              "Velvet",
-              "Microfiber",
-              "Other"
+            "id": "bed-frame",
+            "name": "Bed Frame",
+            "image": "home-bedding",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Twin",
+                  "Full",
+                  "Queen",
+                  "King",
+                  "Cal King"
+                ]
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bed-frame",
-        "name": "Bed Frame",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Twin",
-              "Full",
-              "Queen",
-              "King",
-              "Cal King"
+            "id": "dining-table",
+            "name": "Dining Table",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Platform",
-              "Upholstered",
-              "Metal",
-              "Wooden",
-              "Storage Bed"
+            "id": "desk",
+            "name": "Desk",
+            "image": "home-desk",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dining-table",
-        "name": "Dining Table",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "2-4 Person",
-              "4-6 Person",
-              "6-8 Person",
-              "8+ Person"
+            "id": "bookshelf",
+            "name": "Bookshelf",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "Glass",
-              "Marble",
-              "Metal",
-              "Other"
+            "id": "coffee-table",
+            "name": "Coffee Table",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "desk",
-        "name": "Desk",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Standing Desk",
-              "L-Shaped",
-              "Simple Writing Desk",
-              "Corner Desk",
-              "Other"
+            "id": "accent-chair",
+            "name": "Accent Chair",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "Metal",
-              "Glass",
-              "Other"
+            "id": "dresser",
+            "name": "Dresser",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bookshelf",
-        "name": "Bookshelf",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Floating Shelves",
-              "Freestanding",
-              "Built-In",
-              "Ladder",
-              "Cube"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "coffee-table",
-        "name": "Coffee Table",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Industrial",
-              "Rustic",
-              "Minimalist",
-              "Ottoman",
-              "Other"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "Glass",
-              "Metal",
-              "Marble",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "accent-chair",
-        "name": "Accent Chair",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Lounge",
-              "Recliner",
-              "Barrel",
-              "Slipper",
-              "Egg Chair",
-              "Other"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fabric",
-              "Leather",
-              "Velvet",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dresser",
-        "name": "Dresser",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Tall",
-              "Wide",
-              "Double",
-              "Mid-Century",
-              "Other"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "MDF",
-              "Metal",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -14619,266 +14076,204 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "cookware",
-        "name": "Cookware",
+        "id": "items",
+        "name": "Items",
         "image": "grocery-specifics",
-        "fields": [
+        "products": [
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Non-Stick",
-              "Cast Iron",
-              "Stainless Steel",
-              "Carbon Steel",
-              "Ceramic"
+            "id": "cookware",
+            "name": "Cookware",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cast Iron",
+                  "Stainless Steel",
+                  "Non-Stick",
+                  "Carbon Steel"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Skillet",
-              "Saucepan",
-              "Dutch Oven",
-              "Wok",
-              "Full Set",
-              "Other"
+            "id": "knives",
+            "name": "Knives",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Handle Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "knives",
-        "name": "Knives",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Chef''s Knife",
-              "Santoku",
-              "Bread Knife",
-              "Paring Knife",
-              "Full Set"
+            "id": "small-appliances",
+            "name": "Small Appliances",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Appliance",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "coffee-maker",
+            "name": "Coffee Maker",
+            "image": "coffee-hot",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Drip",
+                  "Espresso",
+                  "French Press",
+                  "Pour Over",
+                  "Pod"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "small-appliances",
-        "name": "Small Appliances",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Air Fryer",
-              "Instant Pot",
-              "Blender",
-              "Toaster Oven",
-              "Food Processor",
-              "Rice Cooker",
-              "Other"
+            "id": "stand-mixer",
+            "name": "Stand Mixer",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "coffee-maker",
-        "name": "Coffee Maker",
-        "image": "coffee-hot",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Drip",
-              "Espresso Machine",
-              "French Press",
-              "Pour Over",
-              "Pod Machine",
-              "Moka Pot"
+            "id": "cutting-boards",
+            "name": "Cutting Boards",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wood",
+                  "Bamboo",
+                  "Plastic",
+                  "Marble"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "storage-organization",
+            "name": "Storage & Organization",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "stand-mixer",
-        "name": "Stand Mixer",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Color",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cutting-boards",
-        "name": "Cutting Boards",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "Bamboo",
-              "Plastic",
-              "Marble",
-              "Other"
+            "id": "bakeware",
+            "name": "Bakeware",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "storage-organization",
-        "name": "Storage & Organization",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Pantry Containers",
-              "Spice Rack",
-              "Cabinet Organizer",
-              "Drawer Dividers",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bakeware",
-        "name": "Bakeware",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Sheet Pan",
-              "Muffin Tin",
-              "Loaf Pan",
-              "Cake Pan",
-              "Full Set",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -14897,265 +14292,203 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "tv",
-        "name": "TV",
+        "id": "devices",
+        "name": "Devices",
         "image": "specific-products",
-        "fields": [
+        "products": [
           {
-            "label": "Screen Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under 40\"",
-              "40-50\"",
-              "55\"",
-              "65\"",
-              "75\"",
-              "85\"+"
+            "id": "tv",
+            "name": "TV",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "OLED",
+                  "QLED",
+                  "LED",
+                  "4K",
+                  "8K"
+                ]
+              },
+              {
+                "label": "Mount or Stand",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wall Mount",
+                  "Stand"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "OLED",
-              "QLED",
-              "LED",
-              "4K",
-              "8K"
+            "id": "sound-system",
+            "name": "Sound System",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Soundbar",
+                  "Surround Sound",
+                  "Bookshelf Speakers",
+                  "Subwoofer"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $500",
-              "$500-$1000",
-              "$1000-$2000",
-              "$2000+"
+            "id": "gaming-setup",
+            "name": "Gaming Setup",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "PlayStation",
+                  "Xbox",
+                  "Nintendo",
+                  "PC"
+                ]
+              },
+              {
+                "label": "Accessories",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sound-system",
-        "name": "Sound System",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Soundbar",
-              "Surround Sound",
-              "Bookshelf Speakers",
-              "Floor Speakers",
-              "Subwoofer",
-              "Full System"
+            "id": "smart-home-hub",
+            "name": "Smart Home Hub",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "System",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Alexa",
+                  "Google Home",
+                  "Apple HomeKit",
+                  "SmartThings"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $200",
-              "$200-$500",
-              "$500-$1000",
-              "$1000+"
+            "id": "projector",
+            "name": "Projector",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Home Theater",
+                  "Portable",
+                  "Short Throw"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "gaming-setup",
-        "name": "Gaming Setup",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "PlayStation",
-              "Xbox",
-              "Nintendo",
-              "PC",
-              "Multi-Platform"
+            "id": "streaming-devices",
+            "name": "Streaming Devices",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Device",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Apple TV",
+                  "Roku",
+                  "Fire Stick",
+                  "Chromecast"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Console",
-              "Monitor",
-              "Gaming Chair",
-              "Desk",
-              "Headset",
-              "Controller",
-              "Other"
+            "id": "turntable",
+            "name": "Turntable",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Budget",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "smart-home-hub",
-        "name": "Smart Home Hub",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Ecosystem",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Amazon Alexa",
-              "Google Home",
-              "Apple HomeKit",
-              "Samsung SmartThings",
-              "Other"
-            ]
-          },
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "projector",
-        "name": "Projector",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Use",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Home Theater",
-              "Gaming",
-              "Outdoor Movies",
-              "Portable",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $300",
-              "$300-$700",
-              "$700-$1500",
-              "$1500+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "streaming-devices",
-        "name": "Streaming Devices",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Device",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Apple TV",
-              "Roku",
-              "Fire Stick",
-              "Chromecast",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "turntable",
-        "name": "Turntable",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $150",
-              "$150-$300",
-              "$300-$600",
-              "$600+"
-            ]
-          },
-          {
-            "label": "Favorite Genres / Artists",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -15174,246 +14507,214 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "bedding",
-        "name": "Bedding",
+        "id": "items",
+        "name": "Items",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Bed Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Twin",
-              "Full",
-              "Queen",
-              "King",
-              "Cal King"
+            "id": "bedding",
+            "name": "Bedding",
+            "image": "home-bedding",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Twin",
+                  "Full",
+                  "Queen",
+                  "King",
+                  "Cal King"
+                ]
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cotton",
+                  "Linen",
+                  "Bamboo",
+                  "Silk",
+                  "Microfiber"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cotton",
-              "Linen",
-              "Bamboo",
-              "Microfiber",
-              "Flannel"
+            "id": "pillows",
+            "name": "Pillows",
+            "image": "home-pillows",
+            "fields": [
+              {
+                "label": "Fill",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Down",
+                  "Memory Foam",
+                  "Latex",
+                  "Synthetic"
+                ]
+              },
+              {
+                "label": "Firmness",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Soft",
+                  "Medium",
+                  "Firm"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "pillows",
-        "name": "Pillows",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Sleep Position",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Side",
-              "Back",
-              "Stomach",
-              "Combo"
+            "id": "mattress",
+            "name": "Mattress",
+            "image": "home-mattress",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Twin",
+                  "Full",
+                  "Queen",
+                  "King",
+                  "Cal King"
+                ]
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Memory Foam",
+                  "Innerspring",
+                  "Hybrid",
+                  "Latex"
+                ]
+              },
+              {
+                "label": "Firmness",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Soft",
+                  "Medium-Soft",
+                  "Medium",
+                  "Medium-Firm",
+                  "Firm"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Fill",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Down",
-              "Memory Foam",
-              "Latex",
-              "Buckwheat",
-              "Other"
+            "id": "nightstand",
+            "name": "Nightstand",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mattress",
-        "name": "Mattress",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Twin",
-              "Full",
-              "Queen",
-              "King",
-              "Cal King"
+            "id": "lighting",
+            "name": "Lighting",
+            "image": "home-lighting",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Lamp",
+                  "Overhead",
+                  "LED Strip",
+                  "Smart Bulbs"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Feel",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Soft",
-              "Medium",
-              "Firm",
-              "Extra Firm"
+            "id": "blackout-curtains",
+            "name": "Blackout Curtains",
+            "image": "home-curtains",
+            "fields": [
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Memory Foam",
-              "Innerspring",
-              "Hybrid",
-              "Latex",
-              "Airbed"
+            "id": "white-noise-machine",
+            "name": "White Noise Machine",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "nightstand",
-        "name": "Nightstand",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Minimalist",
-              "Industrial",
-              "Floating",
-              "Mid-Century",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "lighting",
-        "name": "Lighting",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Bedside Lamp",
-              "Floor Lamp",
-              "Overhead",
-              "LED Strip",
-              "Smart Bulbs",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "blackout-curtains",
-        "name": "Blackout Curtains",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Color",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "white-noise-machine",
-        "name": "White Noise Machine",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sound Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "White Noise",
-              "Fan",
-              "Nature Sounds",
-              "Pink Noise",
-              "All"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -15432,232 +14733,174 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "towels",
-        "name": "Towels",
-        "image": "wish-list",
-        "fields": [
+        "id": "items",
+        "name": "Items",
+        "image": "home-bathroom",
+        "products": [
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cotton",
-              "Turkish Cotton",
-              "Bamboo",
-              "Microfiber",
-              "Other"
+            "id": "towels",
+            "name": "Towels",
+            "image": "home-towels",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cotton",
+                  "Turkish Cotton",
+                  "Bamboo",
+                  "Microfiber"
+                ]
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Color Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bath-mat",
-        "name": "Bath Mat",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cotton",
-              "Memory Foam",
-              "Bamboo",
-              "Diatomite",
-              "Other"
+            "id": "bath-mat",
+            "name": "Bath Mat",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Color Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "shower-curtain",
-        "name": "Shower Curtain",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Solid",
-              "Pattern",
-              "Fabric",
-              "Vinyl",
-              "Other"
+            "id": "shower-curtain",
+            "name": "Shower Curtain",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Color Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "vanity-accessories",
-        "name": "Vanity Accessories",
-        "image": "grooming",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Toothbrush Holder",
-              "Soap Dispenser",
-              "Cotton Jar",
-              "Tray",
-              "Mirror",
-              "All"
+            "id": "vanity-accessories",
+            "name": "Vanity Accessories",
+            "image": "grooming",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Finish",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Chrome",
-              "Matte Black",
-              "Gold",
-              "Brushed Nickel",
-              "Other"
+            "id": "mirror",
+            "name": "Mirror",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mirror",
-        "name": "Mirror",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Vanity Mirror",
-              "Full Length",
-              "Medicine Cabinet",
-              "Magnifying",
-              "Other"
+            "id": "skincare-storage",
+            "name": "Skincare Storage",
+            "image": "grooming-skin",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Frame",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Frameless",
-              "Metal",
-              "Wood",
-              "LED",
-              "Other"
+            "id": "robe",
+            "name": "Robe",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cotton",
+                  "Turkish Cotton",
+                  "Bamboo",
+                  "Waffle Knit",
+                  "Silk"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "skincare-storage",
-        "name": "Skincare Storage",
-        "image": "grooming-skin",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Acrylic Organizer",
-              "Drawer Insert",
-              "Shelf",
-              "Under-Sink Organizer",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "robe",
-        "name": "Robe",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "S",
-              "M",
-              "L",
-              "XL",
-              "XXL"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Terry",
-              "Waffle",
-              "Silk",
-              "Fleece",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -15676,239 +14919,174 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "power-tools",
-        "name": "Power Tools",
+        "id": "items",
+        "name": "Items",
         "image": "specific-products",
-        "fields": [
+        "products": [
           {
-            "label": "Tool",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Drill",
-              "Circular Saw",
-              "Jigsaw",
-              "Sander",
-              "Router",
-              "Impact Driver",
-              "Other"
+            "id": "power-tools",
+            "name": "Power Tools",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Cordless or Corded",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cordless",
+                  "Corded",
+                  "Either"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Battery Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "DeWalt",
-              "Milwaukee",
-              "Makita",
-              "Ryobi",
-              "Other"
+            "id": "hand-tools",
+            "name": "Hand Tools",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "hand-tools",
-        "name": "Hand Tools",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hammer",
-              "Screwdriver Set",
-              "Wrench Set",
-              "Pliers",
-              "Level",
-              "Tool Set",
-              "Other"
+            "id": "tool-storage",
+            "name": "Tool Storage",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Toolbox",
+                  "Cabinet",
+                  "Wall Mount",
+                  "Rolling Cart"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "tool-storage",
-        "name": "Tool Storage",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Tool Chest",
-              "Cabinet",
-              "Wall Mount",
-              "Pegboard",
-              "Tool Bag",
-              "Other"
+            "id": "workbench",
+            "name": "Workbench",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "workbench",
-        "name": "Workbench",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Folding",
-              "Fixed",
-              "Adjustable Height",
-              "With Vice",
-              "Other"
+            "id": "car-care",
+            "name": "Car Care",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Product",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "car-care",
-        "name": "Car Care",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Vacuum",
-              "Pressure Washer",
-              "Polisher",
-              "Detail Kit",
-              "Jump Starter",
-              "Tire Inflator",
-              "Other"
+            "id": "lawn-garden",
+            "name": "Lawn & Garden",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gas or Electric",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Gas",
+                  "Electric",
+                  "Battery"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "lawn-garden",
-        "name": "Lawn & Garden",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Lawn Mower",
-              "Leaf Blower",
-              "Trimmer",
-              "Edger",
-              "Sprinkler",
-              "Garden Tools",
-              "Other"
+            "id": "safety-gear",
+            "name": "Safety Gear",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Power",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Battery",
-              "Gas",
-              "Electric",
-              "Manual"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "safety-gear",
-        "name": "Safety Gear",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Safety Glasses",
-              "Ear Protection",
-              "Gloves",
-              "Dust Mask",
-              "First Aid Kit",
-              "Fire Extinguisher",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -15927,253 +15105,191 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "patio-furniture",
-        "name": "Patio Furniture",
-        "image": "wish-list",
-        "fields": [
+        "id": "items",
+        "name": "Items",
+        "image": "home-patio",
+        "products": [
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Dining Set",
-              "Lounge Set",
-              "Sectional",
-              "Chairs",
-              "Bench",
-              "Other"
+            "id": "patio-furniture",
+            "name": "Patio Furniture",
+            "image": "home-patio",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wicker",
+                  "Aluminum",
+                  "Teak",
+                  "Steel"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Aluminum",
-              "Teak",
-              "Wicker",
-              "Steel",
-              "Plastic",
-              "Other"
+            "id": "grill",
+            "name": "Grill",
+            "image": "food-chicken",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Gas",
+                  "Charcoal",
+                  "Pellet",
+                  "Electric",
+                  "Kamado"
+                ]
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "BTUs",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "grill",
-        "name": "Grill",
-        "image": "food-chicken",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Gas",
-              "Charcoal",
-              "Pellet",
-              "Electric",
-              "Kamado",
-              "Flat Top"
+            "id": "string-lights",
+            "name": "String Lights",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Portable",
-              "Small",
-              "Medium",
-              "Large",
-              "Extra Large"
+            "id": "planters",
+            "name": "Planters",
+            "image": "flowers",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $200",
-              "$200-$500",
-              "$500-$1000",
-              "$1000+"
+            "id": "outdoor-rug",
+            "name": "Outdoor Rug",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "string-lights",
-        "name": "String Lights",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Globe",
-              "Edison",
-              "Fairy",
-              "Solar",
-              "LED",
-              "Other"
+            "id": "fire-pit",
+            "name": "Fire Pit",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wood Burning",
+                  "Gas",
+                  "Propane"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "planters",
-        "name": "Planters",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Terracotta",
-              "Ceramic",
-              "Metal",
-              "Wood",
-              "Fiberglass",
-              "Other"
+            "id": "hammock",
+            "name": "Hammock",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Rope",
+                  "Fabric",
+                  "Camping"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Small",
-              "Medium",
-              "Large",
-              "Extra Large",
-              "Raised Bed"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "outdoor-rug",
-        "name": "Outdoor Rug",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "fire-pit",
-        "name": "Fire Pit",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood Burning",
-              "Gas",
-              "Propane",
-              "Tabletop",
-              "Fire Bowl",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $100",
-              "$100-$300",
-              "$300-$700",
-              "$700+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "hammock",
-        "name": "Hammock",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Rope",
-              "Fabric",
-              "Camping",
-              "Double",
-              "Chair Hammock",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -16192,212 +15308,128 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "closet",
-        "name": "Closet",
-        "image": "clothing-tops",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Closet System",
-              "Hangers",
-              "Shoe Rack",
-              "Drawer Organizer",
-              "Shelf Dividers",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "kitchen-drawers",
-        "name": "Kitchen Drawers",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Drawer Dividers",
-              "Utensil Tray",
-              "Cabinet Organizer",
-              "Lazy Susan",
-              "Spice Rack",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bathroom-org",
-        "name": "Bathroom",
-        "image": "grooming",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under-Sink Organizer",
-              "Shower Caddy",
-              "Medicine Cabinet",
-              "Drawer Insert",
-              "Over-Door",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "entryway",
-        "name": "Entryway",
+        "id": "areas",
+        "name": "Areas",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Shoe Rack",
-              "Key Hook",
-              "Entryway Bench",
-              "Coat Rack",
-              "Mail Organizer",
-              "Other"
+            "id": "closet",
+            "name": "Closet",
+            "image": "clothing-tops",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "home-office",
-        "name": "Home Office",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cable Management",
-              "Desk Organizer",
-              "Monitor Stand",
-              "Drawer Unit",
-              "Filing Cabinet",
-              "Other"
+            "id": "kitchen-drawers",
+            "name": "Kitchen Drawers",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "garage-org",
-        "name": "Garage",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wall Shelving",
-              "Ceiling Storage",
-              "Bike Mount",
-              "Sports Organizer",
-              "Bins & Totes",
-              "Other"
+            "id": "bathroom-org",
+            "name": "Bathroom",
+            "image": "grooming",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "laundry",
-        "name": "Laundry",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Laundry Basket",
-              "Drying Rack",
-              "Hamper",
-              "Folding Station",
-              "Shelf",
-              "Other"
+            "id": "entryway",
+            "name": "Entryway",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
+            "id": "home-office",
+            "name": "Home Office",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "garage-org",
+            "name": "Garage",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "laundry",
+            "name": "Laundry",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -16416,312 +15448,217 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "sofa",
-        "name": "Sofa",
+        "id": "pieces",
+        "name": "Pieces",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Sectional",
-              "Mid-Century",
-              "Boho",
-              "Minimalist",
-              "Other"
+            "id": "sofa",
+            "name": "Sofa",
+            "image": "home-sofa",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fabric",
-              "Velvet",
-              "Linen",
-              "Leather",
-              "Boucle",
-              "Other"
+            "id": "bed-frame",
+            "name": "Bed Frame",
+            "image": "home-bedding",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Twin",
+                  "Full",
+                  "Queen",
+                  "King",
+                  "Cal King"
+                ]
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bed-frame",
-        "name": "Bed Frame",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Twin",
-              "Full",
-              "Queen",
-              "King",
-              "Cal King"
+            "id": "dining-table",
+            "name": "Dining Table",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Upholstered",
-              "Platform",
-              "Canopy",
-              "Storage Bed",
-              "Wooden",
-              "Metal"
+            "id": "desk",
+            "name": "Desk",
+            "image": "home-desk",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dining-table",
-        "name": "Dining Table",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "2-4 Person",
-              "4-6 Person",
-              "6-8 Person",
-              "8+ Person"
+            "id": "bookshelf",
+            "name": "Bookshelf",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "Marble",
-              "Glass",
-              "Rattan",
-              "Other"
+            "id": "coffee-table",
+            "name": "Coffee Table",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "desk",
-        "name": "Desk",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Vanity Desk",
-              "Standing Desk",
-              "Simple Writing Desk",
-              "L-Shaped",
-              "Other"
+            "id": "accent-chair",
+            "name": "Accent Chair",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Boho",
-              "Minimalist",
-              "Mid-Century",
-              "Other"
+            "id": "dresser",
+            "name": "Dresser",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bookshelf",
-        "name": "Bookshelf",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Floating Shelves",
-              "Freestanding",
-              "Ladder",
-              "Cube",
-              "Built-In"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "coffee-table",
-        "name": "Coffee Table",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Boho",
-              "Marble Top",
-              "Glass",
-              "Ottoman",
-              "Other"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "Glass",
-              "Marble",
-              "Rattan",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "accent-chair",
-        "name": "Accent Chair",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Accent",
-              "Papasan",
-              "Barrel",
-              "Slipper",
-              "Egg Chair",
-              "Boucle",
-              "Other"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fabric",
-              "Velvet",
-              "Boucle",
-              "Rattan",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dresser",
-        "name": "Dresser",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Tall",
-              "Wide",
-              "Mid-Century",
-              "Rattan-Front",
-              "Other"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "MDF",
-              "Rattan",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -16740,265 +15677,419 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "cookware",
-        "name": "Cookware",
+        "id": "items",
+        "name": "Items",
         "image": "grocery-specifics",
-        "fields": [
+        "products": [
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Non-Stick",
-              "Cast Iron",
-              "Stainless Steel",
-              "Ceramic",
-              "Enameled"
+            "id": "cookware",
+            "name": "Cookware",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cast Iron",
+                  "Stainless Steel",
+                  "Non-Stick",
+                  "Carbon Steel"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Skillet",
-              "Saucepan",
-              "Dutch Oven",
-              "Full Set",
-              "Other"
+            "id": "knives",
+            "name": "Knives",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Handle Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
+            "id": "small-appliances",
+            "name": "Small Appliances",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Appliance",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "coffee-maker",
+            "name": "Coffee Maker",
+            "image": "coffee-hot",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Drip",
+                  "Espresso",
+                  "French Press",
+                  "Pour Over",
+                  "Pod"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "stand-mixer",
+            "name": "Stand Mixer",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cutting-boards",
+            "name": "Cutting Boards",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wood",
+                  "Bamboo",
+                  "Plastic",
+                  "Marble"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "storage-organization",
+            "name": "Storage & Organization",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "bakeware",
+            "name": "Bakeware",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    "key": "electronics-entertainment-female",
+    "label": "Electronics & Entertainment",
+    "section": "home-living",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 30,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
       {
-        "id": "knives",
-        "name": "Knives",
-        "image": "grocery-specifics",
-        "fields": [
+        "id": "devices",
+        "name": "Devices",
+        "image": "specific-products",
+        "products": [
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Chef''s Knife",
-              "Santoku",
-              "Bread Knife",
-              "Paring Knife",
-              "Full Set"
+            "id": "tv",
+            "name": "TV",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "OLED",
+                  "QLED",
+                  "LED",
+                  "4K",
+                  "8K"
+                ]
+              },
+              {
+                "label": "Mount or Stand",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wall Mount",
+                  "Stand"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "sound-system",
+            "name": "Sound System",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Soundbar",
+                  "Surround Sound",
+                  "Bookshelf Speakers",
+                  "Subwoofer"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "small-appliances",
-        "name": "Small Appliances",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Air Fryer",
-              "Instant Pot",
-              "Blender",
-              "Toaster Oven",
-              "Food Processor",
-              "Waffle Maker",
-              "Other"
+            "id": "gaming-setup",
+            "name": "Gaming Setup",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "PlayStation",
+                  "Xbox",
+                  "Nintendo",
+                  "PC"
+                ]
+              },
+              {
+                "label": "Accessories",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "coffee-maker",
-        "name": "Coffee Maker",
-        "image": "coffee-hot",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Drip",
-              "Espresso Machine",
-              "French Press",
-              "Pour Over",
-              "Pod Machine",
-              "Moka Pot"
+            "id": "smart-home-hub",
+            "name": "Smart Home Hub",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "System",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Alexa",
+                  "Google Home",
+                  "Apple HomeKit",
+                  "SmartThings"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "projector",
+            "name": "Projector",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Home Theater",
+                  "Portable",
+                  "Short Throw"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "stand-mixer",
-        "name": "Stand Mixer",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Color",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cutting-boards",
-        "name": "Cutting Boards",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "Bamboo",
-              "Marble",
-              "Plastic",
-              "Other"
+            "id": "streaming-devices",
+            "name": "Streaming Devices",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Device",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Apple TV",
+                  "Roku",
+                  "Fire Stick",
+                  "Chromecast"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "storage-organization",
-        "name": "Storage & Organization",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Pantry Containers",
-              "Spice Rack",
-              "Cabinet Organizer",
-              "Lazy Susan",
-              "Other"
+            "id": "turntable",
+            "name": "Turntable",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Budget",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bakeware",
-        "name": "Bakeware",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Sheet Pan",
-              "Muffin Tin",
-              "Loaf Pan",
-              "Cake Pan",
-              "Full Set",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -17012,250 +16103,219 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "genders": [
       "female"
     ],
-    "sort_order": 30,
+    "sort_order": 40,
     "is_active": true,
     "fields": [],
     "subcategories": [
       {
-        "id": "bedding",
-        "name": "Bedding",
+        "id": "items",
+        "name": "Items",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Bed Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Twin",
-              "Full",
-              "Queen",
-              "King",
-              "Cal King"
+            "id": "bedding",
+            "name": "Bedding",
+            "image": "home-bedding",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Twin",
+                  "Full",
+                  "Queen",
+                  "King",
+                  "Cal King"
+                ]
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cotton",
+                  "Linen",
+                  "Bamboo",
+                  "Silk",
+                  "Microfiber"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cotton",
-              "Linen",
-              "Bamboo",
-              "Microfiber",
-              "Silk"
+            "id": "pillows",
+            "name": "Pillows",
+            "image": "home-pillows",
+            "fields": [
+              {
+                "label": "Fill",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Down",
+                  "Memory Foam",
+                  "Latex",
+                  "Synthetic"
+                ]
+              },
+              {
+                "label": "Firmness",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Soft",
+                  "Medium",
+                  "Firm"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "pillows",
-        "name": "Pillows",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Sleep Position",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Side",
-              "Back",
-              "Stomach",
-              "Combo"
+            "id": "mattress",
+            "name": "Mattress",
+            "image": "home-mattress",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Twin",
+                  "Full",
+                  "Queen",
+                  "King",
+                  "Cal King"
+                ]
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Memory Foam",
+                  "Innerspring",
+                  "Hybrid",
+                  "Latex"
+                ]
+              },
+              {
+                "label": "Firmness",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Soft",
+                  "Medium-Soft",
+                  "Medium",
+                  "Medium-Firm",
+                  "Firm"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Fill",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Down",
-              "Memory Foam",
-              "Latex",
-              "Buckwheat",
-              "Other"
+            "id": "nightstand",
+            "name": "Nightstand",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mattress",
-        "name": "Mattress",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Twin",
-              "Full",
-              "Queen",
-              "King",
-              "Cal King"
+            "id": "lighting",
+            "name": "Lighting",
+            "image": "home-lighting",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Lamp",
+                  "Overhead",
+                  "LED Strip",
+                  "Smart Bulbs"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Feel",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Soft",
-              "Medium",
-              "Firm",
-              "Extra Firm"
+            "id": "blackout-curtains",
+            "name": "Blackout Curtains",
+            "image": "home-curtains",
+            "fields": [
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Memory Foam",
-              "Innerspring",
-              "Hybrid",
-              "Latex"
+            "id": "white-noise-machine",
+            "name": "White Noise Machine",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "nightstand",
-        "name": "Nightstand",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Boho",
-              "Minimalist",
-              "Floating",
-              "Rattan",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "lighting",
-        "name": "Lighting",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Bedside Lamp",
-              "Floor Lamp",
-              "String Lights",
-              "LED Strip",
-              "Smart Bulbs",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "blackout-curtains",
-        "name": "Blackout Curtains",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Color",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "white-noise-machine",
-        "name": "White Noise Machine",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sound Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "White Noise",
-              "Fan",
-              "Nature Sounds",
-              "Pink Noise",
-              "All"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -17269,503 +16329,187 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "genders": [
       "female"
     ],
-    "sort_order": 40,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "towels",
-        "name": "Towels",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cotton",
-              "Turkish Cotton",
-              "Bamboo",
-              "Waffle Weave",
-              "Other"
-            ]
-          },
-          {
-            "label": "Color Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bath-mat",
-        "name": "Bath Mat",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cotton",
-              "Memory Foam",
-              "Bamboo",
-              "Diatomite",
-              "Other"
-            ]
-          },
-          {
-            "label": "Color Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "shower-curtain",
-        "name": "Shower Curtain",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Solid",
-              "Floral",
-              "Abstract",
-              "Waffle",
-              "Other"
-            ]
-          },
-          {
-            "label": "Color Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "vanity-accessories",
-        "name": "Vanity Accessories",
-        "image": "grooming-skin",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Toothbrush Holder",
-              "Soap Dispenser",
-              "Cotton Jar",
-              "Tray",
-              "Candle",
-              "All"
-            ]
-          },
-          {
-            "label": "Finish",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Gold",
-              "Rose Gold",
-              "Marble",
-              "Chrome",
-              "Matte Black",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mirror",
-        "name": "Mirror",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Vanity Mirror",
-              "Full Length",
-              "Hollywood Mirror",
-              "LED Mirror",
-              "Magnifying",
-              "Other"
-            ]
-          },
-          {
-            "label": "Frame",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Gold",
-              "Silver",
-              "Rose Gold",
-              "Frameless",
-              "Wood",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "skincare-storage",
-        "name": "Skincare Storage",
-        "image": "grooming-skin",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Acrylic Organizer",
-              "Fridge for Skincare",
-              "Drawer Insert",
-              "Shelf",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "robe",
-        "name": "Robe",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "XS",
-              "S",
-              "M",
-              "L",
-              "XL"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Terry",
-              "Waffle",
-              "Silk",
-              "Satin",
-              "Fleece",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "decor-styling-female",
-    "label": "Decor & Styling",
-    "section": "home-living",
-    "page": "mygotwo",
-    "genders": [
-      "female"
-    ],
     "sort_order": 50,
     "is_active": true,
     "fields": [],
     "subcategories": [
       {
-        "id": "wall-art",
-        "name": "Wall Art",
-        "image": "wish-list",
-        "fields": [
+        "id": "items",
+        "name": "Items",
+        "image": "home-bathroom",
+        "products": [
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Abstract",
-              "Botanical",
-              "Photography",
-              "Prints",
-              "Canvas",
-              "Gallery Wall",
-              "Other"
+            "id": "towels",
+            "name": "Towels",
+            "image": "home-towels",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cotton",
+                  "Turkish Cotton",
+                  "Bamboo",
+                  "Microfiber"
+                ]
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Color Palette",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "throw-pillows",
-        "name": "Throw Pillows",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Velvet",
-              "Linen",
-              "Cotton",
-              "Boucle",
-              "Other"
+            "id": "bath-mat",
+            "name": "Bath Mat",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "rugs",
-        "name": "Rugs",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "2x3",
-              "4x6",
-              "5x8",
-              "8x10",
-              "9x12",
-              "Runner",
-              "Other"
+            "id": "shower-curtain",
+            "name": "Shower Curtain",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Boho",
-              "Persian",
-              "Shag",
-              "Jute",
-              "Other"
+            "id": "vanity-accessories",
+            "name": "Vanity Accessories",
+            "image": "grooming",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "vases",
-        "name": "Vases",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Minimalist",
-              "Sculptural",
-              "Ceramic",
-              "Glass",
-              "Terracotta",
-              "Other"
+            "id": "mirror",
+            "name": "Mirror",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "photo-frames",
-        "name": "Photo Frames",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "4x6",
-              "5x7",
-              "8x10",
-              "11x14",
-              "Multiple",
-              "Gallery Wall Set"
+            "id": "skincare-storage",
+            "name": "Skincare Storage",
+            "image": "grooming-skin",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Wood",
-              "Gold",
-              "Silver",
-              "Black",
-              "Other"
+            "id": "robe",
+            "name": "Robe",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cotton",
+                  "Turkish Cotton",
+                  "Bamboo",
+                  "Waffle Knit",
+                  "Silk"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mirrors",
-        "name": "Mirrors",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Full Length",
-              "Arch",
-              "Round",
-              "Sunburst",
-              "Gallery",
-              "Other"
-            ]
-          },
-          {
-            "label": "Frame",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Gold",
-              "Silver",
-              "Wood",
-              "Rattan",
-              "Frameless",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "throw-blankets",
-        "name": "Throw Blankets",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Knit",
-              "Faux Fur",
-              "Cashmere",
-              "Fleece",
-              "Waffle",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
     ]
   },
   {
-    "key": "candles-fragrance-female",
-    "label": "Candles & Fragrance",
+    "key": "garage-tools-female",
+    "label": "Garage & Tools",
     "section": "home-living",
     "page": "mygotwo",
     "genders": [
@@ -17776,191 +16520,174 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "candle",
-        "name": "Candle",
-        "image": "scent-candles",
-        "fields": [
+        "id": "items",
+        "name": "Items",
+        "image": "specific-products",
+        "products": [
           {
-            "label": "Favorite Scents",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Travel / Votive",
-              "Small",
-              "Medium",
-              "Large",
-              "Candle Set"
+            "id": "power-tools",
+            "name": "Power Tools",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Cordless or Corded",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cordless",
+                  "Corded",
+                  "Either"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "reed-diffuser",
-        "name": "Reed Diffuser",
-        "image": "scent-home",
-        "fields": [
-          {
-            "label": "Favorite Scents",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "wax-melts",
-        "name": "Wax Melts",
-        "image": "scent-candles",
-        "fields": [
-          {
-            "label": "Favorite Scents",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "room-spray",
-        "name": "Room Spray",
-        "image": "scent-home",
-        "fields": [
-          {
-            "label": "Favorite Scents",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "incense",
-        "name": "Incense",
-        "image": "scent-oils",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Sticks",
-              "Cones",
-              "Coils",
-              "Backflow",
-              "Other"
+            "id": "hand-tools",
+            "name": "Hand Tools",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Scents",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "linen-spray",
-        "name": "Linen Spray",
-        "image": "scent-home",
-        "fields": [
-          {
-            "label": "Favorite Scents",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "oil-diffuser",
-        "name": "Oil Diffuser",
-        "image": "scent-oils",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Ultrasonic",
-              "Nebulizing",
-              "Heat",
-              "Evaporative"
+            "id": "tool-storage",
+            "name": "Tool Storage",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Toolbox",
+                  "Cabinet",
+                  "Wall Mount",
+                  "Rolling Cart"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Oils",
-            "type": "text",
-            "value": ""
+            "id": "workbench",
+            "name": "Workbench",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
+            "id": "car-care",
+            "name": "Car Care",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Product",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "lawn-garden",
+            "name": "Lawn & Garden",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gas or Electric",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Gas",
+                  "Electric",
+                  "Battery"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "safety-gear",
+            "name": "Safety Gear",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -17979,216 +16706,191 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "patio-furniture",
-        "name": "Patio Furniture",
-        "image": "wish-list",
-        "fields": [
+        "id": "items",
+        "name": "Items",
+        "image": "home-patio",
+        "products": [
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Dining Set",
-              "Lounge Set",
-              "Bistro Set",
-              "Chairs",
-              "Bench",
-              "Other"
+            "id": "patio-furniture",
+            "name": "Patio Furniture",
+            "image": "home-patio",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wicker",
+                  "Aluminum",
+                  "Teak",
+                  "Steel"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wicker",
-              "Teak",
-              "Aluminum",
-              "Steel",
-              "Other"
+            "id": "grill",
+            "name": "Grill",
+            "image": "food-chicken",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Gas",
+                  "Charcoal",
+                  "Pellet",
+                  "Electric",
+                  "Kamado"
+                ]
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "BTUs",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "string-lights",
-        "name": "String Lights",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Globe",
-              "Edison",
-              "Fairy",
-              "Solar",
-              "LED",
-              "Other"
+            "id": "string-lights",
+            "name": "String Lights",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "planters",
-        "name": "Planters",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Terracotta",
-              "Ceramic",
-              "Metal",
-              "Wood",
-              "Fiberglass",
-              "Other"
+            "id": "planters",
+            "name": "Planters",
+            "image": "flowers",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Small",
-              "Medium",
-              "Large",
-              "Extra Large",
-              "Raised Bed"
+            "id": "outdoor-rug",
+            "name": "Outdoor Rug",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "outdoor-rug",
-        "name": "Outdoor Rug",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "fire-pit",
-        "name": "Fire Pit",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood Burning",
-              "Gas",
-              "Propane",
-              "Tabletop",
-              "Fire Bowl"
+            "id": "fire-pit",
+            "name": "Fire Pit",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wood Burning",
+                  "Gas",
+                  "Propane"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "hammock",
-        "name": "Hammock",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Rope",
-              "Fabric",
-              "Chair Hammock",
-              "Hanging Bed",
-              "Other"
+            "id": "hammock",
+            "name": "Hammock",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Rope",
+                  "Fabric",
+                  "Camping"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "garden",
-        "name": "Garden",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Garden Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Vegetable",
-              "Herb",
-              "Flower",
-              "Container",
-              "Raised Bed",
-              "Other"
-            ]
-          },
-          {
-            "label": "Favorite Plants",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -18207,211 +16909,128 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "closet",
-        "name": "Closet",
-        "image": "clothing-tops",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Closet System",
-              "Hangers",
-              "Shoe Rack",
-              "Drawer Organizer",
-              "Shelf Dividers",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "kitchen-drawers",
-        "name": "Kitchen Drawers",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Drawer Dividers",
-              "Utensil Tray",
-              "Cabinet Organizer",
-              "Lazy Susan",
-              "Pantry Containers",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bathroom-org",
-        "name": "Bathroom",
-        "image": "grooming-skin",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under-Sink Organizer",
-              "Shower Caddy",
-              "Vanity Organizer",
-              "Drawer Insert",
-              "Over-Door",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "entryway",
-        "name": "Entryway",
+        "id": "areas",
+        "name": "Areas",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Shoe Rack",
-              "Key Hook",
-              "Entryway Bench",
-              "Coat Rack",
-              "Mail Organizer",
-              "Other"
+            "id": "closet",
+            "name": "Closet",
+            "image": "clothing-tops",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "home-office",
-        "name": "Home Office",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Desk Organizer",
-              "Cable Management",
-              "Monitor Stand",
-              "Filing System",
-              "Bulletin Board",
-              "Other"
+            "id": "kitchen-drawers",
+            "name": "Kitchen Drawers",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "laundry",
-        "name": "Laundry",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Laundry Basket",
-              "Drying Rack",
-              "Hamper",
-              "Folding Station",
-              "Shelf",
-              "Other"
+            "id": "bathroom-org",
+            "name": "Bathroom",
+            "image": "grooming",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "junk-drawer",
-        "name": "Junk Drawer",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Drawer Organizer",
-              "Small Bins",
-              "Label Maker",
-              "Dividers",
-              "Other"
+            "id": "entryway",
+            "name": "Entryway",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
+            "id": "home-office",
+            "name": "Home Office",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "garage-org",
+            "name": "Garage",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "laundry",
+            "name": "Laundry",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -18430,309 +17049,217 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "sofa",
-        "name": "Sofa",
+        "id": "pieces",
+        "name": "Pieces",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Sectional",
-              "Mid-Century",
-              "Minimalist",
-              "Boho",
-              "Other"
+            "id": "sofa",
+            "name": "Sofa",
+            "image": "home-sofa",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fabric",
-              "Leather",
-              "Velvet",
-              "Linen",
-              "Boucle",
-              "Other"
+            "id": "bed-frame",
+            "name": "Bed Frame",
+            "image": "home-bedding",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Twin",
+                  "Full",
+                  "Queen",
+                  "King",
+                  "Cal King"
+                ]
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bed-frame",
-        "name": "Bed Frame",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Twin",
-              "Full",
-              "Queen",
-              "King",
-              "Cal King"
+            "id": "dining-table",
+            "name": "Dining Table",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Platform",
-              "Upholstered",
-              "Metal",
-              "Wooden",
-              "Storage Bed",
-              "Canopy"
+            "id": "desk",
+            "name": "Desk",
+            "image": "home-desk",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dining-table",
-        "name": "Dining Table",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "2-4 Person",
-              "4-6 Person",
-              "6-8 Person",
-              "8+ Person"
+            "id": "bookshelf",
+            "name": "Bookshelf",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "Glass",
-              "Marble",
-              "Metal",
-              "Other"
+            "id": "coffee-table",
+            "name": "Coffee Table",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "desk",
-        "name": "Desk",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Standing Desk",
-              "L-Shaped",
-              "Simple Writing Desk",
-              "Corner Desk",
-              "Other"
+            "id": "accent-chair",
+            "name": "Accent Chair",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "Metal",
-              "Glass",
-              "Other"
+            "id": "dresser",
+            "name": "Dresser",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bookshelf",
-        "name": "Bookshelf",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Floating Shelves",
-              "Freestanding",
-              "Ladder",
-              "Cube",
-              "Built-In"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "coffee-table",
-        "name": "Coffee Table",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Industrial",
-              "Minimalist",
-              "Boho",
-              "Ottoman",
-              "Other"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "Glass",
-              "Metal",
-              "Marble",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "accent-chair",
-        "name": "Accent Chair",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Lounge",
-              "Egg Chair",
-              "Barrel",
-              "Papasan",
-              "Slipper",
-              "Other"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Fabric",
-              "Velvet",
-              "Leather",
-              "Boucle",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dresser",
-        "name": "Dresser",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Tall",
-              "Wide",
-              "Mid-Century",
-              "Other"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "MDF",
-              "Metal",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -18751,266 +17278,204 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "cookware",
-        "name": "Cookware",
+        "id": "items",
+        "name": "Items",
         "image": "grocery-specifics",
-        "fields": [
+        "products": [
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Non-Stick",
-              "Cast Iron",
-              "Stainless Steel",
-              "Carbon Steel",
-              "Ceramic"
+            "id": "cookware",
+            "name": "Cookware",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cast Iron",
+                  "Stainless Steel",
+                  "Non-Stick",
+                  "Carbon Steel"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Skillet",
-              "Saucepan",
-              "Dutch Oven",
-              "Wok",
-              "Full Set",
-              "Other"
+            "id": "knives",
+            "name": "Knives",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Handle Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "knives",
-        "name": "Knives",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Chef''s Knife",
-              "Santoku",
-              "Bread Knife",
-              "Paring Knife",
-              "Full Set"
+            "id": "small-appliances",
+            "name": "Small Appliances",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Appliance",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "coffee-maker",
+            "name": "Coffee Maker",
+            "image": "coffee-hot",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Drip",
+                  "Espresso",
+                  "French Press",
+                  "Pour Over",
+                  "Pod"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "small-appliances",
-        "name": "Small Appliances",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Air Fryer",
-              "Instant Pot",
-              "Blender",
-              "Toaster Oven",
-              "Food Processor",
-              "Rice Cooker",
-              "Other"
+            "id": "stand-mixer",
+            "name": "Stand Mixer",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "coffee-maker",
-        "name": "Coffee Maker",
-        "image": "coffee-hot",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Drip",
-              "Espresso Machine",
-              "French Press",
-              "Pour Over",
-              "Pod Machine",
-              "Moka Pot"
+            "id": "cutting-boards",
+            "name": "Cutting Boards",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wood",
+                  "Bamboo",
+                  "Plastic",
+                  "Marble"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $50",
-              "$50-$150",
-              "$150-$300",
-              "$300+"
+            "id": "storage-organization",
+            "name": "Storage & Organization",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "stand-mixer",
-        "name": "Stand Mixer",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Color",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cutting-boards",
-        "name": "Cutting Boards",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood",
-              "Bamboo",
-              "Plastic",
-              "Marble",
-              "Other"
+            "id": "bakeware",
+            "name": "Bakeware",
+            "image": "grocery-specifics",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "storage-organization",
-        "name": "Storage & Organization",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Pantry Containers",
-              "Spice Rack",
-              "Cabinet Organizer",
-              "Drawer Dividers",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bakeware",
-        "name": "Bakeware",
-        "image": "grocery-specifics",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Sheet Pan",
-              "Muffin Tin",
-              "Loaf Pan",
-              "Cake Pan",
-              "Full Set",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -19029,264 +17494,203 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "tv",
-        "name": "TV",
+        "id": "devices",
+        "name": "Devices",
         "image": "specific-products",
-        "fields": [
+        "products": [
           {
-            "label": "Screen Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under 40\"",
-              "40-50\"",
-              "55\"",
-              "65\"",
-              "75\"",
-              "85\"+"
+            "id": "tv",
+            "name": "TV",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "OLED",
+                  "QLED",
+                  "LED",
+                  "4K",
+                  "8K"
+                ]
+              },
+              {
+                "label": "Mount or Stand",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wall Mount",
+                  "Stand"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "OLED",
-              "QLED",
-              "LED",
-              "4K",
-              "8K"
+            "id": "sound-system",
+            "name": "Sound System",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Soundbar",
+                  "Surround Sound",
+                  "Bookshelf Speakers",
+                  "Subwoofer"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $500",
-              "$500-$1000",
-              "$1000-$2000",
-              "$2000+"
+            "id": "gaming-setup",
+            "name": "Gaming Setup",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "PlayStation",
+                  "Xbox",
+                  "Nintendo",
+                  "PC"
+                ]
+              },
+              {
+                "label": "Accessories",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sound-system",
-        "name": "Sound System",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Soundbar",
-              "Surround Sound",
-              "Bookshelf Speakers",
-              "Floor Speakers",
-              "Full System"
+            "id": "smart-home-hub",
+            "name": "Smart Home Hub",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "System",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Alexa",
+                  "Google Home",
+                  "Apple HomeKit",
+                  "SmartThings"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $200",
-              "$200-$500",
-              "$500-$1000",
-              "$1000+"
+            "id": "projector",
+            "name": "Projector",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Home Theater",
+                  "Portable",
+                  "Short Throw"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "gaming-setup",
-        "name": "Gaming Setup",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "PlayStation",
-              "Xbox",
-              "Nintendo",
-              "PC",
-              "Multi-Platform"
+            "id": "streaming-devices",
+            "name": "Streaming Devices",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Device",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Apple TV",
+                  "Roku",
+                  "Fire Stick",
+                  "Chromecast"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Console",
-              "Monitor",
-              "Gaming Chair",
-              "Desk",
-              "Headset",
-              "Controller",
-              "Other"
+            "id": "turntable",
+            "name": "Turntable",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Budget",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "smart-home-hub",
-        "name": "Smart Home Hub",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Ecosystem",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Amazon Alexa",
-              "Google Home",
-              "Apple HomeKit",
-              "Samsung SmartThings",
-              "Other"
-            ]
-          },
-          {
-            "label": "Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "projector",
-        "name": "Projector",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Use",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Home Theater",
-              "Gaming",
-              "Outdoor Movies",
-              "Portable",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $300",
-              "$300-$700",
-              "$700-$1500",
-              "$1500+"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "streaming-devices",
-        "name": "Streaming Devices",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Device",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Apple TV",
-              "Roku",
-              "Fire Stick",
-              "Chromecast",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "turntable",
-        "name": "Turntable",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Budget",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under $150",
-              "$150-$300",
-              "$300-$600",
-              "$600+"
-            ]
-          },
-          {
-            "label": "Favorite Genres / Artists",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -19305,245 +17709,214 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "bedding",
-        "name": "Bedding",
+        "id": "items",
+        "name": "Items",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Bed Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Twin",
-              "Full",
-              "Queen",
-              "King",
-              "Cal King"
+            "id": "bedding",
+            "name": "Bedding",
+            "image": "home-bedding",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Twin",
+                  "Full",
+                  "Queen",
+                  "King",
+                  "Cal King"
+                ]
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cotton",
+                  "Linen",
+                  "Bamboo",
+                  "Silk",
+                  "Microfiber"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cotton",
-              "Linen",
-              "Bamboo",
-              "Microfiber",
-              "Silk"
+            "id": "pillows",
+            "name": "Pillows",
+            "image": "home-pillows",
+            "fields": [
+              {
+                "label": "Fill",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Down",
+                  "Memory Foam",
+                  "Latex",
+                  "Synthetic"
+                ]
+              },
+              {
+                "label": "Firmness",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Soft",
+                  "Medium",
+                  "Firm"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "pillows",
-        "name": "Pillows",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Sleep Position",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Side",
-              "Back",
-              "Stomach",
-              "Combo"
+            "id": "mattress",
+            "name": "Mattress",
+            "image": "home-mattress",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Twin",
+                  "Full",
+                  "Queen",
+                  "King",
+                  "Cal King"
+                ]
+              },
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Memory Foam",
+                  "Innerspring",
+                  "Hybrid",
+                  "Latex"
+                ]
+              },
+              {
+                "label": "Firmness",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Soft",
+                  "Medium-Soft",
+                  "Medium",
+                  "Medium-Firm",
+                  "Firm"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Fill",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Down",
-              "Memory Foam",
-              "Latex",
-              "Buckwheat",
-              "Other"
+            "id": "nightstand",
+            "name": "Nightstand",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mattress",
-        "name": "Mattress",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Twin",
-              "Full",
-              "Queen",
-              "King",
-              "Cal King"
+            "id": "lighting",
+            "name": "Lighting",
+            "image": "home-lighting",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Lamp",
+                  "Overhead",
+                  "LED Strip",
+                  "Smart Bulbs"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Feel",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Soft",
-              "Medium",
-              "Firm",
-              "Extra Firm"
+            "id": "blackout-curtains",
+            "name": "Blackout Curtains",
+            "image": "home-curtains",
+            "fields": [
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Memory Foam",
-              "Innerspring",
-              "Hybrid",
-              "Latex"
+            "id": "white-noise-machine",
+            "name": "White Noise Machine",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "nightstand",
-        "name": "Nightstand",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Minimalist",
-              "Industrial",
-              "Floating",
-              "Mid-Century",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "lighting",
-        "name": "Lighting",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Bedside Lamp",
-              "Floor Lamp",
-              "LED Strip",
-              "String Lights",
-              "Smart Bulbs",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "blackout-curtains",
-        "name": "Blackout Curtains",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Color",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "white-noise-machine",
-        "name": "White Noise Machine",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Sound Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "White Noise",
-              "Fan",
-              "Nature Sounds",
-              "Pink Noise",
-              "All"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -19562,243 +17935,182 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "towels",
-        "name": "Towels",
-        "image": "wish-list",
-        "fields": [
+        "id": "items",
+        "name": "Items",
+        "image": "home-bathroom",
+        "products": [
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cotton",
-              "Turkish Cotton",
-              "Bamboo",
-              "Microfiber",
-              "Other"
+            "id": "towels",
+            "name": "Towels",
+            "image": "home-towels",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cotton",
+                  "Turkish Cotton",
+                  "Bamboo",
+                  "Microfiber"
+                ]
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Color Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bath-mat",
-        "name": "Bath Mat",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cotton",
-              "Memory Foam",
-              "Bamboo",
-              "Diatomite",
-              "Other"
+            "id": "bath-mat",
+            "name": "Bath Mat",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Color",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Color Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "shower-curtain",
-        "name": "Shower Curtain",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Solid",
-              "Pattern",
-              "Fabric",
-              "Vinyl",
-              "Other"
+            "id": "shower-curtain",
+            "name": "Shower Curtain",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Color Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "vanity-accessories",
-        "name": "Vanity Accessories",
-        "image": "grooming",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Toothbrush Holder",
-              "Soap Dispenser",
-              "Cotton Jar",
-              "Tray",
-              "Mirror",
-              "All"
+            "id": "vanity-accessories",
+            "name": "Vanity Accessories",
+            "image": "grooming",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Finish",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Chrome",
-              "Matte Black",
-              "Gold",
-              "Brushed Nickel",
-              "Other"
+            "id": "mirror",
+            "name": "Mirror",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mirror",
-        "name": "Mirror",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Vanity Mirror",
-              "Full Length",
-              "Round",
-              "Arch",
-              "LED",
-              "Other"
+            "id": "skincare-storage",
+            "name": "Skincare Storage",
+            "image": "grooming-skin",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Frame",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Frameless",
-              "Metal",
-              "Wood",
-              "Gold",
-              "Other"
+            "id": "robe",
+            "name": "Robe",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cotton",
+                  "Turkish Cotton",
+                  "Bamboo",
+                  "Waffle Knit",
+                  "Silk"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "skincare-storage",
-        "name": "Skincare Storage",
-        "image": "grooming-skin",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Acrylic Organizer",
-              "Drawer Insert",
-              "Shelf",
-              "Under-Sink Organizer",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "robe",
-        "name": "Robe",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "XS",
-              "S",
-              "M",
-              "L",
-              "XL",
-              "XXL"
-            ]
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Terry",
-              "Waffle",
-              "Silk",
-              "Satin",
-              "Fleece",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
     ]
   },
   {
-    "key": "decor-styling-nb",
-    "label": "Decor & Styling",
+    "key": "garage-tools-nb",
+    "label": "Garage & Tools",
     "section": "home-living",
     "page": "mygotwo",
     "genders": [
@@ -19809,238 +18121,174 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "wall-art",
-        "name": "Wall Art",
-        "image": "wish-list",
-        "fields": [
+        "id": "items",
+        "name": "Items",
+        "image": "specific-products",
+        "products": [
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Abstract",
-              "Photography",
-              "Prints",
-              "Canvas",
-              "Posters",
-              "Gallery Wall",
-              "Other"
+            "id": "power-tools",
+            "name": "Power Tools",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Cordless or Corded",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Cordless",
+                  "Corded",
+                  "Either"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Color Palette",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "throw-pillows",
-        "name": "Throw Pillows",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Velvet",
-              "Linen",
-              "Cotton",
-              "Boucle",
-              "Other"
+            "id": "hand-tools",
+            "name": "Hand Tools",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "rugs",
-        "name": "Rugs",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "2x3",
-              "4x6",
-              "5x8",
-              "8x10",
-              "9x12",
-              "Runner",
-              "Other"
+            "id": "tool-storage",
+            "name": "Tool Storage",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Toolbox",
+                  "Cabinet",
+                  "Wall Mount",
+                  "Rolling Cart"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Minimalist",
-              "Boho",
-              "Persian",
-              "Jute",
-              "Other"
+            "id": "workbench",
+            "name": "Workbench",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "vases",
-        "name": "Vases",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Minimalist",
-              "Sculptural",
-              "Ceramic",
-              "Glass",
-              "Terracotta",
-              "Other"
+            "id": "car-care",
+            "name": "Car Care",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Product",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "photo-frames",
-        "name": "Photo Frames",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "4x6",
-              "5x7",
-              "8x10",
-              "11x14",
-              "Gallery Wall Set"
+            "id": "lawn-garden",
+            "name": "Lawn & Garden",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Tool",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gas or Electric",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Gas",
+                  "Electric",
+                  "Battery"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Modern",
-              "Wood",
-              "Black",
-              "Metal",
-              "Other"
+            "id": "safety-gear",
+            "name": "Safety Gear",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Item",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mirrors",
-        "name": "Mirrors",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Full Length",
-              "Round",
-              "Arch",
-              "Sunburst",
-              "Other"
-            ]
-          },
-          {
-            "label": "Frame",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Gold",
-              "Silver",
-              "Wood",
-              "Frameless",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "throw-blankets",
-        "name": "Throw Blankets",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Knit",
-              "Faux Fur",
-              "Cashmere",
-              "Fleece",
-              "Waffle",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -20059,216 +18307,191 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "patio-furniture",
-        "name": "Patio Furniture",
-        "image": "wish-list",
-        "fields": [
+        "id": "items",
+        "name": "Items",
+        "image": "home-patio",
+        "products": [
           {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Dining Set",
-              "Lounge Set",
-              "Sectional",
-              "Chairs",
-              "Bench",
-              "Other"
+            "id": "patio-furniture",
+            "name": "Patio Furniture",
+            "image": "home-patio",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wicker",
+                  "Aluminum",
+                  "Teak",
+                  "Steel"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Aluminum",
-              "Teak",
-              "Wicker",
-              "Steel",
-              "Other"
+            "id": "grill",
+            "name": "Grill",
+            "image": "food-chicken",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Gas",
+                  "Charcoal",
+                  "Pellet",
+                  "Electric",
+                  "Kamado"
+                ]
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "BTUs",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "string-lights",
-        "name": "String Lights",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Globe",
-              "Edison",
-              "Fairy",
-              "Solar",
-              "LED",
-              "Other"
+            "id": "string-lights",
+            "name": "String Lights",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "planters",
-        "name": "Planters",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Material",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Terracotta",
-              "Ceramic",
-              "Metal",
-              "Wood",
-              "Fiberglass",
-              "Other"
+            "id": "planters",
+            "name": "Planters",
+            "image": "flowers",
+            "fields": [
+              {
+                "label": "Material",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Small",
-              "Medium",
-              "Large",
-              "Extra Large",
-              "Raised Bed"
+            "id": "outdoor-rug",
+            "name": "Outdoor Rug",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "outdoor-rug",
-        "name": "Outdoor Rug",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Size",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "fire-pit",
-        "name": "Fire Pit",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wood Burning",
-              "Gas",
-              "Propane",
-              "Tabletop",
-              "Fire Bowl"
+            "id": "fire-pit",
+            "name": "Fire Pit",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Type",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Wood Burning",
+                  "Gas",
+                  "Propane"
+                ]
+              },
+              {
+                "label": "Preferred Brand",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "hammock",
-        "name": "Hammock",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Rope",
-              "Fabric",
-              "Camping",
-              "Chair Hammock",
-              "Other"
+            "id": "hammock",
+            "name": "Hammock",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Rope",
+                  "Fabric",
+                  "Camping"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "garden",
-        "name": "Garden",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Garden Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Vegetable",
-              "Herb",
-              "Flower",
-              "Container",
-              "Raised Bed",
-              "Other"
-            ]
-          },
-          {
-            "label": "Favorite Plants",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -20287,212 +18510,128 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "closet",
-        "name": "Closet",
-        "image": "clothing-tops",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Closet System",
-              "Hangers",
-              "Shoe Rack",
-              "Drawer Organizer",
-              "Shelf Dividers",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "kitchen-drawers",
-        "name": "Kitchen Drawers",
-        "image": "grocery-pantry",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Drawer Dividers",
-              "Utensil Tray",
-              "Cabinet Organizer",
-              "Lazy Susan",
-              "Spice Rack",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "bathroom-org",
-        "name": "Bathroom",
-        "image": "grooming",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Under-Sink Organizer",
-              "Shower Caddy",
-              "Medicine Cabinet",
-              "Drawer Insert",
-              "Over-Door",
-              "Other"
-            ]
-          },
-          {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "entryway",
-        "name": "Entryway",
+        "id": "areas",
+        "name": "Areas",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Shoe Rack",
-              "Key Hook",
-              "Entryway Bench",
-              "Coat Rack",
-              "Mail Organizer",
-              "Other"
+            "id": "closet",
+            "name": "Closet",
+            "image": "clothing-tops",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "home-office",
-        "name": "Home Office",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cable Management",
-              "Desk Organizer",
-              "Monitor Stand",
-              "Drawer Unit",
-              "Filing Cabinet",
-              "Other"
+            "id": "kitchen-drawers",
+            "name": "Kitchen Drawers",
+            "image": "grocery-pantry",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "laundry",
-        "name": "Laundry",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Laundry Basket",
-              "Drying Rack",
-              "Hamper",
-              "Folding Station",
-              "Shelf",
-              "Other"
+            "id": "bathroom-org",
+            "name": "Bathroom",
+            "image": "grooming",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "garage-org",
-        "name": "Garage",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Item",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wall Shelving",
-              "Ceiling Storage",
-              "Bike Mount",
-              "Sports Organizer",
-              "Bins & Totes",
-              "Other"
+            "id": "entryway",
+            "name": "Entryway",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Brand Preference",
-            "type": "text",
-            "value": ""
+            "id": "home-office",
+            "name": "Home Office",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "garage-org",
+            "name": "Garage",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "laundry",
+            "name": "Laundry",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "System",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -20511,263 +18650,205 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "action",
-        "name": "Action",
+        "id": "genres",
+        "name": "Genres",
         "image": "event-concerts",
-        "fields": [
+        "products": [
           {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where You Watch",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Netflix",
-              "HBO Max",
-              "Disney+",
-              "Hulu",
-              "Prime",
-              "Theater",
-              "All"
+            "id": "action",
+            "name": "Action",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comedy",
-        "name": "Comedy",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where You Watch",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Netflix",
-              "HBO Max",
-              "Disney+",
-              "Hulu",
-              "Prime",
-              "Theater",
-              "All"
+            "id": "comedy",
+            "name": "Comedy",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "drama",
-        "name": "Drama",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where You Watch",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Netflix",
-              "HBO Max",
-              "Disney+",
-              "Hulu",
-              "Prime",
-              "Theater",
-              "All"
+            "id": "drama",
+            "name": "Drama",
+            "image": "event-theater",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "horror",
-        "name": "Horror",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Subgenre",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Slasher",
-              "Psychological",
-              "Supernatural",
-              "Found Footage",
-              "Comedy Horror",
-              "All"
+            "id": "horror",
+            "name": "Horror",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sci-fi",
-        "name": "Sci-Fi",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "documentary",
-        "name": "Documentary",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Docs",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Topics",
-            "type": "select",
-            "value": "",
-            "options": [
-              "True Crime",
-              "Sports",
-              "Nature",
-              "History",
-              "Music",
-              "Tech",
-              "Other"
+            "id": "sci-fi",
+            "name": "Sci-Fi",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "thriller",
-        "name": "Thriller",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "anime",
-        "name": "Anime",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Series",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genres",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Shonen",
-              "Shojo",
-              "Seinen",
-              "Isekai",
-              "Mecha",
-              "Slice of Life",
-              "Other"
+            "id": "documentary",
+            "name": "Documentary",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Doc",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Topic",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Where You Watch",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Crunchyroll",
-              "Netflix",
-              "Funimation",
-              "Hulu",
-              "Other"
+            "id": "thriller",
+            "name": "Thriller",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "anime",
+            "name": "Anime",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Series",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Genre",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -20786,193 +18867,175 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "favorite-genres",
-        "name": "Favorite Genres",
+        "id": "preferences",
+        "name": "Preferences",
         "image": "event-concerts",
-        "fields": [
+        "products": [
           {
-            "label": "Top Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "favorite-artists",
-        "name": "Favorite Artists",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "All-Time Favorites",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Currently Listening To",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "concerts",
-        "name": "Concerts",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Dream Concert",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Venue Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Small Club",
-              "Mid-Size Venue",
-              "Arena",
-              "Festival",
-              "Intimate / Acoustic",
-              "Any"
+            "id": "favorite-genres",
+            "name": "Favorite Genres",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Top Genres",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "playlists",
-        "name": "Playlists",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Playlist Link",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Spotify",
-              "Apple Music",
-              "YouTube Music",
-              "Tidal",
-              "Amazon Music",
-              "Other"
+            "id": "favorite-artists",
+            "name": "Favorite Artists",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "All-Time Favorite",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Listening To",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "vinyl-collecting",
-        "name": "Vinyl / Collecting",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Do You Collect Vinyl",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Yes",
-              "No",
-              "Want to Start"
+            "id": "concerts",
+            "name": "Concerts",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Dream Concert",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Records",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "podcasts",
-        "name": "Podcasts",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Podcasts",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Topics",
-            "type": "select",
-            "value": "",
-            "options": [
-              "True Crime",
-              "Comedy",
-              "Sports",
-              "Business",
-              "Tech",
-              "History",
-              "Science",
-              "Other"
+            "id": "playlists",
+            "name": "Playlists",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Playlist Name",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Spotify",
+                  "Apple Music",
+                  "YouTube",
+                  "Tidal"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Spotify",
-              "Apple Podcasts",
-              "Google Podcasts",
-              "Other"
+            "id": "vinyl-collecting",
+            "name": "Vinyl / Collecting",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Album on Vinyl",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "live-music-venues",
-        "name": "Live Music Venues",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Local Venue",
-            "type": "text",
-            "value": ""
+            "id": "podcasts",
+            "name": "Podcasts",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Podcast",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Topic",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Spotify",
+                  "Apple Podcasts",
+                  "YouTube",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Favorite City for Music",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "live-music-venues",
+            "name": "Live Music Venues",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "City",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -20991,247 +19054,198 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "favorite-teams",
-        "name": "Favorite Teams",
+        "id": "preferences",
+        "name": "Preferences",
         "image": "event-sports",
-        "fields": [
+        "products": [
           {
-            "label": "NFL Team",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "NBA Team",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "MLB Team",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "NHL Team",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Soccer Team",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "fantasy-sports",
-        "name": "Fantasy Sports",
-        "image": "event-sports",
-        "fields": [
-          {
-            "label": "Sports You Play Fantasy",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "ESPN",
-              "Yahoo",
-              "DraftKings",
-              "FanDuel",
-              "Sleeper",
-              "Other"
+            "id": "favorite-teams",
+            "name": "Favorite Teams",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Football",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Basketball",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Baseball",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Soccer",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Hockey",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Other",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "live-events",
-        "name": "Live Events",
-        "image": "event-sports",
-        "fields": [
-          {
-            "label": "Favorite Sport to Watch Live",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Stadium / Arena",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Seat",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Field / Floor",
-              "Lower Bowl",
-              "Upper Bowl",
-              "Suite",
-              "Any"
+            "id": "fantasy-sports",
+            "name": "Fantasy Sports",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sports-to-play",
-        "name": "Sports to Play",
-        "image": "event-sports",
-        "fields": [
-          {
-            "label": "Sports You Play",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Recreational",
-              "Competitive",
-              "Elite"
+            "id": "live-events",
+            "name": "Live Events",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Favorite Sport to Watch Live",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Seat Preference",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "fitness",
-        "name": "Fitness",
-        "image": "clothing-activewear",
-        "fields": [
-          {
-            "label": "Workout Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Weightlifting",
-              "CrossFit",
-              "Running",
-              "Cycling",
-              "Swimming",
-              "HIIT",
-              "Yoga",
-              "Other"
+            "id": "sports-to-play",
+            "name": "Sports to Play",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Skill Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Beginner",
+                  "Intermediate",
+                  "Advanced",
+                  "Competitive"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Gym or Home",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Gym",
-              "Home",
-              "Both",
-              "Outdoors"
+            "id": "fitness",
+            "name": "Fitness",
+            "image": "clothing-activewear",
+            "fields": [
+              {
+                "label": "Workout Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gym",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Frequency",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1-2x/week",
+                  "3-4x/week",
+                  "5+x/week",
+                  "Daily"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Gym",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "combat-sports",
-        "name": "Combat Sports",
-        "image": "event-sports",
-        "fields": [
-          {
-            "label": "Sport",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Boxing",
-              "MMA",
-              "Wrestling",
-              "BJJ",
-              "Muay Thai",
-              "Kickboxing",
-              "Other"
+            "id": "combat-sports",
+            "name": "Combat Sports",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Boxing",
+                  "MMA",
+                  "Wrestling",
+                  "BJJ",
+                  "Muay Thai",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Participant or Fan",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Participant",
-              "Fan",
-              "Both"
+            "id": "extreme-sports",
+            "name": "Extreme Sports",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "extreme-sports",
-        "name": "Extreme Sports",
-        "image": "travel-preferences",
-        "fields": [
-          {
-            "label": "Sport",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Snowboarding",
-              "Surfing",
-              "Skateboarding",
-              "BMX",
-              "Rock Climbing",
-              "Skydiving",
-              "Other"
-            ]
-          },
-          {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Intermediate",
-              "Advanced",
-              "Pro"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -21250,233 +19264,175 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "console",
-        "name": "Console Gaming",
+        "id": "platforms",
+        "name": "Platforms",
         "image": "specific-products",
-        "fields": [
+        "products": [
           {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "PlayStation",
-              "Xbox",
-              "Nintendo Switch",
-              "Multi-Platform"
+            "id": "console",
+            "name": "Console Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Console",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "PlayStation 5",
+                  "Xbox Series X",
+                  "Nintendo Switch",
+                  "Multiple"
+                ]
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gamertag",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genres",
-            "type": "select",
-            "value": "",
-            "options": [
-              "FPS",
-              "RPG",
-              "Sports",
-              "Fighting",
-              "Racing",
-              "Adventure",
-              "Strategy",
-              "Other"
+            "id": "pc-gaming",
+            "name": "PC Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Steam",
+                  "Epic Games",
+                  "Battle.net",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Gamertag",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "pc-gaming",
-        "name": "PC Gaming",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genres",
-            "type": "select",
-            "value": "",
-            "options": [
-              "FPS",
-              "RTS",
-              "MOBA",
-              "RPG",
-              "Simulation",
-              "Other"
+            "id": "mobile-gaming",
+            "name": "Mobile Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Steam / Epic Username",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mobile-gaming",
-        "name": "Mobile Gaming",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genres",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Puzzle",
-              "Strategy",
-              "Battle Royale",
-              "RPG",
-              "Casual",
-              "Other"
+            "id": "board-games",
+            "name": "Board Games",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "board-games",
-        "name": "Board Games",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genres",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Strategy",
-              "Party",
-              "Cooperative",
-              "Word Games",
-              "Card Games",
-              "Other"
+            "id": "card-games",
+            "name": "Card Games",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "card-games",
-        "name": "Card Games",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Trading Card Games",
-              "Poker",
-              "UNO",
-              "Magic: The Gathering",
-              "Other"
+            "id": "vr",
+            "name": "VR Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Headset",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "vr",
-        "name": "VR Gaming",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Headset",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Meta Quest",
-              "PlayStation VR",
-              "Valve Index",
-              "None Yet",
-              "Other"
+            "id": "retro-gaming",
+            "name": "Retro Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Console",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Favorite VR Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "retro-gaming",
-        "name": "Retro Gaming",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Era",
-            "type": "select",
-            "value": "",
-            "options": [
-              "NES / SNES",
-              "N64",
-              "PlayStation 1 & 2",
-              "Sega Genesis",
-              "Arcade",
-              "Other"
-            ]
-          },
-          {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -21495,200 +19451,174 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "fiction",
-        "name": "Fiction",
+        "id": "genres",
+        "name": "Genres",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Authors",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Subgenre",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Thriller",
-              "Sci-Fi",
-              "Fantasy",
-              "Literary Fiction",
-              "Historical Fiction",
-              "Other"
+            "id": "fiction",
+            "name": "Fiction",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Reading",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "non-fiction",
-        "name": "Non-Fiction",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Topics",
-            "type": "select",
-            "value": "",
-            "options": [
-              "History",
-              "Science",
-              "Politics",
-              "Sports",
-              "True Crime",
-              "Other"
+            "id": "non-fiction",
+            "name": "Non-Fiction",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "self-help",
-        "name": "Self-Help",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Focus Area",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Productivity",
-              "Finance",
-              "Mindset",
-              "Health",
-              "Relationships",
-              "Other"
+            "id": "self-help",
+            "name": "Self-Help",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "business",
-        "name": "Business",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Topics",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Entrepreneurship",
-              "Investing",
-              "Leadership",
-              "Marketing",
-              "Finance",
-              "Other"
+            "id": "business",
+            "name": "Business",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "history",
-        "name": "History",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Era / Topic",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "true-crime",
-        "name": "True Crime",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Podcasts",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "audiobooks",
-        "name": "Audiobooks",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Audible",
-              "Libro.fm",
-              "Spotify",
-              "Apple Books",
-              "Other"
+            "id": "history",
+            "name": "History",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Era of Interest",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Titles",
-            "type": "text",
-            "value": ""
+            "id": "true-crime",
+            "name": "True Crime",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Podcast",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "audiobooks",
+            "name": "Audiobooks",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Audible",
+                  "Spotify",
+                  "Libby",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -21707,208 +19637,155 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "outdoors",
-        "name": "Outdoors",
+        "id": "types",
+        "name": "Types",
         "image": "travel-preferences",
-        "fields": [
+        "products": [
           {
-            "label": "Activities",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hiking",
-              "Camping",
-              "Fishing",
-              "Hunting",
-              "Kayaking",
-              "Rock Climbing",
-              "Other"
+            "id": "outdoors",
+            "name": "Outdoors",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Intermediate",
-              "Advanced"
+            "id": "photography",
+            "name": "Photography",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Camera Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "photography",
-        "name": "Photography",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Portrait",
-              "Landscape",
-              "Street",
-              "Sports",
-              "Wildlife",
-              "Film",
-              "Other"
+            "id": "cooking",
+            "name": "Cooking",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Specialty",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Camera",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cooking",
-        "name": "Cooking",
-        "image": "meal-dinner",
-        "fields": [
-          {
-            "label": "Favorite Cuisines to Cook",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Intermediate",
-              "Advanced",
-              "Chef-Level"
+            "id": "travel",
+            "name": "Travel",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Dream Destination",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Travel Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Adventure",
+                  "Relaxation",
+                  "Cultural",
+                  "Backpacking",
+                  "Luxury"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "travel",
-        "name": "Travel",
-        "image": "travel-preferences",
-        "fields": [
-          {
-            "label": "Dream Destination",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Travel Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Adventure",
-              "Road Trip",
-              "Backpacking",
-              "Luxury",
-              "Cultural",
-              "Other"
+            "id": "collecting",
+            "name": "Collecting",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "What I Collect",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "collecting",
-        "name": "Collecting",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "What You Collect",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Most Prized Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "diy-crafts",
-        "name": "DIY & Projects",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Woodworking",
-              "Home Improvement",
-              "Electronics",
-              "3D Printing",
-              "Other"
+            "id": "diy-crafts",
+            "name": "DIY & Projects",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Current Project",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Current Project",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cars-motorsport",
-        "name": "Cars & Motorsport",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Car Enthusiast",
-              "Motorcycles",
-              "Racing",
-              "Detailing",
-              "Off-Road",
-              "Other"
+            "id": "cars-motorsport",
+            "name": "Cars & Motorsport",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Car",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Track / Race",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Dream Car",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -21927,190 +19804,165 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "bar-scene",
-        "name": "Bar Scene",
+        "id": "activities",
+        "name": "Activities",
         "image": "favorite-restaurants",
-        "fields": [
+        "products": [
           {
-            "label": "Favorite Bar Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Sports Bar",
-              "Craft Beer",
-              "Cocktail Bar",
-              "Dive Bar",
-              "Wine Bar",
-              "Rooftop",
-              "Other"
+            "id": "bar-scene",
+            "name": "Bar Scene",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Bar",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink of Choice",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Vibe",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Dive Bar",
+                  "Craft Beer",
+                  "Cocktail Bar",
+                  "Sports Bar",
+                  "Wine Bar"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "clubs",
-        "name": "Clubs",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Music Preference",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hip-Hop",
-              "House / EDM",
-              "Latin",
-              "Top 40",
-              "R&B",
-              "Other"
+            "id": "clubs",
+            "name": "Clubs",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Music Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Venue",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "live-music",
-        "name": "Live Music",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Preferred Genre",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Venue",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "karaoke",
-        "name": "Karaoke",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Go-To Song",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "game-nights",
-        "name": "Game Nights",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Format",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Board Games",
-              "Card Games",
-              "Video Games",
-              "Trivia",
-              "All"
+            "id": "live-music",
+            "name": "Live Music",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Genre",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dinner-parties",
-        "name": "Dinner Parties",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Host or Guest",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Love to Host",
-              "Love to Attend",
-              "Both"
+            "id": "karaoke",
+            "name": "Karaoke",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Song to Sing",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Cuisine to Serve",
-            "type": "text",
-            "value": ""
+            "id": "game-nights",
+            "name": "Game Nights",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "rooftop-bars",
-        "name": "Rooftop Bars",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
+            "id": "dinner-parties",
+            "name": "Dinner Parties",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Hosting or Attending",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "I Host",
+                  "I Attend",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Favorite Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "rooftop-bars",
+            "name": "Rooftop Bars",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -22129,146 +19981,136 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "stand-up",
-        "name": "Stand-Up",
+        "id": "types",
+        "name": "Types",
         "image": "event-concerts",
-        "fields": [
+        "products": [
           {
-            "label": "Favorite Comedians",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Observational",
-              "Dark",
-              "Political",
-              "Self-Deprecating",
-              "Storytelling",
-              "Other"
+            "id": "stand-up",
+            "name": "Stand-Up",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Comedian",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "improv",
-        "name": "Improv",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Favorite Shows / Groups",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "live-theater",
-        "name": "Live Theater",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Broadway",
-              "Off-Broadway",
-              "Local Theater",
-              "Musical",
-              "Drama",
-              "Comedy",
-              "Other"
+            "id": "improv",
+            "name": "Improv",
+            "image": "event-theater",
+            "fields": [
+              {
+                "label": "Favorite Group",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "open-mic",
-        "name": "Open Mic",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Participant or Audience",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Participant",
-              "Audience",
-              "Both"
+            "id": "live-theater",
+            "name": "Live Theater",
+            "image": "event-theater",
+            "fields": [
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Venue",
-            "type": "text",
-            "value": ""
+            "id": "open-mic",
+            "name": "Open Mic",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Performing or Watching",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Watching",
+                  "Performing",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comedy-clubs",
-        "name": "Comedy Clubs",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Club",
-            "type": "text",
-            "value": ""
+            "id": "comedy-clubs",
+            "name": "Comedy Clubs",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Club",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "favorite-comedians",
-        "name": "Favorite Comedians",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "All-Time Favorites",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Currently Following",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "favorite-comedians",
+            "name": "Favorite Comedians",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "All-Time Favorite",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Watching",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -22287,249 +20129,205 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "romance",
-        "name": "Romance",
-        "image": "anniversary-gifts",
-        "fields": [
+        "id": "genres",
+        "name": "Genres",
+        "image": "event-concerts",
+        "products": [
           {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where You Watch",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Netflix",
-              "HBO Max",
-              "Disney+",
-              "Hulu",
-              "Prime",
-              "Theater",
-              "All"
+            "id": "action",
+            "name": "Action",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comedy",
-        "name": "Comedy",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where You Watch",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Netflix",
-              "HBO Max",
-              "Disney+",
-              "Hulu",
-              "Prime",
-              "Theater",
-              "All"
+            "id": "comedy",
+            "name": "Comedy",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "drama",
-        "name": "Drama",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where You Watch",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Netflix",
-              "HBO Max",
-              "Disney+",
-              "Hulu",
-              "Prime",
-              "Theater",
-              "All"
+            "id": "drama",
+            "name": "Drama",
+            "image": "event-theater",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "thriller",
-        "name": "Thriller",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "documentary",
-        "name": "Documentary",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Docs",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Topics",
-            "type": "select",
-            "value": "",
-            "options": [
-              "True Crime",
-              "Nature",
-              "Fashion",
-              "History",
-              "Social Justice",
-              "Food",
-              "Other"
+            "id": "horror",
+            "name": "Horror",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "horror",
-        "name": "Horror",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Subgenre",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Psychological",
-              "Supernatural",
-              "Slasher",
-              "Comedy Horror",
-              "Other"
+            "id": "sci-fi",
+            "name": "Sci-Fi",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sci-fi",
-        "name": "Sci-Fi",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "reality-tv",
-        "name": "Reality TV",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Genre",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Dating",
-              "Competition",
-              "Lifestyle",
-              "Travel",
-              "True Crime",
-              "Other"
+            "id": "documentary",
+            "name": "Documentary",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Doc",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Topic",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "thriller",
+            "name": "Thriller",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "anime",
+            "name": "Anime",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Series",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Genre",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -22548,192 +20346,572 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "favorite-genres",
-        "name": "Favorite Genres",
+        "id": "preferences",
+        "name": "Preferences",
         "image": "event-concerts",
-        "fields": [
+        "products": [
           {
-            "label": "Top Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "favorite-artists",
-        "name": "Favorite Artists",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "All-Time Favorites",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Currently Listening To",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "concerts",
-        "name": "Concerts",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Dream Concert",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Venue Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Small Club",
-              "Mid-Size Venue",
-              "Arena",
-              "Festival",
-              "Intimate / Acoustic",
-              "Any"
+            "id": "favorite-genres",
+            "name": "Favorite Genres",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Top Genres",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "playlists",
-        "name": "Playlists",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Playlist Link",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Spotify",
-              "Apple Music",
-              "YouTube Music",
-              "Tidal",
-              "Amazon Music",
-              "Other"
+            "id": "favorite-artists",
+            "name": "Favorite Artists",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "All-Time Favorite",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Listening To",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "podcasts",
-        "name": "Podcasts",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Podcasts",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Topics",
-            "type": "select",
-            "value": "",
-            "options": [
-              "True Crime",
-              "Pop Culture",
-              "Self-Help",
-              "Comedy",
-              "Fashion",
-              "Wellness",
-              "Other"
+            "id": "concerts",
+            "name": "Concerts",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Dream Concert",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Spotify",
-              "Apple Podcasts",
-              "Google Podcasts",
-              "Other"
+            "id": "playlists",
+            "name": "Playlists",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Playlist Name",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Spotify",
+                  "Apple Music",
+                  "YouTube",
+                  "Tidal"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "vinyl-collecting",
+            "name": "Vinyl / Collecting",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Album on Vinyl",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "podcasts",
+            "name": "Podcasts",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Podcast",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Topic",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Spotify",
+                  "Apple Podcasts",
+                  "YouTube",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "live-music-venues",
+            "name": "Live Music Venues",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "City",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    "key": "sports-female",
+    "label": "Sports",
+    "section": "entertainment",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 30,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
       {
-        "id": "vinyl-collecting",
-        "name": "Vinyl / Collecting",
+        "id": "preferences",
+        "name": "Preferences",
+        "image": "event-sports",
+        "products": [
+          {
+            "id": "favorite-teams",
+            "name": "Favorite Teams",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Football",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Basketball",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Baseball",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Soccer",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Hockey",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Other",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "fantasy-sports",
+            "name": "Fantasy Sports",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "live-events",
+            "name": "Live Events",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Favorite Sport to Watch Live",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Seat Preference",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "sports-to-play",
+            "name": "Sports to Play",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Skill Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Beginner",
+                  "Intermediate",
+                  "Advanced",
+                  "Competitive"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "fitness",
+            "name": "Fitness",
+            "image": "clothing-activewear",
+            "fields": [
+              {
+                "label": "Workout Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gym",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Frequency",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1-2x/week",
+                  "3-4x/week",
+                  "5+x/week",
+                  "Daily"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "combat-sports",
+            "name": "Combat Sports",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Boxing",
+                  "MMA",
+                  "Wrestling",
+                  "BJJ",
+                  "Muay Thai",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "extreme-sports",
+            "name": "Extreme Sports",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "gaming-female",
+    "label": "Gaming",
+    "section": "entertainment",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 40,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
+      {
+        "id": "platforms",
+        "name": "Platforms",
         "image": "specific-products",
-        "fields": [
+        "products": [
           {
-            "label": "Do You Collect Vinyl",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Yes",
-              "No",
-              "Want to Start"
+            "id": "console",
+            "name": "Console Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Console",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "PlayStation 5",
+                  "Xbox Series X",
+                  "Nintendo Switch",
+                  "Multiple"
+                ]
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gamertag",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Records",
-            "type": "text",
-            "value": ""
+            "id": "pc-gaming",
+            "name": "PC Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Steam",
+                  "Epic Games",
+                  "Battle.net",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "live-music-venues",
-        "name": "Live Music Venues",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Local Venue",
-            "type": "text",
-            "value": ""
+            "id": "mobile-gaming",
+            "name": "Mobile Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Favorite City for Music",
-            "type": "text",
-            "value": ""
+            "id": "board-games",
+            "name": "Board Games",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "card-games",
+            "name": "Card Games",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "vr",
+            "name": "VR Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Headset",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "retro-gaming",
+            "name": "Retro Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Console",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -22747,203 +20925,179 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "genders": [
       "female"
     ],
-    "sort_order": 30,
+    "sort_order": 50,
     "is_active": true,
     "fields": [],
     "subcategories": [
       {
-        "id": "fiction",
-        "name": "Fiction",
+        "id": "genres",
+        "name": "Genres",
         "image": "wish-list",
-        "fields": [
+        "products": [
           {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Authors",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Subgenre",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Romance",
-              "Thriller",
-              "Fantasy",
-              "Literary Fiction",
-              "Historical Fiction",
-              "Other"
+            "id": "fiction",
+            "name": "Fiction",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Reading",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "non-fiction",
-        "name": "Non-Fiction",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Topics",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Memoir",
-              "Self-Help",
-              "Health",
-              "True Crime",
-              "Social Issues",
-              "Other"
+            "id": "non-fiction",
+            "name": "Non-Fiction",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "self-help",
-        "name": "Self-Help",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Focus Area",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Confidence",
-              "Finance",
-              "Mindset",
-              "Health",
-              "Relationships",
-              "Spirituality",
-              "Other"
+            "id": "self-help",
+            "name": "Self-Help",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "true-crime",
-        "name": "True Crime",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Podcasts",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "book-clubs",
-        "name": "Book Clubs",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "In a Book Club",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Yes",
-              "No",
-              "Want to Join"
+            "id": "business",
+            "name": "Business",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Recent Reads",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "history",
-        "name": "History",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Era / Topic",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "audiobooks",
-        "name": "Audiobooks",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Audible",
-              "Libro.fm",
-              "Spotify",
-              "Apple Books",
-              "Other"
+            "id": "history",
+            "name": "History",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Era of Interest",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Titles",
-            "type": "text",
-            "value": ""
+            "id": "true-crime",
+            "name": "True Crime",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Podcast",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "audiobooks",
+            "name": "Audiobooks",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Audible",
+                  "Spotify",
+                  "Libby",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -22957,215 +21111,160 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "genders": [
       "female"
     ],
-    "sort_order": 40,
+    "sort_order": 60,
     "is_active": true,
     "fields": [],
     "subcategories": [
       {
-        "id": "art-painting",
-        "name": "Art & Painting",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Medium",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Watercolor",
-              "Oil",
-              "Acrylic",
-              "Sketching",
-              "Digital",
-              "Mixed Media",
-              "Other"
-            ]
-          },
-          {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Intermediate",
-              "Advanced"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "photography",
-        "name": "Photography",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Portrait",
-              "Travel",
-              "Food",
-              "Nature",
-              "Film",
-              "Street",
-              "Other"
-            ]
-          },
-          {
-            "label": "Camera",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cooking",
-        "name": "Cooking",
-        "image": "meal-dinner",
-        "fields": [
-          {
-            "label": "Favorite Cuisines to Cook",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Intermediate",
-              "Advanced",
-              "Chef-Level"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "travel",
-        "name": "Travel",
+        "id": "types",
+        "name": "Types",
         "image": "travel-preferences",
-        "fields": [
+        "products": [
           {
-            "label": "Dream Destination",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Travel Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beach",
-              "Cultural",
-              "City Break",
-              "Luxury",
-              "Backpacking",
-              "Other"
+            "id": "outdoors",
+            "name": "Outdoors",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "diy-crafts",
-        "name": "DIY & Crafts",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Candle Making",
-              "Pottery",
-              "Sewing",
-              "Knitting",
-              "Jewelry Making",
-              "Scrapbooking",
-              "Other"
+            "id": "photography",
+            "name": "Photography",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Camera Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Current Project",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "collecting",
-        "name": "Collecting",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "What You Collect",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Most Prized Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "gardening",
-        "name": "Gardening",
-        "image": "flowers",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Flower Garden",
-              "Herb Garden",
-              "Vegetable Garden",
-              "Indoor Plants",
-              "Container Garden",
-              "Other"
+            "id": "cooking",
+            "name": "Cooking",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Specialty",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Plants",
-            "type": "text",
-            "value": ""
+            "id": "travel",
+            "name": "Travel",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Dream Destination",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Travel Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Adventure",
+                  "Relaxation",
+                  "Cultural",
+                  "Backpacking",
+                  "Luxury"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "collecting",
+            "name": "Collecting",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "What I Collect",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "diy-crafts",
+            "name": "DIY & Projects",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Current Project",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cars-motorsport",
+            "name": "Cars & Motorsport",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Car",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Track / Race",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -23179,195 +21278,170 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "genders": [
       "female"
     ],
-    "sort_order": 50,
+    "sort_order": 70,
     "is_active": true,
     "fields": [],
     "subcategories": [
       {
-        "id": "bar-scene",
-        "name": "Bar Scene",
+        "id": "activities",
+        "name": "Activities",
         "image": "favorite-restaurants",
-        "fields": [
+        "products": [
           {
-            "label": "Favorite Bar Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wine Bar",
-              "Cocktail Bar",
-              "Rooftop",
-              "Speakeasy",
-              "Sports Bar",
-              "Dive Bar",
-              "Other"
+            "id": "bar-scene",
+            "name": "Bar Scene",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Bar",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink of Choice",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Vibe",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Dive Bar",
+                  "Craft Beer",
+                  "Cocktail Bar",
+                  "Sports Bar",
+                  "Wine Bar"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "clubs",
-        "name": "Clubs",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Music Preference",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Pop",
-              "House / EDM",
-              "Hip-Hop",
-              "Latin",
-              "R&B",
-              "Other"
+            "id": "clubs",
+            "name": "Clubs",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Music Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Venue",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "live-music",
-        "name": "Live Music",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Preferred Genre",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Venue",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "karaoke",
-        "name": "Karaoke",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Go-To Song",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "game-nights",
-        "name": "Game Nights",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Format",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Board Games",
-              "Card Games",
-              "Trivia",
-              "Party Games",
-              "All"
+            "id": "live-music",
+            "name": "Live Music",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Genre",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dinner-parties",
-        "name": "Dinner Parties",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Host or Guest",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Love to Host",
-              "Love to Attend",
-              "Both"
+            "id": "karaoke",
+            "name": "Karaoke",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Song to Sing",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Cuisine to Serve",
-            "type": "text",
-            "value": ""
+            "id": "game-nights",
+            "name": "Game Nights",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "rooftop-bars",
-        "name": "Rooftop Bars",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
+            "id": "dinner-parties",
+            "name": "Dinner Parties",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Hosting or Attending",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "I Host",
+                  "I Attend",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Favorite Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "rooftop-bars",
+            "name": "Rooftop Bars",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -23381,593 +21455,141 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "genders": [
       "female"
     ],
-    "sort_order": 60,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "stand-up",
-        "name": "Stand-Up",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Comedians",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Observational",
-              "Self-Deprecating",
-              "Political",
-              "Storytelling",
-              "Dark",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "improv",
-        "name": "Improv",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Favorite Shows / Groups",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "live-theater",
-        "name": "Live Theater",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Broadway",
-              "Musical",
-              "Drama",
-              "Comedy",
-              "Ballet",
-              "Opera",
-              "Other"
-            ]
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "open-mic",
-        "name": "Open Mic",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Participant or Audience",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Participant",
-              "Audience",
-              "Both"
-            ]
-          },
-          {
-            "label": "Favorite Venue",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comedy-clubs",
-        "name": "Comedy Clubs",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Club",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "favorite-comedians",
-        "name": "Favorite Comedians",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "All-Time Favorites",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Currently Following",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "arts-culture-female",
-    "label": "Arts & Culture",
-    "section": "entertainment",
-    "page": "mygotwo",
-    "genders": [
-      "female"
-    ],
-    "sort_order": 70,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "museums",
-        "name": "Museums",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Favorite Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Art Museum",
-              "History Museum",
-              "Science Museum",
-              "Natural History",
-              "Interactive",
-              "Other"
-            ]
-          },
-          {
-            "label": "Favorite Museum",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "galleries",
-        "name": "Galleries",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Art Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Contemporary",
-              "Classical",
-              "Photography",
-              "Abstract",
-              "Street Art",
-              "Other"
-            ]
-          },
-          {
-            "label": "Favorite Gallery",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "theater",
-        "name": "Theater",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Broadway",
-              "Musical",
-              "Drama",
-              "Comedy",
-              "Experimental",
-              "Other"
-            ]
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "film-festivals",
-        "name": "Film Festivals",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Festival",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genre",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "poetry",
-        "name": "Poetry",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Poets",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Collections",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dance",
-        "name": "Dance",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Ballet",
-              "Contemporary",
-              "Latin",
-              "Hip-Hop",
-              "Ballroom",
-              "Other"
-            ]
-          },
-          {
-            "label": "Participant or Fan",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Participant",
-              "Fan",
-              "Both"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cultural-events",
-        "name": "Cultural Events",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Events",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Festivals",
-              "Food Events",
-              "Cultural Fairs",
-              "Art Walks",
-              "Other"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "wellness-mindfulness-female",
-    "label": "Wellness & Mindfulness",
-    "section": "entertainment",
-    "page": "mygotwo",
-    "genders": [
-      "female"
-    ],
     "sort_order": 80,
     "is_active": true,
     "fields": [],
     "subcategories": [
       {
-        "id": "meditation",
-        "name": "Meditation",
-        "image": "wish-list",
-        "fields": [
+        "id": "types",
+        "name": "Types",
+        "image": "event-concerts",
+        "products": [
           {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Guided",
-              "Silent",
-              "Transcendental",
-              "Loving-Kindness",
-              "Body Scan",
-              "Other"
+            "id": "stand-up",
+            "name": "Stand-Up",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Comedian",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "App / Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Calm",
-              "Headspace",
-              "Insight Timer",
-              "Ten Percent Happier",
-              "Other"
+            "id": "improv",
+            "name": "Improv",
+            "image": "event-theater",
+            "fields": [
+              {
+                "label": "Favorite Group",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Frequency",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Daily",
-              "Few Times a Week",
-              "Weekly",
-              "Occasionally"
+            "id": "live-theater",
+            "name": "Live Theater",
+            "image": "event-theater",
+            "fields": [
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "yoga",
-        "name": "Yoga",
-        "image": "clothing-activewear",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Vinyasa",
-              "Hatha",
-              "Yin",
-              "Hot Yoga",
-              "Restorative",
-              "Kundalini",
-              "Other"
+            "id": "open-mic",
+            "name": "Open Mic",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Performing or Watching",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Watching",
+                  "Performing",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Studio",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "journaling",
-        "name": "Journaling",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Gratitude",
-              "Bullet Journal",
-              "Stream of Consciousness",
-              "Prompted",
-              "Art Journal",
-              "Other"
+            "id": "comedy-clubs",
+            "name": "Comedy Clubs",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Club",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Brand / Journal",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "reading",
-        "name": "Reading",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Reading Goal",
-            "type": "select",
-            "value": "",
-            "options": [
-              "1-10 books/year",
-              "10-25 books/year",
-              "25-50 books/year",
-              "50+ books/year"
+            "id": "favorite-comedians",
+            "name": "Favorite Comedians",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "All-Time Favorite",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Watching",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "self-care",
-        "name": "Self-Care",
-        "image": "grooming-skin",
-        "fields": [
-          {
-            "label": "Routine",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorites",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sound-baths",
-        "name": "Sound Baths",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Experience Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Never Tried",
-              "Tried Once",
-              "Regular",
-              "At Home Practice"
-            ]
-          },
-          {
-            "label": "Favorite Studio",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "breathwork",
-        "name": "Breathwork",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Wim Hof",
-              "Box Breathing",
-              "4-7-8",
-              "Holotropic",
-              "Other"
-            ]
-          },
-          {
-            "label": "App / Platform",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
           }
         ]
       }
@@ -23986,256 +21608,205 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "action",
-        "name": "Action",
+        "id": "genres",
+        "name": "Genres",
         "image": "event-concerts",
-        "fields": [
+        "products": [
           {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where You Watch",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Netflix",
-              "HBO Max",
-              "Disney+",
-              "Hulu",
-              "Prime",
-              "Theater",
-              "All"
+            "id": "action",
+            "name": "Action",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comedy",
-        "name": "Comedy",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where You Watch",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Netflix",
-              "HBO Max",
-              "Disney+",
-              "Hulu",
-              "Prime",
-              "Theater",
-              "All"
+            "id": "comedy",
+            "name": "Comedy",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "drama",
-        "name": "Drama",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Where You Watch",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Netflix",
-              "HBO Max",
-              "Disney+",
-              "Hulu",
-              "Prime",
-              "Theater",
-              "All"
+            "id": "drama",
+            "name": "Drama",
+            "image": "event-theater",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "thriller",
-        "name": "Thriller",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "sci-fi",
-        "name": "Sci-Fi",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "documentary",
-        "name": "Documentary",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Docs",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Topics",
-            "type": "select",
-            "value": "",
-            "options": [
-              "True Crime",
-              "Nature",
-              "History",
-              "Social Justice",
-              "Science",
-              "Music",
-              "Other"
+            "id": "horror",
+            "name": "Horror",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "horror",
-        "name": "Horror",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Movies",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Subgenre",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Psychological",
-              "Supernatural",
-              "Slasher",
-              "Comedy Horror",
-              "Other"
+            "id": "sci-fi",
+            "name": "Sci-Fi",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "anime",
-        "name": "Anime",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Series",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genres",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Shonen",
-              "Shojo",
-              "Seinen",
-              "Isekai",
-              "Slice of Life",
-              "Other"
+            "id": "documentary",
+            "name": "Documentary",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Doc",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Topic",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Where You Watch",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Crunchyroll",
-              "Netflix",
-              "Funimation",
-              "Hulu",
-              "Other"
+            "id": "thriller",
+            "name": "Thriller",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Movie",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "anime",
+            "name": "Anime",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Series",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Genre",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Streaming Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -24254,200 +21825,183 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "favorite-genres",
-        "name": "Favorite Genres",
+        "id": "preferences",
+        "name": "Preferences",
         "image": "event-concerts",
-        "fields": [
+        "products": [
           {
-            "label": "Top Genres",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "favorite-artists",
-        "name": "Favorite Artists",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "All-Time Favorites",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Currently Listening To",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "concerts",
-        "name": "Concerts",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Dream Concert",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Preferred Venue Size",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Small Club",
-              "Mid-Size Venue",
-              "Arena",
-              "Festival",
-              "Intimate / Acoustic",
-              "Any"
+            "id": "favorite-genres",
+            "name": "Favorite Genres",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Top Genres",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "playlists",
-        "name": "Playlists",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Playlist Link",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Spotify",
-              "Apple Music",
-              "YouTube Music",
-              "Tidal",
-              "Amazon Music",
-              "Other"
+            "id": "favorite-artists",
+            "name": "Favorite Artists",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "All-Time Favorite",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Listening To",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "podcasts",
-        "name": "Podcasts",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Podcasts",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Topics",
-            "type": "select",
-            "value": "",
-            "options": [
-              "True Crime",
-              "Comedy",
-              "Culture",
-              "Self-Help",
-              "Tech",
-              "History",
-              "Other"
+            "id": "concerts",
+            "name": "Concerts",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Dream Concert",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Spotify",
-              "Apple Podcasts",
-              "Google Podcasts",
-              "Other"
+            "id": "playlists",
+            "name": "Playlists",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Playlist Name",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Spotify",
+                  "Apple Music",
+                  "YouTube",
+                  "Tidal"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "vinyl-collecting",
-        "name": "Vinyl / Collecting",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Do You Collect Vinyl",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Yes",
-              "No",
-              "Want to Start"
+            "id": "vinyl-collecting",
+            "name": "Vinyl / Collecting",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Album on Vinyl",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Store",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Records",
-            "type": "text",
-            "value": ""
+            "id": "podcasts",
+            "name": "Podcasts",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Podcast",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Topic",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Spotify",
+                  "Apple Podcasts",
+                  "YouTube",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "live-music-venues",
-        "name": "Live Music Venues",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Local Venue",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite City for Music",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "live-music-venues",
+            "name": "Live Music Venues",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "City",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
     ]
   },
   {
-    "key": "books-podcasts-nb",
-    "label": "Books & Podcasts",
+    "key": "sports-nb",
+    "label": "Sports",
     "section": "entertainment",
     "page": "mygotwo",
     "genders": [
@@ -24458,201 +22012,198 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "fiction",
-        "name": "Fiction",
-        "image": "wish-list",
-        "fields": [
+        "id": "preferences",
+        "name": "Preferences",
+        "image": "event-sports",
+        "products": [
           {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Authors",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Subgenre",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Sci-Fi",
-              "Fantasy",
-              "Thriller",
-              "Literary Fiction",
-              "Historical Fiction",
-              "Other"
+            "id": "favorite-teams",
+            "name": "Favorite Teams",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Football",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Basketball",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Baseball",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Soccer",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Hockey",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Other",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "non-fiction",
-        "name": "Non-Fiction",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Topics",
-            "type": "select",
-            "value": "",
-            "options": [
-              "History",
-              "Science",
-              "Politics",
-              "Memoir",
-              "Social Issues",
-              "Other"
+            "id": "fantasy-sports",
+            "name": "Fantasy Sports",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "self-help",
-        "name": "Self-Help",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Focus Area",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Productivity",
-              "Finance",
-              "Mindset",
-              "Health",
-              "Relationships",
-              "Identity",
-              "Other"
+            "id": "live-events",
+            "name": "Live Events",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Favorite Sport to Watch Live",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Seat Preference",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "true-crime",
-        "name": "True Crime",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Podcasts",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "history",
-        "name": "History",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Era / Topic",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "business",
-        "name": "Business",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Books",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Topics",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Entrepreneurship",
-              "Investing",
-              "Leadership",
-              "Marketing",
-              "Finance",
-              "Other"
+            "id": "sports-to-play",
+            "name": "Sports to Play",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Skill Level",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Beginner",
+                  "Intermediate",
+                  "Advanced",
+                  "Competitive"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "audiobooks",
-        "name": "Audiobooks",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Audible",
-              "Libro.fm",
-              "Spotify",
-              "Apple Books",
-              "Other"
+            "id": "fitness",
+            "name": "Fitness",
+            "image": "clothing-activewear",
+            "fields": [
+              {
+                "label": "Workout Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gym",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Frequency",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "1-2x/week",
+                  "3-4x/week",
+                  "5+x/week",
+                  "Daily"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Titles",
-            "type": "text",
-            "value": ""
+            "id": "combat-sports",
+            "name": "Combat Sports",
+            "image": "event-sports",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Boxing",
+                  "MMA",
+                  "Wrestling",
+                  "BJJ",
+                  "Muay Thai",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "extreme-sports",
+            "name": "Extreme Sports",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Sport",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -24671,228 +22222,361 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "console",
-        "name": "Console Gaming",
+        "id": "platforms",
+        "name": "Platforms",
         "image": "specific-products",
-        "fields": [
+        "products": [
           {
-            "label": "Platform",
-            "type": "select",
-            "value": "",
-            "options": [
-              "PlayStation",
-              "Xbox",
-              "Nintendo Switch",
-              "Multi-Platform"
+            "id": "console",
+            "name": "Console Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Console",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "PlayStation 5",
+                  "Xbox Series X",
+                  "Nintendo Switch",
+                  "Multiple"
+                ]
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Gamertag",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genres",
-            "type": "select",
-            "value": "",
-            "options": [
-              "RPG",
-              "Adventure",
-              "Indie",
-              "FPS",
-              "Strategy",
-              "Other"
+            "id": "pc-gaming",
+            "name": "PC Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Steam",
+                  "Epic Games",
+                  "Battle.net",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Accessories Needed",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Gamertag",
-            "type": "text",
-            "value": ""
+            "id": "mobile-gaming",
+            "name": "Mobile Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "board-games",
+            "name": "Board Games",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "card-games",
+            "name": "Card Games",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "vr",
+            "name": "VR Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Headset",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "retro-gaming",
+            "name": "Retro Gaming",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Console",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    "key": "books-podcasts-nb",
+    "label": "Books & Podcasts",
+    "section": "entertainment",
+    "page": "mygotwo",
+    "genders": [
+      "non-binary"
+    ],
+    "sort_order": 50,
+    "is_active": true,
+    "fields": [],
+    "subcategories": [
       {
-        "id": "pc-gaming",
-        "name": "PC Gaming",
-        "image": "specific-products",
-        "fields": [
+        "id": "genres",
+        "name": "Genres",
+        "image": "wish-list",
+        "products": [
           {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genres",
-            "type": "select",
-            "value": "",
-            "options": [
-              "RPG",
-              "Simulation",
-              "Indie",
-              "Strategy",
-              "Other"
+            "id": "fiction",
+            "name": "Fiction",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Reading",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Steam / Epic Username",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "mobile-gaming",
-        "name": "Mobile Gaming",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genres",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Puzzle",
-              "Strategy",
-              "RPG",
-              "Casual",
-              "Other"
+            "id": "non-fiction",
+            "name": "Non-Fiction",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "board-games",
-        "name": "Board Games",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genres",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Strategy",
-              "Cooperative",
-              "Party",
-              "Word Games",
-              "Other"
+            "id": "self-help",
+            "name": "Self-Help",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "card-games",
-        "name": "Card Games",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Trading Card Games",
-              "Poker",
-              "UNO",
-              "Magic: The Gathering",
-              "Other"
+            "id": "business",
+            "name": "Business",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Author",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "vr",
-        "name": "VR Gaming",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Headset",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Meta Quest",
-              "PlayStation VR",
-              "Valve Index",
-              "None Yet",
-              "Other"
+            "id": "history",
+            "name": "History",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Era of Interest",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite VR Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "retro-gaming",
-        "name": "Retro Gaming",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Era",
-            "type": "select",
-            "value": "",
-            "options": [
-              "NES / SNES",
-              "N64",
-              "PlayStation 1 & 2",
-              "Sega Genesis",
-              "Arcade",
-              "Other"
+            "id": "true-crime",
+            "name": "True Crime",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Podcast",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "audiobooks",
+            "name": "Audiobooks",
+            "image": "wish-list",
+            "fields": [
+              {
+                "label": "Platform",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Audible",
+                  "Spotify",
+                  "Libby",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Favorite Book",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -24906,218 +22590,160 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "genders": [
       "non-binary"
     ],
-    "sort_order": 50,
+    "sort_order": 60,
     "is_active": true,
     "fields": [],
     "subcategories": [
       {
-        "id": "art-painting",
-        "name": "Art & Painting",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Medium",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Watercolor",
-              "Oil",
-              "Acrylic",
-              "Sketching",
-              "Digital",
-              "Mixed Media",
-              "Other"
-            ]
-          },
-          {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Intermediate",
-              "Advanced"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "photography",
-        "name": "Photography",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Portrait",
-              "Landscape",
-              "Street",
-              "Film",
-              "Nature",
-              "Other"
-            ]
-          },
-          {
-            "label": "Camera",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cooking",
-        "name": "Cooking",
-        "image": "meal-dinner",
-        "fields": [
-          {
-            "label": "Favorite Cuisines to Cook",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Intermediate",
-              "Advanced",
-              "Chef-Level"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "travel",
-        "name": "Travel",
+        "id": "types",
+        "name": "Types",
         "image": "travel-preferences",
-        "fields": [
+        "products": [
           {
-            "label": "Dream Destination",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Travel Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Adventure",
-              "Cultural",
-              "City Break",
-              "Beach",
-              "Backpacking",
-              "Other"
+            "id": "outdoors",
+            "name": "Outdoors",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Activity",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "diy-crafts",
-        "name": "DIY & Crafts",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Woodworking",
-              "Pottery",
-              "Sewing",
-              "3D Printing",
-              "Electronics",
-              "Other"
+            "id": "photography",
+            "name": "Photography",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Camera Type",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Current Project",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "collecting",
-        "name": "Collecting",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "What You Collect",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Most Prized Item",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "outdoors",
-        "name": "Outdoors",
-        "image": "travel-preferences",
-        "fields": [
-          {
-            "label": "Activities",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Hiking",
-              "Camping",
-              "Kayaking",
-              "Rock Climbing",
-              "Cycling",
-              "Other"
+            "id": "cooking",
+            "name": "Cooking",
+            "image": "favorite-meals",
+            "fields": [
+              {
+                "label": "Specialty",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Skill Level",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Beginner",
-              "Intermediate",
-              "Advanced"
+            "id": "travel",
+            "name": "Travel",
+            "image": "travel-preferences",
+            "fields": [
+              {
+                "label": "Dream Destination",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Travel Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Adventure",
+                  "Relaxation",
+                  "Cultural",
+                  "Backpacking",
+                  "Luxury"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "collecting",
+            "name": "Collecting",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "What I Collect",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "diy-crafts",
+            "name": "DIY & Projects",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Current Project",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "cars-motorsport",
+            "name": "Cars & Motorsport",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Car",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Track / Race",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -25131,409 +22757,170 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "genders": [
       "non-binary"
     ],
-    "sort_order": 60,
-    "is_active": true,
-    "fields": [],
-    "subcategories": [
-      {
-        "id": "bar-scene",
-        "name": "Bar Scene",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Bar Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Cocktail Bar",
-              "Wine Bar",
-              "Craft Beer",
-              "Rooftop",
-              "Dive Bar",
-              "Speakeasy",
-              "Other"
-            ]
-          },
-          {
-            "label": "Favorite Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "clubs",
-        "name": "Clubs",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Music Preference",
-            "type": "select",
-            "value": "",
-            "options": [
-              "House / EDM",
-              "Hip-Hop",
-              "Pop",
-              "Latin",
-              "R&B",
-              "Other"
-            ]
-          },
-          {
-            "label": "Favorite Venue",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "live-music",
-        "name": "Live Music",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Preferred Genre",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Venue",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "karaoke",
-        "name": "Karaoke",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Go-To Song",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "game-nights",
-        "name": "Game Nights",
-        "image": "specific-products",
-        "fields": [
-          {
-            "label": "Favorite Games",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Format",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Board Games",
-              "Card Games",
-              "Video Games",
-              "Trivia",
-              "Party Games",
-              "All"
-            ]
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dinner-parties",
-        "name": "Dinner Parties",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Host or Guest",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Love to Host",
-              "Love to Attend",
-              "Both"
-            ]
-          },
-          {
-            "label": "Favorite Cuisine to Serve",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "rooftop-bars",
-        "name": "Rooftop Bars",
-        "image": "favorite-restaurants",
-        "fields": [
-          {
-            "label": "Favorite Spot",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Drink",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "key": "arts-culture-nb",
-    "label": "Arts & Culture",
-    "section": "entertainment",
-    "page": "mygotwo",
-    "genders": [
-      "non-binary"
-    ],
     "sort_order": 70,
     "is_active": true,
     "fields": [],
     "subcategories": [
       {
-        "id": "museums",
-        "name": "Museums",
-        "image": "event-theater",
-        "fields": [
+        "id": "activities",
+        "name": "Activities",
+        "image": "favorite-restaurants",
+        "products": [
           {
-            "label": "Favorite Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Art Museum",
-              "History Museum",
-              "Science Museum",
-              "Natural History",
-              "Interactive",
-              "Other"
+            "id": "bar-scene",
+            "name": "Bar Scene",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Bar",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Drink of Choice",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Vibe",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Dive Bar",
+                  "Craft Beer",
+                  "Cocktail Bar",
+                  "Sports Bar",
+                  "Wine Bar"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Museum",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "galleries",
-        "name": "Galleries",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Art Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Contemporary",
-              "Abstract",
-              "Photography",
-              "Street Art",
-              "Classical",
-              "Other"
+            "id": "clubs",
+            "name": "Clubs",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Music Style",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Gallery",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "theater",
-        "name": "Theater",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Broadway",
-              "Musical",
-              "Drama",
-              "Comedy",
-              "Experimental",
-              "Other"
+            "id": "live-music",
+            "name": "Live Music",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Genre",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "film-festivals",
-        "name": "Film Festivals",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Festival",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Genre",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "poetry",
-        "name": "Poetry",
-        "image": "wish-list",
-        "fields": [
-          {
-            "label": "Favorite Poets",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Favorite Collections",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "dance",
-        "name": "Dance",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Contemporary",
-              "Hip-Hop",
-              "Ballet",
-              "Latin",
-              "Ballroom",
-              "Other"
+            "id": "karaoke",
+            "name": "Karaoke",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Song to Sing",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Participant or Fan",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Participant",
-              "Fan",
-              "Both"
+            "id": "game-nights",
+            "name": "Game Nights",
+            "image": "specific-products",
+            "fields": [
+              {
+                "label": "Favorite Games",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "cultural-events",
-        "name": "Cultural Events",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Events",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Festivals",
-              "Food Events",
-              "Cultural Fairs",
-              "Art Walks",
-              "Pride Events",
-              "Other"
+            "id": "dinner-parties",
+            "name": "Dinner Parties",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Hosting or Attending",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "I Host",
+                  "I Attend",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "rooftop-bars",
+            "name": "Rooftop Bars",
+            "image": "favorite-restaurants",
+            "fields": [
+              {
+                "label": "Favorite Spot",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
@@ -25552,145 +22939,136 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     "fields": [],
     "subcategories": [
       {
-        "id": "stand-up",
-        "name": "Stand-Up",
+        "id": "types",
+        "name": "Types",
         "image": "event-concerts",
-        "fields": [
+        "products": [
           {
-            "label": "Favorite Comedians",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Style",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Observational",
-              "Dark",
-              "Political",
-              "Self-Deprecating",
-              "Storytelling",
-              "Other"
+            "id": "stand-up",
+            "name": "Stand-Up",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Comedian",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "improv",
-        "name": "Improv",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Favorite Shows / Groups",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "live-theater",
-        "name": "Live Theater",
-        "image": "event-theater",
-        "fields": [
-          {
-            "label": "Type",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Broadway",
-              "Musical",
-              "Drama",
-              "Comedy",
-              "Experimental",
-              "Other"
+            "id": "improv",
+            "name": "Improv",
+            "image": "event-theater",
+            "fields": [
+              {
+                "label": "Favorite Group",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Shows",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "open-mic",
-        "name": "Open Mic",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Participant or Audience",
-            "type": "select",
-            "value": "",
-            "options": [
-              "Participant",
-              "Audience",
-              "Both"
+            "id": "live-theater",
+            "name": "Live Theater",
+            "image": "event-theater",
+            "fields": [
+              {
+                "label": "Favorite Show",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
             ]
           },
           {
-            "label": "Favorite Venue",
-            "type": "text",
-            "value": ""
+            "id": "open-mic",
+            "name": "Open Mic",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Venue",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Performing or Watching",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Watching",
+                  "Performing",
+                  "Both"
+                ]
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "comedy-clubs",
-        "name": "Comedy Clubs",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "Favorite Club",
-            "type": "text",
-            "value": ""
+            "id": "comedy-clubs",
+            "name": "Comedy Clubs",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "Favorite Club",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           },
           {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
-          }
-        ]
-      },
-      {
-        "id": "favorite-comedians",
-        "name": "Favorite Comedians",
-        "image": "event-concerts",
-        "fields": [
-          {
-            "label": "All-Time Favorites",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Currently Following",
-            "type": "text",
-            "value": ""
-          },
-          {
-            "label": "Notes",
-            "type": "text",
-            "value": ""
+            "id": "favorite-comedians",
+            "name": "Favorite Comedians",
+            "image": "event-concerts",
+            "fields": [
+              {
+                "label": "All-Time Favorite",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Currently Watching",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
           }
         ]
       }
