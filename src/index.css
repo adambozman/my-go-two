@@ -309,3 +309,9 @@ body {
     transform: scale(1.6);
   }
 }
+
+@media (min-width: 1024px) {
+  :root {
+    --header-tagline-margin-top: 52px;
+  }
+}
