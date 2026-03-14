@@ -170,6 +170,10 @@ const MyGoTwo = () => {
 
   const goBackFromField = () => {
     setFieldState(null);
+    // If activeSubcategory has no products it was the leaf — clear it too so we go back to subcategory picker
+    if (activeSubcategory && (!activeSubcategory.products || activeSubcategory.products.length === 0)) {
+      setActiveSubcategory(null);
+    }
   };
 
   const goBackFromProducts = () => {
