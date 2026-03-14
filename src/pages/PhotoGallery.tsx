@@ -139,23 +139,28 @@ const SparePicker = ({ slot, onPick, onClose }: {
 
 const ImageCard = ({
   slot,
+  gender,
   onDelete,
   onPick,
-  blocked,
 }: {
   slot: ImageSlot;
+  gender: Gender;
   onDelete: () => void;
   onPick: () => void;
-  blocked: boolean;
 }) => {
-  const hasOverride = !!getOverride(slot.imageKey);
-  const showImage = slot.resolvedUrl && !blocked;
+  // Always resolve live — never use stale baked-in URL
+  const override = getOverride(slot.imageKey);
+  const liveUrl = override || getProductImage(slot.imageKey, gender, "");
+  const livePath = urlToPath(liveUrl);
+  const blocked = isPathBlocked(livePath);
+  const hasOverride = !!override;
+  const showImage = !!liveUrl && !blocked;
 
   return (
     <div className="flex flex-col gap-1">
       <div className="relative rounded-xl overflow-hidden bg-muted group cursor-pointer" style={{ aspectRatio: "3/4" }} onClick={onPick}>
         {showImage ? (
-          <img src={slot.resolvedUrl} alt={slot.label} className="w-full h-full object-cover" />
+          <img src={liveUrl} alt={slot.label} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-muted/60">
             <ImagePlus className="w-6 h-6 text-muted-foreground opacity-50" />
@@ -225,7 +230,6 @@ export default function PhotoGallery() {
   const [gender, setGender] = useState<Gender>("male");
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
-  const [blocked, setBlocked] = useState<Set<string>>(new Set());
   const [deletedKeys, setDeletedKeys] = useState<Set<string>>(new Set());
   const [version, setVersion] = useState(0);
   const [pickerSlot, setPickerSlot] = useState<ImageSlot | null>(null);
@@ -295,8 +299,8 @@ export default function PhotoGallery() {
 
   const handleDelete = useCallback(async (path: string, key: string) => {
     await addToBlocklist(path);
-    setBlocked(prev => new Set([...prev, path]));
     setDeletedKeys(prev => new Set([...prev, key]));
+    setVersion(v => v + 1);
     toast.success(`Deleted: ${key}`);
   }, []);
 
@@ -315,11 +319,9 @@ export default function PhotoGallery() {
     toast.success(`Assigned spare photo to ${slot.imageKey}`);
   }, []);
 
-  const isBlocked = (slot: ImageSlot) => blocked.has(slot.resolvedPath) || isPathBlocked(slot.resolvedPath);
-
   const cardProps = (slot: ImageSlot) => ({
     slot,
-    blocked: isBlocked(slot),
+    gender,
     onDelete: () => handleDelete(slot.resolvedPath, slot.imageKey),
     onPick: () => setPickerSlot(slot),
   });
