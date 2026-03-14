@@ -1,28 +1,22 @@
 /**
  * Unified image resolver for the entire app.
  *
- * Asset banks:
- *   female  → /src/assets/templates/          (root, largest set)
- *   male    → /src/assets/templates/male/
- *   non-binary → no dedicated folder; falls back to root then male
- *
- * Fallback chain per gender:
- *   male:        male/ → root → (empty)
- *   female:      root  → male/ → (empty)
- *   non-binary:  root  → male/ → (empty)
+ * Three equal gender banks — no fallbacks, no crossover:
+ *   male       → /src/assets/templates/male/
+ *   female     → /src/assets/templates/female/
+ *   non-binary → /src/assets/templates/non-binary/
  */
 
 import { type Gender, normalizeGender } from "@/lib/gender";
 import { getOverride } from "@/lib/imageOverrides";
 
-// ── Eager glob of ALL template .jpg assets ──
-const rootModules = import.meta.glob<string>(
-  "/src/assets/templates/*.jpg",
+const maleModules = import.meta.glob<string>(
+  "/src/assets/templates/male/*.jpg",
   { eager: true, import: "default" },
 );
 
-const maleModules = import.meta.glob<string>(
-  "/src/assets/templates/male/*.jpg",
+const femaleModules = import.meta.glob<string>(
+  "/src/assets/templates/female/*.jpg",
   { eager: true, import: "default" },
 );
 
@@ -39,22 +33,17 @@ function resolveKey(key: string, gender: Gender): string {
   if (override) return override;
 
   if (gender === "male") {
-    const m = maleModules[`/src/assets/templates/male/${k}.jpg`];
-    if (m) return m;
-    const r = rootModules[`/src/assets/templates/${k}.jpg`];
-    if (r) return r;
-    return "";
+    return maleModules[`/src/assets/templates/male/${k}.jpg`] ?? "";
+  }
+
+  if (gender === "female") {
+    return femaleModules[`/src/assets/templates/female/${k}.jpg`] ?? "";
   }
 
   if (gender === "non-binary") {
-    const nb = nonBinaryModules[`/src/assets/templates/non-binary/${k}.jpg`];
-    if (nb) return nb;
-    return "";
+    return nonBinaryModules[`/src/assets/templates/non-binary/${k}.jpg`] ?? "";
   }
 
-  // female: root folder
-  const r = rootModules[`/src/assets/templates/${k}.jpg`];
-  if (r) return r;
   return "";
 }
 
