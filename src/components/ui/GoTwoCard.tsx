@@ -103,9 +103,11 @@ const GoTwoCard = forwardRef<HTMLDivElement, GoTwoCardProps>(
                 fontSize: 15,
                 letterSpacing: "0.02em",
                 color: "#fff",
-                background: "rgba(45,104,112,0.45)",
+                background: "rgba(255,255,255,0.18)",
                 borderRadius: 999,
-                backdropFilter: "blur(6px)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                border: "1px solid rgba(255,255,255,0.35)",
                 maxWidth: 220,
               }}
             >
