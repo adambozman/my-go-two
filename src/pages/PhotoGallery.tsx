@@ -468,7 +468,39 @@ export default function PhotoGallery() {
             </span>
           </div>
 
-          {ALL_SPARE_PHOTOS.length === 0 ? (
+          {/* Uploaded photos from storage */}
+          {uploadedPhotos.filter(p => !isPathBlocked(p.path)).length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Uploaded Photos</p>
+              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+                {uploadedPhotos.filter(p => !isPathBlocked(p.path)).map(photo => (
+                  <div key={photo.path} className="flex flex-col gap-1 group">
+                    <div className="relative rounded-xl overflow-hidden" style={{ aspectRatio: "3/4" }}>
+                      <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <button
+                          onClick={async () => {
+                            // Delete from storage and blocklist it
+                            await supabase.storage.from("category-images").remove([`spare/${photo.name}.${photo.url.split('.').pop()}`]);
+                            await addToBlocklist(photo.path);
+                            await loadUploadedPhotos();
+                            toast.success(`Deleted: ${photo.name}`);
+                          }}
+                          className="flex items-center gap-1 px-2 py-1 bg-red-600 text-white rounded-md text-[10px] font-medium"
+                        >
+                          <X className="w-3 h-3" /> Delete
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground truncate">{photo.name}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Static spare photos from build */}
+          {ALL_SPARE_PHOTOS.filter(p => !isPathBlocked(p.path)).length === 0 && uploadedPhotos.filter(p => !isPathBlocked(p.path)).length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 gap-3 text-muted-foreground">
               <ImagePlus className="w-12 h-12 opacity-30" />
               <p>No spare photos yet — upload some or copy the prompt below.</p>
