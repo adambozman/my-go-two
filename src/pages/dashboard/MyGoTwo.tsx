@@ -76,37 +76,54 @@ const EntryFormCard = ({
   onDelete: () => void;
 }) => {
   return (
-    <div className="w-full h-full flex flex-col bg-card/95 p-6">
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground" style={{ fontFamily: "'Jost', sans-serif" }}>
-          {subcategoryName || "Preferences"}
-        </p>
-      </div>
-
-      <Input
+    <div className="w-full h-full flex flex-col" style={{ background: "rgba(0,0,0,0.52)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", padding: "28px 24px 20px" }}>
+      {/* Entry name */}
+      <input
         value={entryName}
         onChange={(e) => onEntryNameChange(e.target.value)}
-        placeholder={`Name this ${subtype.name.toLowerCase()} entry`}
-        className="rounded-xl h-10 mb-4 bg-background/80"
+        placeholder={subtype.name}
+        style={{
+          width: "100%",
+          background: "rgba(255,255,255,0.10)",
+          border: "1px solid rgba(255,255,255,0.22)",
+          borderRadius: 12,
+          padding: "10px 14px",
+          fontSize: 15,
+          fontWeight: 600,
+          color: "#fff",
+          outline: "none",
+          marginBottom: 18,
+          fontFamily: "'Cormorant Garamond', serif",
+          letterSpacing: "0.02em",
+        }}
       />
 
-      <div className="flex-1 overflow-y-auto pr-1 space-y-4" style={{ scrollbarWidth: "none" }}>
+      {/* Fields */}
+      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", display: "flex", flexDirection: "column", gap: 14 }}>
         {subtype.fields.map((field) => (
-          <div key={field.label} className="space-y-2">
-            <label className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground" style={{ fontFamily: "'Jost', sans-serif" }}>
+          <div key={field.label}>
+            <p style={{ fontSize: 10, fontFamily: "'Jost', sans-serif", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)", marginBottom: 6 }}>
               {field.label}
-            </label>
+            </p>
             {field.type === "select" && field.options ? (
-              <div className="flex flex-wrap gap-2">
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                 {field.options.map((opt) => {
                   const isSelected = values[field.label] === opt;
                   return (
                     <button
                       key={opt}
                       onClick={() => onChange(field.label, isSelected ? "" : opt)}
-                      className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
-                        isSelected ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/40 text-foreground border-border"
-                      }`}
+                      style={{
+                        padding: "5px 14px",
+                        borderRadius: 999,
+                        fontSize: 12,
+                        fontFamily: "'Jost', sans-serif",
+                        border: isSelected ? "1px solid #2d6870" : "1px solid rgba(255,255,255,0.2)",
+                        background: isSelected ? "#2d6870" : "rgba(255,255,255,0.08)",
+                        color: "#fff",
+                        cursor: "pointer",
+                        transition: "all 0.15s",
+                      }}
                     >
                       {opt}
                     </button>
@@ -114,25 +131,55 @@ const EntryFormCard = ({
                 })}
               </div>
             ) : (
-              <Input
+              <input
                 value={values[field.label] || ""}
                 onChange={(e) => onChange(field.label, e.target.value)}
-                placeholder={`Enter ${field.label.toLowerCase()}`}
-                className="rounded-xl h-10 bg-background/80"
+                placeholder={field.label}
+                style={{
+                  width: "100%",
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                  borderRadius: 10,
+                  padding: "8px 12px",
+                  fontSize: 13,
+                  color: "#fff",
+                  outline: "none",
+                  fontFamily: "'Jost', sans-serif",
+                }}
               />
             )}
           </div>
         ))}
       </div>
 
-      <div className="flex gap-2 mt-4">
-        <Button onClick={onSave} disabled={saving} className="flex-1 h-10 rounded-full bg-primary text-primary-foreground">
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4 mr-2" />Save</>}
-        </Button>
+      {/* Actions */}
+      <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+        <button
+          onClick={onSave}
+          disabled={saving}
+          style={{
+            flex: 1, height: 42, borderRadius: 999,
+            background: "#2d6870", border: "none",
+            color: "#fff", fontSize: 13, fontWeight: 600,
+            fontFamily: "'Jost', sans-serif",
+            letterSpacing: "0.06em", cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          }}
+        >
+          {saving ? <Loader2 style={{ width: 14, height: 14 }} className="animate-spin" /> : <>Save</>}
+        </button>
         {isEditing && (
-          <Button onClick={onDelete} variant="outline" className="h-10 rounded-full px-3 text-destructive border-destructive/40">
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          <button
+            onClick={onDelete}
+            style={{
+              width: 42, height: 42, borderRadius: 999,
+              background: "rgba(212,84,58,0.15)",
+              border: "1px solid rgba(212,84,58,0.4)",
+              display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+            }}
+          >
+            <Trash2 style={{ width: 14, height: 14, color: "#d4543a" }} />
+          </button>
         )}
       </div>
     </div>
