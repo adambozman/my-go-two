@@ -90,10 +90,20 @@ function urlToPath(url: string): string {
   return match ? "/" + match[0] : url;
 }
 
-function makeSlot(label: string, imageKey: string, gender: Gender, fallback = "", section = "", categoryId = "", subcategoryId = ""): ImageSlot {
-  const override = getOverride(imageKey);
-  const url = override || getProductImage(imageKey, gender, fallback, section, categoryId, subcategoryId);
-  return { label, imageKey, resolvedUrl: url, resolvedPath: urlToPath(url) };
+function makeSlot(label: string, imageKey: string): ImageSlot {
+  return { label, imageKey, resolvedUrl: "", resolvedPath: "" };
+}
+
+/** Batch-fetch image URLs from category_images for a list of keys */
+async function fetchImageMap(keys: string[]): Promise<Record<string, string>> {
+  if (keys.length === 0) return {};
+  const { data } = await supabase
+    .from("category_images")
+    .select("category_key, image_url")
+    .in("category_key", keys);
+  const map: Record<string, string> = {};
+  for (const row of data || []) map[row.category_key] = row.image_url;
+  return map;
 }
 
 // ─── Spare Picker Modal ───────────────────────────────────────────────────────
