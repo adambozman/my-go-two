@@ -1,6 +1,6 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Camera, Loader2, X, Trash2, Sparkles } from "lucide-react";
+import { Search, Camera, Loader2, X, Trash2, Sparkles, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { setImageUrl, deleteImageUrl, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,7 +27,7 @@ export default function InlinePhotoSearch(props: Props) {
 }
 
 // ── Crop helper ──────────────────────────────────────────────
-function cropAndUpload(sourceUrl: string, imageKey: string) {
+function cropAndUpload(sourceUrl: string) {
   const W = 1015, H = 686;
   return new Promise<Blob>((resolve, reject) => {
     const img = new Image();
@@ -48,6 +48,13 @@ function cropAndUpload(sourceUrl: string, imageKey: string) {
   });
 }
 
+// ── DB type for category bank photos ─────────────────────────
+interface BankPhoto {
+  id: string;
+  image_url: string;
+  filename: string | null;
+}
+
 // ── Main admin panel ─────────────────────────────────────────
 function AdminPanel({ imageKey, label, onImageChanged }: Props) {
   const { toast } = useToast();
@@ -57,6 +64,15 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
   const [deleting, setDeleting] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
+  // Category-specific bank photos (from DB)
+  const [bankPhotos, setBankPhotos] = useState<BankPhoto[]>([]);
+  const [loadingBank, setLoadingBank] = useState(false);
+
+  // Spare bank expand
+  const [showSpare, setShowSpare] = useState(false);
+  const [sparePhotos] = useState<LocalPhoto[]>(() => getSpareBank());
+  const [addingToBank, setAddingToBank] = useState<string | null>(null);
+
   // Web search state
   const [query, setQuery] = useState(label);
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -65,9 +81,6 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
   // AI generate state
   const [prompt, setPrompt] = useState("");
   const [generating, setGenerating] = useState(false);
-
-  // Bank images
-  const sparePhotos = useMemo(() => getSpareBank(), []);
 
   // Has existing image?
   const [hasImage, setHasImage] = useState(false);
@@ -79,6 +92,22 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
     return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
   }, [imageKey]);
 
+  // Load category bank photos when panel opens
+  const loadBankPhotos = useCallback(async () => {
+    setLoadingBank(true);
+    const { data } = await supabase
+      .from("category_bank_photos")
+      .select("id, image_url, filename")
+      .eq("category_key", imageKey)
+      .order("created_at", { ascending: false });
+    setBankPhotos(data ?? []);
+    setLoadingBank(false);
+  }, [imageKey]);
+
+  useEffect(() => {
+    if (open) loadBankPhotos();
+  }, [open, loadBankPhotos]);
+
   // Outside click
   useEffect(() => {
     if (!open) return;
@@ -89,11 +118,41 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  // ── Save a photo (from bank or web search) ──
+  // ── Add a spare photo to this category's bank ──
+  const addToBank = useCallback(async (photo: LocalPhoto) => {
+    setAddingToBank(photo.id);
+    try {
+      const { error } = await supabase
+        .from("category_bank_photos")
+        .insert({ category_key: imageKey, image_url: photo.url, filename: photo.filename });
+      if (error) {
+        if (error.code === "23505") {
+          toast({ title: "Already added", description: "This photo is already in this category's bank" });
+        } else throw error;
+      } else {
+        toast({ title: "✓ Added to bank", description: label });
+        loadBankPhotos();
+      }
+    } catch (e: any) {
+      toast({ title: "Failed", description: e.message, variant: "destructive" });
+    } finally { setAddingToBank(null); }
+  }, [imageKey, label, toast, loadBankPhotos]);
+
+  // ── Remove a photo from this category's bank ──
+  const removeFromBank = useCallback(async (photoId: string) => {
+    const { error } = await supabase.from("category_bank_photos").delete().eq("id", photoId);
+    if (error) {
+      toast({ title: "Failed", description: error.message, variant: "destructive" });
+    } else {
+      setBankPhotos(prev => prev.filter(p => p.id !== photoId));
+    }
+  }, [toast]);
+
+  // ── Save a photo as the category image ──
   const savePhoto = useCallback(async (sourceUrl: string, saveId: string) => {
     setSaving(saveId);
     try {
-      const blob = await cropAndUpload(sourceUrl, imageKey);
+      const blob = await cropAndUpload(sourceUrl);
       const filename = `${imageKey}.jpg`;
       const { error } = await supabase.storage.from("category-images").upload(filename, blob, { contentType: "image/jpeg", upsert: true });
       if (error) throw error;
@@ -139,7 +198,6 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
       });
       if (error) throw error;
       if (data?.image_url) {
-        // Dispatch the event so the card updates immediately
         window.dispatchEvent(new CustomEvent(OVERRIDE_CHANGED_EVENT, { detail: { imageKey, url: `${data.image_url}?t=${Date.now()}` } }));
         toast({ title: "✓ Image generated", description: label });
         setOpen(false);
@@ -177,7 +235,7 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
     <>
       {/* Camera button */}
       <button
-        onClick={(e) => { e.stopPropagation(); setOpen(true); setQuery(label); setTab("bank"); setPhotos([]); setPrompt(""); }}
+        onClick={(e) => { e.stopPropagation(); setOpen(true); setQuery(label); setTab("bank"); setPhotos([]); setPrompt(""); setShowSpare(false); }}
         style={{
           position: "absolute", top: 8, right: 8, zIndex: 20,
           width: 32, height: 32, borderRadius: 999,
@@ -199,7 +257,7 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
           onClick={e => e.stopPropagation()}
           style={{
             position: "absolute", bottom: 40, right: 4, zIndex: 30,
-            width: 350, maxHeight: 480, overflowY: "auto",
+            width: 350, maxHeight: 520, overflowY: "auto",
             background: "rgba(255,255,255,0.97)", backdropFilter: "blur(16px)",
             borderRadius: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
             border: "1px solid rgba(45,104,112,0.15)", padding: 12,
@@ -231,24 +289,97 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
 
           {/* ── BANK TAB ── */}
           {tab === "bank" && (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
-              {sparePhotos.map(photo => (
-                <button key={photo.id} onClick={() => savePhoto(photo.url, photo.id)} disabled={!!saving}
-                  style={{ position: "relative", borderRadius: 8, overflow: "hidden", aspectRatio: "3/2", border: "2px solid transparent", cursor: "pointer", background: "#eee", padding: 0 }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = "#2d6870")}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = "transparent")}>
-                  <img src={photo.url} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                  {saving === photo.id && (
-                    <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Loader2 style={{ width: 16, height: 16, color: "#fff" }} className="animate-spin" />
+            <div>
+              {/* Category-specific photos */}
+              <p style={{ fontSize: 11, fontWeight: 600, color: "#2d6870", marginBottom: 6 }}>
+                Photos for "{label}"
+              </p>
+
+              {loadingBank ? (
+                <div style={{ display: "flex", justifyContent: "center", padding: "20px 0" }}>
+                  <Loader2 style={{ width: 16, height: 16, color: "#2d6870" }} className="animate-spin" />
+                </div>
+              ) : bankPhotos.length > 0 ? (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6, marginBottom: 10 }}>
+                  {bankPhotos.map(photo => (
+                    <div key={photo.id} style={{ position: "relative" }}>
+                      <button onClick={() => savePhoto(photo.image_url, photo.id)} disabled={!!saving}
+                        style={{ width: "100%", borderRadius: 8, overflow: "hidden", aspectRatio: "3/2", border: "2px solid transparent", cursor: "pointer", background: "#eee", padding: 0, display: "block" }}
+                        onMouseEnter={e => (e.currentTarget.style.borderColor = "#2d6870")}
+                        onMouseLeave={e => (e.currentTarget.style.borderColor = "transparent")}>
+                        <img src={photo.image_url} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        {saving === photo.id && (
+                          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <Loader2 style={{ width: 16, height: 16, color: "#fff" }} className="animate-spin" />
+                          </div>
+                        )}
+                      </button>
+                      {/* Remove from bank */}
+                      <button onClick={(e) => { e.stopPropagation(); removeFromBank(photo.id); }}
+                        style={{ position: "absolute", top: 3, right: 3, width: 18, height: 18, borderRadius: 4, background: "rgba(0,0,0,0.5)", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                        <X style={{ width: 10, height: 10, color: "#fff" }} />
+                      </button>
                     </div>
-                  )}
-                </button>
-              ))}
-              {sparePhotos.length === 0 && (
-                <p style={{ gridColumn: "1/-1", fontSize: 12, color: "#999", textAlign: "center", padding: "16px 0" }}>
-                  No bank photos available
+                  ))}
+                </div>
+              ) : (
+                <p style={{ fontSize: 12, color: "#999", textAlign: "center", padding: "12px 0", marginBottom: 8 }}>
+                  No photos assigned yet — add from the spare bank below
                 </p>
+              )}
+
+              {/* Expandable spare bank */}
+              <button
+                onClick={() => setShowSpare(!showSpare)}
+                style={{
+                  width: "100%", padding: "8px 10px", borderRadius: 8,
+                  background: "rgba(45,104,112,0.06)", border: "1px solid rgba(45,104,112,0.15)",
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between",
+                  fontSize: 12, fontWeight: 600, color: "#2d6870",
+                }}
+              >
+                <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <Plus style={{ width: 12, height: 12 }} /> Add from Spare Bank ({sparePhotos.length})
+                </span>
+                {showSpare ? <ChevronUp style={{ width: 12, height: 12 }} /> : <ChevronDown style={{ width: 12, height: 12 }} />}
+              </button>
+
+              {showSpare && (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6, marginTop: 8 }}>
+                  {sparePhotos.map(photo => {
+                    const alreadyAdded = bankPhotos.some(bp => bp.image_url === photo.url);
+                    return (
+                      <button key={photo.id}
+                        onClick={() => !alreadyAdded && addToBank(photo)}
+                        disabled={!!addingToBank || alreadyAdded}
+                        style={{
+                          position: "relative", borderRadius: 8, overflow: "hidden", aspectRatio: "3/2",
+                          border: alreadyAdded ? "2px solid #2d6870" : "2px solid transparent",
+                          cursor: alreadyAdded ? "default" : "pointer", background: "#eee", padding: 0,
+                          opacity: alreadyAdded ? 0.5 : 1,
+                        }}
+                        onMouseEnter={e => { if (!alreadyAdded) e.currentTarget.style.borderColor = "#2d6870"; }}
+                        onMouseLeave={e => { if (!alreadyAdded) e.currentTarget.style.borderColor = "transparent"; }}>
+                        <img src={photo.url} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        {addingToBank === photo.id && (
+                          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <Loader2 style={{ width: 16, height: 16, color: "#fff" }} className="animate-spin" />
+                          </div>
+                        )}
+                        {alreadyAdded && (
+                          <div style={{ position: "absolute", inset: 0, background: "rgba(45,104,112,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <span style={{ fontSize: 9, color: "#fff", fontWeight: 700, background: "rgba(0,0,0,0.4)", padding: "2px 6px", borderRadius: 4 }}>Added</span>
+                          </div>
+                        )}
+                        {!alreadyAdded && (
+                          <div style={{ position: "absolute", bottom: 3, right: 3, width: 18, height: 18, borderRadius: 4, background: "rgba(45,104,112,0.8)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <Plus style={{ width: 10, height: 10, color: "#fff" }} />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               )}
             </div>
           )}
