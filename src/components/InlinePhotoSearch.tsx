@@ -106,7 +106,21 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
   }, [imageKey]);
 
   useEffect(() => {
-    if (open) loadBankPhotos();
+    if (open) {
+      loadBankPhotos();
+      // Load blocklist and filter spare photos
+      supabase.from("image_blocklist").select("path").then(({ data }) => {
+        const blocked = new Set((data ?? []).map((r: any) => r.path));
+        blockedPathsRef.current = blocked;
+        const all = getSpareBank();
+        // Filter out blocked paths — blocklist stores paths like "/src/assets/spare/spare-004.jpg"
+        // while LocalPhoto.url is the resolved import URL; match by filename
+        const blockedFilenames = new Set(
+          [...blocked].map(p => p.split('/').pop()?.replace(/\.\w+$/, '') ?? '')
+        );
+        setSparePhotos(all.filter(p => !blockedFilenames.has(p.filename)));
+      });
+    }
   }, [open, loadBankPhotos]);
 
   // Outside click
