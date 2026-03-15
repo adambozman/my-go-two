@@ -404,23 +404,7 @@ const MyGoTwo = () => {
 
   // Determine which view to show
   const renderContent = () => {
-    // Level 6: Field form (editing/creating an entry)
-    if (fieldState && cardKey) {
-      return (
-        <FieldForm
-          key="field-form"
-          fieldState={fieldState}
-          onSave={handleSave}
-          saving={saving}
-          entryName={editingEntry?.entry_name || "New Entry"}
-          onDelete={editingEntry?.id ? handleDelete : undefined}
-          isEditing={!!editingEntry?.id}
-        />
-      );
-    }
-
-    // Entries coverflow
-    if (cardKey) {
+    if (cardKey && leafSubtype) {
       return (
         <motion.div
           key="entry-coverflow"
@@ -428,50 +412,47 @@ const MyGoTwo = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -40 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="h-full flex flex-col items-center justify-center"
+          className="h-full flex flex-col items-center justify-center px-4"
         >
-          {entryCoverFlowItems.length > 0 ? (
-            <CoverFlowCarousel
-              items={entryCoverFlowItems}
-              onSelect={handleEntrySelect}
-            />
-          ) : (
-            <p
-              className="text-center mb-4"
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 20,
-                fontStyle: "italic",
-                color: "var(--swatch-teal)",
-                opacity: 0.6,
-              }}
+          <FormCoverFlowCarousel
+            items={entryCoverFlowItems}
+            activeIndex={activeEntryIndex}
+            onActiveIndexChange={setActiveEntryIndex}
+            renderActiveCard={(item) => (
+              <EntryFormCard
+                subtype={leafSubtype}
+                subcategoryName={leafSubcategoryName}
+                entryName={entryNames[item.id] || ""}
+                values={entryDrafts[item.id] || defaultFieldValues}
+                saving={saving}
+                isEditing={item.id !== NEW_ENTRY_ID}
+                onEntryNameChange={(name) => handleNameChange(item.id, name)}
+                onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
+                onSave={() => handleSaveEntry(item.id)}
+                onDelete={() => handleDeleteEntry(item.id)}
+              />
+            )}
+          />
+
+          <div className="mt-8 flex items-center gap-3">
+            <Button
+              variant="outline"
+              className="rounded-full px-6 h-10 border-border text-foreground"
+              onClick={() => setShowGroupDialog(true)}
             >
-              No entries yet
-            </p>
-          )}
-          <button
-            onClick={() => { setNewName(""); setShowNameDialog(true); }}
-            className="mt-8 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
-            style={{
-              padding: "12px 28px",
-              borderRadius: 999,
-              fontFamily: "'Jost', sans-serif",
-              fontSize: 14,
-              fontWeight: 600,
-              letterSpacing: "0.06em",
-              color: "#fff",
-              background: "var(--swatch-cedar-grove)",
-              boxShadow: "0 4px 16px rgba(212,84,58,0.25)",
-            }}
-          >
-            <Plus className="w-4 h-4" />
-            Add New
-          </button>
+              <Plus className="w-4 h-4 mr-2" />
+              New Group
+            </Button>
+            {activeGroup && (
+              <span className="text-sm text-muted-foreground" style={{ fontFamily: "'Jost', sans-serif" }}>
+                Saving to: {activeGroup}
+              </span>
+            )}
+          </div>
         </motion.div>
       );
     }
 
-    // Level 2-3: TemplateCoverFlow (subcategory/product picker)
     if (coverFlowState) {
       return (
         <TemplateCoverFlow
@@ -491,7 +472,6 @@ const MyGoTwo = () => {
       );
     }
 
-    // Level 1: Section coverflows
     return (
       <motion.div
         key="main"
