@@ -156,18 +156,23 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                   }}
                   transition={spring}
                   className="absolute"
+                  style={{ position: "absolute" }}
                 >
-                  <GoTwoCard
-                    image={item.image}
-                    label={item.label}
-                    isActive={isActive}
-                    cardWidth={cardWidth}
-                    cardHeight={cardHeight}
-                    borderRadius={borderRadius}
-                    onClick={() => {
-                      if (isActive) onSelect(item.id);
-                      else setActiveIndex((activeIndex + offset + n) % n);
-                    }}
+                  <div style={{ position: "relative" }}>
+                    <GoTwoCard
+                      image={item.image}
+                      label={item.label}
+                      isActive={isActive}
+                      cardWidth={cardWidth}
+                      cardHeight={cardHeight}
+                      borderRadius={borderRadius}
+                      onClick={() => {
+                        if (isActive) onSelect(item.id);
+                        else setActiveIndex((activeIndex + offset + n) % n);
+                      }}
+                    />
+                    {isActive && <InlinePhotoSearch imageKey={item.id} label={item.label} onImageChanged={forceUpdate} />}
+                  </div>
                   />
                 </motion.div>
               );
