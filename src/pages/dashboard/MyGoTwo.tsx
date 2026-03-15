@@ -618,6 +618,7 @@ const MyGoTwo = () => {
             group_name: activeGroup || leafSubtype.name,
             entry_name: entryName,
             field_values: fieldValues,
+            image_url: entryImages[NEW_ENTRY_ID] || null,
           })
           .select("*")
           .single();
