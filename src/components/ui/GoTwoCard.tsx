@@ -95,20 +95,21 @@ const GoTwoCard = forwardRef<HTMLDivElement, GoTwoCardProps>(
           )}
 
           {/* Bottom-left pill label */}
-          <div className="absolute bottom-3 left-3">
+          <div className="absolute bottom-4 left-4">
             <span
-              className="px-3 py-1 font-semibold truncate block"
+              className="px-4 py-1.5 font-bold truncate block"
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 15,
-                letterSpacing: "0.02em",
+                fontSize: 17,
+                letterSpacing: "0.03em",
                 color: "#fff",
-                background: "rgba(255,255,255,0.18)",
+                background: "rgba(0,0,0,0.45)",
                 borderRadius: 999,
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
-                border: "1px solid rgba(255,255,255,0.35)",
-                maxWidth: 220,
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                maxWidth: 240,
+                textShadow: "0 1px 4px rgba(0,0,0,0.5)",
               }}
             >
               {label}
