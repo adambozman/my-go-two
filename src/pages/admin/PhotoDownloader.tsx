@@ -189,34 +189,35 @@ export default function PhotoDownloader() {
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--color-background-primary)" }}>
-    <div style={{ padding: "24px 32px", maxWidth: 900, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>Photo Downloader</h1>
-      <p style={{ fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 16 }}>{products.length} slots · Male</p>
-      <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
-        {SECTIONS.map(s => (
-          <button key={s.id} onClick={() => setSection(s.id)}
-            style={{ padding: "4px 12px", borderRadius: 999, fontSize: 12, border: "1px solid", cursor: "pointer", background: section === s.id ? "#2d6870" : "transparent", color: section === s.id ? "#fff" : "var(--color-text-secondary)", borderColor: section === s.id ? "#2d6870" : "var(--color-border-tertiary)" }}>
-            {s.label}
-          </button>
-        ))}
-      </div>
-      {loading ? (
-        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--color-text-secondary)" }}>
-          <Loader2 style={{ width: 14, height: 14 }} className="animate-spin" /> Loading...
+      <div style={{ padding: "24px 32px", maxWidth: 900, margin: "0 auto" }}>
+        <h1 style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>Photo Downloader</h1>
+        <p style={{ fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 16 }}>{products.length} slots · Male</p>
+        <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
+          {SECTIONS.map(s => (
+            <button key={s.id} onClick={() => setSection(s.id)}
+              style={{ padding: "4px 12px", borderRadius: 999, fontSize: 12, border: "1px solid", cursor: "pointer", background: section === s.id ? "#2d6870" : "transparent", color: section === s.id ? "#fff" : "var(--color-text-secondary)", borderColor: section === s.id ? "#2d6870" : "var(--color-border-tertiary)" }}>
+              {s.label}
+            </button>
+          ))}
         </div>
-      ) : (
-        Object.entries(grouped).map(([bank, subs]) => (
-          <div key={bank} style={{ marginBottom: 24 }}>
-            <h2 style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, color: "#2d6870", textTransform: "uppercase", letterSpacing: "0.08em" }}>{bank}</h2>
-            {Object.entries(subs).map(([sub, prods]) => (
-              <div key={sub} style={{ marginBottom: 8 }}>
-                {sub !== cat && <p style={{ fontSize: 11, color: "var(--color-text-secondary)", marginBottom: 4, fontWeight: 500 }}>{sub}</p>}
-                {prods.map(p => <ProductRow key={p.id} product={p} />)}
-              </div>
-            ))}
+        {loading ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--color-text-secondary)" }}>
+            <Loader2 style={{ width: 14, height: 14 }} className="animate-spin" /> Loading...
           </div>
-        ))
-      )}
+        ) : (
+          Object.entries(grouped).map(([bank, subs]) => (
+            <div key={bank} style={{ marginBottom: 24 }}>
+              <h2 style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, color: "#2d6870", textTransform: "uppercase", letterSpacing: "0.08em" }}>{bank}</h2>
+              {Object.entries(subs).map(([sub, prods]) => (
+                <div key={sub} style={{ marginBottom: 8 }}>
+                  {sub !== bank && <p style={{ fontSize: 11, color: "var(--color-text-secondary)", marginBottom: 4, fontWeight: 500 }}>{sub}</p>}
+                  {prods.map(p => <ProductRow key={p.id} product={p} />)}
+                </div>
+              ))}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
