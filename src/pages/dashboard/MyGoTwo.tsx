@@ -120,6 +120,75 @@ const TagInput = ({ value, onChange, fieldLabel }: { value: string; onChange: (v
   );
 };
 
+/** Auto-sizing title that scales font to fill container height */
+const AutoFitTitle = ({ value, placeholder, onChange }: {
+  value: string;
+  placeholder: string;
+  onChange: (v: string) => void;
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [fontSize, setFontSize] = useState(46);
+  const text = value || placeholder;
+  const isPlaceholder = !value;
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const measure = measureRef.current;
+    if (!container || !measure) return;
+
+    const containerW = container.offsetWidth;
+    const containerH = container.offsetHeight;
+    if (containerW === 0 || containerH === 0) return;
+
+    // Binary search for the largest font size that fits
+    let lo = 16, hi = 72, best = 16;
+    while (lo <= hi) {
+      const mid = Math.floor((lo + hi) / 2);
+      measure.style.fontSize = `${mid}px`;
+      measure.style.width = `${containerW}px`;
+      const fits = measure.scrollHeight <= containerH;
+      if (fits) { best = mid; lo = mid + 1; }
+      else { hi = mid - 1; }
+    }
+    setFontSize(best);
+  }, [text]);
+
+  return (
+    <div ref={containerRef} style={{ position: "relative", width: "100%", height: "100%" }}>
+      {/* Hidden measurement div */}
+      <div ref={measureRef} aria-hidden style={{
+        position: "absolute", visibility: "hidden", top: 0, left: 0,
+        fontWeight: 700, lineHeight: 0.95, letterSpacing: "-0.02em",
+        fontFamily: "'Cormorant Garamond', serif",
+        wordBreak: "keep-all", overflowWrap: "normal", hyphens: "manual" as any,
+        whiteSpace: "pre-wrap",
+      }}>{text}</div>
+
+      {/* Visible editable title */}
+      <textarea
+        className="gotwo-title"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={{
+          display: "block",
+          width: "100%", height: "100%",
+          background: "transparent",
+          border: "none", outline: "none", resize: "none",
+          fontSize, fontWeight: 700, lineHeight: 0.95,
+          letterSpacing: "-0.02em",
+          color: isPlaceholder ? undefined : "#1a1a1a",
+          fontFamily: "'Cormorant Garamond', serif",
+          overflow: "hidden", boxSizing: "border-box", padding: 0,
+          overflowWrap: "normal", wordBreak: "keep-all",
+          hyphens: "manual" as any,
+        }}
+      />
+    </div>
+  );
+};
+
 const EntryFormCard = ({
   subtype,
   subcategoryName,
