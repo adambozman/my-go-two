@@ -104,9 +104,17 @@ const EntryFormCard = ({
       </div>
 
       {/* ── TITLE BLOCK ── */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "0 22px", flexShrink: 0 }}>
+      <div style={{ position: "relative", padding: "0 22px", flexShrink: 0 }}>
+        {/* Photo thumbnail — top right */}
+        <div style={{
+          position: "absolute",
+          top: 0, right: 22,
+          width: 90, height: 110,
+          borderRadius: 10,
+          background: "#c8bfb4",
+        }} />
         {/* Invisible constraining box — forces natural word-wrap */}
-        <div style={{ width: 155, flexShrink: 0 }}>
+        <div style={{ width: 155 }}>
           <textarea
             className="gotwo-title"
             value={entryName}
@@ -133,14 +141,6 @@ const EntryFormCard = ({
             rows={3}
           />
         </div>
-        {/* Photo thumbnail */}
-        <div style={{
-          width: 90, height: 110,
-          borderRadius: 10,
-          background: "#c8bfb4",
-          flexShrink: 0,
-          marginLeft: "auto",
-        }} />
       </div>
 
       {/* ── CORAL ACCENT ── */}
