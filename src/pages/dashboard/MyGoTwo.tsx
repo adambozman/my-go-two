@@ -95,19 +95,21 @@ const EntryFormCard = ({
       </div>
 
       {/* TITLE + PHOTO */}
-      <div style={{ display: "flex", alignItems: "flex-start", padding: "6px 16px 0", gap: 12, flexShrink: 0 }}>
+      <div style={{ padding: "6px 16px 0", flexShrink: 0, position: "relative" }}>
+        <div style={{ float: "right", width: 110, height: 130, borderRadius: 10, background: "#c8bfb4", overflow: "hidden", marginLeft: 10, marginBottom: 4 }} />
         <textarea
           value={entryName}
           onChange={(e) => onEntryNameChange(e.target.value)}
           placeholder={subtype.name}
-          rows={3}
+          rows={4}
           style={{
-            flex: 1, background: "transparent", border: "none", outline: "none", resize: "none",
+            width: "100%", background: "transparent", border: "none", outline: "none", resize: "none",
             fontSize: 44, fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.02em",
             color: "#1a1a1a", fontFamily: "'Cormorant Garamond', serif", overflow: "hidden",
+            boxSizing: "border-box",
           }}
         />
-        <div style={{ width: 140, height: 160, borderRadius: 10, background: "#c8bfb4", flexShrink: 0, overflow: "hidden", marginTop: 4 }} />
+        <div style={{ clear: "both" }} />
       </div>
 
       {/* Coral accent */}
