@@ -542,8 +542,8 @@ const MyGoTwo = () => {
         {renderContent()}
       </AnimatePresence>
 
-      {/* Name dialog for creating groups/entries */}
-      <Dialog open={!!showNameDialog} onOpenChange={() => setShowNameDialog(null)}>
+      {/* Name dialog for creating entries */}
+      <Dialog open={showNameDialog} onOpenChange={() => setShowNameDialog(false)}>
         <DialogContent
           className="rounded-3xl"
           style={{
@@ -561,25 +561,23 @@ const MyGoTwo = () => {
                 color: "var(--swatch-viridian-odyssey)",
               }}
             >
-              {showNameDialog === "group" ? "New Group" : "New Entry"}
+              Name Your Entry
             </DialogTitle>
           </DialogHeader>
           <Input
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder={showNameDialog === "group" ? "e.g. Taco Bell, McDonald's..." : "e.g. My usual, Late night order..."}
+            placeholder="e.g. My usual, Taco Bell, Late night..."
             className="rounded-xl h-12 mt-2"
             style={{ background: "rgba(45,104,112,0.04)", border: "1.5px solid rgba(45,104,112,0.15)" }}
             autoFocus
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                showNameDialog === "group" ? handleCreateGroup() : handleCreateEntry();
-              }
+              if (e.key === "Enter") handleCreateEntry();
             }}
           />
           <DialogFooter>
             <Button
-              onClick={showNameDialog === "group" ? handleCreateGroup : handleCreateEntry}
+              onClick={handleCreateEntry}
               disabled={!newName.trim()}
               className="rounded-full px-8 h-11"
               style={{ background: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif", letterSpacing: "0.08em" }}
