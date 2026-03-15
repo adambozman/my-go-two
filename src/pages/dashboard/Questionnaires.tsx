@@ -34,6 +34,7 @@ const SECTION_FILTERS: Record<string, string[]> = {
 };
 
 const SECTIONS = [
+  { id: "all", label: "All" },
   { id: "style-fit", label: "Style & Fit" },
   { id: "shopping", label: "Shopping" },
   { id: "lifestyle-gifts", label: "Lifestyle & Gifts" },
@@ -112,7 +113,7 @@ const Questionnaires = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<AICategory | null>(null);
-  const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
+  const [activeSection, setActiveSection] = useState("all");
 
   const fetchCategories = useCallback(async () => {
     if (!user) { setCategories([]); setLoading(false); return; }
@@ -121,10 +122,12 @@ const Questionnaires = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("AUTH_REQUIRED");
 
-      const { data, error } = await supabase.functions.invoke("ai-quizzes", {
+      const { data: rawData, error } = await supabase.functions.invoke("ai-quizzes", {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
       if (error) throw error;
+
+      const data = typeof rawData === "string" ? JSON.parse(rawData) : rawData;
 
       const normalized = (Array.isArray(data?.categories) ? data.categories : [])
         .map(sanitizeCategory)
@@ -154,6 +157,7 @@ const Questionnaires = () => {
   };
 
   const getSectionCategories = (sectionId: string) => {
+    if (sectionId === "all") return categories;
     const filters = SECTION_FILTERS[sectionId] || [];
     return categories.filter((cat) => filters.includes(cat.category));
   };
