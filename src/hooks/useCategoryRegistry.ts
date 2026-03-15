@@ -74,14 +74,24 @@ export function useCategoryRegistry(
 
         if (cancelled) return;
 
+        // Fetch all image URLs for this gender from category_images table
+        const keys = (rows as any[]).map((r: any) => r.key);
+        const { data: imageRows } = await supabase
+          .from("category_images")
+          .select("category_key, image_url")
+          .in("category_key", keys);
+        const imageMap: Record<string, string> = {};
+        for (const row of (imageRows || [])) {
+          imageMap[row.category_key] = row.image_url;
+        }
+
         const items: CategoryItem[] = (rows as any[]).map((r: any) => {
-          const imageKey: string = r.image || r.key || "";
-          const resolvedImage = imageKey ? getOverride(imageKey) ?? "" : "";
+          const imageKey: string = r.key || "";
           return {
             key: r.key,
             label: r.label,
             section: r.section,
-            image: resolvedImage,
+            image: imageMap[imageKey] ?? "",
             imageKey: imageKey,
             sort_order: r.sort_order,
             fields: (r.fields as SubtypeItem[]) || [],

@@ -1,9 +1,8 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { setOverride } from "@/lib/imageOverrides";
 import { Search, Camera, Loader2, X, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { getOverride, clearOverride } from "@/lib/imageOverrides";
+import { setImageUrl, deleteImageUrl, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { getLibraryForKey, type LocalPhoto } from "@/lib/localImageLibrary";
 
 const UNSPLASH_KEY = "qrGolQ1Yn5Fn3HCqDQfFWRcwjVBrLwVYLBKjaMyxJfY";
@@ -49,7 +48,14 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
   const [showLibrary, setShowLibrary] = useState(true);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const hasOverride = !!getOverride(imageKey);
+  const [hasImage, setHasImage] = useState(false);
+  useEffect(() => {
+    supabase.from("category_images").select("image_url").eq("category_key", imageKey).maybeSingle()
+      .then(({ data }) => setHasImage(!!data?.image_url));
+    const handler = (e: any) => { if (e.detail?.imageKey === imageKey) setHasImage(!!e.detail?.url); };
+    window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
+  }, [imageKey]);
 
   // Get local library images, matching ones first
   const localPhotos = useMemo(() => getLibraryForKey(imageKey), [imageKey]);
@@ -95,7 +101,7 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
       const { error } = await supabase.storage.from("category-images").upload(filename, blob, { contentType: "image/jpeg", upsert: true });
       if (error) throw error;
       const { data } = supabase.storage.from("category-images").getPublicUrl(filename);
-      setOverride(imageKey, data.publicUrl);
+      await setImageUrl(imageKey, data.publicUrl);
       toast({ title: "Saved", description: label });
       setOpen(false);
       setPhotos([]);
@@ -114,7 +120,7 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
       const { error } = await supabase.storage.from("category-images").upload(filename, blob, { contentType: "image/jpeg", upsert: true });
       if (error) throw error;
       const { data } = supabase.storage.from("category-images").getPublicUrl(filename);
-      setOverride(imageKey, data.publicUrl);
+      await setImageUrl(imageKey, data.publicUrl);
       toast({ title: "Saved", description: label });
       setOpen(false);
       setShowLibrary(true);
@@ -128,7 +134,7 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
     setDeleting(true);
     try {
       await supabase.storage.from("category-images").remove([`${imageKey}.jpg`]);
-      clearOverride(imageKey);
+      await deleteImageUrl(imageKey);
       toast({ title: "Deleted", description: label });
       setOpen(false);
       onImageChanged?.();
@@ -218,7 +224,7 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
               style={{ width: 30, height: 30, borderRadius: 8, background: "#2d6870", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
               {loading ? <Loader2 style={{ width: 14, height: 14, color: "#fff" }} className="animate-spin" /> : <Search style={{ width: 14, height: 14, color: "#fff" }} />}
             </button>
-            {hasOverride && (
+            {hasImage && (
               <button onClick={handleDelete} disabled={deleting}
                 style={{ width: 30, height: 30, borderRadius: 8, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
                 {deleting ? <Loader2 style={{ width: 14, height: 14, color: "#ef4444" }} className="animate-spin" /> : <Trash2 style={{ width: 14, height: 14, color: "#ef4444" }} />}

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import GoTwoCard from "@/components/ui/GoTwoCard";
 import InlinePhotoSearch from "@/components/InlinePhotoSearch";
-import { getOverride, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
+import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 
 export interface CoverFlowItem {
   id: string;
@@ -124,7 +124,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                     }}
                   >
                     <div className="w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
-                      <img src={item.imageKey ? (getOverride(item.imageKey) ?? item.image) : item.image} alt={item.label} className="w-full h-full object-cover" />
+                      <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
                     </div>
                     {isActive && (
                       <>
