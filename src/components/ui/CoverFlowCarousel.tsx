@@ -101,7 +101,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                     initial={false}
                     animate={{ x, zIndex: VISIBLE + 1 - absOffset, opacity: 1 }}
                     transition={spring}
-                    className="absolute overflow-hidden cursor-pointer"
+                    className="absolute cursor-pointer"
                     style={{
                       width: pill.w, height: pill.h, borderRadius: pill.r,
                       boxShadow: isActive
@@ -113,7 +113,9 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                       else setActiveIndex((activeIndex + offset + n) % n);
                     }}
                   >
-                    <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
+                    <div className="w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
+                      <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
+                    </div>
                     {isActive && (
                       <>
                         <div className="absolute bottom-6 left-6">
