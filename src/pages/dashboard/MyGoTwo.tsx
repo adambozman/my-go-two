@@ -80,7 +80,6 @@ const EntryFormCard = ({
   onSave: () => void;
   onDelete: () => void;
 }) => {
-}) => {
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
   const fs = isDesktop ? 1.8 : 1;
 
