@@ -181,7 +181,7 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
           onClick={e => e.stopPropagation()}
           style={{
             position: "absolute",
-            top: 44,
+            bottom: 40,
             right: 4,
             zIndex: 30,
             width: 340,
