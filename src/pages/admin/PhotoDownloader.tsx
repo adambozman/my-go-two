@@ -167,10 +167,10 @@ export default function PhotoDownloader() {
         for (const sub of (row.subcategories || [])) {
           if ((sub.products || []).length > 0) {
             for (const p of sub.products) {
-              if (p.image) items.push({ id: `${row.key}-${sub.id}-${p.id}`, name: p.name, imageKey: p.image, subcategory: sub.name, category: row.label });
+              if (p.image) items.push({ id: `${row.key}-${sub.id}-${p.id}`, name: p.name, imageKey: p.image, subcategory: sub.name, category: row.label, bank: row.label });
             }
           } else if (sub.image) {
-            items.push({ id: `${row.key}-${sub.id}`, name: sub.name, imageKey: sub.image, subcategory: row.label, category: row.label });
+            items.push({ id: `${row.key}-${sub.id}`, name: sub.name, imageKey: sub.image, subcategory: row.label, category: row.label, bank: row.label });
           }
         }
       }
