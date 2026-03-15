@@ -80,148 +80,139 @@ const EntryFormCard = ({
   onSave: () => void;
   onDelete: () => void;
 }) => {
-  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
-  const fs = isDesktop ? 1.8 : 1;
-
   return (
-    <div style={{ width: "100%", height: "100%", background: "#f0e8d8", display: "flex", flexDirection: "column", overflow: "hidden", fontFamily: "'Jost', sans-serif" }}>
+    <div style={{ width: "100%", height: "100%", background: "#f0e8d8", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
-      {/* ── TOP META ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: `${14*fs}px ${18*fs}px ${6*fs}px`, flexShrink: 0 }}>
-        <span style={{ fontSize: 7*fs, letterSpacing: "0.2em", textTransform: "uppercase", color: "#d4543a", fontWeight: 700 }}>
+      {/* ── META ── */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px 0", flexShrink: 0 }}>
+        <span style={{ fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase", color: "#d4543a", fontWeight: 700, fontFamily: "'Jost', sans-serif" }}>
           {subcategoryName ? `${subcategoryName} · ${subtype.name}` : subtype.name}
         </span>
-        <span style={{ fontSize: 8*fs, color: "rgba(26,26,26,0.25)", fontStyle: "italic", fontFamily: "'Cormorant Garamond', serif" }}>
+        <span style={{ fontSize: 9, color: "rgba(26,26,26,0.22)", fontStyle: "italic", fontFamily: "'Cormorant Garamond', serif" }}>
           {isEditing ? "edit" : "new"}
         </span>
       </div>
 
-      {/* ── TITLE + PHOTO BOX ── */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: `0 ${18*fs}px ${8*fs}px`, flexShrink: 0 }}>
+      {/* ── TITLE + PHOTO — dominant top section ── */}
+      <div style={{ display: "flex", alignItems: "flex-start", padding: "8px 18px 0", flexShrink: 0, gap: 12 }}>
         <textarea
           value={entryName}
           onChange={(e) => onEntryNameChange(e.target.value)}
-          placeholder={subtype.name || "Entry name..."}
+          placeholder={subtype.name}
           rows={3}
           style={{
             flex: 1, background: "transparent", border: "none", outline: "none", resize: "none",
-            fontSize: 42, fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.02em",
+            fontSize: 40, fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.02em",
             color: "#1a1a1a", fontFamily: "'Cormorant Garamond', serif", overflow: "hidden",
+            minHeight: 0,
           }}
         />
-        <div style={{ width: 130, height: 180, borderRadius: 12, background: "#c8bfb4", flexShrink: 0, marginLeft: 14, marginTop: 0, overflow: "hidden" }} />
+        <div style={{ width: 100, height: 130, borderRadius: 10, background: "#c8bfb4", flexShrink: 0, overflow: "hidden", marginTop: 2 }} />
       </div>
 
       {/* Coral accent */}
-      <div style={{ display: "flex", gap: 3*fs, padding: `0 ${18*fs}px`, marginBottom: 12*fs, flexShrink: 0 }}>
-        <div style={{ height: 2.5*fs, width: 28*fs, background: "#d4543a", borderRadius: 1 }} />
-        <div style={{ height: 2.5*fs, width: 10*fs, background: "rgba(212,84,58,0.3)", borderRadius: 1 }} />
+      <div style={{ display: "flex", gap: 3, padding: "8px 18px 10px", flexShrink: 0 }}>
+        <div style={{ height: 2, width: 24, background: "#d4543a", borderRadius: 1 }} />
+        <div style={{ height: 2, width: 8, background: "rgba(212,84,58,0.3)", borderRadius: 1 }} />
       </div>
 
       {/* ── FIELDS ── */}
-      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: `0 ${18*fs}px` }}>
-        {subtype.fields.map((field, i) => (
-          <div key={field.label} style={{ marginBottom: 14*fs, paddingBottom: 14*fs, borderBottom: i < subtype.fields.length - 1 ? `1px solid rgba(26,26,26,0.1)` : "none" }}>
+      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 18px" }}>
 
-            <p style={{ fontSize: 7*fs, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(26,26,26,0.38)", fontWeight: 700, margin: `0 0 ${7*fs}px` }}>
+        {/* Select fields */}
+        {subtype.fields.filter(f => f.type === "select" && f.options).map((field, i) => (
+          <div key={field.label} style={{ marginBottom: 12, paddingBottom: 12, borderBottom: "1px solid rgba(26,26,26,0.1)" }}>
+            <p style={{ fontSize: 7, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(26,26,26,0.38)", fontWeight: 700, margin: "0 0 7px", fontFamily: "'Jost', sans-serif" }}>
               {field.label}
             </p>
-
-            {field.type === "select" && field.options ? (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 5*fs }}>
-                {field.options.map((opt) => {
-                  const isSelected = values[field.label] === opt;
-                  return (
-                    <button
-                      key={opt}
-                      onClick={() => onChange(field.label, isSelected ? "" : opt)}
-                      style={{
-                        padding: `${4*fs}px ${12*fs}px`, borderRadius: 999,
-                        fontSize: 10*fs, fontWeight: 500, cursor: "pointer", transition: "all 0.15s",
-                        border: isSelected ? "1.5px solid #d4543a" : `1px solid rgba(26,26,26,0.18)`,
-                        background: isSelected ? "#d4543a" : "transparent",
-                        color: isSelected ? "#fff" : "#1a1a1a",
-                        fontFamily: "'Jost', sans-serif",
-                      }}
-                    >
-                      {opt}
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 5*fs, alignItems: "center" }}>
-                {(values[field.label] || "").split(",").filter(t => t.trim()).map((tag, ti) => (
-                  <span
-                    key={ti}
-                    onClick={() => {
-                      const tags = (values[field.label] || "").split(",").filter(t => t.trim());
-                      tags.splice(ti, 1);
-                      onChange(field.label, tags.join(", "));
-                    }}
-                    style={{
-                      padding: "3px 10px", borderRadius: 4, fontSize: 11,
-                      background: field.label.toLowerCase().includes("brand") ? "rgba(45,104,112,0.12)" : "rgba(26,26,26,0.07)",
-                      color: field.label.toLowerCase().includes("brand") ? "#2d6870" : "#1a1a1a",
-                      fontWeight: field.label.toLowerCase().includes("brand") ? 600 : 400,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {tag.trim()}
-                  </span>
-                ))}
-                <input
-                  placeholder="+ add"
-                  style={{
-                    background: "transparent", border: "none", outline: "none",
-                    fontSize: 11, color: "rgba(26,26,26,0.3)", fontFamily: "'Jost', sans-serif",
-                    width: 48, cursor: "text",
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === ",") {
-                      e.preventDefault();
-                      const val = (e.target as HTMLInputElement).value.trim();
-                      if (val) {
-                        const existing = (values[field.label] || "").split(",").filter(t => t.trim());
-                        onChange(field.label, [...existing, val].join(", "));
-                        (e.target as HTMLInputElement).value = "";
-                      }
-                    }
-                  }}
-                />
-              </div>
-            )}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {field.options!.map((opt) => {
+                const isSelected = values[field.label] === opt;
+                return (
+                  <button key={opt} onClick={() => onChange(field.label, isSelected ? "" : opt)} style={{
+                    padding: "4px 12px", borderRadius: 999, fontSize: 11, fontWeight: 500,
+                    fontFamily: "'Jost', sans-serif", cursor: "pointer", transition: "all 0.15s",
+                    border: isSelected ? "1.5px solid #d4543a" : "1px solid rgba(26,26,26,0.18)",
+                    background: isSelected ? "#d4543a" : "transparent",
+                    color: isSelected ? "#fff" : "#1a1a1a",
+                  }}>
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         ))}
+
+        {/* Text fields — two per row as buttons */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12, paddingBottom: 12, borderBottom: "1px solid rgba(26,26,26,0.1)" }}>
+          {subtype.fields.filter(f => f.type !== "select").map((field) => {
+            const tags = (values[field.label] || "").split(",").filter(t => t.trim());
+            return (
+              <div key={field.label}>
+                <p style={{ fontSize: 7, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(26,26,26,0.38)", fontWeight: 700, margin: "0 0 6px", fontFamily: "'Jost', sans-serif" }}>
+                  {field.label}
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 4, alignItems: "center" }}>
+                  {tags.map((tag, ti) => (
+                    <span key={ti} onClick={() => {
+                      const t = tags.filter((_, j) => j !== ti);
+                      onChange(field.label, t.join(", "));
+                    }} style={{
+                      padding: "3px 9px", borderRadius: 4, fontSize: 10,
+                      background: field.label.toLowerCase().includes("brand") ? "rgba(45,104,112,0.12)" : "rgba(26,26,26,0.07)",
+                      color: field.label.toLowerCase().includes("brand") ? "#2d6870" : "#1a1a1a",
+                      fontFamily: "'Jost', sans-serif", cursor: "pointer",
+                    }}>
+                      {tag.trim()}
+                    </span>
+                  ))}
+                  <button
+                    style={{
+                      padding: "3px 10px", borderRadius: 4, fontSize: 10,
+                      border: "1px dashed rgba(26,26,26,0.22)", background: "transparent",
+                      color: "rgba(26,26,26,0.35)", fontFamily: "'Jost', sans-serif", cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      const val = window.prompt(`Add ${field.label}`);
+                      if (val?.trim()) {
+                        const existing = (values[field.label] || "").split(",").filter(t => t.trim());
+                        onChange(field.label, [...existing, val.trim()].join(", "));
+                      }
+                    }}
+                  >
+                    + add
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
       </div>
 
-      {/* ── SAVE BAR ── */}
-      <div style={{ flexShrink: 0, padding: `${8*fs}px ${18*fs}px ${18*fs}px` }}>
-        <div style={{ height: 1.5, background: "#1a1a1a", marginBottom: 12*fs }} />
-        <div style={{ display: "flex", gap: 8, justifyContent: "flex-start", alignItems: "center" }}>
-          <button
-            onClick={onSave} disabled={saving}
-            style={{
-              height: 36, borderRadius: 6, padding: "0 20px",
-              background: "#1a1a1a", border: "none",
-              color: "#f0e8d8", fontSize: 10, fontWeight: 700,
-              fontFamily: "'Jost', sans-serif", letterSpacing: "0.16em",
-              textTransform: "uppercase", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-            }}
-          >
-            {saving ? <Loader2 style={{ width: 12, height: 12 }} className="animate-spin" /> : "Save Entry"}
+      {/* ── SAVE ── */}
+      <div style={{ flexShrink: 0, padding: "8px 18px 16px", display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ height: 1, background: "rgba(26,26,26,0.15)", flex: 1 }} />
+        <button onClick={onSave} disabled={saving} style={{
+          height: 32, borderRadius: 6, padding: "0 18px",
+          background: "#1a1a1a", border: "none",
+          color: "#f0e8d8", fontSize: 9, fontWeight: 700,
+          fontFamily: "'Jost', sans-serif", letterSpacing: "0.16em",
+          textTransform: "uppercase", cursor: "pointer",
+          display: "flex", alignItems: "center", gap: 6,
+        }}>
+          {saving ? <Loader2 style={{ width: 11, height: 11 }} className="animate-spin" /> : "Save Entry"}
+        </button>
+        {isEditing && (
+          <button onClick={onDelete} style={{
+            width: 32, height: 32, borderRadius: 6,
+            background: "rgba(212,84,58,0.08)", border: "1px solid rgba(212,84,58,0.25)",
+            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+          }}>
+            <Trash2 style={{ width: 12, height: 12, color: "#d4543a" }} />
           </button>
-          {isEditing && (
-            <button onClick={onDelete} style={{
-              width: 42*fs, height: 42*fs, borderRadius: 8*fs,
-              background: "rgba(212,84,58,0.08)", border: "1px solid rgba(212,84,58,0.25)",
-              display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-            }}>
-              <Trash2 style={{ width: 13*fs, height: 13*fs, color: "#d4543a" }} />
-            </button>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
