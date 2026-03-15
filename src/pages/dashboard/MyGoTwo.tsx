@@ -76,33 +76,40 @@ const EntryFormCard = ({
   onDelete: () => void;
 }) => {
   return (
-    <div className="w-full h-full flex flex-col" style={{ background: "rgba(0,0,0,0.52)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", padding: "28px 24px 20px" }}>
-      {/* Entry name */}
+    <div style={{
+      width: "100%", height: "100%", display: "flex", flexDirection: "column",
+      background: "linear-gradient(180deg, rgba(239,224,207,0.97) 0%, rgba(232,215,196,0.97) 100%)",
+      backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+      padding: "24px 22px 18px",
+    }}>
+      {/* Decorative top rule */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+        <div style={{ height: 1, flex: 1, background: "rgba(45,104,112,0.25)" }} />
+        <span style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "#2d6870", fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>
+          {subcategoryName || subtype.name}
+        </span>
+        <div style={{ height: 1, flex: 1, background: "rgba(45,104,112,0.25)" }} />
+      </div>
+
+      {/* Entry name — large editorial input */}
       <input
         value={entryName}
         onChange={(e) => onEntryNameChange(e.target.value)}
-        placeholder={subtype.name}
+        placeholder="Give this a name…"
         style={{
-          width: "100%",
-          background: "rgba(255,255,255,0.10)",
-          border: "1px solid rgba(255,255,255,0.22)",
-          borderRadius: 12,
-          padding: "10px 14px",
-          fontSize: 15,
-          fontWeight: 600,
-          color: "#fff",
-          outline: "none",
-          marginBottom: 18,
-          fontFamily: "'Cormorant Garamond', serif",
-          letterSpacing: "0.02em",
+          width: "100%", background: "transparent",
+          border: "none", borderBottom: "1.5px solid rgba(45,104,112,0.3)",
+          padding: "4px 0 10px", fontSize: 20, fontWeight: 600,
+          color: "#2a2a2a", outline: "none", marginBottom: 18,
+          fontFamily: "'Cormorant Garamond', serif", letterSpacing: "0.01em",
         }}
       />
 
       {/* Fields */}
-      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", display: "flex", flexDirection: "column", gap: 16 }}>
         {subtype.fields.map((field) => (
           <div key={field.label}>
-            <p style={{ fontSize: 10, fontFamily: "'Jost', sans-serif", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)", marginBottom: 6 }}>
+            <p style={{ fontSize: 9, fontFamily: "'Jost', sans-serif", letterSpacing: "0.15em", textTransform: "uppercase", color: "#2d6870", marginBottom: 8, fontWeight: 600 }}>
               {field.label}
             </p>
             {field.type === "select" && field.options ? (
@@ -114,15 +121,13 @@ const EntryFormCard = ({
                       key={opt}
                       onClick={() => onChange(field.label, isSelected ? "" : opt)}
                       style={{
-                        padding: "5px 14px",
-                        borderRadius: 999,
-                        fontSize: 12,
-                        fontFamily: "'Jost', sans-serif",
-                        border: isSelected ? "1px solid #2d6870" : "1px solid rgba(255,255,255,0.2)",
-                        background: isSelected ? "#2d6870" : "rgba(255,255,255,0.08)",
-                        color: "#fff",
-                        cursor: "pointer",
-                        transition: "all 0.15s",
+                        padding: "5px 15px", borderRadius: 999, fontSize: 11,
+                        fontFamily: "'Jost', sans-serif", fontWeight: 500,
+                        border: isSelected ? "1.5px solid #2d6870" : "1px solid rgba(45,104,112,0.25)",
+                        background: isSelected ? "#2d6870" : "rgba(255,255,255,0.6)",
+                        color: isSelected ? "#fff" : "#3a3a3a",
+                        cursor: "pointer", transition: "all 0.15s",
+                        backdropFilter: "blur(4px)",
                       }}
                     >
                       {opt}
@@ -134,17 +139,13 @@ const EntryFormCard = ({
               <input
                 value={values[field.label] || ""}
                 onChange={(e) => onChange(field.label, e.target.value)}
-                placeholder={field.label}
+                placeholder={"—"}
                 style={{
-                  width: "100%",
-                  background: "rgba(255,255,255,0.08)",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  borderRadius: 10,
-                  padding: "8px 12px",
-                  fontSize: 13,
-                  color: "#fff",
-                  outline: "none",
-                  fontFamily: "'Jost', sans-serif",
+                  width: "100%", background: "rgba(255,255,255,0.5)",
+                  border: "none", borderBottom: "1px solid rgba(45,104,112,0.2)",
+                  padding: "6px 0", fontSize: 13, color: "#2a2a2a",
+                  outline: "none", fontFamily: "'Jost', sans-serif",
+                  backdropFilter: "blur(4px)",
                 }}
               />
             )}
@@ -152,35 +153,35 @@ const EntryFormCard = ({
         ))}
       </div>
 
-      {/* Actions */}
-      <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-        <button
-          onClick={onSave}
-          disabled={saving}
-          style={{
-            flex: 1, height: 42, borderRadius: 999,
-            background: "#2d6870", border: "none",
-            color: "#fff", fontSize: 13, fontWeight: 600,
-            fontFamily: "'Jost', sans-serif",
-            letterSpacing: "0.06em", cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-          }}
-        >
-          {saving ? <Loader2 style={{ width: 14, height: 14 }} className="animate-spin" /> : <>Save</>}
-        </button>
-        {isEditing && (
+      {/* Bottom rule + actions */}
+      <div style={{ marginTop: 16 }}>
+        <div style={{ height: 1, background: "rgba(45,104,112,0.15)", marginBottom: 14 }} />
+        <div style={{ display: "flex", gap: 8 }}>
           <button
-            onClick={onDelete}
+            onClick={onSave} disabled={saving}
             style={{
-              width: 42, height: 42, borderRadius: 999,
-              background: "rgba(212,84,58,0.15)",
-              border: "1px solid rgba(212,84,58,0.4)",
-              display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+              flex: 1, height: 40, borderRadius: 999,
+              background: "#2d6870", border: "none",
+              color: "#fff", fontSize: 11, fontWeight: 700,
+              fontFamily: "'Jost', sans-serif", letterSpacing: "0.1em",
+              textTransform: "uppercase", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+              boxShadow: "0 4px 14px rgba(45,104,112,0.35)",
             }}
           >
-            <Trash2 style={{ width: 14, height: 14, color: "#d4543a" }} />
+            {saving ? <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" /> : "Save"}
           </button>
-        )}
+          {isEditing && (
+            <button onClick={onDelete} style={{
+              width: 40, height: 40, borderRadius: 999,
+              background: "rgba(212,84,58,0.1)",
+              border: "1px solid rgba(212,84,58,0.3)",
+              display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+            }}>
+              <Trash2 style={{ width: 13, height: 13, color: "#d4543a" }} />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
