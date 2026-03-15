@@ -259,13 +259,33 @@ export default function PhotoGallery() {
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletedKeys, setDeletedKeys] = useState<Set<string>>(new Set());
-  const [deletedPaths, setDeletedPaths] = useState<Map<string, string>>(new Map()); // key -> path
+  const [deletedPaths, setDeletedPaths] = useState<Map<string, string>>(new Map());
   const [version, setVersion] = useState(0);
   const [pickerSlot, setPickerSlot] = useState<ImageSlot | null>(null);
+  // Uploaded photos from Supabase storage (not in the build)
+  const [uploadedPhotos, setUploadedPhotos] = useState<{ path: string; url: string; name: string }[]>([]);
 
   useEffect(() => {
     initBlocklist().then(() => setVersion(v => v + 1));
   }, []);
+
+  // Load uploaded spare photos from Supabase storage
+  const loadUploadedPhotos = useCallback(async () => {
+    const { data: files, error } = await supabase.storage.from("category-images").list("spare", { limit: 500 });
+    if (error || !files) return;
+    const photos = files
+      .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f.name))
+      .map(f => {
+        const { data: urlData } = supabase.storage.from("category-images").getPublicUrl(`spare/${f.name}`);
+        const name = f.name.replace(/\.[^.]+$/, "");
+        return { path: `storage:spare/${f.name}`, url: urlData.publicUrl, name };
+      });
+    setUploadedPhotos(photos);
+  }, []);
+
+  useEffect(() => {
+    loadUploadedPhotos();
+  }, [loadUploadedPhotos, version]);
 
   useEffect(() => {
     const map: Record<TabName, Gender> = { "Male": "male", "Female": "female", "Non-Binary": "non-binary", "Spare Bank": "male" };
