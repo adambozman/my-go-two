@@ -1,10 +1,13 @@
 import { useState, useCallback, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { RefreshCw, Sparkles } from "lucide-react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import SwipeCards from "@/components/SwipeCards";
+import KnowMeSectionTabs from "@/components/knowme/KnowMeSectionTabs";
+import KnowMeCategoryCard from "@/components/knowme/KnowMeCategoryCard";
+import KnowMeQuizCard from "@/components/knowme/KnowMeQuizCard";
 
 /* ── Types ─────────────────────────────────────────── */
 interface AICategory {
@@ -25,9 +28,9 @@ interface AICategory {
 
 /* ── Section config ────────────────────────────────── */
 const SECTION_FILTERS: Record<string, string[]> = {
-  "style-fit": ["style", "sizing"],
-  shopping: ["products"],
-  "lifestyle-gifts": ["lifestyle", "gifting"],
+  "style-fit": ["style", "sizing", "colors"],
+  shopping: ["products", "brands"],
+  "lifestyle-gifts": ["lifestyle", "gifting", "love-language", "dates"],
 };
 
 const SECTIONS = [
@@ -39,12 +42,18 @@ const SECTIONS = [
 const PLACEHOLDER_GRADIENTS: Record<string, string> = {
   style: "linear-gradient(135deg, #d4a574 0%, #8b6f5a 100%)",
   sizing: "linear-gradient(135deg, #a3b18a 0%, #6b7f5c 100%)",
+  colors: "linear-gradient(135deg, #c9a96e 0%, #e8c6ae 100%)",
   products: "linear-gradient(135deg, #c9a96e 0%, #8b7355 100%)",
+  brands: "linear-gradient(135deg, #8b7355 0%, #6b5b45 100%)",
   lifestyle: "linear-gradient(135deg, #b5838d 0%, #6d6875 100%)",
   gifting: "linear-gradient(135deg, #d4543a 0%, #a84332 100%)",
+  "love-language": "linear-gradient(135deg, #c9707d 0%, #a84332 100%)",
+  dates: "linear-gradient(135deg, #d4a574 0%, #b5838d 100%)",
 };
 
-const VALID_CATEGORY_TYPES = new Set(["style", "sizing", "lifestyle", "gifting", "products"]);
+const VALID_CATEGORY_TYPES = new Set([
+  "style", "sizing", "colors", "lifestyle", "gifting", "products", "brands", "love-language", "dates",
+]);
 
 const toSafeString = (value: unknown) => (typeof value === "string" ? value.trim() : "");
 
@@ -104,11 +113,13 @@ const sanitizeCategory = (raw: any): AICategory | null => {
 
 const Questionnaires = () => {
   const { user } = useAuth();
-  const { profileAnswers, loading: genderLoading, refetch } = usePersonalization();
+  const { profileAnswers, loading: contextLoading, refetch } = usePersonalization();
 
   const [categories, setCategories] = useState<AICategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<AICategory | null>(null);
+  const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
 
   const fetchCategories = useCallback(async () => {
     if (!user) {
@@ -117,7 +128,6 @@ const Questionnaires = () => {
       return;
     }
 
-    setLoading(true);
     try {
       const {
         data: { session },
@@ -146,6 +156,7 @@ const Questionnaires = () => {
       else toast.error("Failed to load questions.");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [user]);
 
@@ -153,38 +164,41 @@ const Questionnaires = () => {
     fetchCategories();
   }, [fetchCategories]);
 
-  const handleCardClick = (cardId: string) => {
-    const cat = categories.find((c) => c.id === cardId);
-    if (!cat || !cat.questions.length) {
-      toast.error("That quiz is incomplete. Refreshing Know Me...");
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setLoading(true);
+    fetchCategories();
+  };
+
+  const handleCardClick = (cat: AICategory) => {
+    if (!cat.questions.length) {
+      toast.error("That quiz is incomplete. Refreshing...");
       fetchCategories();
       return;
     }
     setSelectedCategory(cat);
   };
 
-  const buildSectionCards = (sectionId: string) => {
+  const getSectionCategories = (sectionId: string) => {
     const filters = SECTION_FILTERS[sectionId] || [];
-    return categories
-      .filter((cat) => filters.includes(cat.category))
-      .map((cat) => ({
-        id: cat.id,
-        title: cat.name,
-        image: cat.image_url || "",
-        placeholderGradient: !cat.image_url ? PLACEHOLDER_GRADIENTS[cat.category] : undefined,
-      }));
+    return categories.filter((cat) => filters.includes(cat.category));
   };
 
-  /* ── Swipe quiz view ─────────────────────────────── */
+  const sectionsWithCounts = SECTIONS.map((s) => ({
+    ...s,
+    count: getSectionCategories(s.id).length,
+  }));
+
+  /* ── Quiz view ─────────────────────────────── */
   if (selectedCategory) {
     return (
-      <motion.div className="h-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <SwipeCards
+      <motion.div className="h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <KnowMeQuizCard
           questions={selectedCategory.questions.map((q) => ({
             id: q.id,
             title: q.title,
             subtitle: q.subtitle,
-            type: q.type as any,
+            type: q.type,
             options: q.options,
             multiSelect: q.multi_select,
           }))}
@@ -212,14 +226,115 @@ const Questionnaires = () => {
     );
   }
 
-  if (genderLoading) {
-    return <p className="text-muted-foreground p-4">Loading...</p>;
+  /* ── Loading state ─────────────────────────── */
+  if (contextLoading || loading) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center gap-4 px-4">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+        >
+          <Sparkles className="w-8 h-8" style={{ color: "var(--swatch-teal)" }} />
+        </motion.div>
+        <p
+          className="text-sm text-center"
+          style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
+        >
+          Generating your personalized questions...
+        </p>
+      </div>
+    );
   }
 
+  const currentCards = getSectionCategories(activeSection);
+
+  /* ── Main UI ─────────────────────────────── */
   return (
-    <div className="h-full relative">
-      {/* Data is loaded and ready. New card UI goes here. */}
-      {/* categories: {categories.length}, sections: {SECTIONS.length} */}
+    <div className="h-full flex flex-col">
+      {/* Title area */}
+      <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+        <div>
+          <h1
+            className="text-2xl"
+            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}
+          >
+            Know Me
+          </h1>
+          <p
+            className="text-xs mt-0.5"
+            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
+          >
+            Help your partner find exactly what you love
+          </p>
+        </div>
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="p-2.5 rounded-full transition-colors hover:bg-black/5 disabled:opacity-50"
+        >
+          <RefreshCw
+            className={`w-4.5 h-4.5 ${refreshing ? "animate-spin" : ""}`}
+            style={{ color: "var(--swatch-teal)" }}
+          />
+        </button>
+      </div>
+
+      {/* Section tabs */}
+      <KnowMeSectionTabs
+        sections={sectionsWithCounts}
+        activeSection={activeSection}
+        onSelect={setActiveSection}
+      />
+
+      {/* Category cards grid */}
+      <div className="flex-1 overflow-y-auto px-4 pb-6">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeSection}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="grid grid-cols-2 gap-3"
+          >
+            {currentCards.length > 0 ? (
+              currentCards.map((cat, i) => (
+                <KnowMeCategoryCard
+                  key={cat.id}
+                  name={cat.name}
+                  imageUrl={cat.image_url}
+                  questionCount={cat.questions.length}
+                  gradientFallback={PLACEHOLDER_GRADIENTS[cat.category]}
+                  onClick={() => handleCardClick(cat)}
+                  index={i}
+                />
+              ))
+            ) : (
+              <div className="col-span-2 flex flex-col items-center justify-center py-16">
+                <div
+                  className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
+                  style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)" }}
+                >
+                  <Check className="w-6 h-6" style={{ color: "var(--swatch-teal)" }} />
+                </div>
+                <p
+                  className="text-sm text-center"
+                  style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
+                >
+                  All caught up in this section!
+                </p>
+                <button
+                  onClick={handleRefresh}
+                  className="mt-3 text-xs font-medium px-4 py-2 rounded-full transition-colors"
+                  style={{ color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.1)" }}
+                >
+                  Generate new questions
+                </button>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
