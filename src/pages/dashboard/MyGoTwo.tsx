@@ -103,8 +103,8 @@ const EntryFormCard = ({
         </span>
       </div>
 
-      {/* ── TITLE BLOCK ── */}
-      <div style={{ position: "relative", padding: "0 22px", flexShrink: 0 }}>
+      {/* ── TITLE + PHOTO BLOCK ── */}
+      <div style={{ position: "relative", padding: "0 22px", flexShrink: 0, minHeight: 200 }}>
         {/* Photo thumbnail — top right */}
         <div style={{
           position: "absolute",
@@ -113,8 +113,8 @@ const EntryFormCard = ({
           borderRadius: 14,
           background: "#c8bfb4",
         }} />
-        {/* Invisible constraining box — forces natural word-wrap */}
-        <div style={{ width: 155 }}>
+        {/* Title box — ~55% width, whole-word wrap only */}
+        <div style={{ maxWidth: "55%" }}>
           <textarea
             className="gotwo-title"
             value={entryName}
@@ -126,27 +126,26 @@ const EntryFormCard = ({
               background: "transparent",
               border: "none", outline: "none",
               resize: "none",
-              fontSize: 42,
+              fontSize: 36,
               fontWeight: 800,
-              lineHeight: 1.0,
+              lineHeight: 1.05,
               letterSpacing: "-0.02em",
               color: "#1a1a1a",
               fontFamily: "'Cormorant Garamond', serif",
               overflow: "hidden",
               boxSizing: "border-box",
               padding: 0,
-              wordBreak: "break-word",
-              overflowWrap: "break-word",
+              overflowWrap: "normal",
+              wordBreak: "normal",
             }}
             rows={3}
           />
         </div>
-      </div>
-
-      {/* ── CORAL ACCENT ── */}
-      <div style={{ display: "flex", gap: 3, padding: "4px 22px 12px", flexShrink: 0 }}>
-        <div style={{ height: 2, width: 22, background: "#d4543a", borderRadius: 1 }} />
-        <div style={{ height: 2, width: 8, background: "rgba(212,84,58,0.3)", borderRadius: 1 }} />
+        {/* Coral accent — inside the title block */}
+        <div style={{ display: "flex", gap: 3, paddingTop: 6 }}>
+          <div style={{ height: 2, width: 22, background: "#d4543a", borderRadius: 1 }} />
+          <div style={{ height: 2, width: 8, background: "rgba(212,84,58,0.3)", borderRadius: 1 }} />
+        </div>
       </div>
 
       {/* ── FIELDS ── */}
