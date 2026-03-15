@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, forwardRef } from "react";
+import { useState, useEffect, useRef, forwardRef, useReducer } from "react";
 import { motion } from "framer-motion";
 import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import GoTwoCard from "@/components/ui/GoTwoCard";
+import InlinePhotoSearch from "@/components/InlinePhotoSearch";
 
 export interface CoverFlowItem {
   id: string;
@@ -45,6 +46,7 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
 const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
   ({ items, onSelect }, ref) => {
     const [activeIndex, setActiveIndex] = useState(0);
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
     const layout = useLayout();
     const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
     const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
@@ -113,26 +115,29 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                   >
                     <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
                     {isActive && (
-                      <div className="absolute bottom-6 left-6">
-                        <span
-                          style={{
-                            fontFamily: "'Cormorant Garamond', serif",
-                            fontSize: 20,
-                            letterSpacing: "0.02em",
-                            fontWeight: 600,
-                            color: "#2d6870",
-                            background: "rgba(255,255,255,0.18)",
-                            borderRadius: 999,
-                            backdropFilter: "blur(12px)",
-                            WebkitBackdropFilter: "blur(12px)",
-                            border: "1px solid rgba(255,255,255,0.35)",
-                            padding: "8px 20px",
-                            display: "inline-block",
-                          }}
-                        >
-                          {item.label}
-                        </span>
-                      </div>
+                      <>
+                        <div className="absolute bottom-6 left-6">
+                          <span
+                            style={{
+                              fontFamily: "'Cormorant Garamond', serif",
+                              fontSize: 20,
+                              letterSpacing: "0.02em",
+                              fontWeight: 600,
+                              color: "#2d6870",
+                              background: "rgba(255,255,255,0.18)",
+                              borderRadius: 999,
+                              backdropFilter: "blur(12px)",
+                              WebkitBackdropFilter: "blur(12px)",
+                              border: "1px solid rgba(255,255,255,0.35)",
+                              padding: "8px 20px",
+                              display: "inline-block",
+                            }}
+                          >
+                            {item.label}
+                          </span>
+                        </div>
+                        <InlinePhotoSearch imageKey={item.id} label={item.label} onImageChanged={forceUpdate} />
+                      </>
                     )}
                   </motion.div>
                 );
@@ -151,19 +156,23 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                   }}
                   transition={spring}
                   className="absolute"
+                  style={{ position: "absolute" }}
                 >
-                  <GoTwoCard
-                    image={item.image}
-                    label={item.label}
-                    isActive={isActive}
-                    cardWidth={cardWidth}
-                    cardHeight={cardHeight}
-                    borderRadius={borderRadius}
-                    onClick={() => {
-                      if (isActive) onSelect(item.id);
-                      else setActiveIndex((activeIndex + offset + n) % n);
-                    }}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <GoTwoCard
+                      image={item.image}
+                      label={item.label}
+                      isActive={isActive}
+                      cardWidth={cardWidth}
+                      cardHeight={cardHeight}
+                      borderRadius={borderRadius}
+                      onClick={() => {
+                        if (isActive) onSelect(item.id);
+                        else setActiveIndex((activeIndex + offset + n) % n);
+                      }}
+                    />
+                    {isActive && <InlinePhotoSearch imageKey={item.id} label={item.label} onImageChanged={forceUpdate} />}
+                  </div>
                 </motion.div>
               );
             })}
