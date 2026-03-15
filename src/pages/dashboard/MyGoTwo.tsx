@@ -338,6 +338,7 @@ const MyGoTwo = () => {
     setCardKey(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
+    setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     requestAnimationFrame(() => {
       if (scrollRef.current) {
