@@ -1,7 +1,6 @@
 /**
  * Image overrides — reads and writes category images from Supabase.
- * key → image_url stored in category_images table.
- * localStorage is NOT used for images.
+ * key + gender → image_url stored in category_images table.
  */
 
 import { supabase } from "@/integrations/supabase/client";
@@ -18,26 +17,37 @@ export async function getImageUrl(imageKey: string): Promise<string> {
 }
 
 export async function setImageUrl(imageKey: string, url: string, gender = "male"): Promise<void> {
-  await supabase
+  // The unique constraint is (category_key, gender), so we must include both in the upsert
+  const { error } = await supabase
     .from("category_images")
-    .upsert({ category_key: imageKey, image_url: url, gender }, { onConflict: "category_key" });
+    .upsert(
+      { category_key: imageKey, image_url: url, gender },
+      { onConflict: "category_key,gender" }
+    );
+  if (error) {
+    console.error("setImageUrl failed:", error);
+    throw error;
+  }
   window.dispatchEvent(new CustomEvent(OVERRIDE_CHANGED_EVENT, { detail: { imageKey, url } }));
 }
 
 export async function deleteImageUrl(imageKey: string): Promise<void> {
-  await supabase
+  const { error } = await supabase
     .from("category_images")
     .delete()
     .eq("category_key", imageKey);
+  if (error) {
+    console.error("deleteImageUrl failed:", error);
+    throw error;
+  }
   window.dispatchEvent(new CustomEvent(OVERRIDE_CHANGED_EVENT, { detail: { imageKey, url: null } }));
 }
 
-// Legacy sync shims — kept for compatibility with any remaining callers
-export function getOverride(imageKey: string): string | null { return null; }
+// Legacy shims — no-ops for backward compat
+export function getOverride(_imageKey: string): string | null { return null; }
 export function getOverrides(): Record<string, string> { return {}; }
 export function setOverride(imageKey: string, url: string): void {
   setImageUrl(imageKey, url).catch(console.error);
-  window.dispatchEvent(new CustomEvent(OVERRIDE_CHANGED_EVENT, { detail: { imageKey, url } }));
 }
 export function clearOverride(imageKey: string): void {
   deleteImageUrl(imageKey).catch(console.error);
