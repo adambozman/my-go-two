@@ -547,6 +547,7 @@ const MyGoTwo = () => {
                 <EntryFormCard
                   subtype={leafSubtype}
                   subcategoryName={leafSubcategoryName}
+                  categoryName={leafCategoryName}
                   entryName={entryNames[item.id] || ""}
                   values={entryDrafts[item.id] || defaultFieldValues}
                   saving={saving}
