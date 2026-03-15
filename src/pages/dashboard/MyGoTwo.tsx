@@ -98,7 +98,7 @@ const EntryFormCard = ({
       {/* ── SECTION LABEL + INDEX ── */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 22px 8px", flexShrink: 0 }}>
         <span style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "#d4543a", fontWeight: 700 }}>
-          {subcategoryName ? `${subcategoryName} · ${subtype.name}` : subtype.name}
+          {[categoryName, subcategoryName, subtype.name].filter(Boolean).join(" · ")}
         </span>
         <span style={{ fontSize: 11, color: "rgba(26,26,26,0.2)", fontStyle: "italic", fontFamily: "'Cormorant Garamond', serif" }}>
           {isEditing ? "edit" : "01"}
