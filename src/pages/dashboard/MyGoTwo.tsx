@@ -102,14 +102,14 @@ const EntryFormCard = ({
           value={entryName}
           onChange={(e) => onEntryNameChange(e.target.value)}
           placeholder={subtype.name || "Entry name..."}
-          rows={2}
+          rows={3}
           style={{
             flex: 1, background: "transparent", border: "none", outline: "none", resize: "none",
-            fontSize: 26, fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em",
+            fontSize: 42, fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.02em",
             color: "#1a1a1a", fontFamily: "'Cormorant Garamond', serif", overflow: "hidden",
           }}
         />
-        <div style={{ width: 68, height: 84, borderRadius: 8, background: "#c8bfb4", flexShrink: 0, marginLeft: 10, marginTop: 2, overflow: "hidden" }} />
+        <div style={{ width: 130, height: 180, borderRadius: 12, background: "#c8bfb4", flexShrink: 0, marginLeft: 14, marginTop: 0, overflow: "hidden" }} />
       </div>
 
       {/* Coral accent */}
