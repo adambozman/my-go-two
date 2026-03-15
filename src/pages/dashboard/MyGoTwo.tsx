@@ -91,7 +91,7 @@ const EntryFormCard = ({
       fontFamily: "'Jost', sans-serif",
     }}>
       <style>{`
-        .gotwo-title::placeholder { color: rgba(26,26,26,0.2); }
+        .gotwo-title::placeholder { color: #1a1a1a; }
         .gotwo-notes::placeholder { color: rgba(26,26,26,0.3); }
       `}</style>
 
