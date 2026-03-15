@@ -58,124 +58,90 @@ interface CardEntry {
 // Branded gradient SVG for user-created cards (no photo)
 const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
 
-// ── Level 4: Field fill-out form ──
-const FieldForm = ({
-  fieldState,
-  onSave,
-  saving,
+const EntryFormCard = ({
+  subtype,
+  subcategoryName,
   entryName,
-  onDelete,
+  values,
+  saving,
   isEditing,
+  onEntryNameChange,
+  onChange,
+  onSave,
+  onDelete,
 }: {
-  fieldState: FieldState;
-  onSave: (values: Record<string, string>) => void;
-  saving: boolean;
+  subtype: SubtypeItem;
+  subcategoryName?: string;
   entryName: string;
-  onDelete?: () => void;
+  values: Record<string, string>;
+  saving: boolean;
   isEditing: boolean;
+  onEntryNameChange: (name: string) => void;
+  onChange: (fieldLabel: string, value: string) => void;
+  onSave: () => void;
+  onDelete: () => void;
 }) => {
-  const [values, setValues] = useState<Record<string, string>>(fieldState.values);
-
-  const handleChange = (label: string, value: string) => {
-    setValues((prev) => ({ ...prev, [label]: value }));
-  };
-
   return (
-    <motion.div
-      key="field-form"
-      initial={{ opacity: 0, x: 40 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -40 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="h-full flex flex-col items-center justify-start overflow-y-auto py-8 px-4 md:px-8"
-      style={{ scrollbarWidth: "none" }}
-    >
-      <div
-        className="w-full max-w-xl rounded-3xl flex flex-col gap-6 p-8"
-        style={{
-          background: "rgba(255,255,255,0.6)",
-          backdropFilter: "blur(12px)",
-          boxShadow: "0 8px 40px rgba(45,104,112,0.10), 0 1px 0 rgba(255,255,255,0.8) inset",
-          border: "1px solid rgba(45,104,112,0.10)",
-        }}
-      >
-        <div className="flex flex-col gap-1">
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 13, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--swatch-teal)", opacity: 0.7 }}>
-            {fieldState.subcategoryName || "Preferences"}
-          </p>
-          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 700, letterSpacing: "0.04em", color: "var(--swatch-viridian-odyssey)", lineHeight: 1.1 }}>
-            {entryName}
-          </h2>
-        </div>
-
-        <div style={{ height: 1, background: "rgba(45,104,112,0.12)" }} />
-
-        <div className="flex flex-col gap-6">
-          {fieldState.subtype.fields.map((field) => (
-            <div key={field.label} className="flex flex-col gap-2">
-              <label style={{ fontFamily: "'Jost', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--swatch-teal)" }}>
-                {field.label}
-              </label>
-              {field.type === "select" && field.options ? (
-                <div className="flex flex-wrap gap-2">
-                  {field.options.map((opt) => {
-                    const isSelected = values[field.label] === opt;
-                    return (
-                      <button
-                        key={opt}
-                        onClick={() => handleChange(field.label, isSelected ? "" : opt)}
-                        className="transition-all"
-                        style={{
-                          padding: "8px 18px",
-                          borderRadius: 999,
-                          fontFamily: "'Jost', sans-serif",
-                          fontSize: 13,
-                          fontWeight: 500,
-                          background: isSelected ? "var(--swatch-teal)" : "rgba(45,104,112,0.06)",
-                          color: isSelected ? "#fff" : "var(--swatch-teal)",
-                          border: `1.5px solid ${isSelected ? "var(--swatch-teal)" : "rgba(45,104,112,0.18)"}`,
-                        }}
-                      >
-                        {opt}
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <Input
-                  value={values[field.label] || ""}
-                  onChange={(e) => handleChange(field.label, e.target.value)}
-                  placeholder={`Enter ${field.label.toLowerCase()}`}
-                  className="rounded-xl h-11"
-                  style={{ background: "rgba(45,104,112,0.04)", border: "1.5px solid rgba(45,104,112,0.15)" }}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-
-        <div className="flex gap-3 mt-2">
-          <Button
-            onClick={() => onSave(values)}
-            disabled={saving}
-            className="flex-1 h-12 rounded-full text-base font-semibold"
-            style={{ background: "#d4543a", fontFamily: "'Jost', sans-serif", letterSpacing: "0.08em" }}
-          >
-            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Check className="w-5 h-5 mr-2" />Save</>}
-          </Button>
-          {isEditing && onDelete && (
-            <Button
-              onClick={onDelete}
-              variant="outline"
-              className="h-12 rounded-full px-4"
-              style={{ borderColor: "rgba(212,84,58,0.3)", color: "#d4543a" }}
-            >
-              <Trash2 className="w-5 h-5" />
-            </Button>
-          )}
-        </div>
+    <div className="w-full h-full flex flex-col bg-card/95 p-6">
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground" style={{ fontFamily: "'Jost', sans-serif" }}>
+          {subcategoryName || "Preferences"}
+        </p>
       </div>
-    </motion.div>
+
+      <Input
+        value={entryName}
+        onChange={(e) => onEntryNameChange(e.target.value)}
+        placeholder={`Name this ${subtype.name.toLowerCase()} entry`}
+        className="rounded-xl h-10 mb-4 bg-background/80"
+      />
+
+      <div className="flex-1 overflow-y-auto pr-1 space-y-4" style={{ scrollbarWidth: "none" }}>
+        {subtype.fields.map((field) => (
+          <div key={field.label} className="space-y-2">
+            <label className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground" style={{ fontFamily: "'Jost', sans-serif" }}>
+              {field.label}
+            </label>
+            {field.type === "select" && field.options ? (
+              <div className="flex flex-wrap gap-2">
+                {field.options.map((opt) => {
+                  const isSelected = values[field.label] === opt;
+                  return (
+                    <button
+                      key={opt}
+                      onClick={() => onChange(field.label, isSelected ? "" : opt)}
+                      className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                        isSelected ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/40 text-foreground border-border"
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <Input
+                value={values[field.label] || ""}
+                onChange={(e) => onChange(field.label, e.target.value)}
+                placeholder={`Enter ${field.label.toLowerCase()}`}
+                className="rounded-xl h-10 bg-background/80"
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="flex gap-2 mt-4">
+        <Button onClick={onSave} disabled={saving} className="flex-1 h-10 rounded-full bg-primary text-primary-foreground">
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4 mr-2" />Save</>}
+        </Button>
+        {isEditing && (
+          <Button onClick={onDelete} variant="outline" className="h-10 rounded-full px-3 text-destructive border-destructive/40">
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        )}
+      </div>
+    </div>
   );
 };
 
