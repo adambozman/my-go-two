@@ -265,32 +265,11 @@ const EntryFormCard = ({
                 }}
               />
             ) : (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
-                {(values[field.label] || "").split(",").filter(t => t.trim()).map((tag, ti) => (
-                  <span key={ti} onClick={() => {
-                    const tags = (values[field.label] || "").split(",").filter(t => t.trim());
-                    tags.splice(ti, 1);
-                    onChange(field.label, tags.join(", "));
-                  }} style={{
-                    padding: "4px 11px", borderRadius: 4, fontSize: 13,
-                    background: field.label.toLowerCase().includes("brand") ? "rgba(45,104,112,0.12)" : "rgba(26,26,26,0.07)",
-                    color: field.label.toLowerCase().includes("brand") ? "#2d6870" : "#1a1a1a",
-                    fontWeight: field.label.toLowerCase().includes("brand") ? 600 : 400,
-                    cursor: "pointer", fontFamily: "'Jost', sans-serif",
-                  }}>{tag.trim()}</span>
-                ))}
-                <button onClick={() => {
-                  const val = window.prompt(`Add ${field.label}`);
-                  if (val?.trim()) {
-                    const existing = (values[field.label] || "").split(",").filter(t => t.trim());
-                    onChange(field.label, [...existing, val.trim()].join(", "));
-                  }
-                }} style={{
-                  padding: "4px 12px", borderRadius: 4, fontSize: 12,
-                  border: "1px dashed rgba(26,26,26,0.22)", background: "transparent",
-                  color: "rgba(26,26,26,0.32)", fontFamily: "'Jost', sans-serif", cursor: "pointer",
-                }}>+ add</button>
-              </div>
+              <TagInput
+                value={values[field.label] || ""}
+                onChange={(val) => onChange(field.label, val)}
+                fieldLabel={field.label}
+              />
             )}
           </div>
         ))}
