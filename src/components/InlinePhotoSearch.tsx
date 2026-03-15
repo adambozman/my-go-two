@@ -118,39 +118,6 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  // ── Add a spare photo to this category's bank (silently) ──
-  const addToBankOnly = useCallback(async (photo: LocalPhoto) => {
-    try {
-      await supabase
-        .from("category_bank_photos")
-        .insert({ category_key: imageKey, image_url: photo.url, filename: photo.filename });
-    } catch { /* ignore duplicates */ }
-    loadBankPhotos();
-  }, [imageKey, loadBankPhotos]);
-
-  // ── Pick a spare photo: add to bank + set as card image ──
-  const pickSparePhoto = useCallback(async (photo: LocalPhoto) => {
-    setAddingToBank(photo.id);
-    try {
-      // Add to bank silently
-      addToBankOnly(photo);
-      // Set as card image
-      await savePhoto(photo.url, photo.id);
-    } catch (e: any) {
-      toast({ title: "Failed", description: e.message, variant: "destructive" });
-    } finally { setAddingToBank(null); }
-  }, [addToBankOnly, savePhoto, toast]);
-
-  // ── Remove a photo from this category's bank ──
-  const removeFromBank = useCallback(async (photoId: string) => {
-    const { error } = await supabase.from("category_bank_photos").delete().eq("id", photoId);
-    if (error) {
-      toast({ title: "Failed", description: error.message, variant: "destructive" });
-    } else {
-      setBankPhotos(prev => prev.filter(p => p.id !== photoId));
-    }
-  }, [toast]);
-
   // ── Save a photo as the category image ──
   const savePhoto = useCallback(async (sourceUrl: string, saveId: string) => {
     setSaving(saveId);
@@ -168,6 +135,37 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
       toast({ title: "Failed", description: e.message, variant: "destructive" });
     } finally { setSaving(null); }
   }, [imageKey, label, toast, onImageChanged]);
+
+  // ── Add a spare photo to this category's bank (silently) ──
+  const addToBankOnly = useCallback(async (photo: LocalPhoto) => {
+    try {
+      await supabase
+        .from("category_bank_photos")
+        .insert({ category_key: imageKey, image_url: photo.url, filename: photo.filename });
+    } catch { /* ignore duplicates */ }
+    loadBankPhotos();
+  }, [imageKey, loadBankPhotos]);
+
+  // ── Pick a spare photo: add to bank + set as card image ──
+  const pickSparePhoto = useCallback(async (photo: LocalPhoto) => {
+    setAddingToBank(photo.id);
+    try {
+      addToBankOnly(photo);
+      await savePhoto(photo.url, photo.id);
+    } catch (e: any) {
+      toast({ title: "Failed", description: e.message, variant: "destructive" });
+    } finally { setAddingToBank(null); }
+  }, [addToBankOnly, savePhoto, toast]);
+
+  // ── Remove a photo from this category's bank ──
+  const removeFromBank = useCallback(async (photoId: string) => {
+    const { error } = await supabase.from("category_bank_photos").delete().eq("id", photoId);
+    if (error) {
+      toast({ title: "Failed", description: error.message, variant: "destructive" });
+    } else {
+      setBankPhotos(prev => prev.filter(p => p.id !== photoId));
+    }
+  }, [toast]);
 
   // ── Web search ──
   const searchWeb = useCallback(async () => {
