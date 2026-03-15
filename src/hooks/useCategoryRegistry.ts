@@ -8,6 +8,7 @@ import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { type Gender } from "@/lib/gender";
 import { getTemplateImage } from "@/lib/imageResolver";
+import { getOverride } from "@/lib/imageOverrides";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 
 /** Pull the image key out of a registry row's subcategories JSONB.
@@ -22,6 +23,7 @@ export interface CategoryItem {
   label: string;
   section: string;
   image: string;
+  imageKey: string;
   sort_order: number;
   fields: SubtypeItem[];
   subcategories?: SubcategoryGroup[];
@@ -65,18 +67,15 @@ export function useCategoryRegistry(
 
         if (cancelled) return;
 
-        // Resolve each card's cover image from its first subtype's image key
         const items: CategoryItem[] = (rows as any[]).map((r: any) => {
-          const imageKey = extractImageKey(r);
-          const categoryId = r.key.replace(/-male$|-female$|-nb$/, "");
-          const firstSub = Array.isArray(r.subcategories) ? r.subcategories[0] : null;
-          const firstSubId = firstSub?.id || "";
-          const resolvedImage = imageKey ? getTemplateImage(imageKey, gender, r.section, categoryId, firstSubId) : "";
+          const imageKey: string = r.image || r.key || "";
+          const resolvedImage = imageKey ? getOverride(imageKey) ?? "" : "";
           return {
             key: r.key,
             label: r.label,
             section: r.section,
             image: resolvedImage,
+            imageKey: imageKey,
             sort_order: r.sort_order,
             fields: (r.fields as SubtypeItem[]) || [],
             subcategories: (r.subcategories as SubcategoryGroup[]) || undefined,

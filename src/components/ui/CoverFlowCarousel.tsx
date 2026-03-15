@@ -138,7 +138,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                             {item.label}
                           </span>
                         </div>
-                        <InlinePhotoSearch imageKey={item.id} label={item.label} onImageChanged={forceUpdate} />
+                        <InlinePhotoSearch imageKey={(item as any).imageKey || item.id} label={item.label} onImageChanged={forceUpdate} />
                       </>
                     )}
                   </motion.div>
@@ -173,7 +173,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                         else setActiveIndex((activeIndex + offset + n) % n);
                       }}
                     />
-                    {isActive && <InlinePhotoSearch imageKey={item.id} label={item.label} onImageChanged={forceUpdate} />}
+                    {isActive && <InlinePhotoSearch imageKey={(item as any).imageKey || item.id} label={item.label} onImageChanged={forceUpdate} />}
                   </div>
                 </motion.div>
               );

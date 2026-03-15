@@ -265,7 +265,7 @@ const MyGoTwo = () => {
     .map((key) => ({
       key,
       label: sectionLabels[key] ?? key,
-      items: sections[key].map((cat) => ({ id: cat.key, label: cat.label, image: cat.image })),
+      items: sections[key].map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
     }));
 
   return (
