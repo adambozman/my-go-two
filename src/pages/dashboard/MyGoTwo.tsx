@@ -473,22 +473,43 @@ const MyGoTwo = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full flex flex-col items-center justify-center"
         >
-          <h2
-            className="mb-6 text-center"
+          {entryCoverFlowItems.length > 0 ? (
+            <CoverFlowCarousel
+              items={entryCoverFlowItems}
+              onSelect={handleEntrySelect}
+            />
+          ) : (
+            <p
+              className="text-center mb-8"
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 20,
+                fontStyle: "italic",
+                color: "var(--swatch-teal)",
+                opacity: 0.6,
+              }}
+            >
+              No entries yet
+            </p>
+          )}
+          <button
+            onClick={() => { setNewName(""); setShowNameDialog("entry"); }}
+            className="mt-8 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 24,
-              fontWeight: 700,
-              letterSpacing: "0.04em",
-              color: "var(--swatch-viridian-odyssey)",
+              padding: "12px 28px",
+              borderRadius: 999,
+              fontFamily: "'Jost', sans-serif",
+              fontSize: 14,
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              color: "#fff",
+              background: "var(--swatch-cedar-grove)",
+              boxShadow: "0 4px 16px rgba(212,84,58,0.25)",
             }}
           >
-            {activeGroup}
-          </h2>
-          <CoverFlowCarousel
-            items={entryCoverFlowItems}
-            onSelect={handleEntrySelect}
-          />
+            <Plus className="w-4 h-4" />
+            New Entry
+          </button>
         </motion.div>
       );
     }
@@ -504,22 +525,43 @@ const MyGoTwo = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full flex flex-col items-center justify-center"
         >
-          <h2
-            className="mb-6 text-center"
+          {groupCoverFlowItems.length > 0 ? (
+            <CoverFlowCarousel
+              items={groupCoverFlowItems}
+              onSelect={handleGroupSelect}
+            />
+          ) : (
+            <p
+              className="text-center mb-8"
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 20,
+                fontStyle: "italic",
+                color: "var(--swatch-teal)",
+                opacity: 0.6,
+              }}
+            >
+              No groups yet
+            </p>
+          )}
+          <button
+            onClick={() => { setNewName(""); setShowNameDialog("group"); }}
+            className="mt-8 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 24,
-              fontWeight: 700,
-              letterSpacing: "0.04em",
-              color: "var(--swatch-viridian-odyssey)",
+              padding: "12px 28px",
+              borderRadius: 999,
+              fontFamily: "'Jost', sans-serif",
+              fontSize: 14,
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              color: "#fff",
+              background: "var(--swatch-cedar-grove)",
+              boxShadow: "0 4px 16px rgba(212,84,58,0.25)",
             }}
           >
-            {leafSubtype?.name || "My Groups"}
-          </h2>
-          <CoverFlowCarousel
-            items={groupCoverFlowItems}
-            onSelect={handleGroupSelect}
-          />
+            <Plus className="w-4 h-4" />
+            New Group
+          </button>
         </motion.div>
       );
     }
