@@ -447,7 +447,7 @@ const MyGoTwo = () => {
       const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
       setCardKey(key);
       setLeafSubtype(sc as unknown as SubtypeItem);
-      setLeafSubcategoryName(sc.name);
+      setLeafSubcategoryName(undefined);
       setLeafCategoryName(coverFlowState?.name);
       setLeafImage((sc as any).image || "");
       setActiveEntryIndex(0);
