@@ -105,30 +105,36 @@ const EntryFormCard = ({
 
       {/* ── TITLE BLOCK ── */}
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "0 22px", flexShrink: 0 }}>
-        {/* Title constrained to force wrapping */}
-        <div style={{ flex: 1, maxWidth: 180, minWidth: 0 }}>
-          <textarea
+        {/* Title — each word on its own line */}
+        <div
+          style={{ flex: 1, minWidth: 0, cursor: "text", position: "relative" }}
+          onClick={() => {
+            const el = document.getElementById("gotwo-title-input");
+            if (el) el.focus();
+          }}
+        >
+          {(entryName || subtype.name).split(/\s+/).filter(Boolean).map((word, wi) => (
+            <div key={wi} style={{
+              fontSize: 42,
+              fontWeight: 700,
+              lineHeight: 1,
+              letterSpacing: "-0.03em",
+              color: entryName ? "#1a1a1a" : "rgba(26,26,26,0.2)",
+              fontFamily: "'Cormorant Garamond', serif",
+            }}>
+              {word}
+            </div>
+          ))}
+          <input
+            id="gotwo-title-input"
             className="gotwo-title"
             value={entryName}
             onChange={(e) => onEntryNameChange(e.target.value)}
             placeholder={subtype.name}
             style={{
-              display: "block",
-              width: "100%",
-              background: "transparent",
-              border: "none", outline: "none",
-              resize: "none",
-              fontSize: 42,
-              fontWeight: 700,
-              lineHeight: 0.95,
-              letterSpacing: "-0.03em",
-              color: "#1a1a1a",
-              fontFamily: "'Cormorant Garamond', serif",
-              overflow: "hidden",
-              boxSizing: "border-box",
-              padding: 0,
+              position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
+              opacity: 0, cursor: "text", fontSize: 16,
             }}
-            rows={3}
           />
         </div>
         {/* Photo thumbnail */}
