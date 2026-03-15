@@ -6,12 +6,11 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronDown, ChevronRight, X, RefreshCw, ImagePlus } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight, X, ImagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getTemplateImage, getProductImage } from "@/lib/imageResolver";
-import { getOverride, setOverride, clearOverride } from "@/lib/imageOverrides";
+import { setImageUrl, deleteImageUrl, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { supabase } from "@/integrations/supabase/client";
-import { addToBlocklist, removeFromBlocklist, isPathBlocked, initBlocklist } from "@/data/imageBlocklist";
+import { addToBlocklist, isPathBlocked, initBlocklist } from "@/data/imageBlocklist";
 import { toast } from "sonner";
 import type { Gender } from "@/lib/gender";
 
@@ -90,10 +89,20 @@ function urlToPath(url: string): string {
   return match ? "/" + match[0] : url;
 }
 
-function makeSlot(label: string, imageKey: string, gender: Gender, fallback = "", section = "", categoryId = "", subcategoryId = ""): ImageSlot {
-  const override = getOverride(imageKey);
-  const url = override || getProductImage(imageKey, gender, fallback, section, categoryId, subcategoryId);
-  return { label, imageKey, resolvedUrl: url, resolvedPath: urlToPath(url) };
+function makeSlot(label: string, imageKey: string): ImageSlot {
+  return { label, imageKey, resolvedUrl: "", resolvedPath: "" };
+}
+
+/** Batch-fetch image URLs from category_images for a list of keys */
+async function fetchImageMap(keys: string[]): Promise<Record<string, string>> {
+  if (keys.length === 0) return {};
+  const { data } = await supabase
+    .from("category_images")
+    .select("category_key, image_url")
+    .in("category_key", keys);
+  const map: Record<string, string> = {};
+  for (const row of data || []) map[row.category_key] = row.image_url;
+  return map;
 }
 
 // ─── Spare Picker Modal ───────────────────────────────────────────────────────
@@ -176,13 +185,8 @@ const ImageCard = ({
   onDelete: () => void;
   onPick: () => void;
 }) => {
-  // Always resolve live — never use stale baked-in URL
-  const override = getOverride(slot.imageKey);
-  const liveUrl = override || slot.resolvedUrl;
-  const livePath = urlToPath(liveUrl);
-  const blocked = isPathBlocked(livePath);
-  const hasOverride = !!override;
-  const showImage = !!liveUrl && !blocked;
+  const liveUrl = slot.resolvedUrl;
+  const showImage = !!liveUrl;
 
   return (
     <div className="flex flex-col gap-1">
@@ -192,7 +196,7 @@ const ImageCard = ({
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-muted/60">
             <ImagePlus className="w-6 h-6 text-muted-foreground opacity-50" />
-            <span className="text-[10px] text-muted-foreground">{blocked ? "Deleted" : "No image"}</span>
+            <span className="text-[10px] text-muted-foreground">No image</span>
           </div>
         )}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex flex-col items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100">
@@ -210,18 +214,7 @@ const ImageCard = ({
               <X className="w-3 h-3" /> Delete
             </button>
           )}
-          {hasOverride && (
-            <button
-              onClick={e => { e.stopPropagation(); clearOverride(slot.imageKey); window.location.reload(); }}
-              className="flex items-center gap-1 px-2 py-1 bg-gray-600 text-white rounded-md text-[10px] font-medium"
-            >
-              <RefreshCw className="w-3 h-3" /> Reset
-            </button>
-          )}
         </div>
-        {hasOverride && (
-          <div className="absolute top-1 right-1 bg-teal-600 rounded-full w-3 h-3" title="Custom photo assigned" />
-        )}
       </div>
       <p className="text-[11px] font-medium text-foreground truncate">{slot.label}</p>
       <p className="text-[10px] text-muted-foreground truncate">{slot.imageKey}</p>
@@ -258,8 +251,6 @@ export default function PhotoGallery() {
   const [gender, setGender] = useState<Gender>("male");
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deletedKeys, setDeletedKeys] = useState<Set<string>>(new Set());
-  const [deletedPaths, setDeletedPaths] = useState<Map<string, string>>(new Map());
   const [version, setVersion] = useState(0);
   const [pickerSlot, setPickerSlot] = useState<ImageSlot | null>(null);
   // Uploaded photos from Supabase storage (not in the build)
@@ -267,6 +258,13 @@ export default function PhotoGallery() {
 
   useEffect(() => {
     initBlocklist().then(() => setVersion(v => v + 1));
+  }, []);
+
+  // Re-fetch when images change (e.g. set via coverflow card)
+  useEffect(() => {
+    const handler = () => setVersion(v => v + 1);
+    window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
   }, []);
 
   // Load uploaded spare photos from Supabase storage
@@ -309,30 +307,45 @@ export default function PhotoGallery() {
 
       if (!rows) { setLoading(false); return; }
 
+      // Collect all image keys first
+      const allKeys: string[] = [];
       const sectionMap: Record<string, Category[]> = {};
 
       for (const row of rows as any[]) {
         const rawSubs: any[] = row.subcategories || [];
-        const section = row.section;
-        const categoryId = row.key.replace(/-male$|-female$|-nb$/, "");
+        const coverKey = row.image || row.key || "";
+        if (coverKey) allKeys.push(coverKey);
+        for (const sc of rawSubs) {
+          allKeys.push(sc.image || sc.id);
+          for (const p of sc.products || []) {
+            allKeys.push(p.image || p.id);
+          }
+        }
+      }
+
+      // Batch-fetch all images from the database
+      const imageMap = await fetchImageMap(allKeys);
+
+      for (const row of rows as any[]) {
+        const rawSubs: any[] = row.subcategories || [];
         const subcategories: Subcategory[] = rawSubs.map((sc: any) => {
-          const scSlot = makeSlot(sc.name, sc.image || sc.id, gender, "", section, categoryId, sc.id);
+          const scKey = sc.image || sc.id;
+          const scSlot: ImageSlot = { label: sc.name, imageKey: scKey, resolvedUrl: imageMap[scKey] || "", resolvedPath: "" };
           const rawProducts: any[] = sc.products || [];
-          const products: ImageSlot[] = rawProducts.map((p: any) =>
-            makeSlot(p.name, p.image || p.id, gender, "", section, categoryId, sc.id)
-          );
+          const products: ImageSlot[] = rawProducts.map((p: any) => {
+            const pKey = p.image || p.id;
+            return { label: p.name, imageKey: pKey, resolvedUrl: imageMap[pKey] || "", resolvedPath: "" };
+          });
           return { id: sc.id, name: sc.name, slot: scSlot, products };
         });
 
         const coverKey = row.image || row.key || "";
-        const firstSubId = rawSubs[0]?.id || "";
-        const coverUrl = coverKey ? getTemplateImage(coverKey, gender, section, categoryId, firstSubId) : "";
 
         sectionMap[row.section] = sectionMap[row.section] || [];
         sectionMap[row.section].push({
           key: row.key,
           label: row.label,
-          coverSlot: { label: row.label, imageKey: coverKey, resolvedUrl: coverUrl, resolvedPath: urlToPath(coverUrl) },
+          coverSlot: { label: row.label, imageKey: coverKey, resolvedUrl: imageMap[coverKey] || "", resolvedPath: "" },
           subcategories,
         });
       }
@@ -349,38 +362,17 @@ export default function PhotoGallery() {
     load();
   }, [gender, version, activeTab]);
 
-  const handleDelete = useCallback(async (path: string, key: string) => {
-    await addToBlocklist(path);
-    setDeletedKeys(prev => new Set([...prev, key]));
-    setDeletedPaths(prev => new Map([...prev, [key, path]]));
+  const handleDelete = useCallback(async (_path: string, key: string) => {
+    await deleteImageUrl(key);
     setVersion(v => v + 1);
     toast.success(`Deleted: ${key}`);
   }, []);
 
-  const handlePhotosReplaced = useCallback(async () => {
-    // Remove all blocked paths for deleted keys so new downloads show
-    for (const [, path] of deletedPaths) {
-      await removeFromBlocklist(path);
-    }
-    setDeletedKeys(new Set());
-    setDeletedPaths(new Map());
-    setVersion(v => v + 1);
-    toast.success("Blocklist cleared — new photos will now show");
-  }, [deletedPaths]);
-
-  const handleGetAll = useCallback(() => {
-    if (deletedKeys.size === 0) { toast.info("No deleted photos yet."); return; }
-    const msg = `Please download new replacement photos for the following image keys and save them as .jpg files in both src/assets/templates/ and src/assets/templates/male/. Use warm, editorial, on-brand lifestyle photography matching the GoTwo aesthetic. Do NOT reuse previously downloaded photos for these keys.\n\nKeys to replace:\n${[...deletedKeys].map(k => `- ${k}`).join("\n")}`;
-    navigator.clipboard.writeText(msg).then(() => {
-      toast.success(`Copied ${deletedKeys.size} keys — paste into Lovable`);
-    }).catch(() => toast.info([...deletedKeys].join(", ")));
-  }, [deletedKeys]);
-
-  const handlePick = useCallback((slot: ImageSlot, spareUrl: string) => {
-    setOverride(slot.imageKey, spareUrl);
+  const handlePick = useCallback(async (slot: ImageSlot, spareUrl: string) => {
+    await setImageUrl(slot.imageKey, spareUrl);
     setPickerSlot(null);
     setVersion(v => v + 1);
-    toast.success(`Assigned spare photo to ${slot.imageKey}`);
+    toast.success(`Assigned photo to ${slot.imageKey}`);
   }, []);
 
   const cardProps = (slot: ImageSlot) => ({
@@ -398,17 +390,6 @@ export default function PhotoGallery() {
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <h1 className="text-lg font-semibold">Image Bank</h1>
-        {deletedKeys.size > 0 && (
-          <>
-            <Button onClick={handleGetAll} size="sm" className="gap-2 ml-2" style={{ background: "var(--swatch-teal)", color: "#fff" }}>
-              <RefreshCw className="w-4 h-4" />
-              Get Photos ({deletedKeys.size})
-            </Button>
-            <Button onClick={handlePhotosReplaced} size="sm" variant="outline" className="gap-2">
-              ✓ Photos Replaced
-            </Button>
-          </>
-        )}
         <div className="flex gap-2 ml-auto">
           {MAIN_TABS.map(tab => (
             <button
