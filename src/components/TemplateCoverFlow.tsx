@@ -81,7 +81,8 @@ const TemplateCoverFlow = ({
       imageKey: sc.image || sc.id,
     }));
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex flex-col items-center justify-center">
+        <h2 className="section-header text-center mb-6">{templateName}</h2>
         <CoverFlowCarousel
           items={items}
           onSelect={(id) => {
@@ -103,7 +104,8 @@ const TemplateCoverFlow = ({
   }));
 
   return (
-    <div className="h-full flex items-center justify-center">
+    <div className="h-full flex flex-col items-center justify-center">
+      <h2 className="section-header text-center mb-6">{activeSubcategory?.name || templateName}</h2>
       <CoverFlowCarousel
         items={productItems}
         onSelect={(id) => {

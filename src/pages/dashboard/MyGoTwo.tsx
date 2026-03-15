@@ -328,11 +328,11 @@ const MyGoTwo = () => {
 
   useEffect(() => {
     if (cardKey) {
-      setBackState({ label: leafSubtype?.name || "Entries", onBack: goBackFromEntries });
+      setBackState({ label: "", onBack: goBackFromEntries });
     } else if (activeSubcategory && coverFlowState) {
-      setBackState({ label: activeSubcategory.name, onBack: () => setActiveSubcategory(null) });
+      setBackState({ label: "", onBack: () => setActiveSubcategory(null) });
     } else if (coverFlowState) {
-      setBackState({ label: coverFlowState.name, onBack: clearCoverFlow });
+      setBackState({ label: "", onBack: clearCoverFlow });
     } else {
       setBackState(null);
     }
@@ -503,9 +503,10 @@ const MyGoTwo = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -40 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="h-full relative px-4"
+          className="h-full flex flex-col items-center justify-center px-4"
         >
-          <div className="absolute inset-0 flex items-center justify-center">
+          <h2 className="section-header text-center mb-6">{leafSubtype?.name || ""}</h2>
+          <div className="flex items-center justify-center">
             <FormCoverFlowCarousel
               items={entryCoverFlowItems}
               activeIndex={activeEntryIndex}
