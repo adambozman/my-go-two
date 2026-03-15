@@ -6,12 +6,11 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronDown, ChevronRight, X, RefreshCw, ImagePlus } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight, X, ImagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getTemplateImage, getProductImage } from "@/lib/imageResolver";
-import { getOverride, setOverride, clearOverride } from "@/lib/imageOverrides";
+import { setImageUrl, deleteImageUrl, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { supabase } from "@/integrations/supabase/client";
-import { addToBlocklist, removeFromBlocklist, isPathBlocked, initBlocklist } from "@/data/imageBlocklist";
+import { isPathBlocked, initBlocklist } from "@/data/imageBlocklist";
 import { toast } from "sonner";
 import type { Gender } from "@/lib/gender";
 
