@@ -539,7 +539,7 @@ const MyGoTwo = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full flex flex-col items-center justify-center px-4"
         >
-          <h2 className="section-header text-center mb-6">{leafSubtype?.name || ""}</h2>
+          
           <div className="flex items-center justify-center">
             <FormCoverFlowCarousel
               items={entryCoverFlowItems}
