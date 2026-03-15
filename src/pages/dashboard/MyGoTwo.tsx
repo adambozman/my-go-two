@@ -514,48 +514,26 @@ const MyGoTwo = () => {
         {renderContent()}
       </AnimatePresence>
 
-      {/* Name dialog for creating entries */}
-      <Dialog open={showNameDialog} onOpenChange={() => setShowNameDialog(false)}>
-        <DialogContent
-          className="rounded-3xl"
-          style={{
-            background: "rgba(255,255,255,0.95)",
-            backdropFilter: "blur(16px)",
-            border: "1px solid rgba(45,104,112,0.12)",
-          }}
-        >
+      {/* Group dialog */}
+      <Dialog open={showGroupDialog} onOpenChange={() => setShowGroupDialog(false)}>
+        <DialogContent className="rounded-3xl bg-card">
           <DialogHeader>
-            <DialogTitle
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 22,
-                fontWeight: 700,
-                color: "var(--swatch-viridian-odyssey)",
-              }}
-            >
-              Name Your Entry
-            </DialogTitle>
+            <DialogTitle style={{ fontFamily: "'Cormorant Garamond', serif" }}>Create Group</DialogTitle>
           </DialogHeader>
           <Input
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            placeholder="e.g. My usual, Taco Bell, Late night..."
+            value={groupNameInput}
+            onChange={(e) => setGroupNameInput(e.target.value)}
+            placeholder="e.g. Taco Bell, McDonald's"
             className="rounded-xl h-12 mt-2"
-            style={{ background: "rgba(45,104,112,0.04)", border: "1.5px solid rgba(45,104,112,0.15)" }}
             autoFocus
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleCreateEntry();
+              if (e.key === "Enter") handleCreateGroup();
             }}
           />
           <DialogFooter>
-            <Button
-              onClick={handleCreateEntry}
-              disabled={!newName.trim()}
-              className="rounded-full px-8 h-11"
-              style={{ background: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif", letterSpacing: "0.08em" }}
-            >
+            <Button onClick={handleCreateGroup} disabled={!groupNameInput.trim()} className="rounded-full px-8 h-11">
               <Plus className="w-4 h-4 mr-2" />
-              Create
+              Save Group
             </Button>
           </DialogFooter>
         </DialogContent>
