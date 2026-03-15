@@ -3,6 +3,8 @@
  * for use in the InlinePhotoSearch component.
  */
 
+import { isBlocked } from "@/data/imageBlocklist";
+
 // Eagerly import all template images (male) and spare bank
 const templateMaleGlob = import.meta.glob<{ default: string }>(
   '/src/assets/templates/male/**/*.{jpg,jpeg,png,webp}',
@@ -56,12 +58,14 @@ export function getAllTemplates(): LocalPhoto[] {
   });
 }
 
-/** Get all spare bank images */
+/** Get all spare bank images (filtered by blocklist) */
 export function getSpareBank(): LocalPhoto[] {
-  return Object.entries(spareGlob).map(([path, mod]) => {
-    const filename = extractFilename(path);
-    return { id: `spare-${filename}`, url: mod.default, category: 'spare' as const, filename };
-  });
+  return Object.entries(spareGlob)
+    .map(([path, mod]) => {
+      const filename = extractFilename(path);
+      return { id: `spare-${filename}`, url: mod.default, category: 'spare' as const, filename };
+    })
+    .filter((photo) => !isBlocked(photo.url));
 }
 
 /** Get combined library: matching templates first, then remaining templates, then spare bank */
