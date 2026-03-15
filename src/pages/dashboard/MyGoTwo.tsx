@@ -441,17 +441,21 @@ const MyGoTwo = () => {
 
     const nextDrafts: Record<string, Record<string, string>> = {};
     const nextNames: Record<string, string> = {};
+    const nextImages: Record<string, string | null> = {};
 
     entries.forEach((entry) => {
       nextDrafts[entry.id] = (entry.field_values as Record<string, string>) || {};
       nextNames[entry.id] = entry.entry_name;
+      nextImages[entry.id] = entry.image_url || null;
     });
 
     nextDrafts[NEW_ENTRY_ID] = defaultFieldValues;
     nextNames[NEW_ENTRY_ID] = "";
+    nextImages[NEW_ENTRY_ID] = null;
 
     setEntryDrafts(nextDrafts);
     setEntryNames(nextNames);
+    setEntryImages(nextImages);
     setActiveEntryIndex((prev) => Math.min(prev, entries.length));
 
     if (!activeGroup) {
