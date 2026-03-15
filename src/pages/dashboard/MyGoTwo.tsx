@@ -245,16 +245,42 @@ const EntryFormCard = ({
 
       {/* ── TITLE + PHOTO BLOCK ── */}
       <div style={{ position: "relative", padding: "0 22px", flexShrink: 0, height: 190 }}>
-        {/* Photo thumbnail — locked top-right proportions */}
-        <div style={{
-          position: "absolute",
-          top: 0,
-          right: 22,
-          width: 170,
-          height: 190,
-          borderRadius: 14,
-          background: "#c8bfb4",
-        }} />
+        {/* Photo thumbnail — tappable to upload */}
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 22,
+            width: 170,
+            height: 190,
+            borderRadius: 14,
+            background: "#c8bfb4",
+            cursor: "pointer",
+            overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {entryImageUrl ? (
+            <img src={entryImageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          ) : (
+            <Camera style={{ width: 28, height: 28, color: "rgba(26,26,26,0.25)" }} />
+          )}
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style={{ display: "none" }}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onImageUpload(file);
+            e.target.value = "";
+          }}
+        />
 
         {/* Invisible title box (fixed) — prevents random wraps */}
         <div style={{ maxWidth: "calc(100% - 196px)", height: 190 }}>
