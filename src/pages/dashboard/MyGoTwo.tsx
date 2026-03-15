@@ -76,104 +76,126 @@ const EntryFormCard = ({
   onDelete: () => void;
 }) => {
   return (
-    <div style={{
-      width: "100%", height: "100%", display: "flex", flexDirection: "column",
-      background: "linear-gradient(180deg, rgba(239,224,207,0.97) 0%, rgba(232,215,196,0.97) 100%)",
-      backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-      padding: "24px 22px 18px",
-    }}>
-      {/* Decorative top rule */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-        <div style={{ height: 1, flex: 1, background: "rgba(45,104,112,0.25)" }} />
-        <span style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "#2d6870", fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>
-          {subcategoryName || subtype.name}
-        </span>
-        <div style={{ height: 1, flex: 1, background: "rgba(45,104,112,0.25)" }} />
+    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
+      {/* Top 38% — image area with gradient fade into panel */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: "42%",
+        background: "linear-gradient(160deg, #1a3a3e 0%, #2d6870 60%, #3d8a96 100%)",
+        zIndex: 0,
+      }}>
+        {/* Subtle noise texture overlay */}
+        <div style={{
+          position: "absolute", inset: 0,
+          backgroundImage: "url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E")",
+          opacity: 0.4,
+        }} />
+        {/* Category label top-left */}
+        <div style={{ position: "absolute", top: 18, left: 20 }}>
+          <p style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", margin: 0 }}>
+            {subcategoryName || subtype.name}
+          </p>
+        </div>
+        {/* Large decorative number/icon top-right */}
+        <div style={{ position: "absolute", top: 10, right: 18, opacity: 0.12 }}>
+          <span style={{ fontSize: 80, fontFamily: "'Cormorant Garamond', serif", color: "#fff", lineHeight: 1 }}>✦</span>
+        </div>
+        {/* Entry name — hero text */}
+        <div style={{ position: "absolute", bottom: 20, left: 20, right: 20 }}>
+          <input
+            value={entryName}
+            onChange={(e) => onEntryNameChange(e.target.value)}
+            placeholder="Name this entry…"
+            style={{
+              width: "100%", background: "transparent", border: "none",
+              borderBottom: "1px solid rgba(255,255,255,0.35)",
+              padding: "4px 0 8px", fontSize: 22, fontWeight: 600,
+              color: "#fff", outline: "none",
+              fontFamily: "'Cormorant Garamond', serif", letterSpacing: "0.01em",
+            }}
+          />
+        </div>
       </div>
 
-      {/* Entry name — large editorial input */}
-      <input
-        value={entryName}
-        onChange={(e) => onEntryNameChange(e.target.value)}
-        placeholder="Give this a name…"
-        style={{
-          width: "100%", background: "transparent",
-          border: "none", borderBottom: "1.5px solid rgba(45,104,112,0.3)",
-          padding: "4px 0 10px", fontSize: 20, fontWeight: 600,
-          color: "#2a2a2a", outline: "none", marginBottom: 18,
-          fontFamily: "'Cormorant Garamond', serif", letterSpacing: "0.01em",
-        }}
-      />
+      {/* Curved panel rising from bottom */}
+      <div style={{
+        position: "absolute", bottom: 0, left: 0, right: 0, top: "36%",
+        background: "#efe0cf",
+        borderRadius: "28px 28px 0 0",
+        zIndex: 1,
+        display: "flex", flexDirection: "column",
+        padding: "20px 20px 16px",
+        boxShadow: "0 -8px 32px rgba(0,0,0,0.12)",
+      }}>
+        {/* Fields */}
+        <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", display: "flex", flexDirection: "column", gap: 0 }}>
+          {subtype.fields.map((field, i) => (
+            <div key={field.label} style={{
+              paddingBottom: 12,
+              marginBottom: 12,
+              borderBottom: i < subtype.fields.length - 1 ? "1px solid rgba(45,104,112,0.12)" : "none",
+            }}>
+              <p style={{ fontSize: 9, fontFamily: "'Jost', sans-serif", letterSpacing: "0.16em", textTransform: "uppercase", color: "#2d6870", marginBottom: 8, fontWeight: 700 }}>
+                {field.label}
+              </p>
+              {field.type === "select" && field.options ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                  {field.options.map((opt) => {
+                    const isSelected = values[field.label] === opt;
+                    return (
+                      <button
+                        key={opt}
+                        onClick={() => onChange(field.label, isSelected ? "" : opt)}
+                        style={{
+                          padding: "4px 13px", borderRadius: 999, fontSize: 11,
+                          fontFamily: "'Jost', sans-serif", fontWeight: 500,
+                          border: isSelected ? "1.5px solid #2d6870" : "1px solid rgba(45,104,112,0.2)",
+                          background: isSelected ? "#2d6870" : "rgba(255,255,255,0.7)",
+                          color: isSelected ? "#fff" : "#3a3a3a",
+                          cursor: "pointer", transition: "all 0.15s",
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <input
+                  value={values[field.label] || ""}
+                  onChange={(e) => onChange(field.label, e.target.value)}
+                  placeholder="—"
+                  style={{
+                    width: "100%", background: "transparent",
+                    border: "none",
+                    padding: "2px 0", fontSize: 13, color: "#1a1a1a",
+                    outline: "none", fontFamily: "'Jost', sans-serif",
+                    fontWeight: 400,
+                  }}
+                />
+              )}
+            </div>
+          ))}
+        </div>
 
-      {/* Fields */}
-      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", display: "flex", flexDirection: "column", gap: 16 }}>
-        {subtype.fields.map((field) => (
-          <div key={field.label}>
-            <p style={{ fontSize: 9, fontFamily: "'Jost', sans-serif", letterSpacing: "0.15em", textTransform: "uppercase", color: "#2d6870", marginBottom: 8, fontWeight: 600 }}>
-              {field.label}
-            </p>
-            {field.type === "select" && field.options ? (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {field.options.map((opt) => {
-                  const isSelected = values[field.label] === opt;
-                  return (
-                    <button
-                      key={opt}
-                      onClick={() => onChange(field.label, isSelected ? "" : opt)}
-                      style={{
-                        padding: "5px 15px", borderRadius: 999, fontSize: 11,
-                        fontFamily: "'Jost', sans-serif", fontWeight: 500,
-                        border: isSelected ? "1.5px solid #2d6870" : "1px solid rgba(45,104,112,0.25)",
-                        background: isSelected ? "#2d6870" : "rgba(255,255,255,0.6)",
-                        color: isSelected ? "#fff" : "#3a3a3a",
-                        cursor: "pointer", transition: "all 0.15s",
-                        backdropFilter: "blur(4px)",
-                      }}
-                    >
-                      {opt}
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <input
-                value={values[field.label] || ""}
-                onChange={(e) => onChange(field.label, e.target.value)}
-                placeholder={"—"}
-                style={{
-                  width: "100%", background: "rgba(255,255,255,0.5)",
-                  border: "none", borderBottom: "1px solid rgba(45,104,112,0.2)",
-                  padding: "6px 0", fontSize: 13, color: "#2a2a2a",
-                  outline: "none", fontFamily: "'Jost', sans-serif",
-                  backdropFilter: "blur(4px)",
-                }}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Bottom rule + actions */}
-      <div style={{ marginTop: 16 }}>
-        <div style={{ height: 1, background: "rgba(45,104,112,0.15)", marginBottom: 14 }} />
-        <div style={{ display: "flex", gap: 8 }}>
+        {/* Save row */}
+        <div style={{ display: "flex", gap: 8, paddingTop: 4 }}>
           <button
             onClick={onSave} disabled={saving}
             style={{
-              flex: 1, height: 40, borderRadius: 999,
-              background: "#2d6870", border: "none",
-              color: "#fff", fontSize: 11, fontWeight: 700,
-              fontFamily: "'Jost', sans-serif", letterSpacing: "0.1em",
+              flex: 1, height: 42, borderRadius: 999,
+              background: "linear-gradient(135deg, #2d6870 0%, #1a4a52 100%)",
+              border: "none", color: "#fff", fontSize: 11, fontWeight: 700,
+              fontFamily: "'Jost', sans-serif", letterSpacing: "0.12em",
               textTransform: "uppercase", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-              boxShadow: "0 4px 14px rgba(45,104,112,0.35)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 4px 16px rgba(45,104,112,0.4)",
             }}
           >
             {saving ? <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" /> : "Save"}
           </button>
           {isEditing && (
             <button onClick={onDelete} style={{
-              width: 40, height: 40, borderRadius: 999,
+              width: 42, height: 42, borderRadius: 999,
               background: "rgba(212,84,58,0.1)",
               border: "1px solid rgba(212,84,58,0.3)",
               display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
