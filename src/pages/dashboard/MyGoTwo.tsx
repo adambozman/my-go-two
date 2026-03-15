@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Check, Plus, Trash2, Camera } from "lucide-react";
+import { Loader2, Check, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,12 +23,13 @@ import {
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
   "food-drink": "Food & Drink",
+  "personal": "Personal",
   "gifts-wishlist": "Gifts & Wishlist",
   "home-living": "Home & Living",
   "entertainment": "Entertainment & Interests",
 };
 
-const sectionOrder = ["style-fit", "food-drink", "gifts-wishlist", "home-living", "entertainment"];
+const sectionOrder = ["style-fit", "food-drink", "personal", "gifts-wishlist", "home-living", "entertainment"];
 
 interface CoverFlowState {
   name: string;
@@ -45,7 +46,6 @@ interface CardEntry {
   group_name: string;
   entry_name: string;
   field_values: Record<string, string>;
-  image_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -195,12 +195,10 @@ const EntryFormCard = ({
   subcategoryName,
   categoryName,
   entryName,
-  entryImageUrl,
   values,
   saving,
   isEditing,
   onEntryNameChange,
-  onImageUpload,
   onChange,
   onSave,
   onDelete,
@@ -209,17 +207,14 @@ const EntryFormCard = ({
   subcategoryName?: string;
   categoryName?: string;
   entryName: string;
-  entryImageUrl?: string | null;
   values: Record<string, string>;
   saving: boolean;
   isEditing: boolean;
   onEntryNameChange: (name: string) => void;
-  onImageUpload: (file: File) => void;
   onChange: (fieldLabel: string, value: string) => void;
   onSave: () => void;
   onDelete: () => void;
 }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   return (
     <div style={{
       width: "100%", height: "100%",
@@ -245,42 +240,16 @@ const EntryFormCard = ({
 
       {/* ── TITLE + PHOTO BLOCK ── */}
       <div style={{ position: "relative", padding: "0 22px", flexShrink: 0, height: 190 }}>
-        {/* Photo thumbnail — tappable to upload */}
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 22,
-            width: 170,
-            height: 190,
-            borderRadius: 14,
-            background: "#c8bfb4",
-            cursor: "pointer",
-            overflow: "hidden",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {entryImageUrl ? (
-            <img src={entryImageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          ) : (
-            <Camera style={{ width: 28, height: 28, color: "rgba(26,26,26,0.25)" }} />
-          )}
-        </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          style={{ display: "none" }}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) onImageUpload(file);
-            e.target.value = "";
-          }}
-        />
+        {/* Photo thumbnail — locked top-right proportions */}
+        <div style={{
+          position: "absolute",
+          top: 0,
+          right: 22,
+          width: 170,
+          height: 190,
+          borderRadius: 14,
+          background: "#c8bfb4",
+        }} />
 
         {/* Invisible title box (fixed) — prevents random wraps */}
         <div style={{ maxWidth: "calc(100% - 196px)", height: 190 }}>
@@ -410,7 +379,6 @@ const MyGoTwo = () => {
   const [leafImage, setLeafImage] = useState<string>("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
   const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
-  const [entryImages, setEntryImages] = useState<Record<string, string | null>>({});
 
   const defaultFieldValues = useMemo(() => {
     if (!leafSubtype) return {} as Record<string, string>;
@@ -441,21 +409,17 @@ const MyGoTwo = () => {
 
     const nextDrafts: Record<string, Record<string, string>> = {};
     const nextNames: Record<string, string> = {};
-    const nextImages: Record<string, string | null> = {};
 
     entries.forEach((entry) => {
       nextDrafts[entry.id] = (entry.field_values as Record<string, string>) || {};
       nextNames[entry.id] = entry.entry_name;
-      nextImages[entry.id] = entry.image_url || null;
     });
 
     nextDrafts[NEW_ENTRY_ID] = defaultFieldValues;
     nextNames[NEW_ENTRY_ID] = "";
-    nextImages[NEW_ENTRY_ID] = null;
 
     setEntryDrafts(nextDrafts);
     setEntryNames(nextNames);
-    setEntryImages(nextImages);
     setActiveEntryIndex((prev) => Math.min(prev, entries.length));
 
     if (!activeGroup) {
@@ -575,32 +539,6 @@ const MyGoTwo = () => {
     }));
   };
 
-  const handleImageUpload = async (itemId: string, file: File) => {
-    if (!user) return;
-    const ext = file.name.split(".").pop() || "jpg";
-    const path = `${user.id}/${itemId === NEW_ENTRY_ID ? Date.now() : itemId}.${ext}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("card-images")
-      .upload(path, file, { upsert: true });
-
-    if (uploadError) {
-      toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" });
-      return;
-    }
-
-    const { data: urlData } = supabase.storage.from("card-images").getPublicUrl(path);
-    const publicUrl = urlData.publicUrl;
-
-    setEntryImages((prev) => ({ ...prev, [itemId]: publicUrl }));
-
-    // If editing an existing entry, save image_url immediately
-    if (itemId !== NEW_ENTRY_ID) {
-      await supabase.from("card_entries").update({ image_url: publicUrl }).eq("id", itemId);
-      setEntries((prev) => prev.map((e) => e.id === itemId ? { ...e, image_url: publicUrl } : e));
-    }
-  };
-
   const handleSaveEntry = async (itemId: string) => {
     if (!user || !cardKey || !leafSubtype) return;
 
@@ -618,7 +556,6 @@ const MyGoTwo = () => {
             group_name: activeGroup || leafSubtype.name,
             entry_name: entryName,
             field_values: fieldValues,
-            image_url: entryImages[NEW_ENTRY_ID] || null,
           })
           .select("*")
           .single();
@@ -637,11 +574,6 @@ const MyGoTwo = () => {
           ...prev,
           [inserted.id]: entryName,
           [NEW_ENTRY_ID]: "",
-        }));
-        setEntryImages((prev) => ({
-          ...prev,
-          [inserted.id]: entryImages[NEW_ENTRY_ID] || null,
-          [NEW_ENTRY_ID]: null,
         }));
         // Navigate to the newly saved card
         setActiveEntryIndex(entries.length);
@@ -726,12 +658,10 @@ const MyGoTwo = () => {
                   subcategoryName={leafSubcategoryName}
                   categoryName={leafCategoryName}
                   entryName={entryNames[item.id] || ""}
-                  entryImageUrl={entryImages[item.id]}
                   values={entryDrafts[item.id] || defaultFieldValues}
                   saving={saving}
                   isEditing={item.id !== NEW_ENTRY_ID}
                   onEntryNameChange={(name) => handleNameChange(item.id, name)}
-                  onImageUpload={(file) => handleImageUpload(item.id, file)}
                   onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
                   onSave={() => handleSaveEntry(item.id)}
                   onDelete={() => handleDeleteEntry(item.id)}
