@@ -351,7 +351,7 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
                     const alreadyAdded = bankPhotos.some(bp => bp.image_url === photo.url);
                     return (
                       <button key={photo.id}
-                        onClick={() => !alreadyAdded && addToBank(photo)}
+                        onClick={() => !alreadyAdded && pickSparePhoto(photo)}
                         disabled={!!addingToBank || alreadyAdded}
                         style={{
                           position: "relative", borderRadius: 8, overflow: "hidden", aspectRatio: "3/2",
