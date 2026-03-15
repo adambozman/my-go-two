@@ -141,13 +141,14 @@ const AutoFitTitle = ({ value, placeholder, onChange }: {
     const containerH = container.offsetHeight;
     if (containerW === 0 || containerH === 0) return;
 
-    // Binary search for the largest font size that fits
-    let lo = 16, hi = 72, best = 16;
+    // Binary search for the largest font size where text fits without overflow
+    let lo = 16, hi = 60, best = 16;
     while (lo <= hi) {
       const mid = Math.floor((lo + hi) / 2);
       measure.style.fontSize = `${mid}px`;
       measure.style.width = `${containerW}px`;
-      const fits = measure.scrollHeight <= containerH;
+      // Check both dimensions — scrollWidth catches single-word overflow
+      const fits = measure.scrollHeight <= containerH && measure.scrollWidth <= containerW;
       if (fits) { best = mid; lo = mid + 1; }
       else { hi = mid - 1; }
     }
@@ -161,7 +162,7 @@ const AutoFitTitle = ({ value, placeholder, onChange }: {
         position: "absolute", visibility: "hidden", top: 0, left: 0,
         fontWeight: 700, lineHeight: 0.95, letterSpacing: "-0.02em",
         fontFamily: "'Cormorant Garamond', serif",
-        overflowWrap: "break-word", wordBreak: "break-word",
+        overflowWrap: "normal", wordBreak: "normal",
         whiteSpace: "pre-wrap",
       }}>{text}</div>
 
@@ -181,7 +182,7 @@ const AutoFitTitle = ({ value, placeholder, onChange }: {
           color: isPlaceholder ? undefined : "#1a1a1a",
           fontFamily: "'Cormorant Garamond', serif",
           overflow: "hidden", boxSizing: "border-box", padding: 0,
-          overflowWrap: "break-word", wordBreak: "break-word",
+          overflowWrap: "normal", wordBreak: "normal",
         }}
       />
     </div>
