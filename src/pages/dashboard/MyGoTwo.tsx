@@ -119,7 +119,7 @@ const EntryFormCard = ({
         }} />
 
         {/* Invisible title box (fixed) — prevents random wraps */}
-        <div style={{ width: 190, maxWidth: "calc(100% - 196px)" }}>
+        <div style={{ width: 190, maxWidth: "calc(100% - 196px)", height: "100%" }}>
           <textarea
             className="gotwo-title"
             value={entryName}
@@ -128,6 +128,7 @@ const EntryFormCard = ({
             style={{
               display: "block",
               width: "100%",
+              height: "100%",
               background: "transparent",
               border: "none",
               outline: "none",
@@ -145,7 +146,6 @@ const EntryFormCard = ({
               wordBreak: "keep-all",
               hyphens: "manual",
             }}
-            rows={3}
           />
         </div>
 
