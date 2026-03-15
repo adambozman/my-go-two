@@ -316,25 +316,19 @@ const MyGoTwo = () => {
 
   // Group coverflow items
   const distinctGroups = [...new Set(entries.map(e => e.group_name))];
-  const groupCoverFlowItems = [
-    ...distinctGroups.map(g => ({
-      id: g,
-      label: g,
-      image: "", // Will show default card styling
-    })),
-    { id: "__new_group__", label: "+ New Group", image: NEW_CARD_IMAGE },
-  ];
+  const groupCoverFlowItems = distinctGroups.map(g => ({
+    id: g,
+    label: g,
+    image: BRANDED_CARD_SVG,
+  }));
 
   // Entry coverflow items for active group
   const groupEntries = entries.filter(e => e.group_name === activeGroup);
-  const entryCoverFlowItems = [
-    ...groupEntries.map(e => ({
-      id: e.id,
-      label: e.entry_name,
-      image: "",
-    })),
-    { id: "__new_entry__", label: "+ New Entry", image: NEW_CARD_IMAGE },
-  ];
+  const entryCoverFlowItems = groupEntries.map(e => ({
+    id: e.id,
+    label: e.entry_name,
+    image: BRANDED_CARD_SVG,
+  }));
 
   const handleGroupSelect = (id: string) => {
     if (id === "__new_group__") {
