@@ -60,6 +60,7 @@ const NEW_ENTRY_ID = "__new_entry__";
 const EntryFormCard = ({
   subtype,
   subcategoryName,
+  categoryName,
   entryName,
   values,
   saving,
@@ -71,6 +72,7 @@ const EntryFormCard = ({
 }: {
   subtype: SubtypeItem;
   subcategoryName?: string;
+  categoryName?: string;
   entryName: string;
   values: Record<string, string>;
   saving: boolean;
