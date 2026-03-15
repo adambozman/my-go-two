@@ -51,15 +51,14 @@ serve(async (req) => {
     const allAnswers = { ...favorites, ...profileAnswers };
     const personalization = (prefsResult.data?.ai_personalization as any) || {};
 
-    // Check cache — must have image_urls and be fresh
+    // Check cache
     if (cachedResult.data) {
       const age = Date.now() - new Date(cachedResult.data.generated_at).getTime();
       const quizData = cachedResult.data.quizzes as any[];
       const isValid =
         Array.isArray(quizData) &&
         quizData.length > 0 &&
-        Array.isArray(quizData[0]?.questions) &&
-        quizData[0]?.image_url; // has images
+        Array.isArray(quizData[0]?.questions);
 
       if (isValid && age < SEVEN_DAYS_MS) {
         // Filter out fully answered categories
