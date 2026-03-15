@@ -351,6 +351,7 @@ const MyGoTwo = () => {
     setCardKey(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
+    setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     if (activeSubcategory && (!activeSubcategory.products || activeSubcategory.products.length === 0)) {
       setActiveSubcategory(null);
