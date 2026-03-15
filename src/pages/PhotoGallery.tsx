@@ -186,13 +186,8 @@ const ImageCard = ({
   onDelete: () => void;
   onPick: () => void;
 }) => {
-  // Always resolve live — never use stale baked-in URL
-  const override = getOverride(slot.imageKey);
-  const liveUrl = override || slot.resolvedUrl;
-  const livePath = urlToPath(liveUrl);
-  const blocked = isPathBlocked(livePath);
-  const hasOverride = !!override;
-  const showImage = !!liveUrl && !blocked;
+  const liveUrl = slot.resolvedUrl;
+  const showImage = !!liveUrl;
 
   return (
     <div className="flex flex-col gap-1">
@@ -202,7 +197,7 @@ const ImageCard = ({
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-muted/60">
             <ImagePlus className="w-6 h-6 text-muted-foreground opacity-50" />
-            <span className="text-[10px] text-muted-foreground">{blocked ? "Deleted" : "No image"}</span>
+            <span className="text-[10px] text-muted-foreground">No image</span>
           </div>
         )}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex flex-col items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100">
@@ -220,18 +215,7 @@ const ImageCard = ({
               <X className="w-3 h-3" /> Delete
             </button>
           )}
-          {hasOverride && (
-            <button
-              onClick={e => { e.stopPropagation(); clearOverride(slot.imageKey); window.location.reload(); }}
-              className="flex items-center gap-1 px-2 py-1 bg-gray-600 text-white rounded-md text-[10px] font-medium"
-            >
-              <RefreshCw className="w-3 h-3" /> Reset
-            </button>
-          )}
         </div>
-        {hasOverride && (
-          <div className="absolute top-1 right-1 bg-teal-600 rounded-full w-3 h-3" title="Custom photo assigned" />
-        )}
       </div>
       <p className="text-[11px] font-medium text-foreground truncate">{slot.label}</p>
       <p className="text-[10px] text-muted-foreground truncate">{slot.imageKey}</p>
