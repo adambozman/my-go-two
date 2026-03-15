@@ -106,7 +106,7 @@ const EntryFormCard = ({
       {/* ── TITLE BLOCK ── */}
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "0 22px", flexShrink: 0 }}>
         {/* Invisible constraining box — forces natural word-wrap */}
-        <div style={{ width: 200, flexShrink: 0 }}>
+        <div style={{ width: 155, flexShrink: 0 }}>
           <textarea
             className="gotwo-title"
             value={entryName}
