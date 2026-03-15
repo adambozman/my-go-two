@@ -195,12 +195,11 @@ const MyGoTwo = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const savedScrollTop = useRef(0);
 
-  // New multi-entry state
+  // Multi-entry state
   const [cardKey, setCardKey] = useState<string | null>(null);
   const [entries, setEntries] = useState<CardEntry[]>([]);
-  const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [editingEntry, setEditingEntry] = useState<CardEntry | null>(null);
-  const [showNameDialog, setShowNameDialog] = useState<"group" | "entry" | null>(null);
+  const [showNameDialog, setShowNameDialog] = useState(false);
   const [newName, setNewName] = useState("");
   const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
