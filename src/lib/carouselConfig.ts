@@ -14,7 +14,7 @@ export const CAROUSEL_LAYOUT = {
 
 /** Desktop card dimensions — Figma originals × 1.4 × 1.4, website view only (≥1024px) */
 export const CAROUSEL_LAYOUT_DESKTOP = {
-  cardWidth: 1015,
+  cardWidth: 686,
   cardHeight: 686,
   flankWidth: 175,
   flankHeight: 567,
