@@ -46,6 +46,7 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
 const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
   ({ items, onSelect }, ref) => {
     const [activeIndex, setActiveIndex] = useState(0);
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
     const layout = useLayout();
     const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
     const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
