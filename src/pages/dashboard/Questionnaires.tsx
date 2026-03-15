@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { RefreshCw, Sparkles, Check } from "lucide-react";
+import { RefreshCw, Sparkles, Check, Heart } from "lucide-react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -101,14 +101,7 @@ const sanitizeCategory = (raw: any): AICategory | null => {
 
   if (!id || !name || questions.length === 0) return null;
 
-  return {
-    id,
-    name,
-    category,
-    image_url: toSafeString(raw?.image_url) || null,
-    image_prompt: toSafeString(raw?.image_prompt),
-    questions,
-  };
+  return { id, name, category, image_url: toSafeString(raw?.image_url) || null, image_prompt: toSafeString(raw?.image_prompt), questions };
 };
 
 const Questionnaires = () => {
@@ -122,16 +115,10 @@ const Questionnaires = () => {
   const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
 
   const fetchCategories = useCallback(async () => {
-    if (!user) {
-      setCategories([]);
-      setLoading(false);
-      return;
-    }
+    if (!user) { setCategories([]); setLoading(false); return; }
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("AUTH_REQUIRED");
 
       const { data, error } = await supabase.functions.invoke("ai-quizzes", {
@@ -144,10 +131,7 @@ const Questionnaires = () => {
         .filter(Boolean) as AICategory[];
 
       setCategories(normalized);
-
-      if (!normalized.length) {
-        toast.message("No new Know Me quizzes yet — try again in a moment.");
-      }
+      if (!normalized.length) toast.message("No new Know Me quizzes yet — try again in a moment.");
     } catch (e: any) {
       console.error("AI quizzes error:", e);
       if (e?.message === "AUTH_REQUIRED") return;
@@ -160,22 +144,12 @@ const Questionnaires = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+  useEffect(() => { fetchCategories(); }, [fetchCategories]);
 
-  const handleRefresh = () => {
-    setRefreshing(true);
-    setLoading(true);
-    fetchCategories();
-  };
+  const handleRefresh = () => { setRefreshing(true); setLoading(true); fetchCategories(); };
 
   const handleCardClick = (cat: AICategory) => {
-    if (!cat.questions.length) {
-      toast.error("That quiz is incomplete. Refreshing...");
-      fetchCategories();
-      return;
-    }
+    if (!cat.questions.length) { toast.error("That quiz is incomplete. Refreshing..."); fetchCategories(); return; }
     setSelectedCategory(cat);
   };
 
@@ -184,10 +158,8 @@ const Questionnaires = () => {
     return categories.filter((cat) => filters.includes(cat.category));
   };
 
-  const sectionsWithCounts = SECTIONS.map((s) => ({
-    ...s,
-    count: getSectionCategories(s.id).length,
-  }));
+  const totalQuestions = categories.reduce((sum, c) => sum + c.questions.length, 0);
+  const sectionsWithCounts = SECTIONS.map((s) => ({ ...s, count: getSectionCategories(s.id).length }));
 
   /* ── Quiz view ─────────────────────────────── */
   if (selectedCategory) {
@@ -195,12 +167,7 @@ const Questionnaires = () => {
       <motion.div className="h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <KnowMeQuizCard
           questions={selectedCategory.questions.map((q) => ({
-            id: q.id,
-            title: q.title,
-            subtitle: q.subtitle,
-            type: q.type,
-            options: q.options,
-            multiSelect: q.multi_select,
+            id: q.id, title: q.title, subtitle: q.subtitle, type: q.type, options: q.options, multiSelect: q.multi_select,
           }))}
           categoryName={selectedCategory.name}
           onComplete={async (selections) => {
@@ -215,9 +182,7 @@ const Questionnaires = () => {
               toast.success("Answers saved!");
               await refetch();
               setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
-            } catch {
-              toast.error("Failed to save answers");
-            }
+            } catch { toast.error("Failed to save answers"); }
             setSelectedCategory(null);
           }}
           onBack={() => setSelectedCategory(null)}
@@ -229,54 +194,110 @@ const Questionnaires = () => {
   /* ── Loading state ─────────────────────────── */
   if (contextLoading || loading) {
     return (
-      <div className="h-full flex flex-col items-center justify-center gap-4 px-4">
+      <div className="h-full flex flex-col items-center justify-center gap-5 px-6">
         <motion.div
+          className="relative"
           animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+          transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
         >
-          <Sparkles className="w-8 h-8" style={{ color: "var(--swatch-teal)" }} />
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center"
+            style={{ background: "rgba(var(--swatch-teal-rgb), 0.08)" }}
+          >
+            <Sparkles className="w-7 h-7" style={{ color: "var(--swatch-teal)" }} />
+          </div>
         </motion.div>
-        <p
-          className="text-sm text-center"
-          style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
-        >
-          Generating your personalized questions...
-        </p>
+        <div className="text-center">
+          <p
+            className="text-base mb-1"
+            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}
+          >
+            Learning about you...
+          </p>
+          <p className="text-xs" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            Generating personalized questions
+          </p>
+        </div>
       </div>
     );
   }
 
   const currentCards = getSectionCategories(activeSection);
+  const heroCard = currentCards[0];
+  const restCards = currentCards.slice(1);
 
   /* ── Main UI ─────────────────────────────── */
   return (
-    <div className="h-full flex flex-col">
-      {/* Title area */}
-      <div className="px-4 pt-3 pb-2 flex items-center justify-between">
-        <div>
-          <h1
-            className="text-2xl"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}
-          >
-            Know Me
-          </h1>
-          <p
-            className="text-xs mt-0.5"
-            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
-          >
-            Help your partner find exactly what you love
-          </p>
+    <div className="h-full flex flex-col overflow-y-auto">
+      {/* Hero header area */}
+      <div className="px-5 pt-4 pb-1">
+        <div className="flex items-start justify-between">
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-2 mb-1"
+            >
+              <Heart className="w-4 h-4" style={{ color: "var(--swatch-cedar-grove)" }} />
+              <span
+                className="text-[11px] uppercase tracking-[0.15em] font-medium"
+                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
+              >
+                Personalized for you
+              </span>
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="text-[32px] leading-[1.05] mb-1"
+              style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}
+            >
+              Know Me
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="text-[13px]"
+              style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
+            >
+              Help your partner find exactly what you love
+            </motion.p>
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            {totalQuestions > 0 && (
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="px-2.5 py-1 rounded-full text-[11px] font-bold"
+                style={{
+                  background: "rgba(var(--swatch-cedar-grove-rgb), 0.1)",
+                  color: "var(--swatch-cedar-grove)",
+                  fontFamily: "'Jost', sans-serif",
+                }}
+              >
+                {totalQuestions} Qs
+              </motion.span>
+            )}
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-105 disabled:opacity-50"
+              style={{ background: "rgba(var(--swatch-teal-rgb), 0.08)" }}
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
+                style={{ color: "var(--swatch-teal)" }}
+              />
+            </button>
+          </div>
         </div>
-        <button
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="p-2.5 rounded-full transition-colors hover:bg-black/5 disabled:opacity-50"
-        >
-          <RefreshCw
-            className={`w-4.5 h-4.5 ${refreshing ? "animate-spin" : ""}`}
-            style={{ color: "var(--swatch-teal)" }}
-          />
-        </button>
+      </div>
+
+      {/* Divider accent */}
+      <div className="px-5 py-3">
+        <div className="h-px" style={{ background: "linear-gradient(90deg, var(--swatch-teal), transparent 60%)", opacity: 0.2 }} />
       </div>
 
       {/* Section tabs */}
@@ -286,51 +307,98 @@ const Questionnaires = () => {
         onSelect={setActiveSection}
       />
 
-      {/* Category cards grid */}
-      <div className="flex-1 overflow-y-auto px-4 pb-6">
+      {/* Category cards */}
+      <div className="flex-1 px-4 pb-8">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeSection}
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
+            exit={{ opacity: 0, y: -16 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="grid grid-cols-2 gap-3"
           >
             {currentCards.length > 0 ? (
-              currentCards.map((cat, i) => (
-                <KnowMeCategoryCard
-                  key={cat.id}
-                  name={cat.name}
-                  imageUrl={cat.image_url}
-                  questionCount={cat.questions.length}
-                  gradientFallback={PLACEHOLDER_GRADIENTS[cat.category]}
-                  onClick={() => handleCardClick(cat)}
-                  index={i}
-                />
-              ))
+              <div className="space-y-3">
+                {/* Hero card — first item gets full-width treatment */}
+                {heroCard && (
+                  <KnowMeCategoryCard
+                    key={heroCard.id}
+                    name={heroCard.name}
+                    imageUrl={heroCard.image_url}
+                    questionCount={heroCard.questions.length}
+                    category={heroCard.category}
+                    gradientFallback={PLACEHOLDER_GRADIENTS[heroCard.category]}
+                    onClick={() => handleCardClick(heroCard)}
+                    index={0}
+                    isHero
+                  />
+                )}
+
+                {/* Remaining cards in 2-col masonry-style grid */}
+                {restCards.length > 0 && (
+                  <div className="grid grid-cols-2 gap-3">
+                    {restCards.map((cat, i) => (
+                      <KnowMeCategoryCard
+                        key={cat.id}
+                        name={cat.name}
+                        imageUrl={cat.image_url}
+                        questionCount={cat.questions.length}
+                        category={cat.category}
+                        gradientFallback={PLACEHOLDER_GRADIENTS[cat.category]}
+                        onClick={() => handleCardClick(cat)}
+                        index={i + 1}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
             ) : (
-              <div className="col-span-2 flex flex-col items-center justify-center py-16">
+              /* Empty state */
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center justify-center py-20"
+              >
                 <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
-                  style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)" }}
+                  className="w-20 h-20 rounded-3xl flex items-center justify-center mb-5 relative"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(var(--swatch-teal-rgb), 0.08), rgba(var(--swatch-teal-rgb), 0.15))",
+                    boxShadow: "0 8px 24px rgba(var(--swatch-teal-rgb), 0.06)",
+                  }}
                 >
-                  <Check className="w-6 h-6" style={{ color: "var(--swatch-teal)" }} />
+                  <Check className="w-8 h-8" style={{ color: "var(--swatch-teal)" }} />
+                  <div
+                    className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{ background: "var(--swatch-cedar-grove)" }}
+                  >
+                    <Sparkles className="w-3 h-3 text-white" />
+                  </div>
                 </div>
                 <p
-                  className="text-sm text-center"
+                  className="text-lg mb-1 text-center"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}
+                >
+                  All caught up!
+                </p>
+                <p
+                  className="text-xs text-center mb-5 max-w-[220px]"
                   style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
                 >
-                  All caught up in this section!
+                  You've answered everything in this section. Want fresh questions?
                 </p>
                 <button
                   onClick={handleRefresh}
-                  className="mt-3 text-xs font-medium px-4 py-2 rounded-full transition-colors"
-                  style={{ color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.1)" }}
+                  className="px-5 py-2.5 rounded-full text-[13px] font-medium transition-all hover:scale-105"
+                  style={{
+                    color: "#fff",
+                    background: "var(--swatch-cedar-grove)",
+                    boxShadow: "0 4px 16px rgba(212, 84, 58, 0.25)",
+                    fontFamily: "'Jost', sans-serif",
+                  }}
                 >
                   Generate new questions
                 </button>
-              </div>
+              </motion.div>
             )}
           </motion.div>
         </AnimatePresence>
