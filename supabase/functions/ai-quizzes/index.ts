@@ -231,23 +231,7 @@ Use the provided tool.`;
 
     const { categories } = JSON.parse(toolCall.function.arguments);
 
-    // Generate cover images for all categories in parallel
-    const imagePromises = categories.map((cat: any) =>
-      generateCategoryImage(
-        cat.id,
-        cat.image_prompt,
-        userGender,
-        userId,
-        LOVABLE_API_KEY,
-        supabaseUrl,
-        supabaseServiceKey
-      )
-    );
-
-    const imageUrls = await Promise.all(imagePromises);
-    categories.forEach((cat: any, i: number) => {
-      cat.image_url = imageUrls[i];
-    });
+    // Skip image generation to stay within CPU limits — frontend uses placeholder gradients
 
     // Cache
     await supabase.from("ai_generated_quizzes").upsert(
