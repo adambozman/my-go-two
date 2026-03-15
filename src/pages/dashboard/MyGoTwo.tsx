@@ -98,17 +98,18 @@ const EntryFormCard = ({
 
       {/* ── TITLE + PHOTO BOX ── */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: `0 ${18*fs}px ${8*fs}px`, flexShrink: 0 }}>
-        <input
+        <textarea
           value={entryName}
           onChange={(e) => onEntryNameChange(e.target.value)}
           placeholder={subtype.name || "Entry name..."}
+          rows={2}
           style={{
-            flex: 1, background: "transparent", border: "none", outline: "none",
-            fontSize: 32*fs, fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.02em",
-            color: "#1a1a1a", fontFamily: "'Cormorant Garamond', serif",
+            flex: 1, background: "transparent", border: "none", outline: "none", resize: "none",
+            fontSize: 26, fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em",
+            color: "#1a1a1a", fontFamily: "'Cormorant Garamond', serif", overflow: "hidden",
           }}
         />
-        <div style={{ width: 72*fs, height: 88*fs, borderRadius: 8*fs, background: "#c8bfb4", flexShrink: 0, marginLeft: 12*fs, marginTop: 4*fs, overflow: "hidden" }} />
+        <div style={{ width: 68, height: 84, borderRadius: 8, background: "#c8bfb4", flexShrink: 0, marginLeft: 10, marginTop: 2, overflow: "hidden" }} />
       </div>
 
       {/* Coral accent */}
