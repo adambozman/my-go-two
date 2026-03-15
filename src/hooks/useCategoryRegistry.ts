@@ -132,7 +132,7 @@ export function useCategoryRegistry(
     return () => {
       cancelled = true;
     };
-  }, [gender, page, dbGender, overrideVersion]);
+  }, [gender, page, dbGender]);
 
   const sections = useMemo(() => {
     const grouped: Record<string, CategoryItem[]> = {};
