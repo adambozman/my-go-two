@@ -70,8 +70,9 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
 
   // Spare bank expand
   const [showSpare, setShowSpare] = useState(false);
-  const [sparePhotos] = useState<LocalPhoto[]>(() => getSpareBank());
+  const [sparePhotos, setSparePhotos] = useState<LocalPhoto[]>([]);
   const [addingToBank, setAddingToBank] = useState<string | null>(null);
+  const blockedPathsRef = useRef<Set<string>>(new Set());
 
   // Web search state
   const [query, setQuery] = useState(label);
