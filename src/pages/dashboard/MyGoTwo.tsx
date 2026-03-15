@@ -101,7 +101,7 @@ const EntryFormCard = ({
         <input
           value={entryName}
           onChange={(e) => onEntryNameChange(e.target.value)}
-          placeholder="Classic Crew-Neck"
+          placeholder={subtype.name || "Entry name..."}
           style={{
             flex: 1, background: "transparent", border: "none", outline: "none",
             fontSize: 32*fs, fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.02em",
