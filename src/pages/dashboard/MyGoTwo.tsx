@@ -38,12 +38,6 @@ interface CoverFlowState {
   categoryId: string;
 }
 
-interface FieldState {
-  subtype: SubtypeItem;
-  subcategoryName?: string;
-  values: Record<string, string>;
-}
-
 interface CardEntry {
   id: string;
   user_id: string;
