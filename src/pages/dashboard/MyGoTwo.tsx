@@ -119,7 +119,7 @@ const EntryFormCard = ({
         }} />
 
         {/* Invisible title box (fixed) — prevents random wraps */}
-        <div style={{ width: 170, height: 190 }}>
+        <div style={{ maxWidth: "calc(100% - 196px)", height: 190 }}>
           <textarea
             className="gotwo-title"
             value={entryName}
