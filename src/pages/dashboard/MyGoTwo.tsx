@@ -55,8 +55,8 @@ interface CardEntry {
   updated_at: string;
 }
 
-// Placeholder image for "+ New" cards
-const NEW_CARD_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500' fill='%23f5f0eb'%3E%3Crect width='400' height='500' rx='24'/%3E%3Ctext x='200' y='260' text-anchor='middle' font-size='64' fill='%232d6870' font-family='sans-serif'%3E%2B%3C/text%3E%3C/svg%3E";
+// Branded gradient SVG for user-created cards (no photo)
+const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
 
 // ── Level 4: Field fill-out form ──
 const FieldForm = ({
