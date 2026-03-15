@@ -358,38 +358,17 @@ export default function PhotoGallery() {
     load();
   }, [gender, version, activeTab]);
 
-  const handleDelete = useCallback(async (path: string, key: string) => {
-    await addToBlocklist(path);
-    setDeletedKeys(prev => new Set([...prev, key]));
-    setDeletedPaths(prev => new Map([...prev, [key, path]]));
+  const handleDelete = useCallback(async (_path: string, key: string) => {
+    await deleteImageUrl(key);
     setVersion(v => v + 1);
     toast.success(`Deleted: ${key}`);
   }, []);
 
-  const handlePhotosReplaced = useCallback(async () => {
-    // Remove all blocked paths for deleted keys so new downloads show
-    for (const [, path] of deletedPaths) {
-      await removeFromBlocklist(path);
-    }
-    setDeletedKeys(new Set());
-    setDeletedPaths(new Map());
-    setVersion(v => v + 1);
-    toast.success("Blocklist cleared — new photos will now show");
-  }, [deletedPaths]);
-
-  const handleGetAll = useCallback(() => {
-    if (deletedKeys.size === 0) { toast.info("No deleted photos yet."); return; }
-    const msg = `Please download new replacement photos for the following image keys and save them as .jpg files in both src/assets/templates/ and src/assets/templates/male/. Use warm, editorial, on-brand lifestyle photography matching the GoTwo aesthetic. Do NOT reuse previously downloaded photos for these keys.\n\nKeys to replace:\n${[...deletedKeys].map(k => `- ${k}`).join("\n")}`;
-    navigator.clipboard.writeText(msg).then(() => {
-      toast.success(`Copied ${deletedKeys.size} keys — paste into Lovable`);
-    }).catch(() => toast.info([...deletedKeys].join(", ")));
-  }, [deletedKeys]);
-
-  const handlePick = useCallback((slot: ImageSlot, spareUrl: string) => {
-    setOverride(slot.imageKey, spareUrl);
+  const handlePick = useCallback(async (slot: ImageSlot, spareUrl: string) => {
+    await setImageUrl(slot.imageKey, spareUrl);
     setPickerSlot(null);
     setVersion(v => v + 1);
-    toast.success(`Assigned spare photo to ${slot.imageKey}`);
+    toast.success(`Assigned photo to ${slot.imageKey}`);
   }, []);
 
   const cardProps = (slot: ImageSlot) => ({
