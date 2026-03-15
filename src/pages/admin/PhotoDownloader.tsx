@@ -30,7 +30,7 @@ async function cropAndResize(url: string): Promise<Blob> {
   });
 }
 
-interface Product { id: string; name: string; imageKey: string; subcategory: string; category: string; }
+interface Product { id: string; name: string; imageKey: string; subcategory: string; category: string; bank: string; }
 interface Photo { id: string | number; thumb: string; full: string; credit: string; }
 
 function ProductRow({ product }: { product: Product }) {
@@ -182,9 +182,9 @@ export default function PhotoDownloader() {
 
   const grouped: Record<string, Record<string, Product[]>> = {};
   for (const p of products) {
-    if (!grouped[p.category]) grouped[p.category] = {};
-    if (!grouped[p.category][p.subcategory]) grouped[p.category][p.subcategory] = [];
-    grouped[p.category][p.subcategory].push(p);
+    if (!grouped[p.bank]) grouped[p.bank] = {};
+    if (!grouped[p.bank][p.subcategory]) grouped[p.bank][p.subcategory] = [];
+    grouped[p.bank][p.subcategory].push(p);
   }
 
   return (
@@ -205,9 +205,9 @@ export default function PhotoDownloader() {
           <Loader2 style={{ width: 14, height: 14 }} className="animate-spin" /> Loading...
         </div>
       ) : (
-        Object.entries(grouped).map(([cat, subs]) => (
-          <div key={cat} style={{ marginBottom: 24 }}>
-            <h2 style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, color: "#2d6870", textTransform: "uppercase", letterSpacing: "0.08em" }}>{cat}</h2>
+        Object.entries(grouped).map(([bank, subs]) => (
+          <div key={bank} style={{ marginBottom: 24 }}>
+            <h2 style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, color: "#2d6870", textTransform: "uppercase", letterSpacing: "0.08em" }}>{bank}</h2>
             {Object.entries(subs).map(([sub, prods]) => (
               <div key={sub} style={{ marginBottom: 8 }}>
                 {sub !== cat && <p style={{ fontSize: 11, color: "var(--color-text-secondary)", marginBottom: 4, fontWeight: 500 }}>{sub}</p>}
