@@ -313,17 +313,12 @@ const MyGoTwo = () => {
     image: BRANDED_CARD_SVG,
   }));
 
-  // Entry coverflow items for active group
-  const groupEntries = entries.filter(e => e.group_name === activeGroup);
-  const entryCoverFlowItems = groupEntries.map(e => ({
+  // Entry coverflow items — flat, no groups
+  const entryCoverFlowItems = entries.map(e => ({
     id: e.id,
     label: e.entry_name,
     image: BRANDED_CARD_SVG,
   }));
-
-  const handleGroupSelect = (id: string) => {
-    setActiveGroup(id);
-  };
 
   const handleEntrySelect = (id: string) => {
     const entry = entries.find(e => e.id === id);
@@ -337,32 +332,22 @@ const MyGoTwo = () => {
     }
   };
 
-  const handleCreateGroup = () => {
-    if (!newName.trim()) return;
-    setShowNameDialog(null);
-    setActiveGroup(newName.trim());
-    // Group is created implicitly when first entry is saved
-  };
-
   const handleCreateEntry = () => {
     if (!newName.trim() || !leafSubtype) return;
-    setShowNameDialog(null);
-    setEditingEntry(null);
+    setShowNameDialog(false);
+    setEditingEntry({ entry_name: newName.trim() } as any);
     setFieldState({
       subtype: leafSubtype,
       subcategoryName: leafSubcategoryName,
       values: leafSubtype.fields.reduce((acc, f) => ({ ...acc, [f.label]: (f as any).value || "" }), {} as Record<string, string>),
     });
-    // Store the entry name temporarily on the editing entry
-    setEditingEntry({ entry_name: newName.trim() } as any);
   };
 
   const handleSave = async (values: Record<string, string>) => {
-    if (!user || !cardKey || !activeGroup) return;
+    if (!user || !cardKey) return;
     setSaving(true);
     try {
       if (editingEntry?.id) {
-        // Update existing entry
         const { error } = await supabase
           .from("card_entries")
           .update({ field_values: values })
@@ -370,14 +355,13 @@ const MyGoTwo = () => {
         if (error) throw error;
         toast({ title: "Updated!", description: `${editingEntry.entry_name} saved.` });
       } else {
-        // Insert new entry
         const entryName = editingEntry?.entry_name || "Untitled";
         const { error } = await supabase
           .from("card_entries")
           .insert({
             user_id: user.id,
             card_key: cardKey,
-            group_name: activeGroup,
+            group_name: leafSubtype?.name || "",
             entry_name: entryName,
             field_values: values,
           });
