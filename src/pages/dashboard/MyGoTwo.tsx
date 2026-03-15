@@ -182,7 +182,7 @@ const AutoFitTitle = ({ value, placeholder, onChange }: {
           color: isPlaceholder ? undefined : "#1a1a1a",
           fontFamily: "'Cormorant Garamond', serif",
           overflow: "hidden", boxSizing: "border-box", padding: 0,
-          overflowWrap: "break-word", wordBreak: "break-word",
+          overflowWrap: "normal", wordBreak: "normal",
         }}
       />
     </div>
