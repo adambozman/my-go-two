@@ -121,15 +121,20 @@ const Questionnaires = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("AUTH_REQUIRED");
 
-      const { data, error } = await supabase.functions.invoke("ai-quizzes", {
+      const { data: rawData, error } = await supabase.functions.invoke("ai-quizzes", {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
       if (error) throw error;
+
+      // supabase.functions.invoke may return string or object
+      const data = typeof rawData === "string" ? JSON.parse(rawData) : rawData;
+      console.log("ai-quizzes response:", JSON.stringify(data).slice(0, 300), "categories count:", Array.isArray(data?.categories) ? data.categories.length : "NOT_ARRAY");
 
       const normalized = (Array.isArray(data?.categories) ? data.categories : [])
         .map(sanitizeCategory)
         .filter(Boolean) as AICategory[];
 
+      console.log("Normalized categories:", normalized.length, normalized.map(c => `${c.id}(${c.category})`));
       setCategories(normalized);
       if (!normalized.length) toast.message("No new Know Me quizzes yet — try again in a moment.");
     } catch (e: any) {
