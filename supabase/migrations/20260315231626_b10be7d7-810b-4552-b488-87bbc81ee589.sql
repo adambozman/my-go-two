@@ -1,0 +1,1 @@
+ALTER TABLE public.card_entries ADD COLUMN image_url text;

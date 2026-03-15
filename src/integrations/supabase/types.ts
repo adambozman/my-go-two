@@ -43,6 +43,7 @@ export type Database = {
           field_values: Json
           group_name: string
           id: string
+          image_url: string | null
           updated_at: string
           user_id: string
         }
@@ -53,6 +54,7 @@ export type Database = {
           field_values?: Json
           group_name: string
           id?: string
+          image_url?: string | null
           updated_at?: string
           user_id: string
         }
@@ -63,6 +65,7 @@ export type Database = {
           field_values?: Json
           group_name?: string
           id?: string
+          image_url?: string | null
           updated_at?: string
           user_id?: string
         }
