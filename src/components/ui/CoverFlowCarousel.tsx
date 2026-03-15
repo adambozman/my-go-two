@@ -173,7 +173,6 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                     />
                     {isActive && <InlinePhotoSearch imageKey={item.id} label={item.label} onImageChanged={forceUpdate} />}
                   </div>
-                  />
                 </motion.div>
               );
             })}
