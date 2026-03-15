@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, forwardRef } from "react";
+import { useState, useEffect, useRef, forwardRef, useReducer } from "react";
 import { motion } from "framer-motion";
 import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import GoTwoCard from "@/components/ui/GoTwoCard";
+import InlinePhotoSearch from "@/components/InlinePhotoSearch";
 
 export interface CoverFlowItem {
   id: string;
