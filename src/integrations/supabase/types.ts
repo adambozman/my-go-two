@@ -116,6 +116,30 @@ export type Database = {
           },
         ]
       }
+      category_bank_photos: {
+        Row: {
+          category_key: string
+          created_at: string
+          filename: string | null
+          id: string
+          image_url: string
+        }
+        Insert: {
+          category_key: string
+          created_at?: string
+          filename?: string | null
+          id?: string
+          image_url: string
+        }
+        Update: {
+          category_key?: string
+          created_at?: string
+          filename?: string | null
+          id?: string
+          image_url?: string
+        }
+        Relationships: []
+      }
       category_images: {
         Row: {
           category_key: string
