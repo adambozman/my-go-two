@@ -156,6 +156,11 @@ const EntryFormCard = ({
         </div>
       </div>
 
+      {/* ── TITLE/PHOTO TO SIZE DIVIDER ── */}
+      <div style={{ padding: "6px 22px 10px", flexShrink: 0 }}>
+        <div style={{ height: 1, background: "rgba(26,26,26,0.14)" }} />
+      </div>
+
       {/* ── FIELDS ── */}
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 22px" }}>
         {subtype.fields.map((field, i) => (
