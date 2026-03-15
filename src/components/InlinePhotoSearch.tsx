@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Camera, Loader2, X, Trash2, Sparkles, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, Camera, Loader2, X, Trash2, Sparkles, Plus, ChevronDown, ChevronUp, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { setImageUrl, deleteImageUrl, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { useAuth } from "@/contexts/AuthContext";
@@ -167,6 +167,38 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
     }
   }, [toast]);
 
+  // ── Upload custom photos to this category's bank ──
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const ext = file.name.split(".").pop() || "jpg";
+        const filename = `${imageKey}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+        const path = `bank/${filename}`;
+        const { error: uploadErr } = await supabase.storage
+          .from("category-images")
+          .upload(path, file, { contentType: file.type, upsert: false });
+        if (uploadErr) throw uploadErr;
+        const { data: urlData } = supabase.storage.from("category-images").getPublicUrl(path);
+        await supabase
+          .from("category_bank_photos")
+          .insert({ category_key: imageKey, image_url: urlData.publicUrl, filename });
+      }
+      toast({ title: "✓ Uploaded", description: `${files.length} photo(s) added` });
+      loadBankPhotos();
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }, [imageKey, toast, loadBankPhotos]);
+
   // ── Web search ──
   const searchWeb = useCallback(async () => {
     setSearching(true);
@@ -292,9 +324,25 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
           {tab === "bank" && (
             <div>
               {/* Category-specific photos */}
-              <p style={{ fontSize: 11, fontWeight: 600, color: "#2d6870", marginBottom: 6 }}>
-                Photos for "{label}"
-              </p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                <p style={{ fontSize: 11, fontWeight: 600, color: "#2d6870", margin: 0 }}>
+                  Photos for "{label}"
+                </p>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 4, padding: "3px 8px",
+                    borderRadius: 6, fontSize: 10, fontWeight: 600, cursor: "pointer",
+                    background: "rgba(45,104,112,0.08)", border: "1px solid rgba(45,104,112,0.2)",
+                    color: "#2d6870",
+                  }}
+                >
+                  {uploading ? <Loader2 style={{ width: 10, height: 10 }} className="animate-spin" /> : <Upload style={{ width: 10, height: 10 }} />}
+                  Upload
+                </button>
+                <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileUpload} style={{ display: "none" }} />
+              </div>
 
               {loadingBank ? (
                 <div style={{ display: "flex", justifyContent: "center", padding: "20px 0" }}>
