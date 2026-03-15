@@ -153,7 +153,7 @@ serve(async (req) => {
       .join("\n");
 
     const prompt = `You are a lifestyle AI for GoTwo, a couples' preference-sharing app.
-You are building a deep profile of this user to power personalized product, gift, date, and style recommendations for their partner.
+You are building the DEEPEST possible profile of this user so their partner always knows exactly what to buy, where to go, and how to show love. Every answer feeds gift recommendations, date planning, and shopping decisions.
 
 USER PROFILE:
 - Gender: ${userGender}
@@ -167,32 +167,38 @@ Style keywords: ${(personalization.style_keywords || []).join(", ") || "None"}
 Brands: ${(personalization.recommended_brands || []).join(", ") || "None"}
 Price tier: ${personalization.price_tier || "Unknown"}
 
-Generate exactly 8 CATEGORIES of adaptive questions. Each category should have 3-5 questions.
-Each category MUST map to one of: style, sizing, colors, lifestyle, gifting, products, brands, love-language, dates.
+Generate exactly 12 CATEGORIES of adaptive questions. Each category should have 4-6 questions with 4-6 options each.
+Each category MUST map to one of these types: style, sizing, colors, lifestyle, gifting, products, brands, love-language, dates, food, wellness, home.
 
-TOPIC GUIDANCE:
-- "style": clothing style, aesthetic preferences, fashion choices, outfit vibes
-- "sizing": clothing sizes, shoe sizes, fit preferences (slim, relaxed, oversized)
-- "colors": favorite colors, color palettes they gravitate toward, colors they avoid
-- "lifestyle": hobbies, free time, wellness, fitness, daily routines
-- "gifting": gift preferences, price comfort, thoughtfulness vs practicality, surprise tolerance
-- "products": specific product categories they care about (skincare, tech, home)
-- "brands": brand loyalty, favorite brands, brand discovery preferences
-- "love-language": how they give/receive love (words, acts of service, quality time, gifts, touch), what makes them feel appreciated
-- "dates": ideal date nights, activities they enjoy together, dining preferences, adventure level, stay-in vs go-out
+TOPIC GUIDANCE — cover ALL of these areas. Go DEEP, not shallow:
+- "style": clothing style, aesthetic, fashion era preferences, pattern preferences (stripes, plaid, solid), seasonal wardrobe priorities, dress code comfort level, accessories (watches, jewelry, hats, bags), sunglasses style
+- "sizing": clothing sizes (tops, bottoms, shoes), fit preferences (slim, relaxed, oversized), body comfort areas, preferred fabric weights, ring size if applicable
+- "colors": favorite colors to wear, colors they avoid, neutral vs bold preference, seasonal color preferences, color in home decor vs clothing
+- "lifestyle": hobbies, free time, morning vs night person, travel style, social energy (introvert/extrovert), reading habits, music taste, podcast preferences, sports they follow, creative outlets
+- "gifting": gift preferences, wrapping importance, surprise vs planned, sentimental vs practical, price comfort, regifting feelings, gift cards opinion, experience vs physical, DIY gifts
+- "products": skincare routine, tech gadgets, home goods, kitchen tools, car preferences, subscription services, fragrance family, grooming essentials, workout gear
+- "brands": brand loyalty level, favorite clothing brands, favorite food/drink brands, luxury vs value, brand discovery (social media, friends, ads), stores they frequent
+- "love-language": primary love language, how they show affection, what makes them feel most loved, appreciation style, conflict resolution, quality time activities, physical affection comfort, words that matter
+- "dates": ideal date nights, adventure level, indoor vs outdoor, budget range for dates, frequency preference, spontaneous vs planned, restaurant preferences, activity dates (bowling, hiking, concerts), staycation vs travel, movie genre
+- "food": cuisine preferences, dietary restrictions, cooking skill/interest, comfort foods, food adventurousness, coffee/tea preferences, snack preferences, meal prep habits, restaurant discovery, cocktail/wine/beer preferences
+- "wellness": fitness routine, self-care habits, sleep preferences, stress relief methods, spa/massage preferences, mental health practices, supplements/vitamins, health goals
+- "home": interior style, room priorities, organization level, plant parent level, candle/scent preferences, bedding preferences, kitchen style, entertaining frequency, smart home interest, seasonal decorating
 
-FOCUS on GAPS. Do NOT repeat answered topics. Be specific and personal.
-If the user has answered basic style questions, go deeper (specific aesthetics, occasions, colors).
-If they've answered food basics, ask about specific cuisines, dining habits, cooking.
+CRITICAL: FOCUS on GAPS. Analyze what has already been answered and go DEEPER or cover NEW territory.
+- If basic style is covered, ask about specific occasions (work, date night, vacation wardrobe)
+- If food basics are covered, ask about cooking, specific cuisines, cocktail preferences
+- If lifestyle basics are done, ask about media consumption, social habits, bucket list items
+- Always think: "What would help a partner buy the PERFECT gift or plan the PERFECT date?"
 
-CRITICAL RULES:
+RULES:
 - All text plain English only. No unicode, emoji, or special characters.
 - Keep question titles short (5-10 words).
-- Keep subtitles one short sentence.
+- Keep subtitles one short engaging sentence.
 - Option labels 1-4 words, plain English only.
 - Each question ID must be unique kebab-case.
-- PERSONALIZE to user's gender. Do NOT show gender-inappropriate items.
-- Each category needs an image_prompt: a 1-sentence description for generating a lifestyle cover photo for that category card. Make it vivid and specific to the category topic.
+- PERSONALIZE to user's gender and age. Be contextually appropriate.
+- Each category needs an image_prompt: a vivid 1-sentence description for a warm, golden-hour lifestyle cover photo. No text in the image.
+- Make questions feel conversational and fun, not like a survey.
 
 Use the provided tool.`;
 
@@ -221,7 +227,7 @@ Use the provided tool.`;
                       properties: {
                         id: { type: "string", description: "unique kebab-case category id" },
                         name: { type: "string", description: "Display name, 2-4 words" },
-                        category: { type: "string", enum: ["style", "sizing", "colors", "lifestyle", "gifting", "products", "brands", "love-language", "dates"] },
+                        category: { type: "string", enum: ["style", "sizing", "colors", "lifestyle", "gifting", "products", "brands", "love-language", "dates", "food", "wellness", "home"] },
                         image_prompt: {
                           type: "string",
                           description: "One vivid sentence describing a lifestyle photo for this category's card cover. E.g. 'A curated flatlay of leather accessories and watches on warm wood'",

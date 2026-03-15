@@ -31,6 +31,8 @@ const SECTION_FILTERS: Record<string, string[]> = {
   "style-fit": ["style", "sizing", "colors"],
   shopping: ["products", "brands"],
   "lifestyle-gifts": ["lifestyle", "gifting", "love-language", "dates"],
+  "food-wellness": ["food", "wellness"],
+  "home-living": ["home"],
 };
 
 const SECTIONS = [
@@ -38,6 +40,8 @@ const SECTIONS = [
   { id: "style-fit", label: "Style & Fit" },
   { id: "shopping", label: "Shopping" },
   { id: "lifestyle-gifts", label: "Lifestyle & Gifts" },
+  { id: "food-wellness", label: "Food & Wellness" },
+  { id: "home-living", label: "Home" },
 ];
 
 const PLACEHOLDER_GRADIENTS: Record<string, string> = {
@@ -50,10 +54,13 @@ const PLACEHOLDER_GRADIENTS: Record<string, string> = {
   gifting: "linear-gradient(135deg, #d4543a 0%, #a84332 100%)",
   "love-language": "linear-gradient(135deg, #c9707d 0%, #a84332 100%)",
   dates: "linear-gradient(135deg, #d4a574 0%, #b5838d 100%)",
+  food: "linear-gradient(135deg, #c9a96e 0%, #a3b18a 100%)",
+  wellness: "linear-gradient(135deg, #a3b18a 0%, #6d9878 100%)",
+  home: "linear-gradient(135deg, #b5838d 0%, #d4a574 100%)",
 };
 
 const VALID_CATEGORY_TYPES = new Set([
-  "style", "sizing", "colors", "lifestyle", "gifting", "products", "brands", "love-language", "dates",
+  "style", "sizing", "colors", "lifestyle", "gifting", "products", "brands", "love-language", "dates", "food", "wellness", "home",
 ]);
 
 const toSafeString = (value: unknown) => (typeof value === "string" ? value.trim() : "");
