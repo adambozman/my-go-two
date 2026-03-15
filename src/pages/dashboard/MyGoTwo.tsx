@@ -310,7 +310,6 @@ const MyGoTwo = () => {
   const [groupNameInput, setGroupNameInput] = useState("");
   const [activeGroup, setActiveGroup] = useState("");
   const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
-  const [leafImage, setLeafImage] = useState<string>("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
 
   const defaultFieldValues = useMemo(() => {
@@ -427,7 +426,6 @@ const MyGoTwo = () => {
       setCardKey(key);
       setLeafSubtype(sc as unknown as SubtypeItem);
       setLeafSubcategoryName(coverFlowState?.name);
-      setLeafImage((sc as any).image || "");
       setActiveEntryIndex(0);
     }
   };
@@ -437,7 +435,6 @@ const MyGoTwo = () => {
     setCardKey(key);
     setLeafSubtype(subtype);
     setLeafSubcategoryName(subcategoryName);
-    setLeafImage((subtype as any).image || "");
     setActiveEntryIndex(0);
   };
 
@@ -445,12 +442,12 @@ const MyGoTwo = () => {
     ...entries.map((entry) => ({
       id: entry.id,
       label: entryNames[entry.id] || entry.entry_name,
-      image: leafImage || BRANDED_CARD_SVG,
+      image: BRANDED_CARD_SVG,
     })),
     {
       id: NEW_ENTRY_ID,
       label: entryNames[NEW_ENTRY_ID]?.trim() || "New Card",
-      image: leafImage || BRANDED_CARD_SVG,
+      image: BRANDED_CARD_SVG,
     },
   ];
 
