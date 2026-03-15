@@ -118,25 +118,28 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  // ── Add a spare photo to this category's bank ──
-  const addToBank = useCallback(async (photo: LocalPhoto) => {
-    setAddingToBank(photo.id);
+  // ── Add a spare photo to this category's bank (silently) ──
+  const addToBankOnly = useCallback(async (photo: LocalPhoto) => {
     try {
-      const { error } = await supabase
+      await supabase
         .from("category_bank_photos")
         .insert({ category_key: imageKey, image_url: photo.url, filename: photo.filename });
-      if (error) {
-        if (error.code === "23505") {
-          toast({ title: "Already added", description: "This photo is already in this category's bank" });
-        } else throw error;
-      } else {
-        toast({ title: "✓ Added to bank", description: label });
-        loadBankPhotos();
-      }
+    } catch { /* ignore duplicates */ }
+    loadBankPhotos();
+  }, [imageKey, loadBankPhotos]);
+
+  // ── Pick a spare photo: add to bank + set as card image ──
+  const pickSparePhoto = useCallback(async (photo: LocalPhoto) => {
+    setAddingToBank(photo.id);
+    try {
+      // Add to bank silently
+      addToBankOnly(photo);
+      // Set as card image
+      await savePhoto(photo.url, photo.id);
     } catch (e: any) {
       toast({ title: "Failed", description: e.message, variant: "destructive" });
     } finally { setAddingToBank(null); }
-  }, [imageKey, label, toast, loadBankPhotos]);
+  }, [addToBankOnly, savePhoto, toast]);
 
   // ── Remove a photo from this category's bank ──
   const removeFromBank = useCallback(async (photoId: string) => {
