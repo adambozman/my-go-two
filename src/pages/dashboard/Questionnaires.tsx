@@ -113,7 +113,7 @@ const Questionnaires = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<AICategory | null>(null);
-  const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
+  const [activeSection, setActiveSection] = useState("all");
 
   const fetchCategories = useCallback(async () => {
     if (!user) { setCategories([]); setLoading(false); return; }
