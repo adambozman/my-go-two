@@ -99,259 +99,10 @@ const EntryFormCard = ({
         <div style={{ position: "absolute", top: 10, right: 18, opacity: 0.12 }}>
           <span style={{ fontSize: 80, fontFamily: "'Cormorant Garamond', serif", color: "#fff", lineHeight: 1 }}>✦</span>
         </div>
-        {/* Entry name — hero text */}
-        <div style={{ position: "absolute", bottom: 20, left: 20, right: 20 }}>
-          <input
-            value={entryName}
-            onChange={(e) => onEntryNameChange(e.target.value)}
-            placeholder="Name this entry…"
-            style={{
-              width: "100%", background: "transparent", border: "none",
-              borderBottom: "1px solid rgba(255,255,255,0.35)",
-              padding: "4px 0 8px", fontSize: 22, fontWeight: 600,
-              color: "#fff", outline: "none",
-              fontFamily: "'Cormorant Garamond', serif", letterSpacing: "0.01em",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Curved panel rising from bottom */}
-      <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0, top: "36%",
-        background: "#efe0cf",
-        borderRadius: "28px 28px 0 0",
-        zIndex: 1,
-        display: "flex", flexDirection: "column",
-        padding: "20px 20px 16px",
-        boxShadow: "0 -8px 32px rgba(0,0,0,0.12)",
-      }}>
-        {/* Fields */}
-        <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", display: "flex", flexDirection: "column", gap: 0 }}>
-          {subtype.fields.map((field, i) => (
-            <div key={field.label} style={{
-              paddingBottom: 12,
-              marginBottom: 12,
-              borderBottom: i < subtype.fields.length - 1 ? "1px solid rgba(45,104,112,0.12)" : "none",
-            }}>
-              <p style={{ fontSize: 9, fontFamily: "'Jost', sans-serif", letterSpacing: "0.16em", textTransform: "uppercase", color: "#2d6870", marginBottom: 8, fontWeight: 700 }}>
-                {field.label}
-              </p>
-              {field.type === "select" && field.options ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {field.options.map((opt) => {
-                    const isSelected = values[field.label] === opt;
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", background: "#efe0cf", overflow: "hidden" }}>
-
-      {/* ── HEADER ── */}
-      <div style={{ padding: "22px 24px 16px", borderBottom: "1px solid rgba(45,104,112,0.15)" }}>
-        <p style={{ fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2d6870", fontFamily: "'Jost', sans-serif", fontWeight: 700, margin: "0 0 10px" }}>
-          {subcategoryName || subtype.name}
-        </p>
-        <input
-          value={entryName}
-          onChange={(e) => onEntryNameChange(e.target.value)}
-          placeholder="Name this entry"
-          style={{
-            width: "100%", background: "transparent", border: "none",
-            padding: "0 0 8px", fontSize: 28, fontWeight: 700,
-            color: "#1a1a1a", outline: "none",
-            fontFamily: "'Cormorant Garamond', serif", letterSpacing: "-0.01em",
-            borderBottom: "2px solid #2d6870",
-          }}
-        />
-        <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+        {/* Coral accent bar */}
+        <div style={{ position: "absolute", bottom: 60, left: 20, display: "flex", gap: 4 }}>
           <div style={{ height: 3, width: 36, background: "#d4543a", borderRadius: 2 }} />
-          <div style={{ height: 3, width: 12, background: "rgba(212,84,58,0.3)", borderRadius: 2 }} />
-        </div>
-      </div>
-
-      {/* ── FIELDS ── */}
-      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "16px 24px 0" }}>
-        {subtype.fields.map((field, i) => (
-          <div key={field.label} style={{
-            paddingBottom: 14, marginBottom: 14,
-            borderBottom: i < subtype.fields.length - 1 ? "1px solid rgba(45,104,112,0.12)" : "none",
-          }}>
-            <p style={{ fontSize: 9, fontFamily: "'Jost', sans-serif", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(45,104,112,0.75)", fontWeight: 700, margin: "0 0 8px" }}>
-              {field.label}
-            </p>
-            {field.type === "select" && field.options ? (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {field.options.map((opt) => {
-                  const isSelected = values[field.label] === opt;
-                  return (
-                    <button
-                      key={opt}
-                      onClick={() => onChange(field.label, isSelected ? "" : opt)}
-                      style={{
-                        padding: "5px 14px", borderRadius: 999, fontSize: 11,
-                        fontFamily: "'Jost', sans-serif", fontWeight: 600,
-                        border: isSelected ? "1.5px solid #2d6870" : "1px solid rgba(45,104,112,0.22)",
-                        background: isSelected ? "#2d6870" : "rgba(255,255,255,0.75)",
-                        color: isSelected ? "#fff" : "#2d6870",
-                        cursor: "pointer", transition: "all 0.15s",
-                        boxShadow: isSelected ? "0 2px 8px rgba(45,104,112,0.28)" : "none",
-                      }}
-                    >
-                      {opt}
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <input
-                value={values[field.label] || ""}
-                onChange={(e) => onChange(field.label, e.target.value)}
-                placeholder="—"
-                style={{
-                  width: "100%",
-                  background: "rgba(255,255,255,0.6)",
-                  border: "1px solid rgba(45,104,112,0.15)",
-                  borderRadius: 8,
-                  padding: "8px 12px", fontSize: 13, color: "#1a1a1a",
-                  outline: "none", fontFamily: "'Jost', sans-serif",
-                }}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* ── SAVE BAR ── */}
-      <div style={{ padding: "12px 24px 20px", borderTop: "1px solid rgba(45,104,112,0.12)" }}>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={onSave} disabled={saving}
-            style={{
-              flex: 1, height: 44, borderRadius: 12,
-              background: "#2d6870", border: "none",
-              color: "#fff", fontSize: 11, fontWeight: 700,
-              fontFamily: "'Jost', sans-serif", letterSpacing: "0.14em",
-              textTransform: "uppercase", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 16px rgba(45,104,112,0.35)",
-            }}
-          >
-            {saving ? <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" /> : "Save Entry"}
-          </button>
-          {isEditing && (
-            <button onClick={onDelete} style={{
-              width: 44, height: 44, borderRadius: 12,
-              background: "rgba(212,84,58,0.08)",
-              border: "1px solid rgba(212,84,58,0.25)",
-              display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-            }}>
-              <Trash2 style={{ width: 14, height: 14, color: "#d4543a" }} />
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Check, Plus, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useAuth } from "@/contexts/AuthContext";
-import { usePersonalization } from "@/contexts/PersonalizationContext";
-import { useTopBar } from "@/contexts/TopBarContext";
-import { useCategoryRegistry, type CategoryItem } from "@/hooks/useCategoryRegistry";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import GoTwoCoverFlow from "@/components/GoTwoCoverFlow";
-import TemplateCoverFlow, { type SubtypeItem, type SubcategoryGroup } from "@/components/TemplateCoverFlow";
-import FormCoverFlowCarousel from "@/components/ui/FormCoverFlowCarousel";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-
-const sectionLabels: Record<string, string> = {
-  "style-fit": "Style & Fit",
-  "food-drink": "Food & Drink",
-  "gifts-wishlist": "Gifts & Wishlist",
-  "home-living": "Home & Living",
-  "entertainment": "Entertainment & Interests",
-};
-
-const sectionOrder = ["style-fit", "food-drink", "gifts-wishlist", "home-living", "entertainment"];
-
-interface CoverFlowState {
-  name: string;
-  subtypes: SubtypeItem[];
-  subcategories?: SubcategoryGroup[];
-  section: string;
-  categoryId: string;
-}
-
-interface CardEntry {
-  id: string;
-  user_id: string;
-  card_key: string;
-  group_name: string;
-  entry_name: string;
-  field_values: Record<string, string>;
-  created_at: string;
-  updated_at: string;
-}
-
-const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
-const NEW_ENTRY_ID = "__new_entry__";
-
-const EntryFormCard = ({
-  subtype,
-  subcategoryName,
-  entryName,
-  values,
-  saving,
-  isEditing,
-  onEntryNameChange,
-  onChange,
-  onSave,
-  onDelete,
-}: {
-  subtype: SubtypeItem;
-  subcategoryName?: string;
-  entryName: string;
-  values: Record<string, string>;
-  saving: boolean;
-  isEditing: boolean;
-  onEntryNameChange: (name: string) => void;
-  onChange: (fieldLabel: string, value: string) => void;
-  onSave: () => void;
-  onDelete: () => void;
-}) => {
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
-      {/* Top 38% — image area with gradient fade into panel */}
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: "42%",
-        background: "linear-gradient(160deg, #1a3a3e 0%, #2d6870 60%, #3d8a96 100%)",
-        zIndex: 0,
-      }}>
-        {/* Subtle noise texture overlay */}
-        <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: "url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E")",
-          opacity: 0.4,
-        }} />
-        {/* Category label top-left */}
-        <div style={{ position: "absolute", top: 18, left: 20 }}>
-          <p style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", margin: 0 }}>
-            {subcategoryName || subtype.name}
-          </p>
-        </div>
-        {/* Large decorative number/icon top-right */}
-        <div style={{ position: "absolute", top: 10, right: 18, opacity: 0.12 }}>
-          <span style={{ fontSize: 80, fontFamily: "'Cormorant Garamond', serif", color: "#fff", lineHeight: 1 }}>✦</span>
+          <div style={{ height: 3, width: 12, background: "rgba(212,84,58,0.4)", borderRadius: 2 }} />
         </div>
         {/* Entry name — hero text */}
         <div style={{ position: "absolute", bottom: 20, left: 20, right: 20 }}>
@@ -361,10 +112,10 @@ const EntryFormCard = ({
             placeholder="Name this entry…"
             style={{
               width: "100%", background: "transparent", border: "none",
-              borderBottom: "1px solid rgba(255,255,255,0.35)",
-              padding: "4px 0 8px", fontSize: 22, fontWeight: 600,
+              borderBottom: "2px solid rgba(255,255,255,0.6)",
+              padding: "4px 0 10px", fontSize: 26, fontWeight: 700,
               color: "#fff", outline: "none",
-              fontFamily: "'Cormorant Garamond', serif", letterSpacing: "0.01em",
+              fontFamily: "'Cormorant Garamond', serif", letterSpacing: "-0.01em",
             }}
           />
         </div>
@@ -419,9 +170,10 @@ const EntryFormCard = ({
                   onChange={(e) => onChange(field.label, e.target.value)}
                   placeholder="—"
                   style={{
-                    width: "100%", background: "transparent",
-                    border: "none",
-                    padding: "2px 0", fontSize: 13, color: "#1a1a1a",
+                    width: "100%", background: "rgba(255,255,255,0.75)",
+                    border: "1px solid rgba(45,104,112,0.15)",
+                    borderRadius: 8,
+                    padding: "8px 12px", fontSize: 13, color: "#1a1a1a",
                     outline: "none", fontFamily: "'Jost', sans-serif",
                     fontWeight: 400,
                   }}
@@ -436,13 +188,13 @@ const EntryFormCard = ({
           <button
             onClick={onSave} disabled={saving}
             style={{
-              flex: 1, height: 42, borderRadius: 999,
-              background: "linear-gradient(135deg, #2d6870 0%, #1a4a52 100%)",
+              flex: 1, height: 44, borderRadius: 12,
+              background: "#2d6870",
               border: "none", color: "#fff", fontSize: 11, fontWeight: 700,
-              fontFamily: "'Jost', sans-serif", letterSpacing: "0.12em",
+              fontFamily: "'Jost', sans-serif", letterSpacing: "0.14em",
               textTransform: "uppercase", cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 16px rgba(45,104,112,0.4)",
+              boxShadow: "0 4px 20px rgba(45,104,112,0.5)",
             }}
           >
             {saving ? <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" /> : "Save"}
