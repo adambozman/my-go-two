@@ -35,6 +35,39 @@ export type Database = {
         }
         Relationships: []
       }
+      card_entries: {
+        Row: {
+          card_key: string
+          created_at: string
+          entry_name: string
+          field_values: Json
+          group_name: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_key: string
+          created_at?: string
+          entry_name: string
+          field_values?: Json
+          group_name: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_key?: string
+          created_at?: string
+          entry_name?: string
+          field_values?: Json
+          group_name?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       card_templates: {
         Row: {
           category: string
