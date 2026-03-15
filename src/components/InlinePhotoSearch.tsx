@@ -324,9 +324,25 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
           {tab === "bank" && (
             <div>
               {/* Category-specific photos */}
-              <p style={{ fontSize: 11, fontWeight: 600, color: "#2d6870", marginBottom: 6 }}>
-                Photos for "{label}"
-              </p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                <p style={{ fontSize: 11, fontWeight: 600, color: "#2d6870", margin: 0 }}>
+                  Photos for "{label}"
+                </p>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 4, padding: "3px 8px",
+                    borderRadius: 6, fontSize: 10, fontWeight: 600, cursor: "pointer",
+                    background: "rgba(45,104,112,0.08)", border: "1px solid rgba(45,104,112,0.2)",
+                    color: "#2d6870",
+                  }}
+                >
+                  {uploading ? <Loader2 style={{ width: 10, height: 10 }} className="animate-spin" /> : <Upload style={{ width: 10, height: 10 }} />}
+                  Upload
+                </button>
+                <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileUpload} style={{ display: "none" }} />
+              </div>
 
               {loadingBank ? (
                 <div style={{ display: "flex", justifyContent: "center", padding: "20px 0" }}>
