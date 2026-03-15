@@ -82,6 +82,7 @@ const EntryFormCard = ({
 }) => {
   return (
     <div style={{ width: "100%", height: "100%", background: "#f0e8d8", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <style>{`textarea::placeholder { color: rgba(26,26,26,0.25); }`}</style>
 
       {/* META */}
       <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px 0", flexShrink: 0 }}>
@@ -102,7 +103,7 @@ const EntryFormCard = ({
           rows={3}
           style={{
             flex: 1, background: "transparent", border: "none", outline: "none", resize: "none",
-            fontSize: 36, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.02em",
+            fontSize: 44, fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.02em",
             color: "#1a1a1a", fontFamily: "'Cormorant Garamond', serif", overflow: "hidden",
           }}
         />
