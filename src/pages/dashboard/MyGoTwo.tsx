@@ -331,12 +331,7 @@ const MyGoTwo = () => {
   }));
 
   const handleGroupSelect = (id: string) => {
-    if (id === "__new_group__") {
-      setNewName("");
-      setShowNameDialog("group");
-    } else {
-      setActiveGroup(id);
-    }
+    setActiveGroup(id);
   };
 
   const handleEntrySelect = (id: string) => {
