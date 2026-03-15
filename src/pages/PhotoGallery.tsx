@@ -408,9 +408,89 @@ export default function PhotoGallery() {
       {/* Spare Bank tab */}
       {activeTab === "Spare Bank" && (
         <div className="p-4 space-y-4">
+          {/* Upload button */}
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground cursor-pointer hover:opacity-90 transition-opacity">
+              <ImagePlus className="w-4 h-4" />
+              Upload Photos
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                className="hidden"
+                onChange={async (e) => {
+                  const files = e.target.files;
+                  if (!files || files.length === 0) return;
+                  let uploaded = 0;
+                  for (const file of Array.from(files)) {
+                    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+                    const nextNum = ALL_SPARE_PHOTOS.length + uploaded + 1;
+                    const filename = `spare-${String(nextNum).padStart(3, '0')}.${ext}`;
+                    const { error } = await supabase.storage
+                      .from("category-images")
+                      .upload(`spare/${filename}`, file, { contentType: file.type, upsert: true });
+                    if (error) {
+                      toast.error(`Failed to upload ${file.name}: ${error.message}`);
+                    } else {
+                      uploaded++;
+                    }
+                  }
+                  if (uploaded > 0) {
+                    toast.success(`Uploaded ${uploaded} photo${uploaded > 1 ? 's' : ''} — they'll appear after a rebuild. For now, use the camera icon on cards to assign images via Search or AI.`);
+                  }
+                  e.target.value = '';
+                }}
+              />
+            </label>
+            <span className="text-xs text-muted-foreground">
+              Upload .jpg/.png/.webp files to add to the spare bank
+            </span>
+          </div>
+
+          {ALL_SPARE_PHOTOS.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 gap-3 text-muted-foreground">
+              <ImagePlus className="w-12 h-12 opacity-30" />
+              <p>No spare photos yet — upload some or copy the prompt below.</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {Object.entries(SPARE_BY_KEY).sort(([a], [b]) => a.localeCompare(b)).map(([key, photos]) => {
+                const visiblePhotos = photos.filter(p => !isPathBlocked(p.path));
+                if (visiblePhotos.length === 0) return null;
+                return (
+                  <div key={key}>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">{key}</p>
+                    <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+                      {visiblePhotos.map(photo => (
+                        <div key={photo.path} className="flex flex-col gap-1 group">
+                          <div className="relative rounded-xl overflow-hidden" style={{ aspectRatio: "3/4" }}>
+                            <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                              <button
+                                onClick={async () => {
+                                  await addToBlocklist(photo.path);
+                                  setVersion(v => v + 1);
+                                  toast.success(`Deleted: ${photo.name}`);
+                                }}
+                                className="flex items-center gap-1 px-2 py-1 bg-red-600 text-white rounded-md text-[10px] font-medium"
+                              >
+                                <X className="w-3 h-3" /> Delete
+                              </button>
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground truncate">{photo.name}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {/* Lovable prompt */}
           <div className="p-4 rounded-xl border border-border bg-muted/30">
-            <p className="text-sm font-medium mb-2">Fill the spare bank</p>
+            <p className="text-sm font-medium mb-2">Fill the spare bank via Lovable</p>
             <p className="text-xs text-muted-foreground mb-2">Tell Lovable to download alternate photos for each image key. Name them <span className="font-mono bg-muted px-1 rounded">{"{image-key}-1.jpg"}</span>, <span className="font-mono bg-muted px-1 rounded">{"{image-key}-2.jpg"}</span> etc. into <span className="font-mono bg-muted px-1 rounded">src/assets/spare/</span></p>
             <button
               onClick={() => {
@@ -423,51 +503,6 @@ export default function PhotoGallery() {
               Copy Lovable Prompt
             </button>
           </div>
-
-          {ALL_SPARE_PHOTOS.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 gap-3 text-muted-foreground">
-              <ImagePlus className="w-12 h-12 opacity-30" />
-              <p>No spare photos yet — copy the prompt above and paste into Lovable.</p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {Object.entries(SPARE_BY_KEY).sort(([a], [b]) => a.localeCompare(b)).map(([key, photos]) => (
-                <div key={key}>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">{key}</p>
-                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
-                    {photos.filter(p => !isPathBlocked(p.path)).map(photo => (
-                      <div key={photo.path} className="flex flex-col gap-1 group">
-                        <div className="relative rounded-xl overflow-hidden" style={{ aspectRatio: "3/4" }}>
-                          <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                            <button
-                              onClick={async () => {
-                                await addToBlocklist(photo.path);
-                                setVersion(v => v + 1);
-                                toast.success(`Blocked spare: ${photo.name}`);
-                              }}
-                              className="flex items-center gap-1 px-2 py-1 bg-red-600 text-white rounded-md text-[10px] font-medium"
-                            >
-                              <X className="w-3 h-3" /> Delete
-                            </button>
-                          </div>
-                        </div>
-                        <p className="text-[10px] text-muted-foreground truncate">{photo.name}</p>
-                      </div>
-                    ))}
-                    {photos.filter(p => isPathBlocked(p.path)).map(photo => (
-                      <div key={photo.path} className="flex flex-col gap-1 opacity-40">
-                        <div className="rounded-xl overflow-hidden bg-muted flex items-center justify-center" style={{ aspectRatio: "3/4" }}>
-                          <span className="text-[10px] text-muted-foreground">Blocked</span>
-                        </div>
-                        <p className="text-[10px] text-muted-foreground truncate">{photo.name}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       )}
 
