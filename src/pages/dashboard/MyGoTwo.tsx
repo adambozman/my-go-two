@@ -254,10 +254,8 @@ const MyGoTwo = () => {
       setBackState({ label: editingEntry.entry_name, onBack: goBackFromField });
     } else if (fieldState && !editingEntry) {
       setBackState({ label: "New Entry", onBack: goBackFromField });
-    } else if (activeGroup && cardKey) {
-      setBackState({ label: activeGroup, onBack: goBackFromEntries });
     } else if (cardKey) {
-      setBackState({ label: leafSubtype?.name || "Groups", onBack: goBackFromGroups });
+      setBackState({ label: leafSubtype?.name || "Entries", onBack: goBackFromEntries });
     } else if (activeSubcategory && coverFlowState) {
       setBackState({ label: activeSubcategory.name, onBack: () => setActiveSubcategory(null) });
     } else if (coverFlowState) {
@@ -265,7 +263,7 @@ const MyGoTwo = () => {
     } else {
       setBackState(null);
     }
-  }, [coverFlowState, activeSubcategory, fieldState, cardKey, activeGroup, editingEntry, leafSubtype]);
+  }, [coverFlowState, activeSubcategory, fieldState, cardKey, editingEntry, leafSubtype]);
 
   const handleCategoryClick = (item: CategoryItem) => {
     if (scrollRef.current) {
