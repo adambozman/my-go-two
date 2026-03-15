@@ -155,22 +155,31 @@ const MyGoTwo = () => {
 
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
-  const [fieldState, setFieldState] = useState<FieldState | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const savedScrollTop = useRef(0);
 
-  // Multi-entry state
+  // Entry coverflow state
   const [cardKey, setCardKey] = useState<string | null>(null);
   const [entries, setEntries] = useState<CardEntry[]>([]);
-  const [editingEntry, setEditingEntry] = useState<CardEntry | null>(null);
-  const [showNameDialog, setShowNameDialog] = useState(false);
-  const [newName, setNewName] = useState("");
+  const [activeEntryIndex, setActiveEntryIndex] = useState(0);
+  const [entryDrafts, setEntryDrafts] = useState<Record<string, Record<string, string>>>({});
+  const [entryNames, setEntryNames] = useState<Record<string, string>>({});
+  const [showGroupDialog, setShowGroupDialog] = useState(false);
+  const [groupNameInput, setGroupNameInput] = useState("");
+  const [activeGroup, setActiveGroup] = useState("");
   const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
 
-  // Fetch entries when cardKey changes
+  const defaultFieldValues = useMemo(() => {
+    if (!leafSubtype) return {} as Record<string, string>;
+    return leafSubtype.fields.reduce(
+      (acc, field) => ({ ...acc, [field.label]: field.value || "" }),
+      {} as Record<string, string>
+    );
+  }, [leafSubtype]);
+
   const fetchEntries = useCallback(async () => {
     if (!user || !cardKey) return;
     const { data } = await supabase
@@ -179,6 +188,7 @@ const MyGoTwo = () => {
       .eq("user_id", user.id)
       .eq("card_key", cardKey)
       .order("created_at", { ascending: true });
+
     setEntries((data as CardEntry[]) || []);
   }, [user, cardKey]);
 
@@ -186,13 +196,36 @@ const MyGoTwo = () => {
     fetchEntries();
   }, [fetchEntries]);
 
+  useEffect(() => {
+    if (!leafSubtype || !cardKey) return;
+
+    const nextDrafts: Record<string, Record<string, string>> = {};
+    const nextNames: Record<string, string> = {};
+
+    entries.forEach((entry) => {
+      nextDrafts[entry.id] = (entry.field_values as Record<string, string>) || {};
+      nextNames[entry.id] = entry.entry_name;
+    });
+
+    nextDrafts[NEW_ENTRY_ID] = defaultFieldValues;
+    nextNames[NEW_ENTRY_ID] = "";
+
+    setEntryDrafts(nextDrafts);
+    setEntryNames(nextNames);
+    setActiveEntryIndex((prev) => Math.min(prev, entries.length));
+
+    if (!activeGroup) {
+      setActiveGroup(leafSubtype.name);
+    }
+  }, [entries, leafSubtype, defaultFieldValues, cardKey, activeGroup]);
+
   const clearCoverFlow = () => {
     setCoverFlowState(null);
     setActiveSubcategory(null);
     setCardKey(null);
-    setEditingEntry(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
+    setActiveEntryIndex(0);
     requestAnimationFrame(() => {
       if (scrollRef.current) {
         scrollRef.current.scrollTop = savedScrollTop.current;
@@ -200,27 +233,18 @@ const MyGoTwo = () => {
     });
   };
 
-  const goBackFromField = () => {
-    setFieldState(null);
-    setEditingEntry(null);
-  };
-
   const goBackFromEntries = () => {
     setCardKey(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
+    setActiveEntryIndex(0);
     if (activeSubcategory && (!activeSubcategory.products || activeSubcategory.products.length === 0)) {
       setActiveSubcategory(null);
     }
   };
 
-  // Back button wiring
   useEffect(() => {
-    if (fieldState && editingEntry) {
-      setBackState({ label: editingEntry.entry_name, onBack: goBackFromField });
-    } else if (fieldState && !editingEntry) {
-      setBackState({ label: "New Entry", onBack: goBackFromField });
-    } else if (cardKey) {
+    if (cardKey) {
       setBackState({ label: leafSubtype?.name || "Entries", onBack: goBackFromEntries });
     } else if (activeSubcategory && coverFlowState) {
       setBackState({ label: activeSubcategory.name, onBack: () => setActiveSubcategory(null) });
@@ -229,7 +253,7 @@ const MyGoTwo = () => {
     } else {
       setBackState(null);
     }
-  }, [coverFlowState, activeSubcategory, fieldState, cardKey, editingEntry, leafSubtype]);
+  }, [coverFlowState, activeSubcategory, cardKey, leafSubtype]);
 
   const handleCategoryClick = (item: CategoryItem) => {
     if (scrollRef.current) {
@@ -246,7 +270,10 @@ const MyGoTwo = () => {
     for (const sectionKey of sectionOrder) {
       const items = sections[sectionKey] || [];
       const item = items.find((c) => c.key === categoryKey);
-      if (item) { handleCategoryClick(item); return; }
+      if (item) {
+        handleCategoryClick(item);
+        return;
+      }
     }
   };
 
@@ -254,89 +281,88 @@ const MyGoTwo = () => {
     if (sc.products && sc.products.length > 0) {
       setActiveSubcategory(sc);
     } else {
-      // Subcategory IS the leaf — go to entries coverflow
       setActiveSubcategory(sc);
       const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
       setCardKey(key);
       setLeafSubtype(sc as unknown as SubtypeItem);
       setLeafSubcategoryName(coverFlowState?.name);
+      setActiveEntryIndex(0);
     }
   };
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
-    // Go to entries coverflow
     const key = `${coverFlowState?.name}__${subcategoryName || ""}__${subtype.name}`;
     setCardKey(key);
     setLeafSubtype(subtype);
     setLeafSubcategoryName(subcategoryName);
+    setActiveEntryIndex(0);
   };
 
-  // Group coverflow items
-  const distinctGroups = [...new Set(entries.map(e => e.group_name))];
-  const groupCoverFlowItems = distinctGroups.map(g => ({
-    id: g,
-    label: g,
-    image: BRANDED_CARD_SVG,
-  }));
+  const entryCoverFlowItems = [
+    ...entries.map((entry) => ({
+      id: entry.id,
+      label: entryNames[entry.id] || entry.entry_name,
+      image: BRANDED_CARD_SVG,
+    })),
+    {
+      id: NEW_ENTRY_ID,
+      label: entryNames[NEW_ENTRY_ID]?.trim() || "New Card",
+      image: BRANDED_CARD_SVG,
+    },
+  ];
 
-  // Entry coverflow items — flat, no groups
-  const entryCoverFlowItems = entries.map(e => ({
-    id: e.id,
-    label: e.entry_name,
-    image: BRANDED_CARD_SVG,
-  }));
-
-  const handleEntrySelect = (id: string) => {
-    const entry = entries.find(e => e.id === id);
-    if (entry && leafSubtype) {
-      setEditingEntry(entry);
-      setFieldState({
-        subtype: leafSubtype,
-        subcategoryName: leafSubcategoryName,
-        values: (entry.field_values as Record<string, string>) || {},
-      });
-    }
+  const handleNameChange = (itemId: string, value: string) => {
+    setEntryNames((prev) => ({ ...prev, [itemId]: value }));
   };
 
-  const handleCreateEntry = () => {
-    if (!newName.trim() || !leafSubtype) return;
-    setShowNameDialog(false);
-    setEditingEntry({ entry_name: newName.trim() } as any);
-    setFieldState({
-      subtype: leafSubtype,
-      subcategoryName: leafSubcategoryName,
-      values: leafSubtype.fields.reduce((acc, f) => ({ ...acc, [f.label]: (f as any).value || "" }), {} as Record<string, string>),
-    });
+  const handleFieldChange = (itemId: string, fieldLabel: string, value: string) => {
+    setEntryDrafts((prev) => ({
+      ...prev,
+      [itemId]: {
+        ...(prev[itemId] || {}),
+        [fieldLabel]: value,
+      },
+    }));
   };
 
-  const handleSave = async (values: Record<string, string>) => {
-    if (!user || !cardKey) return;
+  const handleSaveEntry = async (itemId: string) => {
+    if (!user || !cardKey || !leafSubtype) return;
+
+    const entryName = (entryNames[itemId] || "").trim() || `${leafSubtype.name} ${entries.length + 1}`;
+    const fieldValues = entryDrafts[itemId] || defaultFieldValues;
+
     setSaving(true);
     try {
-      if (editingEntry?.id) {
-        const { error } = await supabase
-          .from("card_entries")
-          .update({ field_values: values })
-          .eq("id", editingEntry.id);
-        if (error) throw error;
-        toast({ title: "Updated!", description: `${editingEntry.entry_name} saved.` });
-      } else {
-        const entryName = editingEntry?.entry_name || "Untitled";
-        const { error } = await supabase
+      if (itemId === NEW_ENTRY_ID) {
+        const { data, error } = await supabase
           .from("card_entries")
           .insert({
             user_id: user.id,
             card_key: cardKey,
-            group_name: leafSubtype?.name || "",
+            group_name: activeGroup || leafSubtype.name,
             entry_name: entryName,
-            field_values: values,
-          });
+            field_values: fieldValues,
+          })
+          .select("*")
+          .single();
+
         if (error) throw error;
+
+        const inserted = data as CardEntry;
+        setEntries((prev) => [...prev, inserted]);
+        setActiveEntryIndex(entries.length);
         toast({ title: "Saved!", description: `${entryName} created.` });
+      } else {
+        const { error } = await supabase
+          .from("card_entries")
+          .update({ entry_name: entryName, field_values: fieldValues })
+          .eq("id", itemId);
+
+        if (error) throw error;
+
+        setEntries((prev) => prev.map((entry) => (entry.id === itemId ? { ...entry, entry_name: entryName, field_values: fieldValues } : entry)));
+        toast({ title: "Updated!", description: `${entryName} saved.` });
       }
-      setFieldState(null);
-      setEditingEntry(null);
-      await fetchEntries();
     } catch (e: any) {
       toast({ title: "Error saving", description: e.message, variant: "destructive" });
     } finally {
@@ -344,24 +370,30 @@ const MyGoTwo = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!editingEntry?.id) return;
+  const handleDeleteEntry = async (itemId: string) => {
+    if (!itemId || itemId === NEW_ENTRY_ID) return;
+
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("card_entries")
-        .delete()
-        .eq("id", editingEntry.id);
+      const { error } = await supabase.from("card_entries").delete().eq("id", itemId);
       if (error) throw error;
-      toast({ title: "Deleted", description: `${editingEntry.entry_name} removed.` });
-      setFieldState(null);
-      setEditingEntry(null);
-      await fetchEntries();
+
+      setEntries((prev) => prev.filter((entry) => entry.id !== itemId));
+      setActiveEntryIndex(0);
+      toast({ title: "Deleted", description: "Entry removed." });
     } catch (e: any) {
       toast({ title: "Error deleting", description: e.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleCreateGroup = () => {
+    if (!groupNameInput.trim()) return;
+    setActiveGroup(groupNameInput.trim());
+    setShowGroupDialog(false);
+    setGroupNameInput("");
+    toast({ title: "Group selected", description: `New cards will save under ${groupNameInput.trim()}.` });
   };
 
   if (registryLoading || genderLoading) {
