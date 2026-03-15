@@ -23,12 +23,13 @@ import {
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
   "food-drink": "Food & Drink",
+  "personal": "Personal",
   "gifts-wishlist": "Gifts & Wishlist",
   "home-living": "Home & Living",
   "entertainment": "Entertainment & Interests",
 };
 
-const sectionOrder = ["style-fit", "food-drink", "gifts-wishlist", "home-living", "entertainment"];
+const sectionOrder = ["style-fit", "food-drink", "personal", "gifts-wishlist", "home-living", "entertainment"];
 
 interface CoverFlowState {
   name: string;
