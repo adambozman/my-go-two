@@ -259,13 +259,33 @@ export default function PhotoGallery() {
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletedKeys, setDeletedKeys] = useState<Set<string>>(new Set());
-  const [deletedPaths, setDeletedPaths] = useState<Map<string, string>>(new Map()); // key -> path
+  const [deletedPaths, setDeletedPaths] = useState<Map<string, string>>(new Map());
   const [version, setVersion] = useState(0);
   const [pickerSlot, setPickerSlot] = useState<ImageSlot | null>(null);
+  // Uploaded photos from Supabase storage (not in the build)
+  const [uploadedPhotos, setUploadedPhotos] = useState<{ path: string; url: string; name: string }[]>([]);
 
   useEffect(() => {
     initBlocklist().then(() => setVersion(v => v + 1));
   }, []);
+
+  // Load uploaded spare photos from Supabase storage
+  const loadUploadedPhotos = useCallback(async () => {
+    const { data: files, error } = await supabase.storage.from("category-images").list("spare", { limit: 500 });
+    if (error || !files) return;
+    const photos = files
+      .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f.name))
+      .map(f => {
+        const { data: urlData } = supabase.storage.from("category-images").getPublicUrl(`spare/${f.name}`);
+        const name = f.name.replace(/\.[^.]+$/, "");
+        return { path: `storage:spare/${f.name}`, url: urlData.publicUrl, name };
+      });
+    setUploadedPhotos(photos);
+  }, []);
+
+  useEffect(() => {
+    loadUploadedPhotos();
+  }, [loadUploadedPhotos, version]);
 
   useEffect(() => {
     const map: Record<TabName, Gender> = { "Male": "male", "Female": "female", "Non-Binary": "non-binary", "Spare Bank": "male" };
@@ -424,7 +444,7 @@ export default function PhotoGallery() {
                   let uploaded = 0;
                   for (const file of Array.from(files)) {
                     const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-                    const nextNum = ALL_SPARE_PHOTOS.length + uploaded + 1;
+                    const nextNum = ALL_SPARE_PHOTOS.length + uploadedPhotos.length + uploaded + 1;
                     const filename = `spare-${String(nextNum).padStart(3, '0')}.${ext}`;
                     const { error } = await supabase.storage
                       .from("category-images")
@@ -436,7 +456,8 @@ export default function PhotoGallery() {
                     }
                   }
                   if (uploaded > 0) {
-                    toast.success(`Uploaded ${uploaded} photo${uploaded > 1 ? 's' : ''} — they'll appear after a rebuild. For now, use the camera icon on cards to assign images via Search or AI.`);
+                    toast.success(`Uploaded ${uploaded} photo${uploaded > 1 ? 's' : ''}`);
+                    await loadUploadedPhotos();
                   }
                   e.target.value = '';
                 }}
@@ -447,7 +468,39 @@ export default function PhotoGallery() {
             </span>
           </div>
 
-          {ALL_SPARE_PHOTOS.length === 0 ? (
+          {/* Uploaded photos from storage */}
+          {uploadedPhotos.filter(p => !isPathBlocked(p.path)).length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Uploaded Photos</p>
+              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+                {uploadedPhotos.filter(p => !isPathBlocked(p.path)).map(photo => (
+                  <div key={photo.path} className="flex flex-col gap-1 group">
+                    <div className="relative rounded-xl overflow-hidden" style={{ aspectRatio: "3/4" }}>
+                      <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <button
+                          onClick={async () => {
+                            // Delete from storage and blocklist it
+                            await supabase.storage.from("category-images").remove([`spare/${photo.name}.${photo.url.split('.').pop()}`]);
+                            await addToBlocklist(photo.path);
+                            await loadUploadedPhotos();
+                            toast.success(`Deleted: ${photo.name}`);
+                          }}
+                          className="flex items-center gap-1 px-2 py-1 bg-red-600 text-white rounded-md text-[10px] font-medium"
+                        >
+                          <X className="w-3 h-3" /> Delete
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground truncate">{photo.name}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Static spare photos from build */}
+          {ALL_SPARE_PHOTOS.filter(p => !isPathBlocked(p.path)).length === 0 && uploadedPhotos.filter(p => !isPathBlocked(p.path)).length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 gap-3 text-muted-foreground">
               <ImagePlus className="w-12 h-12 opacity-30" />
               <p>No spare photos yet — upload some or copy the prompt below.</p>
