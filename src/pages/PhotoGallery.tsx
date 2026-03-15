@@ -260,6 +260,13 @@ export default function PhotoGallery() {
     initBlocklist().then(() => setVersion(v => v + 1));
   }, []);
 
+  // Re-fetch when images change (e.g. set via coverflow card)
+  useEffect(() => {
+    const handler = () => setVersion(v => v + 1);
+    window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
+  }, []);
+
   // Load uploaded spare photos from Supabase storage
   const loadUploadedPhotos = useCallback(async () => {
     const { data: files, error } = await supabase.storage.from("category-images").list("spare", { limit: 500 });
