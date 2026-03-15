@@ -80,54 +80,53 @@ const EntryFormCard = ({
   onSave: () => void;
   onDelete: () => void;
 }) => {
+}) => {
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
   const fs = isDesktop ? 1.8 : 1;
 
   return (
-    <div style={{ width: "100%", height: "100%", background: "#f0e8d8", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ width: "100%", height: "100%", background: "#f0e8d8", display: "flex", flexDirection: "column", overflow: "hidden", fontFamily: "'Jost', sans-serif" }}>
 
-      {/* ── TOP META ROW ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: `${16*fs}px ${20*fs}px ${8*fs}px`, flexShrink: 0 }}>
-        <span style={{ fontSize: 7*fs, letterSpacing: "0.22em", textTransform: "uppercase", color: "#d4543a", fontFamily: "'Jost', sans-serif", fontWeight: 700 }}>
-          {subcategoryName || subtype.name}
+      {/* ── TOP META ── */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: `${14*fs}px ${18*fs}px ${6*fs}px`, flexShrink: 0 }}>
+        <span style={{ fontSize: 7*fs, letterSpacing: "0.2em", textTransform: "uppercase", color: "#d4543a", fontWeight: 700 }}>
+          {subcategoryName ? `${subcategoryName} · ${subtype.name}` : subtype.name}
         </span>
-        <span style={{ fontSize: 9*fs, fontFamily: "'Cormorant Garamond', serif", color: "rgba(26,26,26,0.25)", fontStyle: "italic" }}>
+        <span style={{ fontSize: 8*fs, color: "rgba(26,26,26,0.25)", fontStyle: "italic", fontFamily: "'Cormorant Garamond', serif" }}>
           {isEditing ? "edit" : "new"}
         </span>
       </div>
 
-      {/* ── TITLE ROW: large serif + tall photo box ── */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 14*fs, padding: `0 ${20*fs}px ${10*fs}px`, flexShrink: 0 }}>
-        <div style={{ flex: 1 }}>
-          <input
-            value={entryName}
-            onChange={(e) => onEntryNameChange(e.target.value)}
-            placeholder="Name this entry"
-            style={{
-              width: "100%", background: "transparent", border: "none",
-              fontSize: 28*fs, fontWeight: 700, color: "#1a1a1a", outline: "none",
-              fontFamily: "'Cormorant Garamond', serif", letterSpacing: "-0.02em", lineHeight: 1.0,
-            }}
-          />
-          <div style={{ display: "flex", gap: 3*fs, marginTop: 8*fs }}>
-            <div style={{ height: 2*fs, width: 28*fs, background: "#d4543a", borderRadius: 1 }} />
-            <div style={{ height: 2*fs, width: 10*fs, background: "rgba(212,84,58,0.3)", borderRadius: 1 }} />
-          </div>
-        </div>
-        {/* Tall photo box */}
-        <div style={{ width: 80*fs, height: 100*fs, borderRadius: 10*fs, background: "#c8bfb4", flexShrink: 0, overflow: "hidden" }} />
+      {/* ── TITLE + PHOTO BOX ── */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: `0 ${18*fs}px ${8*fs}px`, flexShrink: 0 }}>
+        <input
+          value={entryName}
+          onChange={(e) => onEntryNameChange(e.target.value)}
+          placeholder="Classic Crew-Neck"
+          style={{
+            flex: 1, background: "transparent", border: "none", outline: "none",
+            fontSize: 32*fs, fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.02em",
+            color: "#1a1a1a", fontFamily: "'Cormorant Garamond', serif",
+          }}
+        />
+        <div style={{ width: 72*fs, height: 88*fs, borderRadius: 8*fs, background: "#c8bfb4", flexShrink: 0, marginLeft: 12*fs, marginTop: 4*fs, overflow: "hidden" }} />
       </div>
 
-      {/* ── FULL RULE ── */}
-      <div style={{ height: 1, background: "#1a1a1a", margin: `0 ${20*fs}px ${10*fs}px`, flexShrink: 0 }} />
+      {/* Coral accent */}
+      <div style={{ display: "flex", gap: 3*fs, padding: `0 ${18*fs}px`, marginBottom: 12*fs, flexShrink: 0 }}>
+        <div style={{ height: 2.5*fs, width: 28*fs, background: "#d4543a", borderRadius: 1 }} />
+        <div style={{ height: 2.5*fs, width: 10*fs, background: "rgba(212,84,58,0.3)", borderRadius: 1 }} />
+      </div>
 
       {/* ── FIELDS ── */}
-      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: `0 ${20*fs}px` }}>
+      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: `0 ${18*fs}px` }}>
         {subtype.fields.map((field, i) => (
-          <div key={field.label} style={{ paddingBottom: 10*fs, marginBottom: 10*fs, borderBottom: i < subtype.fields.length - 1 ? "1px solid rgba(26,26,26,0.1)" : "none" }}>
-            <p style={{ fontSize: 7*fs, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(26,26,26,0.38)", fontWeight: 700, margin: `0 0 ${6*fs}px`, fontFamily: "'Jost', sans-serif" }}>
+          <div key={field.label} style={{ marginBottom: 14*fs, paddingBottom: 14*fs, borderBottom: i < subtype.fields.length - 1 ? `1px solid rgba(26,26,26,0.1)` : "none" }}>
+
+            <p style={{ fontSize: 7*fs, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(26,26,26,0.38)", fontWeight: 700, margin: `0 0 ${7*fs}px` }}>
               {field.label}
             </p>
+
             {field.type === "select" && field.options ? (
               <div style={{ display: "flex", flexWrap: "wrap", gap: 5*fs }}>
                 {field.options.map((opt) => {
@@ -137,12 +136,12 @@ const EntryFormCard = ({
                       key={opt}
                       onClick={() => onChange(field.label, isSelected ? "" : opt)}
                       style={{
-                        padding: `${3*fs}px ${10*fs}px`, borderRadius: 999, fontSize: 9*fs,
-                        fontFamily: "'Jost', sans-serif", fontWeight: 500,
-                        border: isSelected ? "1.5px solid #d4543a" : "1px solid rgba(26,26,26,0.15)",
+                        padding: `${4*fs}px ${12*fs}px`, borderRadius: 999,
+                        fontSize: 10*fs, fontWeight: 500, cursor: "pointer", transition: "all 0.15s",
+                        border: isSelected ? "1.5px solid #d4543a" : `1px solid rgba(26,26,26,0.18)`,
                         background: isSelected ? "#d4543a" : "transparent",
                         color: isSelected ? "#fff" : "#1a1a1a",
-                        cursor: "pointer", transition: "all 0.15s",
+                        fontFamily: "'Jost', sans-serif",
                       }}
                     >
                       {opt}
@@ -151,44 +150,72 @@ const EntryFormCard = ({
                 })}
               </div>
             ) : (
-              <input
-                value={values[field.label] || ""}
-                onChange={(e) => onChange(field.label, e.target.value)}
-                placeholder="—"
-                style={{
-                  width: "100%", background: "transparent", border: "none",
-                  borderBottom: "1px solid rgba(26,26,26,0.08)",
-                  padding: `${4*fs}px 0`, fontSize: 11*fs, color: "#1a1a1a",
-                  outline: "none", fontFamily: "'Jost', sans-serif",
-                }}
-              />
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 5*fs, alignItems: "center" }}>
+                {(values[field.label] || "").split(",").filter(t => t.trim()).map((tag, ti) => (
+                  <span
+                    key={ti}
+                    onClick={() => {
+                      const tags = (values[field.label] || "").split(",").filter(t => t.trim());
+                      tags.splice(ti, 1);
+                      onChange(field.label, tags.join(", "));
+                    }}
+                    style={{
+                      padding: `${3*fs}px ${10*fs}px`, borderRadius: 4*fs, fontSize: 10*fs,
+                      background: field.label.toLowerCase().includes("brand") ? "rgba(45,104,112,0.12)" : "rgba(26,26,26,0.07)",
+                      color: field.label.toLowerCase().includes("brand") ? "#2d6870" : "#1a1a1a",
+                      fontWeight: field.label.toLowerCase().includes("brand") ? 600 : 400,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {tag.trim()}
+                  </span>
+                ))}
+                <input
+                  placeholder="+ add"
+                  style={{
+                    background: "transparent", border: "none", outline: "none",
+                    fontSize: 10*fs, color: "rgba(26,26,26,0.35)", fontFamily: "'Jost', sans-serif",
+                    width: 50*fs, cursor: "text",
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === ",") {
+                      e.preventDefault();
+                      const val = (e.target as HTMLInputElement).value.trim();
+                      if (val) {
+                        const existing = (values[field.label] || "").split(",").filter(t => t.trim());
+                        onChange(field.label, [...existing, val].join(", "));
+                        (e.target as HTMLInputElement).value = "";
+                      }
+                    }
+                  }}
+                />
+              </div>
             )}
           </div>
         ))}
       </div>
 
       {/* ── SAVE BAR ── */}
-      <div style={{ flexShrink: 0 }}>
-        <div style={{ height: 1, background: "#1a1a1a", margin: `${8*fs}px ${20*fs}px ${12*fs}px` }} />
-        <div style={{ display: "flex", gap: 8*fs, padding: `0 ${20*fs}px ${18*fs}px` }}>
+      <div style={{ flexShrink: 0, padding: `${8*fs}px ${18*fs}px ${18*fs}px` }}>
+        <div style={{ height: 1.5, background: "#1a1a1a", marginBottom: 12*fs }} />
+        <div style={{ display: "flex", gap: 8*fs }}>
           <button
             onClick={onSave} disabled={saving}
             style={{
-              flex: 1, height: 38*fs, borderRadius: 6*fs,
+              flex: 1, height: 42*fs, borderRadius: 8*fs,
               background: "#1a1a1a", border: "none",
-              color: "#f0e8d8", fontSize: 8.5*fs, fontWeight: 700,
+              color: "#f0e8d8", fontSize: 9*fs, fontWeight: 700,
               fontFamily: "'Jost', sans-serif", letterSpacing: "0.18em",
               textTransform: "uppercase", cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}
           >
-            {saving ? <Loader2 style={{ width: 12*fs, height: 12*fs }} className="animate-spin" /> : "Save Entry"}
+            {saving ? <Loader2 style={{ width: 13*fs, height: 13*fs }} className="animate-spin" /> : "Save Entry"}
           </button>
           {isEditing && (
             <button onClick={onDelete} style={{
-              width: 38*fs, height: 38*fs, borderRadius: 6*fs,
-              background: "rgba(212,84,58,0.08)",
-              border: "1px solid rgba(212,84,58,0.25)",
+              width: 42*fs, height: 42*fs, borderRadius: 8*fs,
+              background: "rgba(212,84,58,0.08)", border: "1px solid rgba(212,84,58,0.25)",
               display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
             }}>
               <Trash2 style={{ width: 13*fs, height: 13*fs, color: "#d4543a" }} />
@@ -199,7 +226,6 @@ const EntryFormCard = ({
     </div>
   );
 };
-
 
 // ── Main Page ──
 const MyGoTwo = () => {
