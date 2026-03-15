@@ -221,7 +221,7 @@ Use the provided tool.`;
                       properties: {
                         id: { type: "string", description: "unique kebab-case category id" },
                         name: { type: "string", description: "Display name, 2-4 words" },
-                        category: { type: "string", enum: ["style", "sizing", "lifestyle", "gifting", "products"] },
+                        category: { type: "string", enum: ["style", "sizing", "colors", "lifestyle", "gifting", "products", "brands", "love-language", "dates"] },
                         image_prompt: {
                           type: "string",
                           description: "One vivid sentence describing a lifestyle photo for this category's card cover. E.g. 'A curated flatlay of leather accessories and watches on warm wood'",
