@@ -115,26 +115,29 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                   >
                     <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
                     {isActive && (
-                      <div className="absolute bottom-6 left-6">
-                        <span
-                          style={{
-                            fontFamily: "'Cormorant Garamond', serif",
-                            fontSize: 20,
-                            letterSpacing: "0.02em",
-                            fontWeight: 600,
-                            color: "#2d6870",
-                            background: "rgba(255,255,255,0.18)",
-                            borderRadius: 999,
-                            backdropFilter: "blur(12px)",
-                            WebkitBackdropFilter: "blur(12px)",
-                            border: "1px solid rgba(255,255,255,0.35)",
-                            padding: "8px 20px",
-                            display: "inline-block",
-                          }}
-                        >
-                          {item.label}
-                        </span>
-                      </div>
+                      <>
+                        <div className="absolute bottom-6 left-6">
+                          <span
+                            style={{
+                              fontFamily: "'Cormorant Garamond', serif",
+                              fontSize: 20,
+                              letterSpacing: "0.02em",
+                              fontWeight: 600,
+                              color: "#2d6870",
+                              background: "rgba(255,255,255,0.18)",
+                              borderRadius: 999,
+                              backdropFilter: "blur(12px)",
+                              WebkitBackdropFilter: "blur(12px)",
+                              border: "1px solid rgba(255,255,255,0.35)",
+                              padding: "8px 20px",
+                              display: "inline-block",
+                            }}
+                          >
+                            {item.label}
+                          </span>
+                        </div>
+                        <InlinePhotoSearch imageKey={item.id} label={item.label} onImageChanged={forceUpdate} />
+                      </>
                     )}
                   </motion.div>
                 );
