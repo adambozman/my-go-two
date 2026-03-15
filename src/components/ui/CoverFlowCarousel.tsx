@@ -3,11 +3,13 @@ import { motion } from "framer-motion";
 import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import GoTwoCard from "@/components/ui/GoTwoCard";
 import InlinePhotoSearch from "@/components/InlinePhotoSearch";
+import { getOverride, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 
 export interface CoverFlowItem {
   id: string;
   label: string;
   image: string;
+  imageKey?: string;
 }
 
 interface CoverFlowCarouselProps {
@@ -47,6 +49,14 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
   ({ items, onSelect }, ref) => {
     const [activeIndex, setActiveIndex] = useState(0);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
+    const [, forceImages] = useReducer(x => x + 1, 0);
+
+    // Re-render when any image override changes
+    useEffect(() => {
+      const handler = () => forceImages();
+      window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
+      return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
+    }, []);
     const layout = useLayout();
     const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
     const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
@@ -114,7 +124,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                     }}
                   >
                     <div className="w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
-                      <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
+                      <img src={item.imageKey ? (getOverride(item.imageKey) ?? item.image) : item.image} alt={item.label} className="w-full h-full object-cover" />
                     </div>
                     {isActive && (
                       <>
