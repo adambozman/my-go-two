@@ -427,8 +427,8 @@ const MyGoTwo = () => {
       );
     }
 
-    // Level 5: Entry coverflow within a group
-    if (activeGroup && cardKey) {
+    // Entries coverflow
+    if (cardKey) {
       return (
         <motion.div
           key="entry-coverflow"
@@ -445,7 +445,7 @@ const MyGoTwo = () => {
             />
           ) : (
             <p
-              className="text-center mb-8"
+              className="text-center mb-4"
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: 20,
@@ -458,7 +458,7 @@ const MyGoTwo = () => {
             </p>
           )}
           <button
-            onClick={() => { setNewName(""); setShowNameDialog("entry"); }}
+            onClick={() => { setNewName(""); setShowNameDialog(true); }}
             className="mt-8 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
             style={{
               padding: "12px 28px",
@@ -473,59 +473,7 @@ const MyGoTwo = () => {
             }}
           >
             <Plus className="w-4 h-4" />
-            New Entry
-          </button>
-        </motion.div>
-      );
-    }
-
-    // Level 4: Group coverflow
-    if (cardKey) {
-      return (
-        <motion.div
-          key="group-coverflow"
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -40 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="h-full flex flex-col items-center justify-center"
-        >
-          {groupCoverFlowItems.length > 0 ? (
-            <CoverFlowCarousel
-              items={groupCoverFlowItems}
-              onSelect={handleGroupSelect}
-            />
-          ) : (
-            <p
-              className="text-center mb-8"
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 20,
-                fontStyle: "italic",
-                color: "var(--swatch-teal)",
-                opacity: 0.6,
-              }}
-            >
-              No groups yet
-            </p>
-          )}
-          <button
-            onClick={() => { setNewName(""); setShowNameDialog("group"); }}
-            className="mt-8 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
-            style={{
-              padding: "12px 28px",
-              borderRadius: 999,
-              fontFamily: "'Jost', sans-serif",
-              fontSize: 14,
-              fontWeight: 600,
-              letterSpacing: "0.06em",
-              color: "#fff",
-              background: "var(--swatch-cedar-grove)",
-              boxShadow: "0 4px 16px rgba(212,84,58,0.25)",
-            }}
-          >
-            <Plus className="w-4 h-4" />
-            New Group
+            Add New
           </button>
         </motion.div>
       );
