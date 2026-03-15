@@ -288,7 +288,7 @@ const MyGoTwo = () => {
     if (sc.products && sc.products.length > 0) {
       setActiveSubcategory(sc);
     } else {
-      // Subcategory IS the leaf — go to groups coverflow
+      // Subcategory IS the leaf — go to entries coverflow
       setActiveSubcategory(sc);
       const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
       setCardKey(key);
@@ -298,7 +298,7 @@ const MyGoTwo = () => {
   };
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
-    // Instead of opening FieldForm directly, go to groups coverflow
+    // Go to entries coverflow
     const key = `${coverFlowState?.name}__${subcategoryName || ""}__${subtype.name}`;
     setCardKey(key);
     setLeafSubtype(subtype);
