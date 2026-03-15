@@ -195,10 +195,12 @@ const EntryFormCard = ({
   subcategoryName,
   categoryName,
   entryName,
+  entryImageUrl,
   values,
   saving,
   isEditing,
   onEntryNameChange,
+  onImageUpload,
   onChange,
   onSave,
   onDelete,
@@ -207,14 +209,17 @@ const EntryFormCard = ({
   subcategoryName?: string;
   categoryName?: string;
   entryName: string;
+  entryImageUrl?: string | null;
   values: Record<string, string>;
   saving: boolean;
   isEditing: boolean;
   onEntryNameChange: (name: string) => void;
+  onImageUpload: (file: File) => void;
   onChange: (fieldLabel: string, value: string) => void;
   onSave: () => void;
   onDelete: () => void;
 }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   return (
     <div style={{
       width: "100%", height: "100%",
