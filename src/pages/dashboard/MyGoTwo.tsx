@@ -60,6 +60,7 @@ const NEW_ENTRY_ID = "__new_entry__";
 const EntryFormCard = ({
   subtype,
   subcategoryName,
+  categoryName,
   entryName,
   values,
   saving,
@@ -71,6 +72,7 @@ const EntryFormCard = ({
 }: {
   subtype: SubtypeItem;
   subcategoryName?: string;
+  categoryName?: string;
   entryName: string;
   values: Record<string, string>;
   saving: boolean;
@@ -96,7 +98,7 @@ const EntryFormCard = ({
       {/* ── SECTION LABEL + INDEX ── */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 22px 8px", flexShrink: 0 }}>
         <span style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "#d4543a", fontWeight: 700 }}>
-          {subcategoryName ? `${subcategoryName} · ${subtype.name}` : subtype.name}
+          {[categoryName, subcategoryName, subtype.name].filter(Boolean).join(" · ")}
         </span>
         <span style={{ fontSize: 11, color: "rgba(26,26,26,0.2)", fontStyle: "italic", fontFamily: "'Cormorant Garamond', serif" }}>
           {isEditing ? "edit" : "01"}
@@ -281,6 +283,7 @@ const MyGoTwo = () => {
   const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
   const [leafImage, setLeafImage] = useState<string>("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
+  const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
 
   const defaultFieldValues = useMemo(() => {
     if (!leafSubtype) return {} as Record<string, string>;
@@ -335,6 +338,7 @@ const MyGoTwo = () => {
     setCardKey(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
+    setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     requestAnimationFrame(() => {
       if (scrollRef.current) {
@@ -347,6 +351,7 @@ const MyGoTwo = () => {
     setCardKey(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
+    setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     if (activeSubcategory && (!activeSubcategory.products || activeSubcategory.products.length === 0)) {
       setActiveSubcategory(null);
@@ -395,7 +400,8 @@ const MyGoTwo = () => {
       const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
       setCardKey(key);
       setLeafSubtype(sc as unknown as SubtypeItem);
-      setLeafSubcategoryName(coverFlowState?.name);
+      setLeafSubcategoryName(sc.name);
+      setLeafCategoryName(coverFlowState?.name);
       setLeafImage((sc as any).image || "");
       setActiveEntryIndex(0);
     }
@@ -406,6 +412,7 @@ const MyGoTwo = () => {
     setCardKey(key);
     setLeafSubtype(subtype);
     setLeafSubcategoryName(subcategoryName);
+    setLeafCategoryName(coverFlowState?.name);
     setLeafImage((subtype as any).image || "");
     setActiveEntryIndex(0);
   };
@@ -542,6 +549,7 @@ const MyGoTwo = () => {
                 <EntryFormCard
                   subtype={leafSubtype}
                   subcategoryName={leafSubcategoryName}
+                  categoryName={leafCategoryName}
                   entryName={entryNames[item.id] || ""}
                   values={entryDrafts[item.id] || defaultFieldValues}
                   saving={saving}
