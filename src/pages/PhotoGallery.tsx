@@ -444,7 +444,7 @@ export default function PhotoGallery() {
                   let uploaded = 0;
                   for (const file of Array.from(files)) {
                     const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-                    const nextNum = ALL_SPARE_PHOTOS.length + uploaded + 1;
+                    const nextNum = ALL_SPARE_PHOTOS.length + uploadedPhotos.length + uploaded + 1;
                     const filename = `spare-${String(nextNum).padStart(3, '0')}.${ext}`;
                     const { error } = await supabase.storage
                       .from("category-images")
@@ -456,7 +456,8 @@ export default function PhotoGallery() {
                     }
                   }
                   if (uploaded > 0) {
-                    toast.success(`Uploaded ${uploaded} photo${uploaded > 1 ? 's' : ''} — they'll appear after a rebuild. For now, use the camera icon on cards to assign images via Search or AI.`);
+                    toast.success(`Uploaded ${uploaded} photo${uploaded > 1 ? 's' : ''}`);
+                    await loadUploadedPhotos();
                   }
                   e.target.value = '';
                 }}
