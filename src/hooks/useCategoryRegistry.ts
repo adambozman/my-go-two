@@ -8,7 +8,7 @@ import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { type Gender } from "@/lib/gender";
 import { getTemplateImage } from "@/lib/imageResolver";
-import { getOverride } from "@/lib/imageOverrides";
+import { getOverride, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 
 /** Pull the image key out of a registry row's subcategories JSONB.
@@ -36,6 +36,13 @@ export function useCategoryRegistry(
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [overrideVersion, setOverrideVersion] = useState(0);
+
+  useEffect(() => {
+    const handler = () => setOverrideVersion(v => v + 1);
+    window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
+  }, []);
 
   const dbGender =
     gender === "male" ? "male" : gender === "female" ? "female" : "non-binary";
@@ -108,7 +115,7 @@ export function useCategoryRegistry(
     return () => {
       cancelled = true;
     };
-  }, [gender, page, dbGender]);
+  }, [gender, page, dbGender, overrideVersion]);
 
   const sections = useMemo(() => {
     const grouped: Record<string, CategoryItem[]> = {};
