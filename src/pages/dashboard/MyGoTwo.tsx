@@ -103,39 +103,41 @@ const EntryFormCard = ({
         </span>
       </div>
 
-      {/* ── TITLE BLOCK with photo floated right ── */}
-      <div style={{ padding: "0 22px", flexShrink: 0, overflow: "hidden" }}>
+      {/* ── TITLE BLOCK ── */}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "0 22px", flexShrink: 0 }}>
+        {/* Title constrained to force wrapping */}
+        <div style={{ flex: 1, maxWidth: 180, minWidth: 0 }}>
+          <textarea
+            className="gotwo-title"
+            value={entryName}
+            onChange={(e) => onEntryNameChange(e.target.value)}
+            placeholder={subtype.name}
+            style={{
+              display: "block",
+              width: "100%",
+              background: "transparent",
+              border: "none", outline: "none",
+              resize: "none",
+              fontSize: 42,
+              fontWeight: 700,
+              lineHeight: 0.95,
+              letterSpacing: "-0.03em",
+              color: "#1a1a1a",
+              fontFamily: "'Cormorant Garamond', serif",
+              overflow: "hidden",
+              boxSizing: "border-box",
+              padding: 0,
+            }}
+            rows={3}
+          />
+        </div>
+        {/* Photo thumbnail */}
         <div style={{
-          float: "right",
           width: 90, height: 110,
           borderRadius: 10,
           background: "#c8bfb4",
-          marginLeft: 14, marginBottom: 8,
           flexShrink: 0,
         }} />
-        <textarea
-          className="gotwo-title"
-          value={entryName}
-          onChange={(e) => onEntryNameChange(e.target.value)}
-          placeholder={subtype.name}
-          style={{
-            display: "block",
-            width: "100%",
-            background: "transparent",
-            border: "none", outline: "none",
-            resize: "none",
-            fontSize: 46,
-            fontWeight: 700,
-            lineHeight: 0.95,
-            letterSpacing: "-0.03em",
-            color: "#1a1a1a",
-            fontFamily: "'Cormorant Garamond', serif",
-            overflow: "hidden",
-            boxSizing: "border-box",
-          }}
-          rows={3}
-        />
-        <div style={{ clear: "both" }} />
       </div>
 
       {/* ── CORAL ACCENT ── */}
