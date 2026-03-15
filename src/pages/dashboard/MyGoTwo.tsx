@@ -55,8 +55,8 @@ interface CardEntry {
   updated_at: string;
 }
 
-// Placeholder image for "+ New" cards
-const NEW_CARD_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500' fill='%23f5f0eb'%3E%3Crect width='400' height='500' rx='24'/%3E%3Ctext x='200' y='260' text-anchor='middle' font-size='64' fill='%232d6870' font-family='sans-serif'%3E%2B%3C/text%3E%3C/svg%3E";
+// Branded gradient SVG for user-created cards (no photo)
+const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
 
 // ── Level 4: Field fill-out form ──
 const FieldForm = ({
@@ -316,49 +316,33 @@ const MyGoTwo = () => {
 
   // Group coverflow items
   const distinctGroups = [...new Set(entries.map(e => e.group_name))];
-  const groupCoverFlowItems = [
-    ...distinctGroups.map(g => ({
-      id: g,
-      label: g,
-      image: "", // Will show default card styling
-    })),
-    { id: "__new_group__", label: "+ New Group", image: NEW_CARD_IMAGE },
-  ];
+  const groupCoverFlowItems = distinctGroups.map(g => ({
+    id: g,
+    label: g,
+    image: BRANDED_CARD_SVG,
+  }));
 
   // Entry coverflow items for active group
   const groupEntries = entries.filter(e => e.group_name === activeGroup);
-  const entryCoverFlowItems = [
-    ...groupEntries.map(e => ({
-      id: e.id,
-      label: e.entry_name,
-      image: "",
-    })),
-    { id: "__new_entry__", label: "+ New Entry", image: NEW_CARD_IMAGE },
-  ];
+  const entryCoverFlowItems = groupEntries.map(e => ({
+    id: e.id,
+    label: e.entry_name,
+    image: BRANDED_CARD_SVG,
+  }));
 
   const handleGroupSelect = (id: string) => {
-    if (id === "__new_group__") {
-      setNewName("");
-      setShowNameDialog("group");
-    } else {
-      setActiveGroup(id);
-    }
+    setActiveGroup(id);
   };
 
   const handleEntrySelect = (id: string) => {
-    if (id === "__new_entry__") {
-      setNewName("");
-      setShowNameDialog("entry");
-    } else {
-      const entry = entries.find(e => e.id === id);
-      if (entry && leafSubtype) {
-        setEditingEntry(entry);
-        setFieldState({
-          subtype: leafSubtype,
-          subcategoryName: leafSubcategoryName,
-          values: (entry.field_values as Record<string, string>) || {},
-        });
-      }
+    const entry = entries.find(e => e.id === id);
+    if (entry && leafSubtype) {
+      setEditingEntry(entry);
+      setFieldState({
+        subtype: leafSubtype,
+        subcategoryName: leafSubcategoryName,
+        values: (entry.field_values as Record<string, string>) || {},
+      });
     }
   };
 
@@ -479,22 +463,43 @@ const MyGoTwo = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full flex flex-col items-center justify-center"
         >
-          <h2
-            className="mb-6 text-center"
+          {entryCoverFlowItems.length > 0 ? (
+            <CoverFlowCarousel
+              items={entryCoverFlowItems}
+              onSelect={handleEntrySelect}
+            />
+          ) : (
+            <p
+              className="text-center mb-8"
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 20,
+                fontStyle: "italic",
+                color: "var(--swatch-teal)",
+                opacity: 0.6,
+              }}
+            >
+              No entries yet
+            </p>
+          )}
+          <button
+            onClick={() => { setNewName(""); setShowNameDialog("entry"); }}
+            className="mt-8 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 24,
-              fontWeight: 700,
-              letterSpacing: "0.04em",
-              color: "var(--swatch-viridian-odyssey)",
+              padding: "12px 28px",
+              borderRadius: 999,
+              fontFamily: "'Jost', sans-serif",
+              fontSize: 14,
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              color: "#fff",
+              background: "var(--swatch-cedar-grove)",
+              boxShadow: "0 4px 16px rgba(212,84,58,0.25)",
             }}
           >
-            {activeGroup}
-          </h2>
-          <CoverFlowCarousel
-            items={entryCoverFlowItems}
-            onSelect={handleEntrySelect}
-          />
+            <Plus className="w-4 h-4" />
+            New Entry
+          </button>
         </motion.div>
       );
     }
@@ -510,22 +515,43 @@ const MyGoTwo = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full flex flex-col items-center justify-center"
         >
-          <h2
-            className="mb-6 text-center"
+          {groupCoverFlowItems.length > 0 ? (
+            <CoverFlowCarousel
+              items={groupCoverFlowItems}
+              onSelect={handleGroupSelect}
+            />
+          ) : (
+            <p
+              className="text-center mb-8"
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 20,
+                fontStyle: "italic",
+                color: "var(--swatch-teal)",
+                opacity: 0.6,
+              }}
+            >
+              No groups yet
+            </p>
+          )}
+          <button
+            onClick={() => { setNewName(""); setShowNameDialog("group"); }}
+            className="mt-8 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 24,
-              fontWeight: 700,
-              letterSpacing: "0.04em",
-              color: "var(--swatch-viridian-odyssey)",
+              padding: "12px 28px",
+              borderRadius: 999,
+              fontFamily: "'Jost', sans-serif",
+              fontSize: 14,
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              color: "#fff",
+              background: "var(--swatch-cedar-grove)",
+              boxShadow: "0 4px 16px rgba(212,84,58,0.25)",
             }}
           >
-            {leafSubtype?.name || "My Groups"}
-          </h2>
-          <CoverFlowCarousel
-            items={groupCoverFlowItems}
-            onSelect={handleGroupSelect}
-          />
+            <Plus className="w-4 h-4" />
+            New Group
+          </button>
         </motion.div>
       );
     }
