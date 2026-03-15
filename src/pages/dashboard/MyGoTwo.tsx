@@ -161,7 +161,7 @@ const AutoFitTitle = ({ value, placeholder, onChange }: {
         position: "absolute", visibility: "hidden", top: 0, left: 0,
         fontWeight: 700, lineHeight: 0.95, letterSpacing: "-0.02em",
         fontFamily: "'Cormorant Garamond', serif",
-        wordBreak: "keep-all", overflowWrap: "normal", hyphens: "manual" as any,
+        overflowWrap: "break-word", wordBreak: "break-word",
         whiteSpace: "pre-wrap",
       }}>{text}</div>
 
