@@ -104,17 +104,20 @@ const EntryFormCard = ({
       </div>
 
       {/* ── TITLE + PHOTO BLOCK ── */}
-      <div style={{ position: "relative", padding: "0 22px", flexShrink: 0, minHeight: 200 }}>
-        {/* Photo thumbnail — top right */}
+      <div style={{ position: "relative", padding: "0 22px", flexShrink: 0, minHeight: 220 }}>
+        {/* Photo thumbnail — locked top-right proportions */}
         <div style={{
           position: "absolute",
-          top: 0, right: 22,
-          width: 170, height: 190,
+          top: 0,
+          right: 22,
+          width: 170,
+          height: 190,
           borderRadius: 14,
           background: "#c8bfb4",
         }} />
-        {/* Title box — ~55% width, whole-word wrap only */}
-        <div style={{ maxWidth: "55%" }}>
+
+        {/* Invisible title box (fixed) — prevents random wraps */}
+        <div style={{ width: 190, maxWidth: "calc(100% - 196px)" }}>
           <textarea
             className="gotwo-title"
             value={entryName}
@@ -124,11 +127,12 @@ const EntryFormCard = ({
               display: "block",
               width: "100%",
               background: "transparent",
-              border: "none", outline: "none",
+              border: "none",
+              outline: "none",
               resize: "none",
-              fontSize: 36,
-              fontWeight: 800,
-              lineHeight: 1.05,
+              fontSize: 46,
+              fontWeight: 700,
+              lineHeight: 0.95,
               letterSpacing: "-0.02em",
               color: "#1a1a1a",
               fontFamily: "'Cormorant Garamond', serif",
@@ -136,13 +140,15 @@ const EntryFormCard = ({
               boxSizing: "border-box",
               padding: 0,
               overflowWrap: "normal",
-              wordBreak: "normal",
+              wordBreak: "keep-all",
+              hyphens: "manual",
             }}
             rows={3}
           />
         </div>
-        {/* Coral accent — inside the title block */}
-        <div style={{ display: "flex", gap: 3, paddingTop: 6 }}>
+
+        {/* Coral accent — anchored under title */}
+        <div style={{ display: "flex", gap: 3, paddingTop: 8 }}>
           <div style={{ height: 2, width: 22, background: "#d4543a", borderRadius: 1 }} />
           <div style={{ height: 2, width: 8, background: "rgba(212,84,58,0.3)", borderRadius: 1 }} />
         </div>
