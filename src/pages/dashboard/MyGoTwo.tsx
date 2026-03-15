@@ -195,12 +195,11 @@ const MyGoTwo = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const savedScrollTop = useRef(0);
 
-  // New multi-entry state
+  // Multi-entry state
   const [cardKey, setCardKey] = useState<string | null>(null);
   const [entries, setEntries] = useState<CardEntry[]>([]);
-  const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [editingEntry, setEditingEntry] = useState<CardEntry | null>(null);
-  const [showNameDialog, setShowNameDialog] = useState<"group" | "entry" | null>(null);
+  const [showNameDialog, setShowNameDialog] = useState(false);
   const [newName, setNewName] = useState("");
   const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
@@ -225,7 +224,6 @@ const MyGoTwo = () => {
     setCoverFlowState(null);
     setActiveSubcategory(null);
     setCardKey(null);
-    setActiveGroup(null);
     setEditingEntry(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
@@ -242,14 +240,9 @@ const MyGoTwo = () => {
   };
 
   const goBackFromEntries = () => {
-    setActiveGroup(null);
-  };
-
-  const goBackFromGroups = () => {
     setCardKey(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
-    // Go back to subcategory if applicable
     if (activeSubcategory && (!activeSubcategory.products || activeSubcategory.products.length === 0)) {
       setActiveSubcategory(null);
     }
@@ -261,10 +254,8 @@ const MyGoTwo = () => {
       setBackState({ label: editingEntry.entry_name, onBack: goBackFromField });
     } else if (fieldState && !editingEntry) {
       setBackState({ label: "New Entry", onBack: goBackFromField });
-    } else if (activeGroup && cardKey) {
-      setBackState({ label: activeGroup, onBack: goBackFromEntries });
     } else if (cardKey) {
-      setBackState({ label: leafSubtype?.name || "Groups", onBack: goBackFromGroups });
+      setBackState({ label: leafSubtype?.name || "Entries", onBack: goBackFromEntries });
     } else if (activeSubcategory && coverFlowState) {
       setBackState({ label: activeSubcategory.name, onBack: () => setActiveSubcategory(null) });
     } else if (coverFlowState) {
@@ -272,7 +263,7 @@ const MyGoTwo = () => {
     } else {
       setBackState(null);
     }
-  }, [coverFlowState, activeSubcategory, fieldState, cardKey, activeGroup, editingEntry, leafSubtype]);
+  }, [coverFlowState, activeSubcategory, fieldState, cardKey, editingEntry, leafSubtype]);
 
   const handleCategoryClick = (item: CategoryItem) => {
     if (scrollRef.current) {
@@ -297,7 +288,7 @@ const MyGoTwo = () => {
     if (sc.products && sc.products.length > 0) {
       setActiveSubcategory(sc);
     } else {
-      // Subcategory IS the leaf — go to groups coverflow
+      // Subcategory IS the leaf — go to entries coverflow
       setActiveSubcategory(sc);
       const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
       setCardKey(key);
@@ -307,7 +298,7 @@ const MyGoTwo = () => {
   };
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
-    // Instead of opening FieldForm directly, go to groups coverflow
+    // Go to entries coverflow
     const key = `${coverFlowState?.name}__${subcategoryName || ""}__${subtype.name}`;
     setCardKey(key);
     setLeafSubtype(subtype);
@@ -322,17 +313,12 @@ const MyGoTwo = () => {
     image: BRANDED_CARD_SVG,
   }));
 
-  // Entry coverflow items for active group
-  const groupEntries = entries.filter(e => e.group_name === activeGroup);
-  const entryCoverFlowItems = groupEntries.map(e => ({
+  // Entry coverflow items — flat, no groups
+  const entryCoverFlowItems = entries.map(e => ({
     id: e.id,
     label: e.entry_name,
     image: BRANDED_CARD_SVG,
   }));
-
-  const handleGroupSelect = (id: string) => {
-    setActiveGroup(id);
-  };
 
   const handleEntrySelect = (id: string) => {
     const entry = entries.find(e => e.id === id);
@@ -346,32 +332,22 @@ const MyGoTwo = () => {
     }
   };
 
-  const handleCreateGroup = () => {
-    if (!newName.trim()) return;
-    setShowNameDialog(null);
-    setActiveGroup(newName.trim());
-    // Group is created implicitly when first entry is saved
-  };
-
   const handleCreateEntry = () => {
     if (!newName.trim() || !leafSubtype) return;
-    setShowNameDialog(null);
-    setEditingEntry(null);
+    setShowNameDialog(false);
+    setEditingEntry({ entry_name: newName.trim() } as any);
     setFieldState({
       subtype: leafSubtype,
       subcategoryName: leafSubcategoryName,
       values: leafSubtype.fields.reduce((acc, f) => ({ ...acc, [f.label]: (f as any).value || "" }), {} as Record<string, string>),
     });
-    // Store the entry name temporarily on the editing entry
-    setEditingEntry({ entry_name: newName.trim() } as any);
   };
 
   const handleSave = async (values: Record<string, string>) => {
-    if (!user || !cardKey || !activeGroup) return;
+    if (!user || !cardKey) return;
     setSaving(true);
     try {
       if (editingEntry?.id) {
-        // Update existing entry
         const { error } = await supabase
           .from("card_entries")
           .update({ field_values: values })
@@ -379,14 +355,13 @@ const MyGoTwo = () => {
         if (error) throw error;
         toast({ title: "Updated!", description: `${editingEntry.entry_name} saved.` });
       } else {
-        // Insert new entry
         const entryName = editingEntry?.entry_name || "Untitled";
         const { error } = await supabase
           .from("card_entries")
           .insert({
             user_id: user.id,
             card_key: cardKey,
-            group_name: activeGroup,
+            group_name: leafSubtype?.name || "",
             entry_name: entryName,
             field_values: values,
           });
@@ -452,8 +427,8 @@ const MyGoTwo = () => {
       );
     }
 
-    // Level 5: Entry coverflow within a group
-    if (activeGroup && cardKey) {
+    // Entries coverflow
+    if (cardKey) {
       return (
         <motion.div
           key="entry-coverflow"
@@ -470,7 +445,7 @@ const MyGoTwo = () => {
             />
           ) : (
             <p
-              className="text-center mb-8"
+              className="text-center mb-4"
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: 20,
@@ -483,7 +458,7 @@ const MyGoTwo = () => {
             </p>
           )}
           <button
-            onClick={() => { setNewName(""); setShowNameDialog("entry"); }}
+            onClick={() => { setNewName(""); setShowNameDialog(true); }}
             className="mt-8 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
             style={{
               padding: "12px 28px",
@@ -498,59 +473,7 @@ const MyGoTwo = () => {
             }}
           >
             <Plus className="w-4 h-4" />
-            New Entry
-          </button>
-        </motion.div>
-      );
-    }
-
-    // Level 4: Group coverflow
-    if (cardKey) {
-      return (
-        <motion.div
-          key="group-coverflow"
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -40 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="h-full flex flex-col items-center justify-center"
-        >
-          {groupCoverFlowItems.length > 0 ? (
-            <CoverFlowCarousel
-              items={groupCoverFlowItems}
-              onSelect={handleGroupSelect}
-            />
-          ) : (
-            <p
-              className="text-center mb-8"
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 20,
-                fontStyle: "italic",
-                color: "var(--swatch-teal)",
-                opacity: 0.6,
-              }}
-            >
-              No groups yet
-            </p>
-          )}
-          <button
-            onClick={() => { setNewName(""); setShowNameDialog("group"); }}
-            className="mt-8 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
-            style={{
-              padding: "12px 28px",
-              borderRadius: 999,
-              fontFamily: "'Jost', sans-serif",
-              fontSize: 14,
-              fontWeight: 600,
-              letterSpacing: "0.06em",
-              color: "#fff",
-              background: "var(--swatch-cedar-grove)",
-              boxShadow: "0 4px 16px rgba(212,84,58,0.25)",
-            }}
-          >
-            <Plus className="w-4 h-4" />
-            New Group
+            Add New
           </button>
         </motion.div>
       );
@@ -619,8 +542,8 @@ const MyGoTwo = () => {
         {renderContent()}
       </AnimatePresence>
 
-      {/* Name dialog for creating groups/entries */}
-      <Dialog open={!!showNameDialog} onOpenChange={() => setShowNameDialog(null)}>
+      {/* Name dialog for creating entries */}
+      <Dialog open={showNameDialog} onOpenChange={() => setShowNameDialog(false)}>
         <DialogContent
           className="rounded-3xl"
           style={{
@@ -638,25 +561,23 @@ const MyGoTwo = () => {
                 color: "var(--swatch-viridian-odyssey)",
               }}
             >
-              {showNameDialog === "group" ? "New Group" : "New Entry"}
+              Name Your Entry
             </DialogTitle>
           </DialogHeader>
           <Input
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder={showNameDialog === "group" ? "e.g. Taco Bell, McDonald's..." : "e.g. My usual, Late night order..."}
+            placeholder="e.g. My usual, Taco Bell, Late night..."
             className="rounded-xl h-12 mt-2"
             style={{ background: "rgba(45,104,112,0.04)", border: "1.5px solid rgba(45,104,112,0.15)" }}
             autoFocus
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                showNameDialog === "group" ? handleCreateGroup() : handleCreateEntry();
-              }
+              if (e.key === "Enter") handleCreateEntry();
             }}
           />
           <DialogFooter>
             <Button
-              onClick={showNameDialog === "group" ? handleCreateGroup : handleCreateEntry}
+              onClick={handleCreateEntry}
               disabled={!newName.trim()}
               className="rounded-full px-8 h-11"
               style={{ background: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif", letterSpacing: "0.08em" }}
