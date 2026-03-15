@@ -109,8 +109,8 @@ const EntryFormCard = ({
         <div style={{
           position: "absolute",
           top: 0, right: 22,
-          width: 90, height: 110,
-          borderRadius: 10,
+          width: 170, height: 190,
+          borderRadius: 14,
           background: "#c8bfb4",
         }} />
         {/* Invisible constraining box — forces natural word-wrap */}
