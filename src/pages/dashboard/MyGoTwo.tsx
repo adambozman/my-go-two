@@ -410,6 +410,7 @@ const MyGoTwo = () => {
     setCardKey(key);
     setLeafSubtype(subtype);
     setLeafSubcategoryName(subcategoryName);
+    setLeafCategoryName(coverFlowState?.name);
     setLeafImage((subtype as any).image || "");
     setActiveEntryIndex(0);
   };
