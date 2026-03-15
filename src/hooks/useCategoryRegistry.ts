@@ -36,10 +36,17 @@ export function useCategoryRegistry(
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [overrideVersion, setOverrideVersion] = useState(0);
-
+  // Optimistically update the image in local state when an override fires
   useEffect(() => {
-    const handler = () => setOverrideVersion(v => v + 1);
+    const handler = (e: any) => {
+      const { imageKey, url } = e.detail || {};
+      if (!imageKey) return;
+      setCategories(prev =>
+        prev.map(cat =>
+          cat.imageKey === imageKey ? { ...cat, image: url || "" } : cat
+        )
+      );
+    };
     window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
     return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
   }, []);
@@ -125,7 +132,7 @@ export function useCategoryRegistry(
     return () => {
       cancelled = true;
     };
-  }, [gender, page, dbGender, overrideVersion]);
+  }, [gender, page, dbGender]);
 
   const sections = useMemo(() => {
     const grouped: Record<string, CategoryItem[]> = {};
