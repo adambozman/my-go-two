@@ -283,6 +283,7 @@ const MyGoTwo = () => {
   const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
   const [leafImage, setLeafImage] = useState<string>("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
+  const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
 
   const defaultFieldValues = useMemo(() => {
     if (!leafSubtype) return {} as Record<string, string>;
