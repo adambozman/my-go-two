@@ -563,6 +563,18 @@ const MyGoTwo = () => {
 
         const inserted = data as CardEntry;
         setEntries((prev) => [...prev, inserted]);
+        // Reset the "New Card" draft for the next entry
+        setEntryDrafts((prev) => ({
+          ...prev,
+          [inserted.id]: fieldValues,
+          [NEW_ENTRY_ID]: defaultFieldValues,
+        }));
+        setEntryNames((prev) => ({
+          ...prev,
+          [inserted.id]: entryName,
+          [NEW_ENTRY_ID]: "",
+        }));
+        // Navigate to the newly saved card
         setActiveEntryIndex(entries.length);
         toast({ title: "Saved!", description: `${entryName} created.` });
       } else {
