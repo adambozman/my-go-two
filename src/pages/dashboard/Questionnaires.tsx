@@ -160,6 +160,7 @@ const Questionnaires = () => {
   };
 
   const getSectionCategories = (sectionId: string) => {
+    if (sectionId === "all") return categories;
     const filters = SECTION_FILTERS[sectionId] || [];
     return categories.filter((cat) => filters.includes(cat.category));
   };
