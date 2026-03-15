@@ -28,19 +28,19 @@ export default function InlinePhotoSearch(props: Props) {
 
 // ── Crop helper ──────────────────────────────────────────────
 function cropAndUpload(sourceUrl: string) {
-  const W = 1015, H = 686;
+  const SIZE = 1024; // square crop to match square cards
   return new Promise<Blob>((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
       const c = document.createElement("canvas");
-      c.width = W; c.height = H;
+      c.width = SIZE; c.height = SIZE;
       const ctx = c.getContext("2d")!;
-      const r = W / H, ir = img.width / img.height;
+      // Center-crop to 1:1 square
       let sx = 0, sy = 0, sw = img.width, sh = img.height;
-      if (ir > r) { sw = img.height * r; sx = (img.width - sw) / 2; }
-      else { sh = img.width / r; sy = (img.height - sh) / 2; }
-      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
+      if (img.width > img.height) { sw = img.height; sx = (img.width - sw) / 2; }
+      else { sh = img.width; sy = (img.height - sh) / 2; }
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, SIZE, SIZE);
       c.toBlob(b => b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", 0.92);
     };
     img.onerror = () => reject(new Error("Image load failed"));
