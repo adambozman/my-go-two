@@ -253,8 +253,6 @@ export default function PhotoGallery() {
   const [loading, setLoading] = useState(true);
   const [version, setVersion] = useState(0);
   const [pickerSlot, setPickerSlot] = useState<ImageSlot | null>(null);
-  const [version, setVersion] = useState(0);
-  const [pickerSlot, setPickerSlot] = useState<ImageSlot | null>(null);
   // Uploaded photos from Supabase storage (not in the build)
   const [uploadedPhotos, setUploadedPhotos] = useState<{ path: string; url: string; name: string }[]>([]);
 
