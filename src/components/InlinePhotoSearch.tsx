@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Camera, Loader2, X, Trash2, Sparkles, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, Camera, Loader2, X, Trash2, Sparkles, Plus, ChevronDown, ChevronUp, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { setImageUrl, deleteImageUrl, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { useAuth } from "@/contexts/AuthContext";
