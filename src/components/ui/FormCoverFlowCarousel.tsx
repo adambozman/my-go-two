@@ -5,6 +5,7 @@ import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 export interface FormCoverFlowItem {
   id: string;
   label: string;
+  image?: string;
 }
 
 interface FormCoverFlowCarouselProps {
@@ -16,9 +17,7 @@ interface FormCoverFlowCarouselProps {
 
 const VISIBLE = 2;
 const PILL_GAP = 20;
-
-const getLayout = () =>
-  window.innerWidth >= 1024 ? CAROUSEL_LAYOUT_DESKTOP : CAROUSEL_LAYOUT;
+const FALLBACK_GRADIENT = "linear-gradient(160deg, #c8bfb4 0%, #a89d92 100%)";
 
 function getPillX(offset: number, pills: { w: number; h: number; r: number }[]): number {
   if (offset === 0) return 0;
@@ -40,10 +39,9 @@ const FormCoverFlowCarousel = ({
   renderActiveCard,
 }: FormCoverFlowCarouselProps) => {
   const touchStartX = useRef<number | null>(null);
-  const layout = getLayout();
+  const layout = window.innerWidth >= 1024 ? CAROUSEL_LAYOUT_DESKTOP : CAROUSEL_LAYOUT;
   const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
   const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
-
   const n = items.length;
 
   useEffect(() => {
@@ -63,9 +61,7 @@ const FormCoverFlowCarousel = ({
   return (
     <div
       className="relative w-full flex flex-col items-center"
-      onTouchStart={(e) => {
-        touchStartX.current = e.touches[0].clientX;
-      }}
+      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={(e) => {
         if (touchStartX.current === null) return;
         const diff = touchStartX.current - e.changedTouches[0].clientX;
@@ -84,6 +80,7 @@ const FormCoverFlowCarousel = ({
             const absOffset = Math.abs(offset);
             const isActive = offset === 0;
 
+            // Desktop pill path
             if (pills) {
               const pill = pills[Math.min(absOffset, pills.length - 1)];
               const x = getPillX(offset, pills);
@@ -94,37 +91,59 @@ const FormCoverFlowCarousel = ({
                   initial={false}
                   animate={{ x, zIndex: VISIBLE + 1 - absOffset, opacity: 1 }}
                   transition={spring}
-                  className="absolute"
+                  className="absolute cursor-pointer"
                   style={{
                     width: pill.w,
                     height: pill.h,
                     borderRadius: pill.r,
                     boxShadow: isActive
-                      ? "0 0 24px 6px hsl(var(--primary) / 0.3), 0 8px 32px hsl(var(--foreground) / 0.18)"
-                      : "0 4px 16px hsl(var(--foreground) / 0.12)",
+                      ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
+                      : "0 4px 16px rgba(0,0,0,0.12)",
                   }}
-                  onClick={() => {
-                    if (!isActive) onActiveIndexChange((activeIndex + offset + n) % n);
-                  }}
+                  onClick={() => { if (!isActive) onActiveIndexChange((activeIndex + offset + n) % n); }}
                 >
-                  {isActive ? (
-                    <div className="w-full h-full rounded-[inherit] overflow-hidden bg-card">
-                      {renderActiveCard(item)}
-                    </div>
-                  ) : (
-                    <div className="w-full h-full rounded-[inherit] bg-card/80 border border-border/40 flex items-end p-3 cursor-pointer">
-                      <span
-                        className="px-3 py-1 rounded-full text-xs font-medium truncate max-w-full bg-muted/70 text-foreground"
-                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
-                      >
-                        {item.label}
-                      </span>
-                    </div>
-                  )}
+                  <div className="w-full h-full overflow-hidden relative" style={{ borderRadius: pill.r }}>
+                    {/* Background — image or gradient */}
+                    {item.image ? (
+                      <img src={item.image} alt={item.label} className="absolute inset-0 w-full h-full object-cover" />
+                    ) : (
+                      <div className="absolute inset-0" style={{ background: FALLBACK_GRADIENT }} />
+                    )}
+
+                    {/* Active card — render form content on top */}
+                    {isActive && (
+                      <div className="absolute inset-0 overflow-y-auto">
+                        {renderActiveCard(item)}
+                      </div>
+                    )}
+
+                    {/* Label pill — always shown on flanking, shown on active too */}
+                    {!isActive && (
+                      <div className="absolute bottom-6 left-6">
+                        <span style={{
+                          fontFamily: "'Cormorant Garamond', serif",
+                          fontSize: 16,
+                          letterSpacing: "0.02em",
+                          fontWeight: 600,
+                          color: "#fff",
+                          background: "rgba(255,255,255,0.18)",
+                          borderRadius: 999,
+                          backdropFilter: "blur(12px)",
+                          WebkitBackdropFilter: "blur(12px)",
+                          border: "1px solid rgba(255,255,255,0.35)",
+                          padding: "6px 18px",
+                          display: "inline-block",
+                        }}>
+                          {item.label}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               );
             }
 
+            // Mobile path
             return (
               <motion.div
                 key={`slot-${offset}`}
@@ -136,23 +155,38 @@ const FormCoverFlowCarousel = ({
                   zIndex: VISIBLE + 1 - absOffset,
                 }}
                 transition={spring}
-                className="absolute"
+                className="absolute cursor-pointer"
+                onClick={() => { if (!isActive) onActiveIndexChange((activeIndex + offset + n) % n); }}
               >
                 <div
-                  className="border border-border/40 bg-card"
-                  style={{ width: cardWidth, height: cardHeight, borderRadius }}
-                  onClick={() => {
-                    if (!isActive) onActiveIndexChange((activeIndex + offset + n) % n);
+                  className="relative overflow-hidden"
+                  style={{
+                    width: cardWidth, height: cardHeight, borderRadius,
+                    boxShadow: isActive
+                      ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
+                      : "0 4px 16px rgba(0,0,0,0.12)",
                   }}
                 >
-                  {isActive ? (
-                    renderActiveCard(item)
+                  {item.image ? (
+                    <img src={item.image} alt={item.label} className="absolute inset-0 w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-end p-3">
-                      <span
-                        className="px-3 py-1 rounded-full text-xs font-medium truncate max-w-full bg-muted/70 text-foreground"
-                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
-                      >
+                    <div className="absolute inset-0" style={{ background: FALLBACK_GRADIENT }} />
+                  )}
+                  {isActive ? (
+                    <div className="absolute inset-0 overflow-y-auto">{renderActiveCard(item)}</div>
+                  ) : (
+                    <div className="absolute bottom-4 left-4">
+                      <span style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: 13,
+                        color: "#fff",
+                        background: "rgba(255,255,255,0.18)",
+                        borderRadius: 999,
+                        backdropFilter: "blur(12px)",
+                        border: "1px solid rgba(255,255,255,0.35)",
+                        padding: "4px 14px",
+                        display: "inline-block",
+                      }}>
                         {item.label}
                       </span>
                     </div>
