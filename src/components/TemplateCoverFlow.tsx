@@ -1,4 +1,6 @@
-import { getProductImage } from "@/lib/imageResolver";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import CoverFlowCarousel from "@/components/ui/CoverFlowCarousel";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 
@@ -18,33 +20,72 @@ interface TemplateCoverFlowProps {
   categoryId?: string;
 }
 
+/** Hook to batch-fetch images from category_images for a list of keys */
+function useImageMap(keys: string[]) {
+  const [imageMap, setImageMap] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (keys.length === 0) return;
+    supabase
+      .from("category_images")
+      .select("category_key, image_url")
+      .in("category_key", keys)
+      .then(({ data }) => {
+        const map: Record<string, string> = {};
+        for (const row of data || []) map[row.category_key] = row.image_url;
+        setImageMap(map);
+      });
+  }, [keys.join(",")]);
+
+  // Listen for override changes
+  useEffect(() => {
+    const handler = (e: any) => {
+      const { imageKey, url } = e.detail || {};
+      if (imageKey) {
+        setImageMap(prev => ({ ...prev, [imageKey]: url || "" }));
+      }
+    };
+    window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
+  }, []);
+
+  return imageMap;
+}
+
 const TemplateCoverFlow = ({
   subtypes,
   subcategories,
   activeSubcategory,
   onSubcategorySelect,
   onSelect,
-  gender,
-  section = "",
-  categoryId = "",
 }: TemplateCoverFlowProps) => {
   const hasSubcategories = subcategories && subcategories.length > 0;
-  const resolveImage = (imageKey: string, subcategoryId = "") =>
-    getProductImage(imageKey, gender, "", section, categoryId, subcategoryId);
+
+  // Collect all image keys we need
+  const allKeys: string[] = [];
+  if (hasSubcategories && !activeSubcategory) {
+    subcategories!.forEach(sc => allKeys.push(sc.image || sc.id));
+  } else {
+    const products = activeSubcategory ? (activeSubcategory.products ?? []) : subtypes;
+    products.forEach(p => allKeys.push((p as any).image || p.id));
+  }
+
+  const imageMap = useImageMap(allKeys);
 
   // Level 3 — subcategory picker
   if (hasSubcategories && !activeSubcategory) {
-    const items = subcategories.map((sc) => ({
+    const items = subcategories!.map(sc => ({
       id: sc.id,
       label: sc.name,
-      image: resolveImage(sc.image || sc.id, sc.id),
+      image: imageMap[sc.image || sc.id] || "",
+      imageKey: sc.image || sc.id,
     }));
     return (
       <div className="h-full flex items-center justify-center">
         <CoverFlowCarousel
           items={items}
           onSelect={(id) => {
-            const sc = subcategories.find((s) => s.id === id);
+            const sc = subcategories!.find(s => s.id === id);
             if (sc) onSubcategorySelect(sc);
           }}
         />
@@ -53,14 +94,12 @@ const TemplateCoverFlow = ({
   }
 
   // Level 4 — product picker
-  const products = activeSubcategory
-    ? (activeSubcategory.products ?? [])
-    : subtypes;
-
-  const productItems = products.map((p) => ({
+  const products = activeSubcategory ? (activeSubcategory.products ?? []) : subtypes;
+  const productItems = products.map(p => ({
     id: p.id,
     label: p.name,
-    image: resolveImage((p as any).image || p.id, activeSubcategory?.id || ""),
+    image: imageMap[(p as any).image || p.id] || "",
+    imageKey: (p as any).image || p.id,
   }));
 
   return (
@@ -68,7 +107,7 @@ const TemplateCoverFlow = ({
       <CoverFlowCarousel
         items={productItems}
         onSelect={(id) => {
-          const p = products.find((x) => x.id === id);
+          const p = products.find(x => x.id === id);
           if (p) onSelect(p, activeSubcategory?.name);
         }}
       />
