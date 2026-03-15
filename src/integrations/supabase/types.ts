@@ -458,6 +458,27 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_question_sets: {
+        Row: {
+          gender: string
+          generated_at: string
+          id: string
+          questions: Json
+        }
+        Insert: {
+          gender: string
+          generated_at?: string
+          id?: string
+          questions?: Json
+        }
+        Update: {
+          gender?: string
+          generated_at?: string
+          id?: string
+          questions?: Json
+        }
+        Relationships: []
+      }
       sharing_permissions: {
         Row: {
           brands: boolean

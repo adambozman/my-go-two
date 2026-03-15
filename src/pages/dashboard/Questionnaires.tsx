@@ -13,6 +13,7 @@ import KnowMeQuizCard from "@/components/knowme/KnowMeQuizCard";
 interface AICategory {
   id: string;
   name: string;
+  section: string;
   category: string;
   image_url: string | null;
   image_prompt: string;
@@ -26,48 +27,45 @@ interface AICategory {
   }[];
 }
 
-/* ── Section config ────────────────────────────────── */
-const SECTION_FILTERS: Record<string, string[]> = {
-  "style-fit": ["style", "sizing", "colors"],
-  shopping: ["products", "brands"],
-  "lifestyle-gifts": ["lifestyle", "gifting", "love-language", "dates"],
-  "food-wellness": ["food", "wellness"],
-  "home-living": ["home"],
-};
-
+/* ── Section config — matches the 5 registry sections ── */
 const SECTIONS = [
   { id: "all", label: "All" },
   { id: "style-fit", label: "Style & Fit" },
-  { id: "shopping", label: "Shopping" },
-  { id: "lifestyle-gifts", label: "Lifestyle & Gifts" },
-  { id: "food-wellness", label: "Food & Wellness" },
-  { id: "home-living", label: "Home" },
+  { id: "food-drink", label: "Food & Drink" },
+  { id: "gifts-wishlist", label: "Gifts & Wishlist" },
+  { id: "home-living", label: "Home & Living" },
+  { id: "entertainment", label: "Entertainment" },
 ];
 
 const PLACEHOLDER_GRADIENTS: Record<string, string> = {
   style: "linear-gradient(135deg, #d4a574 0%, #8b6f5a 100%)",
   sizing: "linear-gradient(135deg, #a3b18a 0%, #6b7f5c 100%)",
   colors: "linear-gradient(135deg, #c9a96e 0%, #e8c6ae 100%)",
+  accessories: "linear-gradient(135deg, #8b7355 0%, #6b5b45 100%)",
+  cuisine: "linear-gradient(135deg, #c9a96e 0%, #a3b18a 100%)",
+  cooking: "linear-gradient(135deg, #a3b18a 0%, #6d9878 100%)",
+  beverages: "linear-gradient(135deg, #b5838d 0%, #6d6875 100%)",
+  dining: "linear-gradient(135deg, #d4a574 0%, #b5838d 100%)",
+  gifting: "linear-gradient(135deg, #d4543a 0%, #a84332 100%)",
   products: "linear-gradient(135deg, #c9a96e 0%, #8b7355 100%)",
   brands: "linear-gradient(135deg, #8b7355 0%, #6b5b45 100%)",
-  lifestyle: "linear-gradient(135deg, #b5838d 0%, #6d6875 100%)",
-  gifting: "linear-gradient(135deg, #d4543a 0%, #a84332 100%)",
-  "love-language": "linear-gradient(135deg, #c9707d 0%, #a84332 100%)",
+  shopping: "linear-gradient(135deg, #b5838d 0%, #d4a574 100%)",
+  "home-decor": "linear-gradient(135deg, #d4a574 0%, #c9a96e 100%)",
+  "home-comfort": "linear-gradient(135deg, #a3b18a 0%, #8b6f5a 100%)",
+  organization: "linear-gradient(135deg, #6d9878 0%, #a3b18a 100%)",
+  entertaining: "linear-gradient(135deg, #c9707d 0%, #d4a574 100%)",
   dates: "linear-gradient(135deg, #d4a574 0%, #b5838d 100%)",
-  food: "linear-gradient(135deg, #c9a96e 0%, #a3b18a 100%)",
+  lifestyle: "linear-gradient(135deg, #b5838d 0%, #6d6875 100%)",
   wellness: "linear-gradient(135deg, #a3b18a 0%, #6d9878 100%)",
-  home: "linear-gradient(135deg, #b5838d 0%, #d4a574 100%)",
+  "love-language": "linear-gradient(135deg, #c9707d 0%, #a84332 100%)",
 };
-
-const VALID_CATEGORY_TYPES = new Set([
-  "style", "sizing", "colors", "lifestyle", "gifting", "products", "brands", "love-language", "dates", "food", "wellness", "home",
-]);
 
 const toSafeString = (value: unknown) => (typeof value === "string" ? value.trim() : "");
 
 const sanitizeCategory = (raw: any): AICategory | null => {
   const category = toSafeString(raw?.category);
-  if (!VALID_CATEGORY_TYPES.has(category)) return null;
+  const section = toSafeString(raw?.section);
+  if (!section) return null;
 
   const name = toSafeString(raw?.name) || toSafeString(raw?.title);
   const fallbackIdSource = toSafeString(raw?.id) || name;
@@ -109,7 +107,7 @@ const sanitizeCategory = (raw: any): AICategory | null => {
 
   if (!id || !name || questions.length === 0) return null;
 
-  return { id, name, category, image_url: toSafeString(raw?.image_url) || null, image_prompt: toSafeString(raw?.image_prompt), questions };
+  return { id, name, section, category, image_url: toSafeString(raw?.image_url) || null, image_prompt: toSafeString(raw?.image_prompt), questions };
 };
 
 const Questionnaires = () => {
@@ -163,14 +161,25 @@ const Questionnaires = () => {
     setSelectedCategory(cat);
   };
 
+  // Filter by section
   const getSectionCategories = (sectionId: string) => {
     if (sectionId === "all") return categories;
-    const filters = SECTION_FILTERS[sectionId] || [];
-    return categories.filter((cat) => filters.includes(cat.category));
+    return categories.filter((cat) => cat.section === sectionId);
   };
 
-  const totalQuestions = categories.reduce((sum, c) => sum + c.questions.length, 0);
-  const sectionsWithCounts = SECTIONS.map((s) => ({ ...s, count: getSectionCategories(s.id).length }));
+  // Filter out fully-answered categories
+  const getUnansweredCategories = (cats: AICategory[]) => {
+    return cats.filter((cat) =>
+      cat.questions.some((q) => !profileAnswers?.[q.id])
+    );
+  };
+
+  const visibleCategories = getUnansweredCategories(getSectionCategories(activeSection));
+  const totalQuestions = categories.reduce((sum, c) => sum + c.questions.filter((q) => !profileAnswers?.[q.id]).length, 0);
+  const sectionsWithCounts = SECTIONS.map((s) => ({
+    ...s,
+    count: getUnansweredCategories(getSectionCategories(s.id)).length,
+  }));
 
   /* ── Quiz view ─────────────────────────────── */
   if (selectedCategory) {
@@ -192,7 +201,6 @@ const Questionnaires = () => {
               if (error) throw error;
               toast.success("Answers saved!");
               await refetch();
-              setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
             } catch { toast.error("Failed to save answers"); }
             setSelectedCategory(null);
           }}
@@ -223,19 +231,18 @@ const Questionnaires = () => {
             className="text-base mb-1"
             style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}
           >
-            Learning about you...
+            Loading your questions...
           </p>
           <p className="text-xs" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-            Generating personalized questions
+            Same questions, unique answers
           </p>
         </div>
       </div>
     );
   }
 
-  const currentCards = getSectionCategories(activeSection);
-  const heroCard = currentCards[0];
-  const restCards = currentCards.slice(1);
+  const heroCard = visibleCategories[0];
+  const restCards = visibleCategories.slice(1);
 
   /* ── Main UI ─────────────────────────────── */
   return (
@@ -254,7 +261,7 @@ const Questionnaires = () => {
                 className="text-[11px] uppercase tracking-[0.15em] font-medium"
                 style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
               >
-                Personalized for you
+                Help your partner know you
               </span>
             </motion.div>
             <motion.h1
@@ -273,7 +280,7 @@ const Questionnaires = () => {
               className="text-[13px]"
               style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
             >
-              Help your partner find exactly what you love
+              Answer questions so your partner always gets it right
             </motion.p>
           </div>
           <div className="flex items-center gap-2 mt-1">
@@ -288,20 +295,9 @@ const Questionnaires = () => {
                   fontFamily: "'Jost', sans-serif",
                 }}
               >
-                {totalQuestions} Qs
+                {totalQuestions} left
               </motion.span>
             )}
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-105 disabled:opacity-50"
-              style={{ background: "rgba(var(--swatch-teal-rgb), 0.08)" }}
-            >
-              <RefreshCw
-                className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
-                style={{ color: "var(--swatch-teal)" }}
-              />
-            </button>
           </div>
         </div>
       </div>
@@ -328,24 +324,22 @@ const Questionnaires = () => {
             exit={{ opacity: 0, y: -16 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            {currentCards.length > 0 ? (
+            {visibleCategories.length > 0 ? (
               <div className="space-y-3">
-                {/* Hero card — first item gets full-width treatment */}
                 {heroCard && (
                   <KnowMeCategoryCard
                     key={heroCard.id}
                     name={heroCard.name}
                     imageUrl={heroCard.image_url}
-                    questionCount={heroCard.questions.length}
+                    questionCount={heroCard.questions.filter((q) => !profileAnswers?.[q.id]).length}
                     category={heroCard.category}
-                    gradientFallback={PLACEHOLDER_GRADIENTS[heroCard.category]}
+                    gradientFallback={PLACEHOLDER_GRADIENTS[heroCard.category] || PLACEHOLDER_GRADIENTS.style}
                     onClick={() => handleCardClick(heroCard)}
                     index={0}
                     isHero
                   />
                 )}
 
-                {/* Remaining cards in 2-col masonry-style grid */}
                 {restCards.length > 0 && (
                   <div className="grid grid-cols-2 gap-3">
                     {restCards.map((cat, i) => (
@@ -353,9 +347,9 @@ const Questionnaires = () => {
                         key={cat.id}
                         name={cat.name}
                         imageUrl={cat.image_url}
-                        questionCount={cat.questions.length}
+                        questionCount={cat.questions.filter((q) => !profileAnswers?.[q.id]).length}
                         category={cat.category}
-                        gradientFallback={PLACEHOLDER_GRADIENTS[cat.category]}
+                        gradientFallback={PLACEHOLDER_GRADIENTS[cat.category] || PLACEHOLDER_GRADIENTS.style}
                         onClick={() => handleCardClick(cat)}
                         index={i + 1}
                       />
@@ -364,7 +358,6 @@ const Questionnaires = () => {
                 )}
               </div>
             ) : (
-              /* Empty state */
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -395,20 +388,8 @@ const Questionnaires = () => {
                   className="text-xs text-center mb-5 max-w-[220px]"
                   style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
                 >
-                  You've answered everything in this section. Want fresh questions?
+                  You've answered everything in this section.
                 </p>
-                <button
-                  onClick={handleRefresh}
-                  className="px-5 py-2.5 rounded-full text-[13px] font-medium transition-all hover:scale-105"
-                  style={{
-                    color: "#fff",
-                    background: "var(--swatch-cedar-grove)",
-                    boxShadow: "0 4px 16px rgba(212, 84, 58, 0.25)",
-                    fontFamily: "'Jost', sans-serif",
-                  }}
-                >
-                  Generate new questions
-                </button>
               </motion.div>
             )}
           </motion.div>
