@@ -303,30 +303,45 @@ export default function PhotoGallery() {
 
       if (!rows) { setLoading(false); return; }
 
+      // Collect all image keys first
+      const allKeys: string[] = [];
       const sectionMap: Record<string, Category[]> = {};
 
       for (const row of rows as any[]) {
         const rawSubs: any[] = row.subcategories || [];
-        const section = row.section;
-        const categoryId = row.key.replace(/-male$|-female$|-nb$/, "");
+        const coverKey = row.image || row.key || "";
+        if (coverKey) allKeys.push(coverKey);
+        for (const sc of rawSubs) {
+          allKeys.push(sc.image || sc.id);
+          for (const p of sc.products || []) {
+            allKeys.push(p.image || p.id);
+          }
+        }
+      }
+
+      // Batch-fetch all images from the database
+      const imageMap = await fetchImageMap(allKeys);
+
+      for (const row of rows as any[]) {
+        const rawSubs: any[] = row.subcategories || [];
         const subcategories: Subcategory[] = rawSubs.map((sc: any) => {
-          const scSlot = makeSlot(sc.name, sc.image || sc.id, gender, "", section, categoryId, sc.id);
+          const scKey = sc.image || sc.id;
+          const scSlot: ImageSlot = { label: sc.name, imageKey: scKey, resolvedUrl: imageMap[scKey] || "", resolvedPath: "" };
           const rawProducts: any[] = sc.products || [];
-          const products: ImageSlot[] = rawProducts.map((p: any) =>
-            makeSlot(p.name, p.image || p.id, gender, "", section, categoryId, sc.id)
-          );
+          const products: ImageSlot[] = rawProducts.map((p: any) => {
+            const pKey = p.image || p.id;
+            return { label: p.name, imageKey: pKey, resolvedUrl: imageMap[pKey] || "", resolvedPath: "" };
+          });
           return { id: sc.id, name: sc.name, slot: scSlot, products };
         });
 
         const coverKey = row.image || row.key || "";
-        const firstSubId = rawSubs[0]?.id || "";
-        const coverUrl = coverKey ? getTemplateImage(coverKey, gender, section, categoryId, firstSubId) : "";
 
         sectionMap[row.section] = sectionMap[row.section] || [];
         sectionMap[row.section].push({
           key: row.key,
           label: row.label,
-          coverSlot: { label: row.label, imageKey: coverKey, resolvedUrl: coverUrl, resolvedPath: urlToPath(coverUrl) },
+          coverSlot: { label: row.label, imageKey: coverKey, resolvedUrl: imageMap[coverKey] || "", resolvedPath: "" },
           subcategories,
         });
       }
