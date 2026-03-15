@@ -96,12 +96,12 @@ const EntryFormCard = ({
       }}
     >
       {/* ── Header area ── */}
-      <div style={{ padding: `${16 * fs}px ${18 * fs}px ${8 * fs}px`, flexShrink: 0 }}>
-        {/* Top row: category + decorative accent */}
+      <div style={{ padding: `${16 * fs}px ${18 * fs}px ${6 * fs}px`, flexShrink: 0 }}>
+        {/* Top row: category label + index */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <p
             style={{
-              fontSize: 8 * fs,
+              fontSize: 7 * fs,
               letterSpacing: "0.22em",
               textTransform: "uppercase",
               color: "hsl(var(--swatch-teal))",
@@ -112,34 +112,56 @@ const EntryFormCard = ({
           >
             {subcategoryName || subtype.name}
           </p>
-          {/* Coral accent bar — editorial detail */}
-          <div style={{ display: "flex", gap: 3 * fs, alignItems: "center", marginTop: 2 * fs }}>
-            <div style={{ width: 20 * fs, height: 2.5 * fs, background: "#d4543a", borderRadius: 2 }} />
-            <div style={{ width: 8 * fs, height: 2.5 * fs, background: "rgba(212,84,58,0.35)", borderRadius: 2 }} />
-          </div>
+          <span
+            style={{
+              fontSize: 9 * fs,
+              fontFamily: "'Cormorant Garamond', serif",
+              color: "rgba(0,0,0,0.2)",
+              fontWeight: 300,
+              fontStyle: "italic",
+            }}
+          >
+            {isEditing ? "" : "new"}
+          </span>
         </div>
 
-        {/* Entry name — large editorial serif */}
-        <input
-          value={entryName}
-          onChange={(e) => onEntryNameChange(e.target.value)}
-          placeholder="Entry name…"
-          style={{
-            width: "100%",
-            background: "transparent",
-            border: "none",
-            borderBottom: "1.5px solid rgba(45,104,112,0.2)",
-            padding: `${6 * fs}px 0 ${6 * fs}px`,
-            fontSize: 22 * fs,
-            fontWeight: 600,
-            color: "hsl(var(--swatch-teal-dark))",
-            outline: "none",
-            fontFamily: "'Cormorant Garamond', serif",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.1,
-          }}
-        />
+        {/* Entry name — large bold black serif + photo placeholder */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginTop: 4 * fs }}>
+          <input
+            value={entryName}
+            onChange={(e) => onEntryNameChange(e.target.value)}
+            placeholder="Entry name…"
+            style={{
+              flex: 1,
+              background: "transparent",
+              border: "none",
+              padding: `${2 * fs}px 0`,
+              fontSize: 22 * fs,
+              fontWeight: 700,
+              color: "#1a1a1a",
+              outline: "none",
+              fontFamily: "'Cormorant Garamond', serif",
+              letterSpacing: "-0.02em",
+              lineHeight: 1.05,
+            }}
+          />
+          {/* Photo placeholder */}
+          <div
+            style={{
+              width: 42 * fs,
+              height: 42 * fs,
+              borderRadius: 6 * fs,
+              background: "rgba(200,191,180,0.35)",
+              border: "1.5px dashed rgba(160,150,138,0.4)",
+              flexShrink: 0,
+              marginLeft: 8 * fs,
+            }}
+          />
+        </div>
       </div>
+
+      {/* Divider */}
+      <div style={{ margin: `0 ${18 * fs}px`, height: 1, background: "rgba(0,0,0,0.08)" }} />
 
       {/* ── Fields area — scrollable ── */}
       <div
@@ -147,23 +169,21 @@ const EntryFormCard = ({
           flex: 1,
           overflowY: "auto",
           scrollbarWidth: "none",
-          padding: `${6 * fs}px ${18 * fs}px 0`,
+          padding: `${10 * fs}px ${18 * fs}px 0`,
         }}
       >
-        {subtype.fields.map((field, i) => (
+        {subtype.fields.map((field) => (
           <div
             key={field.label}
-            style={{
-              marginBottom: 10 * fs,
-            }}
+            style={{ marginBottom: 12 * fs }}
           >
             <p
               style={{
-                fontSize: 7.5 * fs,
+                fontSize: 6.5 * fs,
                 fontFamily: "'Jost', sans-serif",
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
-                color: "rgba(45,104,112,0.65)",
+                color: "rgba(0,0,0,0.38)",
                 marginBottom: 5 * fs,
                 fontWeight: 600,
               }}
@@ -171,7 +191,7 @@ const EntryFormCard = ({
               {field.label}
             </p>
             {field.type === "select" && field.options ? (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 * fs }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 * fs, alignItems: "center" }}>
                 {field.options.map((opt) => {
                   const isSelected = values[field.label] === opt;
                   return (
@@ -179,18 +199,16 @@ const EntryFormCard = ({
                       key={opt}
                       onClick={() => onChange(field.label, isSelected ? "" : opt)}
                       style={{
-                        padding: `${3 * fs}px ${10 * fs}px`,
+                        padding: `${3.5 * fs}px ${10 * fs}px`,
                         borderRadius: 999,
                         fontSize: 9 * fs,
                         fontFamily: "'Jost', sans-serif",
                         fontWeight: 500,
                         border: isSelected
-                          ? "1.5px solid hsl(var(--swatch-teal))"
-                          : "1px solid rgba(45,104,112,0.15)",
-                        background: isSelected
-                          ? "hsl(var(--swatch-teal))"
-                          : "rgba(255,255,255,0.6)",
-                        color: isSelected ? "#fff" : "#4a4a4a",
+                          ? "1.5px solid #d4543a"
+                          : "1px solid rgba(0,0,0,0.15)",
+                        background: isSelected ? "#d4543a" : "transparent",
+                        color: isSelected ? "#fff" : "#3a3a3a",
                         cursor: "pointer",
                         transition: "all 0.15s ease",
                       }}
@@ -207,11 +225,12 @@ const EntryFormCard = ({
                 placeholder="—"
                 style={{
                   width: "100%",
-                  background: "rgba(255,255,255,0.55)",
-                  border: "1px solid rgba(45,104,112,0.1)",
-                  borderRadius: 6 * fs,
-                  padding: `${6 * fs}px ${10 * fs}px`,
-                  fontSize: 11 * fs,
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: "1px solid rgba(0,0,0,0.08)",
+                  borderRadius: 0,
+                  padding: `${4 * fs}px 0`,
+                  fontSize: 10 * fs,
                   color: "#1a1a1a",
                   outline: "none",
                   fontFamily: "'Jost', sans-serif",
@@ -226,7 +245,7 @@ const EntryFormCard = ({
       {/* ── Bottom action row ── */}
       <div
         style={{
-          padding: `${8 * fs}px ${18 * fs}px ${12 * fs}px`,
+          padding: `${8 * fs}px ${18 * fs}px ${14 * fs}px`,
           display: "flex",
           gap: 6 * fs,
           flexShrink: 0,
@@ -237,37 +256,36 @@ const EntryFormCard = ({
           disabled={saving}
           style={{
             flex: 1,
-            height: 34 * fs,
-            borderRadius: 999,
-            background: "#d4543a",
+            height: 36 * fs,
+            borderRadius: 6 * fs,
+            background: "#1a1a1a",
             border: "none",
             color: "#fff",
-            fontSize: 9 * fs,
+            fontSize: 8.5 * fs,
             fontWeight: 700,
             fontFamily: "'Jost', sans-serif",
-            letterSpacing: "0.16em",
+            letterSpacing: "0.18em",
             textTransform: "uppercase",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 4px 20px rgba(212,84,58,0.30)",
             transition: "transform 0.15s ease",
           }}
         >
           {saving ? (
             <Loader2 style={{ width: 12 * fs, height: 12 * fs }} className="animate-spin" />
           ) : (
-            "Save"
+            "Save Entry"
           )}
         </button>
         {isEditing && (
           <button
             onClick={onDelete}
             style={{
-              width: 34 * fs,
-              height: 34 * fs,
-              borderRadius: 999,
+              width: 36 * fs,
+              height: 36 * fs,
+              borderRadius: 6 * fs,
               background: "rgba(212,84,58,0.08)",
               border: "1px solid rgba(212,84,58,0.25)",
               display: "flex",
