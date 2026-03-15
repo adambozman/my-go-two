@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, forwardRef } from "react";
 import { motion } from "framer-motion";
-import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
+import { FORM_CAROUSEL_LAYOUT, FORM_CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 
 export interface FormCoverFlowItem {
   id: string;
