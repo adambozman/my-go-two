@@ -83,9 +83,6 @@ const EntryFormCard = ({
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
   const fs = isDesktop ? 1.8 : 1;
 
-  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
-  const fs = isDesktop ? 1.8 : 1;
-
   return (
     <div style={{ width: "100%", height: "100%", background: "#f0e8d8", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
