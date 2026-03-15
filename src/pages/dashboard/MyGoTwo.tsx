@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Check, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoCoverFlow from "@/components/GoTwoCoverFlow";
 import TemplateCoverFlow, { type SubtypeItem, type SubcategoryGroup } from "@/components/TemplateCoverFlow";
-import CoverFlowCarousel from "@/components/ui/CoverFlowCarousel";
+import FormCoverFlowCarousel from "@/components/ui/FormCoverFlowCarousel";
 import {
   Dialog,
   DialogContent,
@@ -38,12 +38,6 @@ interface CoverFlowState {
   categoryId: string;
 }
 
-interface FieldState {
-  subtype: SubtypeItem;
-  subcategoryName?: string;
-  values: Record<string, string>;
-}
-
 interface CardEntry {
   id: string;
   user_id: string;
@@ -55,127 +49,93 @@ interface CardEntry {
   updated_at: string;
 }
 
-// Branded gradient SVG for user-created cards (no photo)
 const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
+const NEW_ENTRY_ID = "__new_entry__";
 
-// ── Level 4: Field fill-out form ──
-const FieldForm = ({
-  fieldState,
-  onSave,
-  saving,
+const EntryFormCard = ({
+  subtype,
+  subcategoryName,
   entryName,
-  onDelete,
+  values,
+  saving,
   isEditing,
+  onEntryNameChange,
+  onChange,
+  onSave,
+  onDelete,
 }: {
-  fieldState: FieldState;
-  onSave: (values: Record<string, string>) => void;
-  saving: boolean;
+  subtype: SubtypeItem;
+  subcategoryName?: string;
   entryName: string;
-  onDelete?: () => void;
+  values: Record<string, string>;
+  saving: boolean;
   isEditing: boolean;
+  onEntryNameChange: (name: string) => void;
+  onChange: (fieldLabel: string, value: string) => void;
+  onSave: () => void;
+  onDelete: () => void;
 }) => {
-  const [values, setValues] = useState<Record<string, string>>(fieldState.values);
-
-  const handleChange = (label: string, value: string) => {
-    setValues((prev) => ({ ...prev, [label]: value }));
-  };
-
   return (
-    <motion.div
-      key="field-form"
-      initial={{ opacity: 0, x: 40 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -40 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="h-full flex flex-col items-center justify-start overflow-y-auto py-8 px-4 md:px-8"
-      style={{ scrollbarWidth: "none" }}
-    >
-      <div
-        className="w-full max-w-xl rounded-3xl flex flex-col gap-6 p-8"
-        style={{
-          background: "rgba(255,255,255,0.6)",
-          backdropFilter: "blur(12px)",
-          boxShadow: "0 8px 40px rgba(45,104,112,0.10), 0 1px 0 rgba(255,255,255,0.8) inset",
-          border: "1px solid rgba(45,104,112,0.10)",
-        }}
-      >
-        <div className="flex flex-col gap-1">
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 13, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--swatch-teal)", opacity: 0.7 }}>
-            {fieldState.subcategoryName || "Preferences"}
-          </p>
-          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 700, letterSpacing: "0.04em", color: "var(--swatch-viridian-odyssey)", lineHeight: 1.1 }}>
-            {entryName}
-          </h2>
-        </div>
-
-        <div style={{ height: 1, background: "rgba(45,104,112,0.12)" }} />
-
-        <div className="flex flex-col gap-6">
-          {fieldState.subtype.fields.map((field) => (
-            <div key={field.label} className="flex flex-col gap-2">
-              <label style={{ fontFamily: "'Jost', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--swatch-teal)" }}>
-                {field.label}
-              </label>
-              {field.type === "select" && field.options ? (
-                <div className="flex flex-wrap gap-2">
-                  {field.options.map((opt) => {
-                    const isSelected = values[field.label] === opt;
-                    return (
-                      <button
-                        key={opt}
-                        onClick={() => handleChange(field.label, isSelected ? "" : opt)}
-                        className="transition-all"
-                        style={{
-                          padding: "8px 18px",
-                          borderRadius: 999,
-                          fontFamily: "'Jost', sans-serif",
-                          fontSize: 13,
-                          fontWeight: 500,
-                          background: isSelected ? "var(--swatch-teal)" : "rgba(45,104,112,0.06)",
-                          color: isSelected ? "#fff" : "var(--swatch-teal)",
-                          border: `1.5px solid ${isSelected ? "var(--swatch-teal)" : "rgba(45,104,112,0.18)"}`,
-                        }}
-                      >
-                        {opt}
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <Input
-                  value={values[field.label] || ""}
-                  onChange={(e) => handleChange(field.label, e.target.value)}
-                  placeholder={`Enter ${field.label.toLowerCase()}`}
-                  className="rounded-xl h-11"
-                  style={{ background: "rgba(45,104,112,0.04)", border: "1.5px solid rgba(45,104,112,0.15)" }}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-
-        <div className="flex gap-3 mt-2">
-          <Button
-            onClick={() => onSave(values)}
-            disabled={saving}
-            className="flex-1 h-12 rounded-full text-base font-semibold"
-            style={{ background: "#d4543a", fontFamily: "'Jost', sans-serif", letterSpacing: "0.08em" }}
-          >
-            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Check className="w-5 h-5 mr-2" />Save</>}
-          </Button>
-          {isEditing && onDelete && (
-            <Button
-              onClick={onDelete}
-              variant="outline"
-              className="h-12 rounded-full px-4"
-              style={{ borderColor: "rgba(212,84,58,0.3)", color: "#d4543a" }}
-            >
-              <Trash2 className="w-5 h-5" />
-            </Button>
-          )}
-        </div>
+    <div className="w-full h-full flex flex-col bg-card/95 p-6">
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground" style={{ fontFamily: "'Jost', sans-serif" }}>
+          {subcategoryName || "Preferences"}
+        </p>
       </div>
-    </motion.div>
+
+      <Input
+        value={entryName}
+        onChange={(e) => onEntryNameChange(e.target.value)}
+        placeholder={`Name this ${subtype.name.toLowerCase()} entry`}
+        className="rounded-xl h-10 mb-4 bg-background/80"
+      />
+
+      <div className="flex-1 overflow-y-auto pr-1 space-y-4" style={{ scrollbarWidth: "none" }}>
+        {subtype.fields.map((field) => (
+          <div key={field.label} className="space-y-2">
+            <label className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground" style={{ fontFamily: "'Jost', sans-serif" }}>
+              {field.label}
+            </label>
+            {field.type === "select" && field.options ? (
+              <div className="flex flex-wrap gap-2">
+                {field.options.map((opt) => {
+                  const isSelected = values[field.label] === opt;
+                  return (
+                    <button
+                      key={opt}
+                      onClick={() => onChange(field.label, isSelected ? "" : opt)}
+                      className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                        isSelected ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/40 text-foreground border-border"
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <Input
+                value={values[field.label] || ""}
+                onChange={(e) => onChange(field.label, e.target.value)}
+                placeholder={`Enter ${field.label.toLowerCase()}`}
+                className="rounded-xl h-10 bg-background/80"
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="flex gap-2 mt-4">
+        <Button onClick={onSave} disabled={saving} className="flex-1 h-10 rounded-full bg-primary text-primary-foreground">
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Check className="w-4 h-4 mr-2" />Save</>}
+        </Button>
+        {isEditing && (
+          <Button onClick={onDelete} variant="outline" className="h-10 rounded-full px-3 text-destructive border-destructive/40">
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        )}
+      </div>
+    </div>
   );
 };
 
@@ -189,22 +149,31 @@ const MyGoTwo = () => {
 
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
-  const [fieldState, setFieldState] = useState<FieldState | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const savedScrollTop = useRef(0);
 
-  // Multi-entry state
+  // Entry coverflow state
   const [cardKey, setCardKey] = useState<string | null>(null);
   const [entries, setEntries] = useState<CardEntry[]>([]);
-  const [editingEntry, setEditingEntry] = useState<CardEntry | null>(null);
-  const [showNameDialog, setShowNameDialog] = useState(false);
-  const [newName, setNewName] = useState("");
+  const [activeEntryIndex, setActiveEntryIndex] = useState(0);
+  const [entryDrafts, setEntryDrafts] = useState<Record<string, Record<string, string>>>({});
+  const [entryNames, setEntryNames] = useState<Record<string, string>>({});
+  const [showGroupDialog, setShowGroupDialog] = useState(false);
+  const [groupNameInput, setGroupNameInput] = useState("");
+  const [activeGroup, setActiveGroup] = useState("");
   const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
 
-  // Fetch entries when cardKey changes
+  const defaultFieldValues = useMemo(() => {
+    if (!leafSubtype) return {} as Record<string, string>;
+    return leafSubtype.fields.reduce(
+      (acc, field) => ({ ...acc, [field.label]: field.value || "" }),
+      {} as Record<string, string>
+    );
+  }, [leafSubtype]);
+
   const fetchEntries = useCallback(async () => {
     if (!user || !cardKey) return;
     const { data } = await supabase
@@ -213,6 +182,7 @@ const MyGoTwo = () => {
       .eq("user_id", user.id)
       .eq("card_key", cardKey)
       .order("created_at", { ascending: true });
+
     setEntries((data as CardEntry[]) || []);
   }, [user, cardKey]);
 
@@ -220,13 +190,36 @@ const MyGoTwo = () => {
     fetchEntries();
   }, [fetchEntries]);
 
+  useEffect(() => {
+    if (!leafSubtype || !cardKey) return;
+
+    const nextDrafts: Record<string, Record<string, string>> = {};
+    const nextNames: Record<string, string> = {};
+
+    entries.forEach((entry) => {
+      nextDrafts[entry.id] = (entry.field_values as Record<string, string>) || {};
+      nextNames[entry.id] = entry.entry_name;
+    });
+
+    nextDrafts[NEW_ENTRY_ID] = defaultFieldValues;
+    nextNames[NEW_ENTRY_ID] = "";
+
+    setEntryDrafts(nextDrafts);
+    setEntryNames(nextNames);
+    setActiveEntryIndex((prev) => Math.min(prev, entries.length));
+
+    if (!activeGroup) {
+      setActiveGroup(leafSubtype.name);
+    }
+  }, [entries, leafSubtype, defaultFieldValues, cardKey, activeGroup]);
+
   const clearCoverFlow = () => {
     setCoverFlowState(null);
     setActiveSubcategory(null);
     setCardKey(null);
-    setEditingEntry(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
+    setActiveEntryIndex(0);
     requestAnimationFrame(() => {
       if (scrollRef.current) {
         scrollRef.current.scrollTop = savedScrollTop.current;
@@ -234,27 +227,18 @@ const MyGoTwo = () => {
     });
   };
 
-  const goBackFromField = () => {
-    setFieldState(null);
-    setEditingEntry(null);
-  };
-
   const goBackFromEntries = () => {
     setCardKey(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
+    setActiveEntryIndex(0);
     if (activeSubcategory && (!activeSubcategory.products || activeSubcategory.products.length === 0)) {
       setActiveSubcategory(null);
     }
   };
 
-  // Back button wiring
   useEffect(() => {
-    if (fieldState && editingEntry) {
-      setBackState({ label: editingEntry.entry_name, onBack: goBackFromField });
-    } else if (fieldState && !editingEntry) {
-      setBackState({ label: "New Entry", onBack: goBackFromField });
-    } else if (cardKey) {
+    if (cardKey) {
       setBackState({ label: leafSubtype?.name || "Entries", onBack: goBackFromEntries });
     } else if (activeSubcategory && coverFlowState) {
       setBackState({ label: activeSubcategory.name, onBack: () => setActiveSubcategory(null) });
@@ -263,7 +247,7 @@ const MyGoTwo = () => {
     } else {
       setBackState(null);
     }
-  }, [coverFlowState, activeSubcategory, fieldState, cardKey, editingEntry, leafSubtype]);
+  }, [coverFlowState, activeSubcategory, cardKey, leafSubtype]);
 
   const handleCategoryClick = (item: CategoryItem) => {
     if (scrollRef.current) {
@@ -280,7 +264,10 @@ const MyGoTwo = () => {
     for (const sectionKey of sectionOrder) {
       const items = sections[sectionKey] || [];
       const item = items.find((c) => c.key === categoryKey);
-      if (item) { handleCategoryClick(item); return; }
+      if (item) {
+        handleCategoryClick(item);
+        return;
+      }
     }
   };
 
@@ -288,89 +275,88 @@ const MyGoTwo = () => {
     if (sc.products && sc.products.length > 0) {
       setActiveSubcategory(sc);
     } else {
-      // Subcategory IS the leaf — go to entries coverflow
       setActiveSubcategory(sc);
       const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
       setCardKey(key);
       setLeafSubtype(sc as unknown as SubtypeItem);
       setLeafSubcategoryName(coverFlowState?.name);
+      setActiveEntryIndex(0);
     }
   };
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
-    // Go to entries coverflow
     const key = `${coverFlowState?.name}__${subcategoryName || ""}__${subtype.name}`;
     setCardKey(key);
     setLeafSubtype(subtype);
     setLeafSubcategoryName(subcategoryName);
+    setActiveEntryIndex(0);
   };
 
-  // Group coverflow items
-  const distinctGroups = [...new Set(entries.map(e => e.group_name))];
-  const groupCoverFlowItems = distinctGroups.map(g => ({
-    id: g,
-    label: g,
-    image: BRANDED_CARD_SVG,
-  }));
+  const entryCoverFlowItems = [
+    ...entries.map((entry) => ({
+      id: entry.id,
+      label: entryNames[entry.id] || entry.entry_name,
+      image: BRANDED_CARD_SVG,
+    })),
+    {
+      id: NEW_ENTRY_ID,
+      label: entryNames[NEW_ENTRY_ID]?.trim() || "New Card",
+      image: BRANDED_CARD_SVG,
+    },
+  ];
 
-  // Entry coverflow items — flat, no groups
-  const entryCoverFlowItems = entries.map(e => ({
-    id: e.id,
-    label: e.entry_name,
-    image: BRANDED_CARD_SVG,
-  }));
-
-  const handleEntrySelect = (id: string) => {
-    const entry = entries.find(e => e.id === id);
-    if (entry && leafSubtype) {
-      setEditingEntry(entry);
-      setFieldState({
-        subtype: leafSubtype,
-        subcategoryName: leafSubcategoryName,
-        values: (entry.field_values as Record<string, string>) || {},
-      });
-    }
+  const handleNameChange = (itemId: string, value: string) => {
+    setEntryNames((prev) => ({ ...prev, [itemId]: value }));
   };
 
-  const handleCreateEntry = () => {
-    if (!newName.trim() || !leafSubtype) return;
-    setShowNameDialog(false);
-    setEditingEntry({ entry_name: newName.trim() } as any);
-    setFieldState({
-      subtype: leafSubtype,
-      subcategoryName: leafSubcategoryName,
-      values: leafSubtype.fields.reduce((acc, f) => ({ ...acc, [f.label]: (f as any).value || "" }), {} as Record<string, string>),
-    });
+  const handleFieldChange = (itemId: string, fieldLabel: string, value: string) => {
+    setEntryDrafts((prev) => ({
+      ...prev,
+      [itemId]: {
+        ...(prev[itemId] || {}),
+        [fieldLabel]: value,
+      },
+    }));
   };
 
-  const handleSave = async (values: Record<string, string>) => {
-    if (!user || !cardKey) return;
+  const handleSaveEntry = async (itemId: string) => {
+    if (!user || !cardKey || !leafSubtype) return;
+
+    const entryName = (entryNames[itemId] || "").trim() || `${leafSubtype.name} ${entries.length + 1}`;
+    const fieldValues = entryDrafts[itemId] || defaultFieldValues;
+
     setSaving(true);
     try {
-      if (editingEntry?.id) {
-        const { error } = await supabase
-          .from("card_entries")
-          .update({ field_values: values })
-          .eq("id", editingEntry.id);
-        if (error) throw error;
-        toast({ title: "Updated!", description: `${editingEntry.entry_name} saved.` });
-      } else {
-        const entryName = editingEntry?.entry_name || "Untitled";
-        const { error } = await supabase
+      if (itemId === NEW_ENTRY_ID) {
+        const { data, error } = await supabase
           .from("card_entries")
           .insert({
             user_id: user.id,
             card_key: cardKey,
-            group_name: leafSubtype?.name || "",
+            group_name: activeGroup || leafSubtype.name,
             entry_name: entryName,
-            field_values: values,
-          });
+            field_values: fieldValues,
+          })
+          .select("*")
+          .single();
+
         if (error) throw error;
+
+        const inserted = data as CardEntry;
+        setEntries((prev) => [...prev, inserted]);
+        setActiveEntryIndex(entries.length);
         toast({ title: "Saved!", description: `${entryName} created.` });
+      } else {
+        const { error } = await supabase
+          .from("card_entries")
+          .update({ entry_name: entryName, field_values: fieldValues })
+          .eq("id", itemId);
+
+        if (error) throw error;
+
+        setEntries((prev) => prev.map((entry) => (entry.id === itemId ? { ...entry, entry_name: entryName, field_values: fieldValues } : entry)));
+        toast({ title: "Updated!", description: `${entryName} saved.` });
       }
-      setFieldState(null);
-      setEditingEntry(null);
-      await fetchEntries();
     } catch (e: any) {
       toast({ title: "Error saving", description: e.message, variant: "destructive" });
     } finally {
@@ -378,24 +364,30 @@ const MyGoTwo = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!editingEntry?.id) return;
+  const handleDeleteEntry = async (itemId: string) => {
+    if (!itemId || itemId === NEW_ENTRY_ID) return;
+
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("card_entries")
-        .delete()
-        .eq("id", editingEntry.id);
+      const { error } = await supabase.from("card_entries").delete().eq("id", itemId);
       if (error) throw error;
-      toast({ title: "Deleted", description: `${editingEntry.entry_name} removed.` });
-      setFieldState(null);
-      setEditingEntry(null);
-      await fetchEntries();
+
+      setEntries((prev) => prev.filter((entry) => entry.id !== itemId));
+      setActiveEntryIndex(0);
+      toast({ title: "Deleted", description: "Entry removed." });
     } catch (e: any) {
       toast({ title: "Error deleting", description: e.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleCreateGroup = () => {
+    if (!groupNameInput.trim()) return;
+    setActiveGroup(groupNameInput.trim());
+    setShowGroupDialog(false);
+    setGroupNameInput("");
+    toast({ title: "Group selected", description: `New cards will save under ${groupNameInput.trim()}.` });
   };
 
   if (registryLoading || genderLoading) {
@@ -412,23 +404,7 @@ const MyGoTwo = () => {
 
   // Determine which view to show
   const renderContent = () => {
-    // Level 6: Field form (editing/creating an entry)
-    if (fieldState && cardKey) {
-      return (
-        <FieldForm
-          key="field-form"
-          fieldState={fieldState}
-          onSave={handleSave}
-          saving={saving}
-          entryName={editingEntry?.entry_name || "New Entry"}
-          onDelete={editingEntry?.id ? handleDelete : undefined}
-          isEditing={!!editingEntry?.id}
-        />
-      );
-    }
-
-    // Entries coverflow
-    if (cardKey) {
+    if (cardKey && leafSubtype) {
       return (
         <motion.div
           key="entry-coverflow"
@@ -436,50 +412,47 @@ const MyGoTwo = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -40 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="h-full flex flex-col items-center justify-center"
+          className="h-full flex flex-col items-center justify-center px-4"
         >
-          {entryCoverFlowItems.length > 0 ? (
-            <CoverFlowCarousel
-              items={entryCoverFlowItems}
-              onSelect={handleEntrySelect}
-            />
-          ) : (
-            <p
-              className="text-center mb-4"
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 20,
-                fontStyle: "italic",
-                color: "var(--swatch-teal)",
-                opacity: 0.6,
-              }}
+          <FormCoverFlowCarousel
+            items={entryCoverFlowItems}
+            activeIndex={activeEntryIndex}
+            onActiveIndexChange={setActiveEntryIndex}
+            renderActiveCard={(item) => (
+              <EntryFormCard
+                subtype={leafSubtype}
+                subcategoryName={leafSubcategoryName}
+                entryName={entryNames[item.id] || ""}
+                values={entryDrafts[item.id] || defaultFieldValues}
+                saving={saving}
+                isEditing={item.id !== NEW_ENTRY_ID}
+                onEntryNameChange={(name) => handleNameChange(item.id, name)}
+                onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
+                onSave={() => handleSaveEntry(item.id)}
+                onDelete={() => handleDeleteEntry(item.id)}
+              />
+            )}
+          />
+
+          <div className="mt-8 flex items-center gap-3">
+            <Button
+              variant="outline"
+              className="rounded-full px-6 h-10 border-border text-foreground"
+              onClick={() => setShowGroupDialog(true)}
             >
-              No entries yet
-            </p>
-          )}
-          <button
-            onClick={() => { setNewName(""); setShowNameDialog(true); }}
-            className="mt-8 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
-            style={{
-              padding: "12px 28px",
-              borderRadius: 999,
-              fontFamily: "'Jost', sans-serif",
-              fontSize: 14,
-              fontWeight: 600,
-              letterSpacing: "0.06em",
-              color: "#fff",
-              background: "var(--swatch-cedar-grove)",
-              boxShadow: "0 4px 16px rgba(212,84,58,0.25)",
-            }}
-          >
-            <Plus className="w-4 h-4" />
-            Add New
-          </button>
+              <Plus className="w-4 h-4 mr-2" />
+              New Group
+            </Button>
+            {activeGroup && (
+              <span className="text-sm text-muted-foreground" style={{ fontFamily: "'Jost', sans-serif" }}>
+                Saving to: {activeGroup}
+              </span>
+            )}
+          </div>
         </motion.div>
       );
     }
 
-    // Level 2-3: TemplateCoverFlow (subcategory/product picker)
     if (coverFlowState) {
       return (
         <TemplateCoverFlow
@@ -499,7 +472,6 @@ const MyGoTwo = () => {
       );
     }
 
-    // Level 1: Section coverflows
     return (
       <motion.div
         key="main"
@@ -542,48 +514,26 @@ const MyGoTwo = () => {
         {renderContent()}
       </AnimatePresence>
 
-      {/* Name dialog for creating entries */}
-      <Dialog open={showNameDialog} onOpenChange={() => setShowNameDialog(false)}>
-        <DialogContent
-          className="rounded-3xl"
-          style={{
-            background: "rgba(255,255,255,0.95)",
-            backdropFilter: "blur(16px)",
-            border: "1px solid rgba(45,104,112,0.12)",
-          }}
-        >
+      {/* Group dialog */}
+      <Dialog open={showGroupDialog} onOpenChange={() => setShowGroupDialog(false)}>
+        <DialogContent className="rounded-3xl bg-card">
           <DialogHeader>
-            <DialogTitle
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 22,
-                fontWeight: 700,
-                color: "var(--swatch-viridian-odyssey)",
-              }}
-            >
-              Name Your Entry
-            </DialogTitle>
+            <DialogTitle style={{ fontFamily: "'Cormorant Garamond', serif" }}>Create Group</DialogTitle>
           </DialogHeader>
           <Input
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            placeholder="e.g. My usual, Taco Bell, Late night..."
+            value={groupNameInput}
+            onChange={(e) => setGroupNameInput(e.target.value)}
+            placeholder="e.g. Taco Bell, McDonald's"
             className="rounded-xl h-12 mt-2"
-            style={{ background: "rgba(45,104,112,0.04)", border: "1.5px solid rgba(45,104,112,0.15)" }}
             autoFocus
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleCreateEntry();
+              if (e.key === "Enter") handleCreateGroup();
             }}
           />
           <DialogFooter>
-            <Button
-              onClick={handleCreateEntry}
-              disabled={!newName.trim()}
-              className="rounded-full px-8 h-11"
-              style={{ background: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif", letterSpacing: "0.08em" }}
-            >
+            <Button onClick={handleCreateGroup} disabled={!groupNameInput.trim()} className="rounded-full px-8 h-11">
               <Plus className="w-4 h-4 mr-2" />
-              Create
+              Save Group
             </Button>
           </DialogFooter>
         </DialogContent>
