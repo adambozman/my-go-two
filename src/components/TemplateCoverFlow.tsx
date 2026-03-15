@@ -53,6 +53,7 @@ function useImageMap(keys: string[]) {
 }
 
 const TemplateCoverFlow = ({
+  templateName,
   subtypes,
   subcategories,
   activeSubcategory,
