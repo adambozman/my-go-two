@@ -638,6 +638,11 @@ const MyGoTwo = () => {
           [inserted.id]: entryName,
           [NEW_ENTRY_ID]: "",
         }));
+        setEntryImages((prev) => ({
+          ...prev,
+          [inserted.id]: entryImages[NEW_ENTRY_ID] || null,
+          [NEW_ENTRY_ID]: null,
+        }));
         // Navigate to the newly saved card
         setActiveEntryIndex(entries.length);
         toast({ title: "Saved!", description: `${entryName} created.` });
