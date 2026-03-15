@@ -5368,5 +5368,568 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       }
     ],
     "image": "beverages-nb"
+  },
+  {
+    "key": "hygiene-male",
+    "label": "Hygiene",
+    "section": "personal",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 10,
+    "is_active": true,
+    "fields": [],
+    "image": "hygiene-male",
+    "subcategories": [
+      {
+        "id": "oral-care",
+        "name": "Oral Care",
+        "image": "hygiene-male-oral-care",
+        "fields": [
+          {
+            "label": "Toothbrush",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Manual",
+              "Electric",
+              "Sonic"
+            ]
+          },
+          {
+            "label": "Toothpaste",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Floss",
+            "type": "select",
+            "value": "",
+            "options": [
+              "String",
+              "Picks",
+              "Water Flosser",
+              "None"
+            ]
+          },
+          {
+            "label": "Mouthwash",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Whitening",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Yes",
+              "No",
+              "Sometimes"
+            ]
+          },
+          {
+            "label": "Notes",
+            "type": "text",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "id": "bath-shower",
+        "name": "Bath & Shower",
+        "image": "hygiene-male-bath-shower",
+        "fields": [
+          {
+            "label": "Preference",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Shower",
+              "Bath",
+              "Both"
+            ]
+          },
+          {
+            "label": "Temperature",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Cold",
+              "Warm",
+              "Hot"
+            ]
+          },
+          {
+            "label": "Body Wash",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Shampoo",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Frequency",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Once a Day",
+              "Twice a Day",
+              "Every Other Day"
+            ]
+          },
+          {
+            "label": "Notes",
+            "type": "text",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "id": "grooming",
+        "name": "Grooming",
+        "image": "hygiene-male-grooming",
+        "fields": [
+          {
+            "label": "Shaving Style",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Clean Shave",
+              "Beard",
+              "Stubble",
+              "Mustache"
+            ]
+          },
+          {
+            "label": "Razor",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Cartridge",
+              "Safety Razor",
+              "Electric",
+              "Straight"
+            ]
+          },
+          {
+            "label": "Nail Care",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Clip at Home",
+              "Professional",
+              "Rarely"
+            ]
+          },
+          {
+            "label": "Preferred Barber",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Haircut Frequency",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Weekly",
+              "Every 2 Weeks",
+              "Monthly",
+              "Less Often"
+            ]
+          },
+          {
+            "label": "Notes",
+            "type": "text",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "id": "repair-restore",
+        "name": "Repair & Restore",
+        "image": "hygiene-male-repair-restore",
+        "fields": [
+          {
+            "label": "Anti-Chafe",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Muscle Relief",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Foot Care",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "After Sport Routine",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Recovery Products",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Notes",
+            "type": "text",
+            "value": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "skincare-male",
+    "label": "Skincare",
+    "section": "personal",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 20,
+    "is_active": true,
+    "fields": [],
+    "image": "skincare-male",
+    "subcategories": [
+      {
+        "id": "face-wash-cleanse",
+        "name": "Face Wash & Cleanse",
+        "image": "skincare-male-face-wash-cleanse",
+        "fields": [
+          {
+            "label": "Cleanser",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Skin Type",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Oily",
+              "Dry",
+              "Combination",
+              "Normal",
+              "Sensitive"
+            ]
+          },
+          {
+            "label": "Frequency",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Morning Only",
+              "Night Only",
+              "Morning & Night"
+            ]
+          },
+          {
+            "label": "Exfoliate",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Yes",
+              "No",
+              "Sometimes"
+            ]
+          },
+          {
+            "label": "Preferred Brand",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Notes",
+            "type": "text",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "id": "moisturize-protect",
+        "name": "Moisturize & Protect",
+        "image": "skincare-male-moisturize-protect",
+        "fields": [
+          {
+            "label": "Moisturizer",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "SPF",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Yes Daily",
+              "Sometimes",
+              "No"
+            ]
+          },
+          {
+            "label": "SPF Product",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Texture Preference",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Gel",
+              "Cream",
+              "Lotion",
+              "Oil"
+            ]
+          },
+          {
+            "label": "Preferred Brand",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Notes",
+            "type": "text",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "id": "beard-mustache",
+        "name": "Beard & Mustache",
+        "image": "skincare-male-beard-mustache",
+        "fields": [
+          {
+            "label": "Beard Oil",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Beard Balm",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Beard Wash",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Mustache Wax",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Trimmer",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Notes",
+            "type": "text",
+            "value": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "bodycare-male",
+    "label": "Bodycare",
+    "section": "personal",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 30,
+    "is_active": true,
+    "fields": [],
+    "image": "bodycare-male",
+    "subcategories": [
+      {
+        "id": "cologne-fragrance",
+        "name": "Cologne & Fragrance",
+        "image": "bodycare-male-cologne-fragrance",
+        "fields": [
+          {
+            "label": "Daily Cologne",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Occasion Cologne",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Preferred Notes",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Woody",
+              "Fresh",
+              "Spicy",
+              "Citrus",
+              "Aquatic",
+              "Gourmand"
+            ]
+          },
+          {
+            "label": "Intensity",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Light",
+              "Medium",
+              "Strong"
+            ]
+          },
+          {
+            "label": "Preferred Brand",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Notes",
+            "type": "text",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "id": "muscle-sport",
+        "name": "Muscle & Sport",
+        "image": "bodycare-male-muscle-sport",
+        "fields": [
+          {
+            "label": "Muscle Rub",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Recovery Method",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Ice Bath",
+              "Epsom Salt",
+              "Foam Roll",
+              "Massage",
+              "Nothing"
+            ]
+          },
+          {
+            "label": "Cooling Gel",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Heating Patch",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Preferred Brand",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Notes",
+            "type": "text",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "id": "powders",
+        "name": "Powders",
+        "image": "bodycare-male-powders",
+        "fields": [
+          {
+            "label": "Body Powder",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Foot Powder",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Preferred Brand",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Usage",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Daily",
+              "After Sport",
+              "As Needed"
+            ]
+          },
+          {
+            "label": "Scented or Unscented",
+            "type": "select",
+            "value": "",
+            "options": [
+              "Scented",
+              "Unscented"
+            ]
+          },
+          {
+            "label": "Notes",
+            "type": "text",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "id": "supplements",
+        "name": "Supplements",
+        "image": "bodycare-male-supplements",
+        "fields": [
+          {
+            "label": "Daily Supplements",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Protein",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Pre-Workout",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Vitamins",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Preferred Brand",
+            "type": "text",
+            "value": ""
+          },
+          {
+            "label": "Notes",
+            "type": "text",
+            "value": ""
+          }
+        ]
+      }
+    ]
   }
 ];
