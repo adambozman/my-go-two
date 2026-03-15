@@ -45,9 +45,9 @@ const FormCoverFlowCarousel = ({
   const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
 
   const n = items.length;
-  if (n === 0) return null;
 
   useEffect(() => {
+    if (n === 0) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") onActiveIndexChange((activeIndex - 1 + n) % n);
       if (e.key === "ArrowRight") onActiveIndexChange((activeIndex + 1) % n);
@@ -55,6 +55,8 @@ const FormCoverFlowCarousel = ({
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [activeIndex, n, onActiveIndexChange]);
+
+  if (n === 0) return null;
 
   const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
