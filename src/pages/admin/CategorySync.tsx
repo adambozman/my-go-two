@@ -37,9 +37,11 @@ const CategorySync = () => {
         .neq("key", "");
       if (delError) throw delError;
 
+      // Strip image field — column may not exist in schema yet
+      const seedToInsert = (seed as any[]).map(({ image, ...rest }: any) => rest);
       const { error: insError } = await supabase
         .from("category_registry")
-        .insert(seed as any);
+        .insert(seedToInsert as any);
       if (insError) throw insError;
 
       setStatus("done");
