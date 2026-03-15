@@ -10,7 +10,7 @@ import { ArrowLeft, ChevronDown, ChevronRight, X, ImagePlus } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { setImageUrl, deleteImageUrl, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { supabase } from "@/integrations/supabase/client";
-import { isPathBlocked, initBlocklist } from "@/data/imageBlocklist";
+import { addToBlocklist, isPathBlocked, initBlocklist } from "@/data/imageBlocklist";
 import { toast } from "sonner";
 import type { Gender } from "@/lib/gender";
 
