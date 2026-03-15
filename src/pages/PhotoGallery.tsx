@@ -385,17 +385,6 @@ export default function PhotoGallery() {
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <h1 className="text-lg font-semibold">Image Bank</h1>
-        {deletedKeys.size > 0 && (
-          <>
-            <Button onClick={handleGetAll} size="sm" className="gap-2 ml-2" style={{ background: "var(--swatch-teal)", color: "#fff" }}>
-              <RefreshCw className="w-4 h-4" />
-              Get Photos ({deletedKeys.size})
-            </Button>
-            <Button onClick={handlePhotosReplaced} size="sm" variant="outline" className="gap-2">
-              ✓ Photos Replaced
-            </Button>
-          </>
-        )}
         <div className="flex gap-2 ml-auto">
           {MAIN_TABS.map(tab => (
             <button
