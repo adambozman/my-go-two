@@ -575,6 +575,32 @@ const MyGoTwo = () => {
     }));
   };
 
+  const handleImageUpload = async (itemId: string, file: File) => {
+    if (!user) return;
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${user.id}/${itemId === NEW_ENTRY_ID ? Date.now() : itemId}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("card-images")
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" });
+      return;
+    }
+
+    const { data: urlData } = supabase.storage.from("card-images").getPublicUrl(path);
+    const publicUrl = urlData.publicUrl;
+
+    setEntryImages((prev) => ({ ...prev, [itemId]: publicUrl }));
+
+    // If editing an existing entry, save image_url immediately
+    if (itemId !== NEW_ENTRY_ID) {
+      await supabase.from("card_entries").update({ image_url: publicUrl }).eq("id", itemId);
+      setEntries((prev) => prev.map((e) => e.id === itemId ? { ...e, image_url: publicUrl } : e));
+    }
+  };
+
   const handleSaveEntry = async (itemId: string) => {
     if (!user || !cardKey || !leafSubtype) return;
 
