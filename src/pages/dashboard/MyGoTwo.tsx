@@ -107,7 +107,7 @@ const EntryFormCard = ({
             color: "#1a1a1a", fontFamily: "'Cormorant Garamond', serif", overflow: "hidden",
           }}
         />
-        <div style={{ width: 90, height: 110, borderRadius: 10, background: "#c8bfb4", flexShrink: 0, overflow: "hidden", marginTop: 4 }} />
+        <div style={{ width: 140, height: 160, borderRadius: 10, background: "#c8bfb4", flexShrink: 0, overflow: "hidden", marginTop: 4 }} />
       </div>
 
       {/* Coral accent */}
