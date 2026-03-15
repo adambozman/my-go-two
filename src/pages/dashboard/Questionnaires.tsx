@@ -34,6 +34,7 @@ const SECTION_FILTERS: Record<string, string[]> = {
 };
 
 const SECTIONS = [
+  { id: "all", label: "All" },
   { id: "style-fit", label: "Style & Fit" },
   { id: "shopping", label: "Shopping" },
   { id: "lifestyle-gifts", label: "Lifestyle & Gifts" },
