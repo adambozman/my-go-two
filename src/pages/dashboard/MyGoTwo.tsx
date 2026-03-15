@@ -252,32 +252,10 @@ const EntryFormCard = ({
 
         {/* Invisible title box (fixed) — prevents random wraps */}
         <div style={{ maxWidth: "calc(100% - 196px)", height: 190 }}>
-          <textarea
-            className="gotwo-title"
+          <AutoFitTitle
             value={entryName}
-            onChange={(e) => onEntryNameChange(e.target.value)}
             placeholder={subtype.name}
-            style={{
-              display: "block",
-              width: "100%",
-              height: "100%",
-              background: "transparent",
-              border: "none",
-              outline: "none",
-              resize: "none",
-              fontSize: 46,
-              fontWeight: 700,
-              lineHeight: 0.95,
-              letterSpacing: "-0.02em",
-              color: "#1a1a1a",
-              fontFamily: "'Cormorant Garamond', serif",
-              overflow: "hidden",
-              boxSizing: "border-box",
-              padding: 0,
-              overflowWrap: "normal",
-              wordBreak: "keep-all",
-              hyphens: "manual",
-            }}
+            onChange={onEntryNameChange}
           />
         </div>
 
