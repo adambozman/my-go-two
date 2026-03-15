@@ -1110,7 +1110,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
   },
   {
     "key": "dress-male",
-    "label": "Dress",
+    "label": "Formal",
     "section": "style-fit",
     "page": "mygotwo",
     "genders": [
@@ -3339,7 +3339,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
   },
   {
     "key": "dress-female",
-    "label": "Dress",
+    "label": "Formal",
     "section": "style-fit",
     "page": "mygotwo",
     "genders": [
@@ -3492,7 +3492,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
   },
   {
     "key": "dress-nb",
-    "label": "Dress",
+    "label": "Formal",
     "section": "style-fit",
     "page": "mygotwo",
     "genders": [
