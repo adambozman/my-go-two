@@ -22,6 +22,9 @@ const CATEGORY_EMOJI: Record<string, string> = {
   gifting: "♡",
   "love-language": "♥",
   dates: "★",
+  food: "◉",
+  wellness: "❋",
+  home: "⬡",
 };
 
 const KnowMeCategoryCard = ({
