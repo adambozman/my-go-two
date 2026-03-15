@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, forwardRef } from "react";
 import { motion } from "framer-motion";
-import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
+import { FORM_CAROUSEL_LAYOUT, FORM_CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 
 export interface FormCoverFlowItem {
   id: string;
@@ -19,7 +19,7 @@ const VISIBLE = 2;
 const PILL_GAP = 20;
 
 function useLayout() {
-  const get = () => window.innerWidth >= 1024 ? CAROUSEL_LAYOUT_DESKTOP : CAROUSEL_LAYOUT;
+  const get = () => window.innerWidth >= 1024 ? FORM_CAROUSEL_LAYOUT_DESKTOP : FORM_CAROUSEL_LAYOUT;
   const [layout, setLayout] = useState(get);
   useEffect(() => {
     const handler = () => setLayout(get());

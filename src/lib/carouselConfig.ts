@@ -39,6 +39,33 @@ export const CAROUSEL_LAYOUT_DESKTOP = {
   ],
 };
 
+/** Form card layout — taller active card for entry forms */
+export const FORM_CAROUSEL_LAYOUT = {
+  ...CAROUSEL_LAYOUT,
+  cardWidth: 300,
+  cardHeight: 500,
+  stageHeight: 560,
+  pills: [
+    { w: 300, h: 500, r: 16  }, // center
+    { w: 76,  h: 320, r: 999 }, // ±1
+    { w: 45,  h: 260, r: 999 }, // ±2
+    { w: 17,  h: 190, r: 999 }, // ±3
+  ],
+};
+
+export const FORM_CAROUSEL_LAYOUT_DESKTOP = {
+  ...CAROUSEL_LAYOUT_DESKTOP,
+  cardWidth: 460,
+  cardHeight: 686,
+  stageHeight: 686,
+  pills: [
+    { w: 460,  h: 686, r: 36  }, // center
+    { w: 120,  h: 567, r: 999 }, // ±1
+    { w: 70,   h: 466, r: 999 }, // ±2
+    { w: 30,   h: 339, r: 999 }, // ±3
+  ],
+};
+
 export const DOT_LAYOUT = {
   size: 8,
   activeColor: "var(--swatch-teal)",
