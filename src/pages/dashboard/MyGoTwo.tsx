@@ -81,77 +81,107 @@ const EntryFormCard = ({
   onDelete: () => void;
 }) => {
   return (
-    <div style={{ width: "100%", height: "100%", background: "#f0e8d8", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      <style>{`textarea::placeholder { color: rgba(26,26,26,0.25); }`}</style>
+    <div style={{
+      width: "100%", height: "100%",
+      background: "#f0e8d8",
+      display: "flex", flexDirection: "column",
+      overflow: "hidden",
+      fontFamily: "'Jost', sans-serif",
+    }}>
+      <style>{`
+        .gotwo-title::placeholder { color: rgba(26,26,26,0.2); }
+        .gotwo-notes::placeholder { color: rgba(26,26,26,0.3); }
+      `}</style>
 
-      {/* META */}
-      <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px 0", flexShrink: 0 }}>
-        <span style={{ fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase", color: "#d4543a", fontWeight: 700, fontFamily: "'Jost', sans-serif" }}>
+      {/* ── SECTION LABEL + INDEX ── */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px 6px", flexShrink: 0 }}>
+        <span style={{ fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase", color: "#d4543a", fontWeight: 700 }}>
           {subcategoryName ? `${subcategoryName} · ${subtype.name}` : subtype.name}
         </span>
-        <span style={{ fontSize: 9, color: "rgba(26,26,26,0.22)", fontStyle: "italic", fontFamily: "'Cormorant Garamond', serif" }}>
+        <span style={{ fontSize: 9, color: "rgba(26,26,26,0.2)", fontStyle: "italic", fontFamily: "'Cormorant Garamond', serif" }}>
           {isEditing ? "edit" : "01"}
         </span>
       </div>
 
-      {/* TITLE + PHOTO */}
-      <div style={{ padding: "6px 16px 0", flexShrink: 0, position: "relative" }}>
-        <div style={{ float: "right", width: 110, height: 130, borderRadius: 10, background: "#c8bfb4", overflow: "hidden", marginLeft: 10, marginBottom: 4 }} />
+      {/* ── TITLE BLOCK with photo floated right ── */}
+      <div style={{ padding: "0 18px", flexShrink: 0, overflow: "hidden" }}>
+        <div style={{
+          float: "right",
+          width: 100, height: 120,
+          borderRadius: 10,
+          background: "#c8bfb4",
+          marginLeft: 12, marginBottom: 8,
+          flexShrink: 0,
+        }} />
         <textarea
+          className="gotwo-title"
           value={entryName}
           onChange={(e) => onEntryNameChange(e.target.value)}
           placeholder={subtype.name}
-          rows={4}
           style={{
-            width: "100%", background: "transparent", border: "none", outline: "none", resize: "none",
-            fontSize: 44, fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.02em",
-            color: "#1a1a1a", fontFamily: "'Cormorant Garamond', serif", overflow: "hidden",
+            display: "block",
+            width: "100%",
+            background: "transparent",
+            border: "none", outline: "none",
+            resize: "none",
+            fontSize: 42,
+            fontWeight: 700,
+            lineHeight: 1.0,
+            letterSpacing: "-0.02em",
+            color: "#1a1a1a",
+            fontFamily: "'Cormorant Garamond', serif",
+            overflow: "hidden",
             boxSizing: "border-box",
           }}
+          rows={3}
         />
         <div style={{ clear: "both" }} />
       </div>
 
-      {/* Coral accent */}
-      <div style={{ display: "flex", gap: 3, padding: "6px 16px 8px", flexShrink: 0 }}>
+      {/* ── CORAL ACCENT ── */}
+      <div style={{ display: "flex", gap: 3, padding: "6px 18px 10px", flexShrink: 0 }}>
         <div style={{ height: 2, width: 22, background: "#d4543a", borderRadius: 1 }} />
         <div style={{ height: 2, width: 8, background: "rgba(212,84,58,0.3)", borderRadius: 1 }} />
       </div>
 
-      {/* FIELDS */}
-      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 16px" }}>
+      {/* ── FIELDS ── */}
+      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 18px" }}>
         {subtype.fields.map((field, i) => (
-          <div key={field.label} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: i < subtype.fields.length - 1 ? "1px solid rgba(26,26,26,0.1)" : "none" }}>
-            <p style={{ fontSize: 7, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(26,26,26,0.38)", fontWeight: 700, margin: "0 0 6px", fontFamily: "'Jost', sans-serif" }}>
+          <div key={field.label} style={{
+            paddingBottom: 10, marginBottom: 10,
+            borderBottom: i < subtype.fields.length - 1 ? "1px solid rgba(26,26,26,0.1)" : "none",
+          }}>
+            <p style={{ fontSize: 7, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(26,26,26,0.38)", fontWeight: 700, margin: "0 0 6px" }}>
               {field.label}
             </p>
 
             {field.type === "select" && field.options ? (
               <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                 {field.options.map((opt) => {
-                  const isSelected = values[field.label] === opt;
+                  const sel = values[field.label] === opt;
                   return (
-                    <button key={opt} onClick={() => onChange(field.label, isSelected ? "" : opt)} style={{
+                    <button key={opt} onClick={() => onChange(field.label, sel ? "" : opt)} style={{
                       padding: "4px 12px", borderRadius: 999, fontSize: 11, fontWeight: 500,
-                      fontFamily: "'Jost', sans-serif", cursor: "pointer", transition: "all 0.15s",
-                      border: isSelected ? "1.5px solid #d4543a" : "1px solid rgba(26,26,26,0.18)",
-                      background: isSelected ? "#d4543a" : "transparent",
-                      color: isSelected ? "#fff" : "#1a1a1a",
-                    }}>
-                      {opt}
-                    </button>
+                      cursor: "pointer", transition: "all 0.15s",
+                      border: sel ? "1.5px solid #d4543a" : "1px solid rgba(26,26,26,0.18)",
+                      background: sel ? "#d4543a" : "transparent",
+                      color: sel ? "#fff" : "#1a1a1a",
+                      fontFamily: "'Jost', sans-serif",
+                    }}>{opt}</button>
                   );
                 })}
               </div>
             ) : field.label.toLowerCase() === "notes" ? (
               <textarea
+                className="gotwo-notes"
                 value={values[field.label] || ""}
                 onChange={(e) => onChange(field.label, e.target.value)}
-                placeholder="Add notes…"
+                placeholder="Add a note…"
                 rows={2}
                 style={{
-                  width: "100%", background: "transparent", border: "none", outline: "none", resize: "none",
-                  fontSize: 12, color: "#1a1a1a", fontFamily: "'Jost', sans-serif", lineHeight: 1.5,
+                  width: "100%", background: "transparent", border: "none", outline: "none",
+                  resize: "none", fontSize: 12, color: "#1a1a1a", lineHeight: 1.5,
+                  fontFamily: "'Jost', sans-serif",
                 }}
               />
             ) : (
@@ -165,11 +195,9 @@ const EntryFormCard = ({
                     padding: "3px 9px", borderRadius: 4, fontSize: 11,
                     background: field.label.toLowerCase().includes("brand") ? "rgba(45,104,112,0.12)" : "rgba(26,26,26,0.07)",
                     color: field.label.toLowerCase().includes("brand") ? "#2d6870" : "#1a1a1a",
-                    fontFamily: "'Jost', sans-serif", cursor: "pointer",
                     fontWeight: field.label.toLowerCase().includes("brand") ? 600 : 400,
-                  }}>
-                    {tag.trim()}
-                  </span>
+                    cursor: "pointer", fontFamily: "'Jost', sans-serif",
+                  }}>{tag.trim()}</span>
                 ))}
                 <button onClick={() => {
                   const val = window.prompt(`Add ${field.label}`);
@@ -180,26 +208,24 @@ const EntryFormCard = ({
                 }} style={{
                   padding: "3px 10px", borderRadius: 4, fontSize: 10,
                   border: "1px dashed rgba(26,26,26,0.22)", background: "transparent",
-                  color: "rgba(26,26,26,0.35)", fontFamily: "'Jost', sans-serif", cursor: "pointer",
-                }}>
-                  + add
-                </button>
+                  color: "rgba(26,26,26,0.32)", fontFamily: "'Jost', sans-serif", cursor: "pointer",
+                }}>+ add</button>
               </div>
             )}
           </div>
         ))}
       </div>
 
-      {/* SAVE */}
-      <div style={{ flexShrink: 0, padding: "8px 16px 16px" }}>
+      {/* ── SAVE BAR ── */}
+      <div style={{ flexShrink: 0, padding: "8px 18px 16px" }}>
         <div style={{ height: 1, background: "rgba(26,26,26,0.15)", marginBottom: 10 }} />
         <div style={{ display: "flex", gap: 8 }}>
           <button onClick={onSave} disabled={saving} style={{
             flex: 1, height: 40, borderRadius: 8,
             background: "#1a1a1a", border: "none",
             color: "#f0e8d8", fontSize: 9, fontWeight: 700,
-            fontFamily: "'Jost', sans-serif", letterSpacing: "0.16em",
-            textTransform: "uppercase", cursor: "pointer",
+            letterSpacing: "0.16em", textTransform: "uppercase",
+            cursor: "pointer", fontFamily: "'Jost', sans-serif",
             display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
           }}>
             {saving ? <Loader2 style={{ width: 11, height: 11 }} className="animate-spin" /> : "Save Entry"}
