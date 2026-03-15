@@ -224,7 +224,6 @@ const MyGoTwo = () => {
     setCoverFlowState(null);
     setActiveSubcategory(null);
     setCardKey(null);
-    setActiveGroup(null);
     setEditingEntry(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
@@ -241,14 +240,9 @@ const MyGoTwo = () => {
   };
 
   const goBackFromEntries = () => {
-    setActiveGroup(null);
-  };
-
-  const goBackFromGroups = () => {
     setCardKey(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
-    // Go back to subcategory if applicable
     if (activeSubcategory && (!activeSubcategory.products || activeSubcategory.products.length === 0)) {
       setActiveSubcategory(null);
     }
