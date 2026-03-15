@@ -9,73 +9,6 @@ const corsHeaders = {
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
-/** Generate a single category cover image and upload to storage */
-async function generateCategoryImage(
-  categoryId: string,
-  imagePrompt: string,
-  gender: string,
-  userId: string,
-  apiKey: string,
-  supabaseUrl: string,
-  serviceKey: string
-): Promise<string | null> {
-  try {
-    const genderStyle =
-      gender === "male"
-        ? "masculine lifestyle, warm amber and earth tones, rugged yet refined"
-        : gender === "female"
-        ? "feminine lifestyle, warm rose and golden tones, soft and elegant"
-        : "gender-neutral lifestyle, warm earth tones, modern and inclusive";
-
-    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3.1-flash-image-preview",
-        messages: [
-          {
-            role: "user",
-            content: `Generate a beautiful editorial lifestyle photograph: ${imagePrompt}. Style: ${genderStyle}, golden-hour photography, soft natural lighting, intimate feel. Absolutely no text, labels, or words in the image.`,
-          },
-        ],
-        modalities: ["image", "text"],
-      }),
-    });
-
-    if (!resp.ok) {
-      console.error(`Image gen failed for ${categoryId}: status ${resp.status}`);
-      return null;
-    }
-
-    const result = await resp.json();
-    const imgData = result.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    if (!imgData) return null;
-
-    const m = imgData.match(/^data:image\/(\w+);base64,(.+)$/);
-    if (!m) return null;
-
-    const ext = m[1];
-    const bytes = Uint8Array.from(atob(m[2]), (c) => c.charCodeAt(0));
-
-    const admin = createClient(supabaseUrl, serviceKey);
-    const path = `knowme/${userId}/${categoryId}.${ext}`;
-
-    await admin.storage.from("card-images").upload(path, bytes, {
-      contentType: `image/${ext}`,
-      upsert: true,
-    });
-
-    const { data } = admin.storage.from("card-images").getPublicUrl(path);
-    return data.publicUrl;
-  } catch (e) {
-    console.error(`Image gen error for ${categoryId}:`, e);
-    return null;
-  }
-}
-
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -86,7 +19,7 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    
 
     const authClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
@@ -118,15 +51,14 @@ serve(async (req) => {
     const allAnswers = { ...favorites, ...profileAnswers };
     const personalization = (prefsResult.data?.ai_personalization as any) || {};
 
-    // Check cache — must have image_urls and be fresh
+    // Check cache
     if (cachedResult.data) {
       const age = Date.now() - new Date(cachedResult.data.generated_at).getTime();
       const quizData = cachedResult.data.quizzes as any[];
       const isValid =
         Array.isArray(quizData) &&
         quizData.length > 0 &&
-        Array.isArray(quizData[0]?.questions) &&
-        quizData[0]?.image_url; // has images
+        Array.isArray(quizData[0]?.questions);
 
       if (isValid && age < SEVEN_DAYS_MS) {
         // Filter out fully answered categories
@@ -298,23 +230,7 @@ Use the provided tool.`;
 
     const { categories } = JSON.parse(toolCall.function.arguments);
 
-    // Generate cover images for all categories in parallel
-    const imagePromises = categories.map((cat: any) =>
-      generateCategoryImage(
-        cat.id,
-        cat.image_prompt,
-        userGender,
-        userId,
-        LOVABLE_API_KEY,
-        supabaseUrl,
-        supabaseServiceKey
-      )
-    );
-
-    const imageUrls = await Promise.all(imagePromises);
-    categories.forEach((cat: any, i: number) => {
-      cat.image_url = imageUrls[i];
-    });
+    // Skip image generation to stay within CPU limits — frontend uses placeholder gradients
 
     // Cache
     await supabase.from("ai_generated_quizzes").upsert(
