@@ -304,7 +304,7 @@ export default function PhotoGallery() {
           return { id: sc.id, name: sc.name, slot: scSlot, products };
         });
 
-        const coverKey = rawSubs[0]?.image || rawSubs[0]?.id || "";
+        const coverKey = row.image || row.key || "";
         const firstSubId = rawSubs[0]?.id || "";
         const coverUrl = coverKey ? getTemplateImage(coverKey, gender, section, categoryId, firstSubId) : "";
 
