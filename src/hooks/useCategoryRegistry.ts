@@ -14,17 +14,7 @@ import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
  *  Each subtype has an `image` string (e.g. "clothing-tops").
  *  We grab the first non-empty one to use as the card cover. */
 function extractImageKey(row: any): string {
-  // subcategories is an array of SubtypeItem objects at Level 3
-  const subtypes: any[] = Array.isArray(row.subcategories) ? row.subcategories : [];
-  for (const s of subtypes) {
-    if (s?.image && typeof s.image === "string") return s.image;
-  }
-  // fields fallback (older schema)
-  const fields: any[] = Array.isArray(row.fields) ? row.fields : [];
-  for (const f of fields) {
-    if (f?.image && typeof f.image === "string") return f.image;
-  }
-  return "";
+  return row.key ? row.key.replace(/-male$|-female$|-nb$/, "") : "";
 }
 
 export interface CategoryItem {
