@@ -558,29 +558,31 @@ const MyGoTwo = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -40 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="h-full flex flex-col items-center justify-center px-4"
+          className="h-full relative px-4"
         >
-          <FormCoverFlowCarousel
-            items={entryCoverFlowItems}
-            activeIndex={activeEntryIndex}
-            onActiveIndexChange={setActiveEntryIndex}
-            renderActiveCard={(item) => (
-              <EntryFormCard
-                subtype={leafSubtype}
-                subcategoryName={leafSubcategoryName}
-                entryName={entryNames[item.id] || ""}
-                values={entryDrafts[item.id] || defaultFieldValues}
-                saving={saving}
-                isEditing={item.id !== NEW_ENTRY_ID}
-                onEntryNameChange={(name) => handleNameChange(item.id, name)}
-                onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
-                onSave={() => handleSaveEntry(item.id)}
-                onDelete={() => handleDeleteEntry(item.id)}
-              />
-            )}
-          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <FormCoverFlowCarousel
+              items={entryCoverFlowItems}
+              activeIndex={activeEntryIndex}
+              onActiveIndexChange={setActiveEntryIndex}
+              renderActiveCard={(item) => (
+                <EntryFormCard
+                  subtype={leafSubtype}
+                  subcategoryName={leafSubcategoryName}
+                  entryName={entryNames[item.id] || ""}
+                  values={entryDrafts[item.id] || defaultFieldValues}
+                  saving={saving}
+                  isEditing={item.id !== NEW_ENTRY_ID}
+                  onEntryNameChange={(name) => handleNameChange(item.id, name)}
+                  onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
+                  onSave={() => handleSaveEntry(item.id)}
+                  onDelete={() => handleDeleteEntry(item.id)}
+                />
+              )}
+            />
+          </div>
 
-          <div className="mt-8 flex items-center gap-3">
+          <div className="absolute left-1/2 -translate-x-1/2 bottom-4 flex items-center gap-3 z-10">
             <Button
               variant="outline"
               className="rounded-full px-6 h-10 border-border text-foreground"
