@@ -1,9 +1,8 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, Camera, Loader2, X, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { setImageUrl, deleteImageUrl, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
-import { getLibraryForKey, type LocalPhoto } from "@/lib/localImageLibrary";
 
 const UNSPLASH_KEY = "qrGolQ1Yn5Fn3HCqDQfFWRcwjVBrLwVYLBKjaMyxJfY";
 const PEXELS_KEY = "psTr2m0l2jCIzAiXOVMN6aKVFSxfPvXDg4DonTB8TaHV06z2WxP3qgmZ";
@@ -45,7 +44,6 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [showLibrary, setShowLibrary] = useState(true);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const [hasImage, setHasImage] = useState(false);
@@ -57,16 +55,11 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
     return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
   }, [imageKey]);
 
-  // Get local library images, matching ones first
-  const localPhotos = useMemo(() => getLibraryForKey(imageKey), [imageKey]);
-
   // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -75,7 +68,6 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
   const search = useCallback(async () => {
     setLoading(true);
     setPhotos([]);
-    setShowLibrary(false);
     try {
       const [u, px] = await Promise.all([
         fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=6&orientation=landscape`, { headers: { Authorization: `Client-ID ${UNSPLASH_KEY}` } }).then(r => r.json()),
@@ -101,32 +93,14 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
       const { error } = await supabase.storage.from("category-images").upload(filename, blob, { contentType: "image/jpeg", upsert: true });
       if (error) throw error;
       const { data } = supabase.storage.from("category-images").getPublicUrl(filename);
-      await setImageUrl(imageKey, data.publicUrl);
-      toast({ title: "Saved", description: label });
+      const cacheBustedUrl = `${data.publicUrl}?t=${Date.now()}`;
+      await setImageUrl(imageKey, cacheBustedUrl);
+      toast({ title: "Image saved", description: label });
       setOpen(false);
       setPhotos([]);
-      setShowLibrary(true);
       onImageChanged?.();
     } catch (e: any) {
-      toast({ title: "Failed", description: e.message, variant: "destructive" });
-    } finally { setSaving(null); }
-  }, [imageKey, label, toast, onImageChanged]);
-
-  const pickLocal = useCallback(async (photo: LocalPhoto) => {
-    setSaving(photo.id);
-    try {
-      const blob = await cropAndResize(photo.url);
-      const filename = `${imageKey}.jpg`;
-      const { error } = await supabase.storage.from("category-images").upload(filename, blob, { contentType: "image/jpeg", upsert: true });
-      if (error) throw error;
-      const { data } = supabase.storage.from("category-images").getPublicUrl(filename);
-      await setImageUrl(imageKey, data.publicUrl);
-      toast({ title: "Saved", description: label });
-      setOpen(false);
-      setShowLibrary(true);
-      onImageChanged?.();
-    } catch (e: any) {
-      toast({ title: "Failed", description: e.message, variant: "destructive" });
+      toast({ title: "Failed to save", description: e.message, variant: "destructive" });
     } finally { setSaving(null); }
   }, [imageKey, label, toast, onImageChanged]);
 
@@ -135,7 +109,7 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
     try {
       await supabase.storage.from("category-images").remove([`${imageKey}.jpg`]);
       await deleteImageUrl(imageKey);
-      toast({ title: "Deleted", description: label });
+      toast({ title: "Image removed", description: label });
       setOpen(false);
       onImageChanged?.();
     } catch (e: any) {
@@ -143,35 +117,17 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
     } finally { setDeleting(false); }
   }, [imageKey, label, toast, onImageChanged]);
 
-  // Count matching templates vs rest
-  const matchingCount = useMemo(() => {
-    const normalizedKey = imageKey.toLowerCase().replace(/[^a-z0-9-]/g, '');
-    return localPhotos.filter(p => {
-      const fn = p.filename.toLowerCase().replace(/[^a-z0-9-]/g, '');
-      return fn === normalizedKey || fn.startsWith(normalizedKey) || fn.includes(normalizedKey) || normalizedKey.includes(fn);
-    }).length;
-  }, [localPhotos, imageKey]);
-
   return (
     <>
-      {/* Small camera button — top-right of card */}
+      {/* Camera button */}
       <button
-        onClick={(e) => { e.stopPropagation(); setOpen(true); setQuery(label); setShowLibrary(true); setPhotos([]); }}
+        onClick={(e) => { e.stopPropagation(); setOpen(true); setQuery(label); setPhotos([]); }}
         style={{
-          position: "absolute",
-          top: 8,
-          right: 8,
-          zIndex: 20,
-          width: 32,
-          height: 32,
-          borderRadius: 999,
-          background: "rgba(0,0,0,0.45)",
-          backdropFilter: "blur(8px)",
+          position: "absolute", top: 8, right: 8, zIndex: 20,
+          width: 32, height: 32, borderRadius: 999,
+          background: "rgba(0,0,0,0.45)", backdropFilter: "blur(8px)",
           border: "1px solid rgba(255,255,255,0.25)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
           transition: "background 0.2s",
         }}
         onMouseEnter={e => (e.currentTarget.style.background = "rgba(45,104,112,0.8)")}
@@ -186,23 +142,15 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
           ref={panelRef}
           onClick={e => e.stopPropagation()}
           style={{
-            position: "absolute",
-            bottom: 40,
-            right: 4,
-            zIndex: 30,
-            width: 340,
-            maxHeight: 480,
-            overflowY: "auto",
-            background: "rgba(255,255,255,0.96)",
-            backdropFilter: "blur(16px)",
-            borderRadius: 14,
-            boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
-            border: "1px solid rgba(45,104,112,0.15)",
-            padding: 12,
+            position: "absolute", bottom: 40, right: 4, zIndex: 30,
+            width: 340, maxHeight: 420, overflowY: "auto",
+            background: "rgba(255,255,255,0.97)", backdropFilter: "blur(16px)",
+            borderRadius: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
+            border: "1px solid rgba(45,104,112,0.15)", padding: 12,
             scrollbarWidth: "none",
           }}
         >
-          {/* Header */}
+          {/* Search bar */}
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
             <input
               value={query}
@@ -211,13 +159,8 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
               placeholder="Search photos..."
               autoFocus
               style={{
-                flex: 1,
-                fontSize: 13,
-                padding: "6px 10px",
-                borderRadius: 8,
-                border: "1px solid rgba(45,104,112,0.2)",
-                background: "rgba(45,104,112,0.04)",
-                outline: "none",
+                flex: 1, fontSize: 13, padding: "6px 10px", borderRadius: 8,
+                border: "1px solid rgba(45,104,112,0.2)", background: "rgba(45,104,112,0.04)", outline: "none",
               }}
             />
             <button onClick={search} disabled={loading}
@@ -236,73 +179,8 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
             </button>
           </div>
 
-          {/* Tab toggle */}
+          {/* Results grid */}
           {photos.length > 0 && (
-            <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
-              <button
-                onClick={() => setShowLibrary(true)}
-                style={{
-                  flex: 1, padding: "5px 0", borderRadius: 6, fontSize: 11, fontWeight: 600,
-                  border: "none", cursor: "pointer",
-                  background: showLibrary ? "#2d6870" : "rgba(45,104,112,0.08)",
-                  color: showLibrary ? "#fff" : "#2d6870",
-                }}
-              >
-                Library {matchingCount > 0 && `(${matchingCount})`}
-              </button>
-              <button
-                onClick={() => setShowLibrary(false)}
-                style={{
-                  flex: 1, padding: "5px 0", borderRadius: 6, fontSize: 11, fontWeight: 600,
-                  border: "none", cursor: "pointer",
-                  background: !showLibrary ? "#2d6870" : "rgba(45,104,112,0.08)",
-                  color: !showLibrary ? "#fff" : "#2d6870",
-                }}
-              >
-                Search ({photos.length})
-              </button>
-            </div>
-          )}
-
-          {/* Local library grid */}
-          {showLibrary && localPhotos.length > 0 && (
-            <>
-              {matchingCount > 0 && (
-                <p style={{ fontSize: 10, fontWeight: 600, color: "#2d6870", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>
-                  Best matches
-                </p>
-              )}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6, marginBottom: matchingCount > 0 && matchingCount < localPhotos.length ? 0 : 0 }}>
-                {localPhotos.slice(0, 12).map(photo => (
-                  <button key={photo.id} onClick={() => pickLocal(photo)} disabled={!!saving}
-                    style={{ position: "relative", borderRadius: 8, overflow: "hidden", aspectRatio: "1015/686", border: "2px solid transparent", cursor: "pointer", background: "#eee" }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = "#2d6870")}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = "transparent")}>
-                    <img src={photo.url} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                    {saving === photo.id && (
-                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Loader2 style={{ width: 16, height: 16, color: "#fff" }} className="animate-spin" />
-                      </div>
-                    )}
-                    <span style={{
-                      position: "absolute", bottom: 1, left: 2, fontSize: 7, 
-                      color: "rgba(255,255,255,0.8)",
-                      background: photo.category === 'template' ? "rgba(45,104,112,0.7)" : "rgba(0,0,0,0.5)",
-                      padding: "1px 4px", borderRadius: 3,
-                    }}>
-                      {photo.category === 'template' ? '✦' : '◆'}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              {localPhotos.length > 12 && (
-                <LocalPhotoGrid photos={localPhotos.slice(12)} saving={saving} onPick={pickLocal} />
-              )}
-            </>
-          )}
-
-          {/* Web search results grid */}
-          {!showLibrary && photos.length > 0 && (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
               {photos.map(photo => (
                 <button key={photo.id} onClick={() => pick(photo)} disabled={!!saving}
@@ -321,57 +199,11 @@ export default function InlinePhotoSearch({ imageKey, label, onImageChanged }: I
             </div>
           )}
 
-          {showLibrary && localPhotos.length === 0 && photos.length === 0 && !loading && (
-            <p style={{ fontSize: 11, color: "#999", textAlign: "center", padding: "12px 0" }}>
-              Search for photos to assign to "{label}"
+          {photos.length === 0 && !loading && (
+            <p style={{ fontSize: 12, color: "#999", textAlign: "center", padding: "16px 0" }}>
+              Search for a photo to assign to "{label}"
             </p>
           )}
-        </div>
-      )}
-    </>
-  );
-}
-
-/** Expandable grid for remaining local photos */
-function LocalPhotoGrid({ photos, saving, onPick }: { photos: LocalPhoto[]; saving: string | null; onPick: (p: LocalPhoto) => void }) {
-  const [expanded, setExpanded] = useState(false);
-  const shown = expanded ? photos : [];
-
-  return (
-    <>
-      <button
-        onClick={() => setExpanded(!expanded)}
-        style={{
-          width: "100%", padding: "6px 0", marginTop: 6, fontSize: 11, fontWeight: 600,
-          color: "#2d6870", background: "rgba(45,104,112,0.06)", border: "1px solid rgba(45,104,112,0.12)",
-          borderRadius: 6, cursor: "pointer",
-        }}
-      >
-        {expanded ? "Show less" : `Show ${photos.length} more`}
-      </button>
-      {expanded && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6, marginTop: 6 }}>
-          {shown.map(photo => (
-            <button key={photo.id} onClick={() => onPick(photo)} disabled={!!saving}
-              style={{ position: "relative", borderRadius: 8, overflow: "hidden", aspectRatio: "1015/686", border: "2px solid transparent", cursor: "pointer", background: "#eee" }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = "#2d6870")}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = "transparent")}>
-              <img src={photo.url} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-              {saving === photo.id && (
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Loader2 style={{ width: 16, height: 16, color: "#fff" }} className="animate-spin" />
-                </div>
-              )}
-              <span style={{
-                position: "absolute", bottom: 1, left: 2, fontSize: 7,
-                color: "rgba(255,255,255,0.8)",
-                background: photo.category === 'template' ? "rgba(45,104,112,0.7)" : "rgba(0,0,0,0.5)",
-                padding: "1px 4px", borderRadius: 3,
-              }}>
-                {photo.category === 'template' ? '✦' : '◆'}
-              </span>
-            </button>
-          ))}
         </div>
       )}
     </>
