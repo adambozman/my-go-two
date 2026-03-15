@@ -251,8 +251,8 @@ export default function PhotoGallery() {
   const [gender, setGender] = useState<Gender>("male");
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deletedKeys, setDeletedKeys] = useState<Set<string>>(new Set());
-  const [deletedPaths, setDeletedPaths] = useState<Map<string, string>>(new Map());
+  const [version, setVersion] = useState(0);
+  const [pickerSlot, setPickerSlot] = useState<ImageSlot | null>(null);
   const [version, setVersion] = useState(0);
   const [pickerSlot, setPickerSlot] = useState<ImageSlot | null>(null);
   // Uploaded photos from Supabase storage (not in the build)
