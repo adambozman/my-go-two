@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Check } from "lucide-react";
+import { Loader2, Check, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,6 +11,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoCoverFlow from "@/components/GoTwoCoverFlow";
 import TemplateCoverFlow, { type SubtypeItem, type SubcategoryGroup } from "@/components/TemplateCoverFlow";
+import CoverFlowCarousel from "@/components/ui/CoverFlowCarousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
@@ -36,17 +44,35 @@ interface FieldState {
   values: Record<string, string>;
 }
 
+interface CardEntry {
+  id: string;
+  user_id: string;
+  card_key: string;
+  group_name: string;
+  entry_name: string;
+  field_values: Record<string, string>;
+  created_at: string;
+  updated_at: string;
+}
+
+// Placeholder image for "+ New" cards
+const NEW_CARD_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500' fill='%23f5f0eb'%3E%3Crect width='400' height='500' rx='24'/%3E%3Ctext x='200' y='260' text-anchor='middle' font-size='64' fill='%232d6870' font-family='sans-serif'%3E%2B%3C/text%3E%3C/svg%3E";
+
 // ── Level 4: Field fill-out form ──
 const FieldForm = ({
   fieldState,
-  onBack,
   onSave,
   saving,
+  entryName,
+  onDelete,
+  isEditing,
 }: {
   fieldState: FieldState;
-  onBack: () => void;
   onSave: (values: Record<string, string>) => void;
   saving: boolean;
+  entryName: string;
+  onDelete?: () => void;
+  isEditing: boolean;
 }) => {
   const [values, setValues] = useState<Record<string, string>>(fieldState.values);
 
@@ -78,7 +104,7 @@ const FieldForm = ({
             {fieldState.subcategoryName || "Preferences"}
           </p>
           <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 700, letterSpacing: "0.04em", color: "var(--swatch-viridian-odyssey)", lineHeight: 1.1 }}>
-            {fieldState.subtype.name}
+            {entryName}
           </h2>
         </div>
 
@@ -128,14 +154,26 @@ const FieldForm = ({
           ))}
         </div>
 
-        <Button
-          onClick={() => onSave(values)}
-          disabled={saving}
-          className="w-full h-12 rounded-full text-base font-semibold mt-2"
-          style={{ background: "#d4543a", fontFamily: "'Jost', sans-serif", letterSpacing: "0.08em" }}
-        >
-          {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Check className="w-5 h-5 mr-2" />Save</>}
-        </Button>
+        <div className="flex gap-3 mt-2">
+          <Button
+            onClick={() => onSave(values)}
+            disabled={saving}
+            className="flex-1 h-12 rounded-full text-base font-semibold"
+            style={{ background: "#d4543a", fontFamily: "'Jost', sans-serif", letterSpacing: "0.08em" }}
+          >
+            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Check className="w-5 h-5 mr-2" />Save</>}
+          </Button>
+          {isEditing && onDelete && (
+            <Button
+              onClick={onDelete}
+              variant="outline"
+              className="h-12 rounded-full px-4"
+              style={{ borderColor: "rgba(212,84,58,0.3)", color: "#d4543a" }}
+            >
+              <Trash2 className="w-5 h-5" />
+            </Button>
+          )}
+        </div>
       </div>
     </motion.div>
   );
@@ -157,10 +195,40 @@ const MyGoTwo = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const savedScrollTop = useRef(0);
 
+  // New multi-entry state
+  const [cardKey, setCardKey] = useState<string | null>(null);
+  const [entries, setEntries] = useState<CardEntry[]>([]);
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const [editingEntry, setEditingEntry] = useState<CardEntry | null>(null);
+  const [showNameDialog, setShowNameDialog] = useState<"group" | "entry" | null>(null);
+  const [newName, setNewName] = useState("");
+  const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
+  const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
+
+  // Fetch entries when cardKey changes
+  const fetchEntries = useCallback(async () => {
+    if (!user || !cardKey) return;
+    const { data } = await supabase
+      .from("card_entries")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("card_key", cardKey)
+      .order("created_at", { ascending: true });
+    setEntries((data as CardEntry[]) || []);
+  }, [user, cardKey]);
+
+  useEffect(() => {
+    fetchEntries();
+  }, [fetchEntries]);
+
   const clearCoverFlow = () => {
     setCoverFlowState(null);
     setActiveSubcategory(null);
-    // Restore scroll position
+    setCardKey(null);
+    setActiveGroup(null);
+    setEditingEntry(null);
+    setLeafSubtype(null);
+    setLeafSubcategoryName(undefined);
     requestAnimationFrame(() => {
       if (scrollRef.current) {
         scrollRef.current.scrollTop = savedScrollTop.current;
@@ -170,31 +238,43 @@ const MyGoTwo = () => {
 
   const goBackFromField = () => {
     setFieldState(null);
-    // If activeSubcategory has no products it was the leaf — clear it too so we go back to subcategory picker
+    setEditingEntry(null);
+  };
+
+  const goBackFromEntries = () => {
+    setActiveGroup(null);
+  };
+
+  const goBackFromGroups = () => {
+    setCardKey(null);
+    setLeafSubtype(null);
+    setLeafSubcategoryName(undefined);
+    // Go back to subcategory if applicable
     if (activeSubcategory && (!activeSubcategory.products || activeSubcategory.products.length === 0)) {
       setActiveSubcategory(null);
     }
   };
 
-  const goBackFromProducts = () => {
-    setActiveSubcategory(null);
-  };
-
-  // Back button wiring — 4 levels
+  // Back button wiring
   useEffect(() => {
-    if (fieldState) {
-      setBackState({ label: fieldState.subtype.name, onBack: goBackFromField });
+    if (fieldState && editingEntry) {
+      setBackState({ label: editingEntry.entry_name, onBack: goBackFromField });
+    } else if (fieldState && !editingEntry) {
+      setBackState({ label: "New Entry", onBack: goBackFromField });
+    } else if (activeGroup && cardKey) {
+      setBackState({ label: activeGroup, onBack: goBackFromEntries });
+    } else if (cardKey) {
+      setBackState({ label: leafSubtype?.name || "Groups", onBack: goBackFromGroups });
     } else if (activeSubcategory && coverFlowState) {
-      setBackState({ label: activeSubcategory.name, onBack: goBackFromProducts });
+      setBackState({ label: activeSubcategory.name, onBack: () => setActiveSubcategory(null) });
     } else if (coverFlowState) {
       setBackState({ label: coverFlowState.name, onBack: clearCoverFlow });
     } else {
       setBackState(null);
     }
-  }, [coverFlowState, activeSubcategory, fieldState]);
+  }, [coverFlowState, activeSubcategory, fieldState, cardKey, activeGroup, editingEntry, leafSubtype]);
 
   const handleCategoryClick = (item: CategoryItem) => {
-    // Save scroll position before drilling in
     if (scrollRef.current) {
       savedScrollTop.current = scrollRef.current.scrollTop;
     }
@@ -214,43 +294,146 @@ const MyGoTwo = () => {
   };
 
   const handleSubcategorySelect = (sc: SubcategoryGroup) => {
-    // If subcategory has products, drill into them
     if (sc.products && sc.products.length > 0) {
       setActiveSubcategory(sc);
     } else {
-      // Subcategory IS the final card (e.g. Asian in Restaurants)
-      // Set activeSubcategory first so back button works
+      // Subcategory IS the leaf — go to groups coverflow
       setActiveSubcategory(sc);
-      setFieldState({
-        subtype: sc as unknown as SubtypeItem,
-        subcategoryName: coverFlowState?.name,
-        values: ((sc as any).fields || []).reduce((acc: any, f: any) => ({ ...acc, [f.label]: f.value || "" }), {}),
-      });
+      const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
+      setCardKey(key);
+      setLeafSubtype(sc as unknown as SubtypeItem);
+      setLeafSubcategoryName(coverFlowState?.name);
     }
   };
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
+    // Instead of opening FieldForm directly, go to groups coverflow
+    const key = `${coverFlowState?.name}__${subcategoryName || ""}__${subtype.name}`;
+    setCardKey(key);
+    setLeafSubtype(subtype);
+    setLeafSubcategoryName(subcategoryName);
+  };
+
+  // Group coverflow items
+  const distinctGroups = [...new Set(entries.map(e => e.group_name))];
+  const groupCoverFlowItems = [
+    ...distinctGroups.map(g => ({
+      id: g,
+      label: g,
+      image: "", // Will show default card styling
+    })),
+    { id: "__new_group__", label: "+ New Group", image: NEW_CARD_IMAGE },
+  ];
+
+  // Entry coverflow items for active group
+  const groupEntries = entries.filter(e => e.group_name === activeGroup);
+  const entryCoverFlowItems = [
+    ...groupEntries.map(e => ({
+      id: e.id,
+      label: e.entry_name,
+      image: "",
+    })),
+    { id: "__new_entry__", label: "+ New Entry", image: NEW_CARD_IMAGE },
+  ];
+
+  const handleGroupSelect = (id: string) => {
+    if (id === "__new_group__") {
+      setNewName("");
+      setShowNameDialog("group");
+    } else {
+      setActiveGroup(id);
+    }
+  };
+
+  const handleEntrySelect = (id: string) => {
+    if (id === "__new_entry__") {
+      setNewName("");
+      setShowNameDialog("entry");
+    } else {
+      const entry = entries.find(e => e.id === id);
+      if (entry && leafSubtype) {
+        setEditingEntry(entry);
+        setFieldState({
+          subtype: leafSubtype,
+          subcategoryName: leafSubcategoryName,
+          values: (entry.field_values as Record<string, string>) || {},
+        });
+      }
+    }
+  };
+
+  const handleCreateGroup = () => {
+    if (!newName.trim()) return;
+    setShowNameDialog(null);
+    setActiveGroup(newName.trim());
+    // Group is created implicitly when first entry is saved
+  };
+
+  const handleCreateEntry = () => {
+    if (!newName.trim() || !leafSubtype) return;
+    setShowNameDialog(null);
+    setEditingEntry(null);
     setFieldState({
-      subtype,
-      subcategoryName,
-      values: subtype.fields.reduce((acc, f) => ({ ...acc, [f.label]: f.value || "" }), {}),
+      subtype: leafSubtype,
+      subcategoryName: leafSubcategoryName,
+      values: leafSubtype.fields.reduce((acc, f) => ({ ...acc, [f.label]: (f as any).value || "" }), {} as Record<string, string>),
     });
+    // Store the entry name temporarily on the editing entry
+    setEditingEntry({ entry_name: newName.trim() } as any);
   };
 
   const handleSave = async (values: Record<string, string>) => {
-    if (!user || !fieldState) return;
+    if (!user || !cardKey || !activeGroup) return;
     setSaving(true);
     try {
-      const key = `${coverFlowState?.name}__${fieldState.subcategoryName || ""}__${fieldState.subtype.name}`;
-      const { error } = await supabase
-        .from("user_preferences")
-        .upsert({ user_id: user.id, favorites: { [key]: values } }, { onConflict: "user_id" });
-      if (error) throw error;
-      toast({ title: "Saved!", description: `${fieldState.subtype.name} updated.` });
+      if (editingEntry?.id) {
+        // Update existing entry
+        const { error } = await supabase
+          .from("card_entries")
+          .update({ field_values: values })
+          .eq("id", editingEntry.id);
+        if (error) throw error;
+        toast({ title: "Updated!", description: `${editingEntry.entry_name} saved.` });
+      } else {
+        // Insert new entry
+        const entryName = editingEntry?.entry_name || "Untitled";
+        const { error } = await supabase
+          .from("card_entries")
+          .insert({
+            user_id: user.id,
+            card_key: cardKey,
+            group_name: activeGroup,
+            entry_name: entryName,
+            field_values: values,
+          });
+        if (error) throw error;
+        toast({ title: "Saved!", description: `${entryName} created.` });
+      }
       setFieldState(null);
-      setActiveSubcategory(null);
+      setEditingEntry(null);
+      await fetchEntries();
     } catch (e: any) {
       toast({ title: "Error saving", description: e.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editingEntry?.id) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("card_entries")
+        .delete()
+        .eq("id", editingEntry.id);
+      if (error) throw error;
+      toast({ title: "Deleted", description: `${editingEntry.entry_name} removed.` });
+      setFieldState(null);
+      setEditingEntry(null);
+      await fetchEntries();
+    } catch (e: any) {
+      toast({ title: "Error deleting", description: e.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -268,11 +451,88 @@ const MyGoTwo = () => {
       items: sections[key].map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
     }));
 
-  return (
-    <AnimatePresence mode="wait">
-      {fieldState ? (
-        <FieldForm key="field-form" fieldState={fieldState} onBack={goBackFromField} onSave={handleSave} saving={saving} />
-      ) : coverFlowState ? (
+  // Determine which view to show
+  const renderContent = () => {
+    // Level 6: Field form (editing/creating an entry)
+    if (fieldState && cardKey) {
+      return (
+        <FieldForm
+          key="field-form"
+          fieldState={fieldState}
+          onSave={handleSave}
+          saving={saving}
+          entryName={editingEntry?.entry_name || "New Entry"}
+          onDelete={editingEntry?.id ? handleDelete : undefined}
+          isEditing={!!editingEntry?.id}
+        />
+      );
+    }
+
+    // Level 5: Entry coverflow within a group
+    if (activeGroup && cardKey) {
+      return (
+        <motion.div
+          key="entry-coverflow"
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -40 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="h-full flex flex-col items-center justify-center"
+        >
+          <h2
+            className="mb-6 text-center"
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 24,
+              fontWeight: 700,
+              letterSpacing: "0.04em",
+              color: "var(--swatch-viridian-odyssey)",
+            }}
+          >
+            {activeGroup}
+          </h2>
+          <CoverFlowCarousel
+            items={entryCoverFlowItems}
+            onSelect={handleEntrySelect}
+          />
+        </motion.div>
+      );
+    }
+
+    // Level 4: Group coverflow
+    if (cardKey) {
+      return (
+        <motion.div
+          key="group-coverflow"
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -40 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="h-full flex flex-col items-center justify-center"
+        >
+          <h2
+            className="mb-6 text-center"
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 24,
+              fontWeight: 700,
+              letterSpacing: "0.04em",
+              color: "var(--swatch-viridian-odyssey)",
+            }}
+          >
+            {leafSubtype?.name || "My Groups"}
+          </h2>
+          <CoverFlowCarousel
+            items={groupCoverFlowItems}
+            onSelect={handleGroupSelect}
+          />
+        </motion.div>
+      );
+    }
+
+    // Level 2-3: TemplateCoverFlow (subcategory/product picker)
+    if (coverFlowState) {
+      return (
         <TemplateCoverFlow
           key="drilldown"
           templateName={coverFlowState.name}
@@ -287,41 +547,101 @@ const MyGoTwo = () => {
           section={coverFlowState.section}
           categoryId={coverFlowState.categoryId}
         />
-      ) : (
-        <motion.div
-          key="main"
-          ref={scrollRef}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="h-full overflow-y-auto snap-y snap-mandatory relative"
-          style={{ scrollbarWidth: "none" }}
-          onScroll={(e) => {
-            const el = e.currentTarget;
-            const idx = Math.round(el.scrollTop / el.clientHeight);
-            setActiveSectionIndex(Math.min(idx, orderedSections.length - 1));
+      );
+    }
+
+    // Level 1: Section coverflows
+    return (
+      <motion.div
+        key="main"
+        ref={scrollRef}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="h-full overflow-y-auto snap-y snap-mandatory relative"
+        style={{ scrollbarWidth: "none" }}
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          const idx = Math.round(el.scrollTop / el.clientHeight);
+          setActiveSectionIndex(Math.min(idx, orderedSections.length - 1));
+        }}
+      >
+        {orderedSections.map((section) => (
+          <div key={section.key} className="snap-start h-full flex flex-col items-center justify-center">
+            <h2 className="section-header text-center mb-6">{section.label}</h2>
+            <GoTwoCoverFlow items={section.items} onSelect={handleSelect} />
+          </div>
+        ))}
+        {orderedSections.length === 0 && (
+          <p className="text-muted-foreground text-center mt-12">No categories found.</p>
+        )}
+        <div
+          className="fixed flex flex-col items-center gap-2"
+          style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
+        >
+          {orderedSections.map((_, i) => (
+            <div key={i} style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "#2d6870" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }} />
+          ))}
+        </div>
+      </motion.div>
+    );
+  };
+
+  return (
+    <>
+      <AnimatePresence mode="wait">
+        {renderContent()}
+      </AnimatePresence>
+
+      {/* Name dialog for creating groups/entries */}
+      <Dialog open={!!showNameDialog} onOpenChange={() => setShowNameDialog(null)}>
+        <DialogContent
+          className="rounded-3xl"
+          style={{
+            background: "rgba(255,255,255,0.95)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(45,104,112,0.12)",
           }}
         >
-          {orderedSections.map((section) => (
-            <div key={section.key} className="snap-start h-full flex flex-col items-center justify-center">
-              <h2 className="section-header text-center mb-6">{section.label}</h2>
-              <GoTwoCoverFlow items={section.items} onSelect={handleSelect} />
-            </div>
-          ))}
-          {orderedSections.length === 0 && (
-            <p className="text-muted-foreground text-center mt-12">No categories found.</p>
-          )}
-          <div
-            className="fixed flex flex-col items-center gap-2"
-            style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
-          >
-            {orderedSections.map((_, i) => (
-              <div key={i} style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "#2d6870" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }} />
-            ))}
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          <DialogHeader>
+            <DialogTitle
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 22,
+                fontWeight: 700,
+                color: "var(--swatch-viridian-odyssey)",
+              }}
+            >
+              {showNameDialog === "group" ? "New Group" : "New Entry"}
+            </DialogTitle>
+          </DialogHeader>
+          <Input
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder={showNameDialog === "group" ? "e.g. Taco Bell, McDonald's..." : "e.g. My usual, Late night order..."}
+            className="rounded-xl h-12 mt-2"
+            style={{ background: "rgba(45,104,112,0.04)", border: "1.5px solid rgba(45,104,112,0.15)" }}
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                showNameDialog === "group" ? handleCreateGroup() : handleCreateEntry();
+              }
+            }}
+          />
+          <DialogFooter>
+            <Button
+              onClick={showNameDialog === "group" ? handleCreateGroup : handleCreateEntry}
+              disabled={!newName.trim()}
+              className="rounded-full px-8 h-11"
+              style={{ background: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif", letterSpacing: "0.08em" }}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
