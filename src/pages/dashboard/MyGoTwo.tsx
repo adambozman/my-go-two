@@ -160,7 +160,7 @@ const EntryFormCard = ({
                       onChange(field.label, tags.join(", "));
                     }}
                     style={{
-                      padding: `${3*fs}px ${10*fs}px`, borderRadius: 4*fs, fontSize: 10*fs,
+                      padding: "3px 10px", borderRadius: 4, fontSize: 11,
                       background: field.label.toLowerCase().includes("brand") ? "rgba(45,104,112,0.12)" : "rgba(26,26,26,0.07)",
                       color: field.label.toLowerCase().includes("brand") ? "#2d6870" : "#1a1a1a",
                       fontWeight: field.label.toLowerCase().includes("brand") ? 600 : 400,
@@ -174,8 +174,8 @@ const EntryFormCard = ({
                   placeholder="+ add"
                   style={{
                     background: "transparent", border: "none", outline: "none",
-                    fontSize: 10*fs, color: "rgba(26,26,26,0.35)", fontFamily: "'Jost', sans-serif",
-                    width: 50*fs, cursor: "text",
+                    fontSize: 11, color: "rgba(26,26,26,0.3)", fontFamily: "'Jost', sans-serif",
+                    width: 48, cursor: "text",
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === ",") {
@@ -198,19 +198,19 @@ const EntryFormCard = ({
       {/* ── SAVE BAR ── */}
       <div style={{ flexShrink: 0, padding: `${8*fs}px ${18*fs}px ${18*fs}px` }}>
         <div style={{ height: 1.5, background: "#1a1a1a", marginBottom: 12*fs }} />
-        <div style={{ display: "flex", gap: 8*fs }}>
+        <div style={{ display: "flex", gap: 8, justifyContent: "flex-start", alignItems: "center" }}>
           <button
             onClick={onSave} disabled={saving}
             style={{
-              flex: 1, height: 42*fs, borderRadius: 8*fs,
+              height: 36, borderRadius: 6, padding: "0 20px",
               background: "#1a1a1a", border: "none",
-              color: "#f0e8d8", fontSize: 9*fs, fontWeight: 700,
-              fontFamily: "'Jost', sans-serif", letterSpacing: "0.18em",
+              color: "#f0e8d8", fontSize: 10, fontWeight: 700,
+              fontFamily: "'Jost', sans-serif", letterSpacing: "0.16em",
               textTransform: "uppercase", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
             }}
           >
-            {saving ? <Loader2 style={{ width: 13*fs, height: 13*fs }} className="animate-spin" /> : "Save Entry"}
+            {saving ? <Loader2 style={{ width: 12, height: 12 }} className="animate-spin" /> : "Save Entry"}
           </button>
           {isEditing && (
             <button onClick={onDelete} style={{
