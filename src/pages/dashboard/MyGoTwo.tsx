@@ -335,19 +335,14 @@ const MyGoTwo = () => {
   };
 
   const handleEntrySelect = (id: string) => {
-    if (id === "__new_entry__") {
-      setNewName("");
-      setShowNameDialog("entry");
-    } else {
-      const entry = entries.find(e => e.id === id);
-      if (entry && leafSubtype) {
-        setEditingEntry(entry);
-        setFieldState({
-          subtype: leafSubtype,
-          subcategoryName: leafSubcategoryName,
-          values: (entry.field_values as Record<string, string>) || {},
-        });
-      }
+    const entry = entries.find(e => e.id === id);
+    if (entry && leafSubtype) {
+      setEditingEntry(entry);
+      setFieldState({
+        subtype: leafSubtype,
+        subcategoryName: leafSubcategoryName,
+        values: (entry.field_values as Record<string, string>) || {},
+      });
     }
   };
 
