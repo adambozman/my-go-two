@@ -106,7 +106,7 @@ const EntryFormCard = ({
       </div>
 
       {/* ── TITLE + PHOTO BLOCK ── */}
-      <div style={{ position: "relative", padding: "0 22px", flexShrink: 0, minHeight: 220 }}>
+      <div style={{ position: "relative", padding: "0 22px", flexShrink: 0, height: 190 }}>
         {/* Photo thumbnail — locked top-right proportions */}
         <div style={{
           position: "absolute",
