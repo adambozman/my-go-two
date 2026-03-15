@@ -57,6 +57,69 @@ const NEW_ENTRY_ID = "__new_entry__";
  * Inspired by fashion lookbook layouts: generous whitespace, serif display type,
  * coral accents, and clean field styling on a warm linen background.
  */
+const TagInput = ({ value, onChange, fieldLabel }: { value: string; onChange: (val: string) => void; fieldLabel: string }) => {
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isBrand = fieldLabel.toLowerCase().includes("brand");
+
+  const tags = (value || "").split(",").filter(t => t.trim());
+
+  const addTag = () => {
+    if (!draft.trim()) return;
+    onChange([...tags, draft.trim()].join(", "));
+    setDraft("");
+  };
+
+  const removeTag = (index: number) => {
+    const next = [...tags];
+    next.splice(index, 1);
+    onChange(next.join(", "));
+  };
+
+  useEffect(() => {
+    if (adding && inputRef.current) inputRef.current.focus();
+  }, [adding]);
+
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+      {tags.map((tag, ti) => (
+        <span key={ti} onClick={() => removeTag(ti)} style={{
+          padding: "4px 11px", borderRadius: 4, fontSize: 13,
+          background: isBrand ? "rgba(45,104,112,0.12)" : "rgba(26,26,26,0.07)",
+          color: isBrand ? "#2d6870" : "#1a1a1a",
+          fontWeight: isBrand ? 600 : 400,
+          cursor: "pointer", fontFamily: "'Jost', sans-serif",
+        }}>{tag.trim()} ×</span>
+      ))}
+      {adding ? (
+        <input
+          ref={inputRef}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") { e.preventDefault(); addTag(); }
+            if (e.key === "Escape") { setAdding(false); setDraft(""); }
+          }}
+          onBlur={() => { if (draft.trim()) addTag(); setAdding(false); }}
+          placeholder={`Add ${fieldLabel.toLowerCase()}…`}
+          style={{
+            width: 100, padding: "4px 8px", borderRadius: 4, fontSize: 13,
+            border: "1px solid rgba(26,26,26,0.22)", background: "transparent",
+            outline: "none", fontFamily: "'Jost', sans-serif", color: "#1a1a1a",
+          }}
+        />
+      ) : (
+        <button onClick={() => setAdding(true)} style={{
+          padding: "4px 12px", borderRadius: 4, fontSize: 12,
+          border: "1px dashed rgba(26,26,26,0.22)", background: "transparent",
+          color: "rgba(26,26,26,0.32)", fontFamily: "'Jost', sans-serif", cursor: "pointer",
+        }}>+ add</button>
+      )}
+    </div>
+  );
+};
+
 const EntryFormCard = ({
   subtype,
   subcategoryName,
