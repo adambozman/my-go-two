@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import { motion } from "framer-motion";
 import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 
@@ -17,7 +17,17 @@ interface FormCoverFlowCarouselProps {
 
 const VISIBLE = 2;
 const PILL_GAP = 20;
-const FALLBACK_GRADIENT = "linear-gradient(160deg, #c8bfb4 0%, #a89d92 100%)";
+
+function useLayout() {
+  const get = () => window.innerWidth >= 1024 ? CAROUSEL_LAYOUT_DESKTOP : CAROUSEL_LAYOUT;
+  const [layout, setLayout] = useState(get);
+  useEffect(() => {
+    const handler = () => setLayout(get());
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return layout;
+}
 
 function getPillX(offset: number, pills: { w: number; h: number; r: number }[]): number {
   if (offset === 0) return 0;
@@ -32,173 +42,182 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
   return x * dir;
 }
 
-const FormCoverFlowCarousel = ({
-  items,
-  activeIndex,
-  onActiveIndexChange,
-  renderActiveCard,
-}: FormCoverFlowCarouselProps) => {
-  const touchStartX = useRef<number | null>(null);
-  const layout = window.innerWidth >= 1024 ? CAROUSEL_LAYOUT_DESKTOP : CAROUSEL_LAYOUT;
-  const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
-  const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
-  const n = items.length;
+const FALLBACK_GRADIENT = "linear-gradient(160deg, #2d6870 0%, #1e4a52 100%)";
 
-  useEffect(() => {
-    if (n === 0) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") onActiveIndexChange((activeIndex - 1 + n) % n);
-      if (e.key === "ArrowRight") onActiveIndexChange((activeIndex + 1) % n);
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [activeIndex, n, onActiveIndexChange]);
+const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselProps>(
+  ({ items, activeIndex, onActiveIndexChange, renderActiveCard }, ref) => {
+    const touchStartX = useRef<number | null>(null);
+    const layout = useLayout();
+    const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
+    const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
+    const n = items.length;
 
-  if (n === 0) return null;
+    useEffect(() => {
+      if (n === 0) return;
+      const handler = (e: KeyboardEvent) => {
+        if (e.key === "ArrowLeft") onActiveIndexChange((activeIndex - 1 + n) % n);
+        if (e.key === "ArrowRight") onActiveIndexChange((activeIndex + 1) % n);
+      };
+      window.addEventListener("keydown", handler);
+      return () => window.removeEventListener("keydown", handler);
+    }, [activeIndex, n, onActiveIndexChange]);
 
-  const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
+    if (n === 0) return null;
 
-  return (
-    <div
-      className="relative w-full flex flex-col items-center"
-      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-      onTouchEnd={(e) => {
-        if (touchStartX.current === null) return;
-        const diff = touchStartX.current - e.changedTouches[0].clientX;
-        if (Math.abs(diff) > 40) {
-          if (diff > 0) onActiveIndexChange((activeIndex + 1) % n);
-          else onActiveIndexChange((activeIndex - 1 + n) % n);
-        }
-        touchStartX.current = null;
-      }}
-    >
-      <div className="relative w-full" style={{ height: stageHeight, marginTop: 16 }}>
-        <div className="absolute inset-0 flex items-center justify-center">
-          {slots.map((offset) => {
-            const itemIndex = (activeIndex + offset + n) % n;
-            const item = items[itemIndex];
-            const absOffset = Math.abs(offset);
-            const isActive = offset === 0;
+    const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
-            // Desktop pill path
-            if (pills) {
-              const pill = pills[Math.min(absOffset, pills.length - 1)];
-              const x = getPillX(offset, pills);
+    return (
+      <div
+        ref={ref}
+        className="relative w-full flex flex-col items-center"
+        onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+        onTouchEnd={(e) => {
+          if (touchStartX.current === null) return;
+          const diff = touchStartX.current - e.changedTouches[0].clientX;
+          if (Math.abs(diff) > 40) {
+            if (diff > 0) onActiveIndexChange((activeIndex + 1) % n);
+            else onActiveIndexChange((activeIndex - 1 + n) % n);
+          }
+          touchStartX.current = null;
+        }}
+      >
+        <div className="relative w-full" style={{ height: stageHeight, marginTop: 16 }}>
+          <div className="absolute inset-0 flex items-center justify-center">
+            {slots.map((offset) => {
+              const itemIndex = (activeIndex + offset + n) % n;
+              const item = items[itemIndex];
+              const absOffset = Math.abs(offset);
+              const isActive = offset === 0;
 
+              // Desktop pill path — identical to CoverFlowCarousel
+              if (pills) {
+                const pill = pills[Math.min(absOffset, pills.length - 1)];
+                const x = getPillX(offset, pills);
+
+                return (
+                  <motion.div
+                    key={`slot-${offset}`}
+                    initial={false}
+                    animate={{ x, zIndex: VISIBLE + 1 - absOffset, opacity: 1 }}
+                    transition={spring}
+                    className="absolute cursor-pointer"
+                    style={{
+                      width: pill.w,
+                      height: pill.h,
+                      borderRadius: pill.r,
+                      boxShadow: isActive
+                        ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
+                        : "0 4px 16px rgba(0,0,0,0.12)",
+                    }}
+                    onClick={() => {
+                      if (!isActive) onActiveIndexChange((activeIndex + offset + n) % n);
+                    }}
+                  >
+                    <div
+                      className="w-full h-full overflow-hidden relative"
+                      style={{ borderRadius: pill.r }}
+                    >
+                      {/* Active card — render form content */}
+                      {isActive ? (
+                        <div className="absolute inset-0 overflow-hidden">
+                          {renderActiveCard(item)}
+                        </div>
+                      ) : (
+                        <>
+                          {/* Flanking cards — teal gradient with label */}
+                          <div className="absolute inset-0" style={{ background: FALLBACK_GRADIENT }} />
+                          <div className="absolute bottom-6 left-6">
+                            <span
+                              style={{
+                                fontFamily: "'Cormorant Garamond', serif",
+                                fontSize: 16,
+                                letterSpacing: "0.02em",
+                                fontWeight: 600,
+                                color: "#fff",
+                                background: "rgba(255,255,255,0.18)",
+                                borderRadius: 999,
+                                backdropFilter: "blur(12px)",
+                                WebkitBackdropFilter: "blur(12px)",
+                                border: "1px solid rgba(255,255,255,0.35)",
+                                padding: "6px 18px",
+                                display: "inline-block",
+                              }}
+                            >
+                              {item.label}
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              }
+
+              // Mobile path — identical to CoverFlowCarousel
               return (
                 <motion.div
                   key={`slot-${offset}`}
                   initial={false}
-                  animate={{ x, zIndex: VISIBLE + 1 - absOffset, opacity: 1 }}
+                  animate={{
+                    x: offset * xGap,
+                    scale: isActive ? 1 : 0.6,
+                    opacity: isActive ? 1 : flankOpacity,
+                    zIndex: VISIBLE + 1 - absOffset,
+                  }}
                   transition={spring}
                   className="absolute cursor-pointer"
-                  style={{
-                    width: pill.w,
-                    height: pill.h,
-                    borderRadius: pill.r,
-                    boxShadow: isActive
-                      ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
-                      : "0 4px 16px rgba(0,0,0,0.12)",
+                  onClick={() => {
+                    if (!isActive) onActiveIndexChange((activeIndex + offset + n) % n);
                   }}
-                  onClick={() => { if (!isActive) onActiveIndexChange((activeIndex + offset + n) % n); }}
                 >
-                  <div className="w-full h-full overflow-hidden relative" style={{ borderRadius: pill.r }}>
-                    {/* Background — image or gradient */}
-                    {item.image ? (
-                      <img src={item.image} alt={item.label} className="absolute inset-0 w-full h-full object-cover" />
-                    ) : (
-                      <div className="absolute inset-0" style={{ background: FALLBACK_GRADIENT }} />
-                    )}
-
-                    {/* Active card — render form content on top */}
-                    {isActive && (
-                      <div className="absolute inset-0 overflow-y-auto">
+                  <div
+                    className="relative overflow-hidden"
+                    style={{
+                      width: cardWidth,
+                      height: cardHeight,
+                      borderRadius,
+                      boxShadow: isActive
+                        ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
+                        : "0 4px 16px rgba(0,0,0,0.12)",
+                    }}
+                  >
+                    {isActive ? (
+                      <div className="absolute inset-0 overflow-hidden">
                         {renderActiveCard(item)}
                       </div>
-                    )}
-
-                    {/* Label pill — always shown on flanking, shown on active too */}
-                    {!isActive && (
-                      <div className="absolute bottom-6 left-6">
-                        <span style={{
-                          fontFamily: "'Cormorant Garamond', serif",
-                          fontSize: 16,
-                          letterSpacing: "0.02em",
-                          fontWeight: 600,
-                          color: "#fff",
-                          background: "rgba(255,255,255,0.18)",
-                          borderRadius: 999,
-                          backdropFilter: "blur(12px)",
-                          WebkitBackdropFilter: "blur(12px)",
-                          border: "1px solid rgba(255,255,255,0.35)",
-                          padding: "6px 18px",
-                          display: "inline-block",
-                        }}>
-                          {item.label}
-                        </span>
-                      </div>
+                    ) : (
+                      <>
+                        <div className="absolute inset-0" style={{ background: FALLBACK_GRADIENT }} />
+                        <div className="absolute bottom-4 left-4">
+                          <span
+                            style={{
+                              fontFamily: "'Cormorant Garamond', serif",
+                              fontSize: 13,
+                              color: "#fff",
+                              background: "rgba(255,255,255,0.18)",
+                              borderRadius: 999,
+                              backdropFilter: "blur(12px)",
+                              border: "1px solid rgba(255,255,255,0.35)",
+                              padding: "4px 14px",
+                              display: "inline-block",
+                            }}
+                          >
+                            {item.label}
+                          </span>
+                        </div>
+                      </>
                     )}
                   </div>
                 </motion.div>
               );
-            }
-
-            // Mobile path
-            return (
-              <motion.div
-                key={`slot-${offset}`}
-                initial={false}
-                animate={{
-                  x: offset * xGap,
-                  scale: isActive ? 1 : 0.6,
-                  opacity: isActive ? 1 : flankOpacity,
-                  zIndex: VISIBLE + 1 - absOffset,
-                }}
-                transition={spring}
-                className="absolute cursor-pointer"
-                onClick={() => { if (!isActive) onActiveIndexChange((activeIndex + offset + n) % n); }}
-              >
-                <div
-                  className="relative overflow-hidden"
-                  style={{
-                    width: cardWidth, height: cardHeight, borderRadius,
-                    boxShadow: isActive
-                      ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
-                      : "0 4px 16px rgba(0,0,0,0.12)",
-                  }}
-                >
-                  {item.image ? (
-                    <img src={item.image} alt={item.label} className="absolute inset-0 w-full h-full object-cover" />
-                  ) : (
-                    <div className="absolute inset-0" style={{ background: FALLBACK_GRADIENT }} />
-                  )}
-                  {isActive ? (
-                    <div className="absolute inset-0 overflow-y-auto">{renderActiveCard(item)}</div>
-                  ) : (
-                    <div className="absolute bottom-4 left-4">
-                      <span style={{
-                        fontFamily: "'Cormorant Garamond', serif",
-                        fontSize: 13,
-                        color: "#fff",
-                        background: "rgba(255,255,255,0.18)",
-                        borderRadius: 999,
-                        backdropFilter: "blur(12px)",
-                        border: "1px solid rgba(255,255,255,0.35)",
-                        padding: "4px 14px",
-                        display: "inline-block",
-                      }}>
-                        {item.label}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
+            })}
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
+
+FormCoverFlowCarousel.displayName = "FormCoverFlowCarousel";
 
 export default FormCoverFlowCarousel;

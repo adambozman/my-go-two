@@ -52,6 +52,11 @@ interface CardEntry {
 const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
 const NEW_ENTRY_ID = "__new_entry__";
 
+/**
+ * EntryFormCard — editorial magazine-style form rendered inside the coverflow card.
+ * Inspired by fashion lookbook layouts: generous whitespace, serif display type,
+ * coral accents, and clean field styling on a warm linen background.
+ */
 const EntryFormCard = ({
   subtype,
   subcategoryName,
@@ -75,141 +80,206 @@ const EntryFormCard = ({
   onSave: () => void;
   onDelete: () => void;
 }) => {
+  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+  const fs = isDesktop ? 1.8 : 1;
+
   return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
-      {/* Top 38% — image area with gradient fade into panel */}
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: "42%",
-        background: "linear-gradient(160deg, #1a3a3e 0%, #2d6870 60%, #3d8a96 100%)",
-        zIndex: 0,
-      }}>
-        {/* Subtle noise texture overlay */}
-        <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E")`,
-          opacity: 0.4,
-        }} />
-        {/* Category label top-left */}
-        <div style={{ position: "absolute", top: 18, left: 20 }}>
-          <p style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", margin: 0 }}>
-            {subcategoryName || subtype.name}
-          </p>
-        </div>
-        {/* Large decorative number/icon top-right */}
-        <div style={{ position: "absolute", top: 10, right: 18, opacity: 0.12 }}>
-          <span style={{ fontSize: 80, fontFamily: "'Cormorant Garamond', serif", color: "#fff", lineHeight: 1 }}>✦</span>
-        </div>
-        {/* Coral accent bar */}
-        <div style={{ position: "absolute", bottom: 60, left: 20, display: "flex", gap: 4 }}>
-          <div style={{ height: 3, width: 36, background: "#d4543a", borderRadius: 2 }} />
-          <div style={{ height: 3, width: 12, background: "rgba(212,84,58,0.4)", borderRadius: 2 }} />
-        </div>
-        {/* Entry name — hero text */}
-        <div style={{ position: "absolute", bottom: 20, left: 20, right: 20 }}>
-          <input
-            value={entryName}
-            onChange={(e) => onEntryNameChange(e.target.value)}
-            placeholder="Name this entry…"
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        background: "#f5ede0",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* ── Header area ── */}
+      <div style={{ padding: `${16 * fs}px ${18 * fs}px ${8 * fs}px`, flexShrink: 0 }}>
+        {/* Top row: category + decorative accent */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <p
             style={{
-              width: "100%", background: "transparent", border: "none",
-              borderBottom: "2px solid rgba(255,255,255,0.6)",
-              padding: "4px 0 10px", fontSize: 26, fontWeight: 700,
-              color: "#fff", outline: "none",
-              fontFamily: "'Cormorant Garamond', serif", letterSpacing: "-0.01em",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Curved panel rising from bottom */}
-      <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0, top: "36%",
-        background: "#efe0cf",
-        borderRadius: "28px 28px 0 0",
-        zIndex: 1,
-        display: "flex", flexDirection: "column",
-        padding: "20px 20px 16px",
-        boxShadow: "0 -8px 32px rgba(0,0,0,0.12)",
-      }}>
-        {/* Fields */}
-        <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", display: "flex", flexDirection: "column", gap: 0 }}>
-          {subtype.fields.map((field, i) => (
-            <div key={field.label} style={{
-              paddingBottom: 12,
-              marginBottom: 12,
-              borderBottom: i < subtype.fields.length - 1 ? "1px solid rgba(45,104,112,0.12)" : "none",
-            }}>
-              <p style={{ fontSize: 9, fontFamily: "'Jost', sans-serif", letterSpacing: "0.16em", textTransform: "uppercase", color: "#2d6870", marginBottom: 8, fontWeight: 700 }}>
-                {field.label}
-              </p>
-              {field.type === "select" && field.options ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {field.options.map((opt) => {
-                    const isSelected = values[field.label] === opt;
-                    return (
-                      <button
-                        key={opt}
-                        onClick={() => onChange(field.label, isSelected ? "" : opt)}
-                        style={{
-                          padding: "4px 13px", borderRadius: 999, fontSize: 11,
-                          fontFamily: "'Jost', sans-serif", fontWeight: 500,
-                          border: isSelected ? "1.5px solid #2d6870" : "1px solid rgba(45,104,112,0.2)",
-                          background: isSelected ? "#2d6870" : "rgba(255,255,255,0.7)",
-                          color: isSelected ? "#fff" : "#3a3a3a",
-                          cursor: "pointer", transition: "all 0.15s",
-                        }}
-                      >
-                        {opt}
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <input
-                  value={values[field.label] || ""}
-                  onChange={(e) => onChange(field.label, e.target.value)}
-                  placeholder="—"
-                  style={{
-                    width: "100%", background: "rgba(255,255,255,0.75)",
-                    border: "1px solid rgba(45,104,112,0.15)",
-                    borderRadius: 8,
-                    padding: "8px 12px", fontSize: 13, color: "#1a1a1a",
-                    outline: "none", fontFamily: "'Jost', sans-serif",
-                    fontWeight: 400,
-                  }}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Save row */}
-        <div style={{ display: "flex", gap: 8, paddingTop: 4 }}>
-          <button
-            onClick={onSave} disabled={saving}
-            style={{
-              flex: 1, height: 44, borderRadius: 12,
-              background: "#2d6870",
-              border: "none", color: "#fff", fontSize: 11, fontWeight: 700,
-              fontFamily: "'Jost', sans-serif", letterSpacing: "0.14em",
-              textTransform: "uppercase", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 20px rgba(45,104,112,0.5)",
+              fontSize: 8 * fs,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: "hsl(var(--swatch-teal))",
+              fontFamily: "'Jost', sans-serif",
+              fontWeight: 600,
+              margin: 0,
             }}
           >
-            {saving ? <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" /> : "Save"}
-          </button>
-          {isEditing && (
-            <button onClick={onDelete} style={{
-              width: 42, height: 42, borderRadius: 999,
-              background: "rgba(212,84,58,0.1)",
-              border: "1px solid rgba(212,84,58,0.3)",
-              display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-            }}>
-              <Trash2 style={{ width: 13, height: 13, color: "#d4543a" }} />
-            </button>
-          )}
+            {subcategoryName || subtype.name}
+          </p>
+          {/* Coral accent bar — editorial detail */}
+          <div style={{ display: "flex", gap: 3 * fs, alignItems: "center", marginTop: 2 * fs }}>
+            <div style={{ width: 20 * fs, height: 2.5 * fs, background: "#d4543a", borderRadius: 2 }} />
+            <div style={{ width: 8 * fs, height: 2.5 * fs, background: "rgba(212,84,58,0.35)", borderRadius: 2 }} />
+          </div>
         </div>
+
+        {/* Entry name — large editorial serif */}
+        <input
+          value={entryName}
+          onChange={(e) => onEntryNameChange(e.target.value)}
+          placeholder="Entry name…"
+          style={{
+            width: "100%",
+            background: "transparent",
+            border: "none",
+            borderBottom: "1.5px solid rgba(45,104,112,0.2)",
+            padding: `${6 * fs}px 0 ${6 * fs}px`,
+            fontSize: 22 * fs,
+            fontWeight: 600,
+            color: "hsl(var(--swatch-teal-dark))",
+            outline: "none",
+            fontFamily: "'Cormorant Garamond', serif",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.1,
+          }}
+        />
+      </div>
+
+      {/* ── Fields area — scrollable ── */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          scrollbarWidth: "none",
+          padding: `${6 * fs}px ${18 * fs}px 0`,
+        }}
+      >
+        {subtype.fields.map((field, i) => (
+          <div
+            key={field.label}
+            style={{
+              marginBottom: 10 * fs,
+            }}
+          >
+            <p
+              style={{
+                fontSize: 7.5 * fs,
+                fontFamily: "'Jost', sans-serif",
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: "rgba(45,104,112,0.65)",
+                marginBottom: 5 * fs,
+                fontWeight: 600,
+              }}
+            >
+              {field.label}
+            </p>
+            {field.type === "select" && field.options ? (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 * fs }}>
+                {field.options.map((opt) => {
+                  const isSelected = values[field.label] === opt;
+                  return (
+                    <button
+                      key={opt}
+                      onClick={() => onChange(field.label, isSelected ? "" : opt)}
+                      style={{
+                        padding: `${3 * fs}px ${10 * fs}px`,
+                        borderRadius: 999,
+                        fontSize: 9 * fs,
+                        fontFamily: "'Jost', sans-serif",
+                        fontWeight: 500,
+                        border: isSelected
+                          ? "1.5px solid hsl(var(--swatch-teal))"
+                          : "1px solid rgba(45,104,112,0.15)",
+                        background: isSelected
+                          ? "hsl(var(--swatch-teal))"
+                          : "rgba(255,255,255,0.6)",
+                        color: isSelected ? "#fff" : "#4a4a4a",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <input
+                value={values[field.label] || ""}
+                onChange={(e) => onChange(field.label, e.target.value)}
+                placeholder="—"
+                style={{
+                  width: "100%",
+                  background: "rgba(255,255,255,0.55)",
+                  border: "1px solid rgba(45,104,112,0.1)",
+                  borderRadius: 6 * fs,
+                  padding: `${6 * fs}px ${10 * fs}px`,
+                  fontSize: 11 * fs,
+                  color: "#1a1a1a",
+                  outline: "none",
+                  fontFamily: "'Jost', sans-serif",
+                  fontWeight: 400,
+                }}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* ── Bottom action row ── */}
+      <div
+        style={{
+          padding: `${8 * fs}px ${18 * fs}px ${12 * fs}px`,
+          display: "flex",
+          gap: 6 * fs,
+          flexShrink: 0,
+        }}
+      >
+        <button
+          onClick={onSave}
+          disabled={saving}
+          style={{
+            flex: 1,
+            height: 34 * fs,
+            borderRadius: 999,
+            background: "#d4543a",
+            border: "none",
+            color: "#fff",
+            fontSize: 9 * fs,
+            fontWeight: 700,
+            fontFamily: "'Jost', sans-serif",
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 4px 20px rgba(212,84,58,0.30)",
+            transition: "transform 0.15s ease",
+          }}
+        >
+          {saving ? (
+            <Loader2 style={{ width: 12 * fs, height: 12 * fs }} className="animate-spin" />
+          ) : (
+            "Save"
+          )}
+        </button>
+        {isEditing && (
+          <button
+            onClick={onDelete}
+            style={{
+              width: 34 * fs,
+              height: 34 * fs,
+              borderRadius: 999,
+              background: "rgba(212,84,58,0.08)",
+              border: "1px solid rgba(212,84,58,0.25)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              flexShrink: 0,
+            }}
+          >
+            <Trash2 style={{ width: 11 * fs, height: 11 * fs, color: "#d4543a" }} />
+          </button>
+        )}
       </div>
     </div>
   );
