@@ -153,7 +153,7 @@ serve(async (req) => {
       .join("\n");
 
     const prompt = `You are a lifestyle AI for GoTwo, a couples' preference-sharing app.
-You are building a deep profile of this user to power personalized product, gift, and style recommendations.
+You are building a deep profile of this user to power personalized product, gift, date, and style recommendations for their partner.
 
 USER PROFILE:
 - Gender: ${userGender}
@@ -167,8 +167,19 @@ Style keywords: ${(personalization.style_keywords || []).join(", ") || "None"}
 Brands: ${(personalization.recommended_brands || []).join(", ") || "None"}
 Price tier: ${personalization.price_tier || "Unknown"}
 
-Generate exactly 6 CATEGORIES of adaptive questions. Each category should have 3-5 questions.
-Each category MUST map to one of: style, sizing, lifestyle, gifting, products.
+Generate exactly 8 CATEGORIES of adaptive questions. Each category should have 3-5 questions.
+Each category MUST map to one of: style, sizing, colors, lifestyle, gifting, products, brands, love-language, dates.
+
+TOPIC GUIDANCE:
+- "style": clothing style, aesthetic preferences, fashion choices, outfit vibes
+- "sizing": clothing sizes, shoe sizes, fit preferences (slim, relaxed, oversized)
+- "colors": favorite colors, color palettes they gravitate toward, colors they avoid
+- "lifestyle": hobbies, free time, wellness, fitness, daily routines
+- "gifting": gift preferences, price comfort, thoughtfulness vs practicality, surprise tolerance
+- "products": specific product categories they care about (skincare, tech, home)
+- "brands": brand loyalty, favorite brands, brand discovery preferences
+- "love-language": how they give/receive love (words, acts of service, quality time, gifts, touch), what makes them feel appreciated
+- "dates": ideal date nights, activities they enjoy together, dining preferences, adventure level, stay-in vs go-out
 
 FOCUS on GAPS. Do NOT repeat answered topics. Be specific and personal.
 If the user has answered basic style questions, go deeper (specific aesthetics, occasions, colors).
@@ -210,7 +221,7 @@ Use the provided tool.`;
                       properties: {
                         id: { type: "string", description: "unique kebab-case category id" },
                         name: { type: "string", description: "Display name, 2-4 words" },
-                        category: { type: "string", enum: ["style", "sizing", "lifestyle", "gifting", "products"] },
+                        category: { type: "string", enum: ["style", "sizing", "colors", "lifestyle", "gifting", "products", "brands", "love-language", "dates"] },
                         image_prompt: {
                           type: "string",
                           description: "One vivid sentence describing a lifestyle photo for this category's card cover. E.g. 'A curated flatlay of leather accessories and watches on warm wood'",
