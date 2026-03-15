@@ -83,115 +83,56 @@ const EntryFormCard = ({
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
   const fs = isDesktop ? 1.8 : 1;
 
-  return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        background: "#f5ede0",
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* ── Header area ── */}
-      <div style={{ padding: `${16 * fs}px ${18 * fs}px ${6 * fs}px`, flexShrink: 0 }}>
-        {/* Top row: category label + index */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <p
-            style={{
-              fontSize: 7 * fs,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: "hsl(var(--swatch-teal))",
-              fontFamily: "'Jost', sans-serif",
-              fontWeight: 600,
-              margin: 0,
-            }}
-          >
-            {subcategoryName || subtype.name}
-          </p>
-          <span
-            style={{
-              fontSize: 9 * fs,
-              fontFamily: "'Cormorant Garamond', serif",
-              color: "rgba(0,0,0,0.2)",
-              fontWeight: 300,
-              fontStyle: "italic",
-            }}
-          >
-            {isEditing ? "" : "new"}
-          </span>
-        </div>
+  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+  const fs = isDesktop ? 1.8 : 1;
 
-        {/* Entry name — large bold black serif + photo placeholder */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginTop: 4 * fs }}>
+  return (
+    <div style={{ width: "100%", height: "100%", background: "#f0e8d8", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+
+      {/* ── TOP META ROW ── */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: `${16*fs}px ${20*fs}px ${8*fs}px`, flexShrink: 0 }}>
+        <span style={{ fontSize: 7*fs, letterSpacing: "0.22em", textTransform: "uppercase", color: "#d4543a", fontFamily: "'Jost', sans-serif", fontWeight: 700 }}>
+          {subcategoryName || subtype.name}
+        </span>
+        <span style={{ fontSize: 9*fs, fontFamily: "'Cormorant Garamond', serif", color: "rgba(26,26,26,0.25)", fontStyle: "italic" }}>
+          {isEditing ? "edit" : "new"}
+        </span>
+      </div>
+
+      {/* ── TITLE ROW: large serif + tall photo box ── */}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 14*fs, padding: `0 ${20*fs}px ${10*fs}px`, flexShrink: 0 }}>
+        <div style={{ flex: 1 }}>
           <input
             value={entryName}
             onChange={(e) => onEntryNameChange(e.target.value)}
-            placeholder="Entry name…"
+            placeholder="Name this entry"
             style={{
-              flex: 1,
-              background: "transparent",
-              border: "none",
-              padding: `${2 * fs}px 0`,
-              fontSize: 22 * fs,
-              fontWeight: 700,
-              color: "#1a1a1a",
-              outline: "none",
-              fontFamily: "'Cormorant Garamond', serif",
-              letterSpacing: "-0.02em",
-              lineHeight: 1.05,
+              width: "100%", background: "transparent", border: "none",
+              fontSize: 28*fs, fontWeight: 700, color: "#1a1a1a", outline: "none",
+              fontFamily: "'Cormorant Garamond', serif", letterSpacing: "-0.02em", lineHeight: 1.0,
             }}
           />
-          {/* Photo placeholder */}
-          <div
-            style={{
-              width: 42 * fs,
-              height: 42 * fs,
-              borderRadius: 6 * fs,
-              background: "rgba(200,191,180,0.35)",
-              border: "1.5px dashed rgba(160,150,138,0.4)",
-              flexShrink: 0,
-              marginLeft: 8 * fs,
-            }}
-          />
+          <div style={{ display: "flex", gap: 3*fs, marginTop: 8*fs }}>
+            <div style={{ height: 2*fs, width: 28*fs, background: "#d4543a", borderRadius: 1 }} />
+            <div style={{ height: 2*fs, width: 10*fs, background: "rgba(212,84,58,0.3)", borderRadius: 1 }} />
+          </div>
         </div>
+        {/* Tall photo box */}
+        <div style={{ width: 80*fs, height: 100*fs, borderRadius: 10*fs, background: "#c8bfb4", flexShrink: 0, overflow: "hidden" }} />
       </div>
 
-      {/* Divider */}
-      <div style={{ margin: `0 ${18 * fs}px`, height: 1, background: "rgba(0,0,0,0.08)" }} />
+      {/* ── FULL RULE ── */}
+      <div style={{ height: 1, background: "#1a1a1a", margin: `0 ${20*fs}px ${10*fs}px`, flexShrink: 0 }} />
 
-      {/* ── Fields area — scrollable ── */}
-      <div
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          scrollbarWidth: "none",
-          padding: `${10 * fs}px ${18 * fs}px 0`,
-        }}
-      >
-        {subtype.fields.map((field) => (
-          <div
-            key={field.label}
-            style={{ marginBottom: 12 * fs }}
-          >
-            <p
-              style={{
-                fontSize: 6.5 * fs,
-                fontFamily: "'Jost', sans-serif",
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "rgba(0,0,0,0.38)",
-                marginBottom: 5 * fs,
-                fontWeight: 600,
-              }}
-            >
+      {/* ── FIELDS ── */}
+      <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: `0 ${20*fs}px` }}>
+        {subtype.fields.map((field, i) => (
+          <div key={field.label} style={{ paddingBottom: 10*fs, marginBottom: 10*fs, borderBottom: i < subtype.fields.length - 1 ? "1px solid rgba(26,26,26,0.1)" : "none" }}>
+            <p style={{ fontSize: 7*fs, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(26,26,26,0.38)", fontWeight: 700, margin: `0 0 ${6*fs}px`, fontFamily: "'Jost', sans-serif" }}>
               {field.label}
             </p>
             {field.type === "select" && field.options ? (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 * fs, alignItems: "center" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 5*fs }}>
                 {field.options.map((opt) => {
                   const isSelected = values[field.label] === opt;
                   return (
@@ -199,18 +140,12 @@ const EntryFormCard = ({
                       key={opt}
                       onClick={() => onChange(field.label, isSelected ? "" : opt)}
                       style={{
-                        padding: `${3.5 * fs}px ${10 * fs}px`,
-                        borderRadius: 999,
-                        fontSize: 9 * fs,
-                        fontFamily: "'Jost', sans-serif",
-                        fontWeight: 500,
-                        border: isSelected
-                          ? "1.5px solid #d4543a"
-                          : "1px solid rgba(0,0,0,0.15)",
+                        padding: `${3*fs}px ${10*fs}px`, borderRadius: 999, fontSize: 9*fs,
+                        fontFamily: "'Jost', sans-serif", fontWeight: 500,
+                        border: isSelected ? "1.5px solid #d4543a" : "1px solid rgba(26,26,26,0.15)",
                         background: isSelected ? "#d4543a" : "transparent",
-                        color: isSelected ? "#fff" : "#3a3a3a",
-                        cursor: "pointer",
-                        transition: "all 0.15s ease",
+                        color: isSelected ? "#fff" : "#1a1a1a",
+                        cursor: "pointer", transition: "all 0.15s",
                       }}
                     >
                       {opt}
@@ -224,17 +159,10 @@ const EntryFormCard = ({
                 onChange={(e) => onChange(field.label, e.target.value)}
                 placeholder="—"
                 style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  borderBottom: "1px solid rgba(0,0,0,0.08)",
-                  borderRadius: 0,
-                  padding: `${4 * fs}px 0`,
-                  fontSize: 10 * fs,
-                  color: "#1a1a1a",
-                  outline: "none",
-                  fontFamily: "'Jost', sans-serif",
-                  fontWeight: 400,
+                  width: "100%", background: "transparent", border: "none",
+                  borderBottom: "1px solid rgba(26,26,26,0.08)",
+                  padding: `${4*fs}px 0`, fontSize: 11*fs, color: "#1a1a1a",
+                  outline: "none", fontFamily: "'Jost', sans-serif",
                 }}
               />
             )}
@@ -242,66 +170,39 @@ const EntryFormCard = ({
         ))}
       </div>
 
-      {/* ── Bottom action row ── */}
-      <div
-        style={{
-          padding: `${8 * fs}px ${18 * fs}px ${14 * fs}px`,
-          display: "flex",
-          gap: 6 * fs,
-          flexShrink: 0,
-        }}
-      >
-        <button
-          onClick={onSave}
-          disabled={saving}
-          style={{
-            flex: 1,
-            height: 36 * fs,
-            borderRadius: 6 * fs,
-            background: "#1a1a1a",
-            border: "none",
-            color: "#fff",
-            fontSize: 8.5 * fs,
-            fontWeight: 700,
-            fontFamily: "'Jost', sans-serif",
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "transform 0.15s ease",
-          }}
-        >
-          {saving ? (
-            <Loader2 style={{ width: 12 * fs, height: 12 * fs }} className="animate-spin" />
-          ) : (
-            "Save Entry"
-          )}
-        </button>
-        {isEditing && (
+      {/* ── SAVE BAR ── */}
+      <div style={{ flexShrink: 0 }}>
+        <div style={{ height: 1, background: "#1a1a1a", margin: `${8*fs}px ${20*fs}px ${12*fs}px` }} />
+        <div style={{ display: "flex", gap: 8*fs, padding: `0 ${20*fs}px ${18*fs}px` }}>
           <button
-            onClick={onDelete}
+            onClick={onSave} disabled={saving}
             style={{
-              width: 36 * fs,
-              height: 36 * fs,
-              borderRadius: 6 * fs,
-              background: "rgba(212,84,58,0.08)",
-              border: "1px solid rgba(212,84,58,0.25)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              flexShrink: 0,
+              flex: 1, height: 38*fs, borderRadius: 6*fs,
+              background: "#1a1a1a", border: "none",
+              color: "#f0e8d8", fontSize: 8.5*fs, fontWeight: 700,
+              fontFamily: "'Jost', sans-serif", letterSpacing: "0.18em",
+              textTransform: "uppercase", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
             }}
           >
-            <Trash2 style={{ width: 11 * fs, height: 11 * fs, color: "#d4543a" }} />
+            {saving ? <Loader2 style={{ width: 12*fs, height: 12*fs }} className="animate-spin" /> : "Save Entry"}
           </button>
-        )}
+          {isEditing && (
+            <button onClick={onDelete} style={{
+              width: 38*fs, height: 38*fs, borderRadius: 6*fs,
+              background: "rgba(212,84,58,0.08)",
+              border: "1px solid rgba(212,84,58,0.25)",
+              display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+            }}>
+              <Trash2 style={{ width: 13*fs, height: 13*fs, color: "#d4543a" }} />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
 };
+
 
 // ── Main Page ──
 const MyGoTwo = () => {

@@ -58,6 +58,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -85,6 +90,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -125,6 +135,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -170,6 +185,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -197,6 +217,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -232,6 +257,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -262,6 +292,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -305,6 +340,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -328,6 +368,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -359,6 +404,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -382,6 +432,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -413,6 +468,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -456,6 +516,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -474,6 +539,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -500,6 +570,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -518,6 +593,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -544,6 +624,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -562,6 +647,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -604,6 +694,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -631,6 +726,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -677,6 +777,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -708,6 +813,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -735,6 +845,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -781,6 +896,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -801,6 +921,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             "fields": [
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -832,6 +957,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -845,6 +975,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             "fields": [
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -872,6 +1007,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 ]
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -885,6 +1025,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             "fields": [
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -907,6 +1052,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -948,6 +1098,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -974,6 +1129,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1008,6 +1168,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1034,6 +1199,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1068,6 +1238,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1094,6 +1269,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1161,6 +1341,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1192,6 +1377,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1219,6 +1409,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1256,6 +1451,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1301,6 +1501,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1328,6 +1533,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1366,6 +1576,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1389,6 +1604,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1420,6 +1640,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1443,6 +1668,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1474,6 +1704,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1497,6 +1732,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1540,6 +1780,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1571,6 +1816,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1589,6 +1839,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1624,6 +1879,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1646,6 +1906,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1664,6 +1929,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1718,6 +1988,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1745,6 +2020,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1780,6 +2060,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1807,6 +2092,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1842,6 +2132,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1869,6 +2164,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -1907,6 +2207,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1934,6 +2239,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -1955,6 +2265,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                   "One-Point",
                   "TV Fold"
                 ]
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Notes",
@@ -1985,6 +2300,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2003,6 +2323,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2027,6 +2352,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                   "Gold",
                   "Matte Black"
                 ]
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Notes",
@@ -2066,6 +2396,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2092,6 +2427,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2126,6 +2466,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2152,6 +2497,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2186,6 +2536,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2212,6 +2567,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2269,6 +2629,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2296,6 +2661,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2331,6 +2701,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2358,6 +2733,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2393,6 +2773,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2420,6 +2805,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2462,6 +2852,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2489,6 +2884,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2524,6 +2924,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2551,6 +2956,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2586,6 +2996,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2613,6 +3028,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2656,6 +3076,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2674,6 +3099,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2700,6 +3130,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2722,6 +3157,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2740,6 +3180,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2772,6 +3217,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2814,6 +3264,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2841,6 +3296,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2876,6 +3336,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2903,6 +3368,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -2938,6 +3408,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2969,6 +3444,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -2993,6 +3473,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -3006,6 +3491,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             "fields": [
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -3027,6 +3517,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -3040,6 +3535,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             "fields": [
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -3072,6 +3572,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -3085,6 +3590,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             "fields": [
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -3126,6 +3636,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -3152,6 +3667,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -3186,6 +3706,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -3212,6 +3737,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
@@ -3246,6 +3776,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               },
               {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
                 "label": "Notes",
                 "type": "text",
                 "value": ""
@@ -3272,6 +3807,11 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
               },
               {
                 "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
