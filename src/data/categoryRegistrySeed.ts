@@ -11,6 +11,7 @@ export interface CategoryRegistryRow {
   is_active: boolean;
   fields: unknown[];
   subcategories: unknown[];
+  image?: string;
 }
 
 export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] = 
