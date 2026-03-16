@@ -413,9 +413,8 @@ const Questionnaires = () => {
       <div className="flex-1 px-4 pb-8 space-y-3 mt-2">
         {sprints.map((sprint, idx) => {
           const prog = sprintProgress[idx];
-          const isActive = idx === currentSprintIdx;
-          const isLocked = idx > currentSprintIdx && !sprintProgress[idx - 1]?.complete;
           const isComplete = prog.complete;
+          const hasProgress = prog.answered > 0 && !isComplete;
 
           return (
             <motion.button
@@ -423,25 +422,23 @@ const Questionnaires = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.04, type: "spring", stiffness: 280, damping: 25 }}
-              whileTap={!isLocked ? { scale: 0.98 } : undefined}
-              onClick={() => !isLocked && startSprint(idx)}
-              disabled={isLocked}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => startSprint(idx)}
               className="w-full rounded-2xl p-4 text-left transition-all relative overflow-hidden"
               style={{
-                background: isActive
+                background: hasProgress
                   ? "#FFFFFF"
                   : isComplete
                     ? "rgba(var(--swatch-teal-rgb), 0.04)"
                     : "rgba(255,255,255,0.5)",
-                border: isActive
+                border: hasProgress
                   ? "1.5px solid var(--swatch-teal)"
                   : isComplete
                     ? "1.5px solid rgba(var(--swatch-teal-rgb), 0.15)"
                     : "1.5px solid rgba(var(--swatch-antique-coin-rgb), 0.08)",
-                boxShadow: isActive
+                boxShadow: hasProgress
                   ? "0 4px 20px rgba(45,104,112,0.08)"
                   : "0 1px 4px rgba(0,0,0,0.02)",
-                opacity: isLocked ? 0.45 : 1,
               }}
             >
               <div className="flex items-center gap-3">
