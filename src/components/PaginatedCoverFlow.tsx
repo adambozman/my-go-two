@@ -22,14 +22,14 @@ export default function PaginatedCoverFlow({
   });
 
   return (
-    <div className={className ?? "w-full flex flex-col items-center"}>
+    <div className={className ?? "w-full flex flex-col items-center relative"}>
       <CoverFlowCarousel items={paginatedItems} onSelect={onSelect} />
       <PaginationControls
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
-        label={`Page ${currentPage} of ${totalPages}`}
-        className="mt-5 space-y-2"
+        orientation="vertical"
+        className="fixed flex flex-col items-center gap-2"
       />
     </div>
   );
