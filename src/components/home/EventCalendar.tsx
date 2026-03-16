@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gift, CalendarDays, Heart, ChevronDown } from "lucide-react";
+import { Gift, CalendarDays, Heart, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Milestone } from "./MilestoneCountdown";
 
 interface EventCalendarProps {
@@ -37,9 +37,13 @@ function milestoneIcon(type: string) {
 
 export function EventCalendar({ milestones }: EventCalendarProps) {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
   const today = now.getDate();
+
+  const [visibleDate, setVisibleDate] = useState(() => new Date(currentYear, currentMonth, 1));
+  const year = visibleDate.getFullYear();
+  const month = visibleDate.getMonth();
   const grid = getMonthGrid(year, month);
 
   const dayEvents = useMemo(() => {
@@ -59,10 +63,21 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
     return days[0] ?? null;
   }, [dayEvents]);
 
-  const [expandedDay, setExpandedDay] = useState<number | null>(firstEventDay);
+  const [expandedDay, setExpandedDay] = useState<number | null>(null);
+
+  useEffect(() => {
+    setExpandedDay(firstEventDay);
+  }, [firstEventDay, month, year]);
 
   const selectedEvents = expandedDay ? dayEvents.get(expandedDay) ?? [] : [];
-  const upcoming = milestones.slice(0, 4);
+  const upcoming = useMemo(
+    () => milestones.filter((milestone) => milestone.date.getMonth() === month && milestone.date.getFullYear() === year),
+    [milestones, month, year]
+  );
+
+  const changeMonth = (direction: number) => {
+    setVisibleDate((current) => new Date(current.getFullYear(), current.getMonth() + direction, 1));
+  };
 
   return (
     <motion.section
@@ -78,12 +93,32 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
         >
           Calendar
         </h2>
-        <span
-          className="text-[10px] font-medium"
-          style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
-        >
-          {MONTH_NAMES[month]} {year}
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => changeMonth(-1)}
+            aria-label="View previous month"
+            className="flex h-7 w-7 items-center justify-center rounded-full transition-transform hover:scale-105"
+            style={{ background: "rgba(255,255,255,0.72)", color: "var(--swatch-viridian-odyssey)", border: "1px solid rgba(255,255,255,0.85)" }}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <span
+            className="min-w-[72px] text-center text-[10px] font-medium"
+            style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
+          >
+            {MONTH_NAMES[month]} {year}
+          </span>
+          <button
+            type="button"
+            onClick={() => changeMonth(1)}
+            aria-label="View next month"
+            className="flex h-7 w-7 items-center justify-center rounded-full transition-transform hover:scale-105"
+            style={{ background: "rgba(255,255,255,0.72)", color: "var(--swatch-viridian-odyssey)", border: "1px solid rgba(255,255,255,0.85)" }}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       <div
@@ -111,8 +146,8 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
             {week.map((day, di) => {
               const events = day ? dayEvents.get(day) : undefined;
               const hasEvents = Boolean(events?.length);
-              const isToday = day === today;
-              const isPast = day !== null && day < today;
+              const isToday = day === today && month === currentMonth && year === currentYear;
+              const isPast = day !== null && year === currentYear && month === currentMonth && day < today;
               const isExpanded = day !== null && day === expandedDay;
 
               return (
@@ -170,7 +205,7 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
         <AnimatePresence initial={false}>
           {expandedDay !== null && selectedEvents.length > 0 && (
             <motion.div
-              key={expandedDay}
+              key={`${year}-${month}-${expandedDay}`}
               initial={{ height: 0, opacity: 0, marginTop: 0 }}
               animate={{ height: "auto", opacity: 1, marginTop: 12 }}
               exit={{ height: 0, opacity: 0, marginTop: 0 }}
