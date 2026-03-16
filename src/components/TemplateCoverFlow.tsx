@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
-import CoverFlowCarousel from "@/components/ui/CoverFlowCarousel";
+import PaginatedCoverFlow from "@/components/PaginatedCoverFlow";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 
 export type { SubtypeItem, SubcategoryGroup };
