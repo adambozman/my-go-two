@@ -304,7 +304,7 @@ const DashboardHome = () => {
     <div className="h-full overflow-y-auto relative">
       <div className="max-w-[520px] mx-auto space-y-6 py-4 px-1">
         {/* Greeting */}
-        <GreetingHeader displayName={displayName} />
+        <GreetingHeader displayName={displayName} connectionCount={connections.filter(c => !c.id.startsWith("placeholder-")).length} />
 
         {/* Smart notification banner */}
         {smartBanner && (
@@ -316,29 +316,24 @@ const DashboardHome = () => {
           />
         )}
 
-        {/* Connection avatar row */}
-        <section className="space-y-2.5">
-          <h2
-            className="text-[11px] font-semibold uppercase tracking-[0.14em] px-1"
-            style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
-          >
-            Your People
-          </h2>
-          <ConnectionAvatarRow
-            entries={directoryEntries}
-            onSelect={handleOpenConnectionFromAvatar}
-            onAdd={handleAddConnection}
-          />
-        </section>
+        {/* Connection avatar row (stories-style) */}
+        <ConnectionAvatarRow
+          entries={directoryEntries}
+          onSelect={handleOpenConnectionFromAvatar}
+          onAdd={handleAddConnection}
+        />
 
         {/* Milestone countdowns */}
         <MilestoneList milestones={milestones} />
 
-        {/* Connection directory */}
+        {/* Connection feed cards (image-forward) */}
         <ConnectionDirectory entries={directoryEntries} onSelect={handleOpenConnection} />
 
         {/* Recent activity feed */}
         <RecentUpdates updates={recentUpdates} />
+
+        {/* Bottom spacer */}
+        <div className="h-4" />
       </div>
 
       {/* Connection detail overlay */}
