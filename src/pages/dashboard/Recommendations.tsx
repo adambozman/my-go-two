@@ -101,21 +101,11 @@ const Recommendations = () => {
     return products.filter((p) => p.category === activePillar);
   }, [products, activePillar]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginatedProducts = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return filtered.slice(start, start + PAGE_SIZE);
-  }, [filtered, currentPage]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activePillar]);
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
+  const { currentPage, setCurrentPage, totalPages, paginatedItems: paginatedProducts } = usePagination({
+    items: filtered,
+    pageSize: PAGE_SIZE,
+    resetKeys: [activePillar],
+  });
 
   const toggleSave = (id: string) => {
     setSavedItems((prev) => {
