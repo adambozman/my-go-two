@@ -15,6 +15,7 @@ export interface CoverFlowItem {
 interface CoverFlowCarouselProps {
   items: CoverFlowItem[];
   onSelect: (id: string) => void;
+  initialActiveIndex?: number;
 }
 
 const VISIBLE = 2;
@@ -46,8 +47,8 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
 }
 
 const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
-  ({ items, onSelect }, ref) => {
-    const [activeIndex, setActiveIndex] = useState(0);
+  ({ items, onSelect, initialActiveIndex = 0 }, ref) => {
+    const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const [, forceImages] = useReducer(x => x + 1, 0);
 
@@ -73,6 +74,14 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
       window.addEventListener("keydown", handler);
       return () => window.removeEventListener("keydown", handler);
     }, [n]);
+
+    useEffect(() => {
+      setActiveIndex((prev) => {
+        if (n === 0) return 0;
+        const normalized = ((initialActiveIndex % n) + n) % n;
+        return prev === normalized ? prev : normalized;
+      });
+    }, [initialActiveIndex, n]);
 
     if (n === 0) return null;
 

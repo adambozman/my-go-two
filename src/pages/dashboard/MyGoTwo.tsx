@@ -449,6 +449,7 @@ const MyGoTwo = () => {
   }, [categories]);
 
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
+  const [focusedDrilldownItemId, setFocusedDrilldownItemId] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
@@ -537,6 +538,7 @@ const MyGoTwo = () => {
 
   const clearCoverFlow = () => {
     setCoverFlowState(null);
+    setFocusedDrilldownItemId(null);
     setActiveSubcategory(null);
     setCardKey(null);
     setLeafSubtype(null);
@@ -559,16 +561,15 @@ const MyGoTwo = () => {
     setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     setActiveEntryPage(1);
-    if (activeSubcategory && (!activeSubcategory.products || activeSubcategory.products.length === 0)) {
-      setActiveSubcategory(null);
-    }
+    const fallbackFocusId = leafSubtype?.id || activeSubcategory?.id || null;
+    setFocusedDrilldownItemId(fallbackFocusId);
   };
 
   useEffect(() => {
     if (cardKey) {
       setBackState({ label: "", onBack: goBackFromEntries });
     } else if (activeSubcategory && coverFlowState) {
-      setBackState({ label: "", onBack: () => setActiveSubcategory(null) });
+      setBackState({ label: "", onBack: () => { setFocusedDrilldownItemId(activeSubcategory.id); setActiveSubcategory(null); } });
     } else if (coverFlowState) {
       setBackState({ label: "", onBack: clearCoverFlow });
     } else {
@@ -590,6 +591,7 @@ const MyGoTwo = () => {
     const subcategories = item.subcategories as unknown as SubcategoryGroup[] | undefined;
     if (subtypes.length > 0 || (subcategories && subcategories.length > 0)) {
       setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
+      setFocusedDrilldownItemId(null);
       setShowCategoryPaywall(false);
     }
   };
@@ -607,6 +609,7 @@ const MyGoTwo = () => {
 
   const handleSubcategorySelect = (sc: SubcategoryGroup) => {
     if (sc.products && sc.products.length > 0) {
+      setFocusedDrilldownItemId(sc.id);
       setActiveSubcategory(sc);
       return;
     }
@@ -618,6 +621,7 @@ const MyGoTwo = () => {
     }
 
     setShowCategoryPaywall(false);
+    setFocusedDrilldownItemId(sc.id);
     setActiveSubcategory(sc);
     setCardKey(key);
     setLeafSubtype(sc as unknown as SubtypeItem);
@@ -636,6 +640,7 @@ const MyGoTwo = () => {
     }
 
     setShowCategoryPaywall(false);
+    setFocusedDrilldownItemId(subtype.id);
     setCardKey(key);
     setLeafSubtype(subtype);
     setLeafSubcategoryName(subcategoryName);
@@ -893,6 +898,7 @@ const MyGoTwo = () => {
           onSubcategorySelect={handleSubcategorySelect}
           onBack={clearCoverFlow}
           onSelect={handleSubtypeSelect}
+          focusedItemId={focusedDrilldownItemId}
           creating={false}
           gender={gender}
           section={coverFlowState.section}

@@ -18,6 +18,7 @@ interface TemplateCoverFlowProps {
   gender: string;
   section?: string;
   categoryId?: string;
+  focusedItemId?: string | null;
 }
 
 /** Hook to batch-fetch images from category_images for a list of keys */
@@ -59,6 +60,7 @@ const TemplateCoverFlow = ({
   activeSubcategory,
   onSubcategorySelect,
   onSelect,
+  focusedItemId,
 }: TemplateCoverFlowProps) => {
   const hasSubcategories = subcategories && subcategories.length > 0;
 
@@ -86,6 +88,7 @@ const TemplateCoverFlow = ({
         <h2 className="section-header text-center mb-6">{templateName}</h2>
         <PaginatedCoverFlow
           items={items}
+          focusedItemId={focusedItemId}
           onSelect={(id) => {
             const sc = subcategories!.find(s => s.id === id);
             if (sc) onSubcategorySelect(sc);
@@ -109,6 +112,7 @@ const TemplateCoverFlow = ({
       <h2 className="section-header text-center mb-6">{activeSubcategory?.name || templateName}</h2>
       <PaginatedCoverFlow
         items={productItems}
+        focusedItemId={focusedItemId}
         onSelect={(id) => {
           const p = products.find(x => x.id === id);
           if (p) onSelect(p, activeSubcategory?.name);
