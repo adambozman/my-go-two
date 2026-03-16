@@ -325,17 +325,13 @@ const Questionnaires = () => {
     );
   }
 
-  if (view === "quiz" && currentQuestion && currentSprint) {
-    const sprintQuestionNum = quizQuestionIdx + 1;
-    const sprintTotal = currentSprint.questions.length;
-    const section = getSectionForQuestion(currentQuestion);
-    const effectiveSelected = selections[currentQuestion.id] || currentSelected;
-
+  if (view === "quiz" && currentQuestion && activeCategory) {
     const categoryQuestionNum = quizQuestionIdx + 1;
     const categoryTotal = activeCategory.questions.length;
     const visibleCategoryTotal = subscribed ? categoryTotal : Math.min(categoryTotal, FREE_CATEGORY_LIMIT);
     const section = getSectionForQuestion(currentQuestion);
     const effectiveSelected = selections[currentQuestion.id] || currentSelected;
+    const categoryTitle = activeCategory.title;
     const categoryTitle = activeCategory.title;
 
     return (
