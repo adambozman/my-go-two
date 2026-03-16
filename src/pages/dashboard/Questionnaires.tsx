@@ -135,7 +135,7 @@ const Questionnaires = () => {
     setSelections((prev) => ({ ...prev, [questionId]: values }));
   }, []);
 
-  const openStyleChat = () => {
+  const openCategoriesDashboard = () => setView("categories");
     setStyleChatMessages([
       {
         role: "assistant",
