@@ -453,9 +453,15 @@ const MyGoTwo = () => {
     }, {});
   }, [categories]);
 
+  const visibleSectionKeys = useMemo(
+    () => sectionOrder.filter((key) => sections[key] && sections[key].length > 0),
+    [sections],
+  );
+
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [focusedDrilldownItemId, setFocusedDrilldownItemId] = useState<string | null>(null);
   const [focusedMainCategoryBySection, setFocusedMainCategoryBySection] = useState<Record<string, string>>({});
+  const [lastMainSectionKey, setLastMainSectionKey] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
