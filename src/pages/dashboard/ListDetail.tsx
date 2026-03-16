@@ -379,6 +379,8 @@ const ListDetail = () => {
         onPageChange={setCurrentPage}
         label={`Page ${currentPage} of ${totalPages}`}
       />
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingCard ? "Edit Card" : <>Create <GoTwoText className="text-lg" /> Card</>}</DialogTitle>
