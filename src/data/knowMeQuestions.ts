@@ -34,8 +34,8 @@ const STYLE_FIT: QuizQuestion[] = [
   {
     id: "sf-01", section: "style-fit",
     title: "How would you describe your everyday style?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("casual", "Casual"), opt("classic", "Classic"), opt("trendy", "Trendy"), opt("minimalist", "Minimalist"), opt("sporty", "Sporty"), opt("bohemian", "Bohemian")],
   },
   {
