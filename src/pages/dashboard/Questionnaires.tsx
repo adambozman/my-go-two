@@ -596,28 +596,22 @@ const Questionnaires = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <button
-                onClick={() => pickThisOrThat("A")}
-                className="rounded-[28px] p-5 text-left min-h-[160px]"
-                style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
-              >
-                <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                  This
-                </p>
-                <p className="text-[30px] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  {totCurrent.optionA}
-                </p>
-              </button>
-
-              <button
                 onClick={() => pickThisOrThat("B")}
                 className="rounded-[28px] p-5 text-left min-h-[160px]"
                 style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
               >
-                <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                  That
-                </p>
                 <p className="text-[30px] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  {totCurrent.optionB}
+                  No
+                </p>
+              </button>
+
+              <button
+                onClick={() => pickThisOrThat("A")}
+                className="rounded-[28px] p-5 text-left min-h-[160px]"
+                style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
+              >
+                <p className="text-[30px] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                  Yes
                 </p>
               </button>
             </div>
