@@ -13,6 +13,7 @@ import { ConnectionAvatarRow } from "@/components/home/ConnectionAvatarRow";
 import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { RecentUpdates, type RecentUpdate } from "@/components/home/RecentUpdates";
 import { SmartBanner } from "@/components/home/SmartBanner";
+import { AddConnectionModal } from "@/components/home/AddConnectionModal";
 
 const DEFAULT_IMAGE = getDefaultPhotoForLabel("friend");
 
