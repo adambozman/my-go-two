@@ -338,8 +338,8 @@ const GIFTS_WISHLIST: QuizQuestion[] = [
   {
     id: "gw-01", section: "gifts-wishlist",
     title: "What kind of gifts do you actually enjoy getting?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("experiences", "Experiences"), opt("practical", "Practical Items"), opt("luxury", "Small Luxuries"), opt("handmade", "Handmade / Personal"), opt("tech", "Tech & Gadgets"), opt("gift-cards", "Gift Cards")],
   },
   {
