@@ -69,8 +69,8 @@ const STYLE_FIT: QuizQuestion[] = [
   {
     id: "sf-06", section: "style-fit",
     title: "What's your shoe style?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("sneakers", "Sneakers"), opt("boots", "Boots"), opt("loafers", "Loafers"), opt("sandals", "Sandals"), opt("heels", "Heels"), opt("flats", "Flats")],
     genderOptions: {
       male: [opt("sneakers", "Sneakers"), opt("boots", "Boots"), opt("loafers", "Loafers"), opt("sandals", "Sandals"), opt("dress-shoes", "Dress Shoes"), opt("slides", "Slides")],
