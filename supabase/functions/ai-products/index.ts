@@ -28,50 +28,25 @@ const sanitizeProducts = (rawProducts: unknown) => {
         hook: cleanText(p.hook),
         why: cleanText(p.why),
         is_partner_pick: Boolean(p.is_partner_pick),
+        is_sponsored: false,
+        affiliate_url: null as string | null,
+        sponsored_id: null as string | null,
       };
     })
     .filter((p) => p.name && p.brand && p.hook);
 };
 
-// Explicit price ceilings per tier — the AI must stay within these
 const PRICE_TIERS: Record<string, { label: string; clothes: string; food: string; tech: string; home: string }> = {
-  budget: {
-    label: "Budget-conscious",
-    clothes: "under $40",
-    food: "under $15",
-    tech: "under $100",
-    home: "under $50",
-  },
-  "mid-range": {
-    label: "Mid-range",
-    clothes: "$30-80",
-    food: "$10-30",
-    tech: "$50-300",
-    home: "$30-120",
-  },
-  premium: {
-    label: "Premium but not luxury",
-    clothes: "$60-200",
-    food: "$20-60",
-    tech: "$150-800",
-    home: "$80-400",
-  },
-  luxury: {
-    label: "Luxury",
-    clothes: "$150-600",
-    food: "$40-150",
-    tech: "$500-3000",
-    home: "$200-2000",
-  },
+  budget: { label: "Budget-conscious", clothes: "under $40", food: "under $15", tech: "under $100", home: "under $50" },
+  "mid-range": { label: "Mid-range", clothes: "$30-80", food: "$10-30", tech: "$50-300", home: "$30-120" },
+  premium: { label: "Premium but not luxury", clothes: "$60-200", food: "$20-60", tech: "$150-800", home: "$80-400" },
+  luxury: { label: "Luxury", clothes: "$150-600", food: "$40-150", tech: "$500-3000", home: "$200-2000" },
 };
 
-// Extract spending signals from This or That answers
 function extractSpendingSignals(quizAnswers: Record<string, string> | null): string {
   if (!quizAnswers || typeof quizAnswers !== "object") return "";
-
   const signals: string[] = [];
   for (const [promptId, answer] of Object.entries(quizAnswers)) {
-    // Look for spending-related questions answered "No"
     if (typeof answer === "string") {
       const lower = promptId.toLowerCase();
       if (lower.includes("100") || lower.includes("spend") || lower.includes("luxury") || lower.includes("splurge")) {
@@ -98,8 +73,8 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error("Unauthorized");
 
-    // Fetch preferences and quiz answers in parallel
-    const [prefsResult, quizResult] = await Promise.all([
+    // Fetch preferences, quiz answers, and sponsored products in parallel
+    const [prefsResult, quizResult, sponsoredResult] = await Promise.all([
       supabase
         .from("user_preferences")
         .select("profile_answers, ai_personalization")
@@ -112,6 +87,11 @@ serve(async (req) => {
         .order("generated_at", { ascending: false })
         .limit(1)
         .maybeSingle(),
+      supabase
+        .from("sponsored_products")
+        .select("*")
+        .eq("is_active", true)
+        .eq("placement", "blended"),
     ]);
 
     const profileAnswers = prefsResult.data?.profile_answers as Record<string, any> || {};
@@ -127,21 +107,27 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const gender = profileAnswers?.identity?.[0] || profileAnswers?.identity || "unspecified";
-
-    // Resolve price tier with explicit ceilings
     const rawTier = (personalization.price_tier || "mid-range").toLowerCase().trim();
     const tier = PRICE_TIERS[rawTier] || PRICE_TIERS["mid-range"];
 
-    // Extract spending signals from quiz data
     const quizData = quizResult?.data?.quizzes as Record<string, string> | null;
     const spendingSignals = extractSpendingSignals(quizData);
 
-    // Build Know Me snapshot
     const knowMeSnapshot = Object.entries(profileAnswers)
       .filter(([k]) => k !== "identity")
       .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
       .slice(0, 30)
       .join("\n");
+
+    // Filter sponsored products by user targeting
+    const sponsoredProducts = (sponsoredResult.data || []).filter((sp: any) => {
+      const now = new Date();
+      if (sp.start_date && new Date(sp.start_date) > now) return false;
+      if (sp.end_date && new Date(sp.end_date) < now) return false;
+      if (sp.target_gender?.length && !sp.target_gender.includes(gender)) return false;
+      if (sp.target_price_tiers?.length && !sp.target_price_tiers.includes(rawTier)) return false;
+      return true;
+    });
 
     const prompt = `You are the Go Two Personal Curator — a high-end, AI-driven shopping and lifestyle concierge.
 
@@ -163,11 +149,11 @@ USER PROFILE:
 - Food/Drink: ${tier.food}
 - Tech/Electronics: ${tier.tech}
 - Home/Living: ${tier.home}
-These are HARD CEILINGS. Never recommend items above these ranges. If the user is "mid-range," a $200+ shirt is WRONG. Stay within their budget reality.
+These are HARD CEILINGS. Never recommend items above these ranges.
 
 ${spendingSignals ? `USER SPENDING SIGNALS (from their quiz answers):
 ${spendingSignals}
-Use these signals to calibrate recommendations. If they said "No" to spending $100 on a t-shirt, do NOT recommend expensive clothing.` : ""}
+Use these signals to calibrate recommendations.` : ""}
 
 KNOW ME DATA (their answers):
 ${knowMeSnapshot || "No detailed answers yet"}
@@ -179,12 +165,12 @@ RULES:
 4. Each recommendation needs:
    - hook: 1 sentence explaining WHY this matches their profile (be specific, reference their data)
    - brand: the specific brand name
-   - name: the specific product name  
+   - name: the specific product name
    - price: approximate price that MUST fall within the constraints above
    - why: 1 sentence deeper explanation of fit
    - is_partner_pick: true for 2-3 items that are "Partner Picks" (vetted premium selections)
-5. Talk like a knowledgeable friend: "Since you prefer dark roasts but hate acidity, this blend is your new go-to"
-6. RESPECT their price tier — recommend accessible items they'd actually buy, not aspirational luxury
+5. Talk like a knowledgeable friend
+6. RESPECT their price tier — recommend accessible items they'd actually buy
 7. Use REAL products from REAL brands
 
 Use the provided tool to return the recommendations.`;
@@ -212,13 +198,13 @@ Use the provided tool to return the recommendations.`;
                     items: {
                       type: "object",
                       properties: {
-                        name: { type: "string", description: "Specific product name" },
-                        brand: { type: "string", description: "Brand name" },
-                        price: { type: "string", description: "e.g. '$45' or '$60-80'" },
+                        name: { type: "string" },
+                        brand: { type: "string" },
+                        price: { type: "string" },
                         category: { type: "string", enum: ["food", "clothes", "tech", "home"] },
-                        hook: { type: "string", description: "1 sentence why this matches their profile" },
-                        why: { type: "string", description: "Deeper 1-sentence explanation" },
-                        is_partner_pick: { type: "boolean", description: "true if this is a vetted Partner Pick" },
+                        hook: { type: "string" },
+                        why: { type: "string" },
+                        is_partner_pick: { type: "boolean" },
                       },
                       required: ["name", "brand", "price", "category", "hook", "why", "is_partner_pick"],
                       additionalProperties: false,
@@ -254,9 +240,36 @@ Use the provided tool to return the recommendations.`;
     if (!toolCall) throw new Error("No tool call in AI response");
 
     const parsed = JSON.parse(toolCall.function.arguments);
-    const products = sanitizeProducts(parsed?.products);
+    const aiProducts = sanitizeProducts(parsed?.products);
 
-    return new Response(JSON.stringify({ products }), {
+    // Blend sponsored products into the AI results
+    const blendedProducts = [...aiProducts];
+    const sponsoredMapped = sponsoredProducts
+      .sort((a: any, b: any) => (b.priority || 0) - (a.priority || 0))
+      .slice(0, 3) // max 3 sponsored per load
+      .map((sp: any) => ({
+        name: sp.name,
+        brand: sp.brand,
+        price: sp.price || "",
+        category: ALLOWED_CATEGORIES.has(sp.category) ? sp.category : "clothes",
+        hook: sp.hook || `Curated pick from ${sp.brand}`,
+        why: sp.why || `A ${sp.brand} selection matched to your style`,
+        is_partner_pick: false,
+        is_sponsored: true,
+        affiliate_url: sp.affiliate_url
+          ? `${sp.affiliate_url}${sp.affiliate_url.includes("?") ? "&" : "?"}utm_source=${sp.utm_source || "gotwo"}&utm_medium=${sp.utm_medium || "app"}&utm_campaign=${sp.utm_campaign || "recs"}`
+          : null,
+        sponsored_id: sp.id,
+      }));
+
+    // Insert sponsored items at natural positions (after position 2, 6, 10)
+    const insertPositions = [2, 6, 10];
+    for (let i = 0; i < sponsoredMapped.length; i++) {
+      const pos = Math.min(insertPositions[i] || blendedProducts.length, blendedProducts.length);
+      blendedProducts.splice(pos, 0, sponsoredMapped[i]);
+    }
+
+    return new Response(JSON.stringify({ products: blendedProducts }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

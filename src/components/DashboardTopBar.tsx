@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Bell, Settings, Camera, Upload, Trash2, Database, ArrowLeft } from "lucide-react";
+import { Bell, Settings, Camera, Upload, Trash2, Database, ArrowLeft, Megaphone } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
@@ -181,10 +181,16 @@ export function DashboardTopBar() {
               </DropdownMenuItem>
             )}
             {user?.email === "adambozman@gmail.com" && (
-              <DropdownMenuItem onClick={() => navigate("/dashboard/data-sync")}>
-                <Database className="mr-2 h-4 w-4" />
-                Data Sync
-              </DropdownMenuItem>
+              <>
+                <DropdownMenuItem onClick={() => navigate("/dashboard/data-sync")}>
+                  <Database className="mr-2 h-4 w-4" />
+                  Data Sync
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/dashboard/sponsored")}>
+                  <Megaphone className="mr-2 h-4 w-4" />
+                  Sponsored Ads
+                </DropdownMenuItem>
+              </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>

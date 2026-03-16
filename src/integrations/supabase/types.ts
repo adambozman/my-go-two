@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          placement: string | null
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          placement?: string | null
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          placement?: string | null
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_events_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "sponsored_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_generated_quizzes: {
         Row: {
           generated_at: string
@@ -543,6 +581,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sponsored_products: {
+        Row: {
+          affiliate_url: string | null
+          brand: string
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          hook: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          placement: string
+          price: string | null
+          priority: number
+          start_date: string | null
+          target_gender: string[] | null
+          target_price_tiers: string[] | null
+          target_style_keywords: string[] | null
+          updated_at: string
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          why: string | null
+        }
+        Insert: {
+          affiliate_url?: string | null
+          brand: string
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          hook?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          placement?: string
+          price?: string | null
+          priority?: number
+          start_date?: string | null
+          target_gender?: string[] | null
+          target_price_tiers?: string[] | null
+          target_style_keywords?: string[] | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          why?: string | null
+        }
+        Update: {
+          affiliate_url?: string | null
+          brand?: string
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          hook?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          placement?: string
+          price?: string | null
+          priority?: number
+          start_date?: string | null
+          target_gender?: string[] | null
+          target_price_tiers?: string[] | null
+          target_style_keywords?: string[] | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          why?: string | null
+        }
+        Relationships: []
       }
       user_preferences: {
         Row: {
