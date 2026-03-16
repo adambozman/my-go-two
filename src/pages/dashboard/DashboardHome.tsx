@@ -6,8 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import ConnectionPage from "./ConnectionPage";
 import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
-import { MilestoneList, type Milestone } from "@/components/home/MilestoneCountdown";
-import { ConnectionDirectory, type DirectoryEntry } from "@/components/home/ConnectionDirectory";
+import { type Milestone } from "@/components/home/MilestoneCountdown";
+import { EventCalendar } from "@/components/home/EventCalendar";
+import { type DirectoryEntry } from "@/components/home/ConnectionDirectory";
 import { ConnectionAvatarRow } from "@/components/home/ConnectionAvatarRow";
 import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { RecentUpdates, type RecentUpdate } from "@/components/home/RecentUpdates";
@@ -316,18 +317,15 @@ const DashboardHome = () => {
           />
         )}
 
-        {/* Connection avatar row (stories-style) */}
+        {/* Connection avatar row — single spot for connections */}
         <ConnectionAvatarRow
           entries={directoryEntries}
           onSelect={handleOpenConnectionFromAvatar}
           onAdd={handleAddConnection}
         />
 
-        {/* Milestone countdowns */}
-        <MilestoneList milestones={milestones} />
-
-        {/* Connection feed cards (image-forward) */}
-        <ConnectionDirectory entries={directoryEntries} onSelect={handleOpenConnection} />
+        {/* Calendar + upcoming events */}
+        <EventCalendar milestones={milestones} />
 
         {/* Recent activity feed */}
         <RecentUpdates updates={recentUpdates} />
