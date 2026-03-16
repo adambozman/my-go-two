@@ -568,10 +568,10 @@ const Questionnaires = () => {
           </div>
 
           <motion.div
-            key={totCurrent.id + (totSwipeDir || "idle")}
-            initial={{ opacity: 0, y: 24, rotate: 0 }}
-            animate={{ opacity: 1, y: 0, rotate: totSwipeDir === "left" ? -5 : totSwipeDir === "right" ? 5 : 0 }}
-            transition={{ type: "spring", stiffness: 260, damping: 22 }}
+            key={totCurrent.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
             className="card-design-overlay-teal rounded-[34px] p-6 md:p-8"
             style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
