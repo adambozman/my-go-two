@@ -15,7 +15,7 @@ const FREE_THIS_OR_THAT_LIMIT = 8;
 const AI_FEEDBACK = [
   "Got it! This helps me understand your style better.",
   "Noted — your partner will thank you for this one.",
-  "Great choice. Building your blueprint…",
+  "Great choice. Building your vibe…",
   "Perfect. This is super helpful for recommendations.",
   "Love it. I'm starting to see the full picture.",
   "Interesting! That tells me a lot.",
@@ -110,7 +110,7 @@ const Questionnaires = () => {
   /* ── Start a sprint quiz ── */
   const startSprint = (idx: number) => {
     if (!subscribed && idx >= FREE_SPRINT_LIMIT) {
-      toast("More blueprint sprints unlock with Premium");
+      toast("More questions unlock with Premium");
       return;
     }
     const sprint = sprints[idx];
@@ -619,7 +619,7 @@ const Questionnaires = () => {
                     Go Two / Know Me
                   </p>
                   <h1 className="text-[42px] md:text-[56px] leading-[0.92] max-w-[8ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                    Your Blueprint
+                    Your Vibe
                   </h1>
                 </div>
 
@@ -637,7 +637,7 @@ const Questionnaires = () => {
                     )}%
                   </p>
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    profile complete
+                    vibed
                   </p>
                 </div>
               </div>
@@ -647,9 +647,9 @@ const Questionnaires = () => {
                   <p className="text-[14px] leading-relaxed max-w-[60ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                     {subscribed
                       ? allDone
-                        ? "All 100 questions answered — your profile now reads like a finished editorial portrait."
+                        ? "You have fully vibed — your partner knows exactly who you are."
                         : `${totalAnswered} of ${totalQuestions} questions answered across your style, habits, rituals, and taste.`
-                      : `Free access includes the first ${FREE_SPRINT_LIMIT} blueprint sprints and ${FREE_THIS_OR_THAT_LIMIT} This or That prompts — visible, usable, and never hard-blocked.`}
+                      : `Free access includes the first ${FREE_SPRINT_LIMIT} questions — start with the basics, free forever.`}
                   </p>
 
                   <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }}>
@@ -674,10 +674,10 @@ const Questionnaires = () => {
                     border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)",
                   }}>
                     <p className="text-[10px] uppercase tracking-[0.18em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                      Partial access
+                      Free access
                     </p>
                     <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                      Preview mode stays elegant — content shows up without a full-page wall.
+                      
                     </p>
                   </div>
                 )}
@@ -769,15 +769,15 @@ const Questionnaires = () => {
             <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Open sprints
+                  Get to know you
                 </p>
                 <h2 className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  Editorial sprint lineup
+                  Questions about you
                 </h2>
               </div>
               {!subscribed && (
                 <p className="text-[12px] max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Only the first sprints are open, but the page stays fully composed.
+                  Start free. Go deeper with Premium.
                 </p>
               )}
             </div>
@@ -840,7 +840,7 @@ const Questionnaires = () => {
                           {sprint.name}
                         </h3>
                         <p className="text-[11px] uppercase tracking-[0.14em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: accentColor }}>
-                          Sprint {sprint.id}
+                          Chapter {sprint.id}
                         </p>
 
                         <div className="h-[5px] rounded-full overflow-hidden mb-3" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}>
@@ -858,7 +858,7 @@ const Questionnaires = () => {
 
                       <div className="flex items-center justify-between gap-3">
                         <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                          {isComplete ? "Completed" : hasProgress ? "Continue" : "Start now"}
+                          {isComplete ? "Vibed ✓" : hasProgress ? "Continue" : "Start now"}
                         </span>
                         {!isComplete && <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />}
                       </div>
@@ -894,7 +894,7 @@ const Questionnaires = () => {
                     More available with Premium
                   </p>
                   <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    The remaining {sprints.length - displayedSprints.length} blueprint sprints stay hidden, but the dashboard now stays clean, open, and visually rich.
+                    More questions unlock with Premium — the more you share, the more your partner gets it right.
                   </p>
                 </div>
               </div>
