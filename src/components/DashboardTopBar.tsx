@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Bell, Settings, Camera, Upload, Trash2, Database, ArrowLeft } from "lucide-react";
+import { Bell, Settings, Camera, Upload, Trash2, Database, ArrowLeft, Megaphone } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
