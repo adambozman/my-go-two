@@ -213,9 +213,11 @@ const ListDetail = () => {
   };
   const hasSections = (fields: CardField[]) => fields.some((f) => f.section);
 
+  const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination({
+    items: cards,
+    pageSize: 5,
+  });
 
-
-  return (
     <div className="max-w-4xl">
       <div className="flex items-center gap-3 mb-6">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
