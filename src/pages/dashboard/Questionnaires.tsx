@@ -770,7 +770,47 @@ const Questionnaires = () => {
                 </p>
               </div>
             </motion.div>
-...
+
+            <motion.button
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
+              whileTap={{ scale: 0.99 }}
+              onClick={openCategoriesDashboard}
+              className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 md:p-6 text-left"
+              style={{ borderRadius: 30, boxShadow: "0 18px 50px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.48)", backdropFilter: "blur(10px)" }}
+            >
+              <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Get to know you
+                  </p>
+                  <h2 className="text-[28px] leading-none mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                    Questions by category
+                  </h2>
+                  <p className="text-[14px] leading-relaxed max-w-[42ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    Open a separate dashboard with all categories, descriptions, and your progress. Then choose where you want to continue.
+                  </p>
+                </div>
+                {!subscribed && (
+                  <p className="text-[13px] max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    Free users can answer 4 questions in each category before Premium continues deeper.
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-end justify-between gap-4">
+                <div className="max-w-[30ch]">
+                  <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    Nice and neat boxes, uneven layout, and resume exactly where you left off.
+                  </p>
+                </div>
+                <div className="w-16 h-16 rounded-[22px] backdrop-blur-md flex items-center justify-center" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                  <ChevronRight className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+                </div>
+              </div>
+            </motion.button>
+
             <motion.div
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
