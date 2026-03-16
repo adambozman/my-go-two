@@ -570,6 +570,23 @@ const MyGoTwo = () => {
     },
   ];
 
+  const entryTotalPages = Math.max(1, Math.ceil(entryCoverFlowItems.length / ENTRY_PAGE_SIZE));
+  const entryPageStart = (activeEntryPage - 1) * ENTRY_PAGE_SIZE;
+  const paginatedEntryItems = entryCoverFlowItems.slice(entryPageStart, entryPageStart + ENTRY_PAGE_SIZE);
+  const activeEntryIndexOnPage = paginatedEntryItems.length === 0
+    ? 0
+    : Math.min(Math.max(activeEntryIndex - entryPageStart, 0), paginatedEntryItems.length - 1);
+
+  useEffect(() => {
+    const nextPage = Math.min(entryTotalPages, Math.floor(activeEntryIndex / ENTRY_PAGE_SIZE) + 1);
+    setActiveEntryPage(nextPage);
+  }, [activeEntryIndex, entryTotalPages]);
+
+  const handleEntryPageChange = (page: number) => {
+    setActiveEntryPage(page);
+    setActiveEntryIndex(Math.min((page - 1) * ENTRY_PAGE_SIZE, Math.max(entryCoverFlowItems.length - 1, 0)));
+  };
+
   const handleNameChange = (itemId: string, value: string) => {
     setEntryNames((prev) => ({ ...prev, [itemId]: value }));
   };
