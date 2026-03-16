@@ -601,35 +601,34 @@ const Questionnaires = () => {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 240, damping: 24 }}
-            className="lg:col-span-8 rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[320px]"
+            className="lg:col-span-8 card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[320px]"
             style={{
-              background: "linear-gradient(135deg, hsl(var(--primary) / 0.98) 0%, hsl(var(--primary) / 0.95) 58%, hsl(var(--primary) / 0.9) 100%)",
-              boxShadow: "0 24px 60px hsl(var(--primary) / 0.28)",
+              boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
             }}
           >
             <div
               className="absolute inset-0"
               style={{
-                background: "radial-gradient(circle at 85% 18%, hsl(var(--primary) / 0.32), transparent 30%), radial-gradient(circle at 100% 100%, hsl(var(--primary) / 0.28), transparent 35%)",
+                background: "radial-gradient(circle at 85% 18%, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), radial-gradient(circle at 100% 100%, rgba(var(--swatch-teal-rgb), 0.12), transparent 35%)",
               }}
             />
             <div className="relative h-full flex flex-col justify-between gap-8">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "hsl(var(--destructive))" }}>
+                  <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     Go Two / Know Me
                   </p>
-                  <h1 className="text-[42px] md:text-[56px] leading-[0.92] max-w-[8ch] text-primary-foreground" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
+                  <h1 className="text-[42px] md:text-[56px] leading-[0.92] max-w-[8ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
                     Your Blueprint
                   </h1>
                 </div>
 
                 <div className="rounded-[26px] px-5 py-4 min-w-[150px] backdrop-blur-md" style={{
-                  background: "hsl(var(--primary) / 0.34)",
-                  border: "1px solid hsl(var(--primary) / 0.46)",
-                  boxShadow: "inset 0 1px 0 hsl(var(--primary-foreground) / 0.12)",
+                  background: "rgba(255,255,255,0.24)",
+                  border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)",
                 }}>
-                  <p className="text-[42px] leading-none text-primary-foreground" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}>
+                  <p className="text-[42px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
                     {Math.round(
                       subscribed
                         ? (totalAnswered / totalQuestions) * 100
@@ -637,7 +636,7 @@ const Questionnaires = () => {
                             Math.max(1, freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0))) * 100,
                     )}%
                   </p>
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "hsl(var(--destructive))" }}>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     profile complete
                   </p>
                 </div>
@@ -645,7 +644,7 @@ const Questionnaires = () => {
 
               <div className="grid md:grid-cols-[minmax(0,1fr)_220px] gap-4 items-end">
                 <div>
-                  <p className="text-[14px] leading-relaxed max-w-[60ch] text-primary-foreground/82 mb-4" style={{ fontFamily: "'Jost', sans-serif" }}>
+                  <p className="text-[14px] leading-relaxed max-w-[60ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                     {subscribed
                       ? allDone
                         ? "All 100 questions answered — your profile now reads like a finished editorial portrait."
@@ -653,10 +652,10 @@ const Questionnaires = () => {
                       : `Free access includes the first ${FREE_SPRINT_LIMIT} blueprint sprints and ${FREE_THIS_OR_THAT_LIMIT} This or That prompts — visible, usable, and never hard-blocked.`}
                   </p>
 
-                  <div className="h-2 rounded-full overflow-hidden bg-primary-foreground/15">
+                  <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }}>
                     <motion.div
                       className="h-full rounded-full"
-                      style={{ background: "linear-gradient(90deg, hsl(var(--primary) / 0.98), hsl(var(--primary) / 0.76))" }}
+                      style={{ background: "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.92), rgba(var(--swatch-cedar-grove-rgb), 0.72))" }}
                       initial={{ width: 0 }}
                       animate={{
                         width: `${subscribed
@@ -671,13 +670,13 @@ const Questionnaires = () => {
 
                 {!subscribed && (
                   <div className="rounded-[28px] p-4 backdrop-blur-md" style={{
-                    background: "hsl(var(--primary) / 0.28)",
-                    border: "1px solid hsl(var(--primary) / 0.42)",
+                    background: "rgba(255,255,255,0.22)",
+                    border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)",
                   }}>
-                    <p className="text-[10px] uppercase tracking-[0.18em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "hsl(var(--destructive))" }}>
+                    <p className="text-[10px] uppercase tracking-[0.18em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                       Partial access
                     </p>
-                    <p className="text-[12px] leading-relaxed text-primary-foreground/82" style={{ fontFamily: "'Jost', sans-serif" }}>
+                    <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                       Preview mode stays elegant — content shows up without a full-page wall.
                     </p>
                   </div>
@@ -692,28 +691,27 @@ const Questionnaires = () => {
             transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
             whileTap={{ scale: 0.985 }}
             onClick={openThisOrThat}
-            className="lg:col-span-4 rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left min-h-[320px] flex flex-col justify-between"
+            className="lg:col-span-4 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left min-h-[320px] flex flex-col justify-between"
             style={{
-              background: "linear-gradient(160deg, hsl(var(--primary) / 0.98) 0%, hsl(var(--primary) / 0.94) 54%, hsl(var(--primary) / 0.9) 100%)",
-              boxShadow: "0 22px 54px hsl(var(--primary) / 0.24)",
+              boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
             }}
           >
-            <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, hsl(var(--primary) / 0.28), transparent 32%), linear-gradient(180deg, hsl(var(--primary) / 0.08), transparent 40%)" }} />
+            <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 32%), linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.04), transparent 40%)" }} />
             <div className="relative flex items-center justify-between gap-3">
-              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "hsl(var(--primary) / 0.32)", border: "1px solid hsl(var(--primary) / 0.42)" }}>
-                <Shuffle className="w-4 h-4 text-primary-foreground" />
-                <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "hsl(var(--destructive))" }}>This or That</span>
+              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                <Shuffle className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+                <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>This or That</span>
               </div>
-              <span className="text-[12px] text-primary-foreground/76" style={{ fontFamily: "'Jost', sans-serif" }}>
+              <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                 {visibleThisOrThatAnswered}/{visibleThisOrThatCount}
               </span>
             </div>
 
             <div className="relative">
-              <p className="text-[30px] md:text-[36px] leading-[0.95] text-primary-foreground mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
+              <p className="text-[30px] md:text-[36px] leading-[0.95] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
                 {visibleThisOrThatAnswered < visibleThisOrThatCount ? "Quick instinct picks" : "Finished with taste"}
               </p>
-              <p className="text-[13px] leading-relaxed text-primary-foreground/82 max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif" }}>
+              <p className="text-[13px] leading-relaxed max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                 {subscribed
                   ? "Fast swipes that sharpen the emotional tone of your profile."
                   : `Your free preview includes ${visibleThisOrThatCount} prompts, so the page still feels alive.`}
@@ -722,13 +720,13 @@ const Questionnaires = () => {
 
             <div className="relative flex items-end justify-between gap-4">
               <div className="w-16 h-16 rounded-[22px] backdrop-blur-md flex items-center justify-center" style={{
-                background: "hsl(var(--primary) / 0.3)",
-                border: "1px solid hsl(var(--primary) / 0.42)",
+                background: "rgba(255,255,255,0.22)",
+                border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)",
               }}>
-                <ChevronRight className="w-6 h-6 text-primary-foreground" />
+                <ChevronRight className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
               </div>
               <div className="text-right">
-                <p className="text-[10px] uppercase tracking-[0.16em] text-primary-foreground/60" style={{ fontFamily: "'Jost', sans-serif" }}>
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                   swipe deck
                 </p>
               </div>
