@@ -109,12 +109,8 @@ const Signup = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="rounded-3xl p-8 md:p-10"
-              style={{
-                background: "linear-gradient(165deg, rgba(255,255,255,0.65) 0%, rgba(246,226,212,0.35) 100%)",
-                border: "1px solid rgba(232,198,174,0.3)",
-                boxShadow: "8px 8px 20px rgba(217,101,79,0.06), -6px -6px 16px rgba(255,255,255,0.45)",
-              }}
+              className="card-design-neumorph rounded-[28px] p-8 md:p-10"
+              style={{}}
             >
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">

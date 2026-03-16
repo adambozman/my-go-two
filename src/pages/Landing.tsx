@@ -100,18 +100,20 @@ const Landing = () => {
           <motion.div {...riseIn(0.3)} className="flex items-center" style={{ gap: 14, marginBottom: 12 }}>
             <Link to="/signup">
               <button
-                style={{ background: "#d4543a", color: "white", border: "none", padding: "14px 32px", borderRadius: 40, fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 500, letterSpacing: "0.3px", cursor: "pointer", transition: "all 0.2s ease", boxShadow: "0 4px 20px rgba(212,84,58,0.3)" }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#c4432a"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 28px rgba(212,84,58,0.42)"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "#d4543a"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(212,84,58,0.3)"; }}
+                className="surface-button-primary"
+                style={{ background: "var(--swatch-cedar-grove)", color: "hsl(var(--destructive-foreground))", border: "none", padding: "14px 32px", borderRadius: 40, fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 500, letterSpacing: "0.3px", cursor: "pointer", transition: "all 0.2s ease" }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}
               >
                 Get Started Free &nbsp;→
               </button>
             </Link>
             <a href="#how-it-works">
               <button
-                style={{ background: "transparent", color: "#2d6870", border: "1.5px solid rgba(45,104,112,0.45)", padding: "13px 28px", borderRadius: 40, fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 400, cursor: "pointer", transition: "all 0.2s ease" }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = "#2d6870"; e.currentTarget.style.background = "rgba(45,104,112,0.06)"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(45,104,112,0.45)"; e.currentTarget.style.background = "transparent"; }}
+                className="surface-button-secondary"
+                style={{ color: "var(--swatch-teal)", border: "none", padding: "13px 28px", borderRadius: 40, fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 400, cursor: "pointer", transition: "all 0.2s ease" }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}
               >
                 See How It Works
               </button>
@@ -272,9 +274,10 @@ const Landing = () => {
               </p>
               <Link to="/signup">
                 <button
-                  style={{ background: "#d4543a", color: "white", border: "none", padding: "15px 38px", borderRadius: 40, fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 500, cursor: "pointer", transition: "all 0.2s ease", boxShadow: "0 4px 24px rgba(212,84,58,0.38)", letterSpacing: "0.2px" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "#c4432a"; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 36px rgba(212,84,58,0.5)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "#d4543a"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 24px rgba(212,84,58,0.38)"; }}
+                  className="surface-button-primary"
+                  style={{ background: "var(--swatch-cedar-grove)", color: "hsl(var(--destructive-foreground))", border: "none", padding: "15px 38px", borderRadius: 40, fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 500, cursor: "pointer", transition: "all 0.2s ease", letterSpacing: "0.2px" }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}
                 >
                   Create Your First Card &nbsp;→
                 </button>

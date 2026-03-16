@@ -106,11 +106,12 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
             role="dialog"
             aria-modal="true"
             aria-labelledby="add-connection-title"
-            className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100vh-2rem)] w-auto max-w-[460px] -translate-y-1/2 overflow-y-auto rounded-2xl md:inset-x-0"
+            className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100vh-2rem)] w-auto max-w-[460px] -translate-y-1/2 overflow-y-auto rounded-[28px] md:inset-x-0"
             style={{
-              background: "var(--swatch-sand)",
-              border: "1px solid rgba(255,255,255,0.85)",
-              boxShadow: "0 12px 48px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.9)",
+              background: "linear-gradient(165deg, rgba(255,255,255,0.74) 0%, rgba(245,233,220,0.5) 100%)",
+              border: "1px solid rgba(255,255,255,0.88)",
+              boxShadow: "0 20px 48px rgba(74,96,104,0.14), inset 0 1px 0 rgba(255,255,255,0.94)",
+              backdropFilter: "blur(12px)",
             }}
           >
             <div className="flex items-center justify-between px-5 pt-5 pb-3">
@@ -142,11 +143,12 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                 <button
                   key={key}
                   onClick={() => setTab(key)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[12px] font-semibold transition-all"
+                  className="surface-pill flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full text-[12px] font-semibold transition-all"
                   style={{
-                    background: tab === key ? "var(--swatch-viridian-odyssey)" : "rgba(255,255,255,0.5)",
-                    color: tab === key ? "#fff" : "var(--swatch-antique-coin)",
+                    background: tab === key ? "var(--swatch-viridian-odyssey)" : undefined,
+                    color: tab === key ? "hsl(var(--primary-foreground))" : "var(--swatch-antique-coin)",
                     fontFamily: "'Jost', sans-serif",
+                    boxShadow: tab === key ? "0 8px 20px rgba(30,74,82,0.22), inset 0 1px 0 rgba(255,255,255,0.18)" : undefined,
                   }}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -175,10 +177,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                       value={label}
                       onChange={(e) => setLabel(e.target.value)}
                       placeholder="Wife"
-                      className="w-full px-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all"
+                      className="surface-field w-full px-3.5 py-2.5 rounded-2xl text-[14px] outline-none transition-all"
                       style={{
-                        background: "rgba(255,255,255,0.70)",
-                        border: "1px solid rgba(255,255,255,0.85)",
                         color: "var(--swatch-viridian-odyssey)",
                         fontFamily: "'Jost', sans-serif",
                       }}
@@ -197,10 +197,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="partner@email.com"
-                      className="w-full px-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all"
+                      className="surface-field w-full px-3.5 py-2.5 rounded-2xl text-[14px] outline-none transition-all"
                       style={{
-                        background: "rgba(255,255,255,0.70)",
-                        border: "1px solid rgba(255,255,255,0.85)",
                         color: "var(--swatch-viridian-odyssey)",
                         fontFamily: "'Jost', sans-serif",
                       }}
@@ -210,12 +208,11 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                   <button
                     onClick={handleSendInvite}
                     disabled={!email.trim() || sending}
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-[13px] font-semibold transition-all active:scale-[0.98] disabled:opacity-50"
+                    className="surface-button-primary w-full flex items-center justify-center gap-2 py-3 rounded-full text-[13px] font-semibold transition-all active:scale-[0.98] disabled:opacity-50"
                     style={{
                       background: "var(--swatch-cedar-grove)",
-                      color: "#fff",
+                      color: "hsl(var(--destructive-foreground))",
                       fontFamily: "'Jost', sans-serif",
-                      boxShadow: "0 4px 20px rgba(212, 84, 58, 0.30)",
                     }}
                   >
                     <Send className="w-4 h-4" />
@@ -229,11 +226,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                   </p>
 
                   <div
-                    className="flex items-center gap-2 px-3.5 py-3 rounded-xl"
-                    style={{
-                      background: "rgba(255,255,255,0.70)",
-                      border: "1px solid rgba(255,255,255,0.85)",
-                    }}
+                    className="surface-pill flex items-center gap-2 px-3.5 py-3 rounded-2xl"
+                    style={{}}
                   >
                     <span
                       className="flex-1 text-[12px] truncate"
@@ -243,8 +237,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                     </span>
                     <button
                       onClick={handleCopyLink}
-                      className="shrink-0 p-2 rounded-lg active:scale-90 transition-transform"
-                      style={{ background: "rgba(45,104,112,0.08)" }}
+                       className="surface-pill shrink-0 p-2 rounded-full active:scale-90 transition-transform"
+                       style={{}}
                     >
                       {copied ? (
                         <Check className="w-4 h-4" style={{ color: "var(--swatch-teal)" }} />
@@ -254,7 +248,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-center py-6 rounded-xl" style={{ background: "#fff" }}>
+                  <div className="surface-pill flex items-center justify-center py-6 rounded-2xl" style={{}}>
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(inviteLink)}&color=1e4a52`}
                       alt="QR Code"
