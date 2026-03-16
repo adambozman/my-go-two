@@ -49,7 +49,7 @@ const getFlankBackground = (image?: string) =>
   image ? `center / cover no-repeat url(${image})` : FALLBACK_GRADIENT;
 
 const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselProps>(
-  ({ items, activeIndex, onActiveIndexChange, renderActiveCard }, ref) => {
+  ({ items, activeIndex, previousImage, onActiveIndexChange, renderActiveCard }, ref) => {
     const touchStartX = useRef<number | null>(null);
     const layout = useLayout();
     const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
