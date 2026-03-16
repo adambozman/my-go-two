@@ -8,7 +8,7 @@ import ConnectionPage from "./ConnectionPage";
 import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
 import { type Milestone } from "@/components/home/MilestoneCountdown";
 import { EventCalendar } from "@/components/home/EventCalendar";
-import { ConnectionDirectory, type DirectoryEntry } from "@/components/home/ConnectionDirectory";
+import { type DirectoryEntry } from "@/components/home/ConnectionDirectory";
 import { ConnectionAvatarRow } from "@/components/home/ConnectionAvatarRow";
 import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { RecentUpdates, type RecentUpdate } from "@/components/home/RecentUpdates";
