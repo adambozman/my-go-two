@@ -622,6 +622,7 @@ const MyGoTwo = () => {
     }
 
     setShowCategoryPaywall(false);
+    setFocusedDrilldownItemId(sc.id);
     setActiveSubcategory(sc);
     setCardKey(key);
     setLeafSubtype(sc as unknown as SubtypeItem);
