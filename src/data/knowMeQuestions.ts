@@ -6,8 +6,6 @@
 
 import type { Gender } from "@/lib/gender";
 
-const templateImages = import.meta.glob("../assets/templates/*.jpg", { eager: true, import: "default" }) as Record<string, string>;
-const getTemplateImage = (filename: string): string => templateImages[`../assets/templates/${filename}`] ?? "";
 
 export interface QuizOption {
   id: string;
