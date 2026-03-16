@@ -19,14 +19,21 @@ const CategorySync = () => {
         { cache: "no-store" }
       );
       const text = await res.text();
-      const match = text.match(/CATEGORY_REGISTRY_SEED: CategoryRegistryRow\[\] = \s*(\[[\s\S]*?\n\];)/);
-
+      // Extract JSON array from TypeScript file
+      const startIdx = text.indexOf("CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] = ");
       let seed;
-      if (match) {
-        seed = JSON.parse(match[1].replace(/\n\];$/, "]"));
+      if (startIdx !== -1) {
+        const arrayStart = text.indexOf("[", startIdx);
+        const arrayText = text.slice(arrayStart);
+        // Find the closing ]; by walking the string
+        let depth = 0, endIdx = 0;
+        for (let i = 0; i < arrayText.length; i++) {
+          if (arrayText[i] === "[") depth++;
+          else if (arrayText[i] === "]") { depth--; if (depth === 0) { endIdx = i + 1; break; } }
+        }
+        seed = JSON.parse(arrayText.slice(0, endIdx));
         setMessage(`Fetched ${seed.length} rows from GitHub. Syncing to Supabase...`);
       } else {
-        // Fallback to bundled seed
         seed = CATEGORY_REGISTRY_SEED;
         setMessage(`Using bundled seed (${seed.length} rows). Syncing...`);
       }
