@@ -1,17 +1,22 @@
 import { useState, useMemo, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles, X, Shuffle } from "lucide-react";
+import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles, Shuffle, MessageCircle, Send } from "lucide-react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { buildSprints, SECTIONS, THIS_OR_THAT, type QuizQuestion } from "@/data/knowMeQuestions";
-import cityFallbackImage from "@/assets/templates/travel-city.jpg";
-import natureFallbackImage from "@/assets/templates/travel-mountain.jpg";
+
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
+
 const FREE_SPRINT_LIMIT = 2;
 const FREE_THIS_OR_THAT_LIMIT = 8;
 
-/* ── AI feedback messages — rotate per question ── */
 const AI_FEEDBACK = [
   "Got it! This helps me understand your style better.",
   "Noted — your partner will thank you for this one.",
@@ -25,13 +30,18 @@ const AI_FEEDBACK = [
   "Understood. On to the next one!",
 ];
 
+const STYLE_CHAT_SUGGESTIONS = [
+  "What vibe do you think I have so far?",
+  "Why are you asking me these questions?",
+  "What kinds of brands would you recommend for me right now?",
+];
+
 const Questionnaires = () => {
-  const { user, subscribed } = useAuth();
-  const { profileAnswers, gender, loading: contextLoading, refetch } = usePersonalization();
+  const { subscribed } = useAuth();
+  const { personalization, profileAnswers, gender, loading: contextLoading, refetch } = usePersonalization();
 
   const sprints = useMemo(() => buildSprints(gender), [gender]);
 
-  /* ── Compute per-sprint completion ── */
   const sprintProgress = useMemo(() => {
     return sprints.map((sprint) => {
       const answered = sprint.questions.filter((q) => profileAnswers?.[q.id]).length;
@@ -39,20 +49,39 @@ const Questionnaires = () => {
     });
   }, [sprints, profileAnswers]);
 
-  const totalAnswered = sprintProgress.reduce((s, p) => s + p.answered, 0);
+  const totalAnswered = sprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0);
   const totalQuestions = 100;
+  const freeSprints = sprints.slice(0, FREE_SPRINT_LIMIT);
+  const displayedSprints = subscribed ? sprints : freeSprints;
+  const displayedSprintProgress = subscribed ? sprintProgress : sprintProgress.slice(0, FREE_SPRINT_LIMIT);
+  const totalFreeQuestions = freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0);
+  const vibeProgressPercent = Math.round(
+    subscribed
+      ? (totalAnswered / totalQuestions) * 100
+      : (displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0) / Math.max(1, totalFreeQuestions)) * 100,
+  );
+  const allDone = totalAnswered >= totalQuestions;
 
-  /* ── Active sprint: first incomplete ── */
-  const activeSprintIdx = sprintProgress.findIndex((p) => !p.complete);
-  const currentSprintIdx = activeSprintIdx === -1 ? sprints.length - 1 : activeSprintIdx;
-
-  /* ── State ── */
   const [view, setView] = useState<"dashboard" | "quiz" | "thisorthat">("dashboard");
   const [quizSprintIdx, setQuizSprintIdx] = useState(0);
   const [quizQuestionIdx, setQuizQuestionIdx] = useState(0);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
   const selectionsRef = useRef(selections);
-  // Keep ref in sync
+  const [aiFeedback, setAiFeedback] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const [styleChatOpen, setStyleChatOpen] = useState(false);
+  const [stylePrompt, setStylePrompt] = useState("");
+  const [styleChatLoading, setStyleChatLoading] = useState(false);
+  const [styleChatMessages, setStyleChatMessages] = useState<ChatMessage[]>([
+    {
+      role: "assistant",
+      content:
+        personalization?.persona_summary ||
+        "Ask me what your style looks like so far, why I’m asking certain questions, or what kinds of recommendations I’m building toward.",
+    },
+  ]);
+
   const updateSelections = useCallback((updater: (prev: Record<string, string[]>) => Record<string, string[]>) => {
     setSelections((prev) => {
       const next = updater(prev);
@@ -61,10 +90,9 @@ const Questionnaires = () => {
     });
   }, []);
 
-  /* ── This or That state ── */
   const totQueue = useMemo(() => {
-    const answered = profileAnswers ? Object.keys(profileAnswers).filter(k => k.startsWith("tot-")) : [];
-    const unanswered = THIS_OR_THAT.filter(t => !answered.includes(t.id));
+    const answered = profileAnswers ? Object.keys(profileAnswers).filter((key) => key.startsWith("tot-")) : [];
+    const unanswered = THIS_OR_THAT.filter((item) => !answered.includes(item.id));
     return unanswered.length > 0 ? unanswered : [];
   }, [profileAnswers]);
 
@@ -72,6 +100,8 @@ const Questionnaires = () => {
   const [totSwipeDir, setTotSwipeDir] = useState<"left" | "right" | null>(null);
   const totCurrent = totQueue[totIndex] || null;
   const totAnsweredCount = THIS_OR_THAT.length - totQueue.length;
+  const visibleThisOrThatCount = subscribed ? THIS_OR_THAT.length : Math.min(THIS_OR_THAT.length, FREE_THIS_OR_THAT_LIMIT);
+  const visibleThisOrThatAnswered = subscribed ? totAnsweredCount : Math.min(totAnsweredCount, visibleThisOrThatCount);
 
   const openThisOrThat = () => {
     if (!subscribed && totQueue.length === 0) return;
@@ -80,39 +110,64 @@ const Questionnaires = () => {
     setView("thisorthat");
   };
 
-  const pickThisOrThat = async (choice: "A" | "B") => {
-    if (!totCurrent) return;
-    const dir = choice === "A" ? "right" : "left";
-    setTotSwipeDir(dir);
-    const value = choice === "A" ? "Yes" : "No";
-    try {
-      const userId = (await supabase.auth.getUser()).data.user?.id;
-      if (userId) {
-        const updated = { ...(profileAnswers || {}), [totCurrent.id]: value };
-        await supabase.from("user_preferences").update({ profile_answers: updated, updated_at: new Date().toISOString() }).eq("user_id", userId);
-        await refetch();
-      }
-    } catch { /* silent */ }
-    setTimeout(() => {
-      setTotSwipeDir(null);
-      if (totIndex + 1 >= totQueue.length) {
-        toast.success("All done! Nice work.");
-        setView("dashboard");
-      } else {
-        setTotIndex(i => i + 1);
-      }
-    }, 400);
+  const openStyleChat = () => {
+    setStyleChatMessages([
+      {
+        role: "assistant",
+        content:
+          personalization?.persona_summary ||
+          "Ask me what your style looks like so far, why I’m asking certain questions, or what kinds of recommendations I’m building toward.",
+      },
+    ]);
+    setStylePrompt("");
+    setStyleChatOpen(true);
   };
 
-  const [aiFeedback, setAiFeedback] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const sendStyleChat = async (messageOverride?: string) => {
+    const message = (messageOverride ?? stylePrompt).trim();
+    if (!message || styleChatLoading) return;
 
-  /* ── Start a sprint quiz ── */
+    const nextMessages = [...styleChatMessages, { role: "user", content: message } as ChatMessage];
+    setStyleChatMessages(nextMessages);
+    setStylePrompt("");
+    setStyleChatLoading(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("style-chat", {
+        body: {
+          message,
+          profile_answers: profileAnswers || {},
+          ai_personalization: personalization || null,
+        },
+      });
+
+      if (error) throw error;
+
+      setStyleChatMessages([
+        ...nextMessages,
+        {
+          role: "assistant",
+          content: data?.reply || "I have a rough read on your vibe already—answer a few more questions and I can get sharper.",
+        },
+      ]);
+    } catch (error: any) {
+      const messageText = error?.message?.includes("429")
+        ? "The style chat is busy right now. Try again in a moment."
+        : error?.message?.includes("402")
+          ? "AI credits are unavailable right now. Please try again later."
+          : "I couldn’t reach the style chat right now.";
+      toast.error(messageText);
+    } finally {
+      setStyleChatLoading(false);
+    }
+  };
+
   const startSprint = (idx: number) => {
     if (!subscribed && idx >= FREE_SPRINT_LIMIT) {
       toast("More questions unlock with Premium");
       return;
     }
+
     const sprint = sprints[idx];
     const firstUnanswered = sprint.questions.findIndex((q) => !profileAnswers?.[q.id]);
     setQuizSprintIdx(idx);
@@ -124,47 +179,59 @@ const Questionnaires = () => {
     setView("quiz");
   };
 
-  /* ── Save answers ── */
   const saveAndReturn = async () => {
     const currentSelections = selectionsRef.current;
     if (Object.keys(currentSelections).length === 0) {
       setView("dashboard");
       return;
     }
+
     setSaving(true);
     try {
-      const userId = (await supabase.auth.getUser()).data.user!.id;
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+      if (!userId) throw new Error("No user");
+
       const updated = { ...(profileAnswers || {}), ...currentSelections };
       const cleaned: Record<string, string | string[]> = {};
-      for (const [k, v] of Object.entries(updated)) {
-        cleaned[k] = Array.isArray(v) && v.length === 1 ? v[0] : v;
+      for (const [key, value] of Object.entries(updated)) {
+        cleaned[key] = Array.isArray(value) && value.length === 1 ? value[0] : value;
       }
+
       const { error } = await supabase
         .from("user_preferences")
         .update({ profile_answers: cleaned, updated_at: new Date().toISOString() })
         .eq("user_id", userId);
+
       if (error) throw error;
       toast.success(`${Object.keys(currentSelections).length} answers saved!`);
       await refetch();
     } catch {
       toast.error("Failed to save answers");
     }
+
     setSaving(false);
     setView("dashboard");
   };
 
-  /* ── Quiz interaction ── */
   const currentSprint = sprints[quizSprintIdx];
   const currentQuestion: QuizQuestion | undefined = currentSprint?.questions[quizQuestionIdx];
-  const currentSelected = currentQuestion ? (selections[currentQuestion.id] || (profileAnswers?.[currentQuestion.id] ? (Array.isArray(profileAnswers[currentQuestion.id]) ? profileAnswers[currentQuestion.id] as string[] : [profileAnswers[currentQuestion.id] as string]) : [])) : [];
+  const currentSelected = currentQuestion
+    ? selections[currentQuestion.id] ||
+      (profileAnswers?.[currentQuestion.id]
+        ? Array.isArray(profileAnswers[currentQuestion.id])
+          ? (profileAnswers[currentQuestion.id] as string[])
+          : [profileAnswers[currentQuestion.id] as string]
+        : [])
+    : [];
 
   const toggleOption = (optId: string) => {
     if (!currentQuestion) return;
+
     const isSingle = !currentQuestion.multiSelect;
     updateSelections((prev) => {
       const current = prev[currentQuestion.id] || [];
       if (isSingle) return { ...prev, [currentQuestion.id]: [optId] };
-      if (current.includes(optId)) return { ...prev, [currentQuestion.id]: current.filter((x) => x !== optId) };
+      if (current.includes(optId)) return { ...prev, [currentQuestion.id]: current.filter((value) => value !== optId) };
       return { ...prev, [currentQuestion.id]: [...current, optId] };
     });
 
@@ -174,12 +241,14 @@ const Questionnaires = () => {
         setAiFeedback(null);
         const latestSelections = selectionsRef.current;
         if (!currentSprint) return;
+
         let next = quizQuestionIdx + 1;
         while (next < currentSprint.questions.length) {
           const q = currentSprint.questions[next];
           if (!profileAnswers?.[q.id] && !latestSelections[q.id]) break;
           next++;
         }
+
         if (next >= currentSprint.questions.length) {
           saveAndReturn();
         } else {
@@ -192,12 +261,14 @@ const Questionnaires = () => {
   const advanceQuestion = () => {
     if (!currentSprint) return;
     const latestSelections = selectionsRef.current;
+
     let next = quizQuestionIdx + 1;
     while (next < currentSprint.questions.length) {
       const q = currentSprint.questions[next];
       if (!profileAnswers?.[q.id] && !latestSelections[q.id]) break;
       next++;
     }
+
     if (next >= currentSprint.questions.length) {
       saveAndReturn();
     } else {
@@ -207,44 +278,62 @@ const Questionnaires = () => {
   };
 
   const confirmMultiAndAdvance = () => {
-    if (currentQuestion) {
-      setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
-      setTimeout(() => {
-        setAiFeedback(null);
-        advanceQuestion();
-      }, 800);
-    }
+    if (!currentQuestion) return;
+    setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
+    setTimeout(() => {
+      setAiFeedback(null);
+      advanceQuestion();
+    }, 800);
   };
 
-  const getSectionForQuestion = (q: QuizQuestion) => SECTIONS.find((s) => s.id === q.section);
+  const getSectionForQuestion = (q: QuizQuestion) => SECTIONS.find((section) => section.id === q.section);
+
+  const pickThisOrThat = async (choice: "A" | "B") => {
+    if (!totCurrent) return;
+
+    const dir = choice === "A" ? "right" : "left";
+    setTotSwipeDir(dir);
+    const value = choice === "A" ? "Yes" : "No";
+
+    try {
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+      if (userId) {
+        const updated = { ...(profileAnswers || {}), [totCurrent.id]: value };
+        await supabase
+          .from("user_preferences")
+          .update({ profile_answers: updated, updated_at: new Date().toISOString() })
+          .eq("user_id", userId);
+        await refetch();
+      }
+    } catch {
+      // silent
+    }
+
+    setTimeout(() => {
+      setTotSwipeDir(null);
+      if (totIndex + 1 >= totQueue.length) {
+        toast.success("All done! Nice work.");
+        setView("dashboard");
+      } else {
+        setTotIndex((index) => index + 1);
+      }
+    }, 400);
+  };
 
   if (contextLoading) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--swatch-teal)", borderTopColor: "transparent" }} />
+        <div
+          className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
+          style={{ borderColor: "var(--swatch-teal)", borderTopColor: "transparent" }}
+        />
       </div>
     );
   }
 
-  const freeSprints = sprints.slice(0, FREE_SPRINT_LIMIT);
-  const displayedSprints = subscribed ? sprints : freeSprints;
-  const displayedSprintProgress = subscribed ? sprintProgress : sprintProgress.slice(0, FREE_SPRINT_LIMIT);
-  const visibleThisOrThatCount = subscribed
-    ? THIS_OR_THAT.length
-    : Math.min(THIS_OR_THAT.length, FREE_THIS_OR_THAT_LIMIT);
-  const visibleThisOrThatAnswered = subscribed
-    ? totAnsweredCount
-    : Math.min(totAnsweredCount, visibleThisOrThatCount);
-  const hasKnowMePreviewLimit = !subscribed;
-
-
-  /* ═══════════════════════════════════════════════════════
-     QUIZ VIEW — Active question
-     ═══════════════════════════════════════════════════════ */
   if (view === "quiz" && currentQuestion && currentSprint) {
     const sprintQuestionNum = quizQuestionIdx + 1;
     const sprintTotal = currentSprint.questions.length;
-    const progress = (sprintQuestionNum / sprintTotal) * 100;
     const section = getSectionForQuestion(currentQuestion);
     const effectiveSelected = selections[currentQuestion.id] || currentSelected;
 
@@ -261,7 +350,6 @@ const Questionnaires = () => {
             maxHeight: "calc(100vh - 180px)",
           }}
         >
-          {/* Header */}
           <div className="px-5 pt-5 pb-3">
             <div className="flex items-center justify-between mb-3">
               <button
@@ -272,27 +360,29 @@ const Questionnaires = () => {
                 <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
               </button>
               <div className="text-right">
-                <span className="text-[10px] uppercase tracking-[0.1em] block" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                <span
+                  className="text-[10px] uppercase tracking-[0.1em] block"
+                  style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
+                >
                   Go Two / Know Me
                 </span>
               </div>
             </div>
 
-            {/* Sprint title */}
-            <h2 className="text-lg mb-1" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+            <h2
+              className="text-lg mb-1"
+              style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}
+            >
               Sprint {quizSprintIdx + 1} of 10: {currentSprint.name}
             </h2>
 
-            {/* Segmented progress */}
             <div className="flex items-center gap-1 mb-1">
               {Array.from({ length: sprintTotal }).map((_, i) => (
                 <div
                   key={i}
                   className="flex-1 h-[5px] rounded-full transition-all duration-300"
                   style={{
-                    background: i < sprintQuestionNum
-                      ? "var(--swatch-teal)"
-                      : "rgba(var(--swatch-antique-coin-rgb), 0.12)",
+                    background: i < sprintQuestionNum ? "var(--swatch-teal)" : "rgba(var(--swatch-antique-coin-rgb), 0.12)",
                   }}
                 />
               ))}
@@ -302,7 +392,6 @@ const Questionnaires = () => {
             </p>
           </div>
 
-          {/* Question */}
           <div className="px-5 pt-4 pb-2 flex-1 overflow-y-auto flex flex-col min-h-0">
             <AnimatePresence mode="wait">
               <motion.div
@@ -313,22 +402,25 @@ const Questionnaires = () => {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className="flex-1 flex flex-col"
               >
-                {/* Section badge */}
                 {section && (
-                  <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] mb-3 px-2.5 py-1 rounded-full self-start"
-                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}>
+                  <span
+                    className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] mb-3 px-2.5 py-1 rounded-full self-start"
+                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}
+                  >
                     {section.icon} {section.label}
                   </span>
                 )}
 
-                <h3 className="text-[22px] leading-[1.2] mb-1.5" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                <h3
+                  className="text-[22px] leading-[1.2] mb-1.5"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}
+                >
                   {currentQuestion.title}
                 </h3>
                 <p className="text-[12px] mb-5" style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}>
                   {currentQuestion.subtitle}
                 </p>
 
-                {/* Options grid */}
                 <div className="grid grid-cols-2 gap-2.5 mt-auto">
                   {currentQuestion.options.map((opt, i) => {
                     const isSelected = effectiveSelected.includes(opt.id);
@@ -371,12 +463,9 @@ const Questionnaires = () => {
             </AnimatePresence>
           </div>
 
-          {/* Bottom bar */}
           <div className="px-5 pb-5 pt-3 flex items-center justify-between">
-            {/* AI feedback bubble */}
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)" }}>
+              <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)" }}>
                 <Sparkles className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
               </div>
               <AnimatePresence mode="wait">
@@ -395,34 +484,37 @@ const Questionnaires = () => {
               </AnimatePresence>
             </div>
 
-            {/* Action buttons */}
             {currentQuestion.multiSelect ? (
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={effectiveSelected.length > 0 ? confirmMultiAndAdvance : advanceQuestion}
-                className="px-5 py-2.5 rounded-full text-[13px] font-medium flex items-center gap-2 transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full"
                 style={{
-                  fontFamily: "'Jost', sans-serif",
-                  background: effectiveSelected.length > 0 ? "var(--swatch-teal)" : "rgba(var(--swatch-antique-coin-rgb), 0.1)",
+                  background: effectiveSelected.length > 0 ? "var(--swatch-viridian-odyssey)" : "rgba(var(--swatch-antique-coin-rgb), 0.08)",
                   color: effectiveSelected.length > 0 ? "#fff" : "var(--swatch-antique-coin)",
-                  boxShadow: effectiveSelected.length > 0 ? "0 4px 16px rgba(45,104,112,0.2)" : "none",
+                  fontFamily: "'Jost', sans-serif",
+                  fontSize: 12,
                 }}
               >
                 {effectiveSelected.length > 0 ? (
-                  <>Continue <ChevronRight className="w-4 h-4" /></>
+                  <>
+                    Continue
+                    <ChevronRight className="w-4 h-4" />
+                  </>
                 ) : (
                   <>
-                    <SkipForward className="w-3.5 h-3.5" /> Skip
+                    <SkipForward className="w-3.5 h-3.5" />
+                    Skip
                   </>
                 )}
               </motion.button>
             ) : (
               <button
                 onClick={advanceQuestion}
-                className="flex items-center gap-1.5 text-[12px] py-2 px-3 rounded-full transition-colors hover:bg-black/5"
+                className="text-[12px] px-3 py-2 rounded-full"
                 style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
               >
-                <SkipForward className="w-3.5 h-3.5" /> Skip
+                Skip
               </button>
             )}
           </div>
@@ -431,478 +523,461 @@ const Questionnaires = () => {
     );
   }
 
-  /* ═══════════════════════════════════════════════════════
-     THIS OR THAT — Tinder-style swipe view
-     ═══════════════════════════════════════════════════════ */
   if (view === "thisorthat") {
-    const remaining = totQueue.length - totIndex;
-    const progress = totQueue.length > 0 ? ((totQueue.length - remaining) / totQueue.length) * 100 : 100;
-    const fallbackImage = totIndex % 2 === 0 ? cityFallbackImage : natureFallbackImage;
-    const cardImage = totCurrent?.image || fallbackImage;
+    if (!totCurrent) {
+      return (
+        <div className="h-full flex items-center justify-center px-4">
+          <div className="text-center">
+            <p className="text-[28px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              You’ve answered them all.
+            </p>
+            <p className="text-[14px] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              Your instinct profile is already in the mix.
+            </p>
+            <button
+              onClick={() => setView("dashboard")}
+              className="rounded-full px-5 py-3"
+              style={{
+                background: "rgba(var(--swatch-teal-rgb), 0.16)",
+                color: "var(--swatch-viridian-odyssey)",
+                fontFamily: "'Jost', sans-serif",
+                border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)",
+              }}
+            >
+              Back to dashboard
+            </button>
+          </div>
+        </div>
+      );
+    }
 
     return (
-      <div
-        className="h-full min-h-0 flex flex-col overflow-hidden px-4 pt-4 pb-5"
-        style={{ background: "linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.06) 0%, rgba(var(--swatch-antique-coin-rgb), 0.08) 100%)" }}
-      >
-        {/* Top bar */}
-        <div className="flex items-center justify-between pb-2">
-          <button
-            onClick={() => setView("dashboard")}
-            className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.12)" }}
+      <div className="h-full flex items-center justify-center px-4 py-6">
+        <div className="w-full max-w-[640px]">
+          <div className="flex items-center justify-between mb-4">
+            <button
+              onClick={() => setView("dashboard")}
+              className="w-10 h-10 rounded-full flex items-center justify-center"
+              style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}
+            >
+              <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+            </button>
+            <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              {Math.min(totIndex + 1, visibleThisOrThatCount)} / {visibleThisOrThatCount}
+            </span>
+          </div>
+
+          <motion.div
+            key={totCurrent.id + (totSwipeDir || "idle")}
+            initial={{ opacity: 0, y: 24, rotate: 0 }}
+            animate={{ opacity: 1, y: 0, rotate: totSwipeDir === "left" ? -5 : totSwipeDir === "right" ? 5 : 0 }}
+            transition={{ type: "spring", stiffness: 260, damping: 22 }}
+            className="card-design-overlay-teal rounded-[34px] p-6 md:p-8"
+            style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
-            <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-          </button>
-          <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-            {Math.max(remaining, 0)} remaining
-          </span>
-        </div>
-
-        {/* Progress bar */}
-        <div className="mb-3">
-          <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.15)" }}>
-            <motion.div
-              className="h-full rounded-full"
-              style={{ background: "var(--swatch-teal)" }}
-              animate={{ width: `${progress}%` }}
-              transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            />
-          </div>
-        </div>
-
-        {/* Card area */}
-        <div className="flex-1 min-h-0 flex items-center justify-center py-2">
-          {totCurrent ? (
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={totCurrent.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{
-                  opacity: totSwipeDir ? 0 : 1,
-                  x: totSwipeDir === "left" ? -260 : totSwipeDir === "right" ? 260 : 0,
-                  rotate: totSwipeDir === "left" ? -8 : totSwipeDir === "right" ? 8 : 0,
-                  scale: totSwipeDir ? 0.92 : 1,
-                }}
-                transition={{ type: "spring", stiffness: 280, damping: 26 }}
-                className="w-full max-w-[320px] rounded-3xl overflow-hidden relative"
-                style={{
-                  height: "clamp(320px, 52vh, 420px)",
-                  boxShadow: "0 12px 40px rgba(30,74,82,0.18)",
-                  background: "var(--swatch-viridian-odyssey)",
-                }}
-              >
-                <img
-                  src={cardImage}
-                  alt={totCurrent.prompt}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  loading="lazy"
-                />
-
-                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.18) 45%, transparent 72%)" }} />
-
-                <div className="absolute top-4 left-4">
-                  <span
-                    className="text-[10px] uppercase tracking-[0.15em] px-3 py-1.5 rounded-full"
-                    style={{
-                      fontFamily: "'Jost', sans-serif",
-                      fontWeight: 500,
-                      color: "#fff",
-                      background: "rgba(255,255,255,0.18)",
-                      backdropFilter: "blur(8px)",
-                    }}
-                  >
-                    {totCurrent.category}
-                  </span>
-                </div>
-
-                {totSwipeDir === "right" && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.7 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="absolute top-5 right-5 px-3 py-1.5 rounded-lg border-2"
-                    style={{ borderColor: "var(--swatch-teal)", color: "var(--swatch-teal)", background: "rgba(0,0,0,0.35)" }}
-                  >
-                    <span className="text-[15px] font-bold" style={{ fontFamily: "'Jost', sans-serif" }}>YES</span>
-                  </motion.div>
-                )}
-                {totSwipeDir === "left" && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.7 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="absolute top-5 left-5 px-3 py-1.5 rounded-lg border-2"
-                    style={{ borderColor: "var(--swatch-antique-coin)", color: "var(--swatch-antique-coin)", background: "rgba(0,0,0,0.35)" }}
-                  >
-                    <span className="text-[15px] font-bold" style={{ fontFamily: "'Jost', sans-serif" }}>NO</span>
-                  </motion.div>
-                )}
-
-                <div className="absolute bottom-0 left-0 right-0 p-5">
-                  <h2 className="text-[22px] leading-[1.15] text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}>
-                    {totCurrent.prompt}
-                  </h2>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          ) : (
-            <div className="text-center">
-              <Check className="w-12 h-12 mx-auto mb-3" style={{ color: "var(--swatch-teal)" }} />
-              <p className="text-[20px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
-                All done!
-              </p>
+            <div className="flex items-center justify-between gap-3 mb-6">
+              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                <Shuffle className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+                <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  This or That
+                </span>
+              </div>
+              <span className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                quick instinct pick
+              </span>
             </div>
-          )}
+
+            <p className="text-[36px] md:text-[46px] leading-[0.94] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              {totCurrent.prompt}
+            </p>
+            <p className="text-[14px] leading-relaxed mb-8 max-w-[42ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              Choose the option that feels more like your taste without overthinking it.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <button
+                onClick={() => pickThisOrThat("A")}
+                className="rounded-[28px] p-5 text-left min-h-[160px]"
+                style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
+              >
+                <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  This
+                </p>
+                <p className="text-[30px] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                  {totCurrent.optionA}
+                </p>
+              </button>
+
+              <button
+                onClick={() => pickThisOrThat("B")}
+                className="rounded-[28px] p-5 text-left min-h-[160px]"
+                style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
+              >
+                <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  That
+                </p>
+                <p className="text-[30px] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                  {totCurrent.optionB}
+                </p>
+              </button>
+            </div>
+          </motion.div>
         </div>
-
-        {/* Yes / No buttons */}
-        {totCurrent && (
-          <div className="flex items-center justify-center gap-8 pt-3">
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => pickThisOrThat("B")}
-              className="w-[64px] h-[64px] rounded-full flex flex-col items-center justify-center gap-0.5"
-              style={{
-                background: "rgba(var(--swatch-antique-coin-rgb), 0.15)",
-                border: "2px solid rgba(var(--swatch-antique-coin-rgb), 0.6)",
-              }}
-            >
-              <X className="w-7 h-7" style={{ color: "var(--swatch-antique-coin)" }} />
-              <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>No</span>
-            </motion.button>
-
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => pickThisOrThat("A")}
-              className="w-[64px] h-[64px] rounded-full flex flex-col items-center justify-center gap-0.5"
-              style={{
-                background: "rgba(var(--swatch-teal-rgb), 0.14)",
-                border: "2px solid var(--swatch-teal)",
-              }}
-            >
-              <Check className="w-7 h-7" style={{ color: "var(--swatch-teal)" }} />
-              <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>Yes</span>
-            </motion.button>
-          </div>
-        )}
       </div>
     );
   }
 
-  /* ═══════════════════════════════════════════════════════
-     DASHBOARD VIEW — Sprint overview
-     ═══════════════════════════════════════════════════════ */
-  const allDone = sprintProgress.every((p) => p.complete);
-
   return (
-    <div className="h-full flex flex-col overflow-y-auto px-4 pt-4 pb-8">
-      <div className="max-w-[1200px] w-full mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 auto-rows-[minmax(160px,auto)]">
-          <motion.section
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 240, damping: 24 }}
-            className="lg:col-span-8 card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[320px]"
-            style={{
-              boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
-            }}
-          >
-            <div
-              className="absolute inset-0"
-              style={{
-                background: "radial-gradient(circle at 85% 18%, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), radial-gradient(circle at 100% 100%, rgba(var(--swatch-teal-rgb), 0.12), transparent 35%)",
-              }}
-            />
-            <div className="relative h-full flex flex-col justify-between gap-8">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Go Two / Know Me
-                  </p>
-                  <h1 className="text-[42px] md:text-[56px] leading-[0.92] max-w-[8ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                    Your Vibe
-                  </h1>
+    <>
+      <div className="h-full overflow-y-auto px-1 pb-6">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 auto-rows-auto">
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 260, damping: 24 }}
+              className="lg:col-span-8 card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[340px]"
+              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+            >
+              <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
+              <div className="relative flex h-full flex-col justify-between gap-8">
+                <div className="flex items-start justify-between gap-6 flex-wrap">
+                  <div className="max-w-[29rem]">
+                    <p className="text-[10px] uppercase tracking-[0.22em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      Go Two / Know Me
+                    </p>
+                    <h1 className="text-[44px] md:text-[60px] leading-[0.9] max-w-[9ch] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                      Your Vibe
+                    </h1>
+                    <p className="text-[16px] leading-relaxed max-w-[44ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                      Your Vibe is the AI’s live read of your taste so far. It watches for patterns across what you answer, what you skip, what you value, and how you react to quick instinct prompts.
+                    </p>
+                  </div>
+
+                  <div className="rounded-[26px] px-5 py-4 min-w-[172px] backdrop-blur-md" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)" }}>
+                    <p className="text-[42px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                      {vibeProgressPercent}%
+                    </p>
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      profile read
+                    </p>
+                  </div>
                 </div>
 
-                <div className="rounded-[26px] px-5 py-4 min-w-[150px] backdrop-blur-md" style={{
-                  background: "rgba(255,255,255,0.24)",
-                  border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)",
-                }}>
-                  <p className="text-[42px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
-                    {Math.round(
-                      subscribed
-                        ? (totalAnswered / totalQuestions) * 100
-                        : (displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0) /
-                            Math.max(1, freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0))) * 100,
-                    )}%
-                  </p>
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    vibed
+                <div className="grid md:grid-cols-[minmax(0,1fr)_260px] gap-4 items-end">
+                  <div>
+                    <p className="text-[18px] leading-snug mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                      {personalization?.persona_summary || "You’re still early, but the AI is already building a point of view on whether your style leans cleaner, louder, softer, practical, elevated, or more trend-driven."}
+                    </p>
+                    <p className="text-[14px] leading-relaxed max-w-[62ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                      {subscribed
+                        ? allDone
+                          ? "You’ve given the system a full profile, so your vibe summary and downstream recommendations can now get much more specific."
+                          : `${totalAnswered} of ${totalQuestions} questions answered so far. Every answer sharpens how the AI describes your style and what it recommends next.`
+                        : `Free access includes ${totalFreeQuestions} profile questions across your first ${FREE_SPRINT_LIMIT} chapters — enough for the AI to start reading your vibe before you unlock the full profile.`}
+                    </p>
+
+                    <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }}>
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ background: "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.92), rgba(var(--swatch-cedar-grove-rgb), 0.72))" }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${vibeProgressPercent}%` }}
+                        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                      />
+                    </div>
+                  </div>
+
+                  {!subscribed && (
+                    <div className="rounded-[28px] p-4 backdrop-blur-md" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                      <p className="text-[10px] uppercase tracking-[0.18em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                        Free access
+                      </p>
+                      <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                        You can answer {totalFreeQuestions} questions for free before Premium opens the full profile map.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.section>
+
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
+              whileTap={{ scale: 0.985 }}
+              onClick={openThisOrThat}
+              className="lg:col-span-4 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left min-h-[340px] flex flex-col justify-between"
+              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+            >
+              <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 32%), linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.04), transparent 40%)" }} />
+              <div className="relative flex items-center justify-between gap-3">
+                <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                  <Shuffle className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+                  <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>This or That</span>
+                </div>
+                <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  {visibleThisOrThatAnswered}/{visibleThisOrThatCount}
+                </span>
+              </div>
+
+              <div className="relative">
+                <p className="text-[34px] md:text-[40px] leading-[0.95] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                  {visibleThisOrThatAnswered < visibleThisOrThatCount ? "Fast preference training" : "Finished with taste"}
+                </p>
+                <p className="text-[14px] leading-relaxed max-w-[30ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  This or That is your instinct deck. Each quick choice teaches the AI your lean — cleaner or louder, classic or trendy, safe or bold — so recommendations feel more like your actual taste.
+                </p>
+                <p className="text-[13px] leading-relaxed max-w-[32ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  {subscribed
+                    ? "Use it whenever you want to sharpen the emotional tone of your profile in minutes."
+                    : `Your free preview includes ${visibleThisOrThatCount} fast prompts so the AI can start reading your instinct before the full profile is complete.`}
+                </p>
+              </div>
+
+              <div className="relative flex items-end justify-between gap-4">
+                <div className="w-16 h-16 rounded-[22px] backdrop-blur-md flex items-center justify-center" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                  <ChevronRight className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    instinct deck
                   </p>
                 </div>
               </div>
+            </motion.button>
 
-              <div className="grid md:grid-cols-[minmax(0,1fr)_220px] gap-4 items-end">
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
+              className="lg:col-span-5 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden min-h-[260px]"
+              style={{ borderRadius: 30, boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+            >
+              <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
+              <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                How the AI gets to know you
+              </p>
+              <p className="text-[34px] leading-[0.96] mb-4 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                It learns from patterns, not one answer.
+              </p>
+              <p className="text-[14px] leading-relaxed max-w-[34ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                The AI combines your long-form profile answers, your rapid This or That instinct picks, and the signals inside your spending, style, and gifting preferences. It uses that mix to decide which questions matter next and what products, brands, and ideas fit you best.
+              </p>
+              <div className="rounded-[24px] p-4 backdrop-blur-md" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                <p className="text-[11px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  Recommendation logic
+                </p>
+                <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  More clarity in your answers means fewer generic suggestions and more specific recommendations around style, gifts, brands, and experiences.
+                </p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
+              className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 md:p-6"
+              style={{ borderRadius: 30, boxShadow: "0 18px 50px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.48)", backdropFilter: "blur(10px)" }}
+            >
+              <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
                 <div>
-                  <p className="text-[14px] leading-relaxed max-w-[60ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    {subscribed
-                      ? allDone
-                        ? "You have fully vibed — your partner knows exactly who you are."
-                        : `${totalAnswered} of ${totalQuestions} questions answered across your style, habits, rituals, and taste.`
-                      : `Free access includes the first ${FREE_SPRINT_LIMIT} questions — start with the basics, free forever.`}
+                  <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Get to know you
                   </p>
-
-                  <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }}>
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ background: "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.92), rgba(var(--swatch-cedar-grove-rgb), 0.72))" }}
-                      initial={{ width: 0 }}
-                      animate={{
-                        width: `${subscribed
-                          ? (totalAnswered / totalQuestions) * 100
-                          : (displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0) /
-                              Math.max(1, freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0))) * 100}%`,
-                      }}
-                      transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                    />
-                  </div>
+                  <h2 className="text-[28px] leading-none mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                    Questions about you
+                  </h2>
+                  <p className="text-[14px] leading-relaxed max-w-[42ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    These chapters are the deeper profile builder. Each box opens a set of questions designed to map your taste, routines, values, and shopping behavior so the AI can describe you with more precision.
+                  </p>
                 </div>
-
                 {!subscribed && (
-                  <div className="rounded-[28px] p-4 backdrop-blur-md" style={{
-                    background: "rgba(255,255,255,0.22)",
-                    border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)",
-                  }}>
-                    <p className="text-[10px] uppercase tracking-[0.18em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                      Free access
-                    </p>
-                    <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                      
-                    </p>
-                  </div>
+                  <p className="text-[13px] max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    Start free, then unlock the full profile when you want the AI to get more specific.
+                  </p>
                 )}
               </div>
-            </div>
-          </motion.section>
 
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
-            whileTap={{ scale: 0.985 }}
-            onClick={openThisOrThat}
-            className="lg:col-span-4 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left min-h-[320px] flex flex-col justify-between"
-            style={{
-              boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
-            }}
-          >
-            <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 32%), linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.04), transparent 40%)" }} />
-            <div className="relative flex items-center justify-between gap-3">
-              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                <Shuffle className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-                <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>This or That</span>
-              </div>
-              <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                {visibleThisOrThatAnswered}/{visibleThisOrThatCount}
-              </span>
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {displayedSprints.map((sprint, idx) => {
+                  const prog = displayedSprintProgress[idx];
+                  const isComplete = prog.complete;
+                  const hasProgress = prog.answered > 0 && !isComplete;
+                  const badgeBackground = isComplete ? "rgba(var(--swatch-teal-rgb), 0.84)" : "rgba(var(--swatch-teal-rgb), 0.14)";
+                  const badgeColor = isComplete ? "rgba(255,255,255,0.96)" : "var(--swatch-teal)";
 
-            <div className="relative">
-              <p className="text-[30px] md:text-[36px] leading-[0.95] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                {visibleThisOrThatAnswered < visibleThisOrThatCount ? "Quick instinct picks" : "Finished with taste"}
-              </p>
-              <p className="text-[13px] leading-relaxed max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                {subscribed
-                  ? "Fast swipes that sharpen the emotional tone of your profile."
-                  : `Your free preview includes ${visibleThisOrThatCount} prompts, so the page still feels alive.`}
-              </p>
-            </div>
+                  return (
+                    <motion.button
+                      key={sprint.id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.04, type: "spring", stiffness: 280, damping: 25 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => startSprint(idx)}
+                      className="relative overflow-hidden text-left card-design-overlay-teal rounded-[28px] p-5 transition-all min-h-[250px]"
+                      style={{
+                        borderRadius: 28,
+                        boxShadow: hasProgress ? "0 16px 36px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.46)" : "0 12px 28px rgba(30,74,82,0.05), inset 0 1px 0 rgba(255,255,255,0.42)",
+                        backdropFilter: "blur(10px)",
+                      }}
+                    >
+                      <div className="absolute right-0 top-0 w-24 h-24 rounded-full translate-x-7 -translate-y-7" style={{ background: "rgba(var(--swatch-teal-rgb), 0.12)" }} />
 
-            <div className="relative flex items-end justify-between gap-4">
-              <div className="w-16 h-16 rounded-[22px] backdrop-blur-md flex items-center justify-center" style={{
-                background: "rgba(255,255,255,0.22)",
-                border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)",
-              }}>
-                <ChevronRight className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-              </div>
-              <div className="text-right">
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  swipe deck
-                </p>
-              </div>
-            </div>
-          </motion.button>
+                      <div className="relative h-full flex flex-col justify-between gap-6">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="w-12 h-12 rounded-[18px] flex items-center justify-center flex-shrink-0" style={{ background: badgeBackground, color: badgeColor, boxShadow: isComplete ? "0 10px 22px rgba(45,104,112,0.16)" : "none" }}>
+                            {isComplete ? <Check className="w-5 h-5" /> : <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>{sprint.id}</span>}
+                          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
-            className="lg:col-span-5 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden min-h-[220px]"
-            style={{
-              borderRadius: 30,
-              boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
-            }}
-          >
-            <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
-            <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-              What your vibe unlocks
-            </p>
-            <p className="text-[32px] leading-[0.96] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-              The more you share, the more GoTwo works for you.
-            </p>
-            <p className="text-[13px] leading-relaxed max-w-[32ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Your answers power AI recommendations for gifts, date ideas, trips, and vacations — and give everyone you connect with the best possible guide to what you actually love.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
-            className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 md:p-6"
-            style={{
-              borderRadius: 30,
-              boxShadow: "0 18px 50px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.48)",
-              backdropFilter: "blur(10px)",
-            }}
-          >
-            <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Get to know you
-                </p>
-                <h2 className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  Questions about you
-                </h2>
-              </div>
-              {!subscribed && (
-                <p className="text-[12px] max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Start free. Go deeper with Premium.
-                </p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {displayedSprints.map((sprint, idx) => {
-                const prog = displayedSprintProgress[idx];
-                const isComplete = prog.complete;
-                const hasProgress = prog.answered > 0 && !isComplete;
-                const isTall = true;
-                const overlayClass = "card-design-overlay-teal";
-                const orbColor = "rgba(var(--swatch-teal-rgb), 0.12)";
-                const badgeBackground = isComplete
-                  ? "rgba(var(--swatch-teal-rgb), 0.84)"
-                  : "rgba(var(--swatch-teal-rgb), 0.14)";
-                const badgeColor = isComplete
-                  ? "rgba(255,255,255,0.96)"
-                  : "var(--swatch-teal)";
-                const accentColor = "var(--swatch-teal)";
-
-                return (
-                  <motion.button
-                    key={sprint.id}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.04, type: "spring", stiffness: 280, damping: 25 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={() => startSprint(idx)}
-                    className={`relative overflow-hidden text-left ${overlayClass} rounded-[28px] p-5 transition-all min-h-[220px]`}
-                    style={{
-                      borderRadius: 28,
-                      boxShadow: hasProgress
-                        ? "0 16px 36px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.46)"
-                        : "0 12px 28px rgba(30,74,82,0.05), inset 0 1px 0 rgba(255,255,255,0.42)",
-                      backdropFilter: "blur(10px)",
-                    }}
-                  >
-                    <div className="absolute right-0 top-0 w-24 h-24 rounded-full translate-x-7 -translate-y-7" style={{ background: orbColor }} />
-
-                    <div className="relative h-full flex flex-col justify-between gap-6">
-                      <div className="flex items-start justify-between gap-3">
-                        <div
-                          className="w-12 h-12 rounded-[18px] flex items-center justify-center flex-shrink-0"
-                          style={{
-                            background: badgeBackground,
-                            color: badgeColor,
-                            boxShadow: isComplete ? "0 10px 22px rgba(45,104,112,0.16)" : "none",
-                          }}
-                        >
-                          {isComplete ? <Check className="w-5 h-5" /> : <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>{sprint.id}</span>}
+                          <span className="text-[11px] tabular-nums shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                            {prog.answered}/{prog.total}
+                          </span>
                         </div>
 
-                        <span className="text-[11px] tabular-nums shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: accentColor }}>
-                          {prog.answered}/{prog.total}
-                        </span>
-                      </div>
+                        <div>
+                          <h3 className="text-[26px] leading-[0.98] mb-2 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                            {sprint.name}
+                          </h3>
+                          <p className="text-[11px] uppercase tracking-[0.14em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                            Chapter {sprint.id}
+                          </p>
+                          <p className="text-[13px] leading-relaxed mb-4 max-w-[24ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                            {hasProgress
+                              ? "You’ve started this chapter — jump back in and help the AI tighten its read on this part of your personality."
+                              : `Open this chapter to teach the AI about ${sprint.name.toLowerCase()} and how it should personalize for you.`}
+                          </p>
 
-                      <div>
-                        <h3 className="text-[26px] leading-[0.98] mb-2 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                          {sprint.name}
-                        </h3>
-                        <p className="text-[11px] uppercase tracking-[0.14em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: accentColor }}>
-                          Chapter {sprint.id}
-                        </p>
+                          <div className="h-[5px] rounded-full overflow-hidden mb-3" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}>
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{
+                                width: `${(prog.answered / prog.total) * 100}%`,
+                                background: isComplete ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.84), rgba(var(--swatch-teal-rgb), 0.62))" : "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))",
+                              }}
+                            />
+                          </div>
+                        </div>
 
-                        <div className="h-[5px] rounded-full overflow-hidden mb-3" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}>
-                          <div
-                            className="h-full rounded-full transition-all duration-500"
-                            style={{
-                              width: `${(prog.answered / prog.total) * 100}%`,
-                              background: isComplete
-                                ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.84), rgba(var(--swatch-teal-rgb), 0.62))"
-                                : "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))",
-                            }}
-                          />
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                            {isComplete ? "Vibed ✓" : hasProgress ? "Continue" : "Start now"}
+                          </span>
+                          {!isComplete && <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "var(--swatch-teal)" }} />}
                         </div>
                       </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </motion.div>
 
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                          {isComplete ? "Vibed ✓" : hasProgress ? "Continue" : "Start now"}
-                        </span>
-                        {!isComplete && <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />}
-                      </div>
-                    </div>
-
-                    {hasProgress && (
-                      <motion.div
-                        layoutId="active-sprint"
-                        className="absolute left-0 top-6 bottom-6 w-[3px] rounded-r-full"
-                        style={{ background: accentColor }}
-                      />
-                    )}
-                  </motion.button>
-                );
-              })}
-            </div>
-          </motion.div>
-
-          {!subscribed && (
             <motion.div
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18, type: "spring", stiffness: 250, damping: 24 }}
-              className="lg:col-span-12 card-design-overlay-teal rounded-[28px] px-5 py-4"
-              style={{
-                borderRadius: 28,
-                boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.46)",
-              }}
+              className="lg:col-span-12 card-design-overlay-teal rounded-[28px] px-5 py-5"
+              style={{ borderRadius: 28, boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.46)" }}
             >
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    More available with Premium
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
+                <div className="max-w-[58rem]">
+                  <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Style chat with AI
                   </p>
-                  <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    More questions unlock with Premium — the more you share, the more your partner gets it right.
+                  <p className="text-[28px] leading-none mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                    Ask the AI what it thinks your style is.
+                  </p>
+                  <p className="text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    Open a live style chat to ask how the AI sees your vibe so far, why it is asking certain questions, how it picks what comes next, and what kinds of recommendations it is building toward from your answers.
                   </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={openStyleChat}
+                  className="rounded-full px-5 py-3 text-[13px] transition-all self-start inline-flex items-center gap-2"
+                  style={{ fontFamily: "'Jost', sans-serif", background: "rgba(var(--swatch-teal-rgb), 0.16)", color: "var(--swatch-viridian-odyssey)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)" }}
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Open style chat
+                </button>
               </div>
             </motion.div>
-          )}
+          </div>
         </div>
       </div>
-    </div>
+
+      <Dialog open={styleChatOpen} onOpenChange={setStyleChatOpen}>
+        <DialogContent className="max-w-2xl rounded-[28px] border-border/40 bg-card p-0 overflow-hidden">
+          <div className="card-design-overlay-teal">
+            <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/30">
+              <DialogTitle style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 30, color: "var(--swatch-viridian-odyssey)" }}>
+                Style chat
+              </DialogTitle>
+              <DialogDescription style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                Ask the AI what it thinks your vibe is, why it’s asking certain questions, and what recommendations it’s forming from your answers.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="px-6 pt-4 pb-2 flex flex-wrap gap-2">
+              {STYLE_CHAT_SUGGESTIONS.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  onClick={() => sendStyleChat(suggestion)}
+                  className="rounded-full px-3 py-2 text-[12px]"
+                  style={{ fontFamily: "'Jost', sans-serif", background: "rgba(255,255,255,0.22)", color: "var(--swatch-viridian-odyssey)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+
+            <div className="px-6 py-4 space-y-3 max-h-[420px] overflow-y-auto">
+              {styleChatMessages.map((message, index) => (
+                <div
+                  key={`${message.role}-${index}`}
+                  className={`max-w-[85%] rounded-[24px] px-4 py-3 ${message.role === "user" ? "ml-auto" : "mr-auto"}`}
+                  style={{ background: message.role === "user" ? "rgba(var(--swatch-teal-rgb), 0.18)" : "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}
+                >
+                  <p className="text-[13px] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>
+                    {message.content}
+                  </p>
+                </div>
+              ))}
+              {styleChatLoading && (
+                <div className="max-w-[85%] rounded-[24px] px-4 py-3 mr-auto" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}>
+                  <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    Thinking about your style…
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="px-6 pb-6 pt-2">
+              <div className="flex gap-3 items-end">
+                <Textarea
+                  value={stylePrompt}
+                  onChange={(e) => setStylePrompt(e.target.value)}
+                  placeholder="Ask about your vibe, your taste, or why the AI is asking these questions..."
+                  className="min-h-[96px] resize-none rounded-[22px] border-border/40 bg-background/70 text-foreground placeholder:text-muted-foreground"
+                />
+                <button
+                  type="button"
+                  onClick={() => sendStyleChat()}
+                  disabled={styleChatLoading || !stylePrompt.trim()}
+                  className="rounded-full w-12 h-12 flex items-center justify-center disabled:opacity-50"
+                  style={{ background: "rgba(var(--swatch-teal-rgb), 0.18)", color: "var(--swatch-viridian-odyssey)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)" }}
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
