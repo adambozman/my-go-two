@@ -13,6 +13,7 @@ import { ConnectionAvatarRow } from "@/components/home/ConnectionAvatarRow";
 import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { RecentUpdates, type RecentUpdate } from "@/components/home/RecentUpdates";
 import { SmartBanner } from "@/components/home/SmartBanner";
+import { AddConnectionModal } from "@/components/home/AddConnectionModal";
 
 const DEFAULT_IMAGE = getDefaultPhotoForLabel("friend");
 
@@ -264,6 +265,11 @@ const DashboardHome = () => {
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
+      // Placeholder connections open the add modal
+      if (entry.isPlaceholder) {
+        setShowAddModal(true);
+        return;
+      }
       const card = connections.find((c) => c.id === entry.id);
       if (!card) return;
       setOpenConnection({
@@ -286,19 +292,10 @@ const DashboardHome = () => {
     [connections]
   );
 
+  const [showAddModal, setShowAddModal] = useState(false);
+
   const handleAddConnection = useCallback(() => {
-    const tempId = `new-${Date.now()}`;
-    setConnections((prev) => [
-      ...prev,
-      {
-        id: tempId,
-        name: "New Connection",
-        image: DEFAULT_IMAGE,
-        email: "",
-        status: "pending",
-        isNew: true,
-      },
-    ]);
+    setShowAddModal(true);
   }, []);
 
   return (
@@ -350,6 +347,13 @@ const DashboardHome = () => {
           />
         )}
       </AnimatePresence>
+
+      {/* Add Connection Modal */}
+      <AddConnectionModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onConnectionCreated={loadConnections}
+      />
     </div>
   );
 };
