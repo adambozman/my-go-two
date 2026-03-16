@@ -555,14 +555,27 @@ const MyGoTwo = () => {
   };
 
   const goBackFromEntries = () => {
+    const selectedLeafId = leafSubtype?.id ?? null;
+    const selectedSubcategory = activeSubcategory;
+    const isLeafSubcategory = Boolean(
+      selectedSubcategory && (!selectedSubcategory.products || selectedSubcategory.products.length === 0)
+    );
+    const focusId = isLeafSubcategory
+      ? selectedSubcategory?.id ?? selectedLeafId
+      : selectedLeafId ?? selectedSubcategory?.id ?? null;
+
     setCardKey(null);
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
     setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     setActiveEntryPage(1);
-    const fallbackFocusId = leafSubtype?.id || activeSubcategory?.id || null;
-    setFocusedDrilldownItemId(fallbackFocusId);
+
+    if (isLeafSubcategory) {
+      setActiveSubcategory(null);
+    }
+
+    setFocusedDrilldownItemId(focusId);
   };
 
   useEffect(() => {
