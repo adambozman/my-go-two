@@ -471,16 +471,14 @@ const Questionnaires = () => {
                   background: "var(--swatch-viridian-odyssey)",
                 }}
               >
-                {/* Image */}
-                <img
-                  src={totCurrent.image}
-                  alt={totCurrent.prompt}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  loading="eager"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
+                {/* Image — only render if available */}
+                {totCurrent.image && (
+                  <img
+                    src={totCurrent.image}
+                    alt={totCurrent.prompt}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                )}
                 {/* Gradient overlay */}
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 60%)" }} />
 
