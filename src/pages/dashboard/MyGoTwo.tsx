@@ -816,13 +816,7 @@ const MyGoTwo = () => {
       const { error } = await supabase.from("card_entries").delete().eq("id", itemId);
       if (error) throw error;
 
-      setEntries((prev) => {
-        const nextEntries = prev.filter((entry) => entry.id !== itemId);
-        if (nextEntries.length === 0 && cardKey) {
-          setUnlockedCardKeys((prevKeys) => prevKeys.filter((key) => key !== cardKey));
-        }
-        return nextEntries;
-      });
+      setEntries((prev) => prev.filter((entry) => entry.id !== itemId));
       setActiveEntryIndex(0);
       toast({ title: "Deleted", description: "Entry removed." });
     } catch (e: any) {
