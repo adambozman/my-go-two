@@ -73,6 +73,45 @@ export type Database = {
         }
         Relationships: []
       }
+      calendar_accounts: {
+        Row: {
+          access_token: string | null
+          created_at: string
+          id: string
+          provider: string
+          provider_account_email: string | null
+          refresh_token: string | null
+          scope: string | null
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string
+          id?: string
+          provider: string
+          provider_account_email?: string | null
+          refresh_token?: string | null
+          scope?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string
+          id?: string
+          provider?: string
+          provider_account_email?: string | null
+          refresh_token?: string | null
+          scope?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       card_entries: {
         Row: {
           card_key: string
@@ -375,6 +414,74 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      external_calendar_events: {
+        Row: {
+          calendar_account_id: string
+          created_at: string
+          description: string | null
+          ends_at: string
+          external_event_id: string
+          id: string
+          is_all_day: boolean
+          last_synced_at: string
+          location: string | null
+          provider: string
+          source_calendar_id: string | null
+          source_calendar_name: string | null
+          starts_at: string
+          sync_status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calendar_account_id: string
+          created_at?: string
+          description?: string | null
+          ends_at: string
+          external_event_id: string
+          id?: string
+          is_all_day?: boolean
+          last_synced_at?: string
+          location?: string | null
+          provider: string
+          source_calendar_id?: string | null
+          source_calendar_name?: string | null
+          starts_at: string
+          sync_status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calendar_account_id?: string
+          created_at?: string
+          description?: string | null
+          ends_at?: string
+          external_event_id?: string
+          id?: string
+          is_all_day?: boolean
+          last_synced_at?: string
+          location?: string | null
+          provider?: string
+          source_calendar_id?: string | null
+          source_calendar_name?: string | null
+          starts_at?: string
+          sync_status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_calendar_events_calendar_account_id_fkey"
+            columns: ["calendar_account_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       image_blocklist: {
         Row: {
