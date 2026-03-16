@@ -331,6 +331,13 @@ const Questionnaires = () => {
     const section = getSectionForQuestion(currentQuestion);
     const effectiveSelected = selections[currentQuestion.id] || currentSelected;
 
+    const categoryQuestionNum = quizQuestionIdx + 1;
+    const categoryTotal = activeCategory.questions.length;
+    const visibleCategoryTotal = subscribed ? categoryTotal : Math.min(categoryTotal, FREE_CATEGORY_LIMIT);
+    const section = getSectionForQuestion(currentQuestion);
+    const effectiveSelected = selections[currentQuestion.id] || currentSelected;
+    const categoryTitle = activeCategory.title;
+
     return (
       <div className="h-full flex flex-col items-center justify-start px-3 py-3 overflow-y-auto">
         <motion.div
@@ -339,7 +346,7 @@ const Questionnaires = () => {
           transition={{ type: "spring", stiffness: 280, damping: 24 }}
           className="w-full max-w-[520px] rounded-3xl overflow-hidden relative flex flex-col"
           style={{
-            background: "#FFFFFF",
+            background: "hsl(var(--background))",
             boxShadow: "0 8px 40px rgba(30,74,82,0.08), 0 2px 12px rgba(0,0,0,0.04)",
             maxHeight: "calc(100vh - 180px)",
           }}
@@ -347,7 +354,7 @@ const Questionnaires = () => {
           <div className="px-5 pt-5 pb-3">
             <div className="flex items-center justify-between mb-3">
               <button
-                onClick={saveAndReturn}
+                onClick={() => setView("dashboard")}
                 className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-105"
                 style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}
               >
@@ -367,22 +374,22 @@ const Questionnaires = () => {
               className="text-lg mb-1"
               style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}
             >
-              Sprint {quizSprintIdx + 1} of 10: {currentSprint.name}
+              {categoryTitle}
             </h2>
 
             <div className="flex items-center gap-1 mb-1">
-              {Array.from({ length: sprintTotal }).map((_, i) => (
+              {Array.from({ length: visibleCategoryTotal }).map((_, i) => (
                 <div
                   key={i}
                   className="flex-1 h-[5px] rounded-full transition-all duration-300"
                   style={{
-                    background: i < sprintQuestionNum ? "var(--swatch-teal)" : "rgba(var(--swatch-antique-coin-rgb), 0.12)",
+                    background: i < Math.min(categoryQuestionNum, visibleCategoryTotal) ? "var(--swatch-teal)" : "rgba(var(--swatch-antique-coin-rgb), 0.12)",
                   }}
                 />
               ))}
             </div>
             <p className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Question {sprintQuestionNum} of {sprintTotal}
+              Question {Math.min(categoryQuestionNum, visibleCategoryTotal)} of {visibleCategoryTotal}
             </p>
           </div>
 
@@ -401,7 +408,7 @@ const Questionnaires = () => {
                     className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] mb-3 px-2.5 py-1 rounded-full self-start"
                     style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}
                   >
-                    {section.icon} {section.label}
+                    {section.icon} {categoryTitle}
                   </span>
                 )}
 
@@ -425,8 +432,19 @@ const Questionnaires = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.03, type: "spring", stiffness: 300, damping: 25 }}
                         whileTap={{ scale: 0.97 }}
-                        onClick={() => toggleOption(opt.id)}
-                        className="relative rounded-2xl px-4 py-3.5 text-left transition-all duration-200"
+                        onClick={() => {
+                          if (currentQuestion.multiSelect) {
+                            const current = effectiveSelected;
+                            const nextValues = current.includes(opt.id)
+                              ? current.filter((value) => value !== opt.id)
+                              : [...current, opt.id];
+                            updateSelections(currentQuestion.id, nextValues);
+                          } else {
+                            void saveAnswerAndContinue(currentQuestion.id, [opt.id]);
+                          }
+                        }}
+                        disabled={savingAnswer}
+                        className="relative rounded-2xl px-4 py-3.5 text-left transition-all duration-200 disabled:opacity-60"
                         style={{
                           fontFamily: "'Jost', sans-serif",
                           fontSize: 13,
@@ -481,33 +499,26 @@ const Questionnaires = () => {
             {currentQuestion.multiSelect ? (
               <motion.button
                 whileTap={{ scale: 0.97 }}
-                onClick={effectiveSelected.length > 0 ? confirmMultiAndAdvance : advanceQuestion}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full"
+                onClick={() => void saveAnswerAndContinue(currentQuestion.id, effectiveSelected)}
+                disabled={savingAnswer || effectiveSelected.length === 0}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full disabled:opacity-50"
                 style={{
                   background: effectiveSelected.length > 0 ? "var(--swatch-viridian-odyssey)" : "rgba(var(--swatch-antique-coin-rgb), 0.08)",
-                  color: effectiveSelected.length > 0 ? "#fff" : "var(--swatch-antique-coin)",
+                  color: effectiveSelected.length > 0 ? "hsl(var(--background))" : "var(--swatch-antique-coin)",
                   fontFamily: "'Jost', sans-serif",
                   fontSize: 12,
                 }}
               >
-                {effectiveSelected.length > 0 ? (
-                  <>
-                    Continue
-                    <ChevronRight className="w-4 h-4" />
-                  </>
-                ) : (
-                  <>
-                    <SkipForward className="w-3.5 h-3.5" />
-                    Skip
-                  </>
-                )}
+                Continue
+                <ChevronRight className="w-4 h-4" />
               </motion.button>
             ) : (
               <button
-                onClick={advanceQuestion}
+                onClick={() => void goToNextQuestion()}
                 className="text-[12px] px-3 py-2 rounded-full"
                 style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
               >
+                <SkipForward className="w-3.5 h-3.5 inline mr-1" />
                 Skip
               </button>
             )}
