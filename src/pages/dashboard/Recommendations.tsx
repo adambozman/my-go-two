@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { trackAdEvent } from "@/lib/adTracking";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { usePagination } from "@/hooks/usePagination";
-import { usePagination } from "@/hooks/usePagination";
 
 interface Product {
   name: string;
