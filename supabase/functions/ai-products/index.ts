@@ -33,6 +33,55 @@ const sanitizeProducts = (rawProducts: unknown) => {
     .filter((p) => p.name && p.brand && p.hook);
 };
 
+// Explicit price ceilings per tier — the AI must stay within these
+const PRICE_TIERS: Record<string, { label: string; clothes: string; food: string; tech: string; home: string }> = {
+  budget: {
+    label: "Budget-conscious",
+    clothes: "under $40",
+    food: "under $15",
+    tech: "under $100",
+    home: "under $50",
+  },
+  "mid-range": {
+    label: "Mid-range",
+    clothes: "$30-80",
+    food: "$10-30",
+    tech: "$50-300",
+    home: "$30-120",
+  },
+  premium: {
+    label: "Premium but not luxury",
+    clothes: "$60-200",
+    food: "$20-60",
+    tech: "$150-800",
+    home: "$80-400",
+  },
+  luxury: {
+    label: "Luxury",
+    clothes: "$150-600",
+    food: "$40-150",
+    tech: "$500-3000",
+    home: "$200-2000",
+  },
+};
+
+// Extract spending signals from This or That answers
+function extractSpendingSignals(quizAnswers: Record<string, string> | null): string {
+  if (!quizAnswers || typeof quizAnswers !== "object") return "";
+
+  const signals: string[] = [];
+  for (const [promptId, answer] of Object.entries(quizAnswers)) {
+    // Look for spending-related questions answered "No"
+    if (typeof answer === "string") {
+      const lower = promptId.toLowerCase();
+      if (lower.includes("100") || lower.includes("spend") || lower.includes("luxury") || lower.includes("splurge")) {
+        signals.push(`"${promptId}": ${answer}`);
+      }
+    }
+  }
+  return signals.join("\n");
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -49,14 +98,24 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error("Unauthorized");
 
-    const { data: prefs } = await supabase
-      .from("user_preferences")
-      .select("profile_answers, ai_personalization")
-      .eq("user_id", user.id)
-      .single();
+    // Fetch preferences and quiz answers in parallel
+    const [prefsResult, quizResult] = await Promise.all([
+      supabase
+        .from("user_preferences")
+        .select("profile_answers, ai_personalization")
+        .eq("user_id", user.id)
+        .single(),
+      supabase
+        .from("ai_generated_quizzes")
+        .select("quizzes")
+        .eq("user_id", user.id)
+        .order("generated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
 
-    const profileAnswers = prefs?.profile_answers as Record<string, any> || {};
-    const personalization = prefs?.ai_personalization as any || {};
+    const profileAnswers = prefsResult.data?.profile_answers as Record<string, any> || {};
+    const personalization = prefsResult.data?.ai_personalization as any || {};
 
     if (!personalization.style_keywords?.length) {
       return new Response(JSON.stringify({ products: [] }), {
@@ -69,7 +128,15 @@ serve(async (req) => {
 
     const gender = profileAnswers?.identity?.[0] || profileAnswers?.identity || "unspecified";
 
-    // Build a condensed "Know Me" snapshot from profile answers
+    // Resolve price tier with explicit ceilings
+    const rawTier = (personalization.price_tier || "mid-range").toLowerCase().trim();
+    const tier = PRICE_TIERS[rawTier] || PRICE_TIERS["mid-range"];
+
+    // Extract spending signals from quiz data
+    const quizData = quizResult?.data?.quizzes as Record<string, string> | null;
+    const spendingSignals = extractSpendingSignals(quizData);
+
+    // Build Know Me snapshot
     const knowMeSnapshot = Object.entries(profileAnswers)
       .filter(([k]) => k !== "identity")
       .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
@@ -88,8 +155,19 @@ USER PROFILE:
 - Style Keywords: ${(personalization.style_keywords || []).join(", ")}
 - Brands They Like: ${(personalization.recommended_brands || []).join(", ")}
 - Stores They Prefer: ${(personalization.recommended_stores || []).join(", ")}
-- Price Tier: ${personalization.price_tier || "mid-range"}
+- Price Tier: ${tier.label}
 - Persona: ${personalization.persona_summary || ""}
+
+⚠️ STRICT PRICE CONSTRAINTS (DO NOT EXCEED):
+- Clothes: ${tier.clothes}
+- Food/Drink: ${tier.food}
+- Tech/Electronics: ${tier.tech}
+- Home/Living: ${tier.home}
+These are HARD CEILINGS. Never recommend items above these ranges. If the user is "mid-range," a $200+ shirt is WRONG. Stay within their budget reality.
+
+${spendingSignals ? `USER SPENDING SIGNALS (from their quiz answers):
+${spendingSignals}
+Use these signals to calibrate recommendations. If they said "No" to spending $100 on a t-shirt, do NOT recommend expensive clothing.` : ""}
 
 KNOW ME DATA (their answers):
 ${knowMeSnapshot || "No detailed answers yet"}
@@ -102,11 +180,11 @@ RULES:
    - hook: 1 sentence explaining WHY this matches their profile (be specific, reference their data)
    - brand: the specific brand name
    - name: the specific product name  
-   - price: approximate price (e.g. "$45" or "$120-180")
+   - price: approximate price that MUST fall within the constraints above
    - why: 1 sentence deeper explanation of fit
    - is_partner_pick: true for 2-3 items that are "Partner Picks" (vetted premium selections)
 5. Talk like a knowledgeable friend: "Since you prefer dark roasts but hate acidity, this blend is your new go-to"
-6. Match their price tier exactly
+6. RESPECT their price tier — recommend accessible items they'd actually buy, not aspirational luxury
 7. Use REAL products from REAL brands
 
 Use the provided tool to return the recommendations.`;
@@ -136,7 +214,7 @@ Use the provided tool to return the recommendations.`;
                       properties: {
                         name: { type: "string", description: "Specific product name" },
                         brand: { type: "string", description: "Brand name" },
-                        price: { type: "string", description: "e.g. '$45' or '$120-180'" },
+                        price: { type: "string", description: "e.g. '$45' or '$60-80'" },
                         category: { type: "string", enum: ["food", "clothes", "tech", "home"] },
                         hook: { type: "string", description: "1 sentence why this matches their profile" },
                         why: { type: "string", description: "Deeper 1-sentence explanation" },
