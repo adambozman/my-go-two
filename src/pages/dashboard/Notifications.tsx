@@ -178,8 +178,28 @@ export default function Notifications() {
             </p>
           </div>
         ) : (
-          <div className="flex flex-col" style={{ gap: 4 }}>
-            {notifications.map((n) => {
+          <NotificationList notifications={notifications} markOneRead={markOneRead} deleteOne={deleteOne} formatDate={formatDate} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function NotificationList({ notifications, markOneRead, deleteOne, formatDate }: {
+  notifications: Notification[];
+  markOneRead: (id: string) => void;
+  deleteOne: (id: string) => void;
+  formatDate: (d: string) => string;
+}) {
+  const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination({
+    items: notifications,
+    pageSize: 8,
+  });
+
+  return (
+    <>
+      <div className="flex flex-col" style={{ gap: 4 }}>
+        {paginatedItems.map((n) => {
               const Icon = typeIcon[n.type] || Bell;
               return (
                 <div
