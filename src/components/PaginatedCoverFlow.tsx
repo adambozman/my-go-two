@@ -52,14 +52,16 @@ export default function PaginatedCoverFlow({
         onSelect={onSelect}
         initialActiveIndex={initialActiveIndex}
       />
-      <PaginationControls
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-        orientation="vertical"
-        className="fixed"
-        style={RIGHT_SIDE_DOT_STYLE as never}
-      />
+      {showPagination ? (
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          orientation="vertical"
+          className="fixed"
+          style={RIGHT_SIDE_DOT_STYLE as never}
+        />
+      ) : null}
     </div>
   );
 }
