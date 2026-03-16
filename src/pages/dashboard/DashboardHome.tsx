@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +8,8 @@ import ConnectionPage from "./ConnectionPage";
 import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
 import { MilestoneList, type Milestone } from "@/components/home/MilestoneCountdown";
 import { ConnectionDirectory, type DirectoryEntry } from "@/components/home/ConnectionDirectory";
+import { ConnectionAvatarRow } from "@/components/home/ConnectionAvatarRow";
+import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { RecentUpdates, type RecentUpdate } from "@/components/home/RecentUpdates";
 import { SmartBanner } from "@/components/home/SmartBanner";
 
