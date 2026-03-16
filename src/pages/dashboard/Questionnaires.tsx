@@ -896,7 +896,7 @@ const Questionnaires = () => {
             >
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  <p className="text-[10px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     More available with Premium
                   </p>
                   <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
