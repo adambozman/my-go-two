@@ -176,6 +176,36 @@ body {
   backdrop-filter: blur(10px);
 }
 
+.card-design-overlay-teal {
+  background: linear-gradient(155deg, rgba(45,104,112,0.20) 0%, rgba(239,224,207,0.88) 100%);
+  border: 1px solid rgba(45,104,112,0.16);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.48),
+    0 12px 30px rgba(30,74,82,0.08);
+  backdrop-filter: blur(10px);
+}
+
+.card-design-overlay-coral {
+  background: linear-gradient(155deg, rgba(212,84,58,0.16) 0%, rgba(232,212,190,0.88) 100%);
+  border: 1px solid rgba(212,84,58,0.14);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.44),
+    0 12px 30px rgba(212,84,58,0.08);
+  backdrop-filter: blur(10px);
+}
+
+.card-design-overlay-white {
+  background: linear-gradient(155deg, rgba(255,255,255,0.72) 0%, rgba(245,233,220,0.82) 100%);
+  border: 1px solid rgba(74,96,104,0.10);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.56),
+    0 12px 28px rgba(30,74,82,0.06);
+  backdrop-filter: blur(10px);
+}
+
 /* Global card title label — bottom-left, 16px from edges */
 .card-title {
   font-family: 'Cormorant Garamond', serif;
