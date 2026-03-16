@@ -48,8 +48,8 @@ const STYLE_FIT: QuizQuestion[] = [
   {
     id: "sf-03", section: "style-fit",
     title: "If someone is buying you a shirt, which colors should they AVOID?",
-    subtitle: "Select up to three colors you wouldn't wear.",
-    type: "pill-select", multiSelect: true, maxSelect: 3,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("black", "Black"), opt("white", "White"), opt("red", "Red"), opt("navy", "Navy"), opt("green", "Green"), opt("beige", "Beige"), opt("yellow", "Yellow"), opt("gray", "Gray"), opt("purple", "Purple")],
   },
   {
