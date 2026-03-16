@@ -746,7 +746,7 @@ const Questionnaires = () => {
             }}
           >
             <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
-            <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+            <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
               Profile reading
             </p>
             <p className="text-[32px] leading-[0.96] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
@@ -761,7 +761,7 @@ const Questionnaires = () => {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
-            className="lg:col-span-7 card-design-overlay-white rounded-[30px] p-5 md:p-6"
+            className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 md:p-6"
             style={{
               borderRadius: 30,
               boxShadow: "0 18px 50px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.48)",
@@ -770,7 +770,7 @@ const Questionnaires = () => {
           >
             <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   Open sprints
                 </p>
                 <h2 className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
@@ -790,32 +790,15 @@ const Questionnaires = () => {
                 const isComplete = prog.complete;
                 const hasProgress = prog.answered > 0 && !isComplete;
                 const isTall = idx % 3 === 0;
-                const overlayTheme = idx % 4;
-                const overlayClass = overlayTheme === 0 || overlayTheme === 2
-                  ? "card-design-overlay-teal"
-                  : overlayTheme === 1
-                    ? "card-design-overlay-white"
-                    : "card-design-overlay-coral";
-                const orbColor = overlayTheme === 0 || overlayTheme === 2
-                  ? "rgba(var(--swatch-teal-rgb), 0.12)"
-                  : overlayTheme === 3
-                    ? "rgba(var(--swatch-cedar-grove-rgb), 0.10)"
-                    : "rgba(255,255,255,0.34)";
+                const overlayClass = "card-design-overlay-teal";
+                const orbColor = "rgba(var(--swatch-teal-rgb), 0.12)";
                 const badgeBackground = isComplete
                   ? "rgba(var(--swatch-teal-rgb), 0.84)"
-                  : overlayTheme === 3
-                    ? "rgba(var(--swatch-cedar-grove-rgb), 0.12)"
-                    : overlayTheme === 0 || overlayTheme === 2
-                      ? "rgba(var(--swatch-teal-rgb), 0.14)"
-                      : "rgba(255,255,255,0.58)";
+                  : "rgba(var(--swatch-teal-rgb), 0.14)";
                 const badgeColor = isComplete
                   ? "rgba(255,255,255,0.96)"
-                  : overlayTheme === 3
-                    ? "var(--swatch-cedar-grove)"
-                    : overlayTheme === 0 || overlayTheme === 2
-                      ? "var(--swatch-teal)"
-                      : "var(--swatch-antique-coin)";
-                const accentColor = overlayTheme === 3 ? "var(--swatch-cedar-grove)" : overlayTheme === 0 || overlayTheme === 2 ? "var(--swatch-teal)" : "var(--swatch-antique-coin)";
+                  : "var(--swatch-teal)";
+                const accentColor = "var(--swatch-teal)";
 
                 return (
                   <motion.button
@@ -869,11 +852,7 @@ const Questionnaires = () => {
                               width: `${(prog.answered / prog.total) * 100}%`,
                               background: isComplete
                                 ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.84), rgba(var(--swatch-teal-rgb), 0.62))"
-                                : overlayTheme === 3
-                                  ? "linear-gradient(90deg, rgba(var(--swatch-cedar-grove-rgb), 0.44), rgba(var(--swatch-cedar-grove-rgb), 0.66))"
-                                  : overlayTheme === 0 || overlayTheme === 2
-                                    ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))"
-                                    : "linear-gradient(90deg, rgba(var(--swatch-antique-coin-rgb), 0.28), rgba(var(--swatch-antique-coin-rgb), 0.44))",
+                                : "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))",
                             }}
                           />
                         </div>
@@ -913,7 +892,7 @@ const Questionnaires = () => {
             >
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  <p className="text-[10px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     More available with Premium
                   </p>
                   <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
