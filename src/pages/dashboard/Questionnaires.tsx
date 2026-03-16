@@ -416,6 +416,118 @@ const Questionnaires = () => {
   }
 
   /* ═══════════════════════════════════════════════════════
+     THIS OR THAT — Tinder-style swipe view
+     ═══════════════════════════════════════════════════════ */
+  if (view === "thisorthat") {
+    const remaining = totQueue.length - totIndex;
+
+    return (
+      <div className="h-full flex flex-col items-center justify-center px-4">
+        {/* Back button */}
+        <div className="w-full max-w-[400px] mb-4 flex items-center justify-between">
+          <button
+            onClick={() => setView("dashboard")}
+            className="w-9 h-9 rounded-full flex items-center justify-center"
+            style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}
+          >
+            <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+          </button>
+          <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            {remaining} remaining
+          </span>
+        </div>
+
+        {/* Card */}
+        {totCurrent ? (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={totCurrent.id}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{
+                opacity: totSwipeDir ? 0 : 1,
+                x: totSwipeDir === "left" ? -300 : totSwipeDir === "right" ? 300 : 0,
+                rotate: totSwipeDir === "left" ? -15 : totSwipeDir === "right" ? 15 : 0,
+                scale: totSwipeDir ? 0.9 : 1,
+                y: 0,
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              className="w-full max-w-[340px] rounded-3xl p-8 flex flex-col items-center justify-center relative"
+              style={{
+                background: "var(--swatch-viridian-odyssey)",
+                boxShadow: "0 12px 48px rgba(30,74,82,0.25)",
+                minHeight: 280,
+              }}
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <Shuffle className="w-4 h-4 text-white/50" />
+                <span className="text-[10px] uppercase tracking-[0.15em] text-white/50" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500 }}>
+                  This or That
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center gap-3 w-full">
+                <span className="text-[28px] text-white text-center leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
+                  {totCurrent.optionA}
+                </span>
+                <span className="text-white/30 text-[12px] uppercase tracking-[0.2em]" style={{ fontFamily: "'Jost', sans-serif" }}>or</span>
+                <span className="text-[28px] text-white text-center leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
+                  {totCurrent.optionB}
+                </span>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        ) : (
+          <div className="text-center">
+            <Check className="w-12 h-12 mx-auto mb-3" style={{ color: "var(--swatch-teal)" }} />
+            <p className="text-[16px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+              All done!
+            </p>
+          </div>
+        )}
+
+        {/* X and ✓ buttons */}
+        {totCurrent && (
+          <div className="flex items-center gap-6 mt-8">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => pickThisOrThat("A")}
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{
+                background: "rgba(var(--swatch-antique-coin-rgb), 0.06)",
+                border: "2px solid rgba(var(--swatch-antique-coin-rgb), 0.15)",
+              }}
+            >
+              <X className="w-7 h-7" style={{ color: "var(--swatch-cedar-grove)" }} />
+            </motion.button>
+
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[10px] text-center" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                {totCurrent.optionA}
+              </span>
+              <span className="text-[8px]" style={{ color: "var(--swatch-antique-coin)" }}>←  →</span>
+              <span className="text-[10px] text-center" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                {totCurrent.optionB}
+              </span>
+            </div>
+
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => pickThisOrThat("B")}
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{
+                background: "rgba(var(--swatch-teal-rgb), 0.08)",
+                border: "2px solid var(--swatch-teal)",
+              }}
+            >
+              <Check className="w-7 h-7" style={{ color: "var(--swatch-teal)" }} />
+            </motion.button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ═══════════════════════════════════════════════════════
      DASHBOARD VIEW — Sprint overview
      ═══════════════════════════════════════════════════════ */
   const allDone = sprintProgress.every((p) => p.complete);
