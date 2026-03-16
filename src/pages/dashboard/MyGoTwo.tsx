@@ -614,6 +614,7 @@ const MyGoTwo = () => {
     const subtypes = (item.fields as unknown as SubtypeItem[]) || [];
     const subcategories = item.subcategories as unknown as SubcategoryGroup[] | undefined;
     if (subtypes.length > 0 || (subcategories && subcategories.length > 0)) {
+      setFocusedMainCategoryId(item.key);
       setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
       setFocusedDrilldownItemId(null);
       setShowCategoryPaywall(false);
