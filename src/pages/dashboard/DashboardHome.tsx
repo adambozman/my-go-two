@@ -13,6 +13,7 @@ import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { RecentUpdates, type RecentUpdate } from "@/components/home/RecentUpdates";
 import { HomeNotifications, type HomeNotificationItem } from "@/components/home/HomeNotifications";
 import { AddConnectionModal } from "@/components/home/AddConnectionModal";
+import PremiumLockCard from "@/components/PremiumLockCard";
 
 interface ConnectionCard {
   id: string;
@@ -32,7 +33,7 @@ const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
 ];
 
 const DashboardHome = () => {
-  const { user } = useAuth();
+  const { user, subscribed } = useAuth();
   const navigate = useNavigate();
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
@@ -44,6 +45,7 @@ const DashboardHome = () => {
     rect: { x: number; y: number; width: number; height: number };
   } | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showConnectionsPaywall, setShowConnectionsPaywall] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -254,9 +256,16 @@ const DashboardHome = () => {
     isPlaceholder: c.id.startsWith("placeholder-"),
   }));
 
+  const realConnections = connections.filter((c) => !c.id.startsWith("placeholder-")).length;
+  const canAddAnotherConnection = subscribed || realConnections < 1;
+
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
       if (entry.isPlaceholder) {
+        if (!canAddAnotherConnection) {
+          setShowConnectionsPaywall(true);
+          return;
+        }
         setShowAddModal(true);
         return;
       }
@@ -269,19 +278,37 @@ const DashboardHome = () => {
         rect: { x: window.innerWidth / 2 - 50, y: 100, width: 100, height: 100 },
       });
     },
-    [connections]
+    [canAddAnotherConnection, connections]
   );
 
   const handleAddConnection = useCallback(() => {
+    if (!canAddAnotherConnection) {
+      setShowConnectionsPaywall(true);
+      return;
+    }
     setShowAddModal(true);
-  }, []);
+  }, [canAddAnotherConnection]);
 
   return (
     <div className="relative h-full overflow-y-auto">
       <div className="mx-auto max-w-[520px] space-y-6 px-1 py-4">
-        <GreetingHeader displayName={displayName} connectionCount={connections.filter((c) => !c.id.startsWith("placeholder-")).length} />
+        <GreetingHeader displayName={displayName} connectionCount={realConnections} />
 
         <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
+
+        {showConnectionsPaywall && !canAddAnotherConnection && (
+          <PremiumLockCard
+            title="More than one connection is Premium"
+            description="Free is built to show the value. Premium unlocks family, friends, and deeper everyday use."
+            bullets={[
+              "Keep one connection free to understand the core experience",
+              "Unlock multiple connections for family and friends",
+              "Combine this with reminders, recommendations, and richer preference tracking",
+            ]}
+            compact
+            onDismiss={() => setShowConnectionsPaywall(false)}
+          />
+        )}
 
         <HomeNotifications notifications={notifications} onOpenAll={() => navigate("/dashboard/notifications")} />
 

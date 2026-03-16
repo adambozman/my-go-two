@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { RefreshCw, Loader2, UtensilsCrossed, Shirt, Cpu, Home, Bookmark, Share2, Award, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackAdEvent } from "@/lib/adTracking";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import PremiumLockCard from "@/components/PremiumLockCard";
 
 interface Product {
   name: string;
@@ -29,9 +31,30 @@ const PILLARS = [
 ] as const;
 
 const PAGE_SIZE = 4;
+const LOCKED_PREVIEW: Product[] = [
+  {
+    name: "Soft Wool Zip",
+    brand: "Aurel",
+    price: "$128",
+    category: "clothes",
+    hook: "A polished layer that still feels easy.",
+    why: "Based on saved fit and texture preferences.",
+    is_partner_pick: true,
+  },
+  {
+    name: "Countertop Espresso Set",
+    brand: "Forma",
+    price: "$89",
+    category: "home",
+    hook: "A daily ritual upgrade with minimal footprint.",
+    why: "Fits the home + coffee pattern in the profile.",
+    is_partner_pick: false,
+  },
+];
 
 const Recommendations = () => {
   const { personalization, loading: personalizationLoading } = usePersonalization();
+  const { subscribed } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -66,10 +89,11 @@ const Recommendations = () => {
   };
 
   useEffect(() => {
+    if (!subscribed) return;
     if (!personalizationLoading && personalization && !hasLoaded) {
       fetchProducts();
     }
-  }, [personalizationLoading, personalization, hasLoaded]);
+  }, [personalizationLoading, personalization, hasLoaded, subscribed]);
 
   const filtered = useMemo(() => {
     if (activePillar === "all") return products;
@@ -127,6 +151,36 @@ const Recommendations = () => {
       <div className="space-y-4 text-center py-12">
         <Award className="h-10 w-10 mx-auto text-primary" />
         <p className="text-muted-foreground text-sm">Complete your Know Me profile to unlock curated picks.</p>
+      </div>
+    );
+  }
+
+  if (!subscribed) {
+    return (
+      <div className="h-full overflow-y-auto pb-20">
+        <PremiumLockCard
+          title="Gift recommendations are Premium"
+          description="Weekly picks should feel like a real advantage, so the AI-curated recommendation feed unlocks with Premium."
+          bullets={[
+            "Get a fresh set of recommendations once a week",
+            "See picks generated from your saved profile data",
+            "Use Premium alongside reminders and multiple connections",
+          ]}
+          preview={
+            <div className="space-y-3">
+              {LOCKED_PREVIEW.map((product, index) => (
+                <ProductCard
+                  key={`${product.brand}-${product.name}-${index}`}
+                  product={product}
+                  index={index}
+                  isSaved={false}
+                  onToggleSave={() => undefined}
+                  onShare={() => undefined}
+                />
+              ))}
+            </div>
+          }
+        />
       </div>
     );
   }
@@ -358,43 +412,40 @@ function ProductCard({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h3 className="text-sm font-semibold truncate" style={{ color: "var(--swatch-viridian-odyssey)" }}>{product.name}</h3>
-            <p className="text-xs font-medium" style={{ color: "var(--swatch-teal)" }}>{product.brand}</p>
+            <p className="text-xs text-muted-foreground mt-0.5 truncate">{product.brand}</p>
           </div>
-          <span className="text-xs font-semibold shrink-0 px-2.5 py-1 rounded-full" style={{ background: "var(--swatch-sand-mid)", color: "var(--swatch-antique-coin)" }}>
-            {product.price}
-          </span>
+          <span className="text-xs font-semibold shrink-0" style={{ color: "var(--swatch-cedar-grove)" }}>{product.price}</span>
         </div>
 
-        <p className="text-xs text-muted-foreground leading-relaxed">{product.why}</p>
+        <p className="text-xs leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+          {product.why}
+        </p>
 
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex gap-2">
-            <button
-              onClick={onToggleSave}
-              className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-full transition-all"
-              style={{
-                background: isSaved ? "rgba(45,104,112,0.12)" : "var(--swatch-sand-mid)",
-                color: isSaved ? "var(--swatch-teal)" : "var(--swatch-antique-coin)",
-              }}
-            >
-              <Bookmark className="h-3 w-3" fill={isSaved ? "currentColor" : "none"} />
-              {isSaved ? "Saved" : "Save"}
-            </button>
-            <button
-              onClick={onShare}
-              className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-full transition-all"
-              style={{ background: "var(--swatch-sand-mid)", color: "var(--swatch-antique-coin)" }}
-            >
-              <Share2 className="h-3 w-3" />
-              Share
-            </button>
-          </div>
+        <div className="pt-1 flex items-center justify-between gap-2">
           <button
-            onClick={handleAction}
-            className="text-[11px] font-medium px-3 py-1 rounded-full transition-all"
-            style={{ background: "var(--swatch-viridian-odyssey)", color: "var(--swatch-cream-light)" }}
+            onClick={onToggleSave}
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium transition-all"
+            style={{
+              background: isSaved ? "rgba(45,104,112,0.12)" : "rgba(255,255,255,0.55)",
+              color: isSaved ? "var(--swatch-teal)" : "var(--swatch-antique-coin)",
+              border: "1px solid rgba(45,104,112,0.12)",
+            }}
           >
-            {product.affiliate_url ? "Shop" : "View"}
+            <Bookmark className="h-3.5 w-3.5" />
+            {isSaved ? "Saved" : "Save"}
+          </button>
+
+          <button
+            onClick={product.affiliate_url ? handleAction : onShare}
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium transition-all"
+            style={{
+              background: "rgba(212,84,58,0.08)",
+              color: "var(--swatch-cedar-grove)",
+              border: "1px solid rgba(212,84,58,0.12)",
+            }}
+          >
+            {product.affiliate_url ? <ExternalLink className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
+            {product.affiliate_url ? "Open" : "Share"}
           </button>
         </div>
       </div>

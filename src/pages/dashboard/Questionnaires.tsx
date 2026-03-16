@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { buildSprints, SECTIONS, THIS_OR_THAT, type QuizQuestion } from "@/data/knowMeQuestions";
 import cityFallbackImage from "@/assets/templates/travel-city.jpg";
 import natureFallbackImage from "@/assets/templates/travel-mountain.jpg";
+import PremiumLockCard from "@/components/PremiumLockCard";
 
 /* ── AI feedback messages — rotate per question ── */
 const AI_FEEDBACK = [
@@ -24,7 +25,7 @@ const AI_FEEDBACK = [
 ];
 
 const Questionnaires = () => {
-  const { user } = useAuth();
+  const { user, subscribed } = useAuth();
   const { profileAnswers, gender, loading: contextLoading, refetch } = usePersonalization();
 
   const sprints = useMemo(() => buildSprints(gender), [gender]);
@@ -107,7 +108,6 @@ const Questionnaires = () => {
   /* ── Start a sprint quiz ── */
   const startSprint = (idx: number) => {
     const sprint = sprints[idx];
-    // Find first unanswered question
     const firstUnanswered = sprint.questions.findIndex((q) => !profileAnswers?.[q.id]);
     setQuizSprintIdx(idx);
     setQuizQuestionIdx(firstUnanswered === -1 ? 0 : firstUnanswered);
@@ -129,7 +129,6 @@ const Questionnaires = () => {
     try {
       const userId = (await supabase.auth.getUser()).data.user!.id;
       const updated = { ...(profileAnswers || {}), ...currentSelections };
-      // Convert string[] to string for single-select
       const cleaned: Record<string, string | string[]> = {};
       for (const [k, v] of Object.entries(updated)) {
         cleaned[k] = Array.isArray(v) && v.length === 1 ? v[0] : v;
@@ -164,11 +163,9 @@ const Questionnaires = () => {
     });
 
     if (!currentQuestion.multiSelect) {
-      // Show AI feedback then advance
       setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
       setTimeout(() => {
         setAiFeedback(null);
-        // Use ref to get latest selections to avoid stale closure
         const latestSelections = selectionsRef.current;
         if (!currentSprint) return;
         let next = quizQuestionIdx + 1;
@@ -213,13 +210,41 @@ const Questionnaires = () => {
     }
   };
 
-  /* ── Section helper for dashboard ── */
   const getSectionForQuestion = (q: QuizQuestion) => SECTIONS.find((s) => s.id === q.section);
 
   if (contextLoading) {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--swatch-teal)", borderTopColor: "transparent" }} />
+      </div>
+    );
+  }
+
+  if (!subscribed) {
+    return (
+      <div className="h-full overflow-y-auto px-3 py-4">
+        <PremiumLockCard
+          title="Know Me AI is Premium"
+          description="The full question bank is part of Premium so the profile becomes useful enough for gifting, reminders, and weekly suggestions."
+          bullets={[
+            "Unlock the full 100-question blueprint",
+            "Build richer data for gift recommendations",
+            "Keep your profile useful long after onboarding",
+          ]}
+          preview={
+            <div className="grid grid-cols-2 gap-2.5">
+              {[cityFallbackImage, natureFallbackImage, cityFallbackImage, natureFallbackImage].map((src, index) => (
+                <div key={`${src}-${index}`} className="overflow-hidden rounded-2xl border border-white/70 bg-white/50">
+                  <img src={src} alt="Know Me preview" className="h-28 w-full object-cover" />
+                  <div className="p-3">
+                    <div className="mb-2 h-2.5 w-16 rounded-full bg-white/80" />
+                    <div className="h-2.5 w-24 rounded-full bg-white/70" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          }
+        />
       </div>
     );
   }

@@ -4,6 +4,7 @@ import { ArrowLeft, Bell, Heart, Gift, Sparkles, Check, Trash2 } from "lucide-re
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import PremiumLockCard from "@/components/PremiumLockCard";
 
 interface Notification {
   id: string;
@@ -23,13 +24,16 @@ const typeIcon: Record<string, typeof Bell> = {
 
 export default function Notifications() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, subscribed } = useAuth();
   const { toast } = useToast();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchNotifications = async () => {
-    if (!user) return;
+    if (!user || !subscribed) {
+      setLoading(false);
+      return;
+    }
     const { data, error } = await supabase
       .from("notifications")
       .select("*")
@@ -41,8 +45,8 @@ export default function Notifications() {
 
   useEffect(() => {
     fetchNotifications();
+    if (!subscribed) return;
 
-    // Realtime subscription
     const channel = supabase
       .channel("user-notifications")
       .on(
@@ -53,7 +57,7 @@ export default function Notifications() {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [user]);
+  }, [user, subscribed]);
 
   const markAllRead = async () => {
     if (!user) return;
@@ -95,6 +99,31 @@ export default function Notifications() {
     if (diffDay < 7) return `${diffDay}d ago`;
     return d.toLocaleDateString();
   };
+
+  if (!subscribed) {
+    return (
+      <div className="max-w-4xl mx-auto" style={{ paddingTop: 40 }}>
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1.5 mb-3 bg-transparent border-none cursor-pointer"
+          style={{ color: "#2d6870", fontFamily: "Jost", fontSize: 13, fontWeight: 500 }}
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> Back
+        </button>
+        <div className="mx-auto" style={{ maxWidth: 520 }}>
+          <PremiumLockCard
+            title="Reminders and notifications are Premium"
+            description="Upcoming dates, birthdays, and activity alerts become genuinely useful once the app is part of your routine, so they unlock with Premium."
+            bullets={[
+              "Get reminders before birthdays and anniversaries",
+              "See updates when a connection changes preferences",
+              "Keep recommendations and activity in one stream",
+            ]}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto" style={{ paddingTop: 40 }}>

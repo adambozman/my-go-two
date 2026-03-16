@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import GoTwoCoverFlow from "@/components/GoTwoCoverFlow";
 import TemplateCoverFlow, { type SubtypeItem, type SubcategoryGroup } from "@/components/TemplateCoverFlow";
 import FormCoverFlowCarousel from "@/components/ui/FormCoverFlowCarousel";
+import PremiumLockCard from "@/components/PremiumLockCard";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +31,7 @@ const sectionLabels: Record<string, string> = {
 };
 
 const sectionOrder = ["style-fit", "food-drink", "personal", "gifts-wishlist", "home-living", "entertainment"];
+const FREE_CARD_KEY_LIMIT = 3;
 
 interface CoverFlowState {
   name: string;
@@ -53,11 +55,6 @@ interface CardEntry {
 const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
 const NEW_ENTRY_ID = "__new_entry__";
 
-/**
- * EntryFormCard — editorial magazine-style form rendered inside the coverflow card.
- * Inspired by fashion lookbook layouts: generous whitespace, serif display type,
- * coral accents, and clean field styling on a warm linen background.
- */
 const TagInput = ({ value, onChange, fieldLabel }: { value: string; onChange: (val: string) => void; fieldLabel: string }) => {
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState("");
@@ -121,7 +118,6 @@ const TagInput = ({ value, onChange, fieldLabel }: { value: string; onChange: (v
   );
 };
 
-/** Auto-sizing title that scales font to fill container height */
 const AutoFitTitle = ({ value, placeholder, onChange }: {
   value: string;
   placeholder: string;
@@ -142,13 +138,11 @@ const AutoFitTitle = ({ value, placeholder, onChange }: {
     const containerH = container.offsetHeight;
     if (containerW === 0 || containerH === 0) return;
 
-    // Binary search for the largest font size where text fits without overflow
     let lo = 16, hi = 60, best = 16;
     while (lo <= hi) {
       const mid = Math.floor((lo + hi) / 2);
       measure.style.fontSize = `${mid}px`;
       measure.style.width = `${containerW}px`;
-      // Check both dimensions — scrollWidth catches single-word overflow
       const fits = measure.scrollHeight <= containerH && measure.scrollWidth <= containerW;
       if (fits) { best = mid; lo = mid + 1; }
       else { hi = mid - 1; }
@@ -158,7 +152,6 @@ const AutoFitTitle = ({ value, placeholder, onChange }: {
 
   return (
     <div ref={containerRef} style={{ position: "relative", width: "100%", height: "100%" }}>
-      {/* Hidden measurement div */}
       <div ref={measureRef} aria-hidden style={{
         position: "absolute", visibility: "hidden", top: 0, left: 0,
         fontWeight: 700, lineHeight: 0.95, letterSpacing: "-0.02em",
@@ -167,7 +160,6 @@ const AutoFitTitle = ({ value, placeholder, onChange }: {
         whiteSpace: "pre-wrap",
       }}>{text}</div>
 
-      {/* Visible editable title */}
       <textarea
         className="gotwo-title"
         value={value}
@@ -228,7 +220,6 @@ const EntryFormCard = ({
         .gotwo-notes::placeholder { color: rgba(26,26,26,0.3); }
       `}</style>
 
-      {/* ── SECTION LABEL + INDEX ── */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 22px 8px", flexShrink: 0 }}>
         <span style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "#d4543a", fontWeight: 700 }}>
           {subcategoryName ? [categoryName, subcategoryName].filter(Boolean).join(" · ") : (categoryName || "")}
@@ -238,9 +229,7 @@ const EntryFormCard = ({
         </span>
       </div>
 
-      {/* ── TITLE + PHOTO BLOCK ── */}
       <div style={{ position: "relative", padding: "0 22px", flexShrink: 0, height: 190 }}>
-        {/* Photo thumbnail — locked top-right proportions */}
         <div style={{
           position: "absolute",
           top: 0,
@@ -251,7 +240,6 @@ const EntryFormCard = ({
           background: "#c8bfb4",
         }} />
 
-        {/* Invisible title box (fixed) — prevents random wraps */}
         <div style={{ maxWidth: "calc(100% - 196px)", height: 190 }}>
           <AutoFitTitle
             value={entryName}
@@ -260,19 +248,16 @@ const EntryFormCard = ({
           />
         </div>
 
-        {/* Coral accent — anchored under title */}
         <div style={{ display: "flex", gap: 3, paddingTop: 8 }}>
           <div style={{ height: 2, width: 22, background: "#d4543a", borderRadius: 1 }} />
           <div style={{ height: 2, width: 8, background: "rgba(212,84,58,0.3)", borderRadius: 1 }} />
         </div>
       </div>
 
-      {/* ── TITLE/PHOTO TO SIZE DIVIDER ── */}
       <div style={{ padding: "6px 22px 10px", flexShrink: 0 }}>
         <div style={{ height: 1, background: "rgba(26,26,26,0.14)" }} />
       </div>
 
-      {/* ── FIELDS ── */}
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 22px" }}>
         {subtype.fields.map((field, i) => (
           <div key={field.label} style={{
@@ -323,41 +308,61 @@ const EntryFormCard = ({
         ))}
       </div>
 
-      {/* ── SAVE BAR ── */}
-      <div style={{ flexShrink: 0, padding: "10px 22px 18px" }}>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={onSave} disabled={saving} style={{
-            flex: 1, height: 44, borderRadius: 10,
-            background: "#1a1a1a", border: "none",
-            color: "#f0e8d8", fontSize: 11, fontWeight: 700,
-            letterSpacing: "0.16em", textTransform: "uppercase",
-            cursor: "pointer", fontFamily: "'Jost', sans-serif",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-          }}>
-            {saving ? <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" /> : "Save Entry"}
+      <div style={{ padding: "14px 22px 18px", display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
+        <button
+          onClick={onSave}
+          disabled={saving}
+          style={{
+            flex: 1,
+            height: 42,
+            borderRadius: 999,
+            border: "none",
+            background: "#d4543a",
+            color: "white",
+            fontFamily: "'Jost', sans-serif",
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: saving ? "wait" : "pointer",
+            opacity: saving ? 0.7 : 1,
+          }}
+        >
+          {saving ? "Saving…" : isEditing ? "Save Changes" : "Save Card"}
+        </button>
+        {isEditing && (
+          <button
+            onClick={onDelete}
+            disabled={saving}
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 999,
+              border: "1px solid rgba(26,26,26,0.12)",
+              background: "transparent",
+              color: "#1a1a1a",
+              cursor: saving ? "wait" : "pointer",
+            }}
+          >
+            <Trash2 style={{ width: 16, height: 16, margin: "0 auto" }} />
           </button>
-          {isEditing && (
-            <button onClick={onDelete} style={{
-              width: 44, height: 44, borderRadius: 10,
-              background: "rgba(212,84,58,0.08)", border: "1px solid rgba(212,84,58,0.25)",
-              display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-            }}>
-              <Trash2 style={{ width: 14, height: 14, color: "#d4543a" }} />
-            </button>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
 };
 
-// ── Main Page ──
 const MyGoTwo = () => {
-  const { user } = useAuth();
-  const { gender, loading: genderLoading } = usePersonalization();
+  const { user, subscribed } = useAuth();
   const { toast } = useToast();
-  const { sections, loading: registryLoading } = useCategoryRegistry(gender, "mygotwo");
+  const { gender, loading: genderLoading } = usePersonalization();
+  const { categories, loading: registryLoading } = useCategoryRegistry(gender, "mygotwo");
   const { setBackState } = useTopBar();
+
+  const sections = useMemo(() => {
+    return categories.reduce<Record<string, CategoryItem[]>>((acc, item) => {
+      (acc[item.section] ||= []).push(item);
+      return acc;
+    }, {});
+  }, [categories]);
 
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
@@ -366,7 +371,6 @@ const MyGoTwo = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const savedScrollTop = useRef(0);
 
-  // Entry coverflow state
   const [cardKey, setCardKey] = useState<string | null>(null);
   const [entries, setEntries] = useState<CardEntry[]>([]);
   const [activeEntryIndex, setActiveEntryIndex] = useState(0);
@@ -379,6 +383,8 @@ const MyGoTwo = () => {
   const [leafImage, setLeafImage] = useState<string>("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
   const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
+  const [unlockedCardKeys, setUnlockedCardKeys] = useState<string[]>([]);
+  const [showCategoryPaywall, setShowCategoryPaywall] = useState(false);
 
   const defaultFieldValues = useMemo(() => {
     if (!leafSubtype) return {} as Record<string, string>;
@@ -387,6 +393,18 @@ const MyGoTwo = () => {
       {} as Record<string, string>
     );
   }, [leafSubtype]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("card_entries")
+      .select("card_key")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        const keys = Array.from(new Set((data || []).map((row: any) => row.card_key).filter(Boolean)));
+        setUnlockedCardKeys(keys);
+      });
+  }, [user]);
 
   const fetchEntries = useCallback(async () => {
     if (!user || !cardKey) return;
@@ -435,6 +453,7 @@ const MyGoTwo = () => {
     setLeafSubcategoryName(undefined);
     setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
+    setShowCategoryPaywall(false);
     requestAnimationFrame(() => {
       if (scrollRef.current) {
         scrollRef.current.scrollTop = savedScrollTop.current;
@@ -465,6 +484,12 @@ const MyGoTwo = () => {
     }
   }, [coverFlowState, activeSubcategory, cardKey, leafSubtype]);
 
+  const canAccessCardKey = useCallback((nextCardKey: string) => {
+    if (subscribed) return true;
+    if (unlockedCardKeys.includes(nextCardKey)) return true;
+    return unlockedCardKeys.length < FREE_CARD_KEY_LIMIT;
+  }, [subscribed, unlockedCardKeys]);
+
   const handleCategoryClick = (item: CategoryItem) => {
     if (scrollRef.current) {
       savedScrollTop.current = scrollRef.current.scrollTop;
@@ -473,6 +498,7 @@ const MyGoTwo = () => {
     const subcategories = item.subcategories as unknown as SubcategoryGroup[] | undefined;
     if (subtypes.length > 0 || (subcategories && subcategories.length > 0)) {
       setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
+      setShowCategoryPaywall(false);
     }
   };
 
@@ -490,20 +516,33 @@ const MyGoTwo = () => {
   const handleSubcategorySelect = (sc: SubcategoryGroup) => {
     if (sc.products && sc.products.length > 0) {
       setActiveSubcategory(sc);
-    } else {
-      setActiveSubcategory(sc);
-      const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
-      setCardKey(key);
-      setLeafSubtype(sc as unknown as SubtypeItem);
-      setLeafSubcategoryName(undefined);
-      setLeafCategoryName(coverFlowState?.name);
-      setLeafImage((sc as any).image || "");
-      setActiveEntryIndex(0);
+      return;
     }
+
+    const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
+    if (!canAccessCardKey(key)) {
+      setShowCategoryPaywall(true);
+      return;
+    }
+
+    setShowCategoryPaywall(false);
+    setActiveSubcategory(sc);
+    setCardKey(key);
+    setLeafSubtype(sc as unknown as SubtypeItem);
+    setLeafSubcategoryName(undefined);
+    setLeafCategoryName(coverFlowState?.name);
+    setLeafImage((sc as any).image || "");
+    setActiveEntryIndex(0);
   };
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
     const key = `${coverFlowState?.name}__${subcategoryName || ""}__${subtype.name}`;
+    if (!canAccessCardKey(key)) {
+      setShowCategoryPaywall(true);
+      return;
+    }
+
+    setShowCategoryPaywall(false);
     setCardKey(key);
     setLeafSubtype(subtype);
     setLeafSubcategoryName(subcategoryName);
@@ -564,7 +603,7 @@ const MyGoTwo = () => {
 
         const inserted = data as CardEntry;
         setEntries((prev) => [...prev, inserted]);
-        // Reset the "New Card" draft for the next entry
+        setUnlockedCardKeys((prev) => prev.includes(cardKey) ? prev : [...prev, cardKey]);
         setEntryDrafts((prev) => ({
           ...prev,
           [inserted.id]: fieldValues,
@@ -575,7 +614,6 @@ const MyGoTwo = () => {
           [inserted.id]: entryName,
           [NEW_ENTRY_ID]: "",
         }));
-        // Navigate to the newly saved card
         setActiveEntryIndex(entries.length);
         toast({ title: "Saved!", description: `${entryName} created.` });
       } else {
@@ -604,7 +642,13 @@ const MyGoTwo = () => {
       const { error } = await supabase.from("card_entries").delete().eq("id", itemId);
       if (error) throw error;
 
-      setEntries((prev) => prev.filter((entry) => entry.id !== itemId));
+      setEntries((prev) => {
+        const nextEntries = prev.filter((entry) => entry.id !== itemId);
+        if (nextEntries.length === 0 && cardKey) {
+          setUnlockedCardKeys((prevKeys) => prevKeys.filter((key) => key !== cardKey));
+        }
+        return nextEntries;
+      });
       setActiveEntryIndex(0);
       toast({ title: "Deleted", description: "Entry removed." });
     } catch (e: any) {
@@ -634,8 +678,24 @@ const MyGoTwo = () => {
       items: sections[key].map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
     }));
 
-  // Determine which view to show
   const renderContent = () => {
+    if (showCategoryPaywall) {
+      return (
+        <div className="h-full flex items-center justify-center px-4 py-6">
+          <PremiumLockCard
+            title="Deeper preference cards are Premium"
+            description="Free includes a few categories so people can feel the product. Premium unlocks unlimited categories and entries for real everyday use."
+            bullets={[
+              `Free includes up to ${FREE_CARD_KEY_LIMIT} saved preference areas`,
+              "Unlock unlimited categories, cards, and richer preference tracking",
+              "Pair it with recommendations, reminders, and extra connections",
+            ]}
+            onDismiss={() => setShowCategoryPaywall(false)}
+          />
+        </div>
+      );
+    }
+
     if (cardKey && leafSubtype) {
       return (
         <motion.div
@@ -646,7 +706,6 @@ const MyGoTwo = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full flex flex-col items-center justify-center px-4"
         >
-          
           <div className="flex items-center justify-center">
             <FormCoverFlowCarousel
               items={entryCoverFlowItems}
@@ -723,6 +782,18 @@ const MyGoTwo = () => {
           setActiveSectionIndex(Math.min(idx, orderedSections.length - 1));
         }}
       >
+        {!subscribed && (
+          <div className="px-4 pt-4">
+            <div className="rounded-2xl border px-4 py-3" style={{ background: "rgba(255,255,255,0.64)", borderColor: "rgba(255,255,255,0.84)", boxShadow: "0 8px 24px rgba(74,96,104,0.08), inset 0 1px 0 rgba(255,255,255,0.9)" }}>
+              <p className="text-[10px] uppercase tracking-[0.16em] font-semibold" style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}>
+                Free plan
+              </p>
+              <p className="mt-1 text-sm" style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}>
+                You can save up to {FREE_CARD_KEY_LIMIT} preference areas. Premium unlocks unlimited categories and entries.
+              </p>
+            </div>
+          </div>
+        )}
         {orderedSections.map((section) => (
           <div key={section.key} className="snap-start snap-always h-full flex flex-col items-center justify-center overflow-hidden flex-shrink-0">
             <h2 className="section-header text-center mb-4">{section.label}</h2>
@@ -750,7 +821,6 @@ const MyGoTwo = () => {
         {renderContent()}
       </AnimatePresence>
 
-      {/* Group dialog */}
       <Dialog open={showGroupDialog} onOpenChange={() => setShowGroupDialog(false)}>
         <DialogContent className="rounded-3xl bg-card">
           <DialogHeader>
