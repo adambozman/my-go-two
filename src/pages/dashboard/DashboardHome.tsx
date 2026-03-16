@@ -342,6 +342,13 @@ const DashboardHome = () => {
           />
         )}
       </AnimatePresence>
+
+      {/* Add Connection Modal */}
+      <AddConnectionModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onConnectionCreated={loadConnections}
+      />
     </div>
   );
 };
