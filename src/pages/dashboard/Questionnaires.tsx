@@ -420,106 +420,149 @@ const Questionnaires = () => {
      ═══════════════════════════════════════════════════════ */
   if (view === "thisorthat") {
     const remaining = totQueue.length - totIndex;
+    const progress = totQueue.length > 0 ? ((totQueue.length - remaining) / totQueue.length) * 100 : 100;
 
     return (
-      <div className="h-full flex flex-col items-center justify-center px-4">
-        {/* Back button */}
-        <div className="w-full max-w-[400px] mb-4 flex items-center justify-between">
+      <div className="h-full flex flex-col" style={{ background: "#0a0a0a" }}>
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-2">
           <button
             onClick={() => setView("dashboard")}
             className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}
+            style={{ background: "rgba(255,255,255,0.1)" }}
           >
-            <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+            <ArrowLeft className="w-4 h-4 text-white/70" />
           </button>
-          <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+          <span className="text-[11px] text-white/40" style={{ fontFamily: "'Jost', sans-serif" }}>
             {remaining} remaining
           </span>
         </div>
 
-        {/* Card */}
-        {totCurrent ? (
-          <AnimatePresence mode="wait">
+        {/* Progress bar */}
+        <div className="px-4 mb-3">
+          <div className="h-[3px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
             <motion.div
-              key={totCurrent.id}
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{
-                opacity: totSwipeDir ? 0 : 1,
-                x: totSwipeDir === "left" ? -300 : totSwipeDir === "right" ? 300 : 0,
-                rotate: totSwipeDir === "left" ? -15 : totSwipeDir === "right" ? 15 : 0,
-                scale: totSwipeDir ? 0.9 : 1,
-                y: 0,
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 28 }}
-              className="w-full max-w-[340px] rounded-3xl p-8 flex flex-col items-center justify-center relative"
-              style={{
-                background: "var(--swatch-viridian-odyssey)",
-                boxShadow: "0 12px 48px rgba(30,74,82,0.25)",
-                minHeight: 280,
-              }}
-            >
-              <div className="flex items-center gap-2 mb-6">
-                <Shuffle className="w-4 h-4 text-white/50" />
-                <span className="text-[10px] uppercase tracking-[0.15em] text-white/50" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500 }}>
-                  This or That
-                </span>
-              </div>
-
-              <div className="flex flex-col items-center gap-3 w-full">
-                <span className="text-[28px] text-white text-center leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
-                  {totCurrent.optionA}
-                </span>
-                <span className="text-white/30 text-[12px] uppercase tracking-[0.2em]" style={{ fontFamily: "'Jost', sans-serif" }}>or</span>
-                <span className="text-[28px] text-white text-center leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
-                  {totCurrent.optionB}
-                </span>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        ) : (
-          <div className="text-center">
-            <Check className="w-12 h-12 mx-auto mb-3" style={{ color: "var(--swatch-teal)" }} />
-            <p className="text-[16px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
-              All done!
-            </p>
+              className="h-full rounded-full"
+              style={{ background: "var(--swatch-teal)" }}
+              animate={{ width: `${progress}%` }}
+              transition={{ type: "spring", stiffness: 100, damping: 20 }}
+            />
           </div>
-        )}
+        </div>
 
-        {/* X and ✓ buttons */}
+        {/* Card area */}
+        <div className="flex-1 flex items-center justify-center px-4">
+          {totCurrent ? (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={totCurrent.id}
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{
+                  opacity: totSwipeDir ? 0 : 1,
+                  x: totSwipeDir === "left" ? -350 : totSwipeDir === "right" ? 350 : 0,
+                  rotate: totSwipeDir === "left" ? -12 : totSwipeDir === "right" ? 12 : 0,
+                  scale: totSwipeDir ? 0.85 : 1,
+                }}
+                transition={{ type: "spring", stiffness: 280, damping: 26 }}
+                className="w-full max-w-[380px] rounded-3xl overflow-hidden relative"
+                style={{
+                  aspectRatio: "3/4",
+                  boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+                }}
+              >
+                {/* Image */}
+                <img
+                  src={totCurrent.image}
+                  alt={totCurrent.prompt}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 60%)" }} />
+
+                {/* Category badge */}
+                <div className="absolute top-4 left-4">
+                  <span
+                    className="text-[10px] uppercase tracking-[0.15em] px-3 py-1.5 rounded-full"
+                    style={{
+                      fontFamily: "'Jost', sans-serif",
+                      fontWeight: 500,
+                      color: "#fff",
+                      background: "rgba(255,255,255,0.15)",
+                      backdropFilter: "blur(12px)",
+                      border: "1px solid rgba(255,255,255,0.2)",
+                    }}
+                  >
+                    {totCurrent.category}
+                  </span>
+                </div>
+
+                {/* Swipe indicators */}
+                {totSwipeDir === "right" && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute top-6 right-6 px-4 py-2 rounded-xl border-2"
+                    style={{ borderColor: "var(--swatch-teal)", color: "var(--swatch-teal)" }}
+                  >
+                    <span className="text-[18px] font-bold" style={{ fontFamily: "'Jost', sans-serif" }}>YES</span>
+                  </motion.div>
+                )}
+                {totSwipeDir === "left" && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute top-6 left-6 px-4 py-2 rounded-xl border-2"
+                    style={{ borderColor: "#c45c5c", color: "#c45c5c" }}
+                  >
+                    <span className="text-[18px] font-bold" style={{ fontFamily: "'Jost', sans-serif" }}>NOPE</span>
+                  </motion.div>
+                )}
+
+                {/* Prompt text */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h2 className="text-[26px] leading-[1.15] text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>
+                    {totCurrent.prompt}
+                  </h2>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          ) : (
+            <div className="text-center">
+              <Check className="w-14 h-14 mx-auto mb-4" style={{ color: "var(--swatch-teal)" }} />
+              <p className="text-[20px] text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}>
+                All done!
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Yes / No buttons */}
         {totCurrent && (
-          <div className="flex items-center gap-6 mt-8">
+          <div className="flex items-center justify-center gap-10 pb-8 pt-4">
             <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => pickThisOrThat("A")}
-              className="w-16 h-16 rounded-full flex items-center justify-center"
+              whileTap={{ scale: 0.85 }}
+              onClick={() => pickThisOrThat("B")}
+              className="w-[72px] h-[72px] rounded-full flex flex-col items-center justify-center gap-0.5"
               style={{
-                background: "rgba(var(--swatch-antique-coin-rgb), 0.06)",
-                border: "2px solid rgba(var(--swatch-antique-coin-rgb), 0.15)",
+                background: "rgba(196,92,92,0.12)",
+                border: "2.5px solid rgba(196,92,92,0.5)",
               }}
             >
-              <X className="w-7 h-7" style={{ color: "var(--swatch-cedar-grove)" }} />
+              <X className="w-8 h-8" style={{ color: "#c45c5c" }} />
+              <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ fontFamily: "'Jost', sans-serif", color: "#c45c5c" }}>No</span>
             </motion.button>
 
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-[10px] text-center" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                {totCurrent.optionA}
-              </span>
-              <span className="text-[8px]" style={{ color: "var(--swatch-antique-coin)" }}>←  →</span>
-              <span className="text-[10px] text-center" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                {totCurrent.optionB}
-              </span>
-            </div>
-
             <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => pickThisOrThat("B")}
-              className="w-16 h-16 rounded-full flex items-center justify-center"
+              whileTap={{ scale: 0.85 }}
+              onClick={() => pickThisOrThat("A")}
+              className="w-[72px] h-[72px] rounded-full flex flex-col items-center justify-center gap-0.5"
               style={{
-                background: "rgba(var(--swatch-teal-rgb), 0.08)",
-                border: "2px solid var(--swatch-teal)",
+                background: "rgba(45,104,112,0.15)",
+                border: "2.5px solid var(--swatch-teal)",
               }}
             >
-              <Check className="w-7 h-7" style={{ color: "var(--swatch-teal)" }} />
+              <Check className="w-8 h-8" style={{ color: "var(--swatch-teal)" }} />
+              <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>Yes</span>
             </motion.button>
           </div>
         )}
