@@ -865,45 +865,34 @@ export interface ThisOrThatItem {
 }
 
 export const THIS_OR_THAT: ThisOrThatItem[] = [
-  // Date Ideas
-  { id: "tot-01", prompt: "Dinner and a movie for a first date?", category: "Date Ideas", image: getTemplateImage("event-movies.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-02", prompt: "Picnic in the park?", category: "Date Ideas", image: getTemplateImage("date-outdoor.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-03", prompt: "Cooking together at home?", category: "Date Ideas", image: getTemplateImage("kitchen-cookware.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-04", prompt: "A surprise weekend getaway?", category: "Date Ideas", image: getTemplateImage("travel-city.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-05", prompt: "Wine tasting date?", category: "Date Ideas", image: getTemplateImage("nightlife-bar.jpg"), optionA: "Yes", optionB: "No" },
-
-  // Brands
-  { id: "tot-06", prompt: "Would you wear American Eagle?", category: "Brands", image: getTemplateImage("clothing-basics.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-07", prompt: "Are you a Nike person?", category: "Brands", image: getTemplateImage("shoe-athletic.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-08", prompt: "Do you like Lululemon?", category: "Brands", image: getTemplateImage("clothing-activewear.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-09", prompt: "Would you shop at Zara?", category: "Brands", image: getTemplateImage("clothing-tops.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-10", prompt: "Are you into Patagonia?", category: "Brands", image: getTemplateImage("sports-outdoor.jpg"), optionA: "Yes", optionB: "No" },
-
-  // Spending
-  { id: "tot-11", prompt: "Would you spend $100 on a t-shirt?", category: "Spending", image: getTemplateImage("clothing-tshirt.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-12", prompt: "Would you splurge on designer sunglasses?", category: "Spending", image: getTemplateImage("accessory-sunglasses.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-13", prompt: "Would you pay $200+ for sneakers?", category: "Spending", image: getTemplateImage("shoe-sneakers.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-14", prompt: "Worth it: a $50 candle?", category: "Spending", image: getTemplateImage("scent-candles.jpg"), optionA: "Yes", optionB: "No" },
-
-  // Preferences
-  { id: "tot-15", prompt: "Coffee over tea?", category: "Preferences", image: getTemplateImage("coffee-tea.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-16", prompt: "Mountains over beach?", category: "Preferences", image: getTemplateImage("travel-mountain.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-17", prompt: "Are you an early bird?", category: "Preferences", image: getTemplateImage("travel-preferences.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-18", prompt: "Do you prefer sweet over savory?", category: "Preferences", image: getTemplateImage("meal-dessert.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-19", prompt: "City life over countryside?", category: "Preferences", image: getTemplateImage("travel-city.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-20", prompt: "Books over podcasts?", category: "Preferences", image: getTemplateImage("books-reading.jpg"), optionA: "Yes", optionB: "No" },
-
-  // Style
-  { id: "tot-21", prompt: "Gold jewelry over silver?", category: "Style", image: getTemplateImage("jewelry.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-22", prompt: "Are you minimalist?", category: "Style", image: getTemplateImage("vibe-minimalist.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-23", prompt: "Sneakers over dress shoes?", category: "Style", image: getTemplateImage("shoe-dress.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-24", prompt: "Do you prefer vintage over brand new?", category: "Style", image: getTemplateImage("vibe-vintage.jpg"), optionA: "Yes", optionB: "No" },
-
-  // Lifestyle
-  { id: "tot-25", prompt: "Dog person?", category: "Lifestyle", image: getTemplateImage("pet-peeves.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-26", prompt: "Are you spontaneous?", category: "Lifestyle", image: getTemplateImage("vibe-personality.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-27", prompt: "Netflix night over going out?", category: "Lifestyle", image: getTemplateImage("tech-streaming.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-28", prompt: "Brunch over dinner?", category: "Lifestyle", image: getTemplateImage("meal-breakfast.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-29", prompt: "Concert over museum?", category: "Lifestyle", image: getTemplateImage("event-concerts.jpg"), optionA: "Yes", optionB: "No" },
-  { id: "tot-30", prompt: "Candles over diffusers?", category: "Lifestyle", image: getTemplateImage("scent-candles.jpg"), optionA: "Yes", optionB: "No" },
+  { id: "tot-01", prompt: "Dinner and a movie for a first date?", category: "Date Ideas", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-02", prompt: "Picnic in the park?", category: "Date Ideas", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-03", prompt: "Cooking together at home?", category: "Date Ideas", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-04", prompt: "A surprise weekend getaway?", category: "Date Ideas", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-05", prompt: "Wine tasting date?", category: "Date Ideas", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-06", prompt: "Would you wear American Eagle?", category: "Brands", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-07", prompt: "Are you a Nike person?", category: "Brands", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-08", prompt: "Do you like Lululemon?", category: "Brands", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-09", prompt: "Would you shop at Zara?", category: "Brands", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-10", prompt: "Are you into Patagonia?", category: "Brands", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-11", prompt: "Would you spend $100 on a t-shirt?", category: "Spending", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-12", prompt: "Would you splurge on designer sunglasses?", category: "Spending", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-13", prompt: "Would you pay $200+ for sneakers?", category: "Spending", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-14", prompt: "Worth it: a $50 candle?", category: "Spending", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-15", prompt: "Coffee over tea?", category: "Preferences", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-16", prompt: "Mountains over beach?", category: "Preferences", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-17", prompt: "Are you an early bird?", category: "Preferences", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-18", prompt: "Do you prefer sweet over savory?", category: "Preferences", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-19", prompt: "City life over countryside?", category: "Preferences", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-20", prompt: "Books over podcasts?", category: "Preferences", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-21", prompt: "Gold jewelry over silver?", category: "Style", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-22", prompt: "Are you minimalist?", category: "Style", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-23", prompt: "Sneakers over dress shoes?", category: "Style", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-24", prompt: "Do you prefer vintage over brand new?", category: "Style", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-25", prompt: "Dog person?", category: "Lifestyle", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-26", prompt: "Are you spontaneous?", category: "Lifestyle", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-27", prompt: "Netflix night over going out?", category: "Lifestyle", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-28", prompt: "Brunch over dinner?", category: "Lifestyle", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-29", prompt: "Concert over museum?", category: "Lifestyle", image: "", optionA: "Yes", optionB: "No" },
+  { id: "tot-30", prompt: "Candles over diffusers?", category: "Lifestyle", image: "", optionA: "Yes", optionB: "No" },
 ];
