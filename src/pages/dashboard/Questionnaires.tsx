@@ -739,10 +739,9 @@ const Questionnaires = () => {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
-            className="lg:col-span-5 rounded-[30px] p-5 relative overflow-hidden min-h-[220px]"
+            className="lg:col-span-5 card-design-overlay-coral rounded-[30px] p-5 relative overflow-hidden min-h-[220px]"
             style={{
-              background: "linear-gradient(145deg, rgba(var(--swatch-gypsum-rose-rgb), 0.88) 0%, rgba(var(--swatch-sand-rgb), 0.98) 100%)",
-              border: "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.08)",
+              borderRadius: 30,
               boxShadow: "0 18px 44px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.58)",
             }}
           >
@@ -762,10 +761,9 @@ const Questionnaires = () => {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
-            className="lg:col-span-7 rounded-[30px] p-5 md:p-6"
+            className="lg:col-span-7 card-design-overlay-white rounded-[30px] p-5 md:p-6"
             style={{
-              background: "linear-gradient(145deg, rgba(var(--swatch-sand-rgb), 0.86) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.72) 100%)",
-              border: "1px solid rgba(var(--swatch-teal-rgb), 0.10)",
+              borderRadius: 30,
               boxShadow: "0 18px 50px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.48)",
               backdropFilter: "blur(10px)",
             }}
@@ -793,22 +791,11 @@ const Questionnaires = () => {
                 const hasProgress = prog.answered > 0 && !isComplete;
                 const isTall = idx % 3 === 0;
                 const overlayTheme = idx % 3;
-                const cardBackground = overlayTheme === 0
-                  ? hasProgress
-                    ? "linear-gradient(155deg, rgba(var(--swatch-teal-rgb), 0.22) 0%, rgba(var(--swatch-sand-rgb), 0.92) 100%)"
-                    : "linear-gradient(155deg, rgba(var(--swatch-teal-rgb), 0.14) 0%, rgba(var(--swatch-sand-rgb), 0.88) 100%)"
+                const overlayClass = overlayTheme === 0
+                  ? "card-design-overlay-teal"
                   : overlayTheme === 1
-                    ? hasProgress
-                      ? "linear-gradient(155deg, rgba(var(--swatch-cedar-grove-rgb), 0.18) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.90) 100%)"
-                      : "linear-gradient(155deg, rgba(var(--swatch-cedar-grove-rgb), 0.12) 0%, rgba(var(--swatch-sand-rgb), 0.90) 100%)"
-                    : hasProgress
-                      ? "linear-gradient(155deg, rgba(255,255,255,0.82) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.72) 100%)"
-                      : "linear-gradient(155deg, rgba(255,255,255,0.76) 0%, rgba(var(--swatch-sand-rgb), 0.82) 100%)";
-                const cardBorder = overlayTheme === 0
-                  ? "1px solid rgba(var(--swatch-teal-rgb), 0.20)"
-                  : overlayTheme === 1
-                    ? "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.16)"
-                    : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.12)";
+                    ? "card-design-overlay-coral"
+                    : "card-design-overlay-white";
                 const orbColor = overlayTheme === 0
                   ? "rgba(var(--swatch-teal-rgb), 0.12)"
                   : overlayTheme === 1
@@ -838,10 +825,9 @@ const Questionnaires = () => {
                     transition={{ delay: idx * 0.04, type: "spring", stiffness: 280, damping: 25 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={() => startSprint(idx)}
-                    className={`relative overflow-hidden text-left rounded-[28px] p-5 transition-all ${isTall ? "md:row-span-2 min-h-[220px]" : "min-h-[168px]"}`}
+                    className={`relative overflow-hidden text-left ${overlayClass} rounded-[28px] p-5 transition-all ${isTall ? "md:row-span-2 min-h-[220px]" : "min-h-[168px]"}`}
                     style={{
-                      background: cardBackground,
-                      border: cardBorder,
+                      borderRadius: 28,
                       boxShadow: hasProgress
                         ? "0 16px 36px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.46)"
                         : "0 12px 28px rgba(30,74,82,0.05), inset 0 1px 0 rgba(255,255,255,0.42)",
@@ -919,10 +905,9 @@ const Questionnaires = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18, type: "spring", stiffness: 250, damping: 24 }}
-              className="lg:col-span-12 rounded-[28px] px-5 py-4"
+              className="lg:col-span-12 card-design-overlay-coral rounded-[28px] px-5 py-4"
               style={{
-                background: "linear-gradient(145deg, rgba(var(--swatch-gypsum-rose-rgb), 0.80) 0%, rgba(var(--swatch-sand-rgb), 0.92) 100%)",
-                border: "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.10)",
+                borderRadius: 28,
                 boxShadow: "0 14px 34px rgba(212,84,58,0.06), inset 0 1px 0 rgba(255,255,255,0.46)",
               }}
             >
