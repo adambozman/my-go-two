@@ -34,7 +34,6 @@ export function RecentUpdates({ updates }: { updates: RecentUpdate[] }) {
         style={{
           background: "rgba(255,255,255,0.55)",
           border: "1px solid rgba(255,255,255,0.75)",
-          divideColor: "rgba(74,96,104,0.08)",
         }}
       >
         {updates.map((u) => (
