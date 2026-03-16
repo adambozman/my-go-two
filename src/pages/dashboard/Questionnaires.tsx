@@ -745,13 +745,13 @@ const Questionnaires = () => {
           >
             <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
             <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-              Profile reading
+              What your vibe unlocks
             </p>
             <p className="text-[32px] leading-[0.96] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-              Answer depth creates better recommendations.
+              The more you share, the more GoTwo works for you.
             </p>
             <p className="text-[13px] leading-relaxed max-w-[32ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              This page should feel collected and premium, not like stacked default cards. So the layout now breathes and the hierarchy actually reads.
+              Your answers power AI recommendations for gifts, date ideas, trips, and vacations — and give everyone you connect with the best possible guide to what you actually love.
             </p>
           </motion.div>
 
