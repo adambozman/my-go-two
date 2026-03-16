@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import CoverFlowCarousel from "@/components/ui/CoverFlowCarousel";
+import PaginatedCoverFlow from "@/components/PaginatedCoverFlow";
 
 interface GoTwoCoverFlowProps {
   items: { id: string; label: string; image: string }[];
@@ -8,7 +8,9 @@ interface GoTwoCoverFlowProps {
 
 const GoTwoCoverFlow = forwardRef<HTMLDivElement, GoTwoCoverFlowProps>(
   ({ items, onSelect }, ref) => (
-    <CoverFlowCarousel ref={ref} items={items} onSelect={onSelect} />
+    <div ref={ref} className="w-full">
+      <PaginatedCoverFlow items={items} onSelect={onSelect} />
+    </div>
   )
 );
 

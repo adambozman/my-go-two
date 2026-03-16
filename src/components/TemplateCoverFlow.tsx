@@ -107,7 +107,7 @@ const TemplateCoverFlow = ({
   return (
     <div className="h-full flex flex-col items-center justify-center">
       <h2 className="section-header text-center mb-6">{activeSubcategory?.name || templateName}</h2>
-      <CoverFlowCarousel
+      <PaginatedCoverFlow
         items={productItems}
         onSelect={(id) => {
           const p = products.find(x => x.id === id);
