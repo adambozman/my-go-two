@@ -870,7 +870,7 @@ const MyGoTwo = () => {
                   categoryName={leafCategoryName}
                   entryName={entryNames[item.id] || ""}
                   values={entryDrafts[item.id] || defaultFieldValues}
-                  imageUrl={entryImages[item.id] || ""}
+                  imageUrl={normalizeImageValue(entryImages[item.id])}
                   saving={saving}
                   isEditing={item.id !== NEW_ENTRY_ID}
                   onEntryNameChange={(name) => handleNameChange(item.id, name)}
