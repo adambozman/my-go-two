@@ -1,6 +1,6 @@
-import { useState, useMemo, useRef, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles, Shuffle, MessageCircle, Send } from "lucide-react";
+import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles, Shuffle, MessageCircle, Send, Lock } from "lucide-react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +14,7 @@ type ChatMessage = {
   content: string;
 };
 
-const FREE_SPRINT_LIMIT = 2;
+const FREE_CATEGORY_LIMIT = 4;
 const FREE_THIS_OR_THAT_LIMIT = 8;
 
 const AI_FEEDBACK = [
@@ -36,39 +36,77 @@ const STYLE_CHAT_SUGGESTIONS = [
   "What kinds of brands would you recommend for me right now?",
 ];
 
+const CATEGORY_COPY: Record<string, { title: string; description: string }> = {
+  "style-fit": {
+    title: "Clothes & Style",
+    description: "Fit, fashion taste, brand lean, and how polished or casual your look tends to be.",
+  },
+  "food-drink": {
+    title: "Food & Drink",
+    description: "Restaurants, cravings, comfort picks, and the flavors or places that feel most like you.",
+  },
+  "gifts-wishlist": {
+    title: "Gifts",
+    description: "What you love receiving, what feels thoughtful, and the kinds of things you actually want saved.",
+  },
+  "home-living": {
+    title: "Home",
+    description: "Your comfort zone, everyday living habits, and the spaces, products, and rituals that fit your life.",
+  },
+  entertainment: {
+    title: "Everything Else",
+    description: "Travel, hobbies, entertainment, and the extra signals that sharpen the AI’s read on you.",
+  },
+};
+
 const Questionnaires = () => {
   const { subscribed } = useAuth();
   const { personalization, profileAnswers, gender, loading: contextLoading, refetch } = usePersonalization();
 
-  const sprints = useMemo(() => buildSprints(gender), [gender]);
+  const allQuestions = useMemo(() => buildSprints(gender).flatMap((sprint) => sprint.questions), [gender]);
 
-  const sprintProgress = useMemo(() => {
-    return sprints.map((sprint) => {
-      const answered = sprint.questions.filter((q) => profileAnswers?.[q.id]).length;
-      return { total: sprint.questions.length, answered, complete: answered === sprint.questions.length };
+  const categories = useMemo(() => {
+    return SECTIONS.map((section) => {
+      const questions = allQuestions.filter((question) => question.section === section.id);
+      const answered = questions.filter((question) => profileAnswers?.[question.id]).length;
+      const visibleTotal = subscribed ? questions.length : Math.min(questions.length, FREE_CATEGORY_LIMIT);
+      const visibleAnswered = subscribed ? answered : Math.min(answered, visibleTotal);
+      const firstUnanswered = questions.findIndex((question) => !profileAnswers?.[question.id]);
+      const nextQuestionIndex = firstUnanswered === -1 ? Math.max(questions.length - 1, 0) : firstUnanswered;
+      const isLocked = !subscribed && answered >= FREE_CATEGORY_LIMIT;
+
+      return {
+        ...section,
+        title: CATEGORY_COPY[section.id]?.title ?? section.label,
+        description: CATEGORY_COPY[section.id]?.description ?? "",
+        questions,
+        answered,
+        visibleTotal,
+        visibleAnswered,
+        nextQuestionIndex,
+        complete: answered === questions.length,
+        isLocked,
+      };
     });
-  }, [sprints, profileAnswers]);
+  }, [allQuestions, profileAnswers, subscribed]);
 
-  const totalAnswered = sprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0);
-  const totalQuestions = 100;
-  const freeSprints = sprints.slice(0, FREE_SPRINT_LIMIT);
-  const displayedSprints = subscribed ? sprints : freeSprints;
-  const displayedSprintProgress = subscribed ? sprintProgress : sprintProgress.slice(0, FREE_SPRINT_LIMIT);
-  const totalFreeQuestions = freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0);
+  const totalAnswered = categories.reduce((sum, category) => sum + category.answered, 0);
+  const totalQuestions = allQuestions.length;
+  const totalFreeQuestions = categories.reduce((sum, category) => sum + category.visibleTotal, 0);
+  const totalVisibleAnswered = categories.reduce((sum, category) => sum + category.visibleAnswered, 0);
   const vibeProgressPercent = Math.round(
     subscribed
-      ? (totalAnswered / totalQuestions) * 100
-      : (displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0) / Math.max(1, totalFreeQuestions)) * 100,
+      ? (totalAnswered / Math.max(1, totalQuestions)) * 100
+      : (totalVisibleAnswered / Math.max(1, totalFreeQuestions)) * 100,
   );
   const allDone = totalAnswered >= totalQuestions;
 
   const [view, setView] = useState<"dashboard" | "quiz" | "thisorthat">("dashboard");
-  const [quizSprintIdx, setQuizSprintIdx] = useState(0);
+  const [activeCategoryId, setActiveCategoryId] = useState<string>(SECTIONS[0].id);
   const [quizQuestionIdx, setQuizQuestionIdx] = useState(0);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
-  const selectionsRef = useRef(selections);
   const [aiFeedback, setAiFeedback] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [savingAnswer, setSavingAnswer] = useState(false);
 
   const [styleChatOpen, setStyleChatOpen] = useState(false);
   const [stylePrompt, setStylePrompt] = useState("");
@@ -82,33 +120,20 @@ const Questionnaires = () => {
     },
   ]);
 
-  const updateSelections = useCallback((updater: (prev: Record<string, string[]>) => Record<string, string[]>) => {
-    setSelections((prev) => {
-      const next = updater(prev);
-      selectionsRef.current = next;
-      return next;
-    });
+  const activeCategory = categories.find((category) => category.id === activeCategoryId) ?? categories[0];
+  const currentQuestion: QuizQuestion | undefined = activeCategory?.questions[quizQuestionIdx];
+  const currentSelected = currentQuestion
+    ? selections[currentQuestion.id] ||
+      (profileAnswers?.[currentQuestion.id]
+        ? Array.isArray(profileAnswers[currentQuestion.id])
+          ? (profileAnswers[currentQuestion.id] as string[])
+          : [profileAnswers[currentQuestion.id] as string]
+        : [])
+    : [];
+
+  const updateSelections = useCallback((questionId: string, values: string[]) => {
+    setSelections((prev) => ({ ...prev, [questionId]: values }));
   }, []);
-
-  const totQueue = useMemo(() => {
-    const answered = profileAnswers ? Object.keys(profileAnswers).filter((key) => key.startsWith("tot-")) : [];
-    const unanswered = THIS_OR_THAT.filter((item) => !answered.includes(item.id));
-    return unanswered.length > 0 ? unanswered : [];
-  }, [profileAnswers]);
-
-  const [totIndex, setTotIndex] = useState(0);
-  const [totSwipeDir, setTotSwipeDir] = useState<"left" | "right" | null>(null);
-  const totCurrent = totQueue[totIndex] || null;
-  const totAnsweredCount = THIS_OR_THAT.length - totQueue.length;
-  const visibleThisOrThatCount = subscribed ? THIS_OR_THAT.length : Math.min(THIS_OR_THAT.length, FREE_THIS_OR_THAT_LIMIT);
-  const visibleThisOrThatAnswered = subscribed ? totAnsweredCount : Math.min(totAnsweredCount, visibleThisOrThatCount);
-
-  const openThisOrThat = () => {
-    if (!subscribed && totQueue.length === 0) return;
-    setTotIndex(0);
-    setTotSwipeDir(null);
-    setView("thisorthat");
-  };
 
   const openStyleChat = () => {
     setStyleChatMessages([
@@ -162,128 +187,97 @@ const Questionnaires = () => {
     }
   };
 
-  const startSprint = (idx: number) => {
-    if (!subscribed && idx >= FREE_SPRINT_LIMIT) {
-      toast("More questions unlock with Premium");
+  const persistProfileAnswers = async (patch: Record<string, string | string[]>) => {
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    if (!userId) throw new Error("No user");
+
+    const updated = { ...(profileAnswers || {}), ...patch };
+    const cleaned: Record<string, string | string[]> = {};
+    for (const [key, value] of Object.entries(updated)) {
+      cleaned[key] = Array.isArray(value) && value.length === 1 ? value[0] : value;
+    }
+
+    const { error } = await supabase
+      .from("user_preferences")
+      .update({ profile_answers: cleaned, updated_at: new Date().toISOString() })
+      .eq("user_id", userId);
+
+    if (error) throw error;
+  };
+
+  const goToNextQuestion = async () => {
+    if (!activeCategory) return;
+
+    const nextIndex = quizQuestionIdx + 1;
+    const freeLockReached = !subscribed && nextIndex >= FREE_CATEGORY_LIMIT;
+    if (freeLockReached) {
+      await refetch();
+      setView("dashboard");
+      toast("Premium unlocks more than 4 questions in each category");
       return;
     }
 
-    const sprint = sprints[idx];
-    const firstUnanswered = sprint.questions.findIndex((q) => !profileAnswers?.[q.id]);
-    setQuizSprintIdx(idx);
-    setQuizQuestionIdx(firstUnanswered === -1 ? 0 : firstUnanswered);
-    const empty: Record<string, string[]> = {};
-    setSelections(empty);
-    selectionsRef.current = empty;
+    if (nextIndex >= activeCategory.questions.length) {
+      await refetch();
+      setView("dashboard");
+      toast.success("Category saved");
+      return;
+    }
+
+    setQuizQuestionIdx(nextIndex);
+  };
+
+  const saveAnswerAndContinue = async (questionId: string, values: string[]) => {
+    if (!currentQuestion || savingAnswer) return;
+
+    setSavingAnswer(true);
+    updateSelections(questionId, values);
+
+    try {
+      await persistProfileAnswers({ [questionId]: currentQuestion.multiSelect ? values : values[0] });
+      setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
+      await refetch();
+      await goToNextQuestion();
+    } catch {
+      toast.error("Failed to save answer");
+    } finally {
+      setSavingAnswer(false);
+      setTimeout(() => setAiFeedback(null), 900);
+    }
+  };
+
+  const startCategory = (categoryId: string) => {
+    const category = categories.find((item) => item.id === categoryId);
+    if (!category) return;
+    if (category.isLocked) {
+      toast("Premium unlocks more than 4 questions in each category");
+      return;
+    }
+
+    setActiveCategoryId(categoryId);
+    setQuizQuestionIdx(Math.min(category.nextQuestionIndex, subscribed ? category.questions.length - 1 : FREE_CATEGORY_LIMIT - 1));
     setAiFeedback(null);
     setView("quiz");
   };
 
-  const saveAndReturn = async () => {
-    const currentSelections = selectionsRef.current;
-    if (Object.keys(currentSelections).length === 0) {
-      setView("dashboard");
-      return;
-    }
+  const totQueue = useMemo(() => {
+    const answered = profileAnswers ? Object.keys(profileAnswers).filter((key) => key.startsWith("tot-")) : [];
+    const unanswered = THIS_OR_THAT.filter((item) => !answered.includes(item.id));
+    return unanswered.length > 0 ? unanswered : [];
+  }, [profileAnswers]);
 
-    setSaving(true);
-    try {
-      const userId = (await supabase.auth.getUser()).data.user?.id;
-      if (!userId) throw new Error("No user");
+  const [totIndex, setTotIndex] = useState(0);
+  const [totSwipeDir, setTotSwipeDir] = useState<"left" | "right" | null>(null);
+  const totCurrent = totQueue[totIndex] || null;
+  const totAnsweredCount = THIS_OR_THAT.length - totQueue.length;
+  const visibleThisOrThatCount = subscribed ? THIS_OR_THAT.length : Math.min(THIS_OR_THAT.length, FREE_THIS_OR_THAT_LIMIT);
+  const visibleThisOrThatAnswered = subscribed ? totAnsweredCount : Math.min(totAnsweredCount, visibleThisOrThatCount);
 
-      const updated = { ...(profileAnswers || {}), ...currentSelections };
-      const cleaned: Record<string, string | string[]> = {};
-      for (const [key, value] of Object.entries(updated)) {
-        cleaned[key] = Array.isArray(value) && value.length === 1 ? value[0] : value;
-      }
-
-      const { error } = await supabase
-        .from("user_preferences")
-        .update({ profile_answers: cleaned, updated_at: new Date().toISOString() })
-        .eq("user_id", userId);
-
-      if (error) throw error;
-      toast.success(`${Object.keys(currentSelections).length} answers saved!`);
-      await refetch();
-    } catch {
-      toast.error("Failed to save answers");
-    }
-
-    setSaving(false);
-    setView("dashboard");
-  };
-
-  const currentSprint = sprints[quizSprintIdx];
-  const currentQuestion: QuizQuestion | undefined = currentSprint?.questions[quizQuestionIdx];
-  const currentSelected = currentQuestion
-    ? selections[currentQuestion.id] ||
-      (profileAnswers?.[currentQuestion.id]
-        ? Array.isArray(profileAnswers[currentQuestion.id])
-          ? (profileAnswers[currentQuestion.id] as string[])
-          : [profileAnswers[currentQuestion.id] as string]
-        : [])
-    : [];
-
-  const toggleOption = (optId: string) => {
-    if (!currentQuestion) return;
-
-    const isSingle = !currentQuestion.multiSelect;
-    updateSelections((prev) => {
-      const current = prev[currentQuestion.id] || [];
-      if (isSingle) return { ...prev, [currentQuestion.id]: [optId] };
-      if (current.includes(optId)) return { ...prev, [currentQuestion.id]: current.filter((value) => value !== optId) };
-      return { ...prev, [currentQuestion.id]: [...current, optId] };
-    });
-
-    if (!currentQuestion.multiSelect) {
-      setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
-      setTimeout(() => {
-        setAiFeedback(null);
-        const latestSelections = selectionsRef.current;
-        if (!currentSprint) return;
-
-        let next = quizQuestionIdx + 1;
-        while (next < currentSprint.questions.length) {
-          const q = currentSprint.questions[next];
-          if (!profileAnswers?.[q.id] && !latestSelections[q.id]) break;
-          next++;
-        }
-
-        if (next >= currentSprint.questions.length) {
-          saveAndReturn();
-        } else {
-          setQuizQuestionIdx(next);
-        }
-      }, 1200);
-    }
-  };
-
-  const advanceQuestion = () => {
-    if (!currentSprint) return;
-    const latestSelections = selectionsRef.current;
-
-    let next = quizQuestionIdx + 1;
-    while (next < currentSprint.questions.length) {
-      const q = currentSprint.questions[next];
-      if (!profileAnswers?.[q.id] && !latestSelections[q.id]) break;
-      next++;
-    }
-
-    if (next >= currentSprint.questions.length) {
-      saveAndReturn();
-    } else {
-      setQuizQuestionIdx(next);
-      setAiFeedback(null);
-    }
-  };
-
-  const confirmMultiAndAdvance = () => {
-    if (!currentQuestion) return;
-    setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
-    setTimeout(() => {
-      setAiFeedback(null);
-      advanceQuestion();
-    }, 800);
+  const openThisOrThat = () => {
+    if (!subscribed && totQueue.length === 0) return;
+    setTotIndex(0);
+    setTotSwipeDir(null);
+    setView("thisorthat");
   };
 
   const getSectionForQuestion = (q: QuizQuestion) => SECTIONS.find((section) => section.id === q.section);
@@ -331,11 +325,13 @@ const Questionnaires = () => {
     );
   }
 
-  if (view === "quiz" && currentQuestion && currentSprint) {
-    const sprintQuestionNum = quizQuestionIdx + 1;
-    const sprintTotal = currentSprint.questions.length;
+  if (view === "quiz" && currentQuestion && activeCategory) {
+    const categoryQuestionNum = quizQuestionIdx + 1;
+    const categoryTotal = activeCategory.questions.length;
+    const visibleCategoryTotal = subscribed ? categoryTotal : Math.min(categoryTotal, FREE_CATEGORY_LIMIT);
     const section = getSectionForQuestion(currentQuestion);
     const effectiveSelected = selections[currentQuestion.id] || currentSelected;
+    const categoryTitle = activeCategory.title;
 
     return (
       <div className="h-full flex flex-col items-center justify-start px-3 py-3 overflow-y-auto">
@@ -345,7 +341,7 @@ const Questionnaires = () => {
           transition={{ type: "spring", stiffness: 280, damping: 24 }}
           className="w-full max-w-[520px] rounded-3xl overflow-hidden relative flex flex-col"
           style={{
-            background: "#FFFFFF",
+            background: "hsl(var(--background))",
             boxShadow: "0 8px 40px rgba(30,74,82,0.08), 0 2px 12px rgba(0,0,0,0.04)",
             maxHeight: "calc(100vh - 180px)",
           }}
@@ -353,7 +349,7 @@ const Questionnaires = () => {
           <div className="px-5 pt-5 pb-3">
             <div className="flex items-center justify-between mb-3">
               <button
-                onClick={saveAndReturn}
+                onClick={() => setView("dashboard")}
                 className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-105"
                 style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}
               >
@@ -373,22 +369,22 @@ const Questionnaires = () => {
               className="text-lg mb-1"
               style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}
             >
-              Sprint {quizSprintIdx + 1} of 10: {currentSprint.name}
+              {categoryTitle}
             </h2>
 
             <div className="flex items-center gap-1 mb-1">
-              {Array.from({ length: sprintTotal }).map((_, i) => (
+              {Array.from({ length: visibleCategoryTotal }).map((_, i) => (
                 <div
                   key={i}
                   className="flex-1 h-[5px] rounded-full transition-all duration-300"
                   style={{
-                    background: i < sprintQuestionNum ? "var(--swatch-teal)" : "rgba(var(--swatch-antique-coin-rgb), 0.12)",
+                    background: i < Math.min(categoryQuestionNum, visibleCategoryTotal) ? "var(--swatch-teal)" : "rgba(var(--swatch-antique-coin-rgb), 0.12)",
                   }}
                 />
               ))}
             </div>
             <p className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Question {sprintQuestionNum} of {sprintTotal}
+              Question {Math.min(categoryQuestionNum, visibleCategoryTotal)} of {visibleCategoryTotal}
             </p>
           </div>
 
@@ -407,7 +403,7 @@ const Questionnaires = () => {
                     className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] mb-3 px-2.5 py-1 rounded-full self-start"
                     style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}
                   >
-                    {section.icon} {section.label}
+                    {section.icon} {categoryTitle}
                   </span>
                 )}
 
@@ -431,8 +427,19 @@ const Questionnaires = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.03, type: "spring", stiffness: 300, damping: 25 }}
                         whileTap={{ scale: 0.97 }}
-                        onClick={() => toggleOption(opt.id)}
-                        className="relative rounded-2xl px-4 py-3.5 text-left transition-all duration-200"
+                        onClick={() => {
+                          if (currentQuestion.multiSelect) {
+                            const current = effectiveSelected;
+                            const nextValues = current.includes(opt.id)
+                              ? current.filter((value) => value !== opt.id)
+                              : [...current, opt.id];
+                            updateSelections(currentQuestion.id, nextValues);
+                          } else {
+                            void saveAnswerAndContinue(currentQuestion.id, [opt.id]);
+                          }
+                        }}
+                        disabled={savingAnswer}
+                        className="relative rounded-2xl px-4 py-3.5 text-left transition-all duration-200 disabled:opacity-60"
                         style={{
                           fontFamily: "'Jost', sans-serif",
                           fontSize: 13,
@@ -487,33 +494,26 @@ const Questionnaires = () => {
             {currentQuestion.multiSelect ? (
               <motion.button
                 whileTap={{ scale: 0.97 }}
-                onClick={effectiveSelected.length > 0 ? confirmMultiAndAdvance : advanceQuestion}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full"
+                onClick={() => void saveAnswerAndContinue(currentQuestion.id, effectiveSelected)}
+                disabled={savingAnswer || effectiveSelected.length === 0}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full disabled:opacity-50"
                 style={{
                   background: effectiveSelected.length > 0 ? "var(--swatch-viridian-odyssey)" : "rgba(var(--swatch-antique-coin-rgb), 0.08)",
-                  color: effectiveSelected.length > 0 ? "#fff" : "var(--swatch-antique-coin)",
+                  color: effectiveSelected.length > 0 ? "hsl(var(--background))" : "var(--swatch-antique-coin)",
                   fontFamily: "'Jost', sans-serif",
                   fontSize: 12,
                 }}
               >
-                {effectiveSelected.length > 0 ? (
-                  <>
-                    Continue
-                    <ChevronRight className="w-4 h-4" />
-                  </>
-                ) : (
-                  <>
-                    <SkipForward className="w-3.5 h-3.5" />
-                    Skip
-                  </>
-                )}
+                Continue
+                <ChevronRight className="w-4 h-4" />
               </motion.button>
             ) : (
               <button
-                onClick={advanceQuestion}
+                onClick={() => void goToNextQuestion()}
                 className="text-[12px] px-3 py-2 rounded-full"
                 style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
               >
+                <SkipForward className="w-3.5 h-3.5 inline mr-1" />
                 Skip
               </button>
             )}
@@ -668,7 +668,7 @@ const Questionnaires = () => {
                         ? allDone
                           ? "You’ve given the system a full profile, so your vibe summary and downstream recommendations can now get much more specific."
                           : `${totalAnswered} of ${totalQuestions} questions answered so far. Every answer sharpens how the AI describes your style and what it recommends next.`
-                        : `Free access includes ${totalFreeQuestions} profile questions across your first ${FREE_SPRINT_LIMIT} chapters — enough for the AI to start reading your vibe before you unlock the full profile.`}
+                        : `Free access includes up to ${FREE_CATEGORY_LIMIT} questions in each category before Premium unlocks the rest.`}
                     </p>
 
                     <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }}>
@@ -688,7 +688,7 @@ const Questionnaires = () => {
                         Free access
                       </p>
                       <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                        You can answer {totalFreeQuestions} questions for free before Premium opens the full profile map.
+                        You can answer {FREE_CATEGORY_LIMIT} questions in each category for free before Premium opens the full profile map.
                       </p>
                     </div>
                   )}
@@ -782,35 +782,35 @@ const Questionnaires = () => {
                     Get to know you
                   </p>
                   <h2 className="text-[28px] leading-none mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                    Questions about you
+                    Questions by category
                   </h2>
                   <p className="text-[14px] leading-relaxed max-w-[42ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    These chapters are the deeper profile builder. Each box opens a set of questions designed to map your taste, routines, values, and shopping behavior so the AI can describe you with more precision.
+                    Pick a category and the app will resume exactly where you left off. Every answer saves as soon as you tap it.
                   </p>
                 </div>
                 {!subscribed && (
                   <p className="text-[13px] max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    Start free, then unlock the full profile when you want the AI to get more specific.
+                    Free users can answer 4 questions in each category before Premium continues deeper.
                   </p>
                 )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {displayedSprints.map((sprint, idx) => {
-                  const prog = displayedSprintProgress[idx];
-                  const isComplete = prog.complete;
-                  const hasProgress = prog.answered > 0 && !isComplete;
+                {categories.map((category, idx) => {
+                  const isComplete = category.complete;
+                  const hasProgress = category.answered > 0 && !isComplete;
+                  const isLocked = category.isLocked;
                   const badgeBackground = isComplete ? "rgba(var(--swatch-teal-rgb), 0.84)" : "rgba(var(--swatch-teal-rgb), 0.14)";
                   const badgeColor = isComplete ? "rgba(255,255,255,0.96)" : "var(--swatch-teal)";
 
                   return (
                     <motion.button
-                      key={sprint.id}
+                      key={category.id}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.04, type: "spring", stiffness: 280, damping: 25 }}
                       whileTap={{ scale: 0.99 }}
-                      onClick={() => startSprint(idx)}
+                      onClick={() => startCategory(category.id)}
                       className="relative overflow-hidden text-left card-design-overlay-teal rounded-[28px] p-5 transition-all min-h-[250px]"
                       style={{
                         borderRadius: 28,
@@ -823,32 +823,34 @@ const Questionnaires = () => {
                       <div className="relative h-full flex flex-col justify-between gap-6">
                         <div className="flex items-start justify-between gap-3">
                           <div className="w-12 h-12 rounded-[18px] flex items-center justify-center flex-shrink-0" style={{ background: badgeBackground, color: badgeColor, boxShadow: isComplete ? "0 10px 22px rgba(45,104,112,0.16)" : "none" }}>
-                            {isComplete ? <Check className="w-5 h-5" /> : <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>{sprint.id}</span>}
+                            {isComplete ? <Check className="w-5 h-5" /> : isLocked ? <Lock className="w-5 h-5" /> : <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>{idx + 1}</span>}
                           </div>
 
                           <span className="text-[11px] tabular-nums shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                            {prog.answered}/{prog.total}
+                            {category.visibleAnswered}/{category.visibleTotal}
                           </span>
                         </div>
 
                         <div>
                           <h3 className="text-[26px] leading-[0.98] mb-2 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                            {sprint.name}
+                            {category.title}
                           </h3>
                           <p className="text-[11px] uppercase tracking-[0.14em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                            Chapter {sprint.id}
+                            {category.label}
                           </p>
                           <p className="text-[13px] leading-relaxed mb-4 max-w-[24ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                            {hasProgress
-                              ? "You’ve started this chapter — jump back in and help the AI tighten its read on this part of your personality."
-                              : `Open this chapter to teach the AI about ${sprint.name.toLowerCase()} and how it should personalize for you.`}
+                            {isLocked
+                              ? "You’ve reached the free limit in this category. Upgrade to keep going."
+                              : hasProgress
+                                ? "You’ve started here — tap to resume exactly where you left off."
+                                : category.description}
                           </p>
 
                           <div className="h-[5px] rounded-full overflow-hidden mb-3" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}>
                             <div
                               className="h-full rounded-full transition-all duration-500"
                               style={{
-                                width: `${(prog.answered / prog.total) * 100}%`,
+                                width: `${(category.visibleAnswered / Math.max(1, category.visibleTotal)) * 100}%`,
                                 background: isComplete ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.84), rgba(var(--swatch-teal-rgb), 0.62))" : "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))",
                               }}
                             />
@@ -857,7 +859,7 @@ const Questionnaires = () => {
 
                         <div className="flex items-center justify-between gap-3">
                           <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                            {isComplete ? "Vibed ✓" : hasProgress ? "Continue" : "Start now"}
+                            {isComplete ? "Complete" : isLocked ? "Premium" : hasProgress ? "Resume" : "Start now"}
                           </span>
                           {!isComplete && <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "var(--swatch-teal)" }} />}
                         </div>
