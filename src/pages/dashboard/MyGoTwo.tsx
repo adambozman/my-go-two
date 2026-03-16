@@ -453,9 +453,15 @@ const MyGoTwo = () => {
     }, {});
   }, [categories]);
 
+  const visibleSectionKeys = useMemo(
+    () => sectionOrder.filter((key) => sections[key] && sections[key].length > 0),
+    [sections],
+  );
+
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [focusedDrilldownItemId, setFocusedDrilldownItemId] = useState<string | null>(null);
   const [focusedMainCategoryBySection, setFocusedMainCategoryBySection] = useState<Record<string, string>>({});
+  const [lastMainSectionKey, setLastMainSectionKey] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
@@ -543,14 +549,28 @@ const MyGoTwo = () => {
   }, [entries, leafSubtype, defaultFieldValues, cardKey, activeGroup]);
 
   useEffect(() => {
-    if (!coverFlowState && !cardKey) {
-      requestAnimationFrame(() => {
-        if (scrollRef.current) {
-          scrollRef.current.scrollTop = savedScrollTop.current;
-        }
-      });
-    }
-  }, [coverFlowState, cardKey]);
+    setActiveSectionIndex((prev) => Math.min(prev, Math.max(visibleSectionKeys.length - 1, 0)));
+  }, [visibleSectionKeys.length]);
+
+  useEffect(() => {
+    if (coverFlowState || cardKey) return;
+
+    requestAnimationFrame(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+
+      const sectionHeight = el.clientHeight || 1;
+      const restoreSectionIndex = lastMainSectionKey ? visibleSectionKeys.indexOf(lastMainSectionKey) : -1;
+      const targetScrollTop =
+        restoreSectionIndex >= 0 ? restoreSectionIndex * sectionHeight : savedScrollTop.current;
+
+      el.scrollTop = targetScrollTop;
+      savedScrollTop.current = targetScrollTop;
+
+      const idx = Math.round(targetScrollTop / sectionHeight);
+      setActiveSectionIndex(Math.min(Math.max(idx, 0), Math.max(visibleSectionKeys.length - 1, 0)));
+    });
+  }, [coverFlowState, cardKey, lastMainSectionKey, visibleSectionKeys]);
 
   const clearCoverFlow = () => {
     setCoverFlowState(null);
@@ -614,6 +634,7 @@ const MyGoTwo = () => {
     const subtypes = (item.fields as unknown as SubtypeItem[]) || [];
     const subcategories = item.subcategories as unknown as SubcategoryGroup[] | undefined;
     if (subtypes.length > 0 || (subcategories && subcategories.length > 0)) {
+      setLastMainSectionKey(item.section);
       setFocusedMainCategoryBySection((prev) => ({ ...prev, [item.section]: item.key }));
       setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
       setFocusedDrilldownItemId(null);
@@ -830,13 +851,11 @@ const MyGoTwo = () => {
     return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
 
-  const orderedSections = sectionOrder
-    .filter((key) => sections[key] && sections[key].length > 0)
-    .map((key) => ({
-      key,
-      label: sectionLabels[key] ?? key,
-      items: sections[key].map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
-    }));
+  const orderedSections = visibleSectionKeys.map((key) => ({
+    key,
+    label: sectionLabels[key] ?? key,
+    items: sections[key].map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
+  }));
 
   const renderContent = () => {
     if (showCategoryPaywall) {
