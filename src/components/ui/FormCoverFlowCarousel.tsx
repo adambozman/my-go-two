@@ -44,6 +44,9 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
 
 const FALLBACK_GRADIENT = "linear-gradient(160deg, #2d6870 0%, #1e4a52 100%)";
 
+const getFlankBackground = (image?: string) =>
+  image ? `center / cover no-repeat url(${image})` : FALLBACK_GRADIENT;
+
 const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselProps>(
   ({ items, activeIndex, onActiveIndexChange, renderActiveCard }, ref) => {
     const touchStartX = useRef<number | null>(null);
@@ -124,8 +127,8 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                         </div>
                       ) : (
                         <>
-                          {/* Flanking cards — teal gradient with label */}
-                          <div className="absolute inset-0" style={{ background: FALLBACK_GRADIENT }} />
+                          {/* Flanking cards — use item image when available */}
+                          <div className="absolute inset-0" style={{ background: getFlankBackground(item.image) }} />
                           <div className="absolute bottom-6 left-6">
                             <span
                               style={{
@@ -187,7 +190,7 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                       </div>
                     ) : (
                       <>
-                        <div className="absolute inset-0" style={{ background: FALLBACK_GRADIENT }} />
+                        <div className="absolute inset-0" style={{ background: getFlankBackground(item.image) }} />
                         <div className="absolute bottom-4 left-4">
                           <span
                             style={{
