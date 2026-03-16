@@ -179,8 +179,8 @@ const STYLE_FIT: QuizQuestion[] = [
   {
     id: "sf-20", section: "style-fit",
     title: "What's missing from your wardrobe?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("basics", "Quality Basics"), opt("outerwear", "Great Outerwear"), opt("formalwear", "Formalwear"), opt("activewear", "Activewear"), opt("accessories", "Accessories"), opt("shoes", "Shoes")],
   },
 ];
