@@ -25,6 +25,7 @@ export default function PaginatedCoverFlow({
   pageSize = 5,
   className,
   focusedItemId,
+  showPagination = true,
 }: PaginatedCoverFlowProps) {
   const focusedIndex = useMemo(
     () => (focusedItemId ? items.findIndex((item) => item.id === focusedItemId) : -1),
