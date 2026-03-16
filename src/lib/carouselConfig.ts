@@ -1,20 +1,20 @@
 export const CAROUSEL_LAYOUT = {
-  cardWidth: 300,
-  cardHeight: 300,
-  flankWidth: 160,
-  flankHeight: 260,
-  xGap: 190,
-  stageHeight: 360,
+  cardWidth: 260,
+  cardHeight: 260,
+  flankWidth: 140,
+  flankHeight: 220,
+  xGap: 160,
+  stageHeight: 320,
   maxVisibleOffset: 2,
   flankBlur: 0.2,
   flankOpacity: 1,
   borderRadius: 16,
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
   pills: [
-    { w: 300, h: 300, r: 16  }, // center
-    { w: 76,  h: 247, r: 999 }, // ±1
-    { w: 45,  h: 204, r: 999 }, // ±2
-    { w: 17,  h: 148, r: 999 }, // ±3
+    { w: 260, h: 260, r: 16  }, // center
+    { w: 66,  h: 210, r: 999 }, // ±1
+    { w: 40,  h: 170, r: 999 }, // ±2
+    { w: 15,  h: 124, r: 999 }, // ±3
   ],
 };
 
@@ -42,14 +42,14 @@ export const CAROUSEL_LAYOUT_DESKTOP = {
 /** Form card layout — taller active card for entry forms */
 export const FORM_CAROUSEL_LAYOUT = {
   ...CAROUSEL_LAYOUT,
-  cardWidth: 300,
-  cardHeight: 500,
-  stageHeight: 560,
+  cardWidth: 280,
+  cardHeight: 460,
+  stageHeight: 520,
   pills: [
-    { w: 300, h: 500, r: 16  }, // center
-    { w: 76,  h: 320, r: 999 }, // ±1
-    { w: 45,  h: 260, r: 999 }, // ±2
-    { w: 17,  h: 190, r: 999 }, // ±3
+    { w: 280, h: 460, r: 16  }, // center
+    { w: 66,  h: 290, r: 999 }, // ±1
+    { w: 40,  h: 230, r: 999 }, // ±2
+    { w: 15,  h: 170, r: 999 }, // ±3
   ],
 };
 
