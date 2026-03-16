@@ -10,6 +10,7 @@ import { type Gender } from "@/lib/gender";
 import { getTemplateImage } from "@/lib/imageResolver";
 import { getOverride, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
+import { CATEGORY_REGISTRY_SEED } from "@/data/categoryRegistrySeed";
 
 /** Pull the image key out of a registry row's subcategories JSONB.
  *  Each subtype has an `image` string (e.g. "clothing-tops").
