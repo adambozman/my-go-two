@@ -771,7 +771,6 @@ const MyGoTwo = () => {
 
         const inserted = data as CardEntry;
         setEntries((prev) => [...prev, inserted]);
-        setUnlockedCardKeys((prev) => prev.includes(cardKey) ? prev : [...prev, cardKey]);
         setEntryDrafts((prev) => ({
           ...prev,
           [inserted.id]: fieldValues,
