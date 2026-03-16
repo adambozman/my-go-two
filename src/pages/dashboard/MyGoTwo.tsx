@@ -58,6 +58,11 @@ const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200
 const NEW_ENTRY_ID = "__new_entry__";
 const ENTRY_PAGE_SIZE = 5;
 
+const normalizeImageValue = (value?: string | null) => {
+  if (!value) return "";
+  return value.includes("/") ? value : "";
+};
+
 const TagInput = ({ value, onChange, fieldLabel }: { value: string; onChange: (val: string) => void; fieldLabel: string }) => {
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState("");
