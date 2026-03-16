@@ -841,7 +841,7 @@ const MyGoTwo = () => {
   const orderedSections = visibleSectionKeys.map((key) => ({
     key,
     label: sectionLabels[key] ?? key,
-    items: sections[key].map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
+    items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
   }));
 
   const renderContent = () => {
