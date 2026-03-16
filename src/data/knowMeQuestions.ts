@@ -641,8 +641,8 @@ const ENTERTAINMENT: QuizQuestion[] = [
   {
     id: "en-02", section: "entertainment",
     title: "Favorite movie genre?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("action", "Action / Thriller"), opt("comedy", "Comedy"), opt("drama", "Drama"), opt("romance", "Romance"), opt("sci-fi", "Sci-Fi / Fantasy"), opt("documentary", "Documentary"), opt("horror", "Horror"), opt("indie", "Indie / Art House")],
   },
   {
