@@ -673,7 +673,7 @@ const Questionnaires = () => {
                         ? allDone
                           ? "You’ve given the system a full profile, so your vibe summary and downstream recommendations can now get much more specific."
                           : `${totalAnswered} of ${totalQuestions} questions answered so far. Every answer sharpens how the AI describes your style and what it recommends next.`
-                        : `Free access includes ${totalFreeQuestions} profile questions across your first ${FREE_SPRINT_LIMIT} chapters — enough for the AI to start reading your vibe before you unlock the full profile.`}
+                        : `Free access includes up to ${FREE_CATEGORY_LIMIT} questions in each category before Premium unlocks the rest.`}
                     </p>
 
                     <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }}>
@@ -693,7 +693,7 @@ const Questionnaires = () => {
                         Free access
                       </p>
                       <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                        You can answer {totalFreeQuestions} questions for free before Premium opens the full profile map.
+                        You can answer {FREE_CATEGORY_LIMIT} questions in each category for free before Premium opens the full profile map.
                       </p>
                     </div>
                   )}
@@ -787,35 +787,35 @@ const Questionnaires = () => {
                     Get to know you
                   </p>
                   <h2 className="text-[28px] leading-none mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                    Questions about you
+                    Questions by category
                   </h2>
                   <p className="text-[14px] leading-relaxed max-w-[42ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    These chapters are the deeper profile builder. Each box opens a set of questions designed to map your taste, routines, values, and shopping behavior so the AI can describe you with more precision.
+                    Pick a category and the app will resume exactly where you left off. Every answer saves as soon as you tap it.
                   </p>
                 </div>
                 {!subscribed && (
                   <p className="text-[13px] max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    Start free, then unlock the full profile when you want the AI to get more specific.
+                    Free users can answer 4 questions in each category before Premium continues deeper.
                   </p>
                 )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {displayedSprints.map((sprint, idx) => {
-                  const prog = displayedSprintProgress[idx];
-                  const isComplete = prog.complete;
-                  const hasProgress = prog.answered > 0 && !isComplete;
+                {categories.map((category, idx) => {
+                  const isComplete = category.complete;
+                  const hasProgress = category.answered > 0 && !isComplete;
+                  const isLocked = category.isLocked;
                   const badgeBackground = isComplete ? "rgba(var(--swatch-teal-rgb), 0.84)" : "rgba(var(--swatch-teal-rgb), 0.14)";
                   const badgeColor = isComplete ? "rgba(255,255,255,0.96)" : "var(--swatch-teal)";
 
                   return (
                     <motion.button
-                      key={sprint.id}
+                      key={category.id}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.04, type: "spring", stiffness: 280, damping: 25 }}
                       whileTap={{ scale: 0.99 }}
-                      onClick={() => startSprint(idx)}
+                      onClick={() => startCategory(category.id)}
                       className="relative overflow-hidden text-left card-design-overlay-teal rounded-[28px] p-5 transition-all min-h-[250px]"
                       style={{
                         borderRadius: 28,
@@ -828,32 +828,34 @@ const Questionnaires = () => {
                       <div className="relative h-full flex flex-col justify-between gap-6">
                         <div className="flex items-start justify-between gap-3">
                           <div className="w-12 h-12 rounded-[18px] flex items-center justify-center flex-shrink-0" style={{ background: badgeBackground, color: badgeColor, boxShadow: isComplete ? "0 10px 22px rgba(45,104,112,0.16)" : "none" }}>
-                            {isComplete ? <Check className="w-5 h-5" /> : <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>{sprint.id}</span>}
+                            {isComplete ? <Check className="w-5 h-5" /> : isLocked ? <Lock className="w-5 h-5" /> : <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>{idx + 1}</span>}
                           </div>
 
                           <span className="text-[11px] tabular-nums shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                            {prog.answered}/{prog.total}
+                            {category.visibleAnswered}/{category.visibleTotal}
                           </span>
                         </div>
 
                         <div>
                           <h3 className="text-[26px] leading-[0.98] mb-2 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                            {sprint.name}
+                            {category.title}
                           </h3>
                           <p className="text-[11px] uppercase tracking-[0.14em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                            Chapter {sprint.id}
+                            {category.label}
                           </p>
                           <p className="text-[13px] leading-relaxed mb-4 max-w-[24ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                            {hasProgress
-                              ? "You’ve started this chapter — jump back in and help the AI tighten its read on this part of your personality."
-                              : `Open this chapter to teach the AI about ${sprint.name.toLowerCase()} and how it should personalize for you.`}
+                            {isLocked
+                              ? "You’ve reached the free limit in this category. Upgrade to keep going."
+                              : hasProgress
+                                ? "You’ve started here — tap to resume exactly where you left off."
+                                : category.description}
                           </p>
 
                           <div className="h-[5px] rounded-full overflow-hidden mb-3" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}>
                             <div
                               className="h-full rounded-full transition-all duration-500"
                               style={{
-                                width: `${(prog.answered / prog.total) * 100}%`,
+                                width: `${(category.visibleAnswered / Math.max(1, category.visibleTotal)) * 100}%`,
                                 background: isComplete ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.84), rgba(var(--swatch-teal-rgb), 0.62))" : "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))",
                               }}
                             />
@@ -862,7 +864,7 @@ const Questionnaires = () => {
 
                         <div className="flex items-center justify-between gap-3">
                           <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                            {isComplete ? "Vibed ✓" : hasProgress ? "Continue" : "Start now"}
+                            {isComplete ? "Complete" : isLocked ? "Premium" : hasProgress ? "Resume" : "Start now"}
                           </span>
                           {!isComplete && <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "var(--swatch-teal)" }} />}
                         </div>
