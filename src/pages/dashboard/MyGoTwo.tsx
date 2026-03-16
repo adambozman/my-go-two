@@ -755,8 +755,8 @@ const MyGoTwo = () => {
               currentPage={activeEntryPage}
               totalPages={entryTotalPages}
               onPageChange={handleEntryPageChange}
-              label={`Page ${activeEntryPage} of ${entryTotalPages}`}
-              className="mt-5 space-y-2"
+              orientation="vertical"
+              className="fixed"
             />
           </div>
 

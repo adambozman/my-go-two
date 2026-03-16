@@ -9,6 +9,13 @@ interface PaginatedCoverFlowProps {
   className?: string;
 }
 
+const RIGHT_SIDE_DOT_STYLE = {
+  right: 18,
+  top: "calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2 + 23px)",
+  transform: "translateY(-50%)",
+  zIndex: 50,
+} as const;
+
 export default function PaginatedCoverFlow({
   items,
   onSelect,
@@ -29,7 +36,8 @@ export default function PaginatedCoverFlow({
         totalPages={totalPages}
         onPageChange={setCurrentPage}
         orientation="vertical"
-        className="fixed flex flex-col items-center gap-2"
+        className="fixed"
+        style={RIGHT_SIDE_DOT_STYLE as never}
       />
     </div>
   );

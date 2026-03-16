@@ -4,6 +4,7 @@ interface PaginationControlsProps {
   onPageChange: (page: number) => void;
   label?: string;
   className?: string;
+  orientation?: "horizontal" | "vertical";
 }
 
 export function PaginationControls({
@@ -11,12 +12,15 @@ export function PaginationControls({
   totalPages,
   onPageChange,
   className,
+  orientation = "horizontal",
 }: PaginationControlsProps) {
   if (totalPages <= 1) return null;
 
+  const isVertical = orientation === "vertical";
+
   return (
     <div className={className ?? "mt-6"}>
-      <div className="flex items-center justify-center gap-2">
+      <div className={`flex items-center justify-center ${isVertical ? "flex-col gap-2" : "gap-2"}`}>
         {Array.from({ length: totalPages }, (_, index) => {
           const page = index + 1;
           const isActive = currentPage === page;
@@ -30,9 +34,9 @@ export function PaginationControls({
               onClick={() => onPageChange(page)}
               className="rounded-full transition-all"
               style={{
-                width: isActive ? 18 : 8,
-                height: 8,
-                background: isActive ? "var(--swatch-teal)" : "rgba(45,104,112,0.22)",
+                width: isVertical ? 7 : isActive ? 18 : 8,
+                height: isVertical ? (isActive ? 20 : 7) : 8,
+                background: isActive ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)",
               }}
             />
           );
