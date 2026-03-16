@@ -1,12 +1,11 @@
 import { useState, useMemo, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles } from "lucide-react";
+import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles, X, Shuffle } from "lucide-react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { buildSprints, SECTIONS, SPRINT_NAMES, THIS_OR_THAT, type Sprint, type QuizQuestion, type ThisOrThatItem } from "@/data/knowMeQuestions";
-import { Shuffle } from "lucide-react";
 
 /* ── AI feedback messages — rotate per question ── */
 const AI_FEEDBACK = [
@@ -44,7 +43,7 @@ const Questionnaires = () => {
   const currentSprintIdx = activeSprintIdx === -1 ? sprints.length - 1 : activeSprintIdx;
 
   /* ── State ── */
-  const [view, setView] = useState<"dashboard" | "quiz">("dashboard");
+  const [view, setView] = useState<"dashboard" | "quiz" | "thisorthat">("dashboard");
   const [quizSprintIdx, setQuizSprintIdx] = useState(0);
   const [quizQuestionIdx, setQuizQuestionIdx] = useState(0);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
@@ -59,30 +58,45 @@ const Questionnaires = () => {
   }, []);
 
   /* ── This or That state ── */
-  const getRandomTot = useCallback(() => {
+  const totQueue = useMemo(() => {
     const answered = profileAnswers ? Object.keys(profileAnswers).filter(k => k.startsWith("tot-")) : [];
     const unanswered = THIS_OR_THAT.filter(t => !answered.includes(t.id));
-    const pool = unanswered.length > 0 ? unanswered : THIS_OR_THAT;
-    return pool[Math.floor(Math.random() * pool.length)];
+    return unanswered.length > 0 ? unanswered : [];
   }, [profileAnswers]);
-  const [totItem, setTotItem] = useState<ThisOrThatItem>(() => THIS_OR_THAT[0]);
-  const [totPicked, setTotPicked] = useState<string | null>(null);
+
+  const [totIndex, setTotIndex] = useState(0);
+  const [totSwipeDir, setTotSwipeDir] = useState<"left" | "right" | null>(null);
+  const totCurrent = totQueue[totIndex] || null;
+  const totAnsweredCount = THIS_OR_THAT.length - totQueue.length;
+
+  const openThisOrThat = () => {
+    setTotIndex(0);
+    setTotSwipeDir(null);
+    setView("thisorthat");
+  };
 
   const pickThisOrThat = async (choice: "A" | "B") => {
-    setTotPicked(choice);
-    const value = choice === "A" ? totItem.optionA : totItem.optionB;
+    if (!totCurrent) return;
+    const dir = choice === "A" ? "left" : "right";
+    setTotSwipeDir(dir);
+    const value = choice === "A" ? totCurrent.optionA : totCurrent.optionB;
     try {
       const userId = (await supabase.auth.getUser()).data.user?.id;
       if (userId) {
-        const updated = { ...(profileAnswers || {}), [totItem.id]: value };
+        const updated = { ...(profileAnswers || {}), [totCurrent.id]: value };
         await supabase.from("user_preferences").update({ profile_answers: updated, updated_at: new Date().toISOString() }).eq("user_id", userId);
         await refetch();
       }
     } catch { /* silent */ }
     setTimeout(() => {
-      setTotPicked(null);
-      setTotItem(getRandomTot());
-    }, 800);
+      setTotSwipeDir(null);
+      if (totIndex + 1 >= totQueue.length) {
+        toast.success("All This or That questions answered!");
+        setView("dashboard");
+      } else {
+        setTotIndex(i => i + 1);
+      }
+    }, 400);
   };
 
   const [aiFeedback, setAiFeedback] = useState<string | null>(null);
@@ -402,6 +416,118 @@ const Questionnaires = () => {
   }
 
   /* ═══════════════════════════════════════════════════════
+     THIS OR THAT — Tinder-style swipe view
+     ═══════════════════════════════════════════════════════ */
+  if (view === "thisorthat") {
+    const remaining = totQueue.length - totIndex;
+
+    return (
+      <div className="h-full flex flex-col items-center justify-center px-4">
+        {/* Back button */}
+        <div className="w-full max-w-[400px] mb-4 flex items-center justify-between">
+          <button
+            onClick={() => setView("dashboard")}
+            className="w-9 h-9 rounded-full flex items-center justify-center"
+            style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}
+          >
+            <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+          </button>
+          <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            {remaining} remaining
+          </span>
+        </div>
+
+        {/* Card */}
+        {totCurrent ? (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={totCurrent.id}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{
+                opacity: totSwipeDir ? 0 : 1,
+                x: totSwipeDir === "left" ? -300 : totSwipeDir === "right" ? 300 : 0,
+                rotate: totSwipeDir === "left" ? -15 : totSwipeDir === "right" ? 15 : 0,
+                scale: totSwipeDir ? 0.9 : 1,
+                y: 0,
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              className="w-full max-w-[340px] rounded-3xl p-8 flex flex-col items-center justify-center relative"
+              style={{
+                background: "var(--swatch-viridian-odyssey)",
+                boxShadow: "0 12px 48px rgba(30,74,82,0.25)",
+                minHeight: 280,
+              }}
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <Shuffle className="w-4 h-4 text-white/50" />
+                <span className="text-[10px] uppercase tracking-[0.15em] text-white/50" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500 }}>
+                  This or That
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center gap-3 w-full">
+                <span className="text-[28px] text-white text-center leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
+                  {totCurrent.optionA}
+                </span>
+                <span className="text-white/30 text-[12px] uppercase tracking-[0.2em]" style={{ fontFamily: "'Jost', sans-serif" }}>or</span>
+                <span className="text-[28px] text-white text-center leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
+                  {totCurrent.optionB}
+                </span>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        ) : (
+          <div className="text-center">
+            <Check className="w-12 h-12 mx-auto mb-3" style={{ color: "var(--swatch-teal)" }} />
+            <p className="text-[16px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+              All done!
+            </p>
+          </div>
+        )}
+
+        {/* X and ✓ buttons */}
+        {totCurrent && (
+          <div className="flex items-center gap-6 mt-8">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => pickThisOrThat("A")}
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{
+                background: "rgba(var(--swatch-antique-coin-rgb), 0.06)",
+                border: "2px solid rgba(var(--swatch-antique-coin-rgb), 0.15)",
+              }}
+            >
+              <X className="w-7 h-7" style={{ color: "var(--swatch-cedar-grove)" }} />
+            </motion.button>
+
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[10px] text-center" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                {totCurrent.optionA}
+              </span>
+              <span className="text-[8px]" style={{ color: "var(--swatch-antique-coin)" }}>←  →</span>
+              <span className="text-[10px] text-center" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                {totCurrent.optionB}
+              </span>
+            </div>
+
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => pickThisOrThat("B")}
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{
+                background: "rgba(var(--swatch-teal-rgb), 0.08)",
+                border: "2px solid var(--swatch-teal)",
+              }}
+            >
+              <Check className="w-7 h-7" style={{ color: "var(--swatch-teal)" }} />
+            </motion.button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ═══════════════════════════════════════════════════════
      DASHBOARD VIEW — Sprint overview
      ═══════════════════════════════════════════════════════ */
   const allDone = sprintProgress.every((p) => p.complete);
@@ -437,65 +563,35 @@ const Questionnaires = () => {
         </p>
       </div>
 
-      {/* This or That card */}
+      {/* This or That card — tap to open */}
       <div className="px-4 mt-3 mb-2">
-        <motion.div
+        <motion.button
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 24 }}
-          className="rounded-2xl p-4 relative overflow-hidden"
+          whileTap={{ scale: 0.97 }}
+          onClick={openThisOrThat}
+          className="w-full rounded-2xl p-4 relative overflow-hidden text-left"
           style={{
             background: "var(--swatch-viridian-odyssey)",
             boxShadow: "0 6px 24px rgba(30,74,82,0.15)",
           }}
         >
-          <div className="flex items-center gap-2 mb-3">
-            <Shuffle className="w-4 h-4 text-white/60" />
-            <span className="text-[11px] uppercase tracking-[0.12em] text-white/60" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500 }}>
-              This or That
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Shuffle className="w-4 h-4 text-white/60" />
+              <span className="text-[11px] uppercase tracking-[0.12em] text-white/60" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500 }}>
+                This or That
+              </span>
+            </div>
+            <span className="text-[11px] text-white/40" style={{ fontFamily: "'Jost', sans-serif" }}>
+              {totAnsweredCount}/{THIS_OR_THAT.length}
             </span>
           </div>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={totItem.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ type: "spring", stiffness: 300, damping: 28 }}
-              className="flex gap-3"
-            >
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => !totPicked && pickThisOrThat("A")}
-                className="flex-1 py-4 rounded-xl text-center text-[15px] font-medium transition-all"
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontWeight: 700,
-                  background: totPicked === "A" ? "var(--swatch-teal)" : "rgba(255,255,255,0.12)",
-                  color: "#fff",
-                  border: totPicked === "A" ? "1.5px solid var(--swatch-teal)" : "1.5px solid rgba(255,255,255,0.2)",
-                }}
-              >
-                {totItem.optionA}
-              </motion.button>
-              <span className="self-center text-white/30 text-[11px] font-medium" style={{ fontFamily: "'Jost', sans-serif" }}>or</span>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => !totPicked && pickThisOrThat("B")}
-                className="flex-1 py-4 rounded-xl text-center text-[15px] font-medium transition-all"
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontWeight: 700,
-                  background: totPicked === "B" ? "var(--swatch-teal)" : "rgba(255,255,255,0.12)",
-                  color: "#fff",
-                  border: totPicked === "B" ? "1.5px solid var(--swatch-teal)" : "1.5px solid rgba(255,255,255,0.2)",
-                }}
-              >
-                {totItem.optionB}
-              </motion.button>
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
+          <p className="text-[15px] text-white/90 mt-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}>
+            {totQueue.length > 0 ? "Tap to play →" : "All answered ✓"}
+          </p>
+        </motion.button>
       </div>
 
       {/* Sprint list */}
