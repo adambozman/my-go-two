@@ -91,7 +91,8 @@ const TemplateCoverFlow = ({
           focusedItemId={focusedItemId}
           onSelect={(id) => {
             const sc = subcategories!.find(s => s.id === id);
-            if (sc) onSubcategorySelect(sc);
+            const selectedItem = items.find((item) => item.id === id);
+            if (sc) onSubcategorySelect({ ...sc, image: selectedItem?.image || sc.image });
           }}
         />
       </div>
