@@ -538,6 +538,7 @@ const MyGoTwo = () => {
 
   const clearCoverFlow = () => {
     setCoverFlowState(null);
+    setFocusedDrilldownItemId(null);
     setActiveSubcategory(null);
     setCardKey(null);
     setLeafSubtype(null);

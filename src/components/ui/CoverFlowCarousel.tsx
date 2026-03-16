@@ -75,6 +75,14 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
       return () => window.removeEventListener("keydown", handler);
     }, [n]);
 
+    useEffect(() => {
+      setActiveIndex((prev) => {
+        if (n === 0) return 0;
+        const normalized = ((initialActiveIndex % n) + n) % n;
+        return prev === normalized ? prev : normalized;
+      });
+    }, [initialActiveIndex, n]);
+
     if (n === 0) return null;
 
     const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
