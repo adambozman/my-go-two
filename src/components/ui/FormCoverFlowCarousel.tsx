@@ -11,6 +11,7 @@ export interface FormCoverFlowItem {
 interface FormCoverFlowCarouselProps {
   items: FormCoverFlowItem[];
   activeIndex: number;
+  previousImage?: string;
   onActiveIndexChange: (index: number) => void;
   renderActiveCard: (item: FormCoverFlowItem) => React.ReactNode;
 }
