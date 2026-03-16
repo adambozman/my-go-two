@@ -466,8 +466,9 @@ const Questionnaires = () => {
                 transition={{ type: "spring", stiffness: 280, damping: 26 }}
                 className="w-full max-w-[380px] rounded-3xl overflow-hidden relative"
                 style={{
-                  aspectRatio: "3/4",
+                  height: "min(65vh, 500px)",
                   boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+                  background: "var(--swatch-viridian-odyssey)",
                 }}
               >
                 {/* Image */}
@@ -475,6 +476,8 @@ const Questionnaires = () => {
                   src={totCurrent.image}
                   alt={totCurrent.prompt}
                   className="absolute inset-0 w-full h-full object-cover"
+                  loading="eager"
+                  crossOrigin="anonymous"
                 />
                 {/* Gradient overlay */}
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 60%)" }} />
