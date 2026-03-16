@@ -31,7 +31,6 @@ const sectionLabels: Record<string, string> = {
 };
 
 const sectionOrder = ["style-fit", "food-drink", "personal", "gifts-wishlist", "home-living", "entertainment"];
-const FREE_CARD_KEY_LIMIT = 3;
 
 interface CoverFlowState {
   name: string;
