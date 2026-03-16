@@ -274,9 +274,10 @@ const Landing = () => {
               </p>
               <Link to="/signup">
                 <button
-                  style={{ background: "#d4543a", color: "white", border: "none", padding: "15px 38px", borderRadius: 40, fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 500, cursor: "pointer", transition: "all 0.2s ease", boxShadow: "0 4px 24px rgba(212,84,58,0.38)", letterSpacing: "0.2px" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "#c4432a"; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 36px rgba(212,84,58,0.5)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "#d4543a"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 24px rgba(212,84,58,0.38)"; }}
+                  className="surface-button-primary"
+                  style={{ background: "var(--swatch-cedar-grove)", color: "hsl(var(--destructive-foreground))", border: "none", padding: "15px 38px", borderRadius: 40, fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 500, cursor: "pointer", transition: "all 0.2s ease", letterSpacing: "0.2px" }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}
                 >
                   Create Your First Card &nbsp;→
                 </button>

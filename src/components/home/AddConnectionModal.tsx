@@ -248,7 +248,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-center py-6 rounded-xl" style={{ background: "#fff" }}>
+                  <div className="surface-pill flex items-center justify-center py-6 rounded-2xl" style={{}}>
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(inviteLink)}&color=1e4a52`}
                       alt="QR Code"
