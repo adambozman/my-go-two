@@ -51,6 +51,24 @@ const LOCKED_PREVIEW: Product[] = [
     why: "Fits the home + coffee pattern in the profile.",
     is_partner_pick: false,
   },
+  {
+    name: "Tasting Menu Night",
+    brand: "Luma Table",
+    price: "$72",
+    category: "food",
+    hook: "A date-night pick with a little ceremony.",
+    why: "Leans into shared dining and occasion-driven gifting.",
+    is_partner_pick: true,
+  },
+  {
+    name: "Pocket Film Camera",
+    brand: "Northline",
+    price: "$149",
+    category: "tech",
+    hook: "Playful enough to feel personal, useful enough to keep using.",
+    why: "Matches memory-making and travel-friendly signals.",
+    is_partner_pick: false,
+  },
 ];
 
 const Recommendations = () => {

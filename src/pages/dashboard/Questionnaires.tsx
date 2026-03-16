@@ -8,7 +8,8 @@ import { toast } from "sonner";
 import { buildSprints, SECTIONS, THIS_OR_THAT, type QuizQuestion } from "@/data/knowMeQuestions";
 import cityFallbackImage from "@/assets/templates/travel-city.jpg";
 import natureFallbackImage from "@/assets/templates/travel-mountain.jpg";
-import PremiumLockCard from "@/components/PremiumLockCard";
+const FREE_SPRINT_LIMIT = 2;
+const FREE_THIS_OR_THAT_LIMIT = 8;
 
 /* ── AI feedback messages — rotate per question ── */
 const AI_FEEDBACK = [
