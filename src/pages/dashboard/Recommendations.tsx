@@ -6,8 +6,9 @@ import { RefreshCw, Loader2, UtensilsCrossed, Shirt, Cpu, Home, Bookmark, Share2
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackAdEvent } from "@/lib/adTracking";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import PremiumLockCard from "@/components/PremiumLockCard";
+import { usePagination } from "@/hooks/usePagination";
 
 interface Product {
   name: string;
