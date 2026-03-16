@@ -718,8 +718,8 @@ const ENTERTAINMENT: QuizQuestion[] = [
   {
     id: "en-13", section: "entertainment",
     title: "Preferred exercise?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("gym", "Gym / Weights"), opt("running", "Running / Cardio"), opt("yoga", "Yoga / Pilates"), opt("sports", "Team Sports"), opt("swimming", "Swimming"), opt("hiking", "Hiking / Walking"), opt("cycling", "Cycling"), opt("dance", "Dance")],
   },
   {
