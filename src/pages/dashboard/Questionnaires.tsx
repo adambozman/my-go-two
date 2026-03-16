@@ -1,6 +1,6 @@
-import { useState, useMemo, useRef, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles, Shuffle, MessageCircle, Send } from "lucide-react";
+import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles, Shuffle, MessageCircle, Send, Lock } from "lucide-react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +14,7 @@ type ChatMessage = {
   content: string;
 };
 
-const FREE_SPRINT_LIMIT = 2;
+const FREE_CATEGORY_LIMIT = 4;
 const FREE_THIS_OR_THAT_LIMIT = 8;
 
 const AI_FEEDBACK = [
@@ -36,39 +36,77 @@ const STYLE_CHAT_SUGGESTIONS = [
   "What kinds of brands would you recommend for me right now?",
 ];
 
+const CATEGORY_COPY: Record<string, { title: string; description: string }> = {
+  "style-fit": {
+    title: "Clothes & Style",
+    description: "Fit, fashion taste, brand lean, and how polished or casual your look tends to be.",
+  },
+  "food-drink": {
+    title: "Food & Drink",
+    description: "Restaurants, cravings, comfort picks, and the flavors or places that feel most like you.",
+  },
+  "gifts-wishlist": {
+    title: "Gifts",
+    description: "What you love receiving, what feels thoughtful, and the kinds of things you actually want saved.",
+  },
+  "home-living": {
+    title: "Home",
+    description: "Your comfort zone, everyday living habits, and the spaces, products, and rituals that fit your life.",
+  },
+  entertainment: {
+    title: "Everything Else",
+    description: "Travel, hobbies, entertainment, and the extra signals that sharpen the AI’s read on you.",
+  },
+};
+
 const Questionnaires = () => {
   const { subscribed } = useAuth();
   const { personalization, profileAnswers, gender, loading: contextLoading, refetch } = usePersonalization();
 
-  const sprints = useMemo(() => buildSprints(gender), [gender]);
+  const allQuestions = useMemo(() => buildSprints(gender).flatMap((sprint) => sprint.questions), [gender]);
 
-  const sprintProgress = useMemo(() => {
-    return sprints.map((sprint) => {
-      const answered = sprint.questions.filter((q) => profileAnswers?.[q.id]).length;
-      return { total: sprint.questions.length, answered, complete: answered === sprint.questions.length };
+  const categories = useMemo(() => {
+    return SECTIONS.map((section) => {
+      const questions = allQuestions.filter((question) => question.section === section.id);
+      const answered = questions.filter((question) => profileAnswers?.[question.id]).length;
+      const visibleTotal = subscribed ? questions.length : Math.min(questions.length, FREE_CATEGORY_LIMIT);
+      const visibleAnswered = subscribed ? answered : Math.min(answered, visibleTotal);
+      const firstUnanswered = questions.findIndex((question) => !profileAnswers?.[question.id]);
+      const nextQuestionIndex = firstUnanswered === -1 ? Math.max(questions.length - 1, 0) : firstUnanswered;
+      const isLocked = !subscribed && answered >= FREE_CATEGORY_LIMIT;
+
+      return {
+        ...section,
+        title: CATEGORY_COPY[section.id]?.title ?? section.label,
+        description: CATEGORY_COPY[section.id]?.description ?? "",
+        questions,
+        answered,
+        visibleTotal,
+        visibleAnswered,
+        nextQuestionIndex,
+        complete: answered === questions.length,
+        isLocked,
+      };
     });
-  }, [sprints, profileAnswers]);
+  }, [allQuestions, profileAnswers, subscribed]);
 
-  const totalAnswered = sprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0);
-  const totalQuestions = 100;
-  const freeSprints = sprints.slice(0, FREE_SPRINT_LIMIT);
-  const displayedSprints = subscribed ? sprints : freeSprints;
-  const displayedSprintProgress = subscribed ? sprintProgress : sprintProgress.slice(0, FREE_SPRINT_LIMIT);
-  const totalFreeQuestions = freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0);
+  const totalAnswered = categories.reduce((sum, category) => sum + category.answered, 0);
+  const totalQuestions = allQuestions.length;
+  const totalFreeQuestions = categories.reduce((sum, category) => sum + category.visibleTotal, 0);
+  const totalVisibleAnswered = categories.reduce((sum, category) => sum + category.visibleAnswered, 0);
   const vibeProgressPercent = Math.round(
     subscribed
-      ? (totalAnswered / totalQuestions) * 100
-      : (displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0) / Math.max(1, totalFreeQuestions)) * 100,
+      ? (totalAnswered / Math.max(1, totalQuestions)) * 100
+      : (totalVisibleAnswered / Math.max(1, totalFreeQuestions)) * 100,
   );
   const allDone = totalAnswered >= totalQuestions;
 
   const [view, setView] = useState<"dashboard" | "quiz" | "thisorthat">("dashboard");
-  const [quizSprintIdx, setQuizSprintIdx] = useState(0);
+  const [activeCategoryId, setActiveCategoryId] = useState<string>(SECTIONS[0].id);
   const [quizQuestionIdx, setQuizQuestionIdx] = useState(0);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
-  const selectionsRef = useRef(selections);
   const [aiFeedback, setAiFeedback] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [savingAnswer, setSavingAnswer] = useState(false);
 
   const [styleChatOpen, setStyleChatOpen] = useState(false);
   const [stylePrompt, setStylePrompt] = useState("");
@@ -82,33 +120,20 @@ const Questionnaires = () => {
     },
   ]);
 
-  const updateSelections = useCallback((updater: (prev: Record<string, string[]>) => Record<string, string[]>) => {
-    setSelections((prev) => {
-      const next = updater(prev);
-      selectionsRef.current = next;
-      return next;
-    });
+  const activeCategory = categories.find((category) => category.id === activeCategoryId) ?? categories[0];
+  const currentQuestion: QuizQuestion | undefined = activeCategory?.questions[quizQuestionIdx];
+  const currentSelected = currentQuestion
+    ? selections[currentQuestion.id] ||
+      (profileAnswers?.[currentQuestion.id]
+        ? Array.isArray(profileAnswers[currentQuestion.id])
+          ? (profileAnswers[currentQuestion.id] as string[])
+          : [profileAnswers[currentQuestion.id] as string]
+        : [])
+    : [];
+
+  const updateSelections = useCallback((questionId: string, values: string[]) => {
+    setSelections((prev) => ({ ...prev, [questionId]: values }));
   }, []);
-
-  const totQueue = useMemo(() => {
-    const answered = profileAnswers ? Object.keys(profileAnswers).filter((key) => key.startsWith("tot-")) : [];
-    const unanswered = THIS_OR_THAT.filter((item) => !answered.includes(item.id));
-    return unanswered.length > 0 ? unanswered : [];
-  }, [profileAnswers]);
-
-  const [totIndex, setTotIndex] = useState(0);
-  const [totSwipeDir, setTotSwipeDir] = useState<"left" | "right" | null>(null);
-  const totCurrent = totQueue[totIndex] || null;
-  const totAnsweredCount = THIS_OR_THAT.length - totQueue.length;
-  const visibleThisOrThatCount = subscribed ? THIS_OR_THAT.length : Math.min(THIS_OR_THAT.length, FREE_THIS_OR_THAT_LIMIT);
-  const visibleThisOrThatAnswered = subscribed ? totAnsweredCount : Math.min(totAnsweredCount, visibleThisOrThatCount);
-
-  const openThisOrThat = () => {
-    if (!subscribed && totQueue.length === 0) return;
-    setTotIndex(0);
-    setTotSwipeDir(null);
-    setView("thisorthat");
-  };
 
   const openStyleChat = () => {
     setStyleChatMessages([
@@ -162,128 +187,97 @@ const Questionnaires = () => {
     }
   };
 
-  const startSprint = (idx: number) => {
-    if (!subscribed && idx >= FREE_SPRINT_LIMIT) {
-      toast("More questions unlock with Premium");
+  const persistProfileAnswers = async (patch: Record<string, string | string[]>) => {
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    if (!userId) throw new Error("No user");
+
+    const updated = { ...(profileAnswers || {}), ...patch };
+    const cleaned: Record<string, string | string[]> = {};
+    for (const [key, value] of Object.entries(updated)) {
+      cleaned[key] = Array.isArray(value) && value.length === 1 ? value[0] : value;
+    }
+
+    const { error } = await supabase
+      .from("user_preferences")
+      .update({ profile_answers: cleaned, updated_at: new Date().toISOString() })
+      .eq("user_id", userId);
+
+    if (error) throw error;
+  };
+
+  const goToNextQuestion = async () => {
+    if (!activeCategory) return;
+
+    const nextIndex = quizQuestionIdx + 1;
+    const freeLockReached = !subscribed && nextIndex >= FREE_CATEGORY_LIMIT;
+    if (freeLockReached) {
+      await refetch();
+      setView("dashboard");
+      toast("Premium unlocks more than 4 questions in each category");
       return;
     }
 
-    const sprint = sprints[idx];
-    const firstUnanswered = sprint.questions.findIndex((q) => !profileAnswers?.[q.id]);
-    setQuizSprintIdx(idx);
-    setQuizQuestionIdx(firstUnanswered === -1 ? 0 : firstUnanswered);
-    const empty: Record<string, string[]> = {};
-    setSelections(empty);
-    selectionsRef.current = empty;
+    if (nextIndex >= activeCategory.questions.length) {
+      await refetch();
+      setView("dashboard");
+      toast.success("Category saved");
+      return;
+    }
+
+    setQuizQuestionIdx(nextIndex);
+  };
+
+  const saveAnswerAndContinue = async (questionId: string, values: string[]) => {
+    if (!currentQuestion || savingAnswer) return;
+
+    setSavingAnswer(true);
+    updateSelections(questionId, values);
+
+    try {
+      await persistProfileAnswers({ [questionId]: currentQuestion.multiSelect ? values : values[0] });
+      setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
+      await refetch();
+      await goToNextQuestion();
+    } catch {
+      toast.error("Failed to save answer");
+    } finally {
+      setSavingAnswer(false);
+      setTimeout(() => setAiFeedback(null), 900);
+    }
+  };
+
+  const startCategory = (categoryId: string) => {
+    const category = categories.find((item) => item.id === categoryId);
+    if (!category) return;
+    if (category.isLocked) {
+      toast("Premium unlocks more than 4 questions in each category");
+      return;
+    }
+
+    setActiveCategoryId(categoryId);
+    setQuizQuestionIdx(Math.min(category.nextQuestionIndex, subscribed ? category.questions.length - 1 : FREE_CATEGORY_LIMIT - 1));
     setAiFeedback(null);
     setView("quiz");
   };
 
-  const saveAndReturn = async () => {
-    const currentSelections = selectionsRef.current;
-    if (Object.keys(currentSelections).length === 0) {
-      setView("dashboard");
-      return;
-    }
+  const totQueue = useMemo(() => {
+    const answered = profileAnswers ? Object.keys(profileAnswers).filter((key) => key.startsWith("tot-")) : [];
+    const unanswered = THIS_OR_THAT.filter((item) => !answered.includes(item.id));
+    return unanswered.length > 0 ? unanswered : [];
+  }, [profileAnswers]);
 
-    setSaving(true);
-    try {
-      const userId = (await supabase.auth.getUser()).data.user?.id;
-      if (!userId) throw new Error("No user");
+  const [totIndex, setTotIndex] = useState(0);
+  const [totSwipeDir, setTotSwipeDir] = useState<"left" | "right" | null>(null);
+  const totCurrent = totQueue[totIndex] || null;
+  const totAnsweredCount = THIS_OR_THAT.length - totQueue.length;
+  const visibleThisOrThatCount = subscribed ? THIS_OR_THAT.length : Math.min(THIS_OR_THAT.length, FREE_THIS_OR_THAT_LIMIT);
+  const visibleThisOrThatAnswered = subscribed ? totAnsweredCount : Math.min(totAnsweredCount, visibleThisOrThatCount);
 
-      const updated = { ...(profileAnswers || {}), ...currentSelections };
-      const cleaned: Record<string, string | string[]> = {};
-      for (const [key, value] of Object.entries(updated)) {
-        cleaned[key] = Array.isArray(value) && value.length === 1 ? value[0] : value;
-      }
-
-      const { error } = await supabase
-        .from("user_preferences")
-        .update({ profile_answers: cleaned, updated_at: new Date().toISOString() })
-        .eq("user_id", userId);
-
-      if (error) throw error;
-      toast.success(`${Object.keys(currentSelections).length} answers saved!`);
-      await refetch();
-    } catch {
-      toast.error("Failed to save answers");
-    }
-
-    setSaving(false);
-    setView("dashboard");
-  };
-
-  const currentSprint = sprints[quizSprintIdx];
-  const currentQuestion: QuizQuestion | undefined = currentSprint?.questions[quizQuestionIdx];
-  const currentSelected = currentQuestion
-    ? selections[currentQuestion.id] ||
-      (profileAnswers?.[currentQuestion.id]
-        ? Array.isArray(profileAnswers[currentQuestion.id])
-          ? (profileAnswers[currentQuestion.id] as string[])
-          : [profileAnswers[currentQuestion.id] as string]
-        : [])
-    : [];
-
-  const toggleOption = (optId: string) => {
-    if (!currentQuestion) return;
-
-    const isSingle = !currentQuestion.multiSelect;
-    updateSelections((prev) => {
-      const current = prev[currentQuestion.id] || [];
-      if (isSingle) return { ...prev, [currentQuestion.id]: [optId] };
-      if (current.includes(optId)) return { ...prev, [currentQuestion.id]: current.filter((value) => value !== optId) };
-      return { ...prev, [currentQuestion.id]: [...current, optId] };
-    });
-
-    if (!currentQuestion.multiSelect) {
-      setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
-      setTimeout(() => {
-        setAiFeedback(null);
-        const latestSelections = selectionsRef.current;
-        if (!currentSprint) return;
-
-        let next = quizQuestionIdx + 1;
-        while (next < currentSprint.questions.length) {
-          const q = currentSprint.questions[next];
-          if (!profileAnswers?.[q.id] && !latestSelections[q.id]) break;
-          next++;
-        }
-
-        if (next >= currentSprint.questions.length) {
-          saveAndReturn();
-        } else {
-          setQuizQuestionIdx(next);
-        }
-      }, 1200);
-    }
-  };
-
-  const advanceQuestion = () => {
-    if (!currentSprint) return;
-    const latestSelections = selectionsRef.current;
-
-    let next = quizQuestionIdx + 1;
-    while (next < currentSprint.questions.length) {
-      const q = currentSprint.questions[next];
-      if (!profileAnswers?.[q.id] && !latestSelections[q.id]) break;
-      next++;
-    }
-
-    if (next >= currentSprint.questions.length) {
-      saveAndReturn();
-    } else {
-      setQuizQuestionIdx(next);
-      setAiFeedback(null);
-    }
-  };
-
-  const confirmMultiAndAdvance = () => {
-    if (!currentQuestion) return;
-    setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
-    setTimeout(() => {
-      setAiFeedback(null);
-      advanceQuestion();
-    }, 800);
+  const openThisOrThat = () => {
+    if (!subscribed && totQueue.length === 0) return;
+    setTotIndex(0);
+    setTotSwipeDir(null);
+    setView("thisorthat");
   };
 
   const getSectionForQuestion = (q: QuizQuestion) => SECTIONS.find((section) => section.id === q.section);
