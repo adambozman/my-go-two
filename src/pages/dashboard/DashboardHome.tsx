@@ -261,6 +261,18 @@ const DashboardHome = () => {
     isPlaceholder: c.id.startsWith("placeholder-"),
   }));
 
+  const handleOpenConnectionFromAvatar = useCallback(
+    (entry: DirectoryEntry) => {
+      const card = connections.find((c) => c.id === entry.id);
+      if (!card) return;
+      setOpenConnection({
+        card,
+        rect: { x: window.innerWidth / 2 - 50, y: 100, width: 100, height: 100 },
+      });
+    },
+    [connections]
+  );
+
   const handleOpenConnection = useCallback(
     (entry: DirectoryEntry, rect: DOMRect) => {
       const card = connections.find((c) => c.id === entry.id);
@@ -290,7 +302,10 @@ const DashboardHome = () => {
 
   return (
     <div className="h-full overflow-y-auto relative">
-      <div className="max-w-[520px] mx-auto space-y-5 py-4 px-1">
+      <div className="max-w-[520px] mx-auto space-y-6 py-4 px-1">
+        {/* Greeting */}
+        <GreetingHeader displayName={displayName} />
+
         {/* Smart notification banner */}
         {smartBanner && (
           <SmartBanner
@@ -301,28 +316,26 @@ const DashboardHome = () => {
           />
         )}
 
+        {/* Connection avatar row */}
+        <section className="space-y-2.5">
+          <h2
+            className="text-[11px] font-semibold uppercase tracking-[0.14em] px-1"
+            style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
+          >
+            Your People
+          </h2>
+          <ConnectionAvatarRow
+            entries={directoryEntries}
+            onSelect={handleOpenConnectionFromAvatar}
+            onAdd={handleAddConnection}
+          />
+        </section>
+
         {/* Milestone countdowns */}
         <MilestoneList milestones={milestones} />
 
         {/* Connection directory */}
         <ConnectionDirectory entries={directoryEntries} onSelect={handleOpenConnection} />
-
-        {/* Add connection button */}
-        <button
-          onClick={handleAddConnection}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-all active:scale-[0.98]"
-          style={{
-            background: "rgba(255,255,255,0.35)",
-            border: "1px dashed var(--swatch-text-light)",
-            color: "var(--swatch-teal)",
-            fontFamily: "'Jost', sans-serif",
-            fontSize: "13px",
-            fontWeight: 600,
-          }}
-        >
-          <Plus className="w-4 h-4" />
-          Add Connection
-        </button>
 
         {/* Recent activity feed */}
         <RecentUpdates updates={recentUpdates} />
