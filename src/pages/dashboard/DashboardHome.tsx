@@ -317,18 +317,15 @@ const DashboardHome = () => {
           />
         )}
 
-        {/* Connection avatar row (stories-style) */}
+        {/* Connection avatar row — single spot for connections */}
         <ConnectionAvatarRow
           entries={directoryEntries}
           onSelect={handleOpenConnectionFromAvatar}
           onAdd={handleAddConnection}
         />
 
-        {/* Milestone countdowns */}
-        <MilestoneList milestones={milestones} />
-
-        {/* Connection feed cards (image-forward) */}
-        <ConnectionDirectory entries={directoryEntries} onSelect={handleOpenConnection} />
+        {/* Calendar + upcoming events */}
+        <EventCalendar milestones={milestones} />
 
         {/* Recent activity feed */}
         <RecentUpdates updates={recentUpdates} />
