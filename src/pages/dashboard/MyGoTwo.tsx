@@ -466,6 +466,7 @@ const MyGoTwo = () => {
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const savedScrollTop = useRef(0);
 
   const [cardKey, setCardKey] = useState<string | null>(null);
@@ -548,6 +549,28 @@ const MyGoTwo = () => {
     }
   }, [entries, leafSubtype, defaultFieldValues, cardKey, activeGroup]);
 
+  const getNearestSectionIndex = useCallback(
+    (scrollTop: number) => {
+      if (visibleSectionKeys.length === 0) return 0;
+
+      let nearestIndex = 0;
+      let nearestDistance = Number.POSITIVE_INFINITY;
+
+      visibleSectionKeys.forEach((key, index) => {
+        const sectionTop = sectionRefs.current[key]?.offsetTop ?? 0;
+        const distance = Math.abs(sectionTop - scrollTop);
+
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearestIndex = index;
+        }
+      });
+
+      return nearestIndex;
+    },
+    [visibleSectionKeys],
+  );
+
   useEffect(() => {
     setActiveSectionIndex((prev) => Math.min(prev, Math.max(visibleSectionKeys.length - 1, 0)));
   }, [visibleSectionKeys.length]);
@@ -559,18 +582,18 @@ const MyGoTwo = () => {
       const el = scrollRef.current;
       if (!el) return;
 
-      const sectionHeight = el.clientHeight || 1;
-      const restoreSectionIndex = lastMainSectionKey ? visibleSectionKeys.indexOf(lastMainSectionKey) : -1;
-      const targetScrollTop =
-        restoreSectionIndex >= 0 ? restoreSectionIndex * sectionHeight : savedScrollTop.current;
+      const targetSectionTop =
+        lastMainSectionKey && sectionRefs.current[lastMainSectionKey]
+          ? sectionRefs.current[lastMainSectionKey]!.offsetTop
+          : null;
+
+      const targetScrollTop = targetSectionTop ?? savedScrollTop.current;
 
       el.scrollTop = targetScrollTop;
       savedScrollTop.current = targetScrollTop;
-
-      const idx = Math.round(targetScrollTop / sectionHeight);
-      setActiveSectionIndex(Math.min(Math.max(idx, 0), Math.max(visibleSectionKeys.length - 1, 0)));
+      setActiveSectionIndex(getNearestSectionIndex(targetScrollTop));
     });
-  }, [coverFlowState, cardKey, lastMainSectionKey, visibleSectionKeys]);
+  }, [coverFlowState, cardKey, lastMainSectionKey, getNearestSectionIndex]);
 
   const clearCoverFlow = () => {
     setCoverFlowState(null);
@@ -969,9 +992,7 @@ const MyGoTwo = () => {
         style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
         onScroll={(e) => {
           const el = e.currentTarget;
-          const sectionHeight = el.clientHeight || 1;
-          const idx = Math.round(el.scrollTop / sectionHeight);
-          setActiveSectionIndex(Math.min(Math.max(idx, 0), orderedSections.length - 1));
+          setActiveSectionIndex(getNearestSectionIndex(el.scrollTop));
         }}
       >
         {!subscribed && (
@@ -987,7 +1008,14 @@ const MyGoTwo = () => {
           </div>
         )}
         {orderedSections.map((section, index) => (
-          <div key={section.key} className="snap-start snap-always h-full flex flex-col items-center justify-center overflow-hidden flex-shrink-0">
+          <div
+            key={section.key}
+            data-section-key={section.key}
+            ref={(node) => {
+              sectionRefs.current[section.key] = node;
+            }}
+            className="snap-start snap-always h-full flex flex-col items-center justify-center overflow-hidden flex-shrink-0"
+          >
             <h2 className="section-header text-center mb-4">{section.label}</h2>
             <GoTwoCoverFlow
               items={section.items}
