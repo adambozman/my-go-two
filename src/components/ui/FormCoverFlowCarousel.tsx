@@ -89,6 +89,7 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
             {slots.map((offset) => {
               const itemIndex = (activeIndex + offset + n) % n;
               const item = items[itemIndex];
+              const previousItem = items[(itemIndex - 1 + n) % n];
               const absOffset = Math.abs(offset);
               const isActive = offset === 0;
 
@@ -127,8 +128,8 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                         </div>
                       ) : (
                         <>
-                          {/* Flanking cards — use item image when available */}
-                          <div className="absolute inset-0" style={{ background: getFlankBackground(item.image) }} />
+                          {/* Flanking cards — use previous card image */}
+                          <div className="absolute inset-0" style={{ background: getFlankBackground(previousItem?.image) }} />
                           <div className="absolute bottom-6 left-6">
                             <span
                               style={{
@@ -190,7 +191,7 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                       </div>
                     ) : (
                       <>
-                        <div className="absolute inset-0" style={{ background: getFlankBackground(item.image) }} />
+                        <div className="absolute inset-0" style={{ background: getFlankBackground(previousItem?.image) }} />
                         <div className="absolute bottom-4 left-4">
                           <span
                             style={{
