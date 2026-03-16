@@ -190,7 +190,7 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                       </div>
                     ) : (
                       <>
-                        <div className="absolute inset-0" style={{ background: FALLBACK_GRADIENT }} />
+                        <div className="absolute inset-0" style={{ background: getFlankBackground(item.image) }} />
                         <div className="absolute bottom-4 left-4">
                           <span
                             style={{
