@@ -729,11 +729,11 @@ const MyGoTwo = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full flex flex-col items-center justify-center px-4"
         >
-          <div className="flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center">
             <FormCoverFlowCarousel
-              items={entryCoverFlowItems}
-              activeIndex={activeEntryIndex}
-              onActiveIndexChange={setActiveEntryIndex}
+              items={paginatedEntryItems}
+              activeIndex={activeEntryIndexOnPage}
+              onActiveIndexChange={(index) => setActiveEntryIndex(entryPageStart + index)}
               renderActiveCard={(item) => (
                 <EntryFormCard
                   subtype={leafSubtype}
@@ -749,6 +749,13 @@ const MyGoTwo = () => {
                   onDelete={() => handleDeleteEntry(item.id)}
                 />
               )}
+            />
+            <PaginationControls
+              currentPage={activeEntryPage}
+              totalPages={entryTotalPages}
+              onPageChange={handleEntryPageChange}
+              label={`Page ${activeEntryPage} of ${entryTotalPages}`}
+              className="mt-5 space-y-2"
             />
           </div>
 
