@@ -790,32 +790,15 @@ const Questionnaires = () => {
                 const isComplete = prog.complete;
                 const hasProgress = prog.answered > 0 && !isComplete;
                 const isTall = idx % 3 === 0;
-                const overlayTheme = idx % 4;
-                const overlayClass = overlayTheme === 0 || overlayTheme === 2
-                  ? "card-design-overlay-teal"
-                  : overlayTheme === 1
-                    ? "card-design-overlay-white"
-                    : "card-design-overlay-coral";
-                const orbColor = overlayTheme === 0 || overlayTheme === 2
-                  ? "rgba(var(--swatch-teal-rgb), 0.12)"
-                  : overlayTheme === 3
-                    ? "rgba(var(--swatch-cedar-grove-rgb), 0.10)"
-                    : "rgba(255,255,255,0.34)";
+                const overlayClass = "card-design-overlay-teal";
+                const orbColor = "rgba(var(--swatch-teal-rgb), 0.12)";
                 const badgeBackground = isComplete
                   ? "rgba(var(--swatch-teal-rgb), 0.84)"
-                  : overlayTheme === 3
-                    ? "rgba(var(--swatch-cedar-grove-rgb), 0.12)"
-                    : overlayTheme === 0 || overlayTheme === 2
-                      ? "rgba(var(--swatch-teal-rgb), 0.14)"
-                      : "rgba(255,255,255,0.58)";
+                  : "rgba(var(--swatch-teal-rgb), 0.14)";
                 const badgeColor = isComplete
                   ? "rgba(255,255,255,0.96)"
-                  : overlayTheme === 3
-                    ? "var(--swatch-cedar-grove)"
-                    : overlayTheme === 0 || overlayTheme === 2
-                      ? "var(--swatch-teal)"
-                      : "var(--swatch-antique-coin)";
-                const accentColor = overlayTheme === 3 ? "var(--swatch-cedar-grove)" : overlayTheme === 0 || overlayTheme === 2 ? "var(--swatch-teal)" : "var(--swatch-antique-coin)";
+                  : "var(--swatch-teal)";
+                const accentColor = "var(--swatch-teal)";
 
                 return (
                   <motion.button
