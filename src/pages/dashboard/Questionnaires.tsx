@@ -6,6 +6,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { buildSprints, SECTIONS, SPRINT_NAMES, THIS_OR_THAT, type Sprint, type QuizQuestion, type ThisOrThatItem } from "@/data/knowMeQuestions";
+import cityFallbackImage from "@/assets/templates/travel-city.jpg";
+import natureFallbackImage from "@/assets/templates/travel-mountain.jpg";
 
 /* ── AI feedback messages — rotate per question ── */
 const AI_FEEDBACK = [
