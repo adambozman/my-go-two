@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Check, Plus, Trash2 } from "lucide-react";
+import { Loader2, Check, Plus, Trash2, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -49,6 +49,7 @@ interface CardEntry {
   group_name: string;
   entry_name: string;
   field_values: Record<string, string>;
+  image_url?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -190,10 +191,12 @@ const EntryFormCard = ({
   categoryName,
   entryName,
   values,
+  imageUrl,
   saving,
   isEditing,
   onEntryNameChange,
   onChange,
+  onImageChange,
   onSave,
   onDelete,
 }: {
@@ -202,13 +205,57 @@ const EntryFormCard = ({
   categoryName?: string;
   entryName: string;
   values: Record<string, string>;
+  imageUrl?: string;
   saving: boolean;
   isEditing: boolean;
   onEntryNameChange: (name: string) => void;
   onChange: (fieldLabel: string, value: string) => void;
+  onImageChange: (imageUrl: string) => void;
   onSave: () => void;
   onDelete: () => void;
 }) => {
+  const { toast } = useToast();
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Invalid file", description: "Please choose an image file.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Image too large", description: "Please choose an image under 5MB.", variant: "destructive" });
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Please sign in to upload photos.");
+
+      const ext = file.name.split(".").pop() || "jpg";
+      const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("card-images")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("card-images")
+        .getPublicUrl(filePath);
+
+      onImageChange(publicUrl);
+    } catch (error: any) {
+      toast({ title: "Upload failed", description: error.message || "Could not upload image.", variant: "destructive" });
+    } finally {
+      setUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <div style={{
       width: "100%", height: "100%",
@@ -232,15 +279,50 @@ const EntryFormCard = ({
       </div>
 
       <div style={{ position: "relative", padding: "0 22px", flexShrink: 0, height: 190 }}>
-        <div style={{
-          position: "absolute",
-          top: 0,
-          right: 22,
-          width: 170,
-          height: 190,
-          borderRadius: 14,
-          background: "#c8bfb4",
-        }} />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 22,
+            width: 170,
+            height: 190,
+            borderRadius: 14,
+            border: "none",
+            padding: 0,
+            overflow: "hidden",
+            background: imageUrl
+              ? `center / cover no-repeat url(${imageUrl})`
+              : "#c8bfb4",
+            cursor: uploadingImage ? "wait" : "pointer",
+          }}
+          aria-label="Upload image"
+          disabled={uploadingImage}
+        >
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: imageUrl ? "rgba(26,26,26,0.12)" : "transparent",
+          }}>
+            {uploadingImage ? (
+              <Loader2 style={{ width: 24, height: 24, color: "rgba(255,255,255,0.92)", animation: "spin 1s linear infinite" }} />
+            ) : (
+              <Camera style={{ width: 24, height: 24, color: imageUrl ? "rgba(255,255,255,0.92)" : "rgba(26,26,26,0.42)" }} />
+            )}
+          </div>
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleImageUpload}
+          style={{ display: "none" }}
+        />
 
         <div style={{ maxWidth: "calc(100% - 196px)", height: 190 }}>
           <AutoFitTitle
