@@ -38,10 +38,24 @@ const DashboardHome = () => {
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [recentUpdates, setRecentUpdates] = useState<RecentUpdate[]>([]);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [openConnection, setOpenConnection] = useState<{
     card: ConnectionCard;
     rect: { x: number; y: number; width: number; height: number };
   } | null>(null);
+
+  // Load display name
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        setDisplayName(data?.display_name || user.user_metadata?.display_name || null);
+      });
+  }, [user]);
 
   // Load connections
   const loadConnections = useCallback(async () => {
