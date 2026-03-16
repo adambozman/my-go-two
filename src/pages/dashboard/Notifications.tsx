@@ -263,9 +263,13 @@ function NotificationList({ notifications, markOneRead, deleteOne, formatDate }:
                 </div>
               );
             })}
-          </div>
-        )}
       </div>
-    </div>
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        label={`Page ${currentPage} of ${totalPages}`}
+      />
+    </>
   );
 }
