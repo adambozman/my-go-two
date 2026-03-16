@@ -603,20 +603,20 @@ const Questionnaires = () => {
             transition={{ type: "spring", stiffness: 240, damping: 24 }}
             className="lg:col-span-8 rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[320px]"
             style={{
-              background: "linear-gradient(135deg, rgba(var(--swatch-teal-rgb), 0.98) 0%, rgba(var(--swatch-teal-rgb), 0.95) 58%, rgba(var(--swatch-teal-rgb), 0.92) 100%)",
-              boxShadow: "0 24px 60px rgba(30,74,82,0.28)",
+              background: "linear-gradient(135deg, hsl(var(--primary) / 0.98) 0%, hsl(var(--primary) / 0.95) 58%, hsl(var(--primary) / 0.9) 100%)",
+              boxShadow: "0 24px 60px hsl(var(--primary) / 0.28)",
             }}
           >
             <div
               className="absolute inset-0"
               style={{
-                background: "radial-gradient(circle at 85% 18%, rgba(var(--swatch-teal-rgb), 0.32), transparent 30%), radial-gradient(circle at 100% 100%, rgba(var(--swatch-teal-rgb), 0.28), transparent 35%)",
+                background: "radial-gradient(circle at 85% 18%, hsl(var(--primary) / 0.32), transparent 30%), radial-gradient(circle at 100% 100%, hsl(var(--primary) / 0.28), transparent 35%)",
               }}
             />
             <div className="relative h-full flex flex-col justify-between gap-8">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "hsl(var(--destructive))" }}>
                     Go Two / Know Me
                   </p>
                   <h1 className="text-[42px] md:text-[56px] leading-[0.92] max-w-[8ch] text-primary-foreground" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
@@ -625,9 +625,9 @@ const Questionnaires = () => {
                 </div>
 
                 <div className="rounded-[26px] px-5 py-4 min-w-[150px] backdrop-blur-md" style={{
-                  background: "rgba(var(--swatch-teal-rgb), 0.34)",
-                  border: "1px solid rgba(var(--swatch-teal-rgb), 0.46)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
+                  background: "hsl(var(--primary) / 0.34)",
+                  border: "1px solid hsl(var(--primary) / 0.46)",
+                  boxShadow: "inset 0 1px 0 hsl(var(--primary-foreground) / 0.12)",
                 }}>
                   <p className="text-[42px] leading-none text-primary-foreground" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}>
                     {Math.round(
@@ -637,7 +637,7 @@ const Questionnaires = () => {
                             Math.max(1, freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0))) * 100,
                     )}%
                   </p>
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "hsl(var(--destructive))" }}>
                     profile complete
                   </p>
                 </div>
@@ -656,7 +656,7 @@ const Questionnaires = () => {
                   <div className="h-2 rounded-full overflow-hidden bg-primary-foreground/15">
                     <motion.div
                       className="h-full rounded-full"
-                      style={{ background: "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.98), rgba(var(--swatch-teal-rgb), 0.76))" }}
+                      style={{ background: "linear-gradient(90deg, hsl(var(--primary) / 0.98), hsl(var(--primary) / 0.76))" }}
                       initial={{ width: 0 }}
                       animate={{
                         width: `${subscribed
@@ -671,10 +671,10 @@ const Questionnaires = () => {
 
                 {!subscribed && (
                   <div className="rounded-[28px] p-4 backdrop-blur-md" style={{
-                    background: "rgba(var(--swatch-teal-rgb), 0.28)",
-                    border: "1px solid rgba(var(--swatch-teal-rgb), 0.42)",
+                    background: "hsl(var(--primary) / 0.28)",
+                    border: "1px solid hsl(var(--primary) / 0.42)",
                   }}>
-                    <p className="text-[10px] uppercase tracking-[0.18em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    <p className="text-[10px] uppercase tracking-[0.18em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "hsl(var(--destructive))" }}>
                       Partial access
                     </p>
                     <p className="text-[12px] leading-relaxed text-primary-foreground/82" style={{ fontFamily: "'Jost', sans-serif" }}>
@@ -694,15 +694,15 @@ const Questionnaires = () => {
             onClick={openThisOrThat}
             className="lg:col-span-4 rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left min-h-[320px] flex flex-col justify-between"
             style={{
-              background: "linear-gradient(160deg, rgba(var(--swatch-teal-rgb), 0.98) 0%, rgba(var(--swatch-teal-rgb), 0.94) 54%, rgba(var(--swatch-teal-rgb), 0.9) 100%)",
-              boxShadow: "0 22px 54px rgba(30,74,82,0.24)",
+              background: "linear-gradient(160deg, hsl(var(--primary) / 0.98) 0%, hsl(var(--primary) / 0.94) 54%, hsl(var(--primary) / 0.9) 100%)",
+              boxShadow: "0 22px 54px hsl(var(--primary) / 0.24)",
             }}
           >
-            <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.28), transparent 32%), linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.08), transparent 40%)" }} />
+            <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, hsl(var(--primary) / 0.28), transparent 32%), linear-gradient(180deg, hsl(var(--primary) / 0.08), transparent 40%)" }} />
             <div className="relative flex items-center justify-between gap-3">
-              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "rgba(var(--swatch-teal-rgb), 0.32)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.42)" }}>
+              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "hsl(var(--primary) / 0.32)", border: "1px solid hsl(var(--primary) / 0.42)" }}>
                 <Shuffle className="w-4 h-4 text-primary-foreground" />
-                <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>This or That</span>
+                <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "hsl(var(--destructive))" }}>This or That</span>
               </div>
               <span className="text-[12px] text-primary-foreground/76" style={{ fontFamily: "'Jost', sans-serif" }}>
                 {visibleThisOrThatAnswered}/{visibleThisOrThatCount}
@@ -722,8 +722,8 @@ const Questionnaires = () => {
 
             <div className="relative flex items-end justify-between gap-4">
               <div className="w-16 h-16 rounded-[22px] backdrop-blur-md flex items-center justify-center" style={{
-                background: "rgba(var(--swatch-teal-rgb), 0.3)",
-                border: "1px solid rgba(var(--swatch-teal-rgb), 0.42)",
+                background: "hsl(var(--primary) / 0.3)",
+                border: "1px solid hsl(var(--primary) / 0.42)",
               }}>
                 <ChevronRight className="w-6 h-6 text-primary-foreground" />
               </div>
