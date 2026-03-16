@@ -106,11 +106,12 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
             role="dialog"
             aria-modal="true"
             aria-labelledby="add-connection-title"
-            className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100vh-2rem)] w-auto max-w-[460px] -translate-y-1/2 overflow-y-auto rounded-2xl md:inset-x-0"
+            className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100vh-2rem)] w-auto max-w-[460px] -translate-y-1/2 overflow-y-auto rounded-[28px] md:inset-x-0"
             style={{
-              background: "var(--swatch-sand)",
-              border: "1px solid rgba(255,255,255,0.85)",
-              boxShadow: "0 12px 48px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.9)",
+              background: "linear-gradient(165deg, rgba(255,255,255,0.74) 0%, rgba(245,233,220,0.5) 100%)",
+              border: "1px solid rgba(255,255,255,0.88)",
+              boxShadow: "0 20px 48px rgba(74,96,104,0.14), inset 0 1px 0 rgba(255,255,255,0.94)",
+              backdropFilter: "blur(12px)",
             }}
           >
             <div className="flex items-center justify-between px-5 pt-5 pb-3">
