@@ -43,7 +43,7 @@ const Questionnaires = () => {
   const currentSprintIdx = activeSprintIdx === -1 ? sprints.length - 1 : activeSprintIdx;
 
   /* ── State ── */
-  const [view, setView] = useState<"dashboard" | "quiz">("dashboard");
+  const [view, setView] = useState<"dashboard" | "quiz" | "thisorthat">("dashboard");
   const [quizSprintIdx, setQuizSprintIdx] = useState(0);
   const [quizQuestionIdx, setQuizQuestionIdx] = useState(0);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
