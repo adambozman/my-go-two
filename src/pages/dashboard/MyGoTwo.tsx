@@ -385,6 +385,7 @@ const MyGoTwo = () => {
   const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
   const [leafImage, setLeafImage] = useState<string>("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
+  const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
   const [unlockedCardKeys, setUnlockedCardKeys] = useState<string[]>([]);
   const [showCategoryPaywall, setShowCategoryPaywall] = useState(false);
 
