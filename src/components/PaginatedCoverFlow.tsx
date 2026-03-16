@@ -9,6 +9,7 @@ interface PaginatedCoverFlowProps {
   pageSize?: number;
   className?: string;
   focusedItemId?: string | null;
+  showPagination?: boolean;
 }
 
 const RIGHT_SIDE_DOT_STYLE = {
@@ -24,6 +25,7 @@ export default function PaginatedCoverFlow({
   pageSize = 5,
   className,
   focusedItemId,
+  showPagination = true,
 }: PaginatedCoverFlowProps) {
   const focusedIndex = useMemo(
     () => (focusedItemId ? items.findIndex((item) => item.id === focusedItemId) : -1),
@@ -50,14 +52,16 @@ export default function PaginatedCoverFlow({
         onSelect={onSelect}
         initialActiveIndex={initialActiveIndex}
       />
-      <PaginationControls
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-        orientation="vertical"
-        className="fixed"
-        style={RIGHT_SIDE_DOT_STYLE as never}
-      />
+      {showPagination ? (
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          orientation="vertical"
+          className="fixed"
+          style={RIGHT_SIDE_DOT_STYLE as never}
+        />
+      ) : null}
     </div>
   );
 }

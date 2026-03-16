@@ -455,7 +455,7 @@ const MyGoTwo = () => {
 
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [focusedDrilldownItemId, setFocusedDrilldownItemId] = useState<string | null>(null);
-  const [focusedMainCategoryId, setFocusedMainCategoryId] = useState<string | null>(null);
+  const [focusedMainCategoryBySection, setFocusedMainCategoryBySection] = useState<Record<string, string>>({});
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
@@ -614,7 +614,7 @@ const MyGoTwo = () => {
     const subtypes = (item.fields as unknown as SubtypeItem[]) || [];
     const subcategories = item.subcategories as unknown as SubcategoryGroup[] | undefined;
     if (subtypes.length > 0 || (subcategories && subcategories.length > 0)) {
-      setFocusedMainCategoryId(item.key);
+      setFocusedMainCategoryBySection((prev) => ({ ...prev, [item.section]: item.key }));
       setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
       setFocusedDrilldownItemId(null);
       setShowCategoryPaywall(false);
@@ -967,10 +967,15 @@ const MyGoTwo = () => {
             </div>
           </div>
         )}
-        {orderedSections.map((section) => (
+        {orderedSections.map((section, index) => (
           <div key={section.key} className="snap-start snap-always h-full flex flex-col items-center justify-center overflow-hidden flex-shrink-0">
             <h2 className="section-header text-center mb-4">{section.label}</h2>
-            <GoTwoCoverFlow items={section.items} onSelect={handleSelect} focusedItemId={focusedMainCategoryId} />
+            <GoTwoCoverFlow
+              items={section.items}
+              onSelect={handleSelect}
+              focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+              showPagination={index === activeSectionIndex}
+            />
           </div>
         ))}
         {orderedSections.length === 0 && (
@@ -981,7 +986,7 @@ const MyGoTwo = () => {
           style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
         >
           {orderedSections.map((_, i) => (
-            <div key={i} style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "#2d6870" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }} />
+            <div key={i} style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }} />
           ))}
         </div>
       </motion.div>
