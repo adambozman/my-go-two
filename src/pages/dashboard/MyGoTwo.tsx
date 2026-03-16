@@ -610,6 +610,7 @@ const MyGoTwo = () => {
 
   const handleSubcategorySelect = (sc: SubcategoryGroup) => {
     if (sc.products && sc.products.length > 0) {
+      setFocusedDrilldownItemId(sc.id);
       setActiveSubcategory(sc);
       return;
     }
