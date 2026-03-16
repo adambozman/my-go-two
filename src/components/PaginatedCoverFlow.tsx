@@ -9,6 +9,13 @@ interface PaginatedCoverFlowProps {
   className?: string;
 }
 
+const RIGHT_SIDE_DOT_STYLE = {
+  right: 18,
+  top: "calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2 + 23px)",
+  transform: "translateY(-50%)",
+  zIndex: 50,
+} as const;
+
 export default function PaginatedCoverFlow({
   items,
   onSelect,
@@ -22,14 +29,15 @@ export default function PaginatedCoverFlow({
   });
 
   return (
-    <div className={className ?? "w-full flex flex-col items-center"}>
+    <div className={className ?? "w-full flex flex-col items-center relative"}>
       <CoverFlowCarousel items={paginatedItems} onSelect={onSelect} />
       <PaginationControls
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
-        label={`Page ${currentPage} of ${totalPages}`}
-        className="mt-5 space-y-2"
+        orientation="vertical"
+        className="fixed"
+        style={RIGHT_SIDE_DOT_STYLE as never}
       />
     </div>
   );
