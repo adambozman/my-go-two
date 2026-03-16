@@ -1,35 +1,35 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Sparkles, RefreshCw, Loader2, Star } from "lucide-react";
+import { RefreshCw, Loader2, UtensilsCrossed, Shirt, Cpu, Home, Bookmark, Share2, Award } from "lucide-react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Product {
   name: string;
   brand: string;
-  price_range: string;
+  price: string;
   category: string;
-  why_picked: string;
-  is_discovery: boolean;
+  hook: string;
+  why: string;
+  is_partner_pick: boolean;
 }
 
-const categoryLabels: Record<string, string> = {
-  clothing: "Clothing",
-  accessories: "Accessories",
-  grooming: "Grooming",
-  lifestyle: "Lifestyle",
-  experiences: "Experiences",
-  tech: "Tech",
-  home: "Home",
-  fragrance: "Fragrance",
-};
+const PILLARS = [
+  { key: "all", label: "For You", icon: Award },
+  { key: "food", label: "Food", icon: UtensilsCrossed },
+  { key: "clothes", label: "Clothes", icon: Shirt },
+  { key: "tech", label: "Tech", icon: Cpu },
+  { key: "home", label: "Home", icon: Home },
+] as const;
 
 const Recommendations = () => {
   const { personalization, loading: personalizationLoading } = usePersonalization();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [activePillar, setActivePillar] = useState<string>("all");
+  const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -54,10 +54,33 @@ const Recommendations = () => {
     }
   }, [personalizationLoading, personalization]);
 
+  const filtered = useMemo(() => {
+    if (activePillar === "all") return products;
+    return products.filter((p) => p.category === activePillar);
+  }, [products, activePillar]);
+
+  const toggleSave = (id: string) => {
+    setSavedItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+        toast("Removed from profile");
+      } else {
+        next.add(id);
+        toast.success("Saved to your profile");
+      }
+      return next;
+    });
+  };
+
+  const handleShare = (product: Product) => {
+    toast.success(`Ready to share ${product.name} with your partner`);
+  };
+
   if (personalizationLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--swatch-teal)" }} />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
@@ -65,101 +88,185 @@ const Recommendations = () => {
   if (!personalization) {
     return (
       <div className="space-y-4 text-center py-12">
-        <Sparkles className="h-10 w-10 mx-auto" style={{ color: "var(--swatch-teal)" }} />
-        <p className="text-muted-foreground">Complete your profile to get personalized product picks.</p>
+        <Award className="h-10 w-10 mx-auto text-primary" />
+        <p className="text-muted-foreground text-sm">Complete your Know Me profile to unlock curated picks.</p>
       </div>
     );
   }
 
-  // Group products by category
-  const grouped = products.reduce<Record<string, Product[]>>((acc, p) => {
-    const cat = p.category || "other";
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(p);
-    return acc;
-  }, {});
-
   return (
-    <div className="h-full overflow-y-auto space-y-6 pb-16">
-      <div className="flex items-center justify-between">
+    <div className="h-full overflow-y-auto pb-20">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
         <div>
+          <h1 className="text-lg font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+            Curated For You
+          </h1>
           {personalization.persona_summary && (
-            <p className="text-xs text-muted-foreground mt-1 max-w-sm italic">
-              Based on your {personalization.price_tier || ""} {(personalization.style_keywords || []).slice(0, 3).join(", ")} style
+            <p className="text-[11px] text-muted-foreground mt-0.5 max-w-[260px] leading-snug italic">
+              {personalization.persona_summary}
             </p>
           )}
         </div>
         <button
           onClick={fetchProducts}
           disabled={loading}
-          className="p-2 rounded-full transition-colors"
+          className="p-2 rounded-full transition-colors hover:bg-secondary"
           style={{ color: "var(--swatch-antique-coin)" }}
         >
-          <RefreshCw className={`h-5 w-5 ${loading ? "animate-spin" : ""}`} />
+          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
         </button>
       </div>
 
+      {/* Pillar Tabs */}
+      <div className="flex gap-1.5 mb-5 overflow-x-auto pb-1 -mx-1 px-1">
+        {PILLARS.map(({ key, label, icon: Icon }) => {
+          const isActive = activePillar === key;
+          return (
+            <button
+              key={key}
+              onClick={() => setActivePillar(key)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap shrink-0"
+              style={{
+                background: isActive ? "var(--swatch-viridian-odyssey)" : "var(--swatch-sand)",
+                color: isActive ? "var(--swatch-cream-light)" : "var(--swatch-antique-coin)",
+                border: `1px solid ${isActive ? "var(--swatch-viridian-odyssey)" : "var(--chip-border)"}`,
+              }}
+            >
+              <Icon className="h-3 w-3" />
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Loading State */}
       {loading && products.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-16">
-          <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--swatch-teal)" }} />
-          <p className="text-sm text-muted-foreground">Finding products that match your style...</p>
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Curating your picks…</p>
         </div>
-      ) : products.length > 0 ? (
-        <div className="space-y-7">
-          {Object.entries(grouped).map(([category, items]) => (
-            <div key={category} className="space-y-3">
-              <h2
-                className="text-[17px] font-semibold"
-                style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}
-              >
-                {categoryLabels[category] || category}
-              </h2>
-              <div className="space-y-2.5">
-                {items.map((product, i) => (
-                  <motion.div
-                    key={`${product.brand}-${product.name}-${i}`}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05, duration: 0.4 }}
-                    className="p-4 rounded-2xl"
-                    style={{
-                      background: product.is_discovery ? "rgba(45, 104, 112, 0.07)" : "var(--swatch-sand-mid)",
-                      border: product.is_discovery ? "1px solid rgba(45, 104, 112, 0.15)" : "1px solid var(--chip-border)",
-                    }}
-                  >
+      ) : filtered.length > 0 ? (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activePillar}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25 }}
+            className="space-y-3"
+          >
+            {filtered.map((product, i) => {
+              const itemId = `${product.brand}-${product.name}`;
+              const isSaved = savedItems.has(itemId);
+              return (
+                <motion.div
+                  key={itemId + i}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04, duration: 0.35 }}
+                  className="rounded-2xl overflow-hidden"
+                  style={{
+                    background: "var(--swatch-sand)",
+                    border: product.is_partner_pick
+                      ? "1px solid rgba(45, 104, 112, 0.25)"
+                      : "1px solid var(--chip-border)",
+                  }}
+                >
+                  {/* Partner Pick badge */}
+                  {product.is_partner_pick && (
+                    <div
+                      className="px-3 py-1 text-[10px] font-semibold tracking-wide uppercase"
+                      style={{
+                        background: "rgba(45, 104, 112, 0.08)",
+                        color: "var(--swatch-teal)",
+                        borderBottom: "1px solid rgba(45, 104, 112, 0.12)",
+                      }}
+                    >
+                      ★ Partner Pick
+                    </div>
+                  )}
+
+                  <div className="p-4 space-y-2.5">
+                    {/* Hook — the conversational "why" */}
+                    <p className="text-[13px] leading-relaxed italic text-muted-foreground">
+                      "{product.hook}"
+                    </p>
+
+                    {/* Brand & Product */}
                     <div className="flex items-start justify-between gap-3">
-                      <div className="space-y-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-semibold truncate" style={{ color: "var(--swatch-viridian-odyssey)" }}>
-                            {product.name}
-                          </h3>
-                          {product.is_discovery && (
-                            <Star className="h-3 w-3 shrink-0" style={{ color: "var(--swatch-cedar-grove)" }} fill="var(--swatch-cedar-grove)" />
-                          )}
-                        </div>
+                      <div className="min-w-0">
+                        <h3
+                          className="text-sm font-semibold truncate"
+                          style={{ color: "var(--swatch-viridian-odyssey)" }}
+                        >
+                          {product.name}
+                        </h3>
                         <p className="text-xs font-medium" style={{ color: "var(--swatch-teal)" }}>
                           {product.brand}
-                        </p>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          {product.why_picked}
                         </p>
                       </div>
                       <span
                         className="text-xs font-semibold shrink-0 px-2.5 py-1 rounded-full"
-                        style={{ background: "var(--swatch-sand)", color: "var(--swatch-antique-coin)" }}
+                        style={{
+                          background: "var(--swatch-sand-mid)",
+                          color: "var(--swatch-antique-coin)",
+                        }}
                       >
-                        {product.price_range}
+                        {product.price}
                       </span>
                     </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+
+                    {/* Why explanation */}
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {product.why}
+                    </p>
+
+                    {/* Action row */}
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => toggleSave(itemId)}
+                          className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-full transition-all"
+                          style={{
+                            background: isSaved ? "rgba(45, 104, 112, 0.12)" : "var(--swatch-sand-mid)",
+                            color: isSaved ? "var(--swatch-teal)" : "var(--swatch-antique-coin)",
+                          }}
+                        >
+                          <Bookmark className="h-3 w-3" fill={isSaved ? "currentColor" : "none"} />
+                          {isSaved ? "Saved" : "Save"}
+                        </button>
+                        <button
+                          onClick={() => handleShare(product)}
+                          className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-full transition-all"
+                          style={{
+                            background: "var(--swatch-sand-mid)",
+                            color: "var(--swatch-antique-coin)",
+                          }}
+                        >
+                          <Share2 className="h-3 w-3" />
+                          Share
+                        </button>
+                      </div>
+                      <button
+                        className="text-[11px] font-medium px-3 py-1 rounded-full transition-all"
+                        style={{
+                          background: "var(--swatch-viridian-odyssey)",
+                          color: "var(--swatch-cream-light)",
+                        }}
+                      >
+                        View
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
       ) : hasLoaded ? (
         <div className="text-center py-12">
-          <p className="text-muted-foreground text-sm">Tap refresh to generate product picks.</p>
+          <p className="text-muted-foreground text-sm">Tap refresh to generate your curated picks.</p>
         </div>
       ) : null}
     </div>

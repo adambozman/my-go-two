@@ -7,31 +7,15 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-
 const cleanText = (value: unknown): string => {
   if (typeof value !== "string") return "";
-  return value
-    .replace(/[^\x20-\x7E]/g, "")
-    .replace(/\s+/g, " ")
-    .replace(/\s+,/g, ",")
-    .trim()
-    .replace(/,$/, "");
+  return value.replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, " ").trim();
 };
 
-const ALLOWED_CATEGORIES = new Set([
-  "clothing",
-  "accessories",
-  "grooming",
-  "lifestyle",
-  "experiences",
-  "tech",
-  "home",
-  "fragrance",
-]);
+const ALLOWED_CATEGORIES = new Set(["food", "clothes", "tech", "home"]);
 
 const sanitizeProducts = (rawProducts: unknown) => {
   if (!Array.isArray(rawProducts)) return [];
-
   return rawProducts
     .map((item) => {
       const p = item as Record<string, unknown>;
@@ -39,13 +23,14 @@ const sanitizeProducts = (rawProducts: unknown) => {
       return {
         name: cleanText(p.name),
         brand: cleanText(p.brand),
-        price_range: cleanText(p.price_range),
-        category: ALLOWED_CATEGORIES.has(category) ? category : "lifestyle",
-        why_picked: cleanText(p.why_picked),
-        is_discovery: Boolean(p.is_discovery),
+        price: cleanText(p.price),
+        category: ALLOWED_CATEGORIES.has(category) ? category : "clothes",
+        hook: cleanText(p.hook),
+        why: cleanText(p.why),
+        is_partner_pick: Boolean(p.is_partner_pick),
       };
     })
-    .filter((p) => p.name && p.brand && p.price_range && p.why_picked);
+    .filter((p) => p.name && p.brand && p.hook);
 };
 
 serve(async (req) => {
@@ -64,7 +49,6 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error("Unauthorized");
 
-    // Get ALL user data for deep personalization
     const { data: prefs } = await supabase
       .from("user_preferences")
       .select("profile_answers, ai_personalization")
@@ -85,28 +69,47 @@ serve(async (req) => {
 
     const gender = profileAnswers?.identity?.[0] || profileAnswers?.identity || "unspecified";
 
-    const prompt = `You are a product recommendation AI for GoTwo, a couples' preference app.
+    // Build a condensed "Know Me" snapshot from profile answers
+    const knowMeSnapshot = Object.entries(profileAnswers)
+      .filter(([k]) => k !== "identity")
+      .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+      .slice(0, 30)
+      .join("\n");
 
-Generate 12 specific, real product recommendations for this user:
+    const prompt = `You are the Go Two Personal Curator — a high-end, AI-driven shopping and lifestyle concierge.
 
-Profile:
+CORE PHILOSOPHY:
+- Curated, Not Overbearing: Only recommend items that solve a problem or enhance the user's documented lifestyle
+- Brand-Specific: Focus on specific real brands that align with the user's aesthetic and quality preferences
+- Every recommendation should feel like a "discovery," not an "ad"
+
+USER PROFILE:
 - Gender: ${gender}
-- Style: ${(personalization.style_keywords || []).join(", ")}
-- Brands they like: ${(personalization.recommended_brands || []).join(", ")}
-- Stores they prefer: ${(personalization.recommended_stores || []).join(", ")}
-- Price tier: ${personalization.price_tier || "mid-range"}
-- Gift categories: ${(personalization.gift_categories || []).join(", ")}
+- Style Keywords: ${(personalization.style_keywords || []).join(", ")}
+- Brands They Like: ${(personalization.recommended_brands || []).join(", ")}
+- Stores They Prefer: ${(personalization.recommended_stores || []).join(", ")}
+- Price Tier: ${personalization.price_tier || "mid-range"}
 - Persona: ${personalization.persona_summary || ""}
 
-Rules:
-- Recommend REAL products with real brand names and approximate prices
-- Mix categories: clothing, accessories, grooming, lifestyle, experiences, tech
-- Match their price tier exactly
-- Match their style and brand preferences
-- Include 2-3 "discovery" picks — products from brands they might not know but would love
-- Each product needs: name, brand, price_range, category, why_picked (1 sentence explaining why this matches them)
+KNOW ME DATA (their answers):
+${knowMeSnapshot || "No detailed answers yet"}
 
-Use the provided tool to return the products.`;
+RULES:
+1. Generate exactly 12 recommendations — 3 per category
+2. Categories are EXACTLY: food, clothes, tech, home
+3. Cross-reference their "Know Me" answers with brand/style data
+4. Each recommendation needs:
+   - hook: 1 sentence explaining WHY this matches their profile (be specific, reference their data)
+   - brand: the specific brand name
+   - name: the specific product name  
+   - price: approximate price (e.g. "$45" or "$120-180")
+   - why: 1 sentence deeper explanation of fit
+   - is_partner_pick: true for 2-3 items that are "Partner Picks" (vetted premium selections)
+5. Talk like a knowledgeable friend: "Since you prefer dark roasts but hate acidity, this blend is your new go-to"
+6. Match their price tier exactly
+7. Use REAL products from REAL brands
+
+Use the provided tool to return the recommendations.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -122,7 +125,7 @@ Use the provided tool to return the products.`;
             type: "function",
             function: {
               name: "recommend_products",
-              description: "Generate personalized product recommendations",
+              description: "Return curated product recommendations organized by pillar",
               parameters: {
                 type: "object",
                 properties: {
@@ -131,14 +134,15 @@ Use the provided tool to return the products.`;
                     items: {
                       type: "object",
                       properties: {
-                        name: { type: "string" },
-                        brand: { type: "string" },
-                        price_range: { type: "string", description: "e.g. '$45-65' or '$200+'" },
-                        category: { type: "string", enum: ["clothing", "accessories", "grooming", "lifestyle", "experiences", "tech", "home", "fragrance"] },
-                        why_picked: { type: "string", description: "1 sentence why this matches the user" },
-                        is_discovery: { type: "boolean", description: "true if this is a brand they might not know" },
+                        name: { type: "string", description: "Specific product name" },
+                        brand: { type: "string", description: "Brand name" },
+                        price: { type: "string", description: "e.g. '$45' or '$120-180'" },
+                        category: { type: "string", enum: ["food", "clothes", "tech", "home"] },
+                        hook: { type: "string", description: "1 sentence why this matches their profile" },
+                        why: { type: "string", description: "Deeper 1-sentence explanation" },
+                        is_partner_pick: { type: "boolean", description: "true if this is a vetted Partner Pick" },
                       },
-                      required: ["name", "brand", "price_range", "category", "why_picked", "is_discovery"],
+                      required: ["name", "brand", "price", "category", "hook", "why", "is_partner_pick"],
                       additionalProperties: false,
                     },
                   },
