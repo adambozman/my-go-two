@@ -58,30 +58,45 @@ const Questionnaires = () => {
   }, []);
 
   /* ── This or That state ── */
-  const getRandomTot = useCallback(() => {
+  const totQueue = useMemo(() => {
     const answered = profileAnswers ? Object.keys(profileAnswers).filter(k => k.startsWith("tot-")) : [];
     const unanswered = THIS_OR_THAT.filter(t => !answered.includes(t.id));
-    const pool = unanswered.length > 0 ? unanswered : THIS_OR_THAT;
-    return pool[Math.floor(Math.random() * pool.length)];
+    return unanswered.length > 0 ? unanswered : [];
   }, [profileAnswers]);
-  const [totItem, setTotItem] = useState<ThisOrThatItem>(() => THIS_OR_THAT[0]);
-  const [totPicked, setTotPicked] = useState<string | null>(null);
+
+  const [totIndex, setTotIndex] = useState(0);
+  const [totSwipeDir, setTotSwipeDir] = useState<"left" | "right" | null>(null);
+  const totCurrent = totQueue[totIndex] || null;
+  const totAnsweredCount = THIS_OR_THAT.length - totQueue.length;
+
+  const openThisOrThat = () => {
+    setTotIndex(0);
+    setTotSwipeDir(null);
+    setView("thisorthat");
+  };
 
   const pickThisOrThat = async (choice: "A" | "B") => {
-    setTotPicked(choice);
-    const value = choice === "A" ? totItem.optionA : totItem.optionB;
+    if (!totCurrent) return;
+    const dir = choice === "A" ? "left" : "right";
+    setTotSwipeDir(dir);
+    const value = choice === "A" ? totCurrent.optionA : totCurrent.optionB;
     try {
       const userId = (await supabase.auth.getUser()).data.user?.id;
       if (userId) {
-        const updated = { ...(profileAnswers || {}), [totItem.id]: value };
+        const updated = { ...(profileAnswers || {}), [totCurrent.id]: value };
         await supabase.from("user_preferences").update({ profile_answers: updated, updated_at: new Date().toISOString() }).eq("user_id", userId);
         await refetch();
       }
     } catch { /* silent */ }
     setTimeout(() => {
-      setTotPicked(null);
-      setTotItem(getRandomTot());
-    }, 800);
+      setTotSwipeDir(null);
+      if (totIndex + 1 >= totQueue.length) {
+        toast.success("All This or That questions answered!");
+        setView("dashboard");
+      } else {
+        setTotIndex(i => i + 1);
+      }
+    }, 400);
   };
 
   const [aiFeedback, setAiFeedback] = useState<string | null>(null);
