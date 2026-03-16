@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
-import CoverFlowCarousel from "@/components/ui/CoverFlowCarousel";
+import PaginatedCoverFlow from "@/components/PaginatedCoverFlow";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 
 export type { SubtypeItem, SubcategoryGroup };
@@ -84,7 +84,7 @@ const TemplateCoverFlow = ({
     return (
       <div className="h-full flex flex-col items-center justify-center">
         <h2 className="section-header text-center mb-6">{templateName}</h2>
-        <CoverFlowCarousel
+        <PaginatedCoverFlow
           items={items}
           onSelect={(id) => {
             const sc = subcategories!.find(s => s.id === id);
@@ -107,7 +107,7 @@ const TemplateCoverFlow = ({
   return (
     <div className="h-full flex flex-col items-center justify-center">
       <h2 className="section-header text-center mb-6">{activeSubcategory?.name || templateName}</h2>
-      <CoverFlowCarousel
+      <PaginatedCoverFlow
         items={productItems}
         onSelect={(id) => {
           const p = products.find(x => x.id === id);

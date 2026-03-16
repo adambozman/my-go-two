@@ -13,6 +13,7 @@ import GoTwoCoverFlow from "@/components/GoTwoCoverFlow";
 import TemplateCoverFlow, { type SubtypeItem, type SubcategoryGroup } from "@/components/TemplateCoverFlow";
 import FormCoverFlowCarousel from "@/components/ui/FormCoverFlowCarousel";
 import PremiumLockCard from "@/components/PremiumLockCard";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import {
   Dialog,
   DialogContent,
@@ -54,6 +55,7 @@ interface CardEntry {
 
 const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
 const NEW_ENTRY_ID = "__new_entry__";
+const ENTRY_PAGE_SIZE = 5;
 
 const TagInput = ({ value, onChange, fieldLabel }: { value: string; onChange: (val: string) => void; fieldLabel: string }) => {
   const [adding, setAdding] = useState(false);
@@ -374,6 +376,7 @@ const MyGoTwo = () => {
   const [cardKey, setCardKey] = useState<string | null>(null);
   const [entries, setEntries] = useState<CardEntry[]>([]);
   const [activeEntryIndex, setActiveEntryIndex] = useState(0);
+  const [activeEntryPage, setActiveEntryPage] = useState(1);
   const [entryDrafts, setEntryDrafts] = useState<Record<string, Record<string, string>>>({});
   const [entryNames, setEntryNames] = useState<Record<string, string>>({});
   const [showGroupDialog, setShowGroupDialog] = useState(false);
@@ -453,6 +456,7 @@ const MyGoTwo = () => {
     setLeafSubcategoryName(undefined);
     setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
+    setActiveEntryPage(1);
     setShowCategoryPaywall(false);
     requestAnimationFrame(() => {
       if (scrollRef.current) {
@@ -467,6 +471,7 @@ const MyGoTwo = () => {
     setLeafSubcategoryName(undefined);
     setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
+    setActiveEntryPage(1);
     if (activeSubcategory && (!activeSubcategory.products || activeSubcategory.products.length === 0)) {
       setActiveSubcategory(null);
     }
@@ -533,6 +538,7 @@ const MyGoTwo = () => {
     setLeafCategoryName(coverFlowState?.name);
     setLeafImage((sc as any).image || "");
     setActiveEntryIndex(0);
+    setActiveEntryPage(1);
   };
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
@@ -549,6 +555,7 @@ const MyGoTwo = () => {
     setLeafCategoryName(coverFlowState?.name);
     setLeafImage((subtype as any).image || "");
     setActiveEntryIndex(0);
+    setActiveEntryPage(1);
   };
 
   const entryCoverFlowItems = [
@@ -563,6 +570,23 @@ const MyGoTwo = () => {
       image: leafImage || BRANDED_CARD_SVG,
     },
   ];
+
+  const entryTotalPages = Math.max(1, Math.ceil(entryCoverFlowItems.length / ENTRY_PAGE_SIZE));
+  const entryPageStart = (activeEntryPage - 1) * ENTRY_PAGE_SIZE;
+  const paginatedEntryItems = entryCoverFlowItems.slice(entryPageStart, entryPageStart + ENTRY_PAGE_SIZE);
+  const activeEntryIndexOnPage = paginatedEntryItems.length === 0
+    ? 0
+    : Math.min(Math.max(activeEntryIndex - entryPageStart, 0), paginatedEntryItems.length - 1);
+
+  useEffect(() => {
+    const nextPage = Math.min(entryTotalPages, Math.floor(activeEntryIndex / ENTRY_PAGE_SIZE) + 1);
+    setActiveEntryPage(nextPage);
+  }, [activeEntryIndex, entryTotalPages]);
+
+  const handleEntryPageChange = (page: number) => {
+    setActiveEntryPage(page);
+    setActiveEntryIndex(Math.min((page - 1) * ENTRY_PAGE_SIZE, Math.max(entryCoverFlowItems.length - 1, 0)));
+  };
 
   const handleNameChange = (itemId: string, value: string) => {
     setEntryNames((prev) => ({ ...prev, [itemId]: value }));
@@ -706,11 +730,11 @@ const MyGoTwo = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full flex flex-col items-center justify-center px-4"
         >
-          <div className="flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center">
             <FormCoverFlowCarousel
-              items={entryCoverFlowItems}
-              activeIndex={activeEntryIndex}
-              onActiveIndexChange={setActiveEntryIndex}
+              items={paginatedEntryItems}
+              activeIndex={activeEntryIndexOnPage}
+              onActiveIndexChange={(index) => setActiveEntryIndex(entryPageStart + index)}
               renderActiveCard={(item) => (
                 <EntryFormCard
                   subtype={leafSubtype}
@@ -726,6 +750,13 @@ const MyGoTwo = () => {
                   onDelete={() => handleDeleteEntry(item.id)}
                 />
               )}
+            />
+            <PaginationControls
+              currentPage={activeEntryPage}
+              totalPages={entryTotalPages}
+              onPageChange={handleEntryPageChange}
+              label={`Page ${activeEntryPage} of ${entryTotalPages}`}
+              className="mt-5 space-y-2"
             />
           </div>
 
