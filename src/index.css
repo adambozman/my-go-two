@@ -97,6 +97,8 @@ html::-webkit-scrollbar {
     --swatch-gypsum-rose-rgb: 232 212 190;
     --swatch-cedar-grove-rgb: 212 84 58;
     --swatch-teal-rgb: 45 104 112;
+    --swatch-sand-rgb: 239 224 207;
+    --swatch-cream-light-rgb: 245 233 220;
 
     --chip-border: rgba(174, 176, 161, 0.62);
     --texture-linen-light: url("./assets/textures/linen-overlay-light.svg");
