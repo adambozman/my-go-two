@@ -12,7 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 import GoTwoCoverFlow from "@/components/GoTwoCoverFlow";
 import TemplateCoverFlow, { type SubtypeItem, type SubcategoryGroup } from "@/components/TemplateCoverFlow";
 import FormCoverFlowCarousel from "@/components/ui/FormCoverFlowCarousel";
-import PremiumLockCard from "@/components/PremiumLockCard";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import {
   Dialog,
@@ -32,7 +31,6 @@ const sectionLabels: Record<string, string> = {
 };
 
 const sectionOrder = ["style-fit", "food-drink", "personal", "gifts-wishlist", "home-living", "entertainment"];
-const FREE_CARD_KEY_LIMIT = 3;
 
 interface CoverFlowState {
   name: string;
@@ -440,7 +438,7 @@ const EntryFormCard = ({
 };
 
 const MyGoTwo = () => {
-  const { user, subscribed } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const { gender, loading: genderLoading } = usePersonalization();
   const { categories, loading: registryLoading } = useCategoryRegistry(gender, "mygotwo");
@@ -453,10 +451,10 @@ const MyGoTwo = () => {
     }, {});
   }, [categories]);
 
-  const visibleSectionKeys = useMemo(
-    () => sectionOrder.filter((key) => sections[key] && sections[key].length > 0),
-    [sections],
-  );
+  const visibleSectionKeys = useMemo(() => {
+    const customKeys = Object.keys(sections).filter((key) => !sectionOrder.includes(key));
+    return [...sectionOrder, ...customKeys];
+  }, [sections]);
 
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [focusedDrilldownItemId, setFocusedDrilldownItemId] = useState<string | null>(null);
@@ -483,8 +481,6 @@ const MyGoTwo = () => {
   const [leafImage, setLeafImage] = useState<string>("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
   const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
-  const [unlockedCardKeys, setUnlockedCardKeys] = useState<string[]>([]);
-  const [showCategoryPaywall, setShowCategoryPaywall] = useState(false);
 
   const defaultFieldValues = useMemo(() => {
     if (!leafSubtype) return {} as Record<string, string>;
@@ -493,18 +489,6 @@ const MyGoTwo = () => {
       {} as Record<string, string>
     );
   }, [leafSubtype]);
-
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from("card_entries")
-      .select("card_key")
-      .eq("user_id", user.id)
-      .then(({ data }) => {
-        const keys = Array.from(new Set((data || []).map((row: any) => row.card_key).filter(Boolean)));
-        setUnlockedCardKeys(keys);
-      });
-  }, [user]);
 
   const fetchEntries = useCallback(async () => {
     if (!user || !cardKey) return;
@@ -605,7 +589,6 @@ const MyGoTwo = () => {
     setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     setActiveEntryPage(1);
-    setShowCategoryPaywall(false);
   };
 
   const goBackFromEntries = () => {
@@ -644,12 +627,6 @@ const MyGoTwo = () => {
     }
   }, [coverFlowState, activeSubcategory, cardKey, leafSubtype]);
 
-  const canAccessCardKey = useCallback((nextCardKey: string) => {
-    if (subscribed) return true;
-    if (unlockedCardKeys.includes(nextCardKey)) return true;
-    return unlockedCardKeys.length < FREE_CARD_KEY_LIMIT;
-  }, [subscribed, unlockedCardKeys]);
-
   const handleCategoryClick = (item: CategoryItem) => {
     if (scrollRef.current) {
       savedScrollTop.current = scrollRef.current.scrollTop;
@@ -661,7 +638,6 @@ const MyGoTwo = () => {
       setFocusedMainCategoryBySection((prev) => ({ ...prev, [item.section]: item.key }));
       setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
       setFocusedDrilldownItemId(null);
-      setShowCategoryPaywall(false);
     }
   };
 
@@ -691,12 +667,6 @@ const MyGoTwo = () => {
     }
 
     const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
-    if (!canAccessCardKey(key)) {
-      setShowCategoryPaywall(true);
-      return;
-    }
-
-    setShowCategoryPaywall(false);
     setFocusedDrilldownItemId(sc.id);
     setActiveSubcategory(sc);
     setCardKey(key);
@@ -710,12 +680,6 @@ const MyGoTwo = () => {
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
     const key = `${coverFlowState?.name}__${subcategoryName || ""}__${subtype.name}`;
-    if (!canAccessCardKey(key)) {
-      setShowCategoryPaywall(true);
-      return;
-    }
-
-    setShowCategoryPaywall(false);
     setFocusedDrilldownItemId(subtype.id);
     setCardKey(key);
     setLeafSubtype(subtype);
@@ -807,7 +771,6 @@ const MyGoTwo = () => {
 
         const inserted = data as CardEntry;
         setEntries((prev) => [...prev, inserted]);
-        setUnlockedCardKeys((prev) => prev.includes(cardKey) ? prev : [...prev, cardKey]);
         setEntryDrafts((prev) => ({
           ...prev,
           [inserted.id]: fieldValues,
@@ -853,13 +816,7 @@ const MyGoTwo = () => {
       const { error } = await supabase.from("card_entries").delete().eq("id", itemId);
       if (error) throw error;
 
-      setEntries((prev) => {
-        const nextEntries = prev.filter((entry) => entry.id !== itemId);
-        if (nextEntries.length === 0 && cardKey) {
-          setUnlockedCardKeys((prevKeys) => prevKeys.filter((key) => key !== cardKey));
-        }
-        return nextEntries;
-      });
+      setEntries((prev) => prev.filter((entry) => entry.id !== itemId));
       setActiveEntryIndex(0);
       toast({ title: "Deleted", description: "Entry removed." });
     } catch (e: any) {
@@ -884,27 +841,10 @@ const MyGoTwo = () => {
   const orderedSections = visibleSectionKeys.map((key) => ({
     key,
     label: sectionLabels[key] ?? key,
-    items: sections[key].map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
+    items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
   }));
 
   const renderContent = () => {
-    if (showCategoryPaywall) {
-      return (
-        <div className="h-full flex items-center justify-center px-4 py-6">
-          <PremiumLockCard
-            title="Deeper preference cards are Premium"
-            description="Free includes a few categories so people can feel the product. Premium unlocks unlimited categories and entries for real everyday use."
-            bullets={[
-              `Free includes up to ${FREE_CARD_KEY_LIMIT} saved preference areas`,
-              "Unlock unlimited categories, cards, and richer preference tracking",
-              "Pair it with recommendations, reminders, and extra connections",
-            ]}
-            onDismiss={() => setShowCategoryPaywall(false)}
-          />
-        </div>
-      );
-    }
-
     if (cardKey && leafSubtype) {
       return (
         <motion.div
@@ -1002,18 +942,6 @@ const MyGoTwo = () => {
           setActiveSectionIndex(getNearestSectionIndex(el.scrollTop));
         }}
       >
-        {!subscribed && (
-          <div className="px-4 pt-4">
-            <div className="rounded-2xl border px-4 py-3" style={{ background: "rgba(255,255,255,0.64)", borderColor: "rgba(255,255,255,0.84)", boxShadow: "0 8px 24px rgba(74,96,104,0.08), inset 0 1px 0 rgba(255,255,255,0.9)" }}>
-              <p className="text-[10px] uppercase tracking-[0.16em] font-semibold" style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}>
-                Free plan
-              </p>
-              <p className="mt-1 text-sm" style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}>
-                You can save up to {FREE_CARD_KEY_LIMIT} preference areas. Premium unlocks unlimited categories and entries.
-              </p>
-            </div>
-          </div>
-        )}
         {orderedSections.map((section, index) => (
           <div
             key={section.key}

@@ -7,16 +7,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { type Gender } from "@/lib/gender";
-import { getTemplateImage } from "@/lib/imageResolver";
-import { getOverride, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
+import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
-
-/** Pull the image key out of a registry row's subcategories JSONB.
- *  Each subtype has an `image` string (e.g. "clothing-tops").
- *  We grab the first non-empty one to use as the card cover. */
-function extractImageKey(row: any): string {
-  return row.key ? row.key.replace(/-male$|-female$|-nb$/, "") : "";
-}
+import { CATEGORY_REGISTRY_SEED } from "@/data/categoryRegistrySeed";
 
 export interface CategoryItem {
   key: string;
@@ -62,7 +55,7 @@ export function useCategoryRegistry(
       setError(null);
 
       try {
-        const { data: rows, error: fetchError } = await supabase
+        const { data: dbRows, error: fetchError } = await supabase
           .from("category_registry" as any)
           .select("*")
           .eq("page", page)
@@ -70,10 +63,15 @@ export function useCategoryRegistry(
           .contains("genders", [dbGender])
           .order("sort_order");
 
-        if (fetchError) throw fetchError;
+        const fallbackRows = CATEGORY_REGISTRY_SEED.filter(
+          (row) => row.page === page && row.is_active && row.genders?.includes(dbGender),
+        );
+        const rows = ((dbRows as any[])?.length ? dbRows : fallbackRows) as any[];
+
+        if (fetchError && rows.length === 0) throw fetchError;
         if (cancelled) return;
 
-        if (!rows || rows.length === 0) {
+        if (rows.length === 0) {
           setCategories([]);
           setLoading(false);
           return;
@@ -81,25 +79,25 @@ export function useCategoryRegistry(
 
         if (cancelled) return;
 
-        // Fetch all image URLs for this gender from category_images table
-        const keys = (rows as any[]).map((r: any) => r.key);
+        // Fetch all image URLs for this page from category_images table
+        const keys = Array.from(new Set(rows.map((r: any) => r.key).filter(Boolean)));
         const { data: imageRows } = await supabase
           .from("category_images")
           .select("category_key, image_url")
           .in("category_key", keys);
         const imageMap: Record<string, string> = {};
-        for (const row of (imageRows || [])) {
+        for (const row of imageRows || []) {
           imageMap[row.category_key] = row.image_url;
         }
 
-        const items: CategoryItem[] = (rows as any[]).map((r: any) => {
+        const items: CategoryItem[] = rows.map((r: any) => {
           const imageKey: string = r.key || "";
           return {
             key: r.key,
             label: r.label,
             section: r.section,
             image: imageMap[imageKey] ?? "",
-            imageKey: imageKey,
+            imageKey,
             sort_order: r.sort_order,
             fields: (r.fields as SubtypeItem[]) || [],
             subcategories: (r.subcategories as SubcategoryGroup[]) || undefined,
