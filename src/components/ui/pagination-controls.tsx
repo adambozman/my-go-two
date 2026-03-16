@@ -5,6 +5,7 @@ interface PaginationControlsProps {
   label?: string;
   className?: string;
   orientation?: "horizontal" | "vertical";
+  style?: React.CSSProperties;
 }
 
 export function PaginationControls({
