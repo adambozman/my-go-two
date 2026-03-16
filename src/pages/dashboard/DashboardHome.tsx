@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +8,8 @@ import ConnectionPage from "./ConnectionPage";
 import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
 import { MilestoneList, type Milestone } from "@/components/home/MilestoneCountdown";
 import { ConnectionDirectory, type DirectoryEntry } from "@/components/home/ConnectionDirectory";
+import { ConnectionAvatarRow } from "@/components/home/ConnectionAvatarRow";
+import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { RecentUpdates, type RecentUpdate } from "@/components/home/RecentUpdates";
 import { SmartBanner } from "@/components/home/SmartBanner";
 
@@ -37,10 +38,24 @@ const DashboardHome = () => {
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [recentUpdates, setRecentUpdates] = useState<RecentUpdate[]>([]);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [openConnection, setOpenConnection] = useState<{
     card: ConnectionCard;
     rect: { x: number; y: number; width: number; height: number };
   } | null>(null);
+
+  // Load display name
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        setDisplayName(data?.display_name || user.user_metadata?.display_name || null);
+      });
+  }, [user]);
 
   // Load connections
   const loadConnections = useCallback(async () => {
@@ -246,6 +261,18 @@ const DashboardHome = () => {
     isPlaceholder: c.id.startsWith("placeholder-"),
   }));
 
+  const handleOpenConnectionFromAvatar = useCallback(
+    (entry: DirectoryEntry) => {
+      const card = connections.find((c) => c.id === entry.id);
+      if (!card) return;
+      setOpenConnection({
+        card,
+        rect: { x: window.innerWidth / 2 - 50, y: 100, width: 100, height: 100 },
+      });
+    },
+    [connections]
+  );
+
   const handleOpenConnection = useCallback(
     (entry: DirectoryEntry, rect: DOMRect) => {
       const card = connections.find((c) => c.id === entry.id);
@@ -275,7 +302,10 @@ const DashboardHome = () => {
 
   return (
     <div className="h-full overflow-y-auto relative">
-      <div className="max-w-[520px] mx-auto space-y-5 py-4 px-1">
+      <div className="max-w-[520px] mx-auto space-y-6 py-4 px-1">
+        {/* Greeting */}
+        <GreetingHeader displayName={displayName} />
+
         {/* Smart notification banner */}
         {smartBanner && (
           <SmartBanner
@@ -286,28 +316,26 @@ const DashboardHome = () => {
           />
         )}
 
+        {/* Connection avatar row */}
+        <section className="space-y-2.5">
+          <h2
+            className="text-[11px] font-semibold uppercase tracking-[0.14em] px-1"
+            style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
+          >
+            Your People
+          </h2>
+          <ConnectionAvatarRow
+            entries={directoryEntries}
+            onSelect={handleOpenConnectionFromAvatar}
+            onAdd={handleAddConnection}
+          />
+        </section>
+
         {/* Milestone countdowns */}
         <MilestoneList milestones={milestones} />
 
         {/* Connection directory */}
         <ConnectionDirectory entries={directoryEntries} onSelect={handleOpenConnection} />
-
-        {/* Add connection button */}
-        <button
-          onClick={handleAddConnection}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-all active:scale-[0.98]"
-          style={{
-            background: "rgba(255,255,255,0.35)",
-            border: "1px dashed var(--swatch-text-light)",
-            color: "var(--swatch-teal)",
-            fontFamily: "'Jost', sans-serif",
-            fontSize: "13px",
-            fontWeight: 600,
-          }}
-        >
-          <Plus className="w-4 h-4" />
-          Add Connection
-        </button>
 
         {/* Recent activity feed */}
         <RecentUpdates updates={recentUpdates} />
