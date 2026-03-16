@@ -221,34 +221,17 @@ const Questionnaires = () => {
     );
   }
 
-  if (!subscribed) {
-    return (
-      <div className="h-full overflow-y-auto px-3 py-4">
-        <PremiumLockCard
-          title="Know Me AI is Premium"
-          description="The full question bank is part of Premium so the profile becomes useful enough for gifting, reminders, and weekly suggestions."
-          bullets={[
-            "Unlock the full 100-question blueprint",
-            "Build richer data for gift recommendations",
-            "Keep your profile useful long after onboarding",
-          ]}
-          preview={
-            <div className="grid grid-cols-2 gap-2.5">
-              {[cityFallbackImage, natureFallbackImage, cityFallbackImage, natureFallbackImage].map((src, index) => (
-                <div key={`${src}-${index}`} className="overflow-hidden rounded-2xl border border-white/70 bg-white/50">
-                  <img src={src} alt="Know Me preview" className="h-28 w-full object-cover" />
-                  <div className="p-3">
-                    <div className="mb-2 h-2.5 w-16 rounded-full bg-white/80" />
-                    <div className="h-2.5 w-24 rounded-full bg-white/70" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          }
-        />
-      </div>
-    );
-  }
+  const freeSprints = sprints.slice(0, FREE_SPRINT_LIMIT);
+  const displayedSprints = subscribed ? sprints : freeSprints;
+  const displayedSprintProgress = subscribed ? sprintProgress : sprintProgress.slice(0, FREE_SPRINT_LIMIT);
+  const visibleThisOrThatCount = subscribed
+    ? THIS_OR_THAT.length
+    : Math.min(THIS_OR_THAT.length, FREE_THIS_OR_THAT_LIMIT);
+  const visibleThisOrThatAnswered = subscribed
+    ? totAnsweredCount
+    : Math.min(totAnsweredCount, visibleThisOrThatCount);
+  const hasKnowMePreviewLimit = !subscribed;
+
 
   /* ═══════════════════════════════════════════════════════
      QUIZ VIEW — Active question
