@@ -849,3 +849,45 @@ export function buildSprints(gender: Gender): Sprint[] {
 export function getTotalQuestionCount(): number {
   return ALL_QUESTIONS.length;
 }
+
+/* ═══════════════════════════════════════════════════════
+   THIS OR THAT — Random binary choices
+   ═══════════════════════════════════════════════════════ */
+export interface ThisOrThatItem {
+  id: string;
+  optionA: string;
+  optionB: string;
+}
+
+export const THIS_OR_THAT: ThisOrThatItem[] = [
+  { id: "tot-01", optionA: "Coffee", optionB: "Tea" },
+  { id: "tot-02", optionA: "Mountains", optionB: "Beach" },
+  { id: "tot-03", optionA: "Early Bird", optionB: "Night Owl" },
+  { id: "tot-04", optionA: "Sweet", optionB: "Savory" },
+  { id: "tot-05", optionA: "City", optionB: "Countryside" },
+  { id: "tot-06", optionA: "Books", optionB: "Podcasts" },
+  { id: "tot-07", optionA: "Cooking", optionB: "Ordering In" },
+  { id: "tot-08", optionA: "Gold", optionB: "Silver" },
+  { id: "tot-09", optionA: "Minimalist", optionB: "Maximalist" },
+  { id: "tot-10", optionA: "Road Trip", optionB: "Fly There" },
+  { id: "tot-11", optionA: "Dogs", optionB: "Cats" },
+  { id: "tot-12", optionA: "Hot Weather", optionB: "Cold Weather" },
+  { id: "tot-13", optionA: "Fiction", optionB: "Non-Fiction" },
+  { id: "tot-14", optionA: "Spontaneous", optionB: "Planned" },
+  { id: "tot-15", optionA: "Netflix", optionB: "Going Out" },
+  { id: "tot-16", optionA: "Texting", optionB: "Calling" },
+  { id: "tot-17", optionA: "Wine", optionB: "Beer" },
+  { id: "tot-18", optionA: "Sunrise", optionB: "Sunset" },
+  { id: "tot-19", optionA: "Sneakers", optionB: "Dress Shoes" },
+  { id: "tot-20", optionA: "Brunch", optionB: "Dinner" },
+  { id: "tot-21", optionA: "Concert", optionB: "Museum" },
+  { id: "tot-22", optionA: "Bath", optionB: "Shower" },
+  { id: "tot-23", optionA: "Candles", optionB: "Diffuser" },
+  { id: "tot-24", optionA: "Chocolate", optionB: "Candy" },
+  { id: "tot-25", optionA: "Dine In", optionB: "Takeaway" },
+  { id: "tot-26", optionA: "Socks", optionB: "Barefoot" },
+  { id: "tot-27", optionA: "Vintage", optionB: "Brand New" },
+  { id: "tot-28", optionA: "Rain", optionB: "Sunshine" },
+  { id: "tot-29", optionA: "Silence", optionB: "Background Music" },
+  { id: "tot-30", optionA: "Pajamas", optionB: "Outfit Even At Home" },
+];

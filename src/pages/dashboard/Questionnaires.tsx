@@ -5,7 +5,8 @@ import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { buildSprints, SECTIONS, SPRINT_NAMES, type Sprint, type QuizQuestion } from "@/data/knowMeQuestions";
+import { buildSprints, SECTIONS, SPRINT_NAMES, THIS_OR_THAT, type Sprint, type QuizQuestion, type ThisOrThatItem } from "@/data/knowMeQuestions";
+import { Shuffle } from "lucide-react";
 
 /* ── AI feedback messages — rotate per question ── */
 const AI_FEEDBACK = [
@@ -56,6 +57,33 @@ const Questionnaires = () => {
       return next;
     });
   }, []);
+
+  /* ── This or That state ── */
+  const getRandomTot = useCallback(() => {
+    const answered = profileAnswers ? Object.keys(profileAnswers).filter(k => k.startsWith("tot-")) : [];
+    const unanswered = THIS_OR_THAT.filter(t => !answered.includes(t.id));
+    const pool = unanswered.length > 0 ? unanswered : THIS_OR_THAT;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }, [profileAnswers]);
+  const [totItem, setTotItem] = useState<ThisOrThatItem>(() => THIS_OR_THAT[0]);
+  const [totPicked, setTotPicked] = useState<string | null>(null);
+
+  const pickThisOrThat = async (choice: "A" | "B") => {
+    setTotPicked(choice);
+    const value = choice === "A" ? totItem.optionA : totItem.optionB;
+    try {
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+      if (userId) {
+        const updated = { ...(profileAnswers || {}), [totItem.id]: value };
+        await supabase.from("user_preferences").update({ profile_answers: updated, updated_at: new Date().toISOString() }).eq("user_id", userId);
+        await refetch();
+      }
+    } catch { /* silent */ }
+    setTimeout(() => {
+      setTotPicked(null);
+      setTotItem(getRandomTot());
+    }, 800);
+  };
 
   const [aiFeedback, setAiFeedback] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -409,13 +437,73 @@ const Questionnaires = () => {
         </p>
       </div>
 
+      {/* This or That card */}
+      <div className="px-4 mt-3 mb-2">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 24 }}
+          className="rounded-2xl p-4 relative overflow-hidden"
+          style={{
+            background: "var(--swatch-viridian-odyssey)",
+            boxShadow: "0 6px 24px rgba(30,74,82,0.15)",
+          }}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Shuffle className="w-4 h-4 text-white/60" />
+            <span className="text-[11px] uppercase tracking-[0.12em] text-white/60" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500 }}>
+              This or That
+            </span>
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={totItem.id}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              className="flex gap-3"
+            >
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => !totPicked && pickThisOrThat("A")}
+                className="flex-1 py-4 rounded-xl text-center text-[15px] font-medium transition-all"
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontWeight: 700,
+                  background: totPicked === "A" ? "var(--swatch-teal)" : "rgba(255,255,255,0.12)",
+                  color: "#fff",
+                  border: totPicked === "A" ? "1.5px solid var(--swatch-teal)" : "1.5px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                {totItem.optionA}
+              </motion.button>
+              <span className="self-center text-white/30 text-[11px] font-medium" style={{ fontFamily: "'Jost', sans-serif" }}>or</span>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => !totPicked && pickThisOrThat("B")}
+                className="flex-1 py-4 rounded-xl text-center text-[15px] font-medium transition-all"
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontWeight: 700,
+                  background: totPicked === "B" ? "var(--swatch-teal)" : "rgba(255,255,255,0.12)",
+                  color: "#fff",
+                  border: totPicked === "B" ? "1.5px solid var(--swatch-teal)" : "1.5px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                {totItem.optionB}
+              </motion.button>
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
       {/* Sprint list */}
       <div className="flex-1 px-4 pb-8 space-y-3 mt-2">
         {sprints.map((sprint, idx) => {
           const prog = sprintProgress[idx];
-          const isActive = idx === currentSprintIdx;
-          const isLocked = idx > currentSprintIdx && !sprintProgress[idx - 1]?.complete;
           const isComplete = prog.complete;
+          const hasProgress = prog.answered > 0 && !isComplete;
 
           return (
             <motion.button
@@ -423,25 +511,23 @@ const Questionnaires = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.04, type: "spring", stiffness: 280, damping: 25 }}
-              whileTap={!isLocked ? { scale: 0.98 } : undefined}
-              onClick={() => !isLocked && startSprint(idx)}
-              disabled={isLocked}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => startSprint(idx)}
               className="w-full rounded-2xl p-4 text-left transition-all relative overflow-hidden"
               style={{
-                background: isActive
+                background: hasProgress
                   ? "#FFFFFF"
                   : isComplete
                     ? "rgba(var(--swatch-teal-rgb), 0.04)"
                     : "rgba(255,255,255,0.5)",
-                border: isActive
+                border: hasProgress
                   ? "1.5px solid var(--swatch-teal)"
                   : isComplete
                     ? "1.5px solid rgba(var(--swatch-teal-rgb), 0.15)"
                     : "1.5px solid rgba(var(--swatch-antique-coin-rgb), 0.08)",
-                boxShadow: isActive
+                boxShadow: hasProgress
                   ? "0 4px 20px rgba(45,104,112,0.08)"
                   : "0 1px 4px rgba(0,0,0,0.02)",
-                opacity: isLocked ? 0.45 : 1,
               }}
             >
               <div className="flex items-center gap-3">
@@ -452,12 +538,12 @@ const Questionnaires = () => {
                     fontFamily: "'Jost', sans-serif",
                     background: isComplete
                       ? "var(--swatch-teal)"
-                      : isActive
+                      : hasProgress
                         ? "rgba(var(--swatch-teal-rgb), 0.1)"
                         : "rgba(var(--swatch-antique-coin-rgb), 0.06)",
                     color: isComplete
                       ? "#fff"
-                      : isActive
+                      : hasProgress
                         ? "var(--swatch-teal)"
                         : "var(--swatch-antique-coin)",
                   }}
@@ -487,13 +573,13 @@ const Questionnaires = () => {
                 </div>
 
                 {/* Arrow */}
-                {!isLocked && !isComplete && (
-                  <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "var(--swatch-teal)" }} />
+                {!isComplete && (
+                  <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: hasProgress ? "var(--swatch-teal)" : "var(--swatch-antique-coin)" }} />
                 )}
               </div>
 
-              {/* Active indicator */}
-              {isActive && (
+              {/* In-progress indicator */}
+              {hasProgress && (
                 <motion.div
                   layoutId="active-sprint"
                   className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full"
