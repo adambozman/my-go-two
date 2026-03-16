@@ -536,6 +536,16 @@ const MyGoTwo = () => {
     }
   }, [entries, leafSubtype, defaultFieldValues, cardKey, activeGroup]);
 
+  useEffect(() => {
+    if (!coverFlowState && !cardKey) {
+      requestAnimationFrame(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = savedScrollTop.current;
+        }
+      });
+    }
+  }, [coverFlowState, cardKey]);
+
   const clearCoverFlow = () => {
     setCoverFlowState(null);
     setFocusedDrilldownItemId(null);
@@ -547,11 +557,6 @@ const MyGoTwo = () => {
     setActiveEntryIndex(0);
     setActiveEntryPage(1);
     setShowCategoryPaywall(false);
-    requestAnimationFrame(() => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTop = savedScrollTop.current;
-      }
-    });
   };
 
   const goBackFromEntries = () => {
