@@ -164,15 +164,85 @@ const Recommendations = () => {
               const itemId = `${product.brand}-${product.name}`;
               const isSaved = savedItems.has(itemId);
               return (
-                <motion.div
+                <SponsoredAwareCard
                   key={itemId + i}
+                  product={product}
+                  index={i}
+                  isSaved={isSaved}
+                  onToggleSave={() => toggleSave(itemId)}
+                  onShare={() => handleShare(product)}
+                />
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
+      ) : hasLoaded ? (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground text-sm">Tap refresh to generate your curated picks.</p>
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+// Extracted card component with impression tracking for sponsored items
+function SponsoredAwareCard({
+  product,
+  index,
+  isSaved,
+  onToggleSave,
+  onShare,
+}: {
+  product: Product;
+  index: number;
+  isSaved: boolean;
+  onToggleSave: () => void;
+  onShare: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const tracked = useRef(false);
+
+  // Track impression when card becomes visible
+  useEffect(() => {
+    if (!product.is_sponsored || !product.sponsored_id || tracked.current) return;
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !tracked.current) {
+          tracked.current = true;
+          trackAdEvent(product.sponsored_id!, "impression", "blended");
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [product.is_sponsored, product.sponsored_id]);
+
+  const handleClick = () => {
+    if (product.is_sponsored && product.sponsored_id) {
+      trackAdEvent(product.sponsored_id, "click", "blended");
+    }
+    if (product.affiliate_url) {
+      window.open(product.affiliate_url, "_blank", "noopener");
+    }
+  };
+
+  return (
+                <motion.div
+                  ref={ref}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04, duration: 0.35 }}
+                  transition={{ delay: index * 0.04, duration: 0.35 }}
                   className="rounded-2xl overflow-hidden"
                   style={{
                     background: "var(--swatch-sand)",
-                    border: product.is_partner_pick
+                    border: product.is_sponsored
+                      ? "1px solid rgba(212,84,58,0.15)"
+                      : product.is_partner_pick
                       ? "1px solid rgba(45, 104, 112, 0.25)"
                       : "1px solid var(--chip-border)",
                   }}
