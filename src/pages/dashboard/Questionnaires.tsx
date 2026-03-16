@@ -603,93 +603,125 @@ const Questionnaires = () => {
         <h1 className="text-[28px] leading-[1.1] mb-1" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
           Your Blueprint
         </h1>
-        <p className="text-[13px] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-          {subscribed
-            ? allDone
-              ? "All 100 questions answered — your blueprint is complete!"
-              : `${totalAnswered} of ${totalQuestions} questions answered`
-            : `Free access: ${displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0)} of ${freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0)} questions answered`}
-        </p>
+        <div className="rounded-[28px] px-5 py-5 mb-4 relative overflow-hidden" style={{
+          background: "linear-gradient(135deg, rgba(var(--swatch-sand-rgb), 0.78) 0%, rgba(255,255,255,0.58) 50%, rgba(var(--swatch-sand-rgb), 0.72) 100%)",
+          border: "1px solid rgba(var(--swatch-antique-coin-rgb), 0.12)",
+          boxShadow: "0 18px 60px rgba(30,74,82,0.10), inset 0 1px 0 rgba(255,255,255,0.92)",
+          backdropFilter: "blur(10px)",
+        }}>
+          <div className="absolute inset-y-0 right-0 w-1/2" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.12), transparent 62%)" }} />
+          <div className="relative">
+            <p className="text-[10px] uppercase tracking-[0.18em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-coral)" }}>
+              Go Two / Know Me
+            </p>
+            <div className="flex items-end justify-between gap-4 mb-2">
+              <div>
+                <h1 className="text-[34px] leading-none mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                  Your Blueprint
+                </h1>
+                <p className="text-[13px] max-w-[580px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  {subscribed
+                    ? allDone
+                      ? "All 100 questions answered — your blueprint is complete."
+                      : `${totalAnswered} of ${totalQuestions} questions answered across your editorial profile.`
+                    : `Free access includes the first ${FREE_SPRINT_LIMIT} blueprint sprints and ${FREE_THIS_OR_THAT_LIMIT} This or That prompts — no hard stop, just a refined preview.`}
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-teal)" }}>
+                  {Math.round(
+                    subscribed
+                      ? (totalAnswered / totalQuestions) * 100
+                      : (displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0) /
+                          Math.max(1, freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0))) * 100,
+                  )}%
+                </p>
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  complete
+                </p>
+              </div>
+            </div>
 
-        {!subscribed && (
-          <div
-            className="rounded-2xl px-4 py-3 mb-3"
-            style={{
-              background: "rgba(var(--swatch-teal-rgb), 0.08)",
-              border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)",
-            }}
-          >
-            <p className="text-[11px] uppercase tracking-[0.12em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-              Partial access
-            </p>
-            <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              You can use the first {FREE_SPRINT_LIMIT} blueprint sprints and {FREE_THIS_OR_THAT_LIMIT} This or That prompts here. No full-page block.
-            </p>
+            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px] items-end">
+              <div>
+                <div className="h-2 rounded-full overflow-hidden mb-2" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}>
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-teal-mid))" }}
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${subscribed
+                        ? (totalAnswered / totalQuestions) * 100
+                        : (displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0) /
+                            Math.max(1, freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0))) * 100}%`,
+                    }}
+                    transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                  />
+                </div>
+                <p className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  {subscribed ? "A richer profile leads to better gift ideas and recommendations." : "Start with the open sprints below and build momentum naturally."}
+                </p>
+              </div>
+
+              {!subscribed && (
+                <div className="rounded-[22px] px-4 py-3" style={{
+                  background: "rgba(255,255,255,0.58)",
+                  border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.88)",
+                }}>
+                  <p className="text-[10px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                    Partial access
+                  </p>
+                  <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    Elegant preview mode is on — no full-page block.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        )}
-
-        {/* Overall progress bar */}
-        <div className="h-2 rounded-full overflow-hidden mb-1" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}>
-          <motion.div
-            className="h-full rounded-full"
-            style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-teal-mid))" }}
-            initial={{ width: 0 }}
-            animate={{
-              width: `${subscribed
-                ? (totalAnswered / totalQuestions) * 100
-                : (displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0) /
-                    Math.max(1, freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0))) * 100}%`,
-            }}
-            transition={{ type: "spring", stiffness: 100, damping: 20 }}
-          />
         </div>
-        <p className="text-[10px] text-right" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-          {Math.round(
-            subscribed
-              ? (totalAnswered / totalQuestions) * 100
-              : (displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0) /
-                  Math.max(1, freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0))) * 100,
-          )}% complete
-        </p>
       </div>
 
-      {/* This or That card — tap to open */}
-      <div className="px-4 mt-3 mb-2">
+      <div className="px-4 mt-1 mb-3">
         <motion.button
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 24 }}
-          whileTap={{ scale: 0.97 }}
+          whileTap={{ scale: 0.985 }}
           onClick={openThisOrThat}
-          className="w-full rounded-2xl p-4 relative overflow-hidden text-left"
+          className="w-full rounded-[26px] p-5 relative overflow-hidden text-left"
           style={{
-            background: "var(--swatch-viridian-odyssey)",
-            boxShadow: "0 6px 24px rgba(30,74,82,0.15)",
+            background: "linear-gradient(135deg, var(--swatch-viridian-odyssey) 0%, rgba(var(--swatch-teal-rgb), 0.94) 100%)",
+            boxShadow: "0 18px 44px rgba(30,74,82,0.18)",
           }}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Shuffle className="w-4 h-4 text-white/60" />
-              <span className="text-[11px] uppercase tracking-[0.12em] text-white/60" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500 }}>
-                This or That
-              </span>
+          <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(255,255,255,0.14), transparent 34%)" }} />
+          <div className="relative flex items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Shuffle className="w-4 h-4 text-white/70" />
+                <span className="text-[11px] uppercase tracking-[0.16em] text-white/70" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500 }}>
+                  This or That
+                </span>
+              </div>
+              <p className="text-[22px] leading-none text-white/95" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}>
+                {visibleThisOrThatAnswered < visibleThisOrThatCount ? "Quick instinct picks" : "Completed beautifully"}
+              </p>
+              <p className="text-[12px] mt-2 text-white/72 max-w-[480px]" style={{ fontFamily: "'Jost', sans-serif" }}>
+                {subscribed
+                  ? "Fast swipes that sharpen the emotional tone of your profile."
+                  : `Your free preview includes ${visibleThisOrThatCount} prompts.`}
+              </p>
             </div>
-            <span className="text-[11px] text-white/40" style={{ fontFamily: "'Jost', sans-serif" }}>
-              {visibleThisOrThatAnswered}/{visibleThisOrThatCount}
-            </span>
+            <div className="text-right shrink-0">
+              <p className="text-[24px] leading-none text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}>
+                {visibleThisOrThatAnswered}/{visibleThisOrThatCount}
+              </p>
+            </div>
           </div>
-          <p className="text-[15px] text-white/90 mt-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}>
-            {visibleThisOrThatAnswered < visibleThisOrThatCount ? "Tap to play →" : "All answered ✓"}
-          </p>
-          {!subscribed && (
-            <p className="text-[11px] text-white/60 mt-2" style={{ fontFamily: "'Jost', sans-serif" }}>
-              Free preview includes {visibleThisOrThatCount} prompts.
-            </p>
-          )}
         </motion.button>
       </div>
 
-      {/* Sprint list */}
       <div className="flex-1 px-4 pb-8 space-y-3 mt-2">
         {displayedSprints.map((sprint, idx) => {
           const prog = displayedSprintProgress[idx];
@@ -702,62 +734,60 @@ const Questionnaires = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.04, type: "spring", stiffness: 280, damping: 25 }}
-              whileTap={{ scale: 0.98 }}
+              whileTap={{ scale: 0.99 }}
               onClick={() => startSprint(idx)}
-              className="w-full rounded-2xl p-4 text-left transition-all relative overflow-hidden"
+              className="w-full rounded-[24px] p-4 text-left transition-all relative overflow-hidden"
               style={{
-                background: hasProgress
-                  ? "#FFFFFF"
-                  : isComplete
-                    ? "rgba(var(--swatch-teal-rgb), 0.04)"
-                    : "rgba(255,255,255,0.5)",
+                background: "linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(var(--swatch-sand-rgb), 0.52) 100%)",
                 border: hasProgress
-                  ? "1.5px solid var(--swatch-teal)"
+                  ? "1px solid rgba(var(--swatch-teal-rgb), 0.22)"
                   : isComplete
-                    ? "1.5px solid rgba(var(--swatch-teal-rgb), 0.15)"
-                    : "1.5px solid rgba(var(--swatch-antique-coin-rgb), 0.08)",
+                    ? "1px solid rgba(var(--swatch-teal-rgb), 0.18)"
+                    : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.10)",
                 boxShadow: hasProgress
-                  ? "0 4px 20px rgba(45,104,112,0.08)"
-                  : "0 1px 4px rgba(0,0,0,0.02)",
+                  ? "0 12px 34px rgba(45,104,112,0.10), inset 0 1px 0 rgba(255,255,255,0.88)"
+                  : "0 10px 28px rgba(30,74,82,0.05), inset 0 1px 0 rgba(255,255,255,0.88)",
+                backdropFilter: "blur(10px)",
               }}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-bold"
+                  className="w-11 h-11 rounded-[16px] flex items-center justify-center flex-shrink-0 text-sm font-bold"
                   style={{
                     fontFamily: "'Jost', sans-serif",
                     background: isComplete
                       ? "var(--swatch-teal)"
                       : hasProgress
-                        ? "rgba(var(--swatch-teal-rgb), 0.1)"
+                        ? "rgba(var(--swatch-teal-rgb), 0.12)"
                         : "rgba(var(--swatch-antique-coin-rgb), 0.06)",
                     color: isComplete
-                      ? "#fff"
+                      ? "rgba(255,255,255,0.96)"
                       : hasProgress
                         ? "var(--swatch-teal)"
                         : "var(--swatch-antique-coin)",
+                    boxShadow: isComplete ? "0 8px 18px rgba(45,104,112,0.18)" : "none",
                   }}
                 >
                   {isComplete ? <Check className="w-5 h-5" /> : sprint.id}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[15px] leading-tight mb-0.5 truncate" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
-                    Sprint {sprint.id}: {sprint.name}
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}>
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{
-                          width: `${(prog.answered / prog.total) * 100}%`,
-                          background: isComplete ? "var(--swatch-teal)" : "var(--swatch-teal-mid)",
-                        }}
-                      />
-                    </div>
-                    <span className="text-[10px] tabular-nums flex-shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <h3 className="text-[22px] leading-none truncate" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                      Sprint {sprint.id}: {sprint.name}
+                    </h3>
+                    <span className="text-[11px] tabular-nums shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                       {prog.answered}/{prog.total}
                     </span>
+                  </div>
+                  <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}>
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${(prog.answered / prog.total) * 100}%`,
+                        background: isComplete ? "var(--swatch-teal)" : "var(--swatch-teal-mid)",
+                      }}
+                    />
                   </div>
                 </div>
 
@@ -769,7 +799,7 @@ const Questionnaires = () => {
               {hasProgress && (
                 <motion.div
                   layoutId="active-sprint"
-                  className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full"
+                  className="absolute left-0 top-5 bottom-5 w-[3px] rounded-r-full"
                   style={{ background: "var(--swatch-teal)" }}
                 />
               )}
@@ -778,18 +808,12 @@ const Questionnaires = () => {
         })}
 
         {!subscribed && (
-          <div
-            className="rounded-2xl px-4 py-4"
-            style={{
-              background: "rgba(var(--swatch-antique-coin-rgb), 0.04)",
-              border: "1px dashed rgba(var(--swatch-antique-coin-rgb), 0.18)",
-            }}
-          >
-            <p className="text-[11px] uppercase tracking-[0.12em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+          <div className="pt-3 px-1">
+            <p className="text-[10px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-coral)" }}>
               More available with Premium
             </p>
-            <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              The remaining {sprints.length - displayedSprints.length} blueprint sprints stay hidden, but this page no longer blocks access.
+            <p className="text-[12px] leading-relaxed max-w-[540px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              The remaining {sprints.length - displayedSprints.length} blueprint sprints stay hidden, but the dashboard now stays clean, open, and usable.
             </p>
           </div>
         )}
