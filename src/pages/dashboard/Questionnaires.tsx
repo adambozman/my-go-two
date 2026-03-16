@@ -603,7 +603,7 @@ const Questionnaires = () => {
             transition={{ type: "spring", stiffness: 240, damping: 24 }}
             className="lg:col-span-8 rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[320px]"
             style={{
-              background: "linear-gradient(135deg, rgba(var(--swatch-teal-rgb), 0.92) 0%, rgba(var(--swatch-teal-rgb), 0.78) 48%, rgba(var(--swatch-antique-coin-rgb), 0.88) 100%)",
+              background: "linear-gradient(135deg, rgba(var(--swatch-teal-rgb), 0.90) 0%, rgba(var(--swatch-teal-rgb), 0.74) 44%, rgba(var(--swatch-antique-coin-rgb), 0.84) 100%)",
               boxShadow: "0 24px 60px rgba(30,74,82,0.22)",
             }}
           >
@@ -625,7 +625,7 @@ const Questionnaires = () => {
                 </div>
 
                 <div className="rounded-[26px] px-5 py-4 min-w-[150px] backdrop-blur-md" style={{
-                  background: "rgba(255,255,255,0.10)",
+                  background: "rgba(255,255,255,0.12)",
                   border: "1px solid rgba(255,255,255,0.16)",
                   boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18)",
                 }}>
@@ -671,7 +671,7 @@ const Questionnaires = () => {
 
                 {!subscribed && (
                   <div className="rounded-[28px] p-4 backdrop-blur-md" style={{
-                    background: "rgba(var(--swatch-gypsum-rose-rgb), 0.16)",
+                    background: "rgba(var(--swatch-gypsum-rose-rgb), 0.18)",
                     border: "1px solid rgba(255,255,255,0.16)",
                   }}>
                     <p className="text-[10px] uppercase tracking-[0.18em] mb-1 text-primary-foreground/70" style={{ fontFamily: "'Jost', sans-serif" }}>
@@ -694,7 +694,7 @@ const Questionnaires = () => {
             onClick={openThisOrThat}
             className="lg:col-span-4 rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left min-h-[320px] flex flex-col justify-between"
             style={{
-              background: "linear-gradient(160deg, rgba(var(--swatch-cedar-grove-rgb), 0.84) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.66) 52%, rgba(var(--swatch-teal-rgb), 0.78) 100%)",
+              background: "linear-gradient(160deg, rgba(var(--swatch-cedar-grove-rgb), 0.78) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.56) 50%, rgba(var(--swatch-teal-rgb), 0.64) 100%)",
               boxShadow: "0 22px 54px rgba(212,84,58,0.18)",
             }}
           >
@@ -741,9 +741,9 @@ const Questionnaires = () => {
             transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
             className="lg:col-span-5 rounded-[30px] p-5 relative overflow-hidden min-h-[220px]"
             style={{
-              background: "linear-gradient(145deg, rgba(var(--swatch-gypsum-rose-rgb), 0.82) 0%, rgba(var(--swatch-sand-rgb), 0.92) 100%)",
+              background: "linear-gradient(145deg, rgba(var(--swatch-gypsum-rose-rgb), 0.88) 0%, rgba(var(--swatch-sand-rgb), 0.98) 100%)",
               border: "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.08)",
-              boxShadow: "0 18px 44px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.62)",
+              boxShadow: "0 18px 44px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.58)",
             }}
           >
             <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-cedar-grove-rgb), 0.12)" }} />
@@ -764,9 +764,9 @@ const Questionnaires = () => {
             transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
             className="lg:col-span-7 rounded-[30px] p-5 md:p-6"
             style={{
-              background: "linear-gradient(145deg, rgba(var(--swatch-sand-rgb), 0.94) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.74) 100%)",
+              background: "linear-gradient(145deg, rgba(var(--swatch-sand-rgb), 0.86) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.72) 100%)",
               border: "1px solid rgba(var(--swatch-teal-rgb), 0.10)",
-              boxShadow: "0 18px 50px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.62)",
+              boxShadow: "0 18px 50px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.48)",
               backdropFilter: "blur(10px)",
             }}
           >
@@ -792,6 +792,43 @@ const Questionnaires = () => {
                 const isComplete = prog.complete;
                 const hasProgress = prog.answered > 0 && !isComplete;
                 const isTall = idx % 3 === 0;
+                const overlayTheme = idx % 3;
+                const cardBackground = overlayTheme === 0
+                  ? hasProgress
+                    ? "linear-gradient(155deg, rgba(var(--swatch-teal-rgb), 0.22) 0%, rgba(var(--swatch-sand-rgb), 0.92) 100%)"
+                    : "linear-gradient(155deg, rgba(var(--swatch-teal-rgb), 0.14) 0%, rgba(var(--swatch-sand-rgb), 0.88) 100%)"
+                  : overlayTheme === 1
+                    ? hasProgress
+                      ? "linear-gradient(155deg, rgba(var(--swatch-cedar-grove-rgb), 0.18) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.90) 100%)"
+                      : "linear-gradient(155deg, rgba(var(--swatch-cedar-grove-rgb), 0.12) 0%, rgba(var(--swatch-sand-rgb), 0.90) 100%)"
+                    : hasProgress
+                      ? "linear-gradient(155deg, rgba(255,255,255,0.82) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.72) 100%)"
+                      : "linear-gradient(155deg, rgba(255,255,255,0.76) 0%, rgba(var(--swatch-sand-rgb), 0.82) 100%)";
+                const cardBorder = overlayTheme === 0
+                  ? "1px solid rgba(var(--swatch-teal-rgb), 0.20)"
+                  : overlayTheme === 1
+                    ? "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.16)"
+                    : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.12)";
+                const orbColor = overlayTheme === 0
+                  ? "rgba(var(--swatch-teal-rgb), 0.12)"
+                  : overlayTheme === 1
+                    ? "rgba(var(--swatch-cedar-grove-rgb), 0.12)"
+                    : "rgba(255,255,255,0.34)";
+                const badgeBackground = isComplete
+                  ? "rgba(var(--swatch-teal-rgb), 0.84)"
+                  : overlayTheme === 1
+                    ? "rgba(var(--swatch-cedar-grove-rgb), 0.14)"
+                    : overlayTheme === 0
+                      ? "rgba(var(--swatch-teal-rgb), 0.14)"
+                      : "rgba(255,255,255,0.58)";
+                const badgeColor = isComplete
+                  ? "rgba(255,255,255,0.96)"
+                  : overlayTheme === 1
+                    ? "var(--swatch-cedar-grove)"
+                    : overlayTheme === 0
+                      ? "var(--swatch-teal)"
+                      : "var(--swatch-antique-coin)";
+                const accentColor = overlayTheme === 1 ? "var(--swatch-cedar-grove)" : overlayTheme === 0 ? "var(--swatch-teal)" : "var(--swatch-antique-coin)";
 
                 return (
                   <motion.button
@@ -803,52 +840,30 @@ const Questionnaires = () => {
                     onClick={() => startSprint(idx)}
                     className={`relative overflow-hidden text-left rounded-[28px] p-5 transition-all ${isTall ? "md:row-span-2 min-h-[220px]" : "min-h-[168px]"}`}
                     style={{
-                      background: hasProgress
-                        ? "linear-gradient(155deg, rgba(var(--swatch-teal-rgb), 0.22) 0%, rgba(var(--swatch-sand-rgb), 0.92) 100%)"
-                        : isComplete
-                          ? "linear-gradient(155deg, rgba(var(--swatch-teal-rgb), 0.16) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.82) 100%)"
-                          : "linear-gradient(155deg, rgba(var(--swatch-sand-rgb), 0.94) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.68) 100%)",
-                      border: hasProgress
-                        ? "1px solid rgba(var(--swatch-teal-rgb), 0.20)"
-                        : isComplete
-                          ? "1px solid rgba(var(--swatch-teal-rgb), 0.14)"
-                          : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.10)",
+                      background: cardBackground,
+                      border: cardBorder,
                       boxShadow: hasProgress
-                        ? "0 16px 36px rgba(45,104,112,0.10), inset 0 1px 0 rgba(255,255,255,0.56)"
-                        : "0 12px 28px rgba(30,74,82,0.05), inset 0 1px 0 rgba(255,255,255,0.52)",
+                        ? "0 16px 36px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.46)"
+                        : "0 12px 28px rgba(30,74,82,0.05), inset 0 1px 0 rgba(255,255,255,0.42)",
                       backdropFilter: "blur(10px)",
                     }}
                   >
-                    <div className="absolute right-0 top-0 w-24 h-24 rounded-full translate-x-7 -translate-y-7" style={{
-                      background: hasProgress
-                        ? "rgba(var(--swatch-teal-rgb), 0.12)"
-                        : isComplete
-                          ? "rgba(var(--swatch-teal-rgb), 0.08)"
-                          : "rgba(var(--swatch-cedar-grove-rgb), 0.08)",
-                    }} />
+                    <div className="absolute right-0 top-0 w-24 h-24 rounded-full translate-x-7 -translate-y-7" style={{ background: orbColor }} />
 
                     <div className="relative h-full flex flex-col justify-between gap-6">
                       <div className="flex items-start justify-between gap-3">
                         <div
                           className="w-12 h-12 rounded-[18px] flex items-center justify-center flex-shrink-0"
                           style={{
-                            background: isComplete
-                              ? "rgba(var(--swatch-teal-rgb), 0.84)"
-                              : hasProgress
-                                ? "rgba(var(--swatch-teal-rgb), 0.14)"
-                                : "rgba(var(--swatch-gypsum-rose-rgb), 0.62)",
-                            color: isComplete
-                              ? "rgba(255,255,255,0.96)"
-                              : hasProgress
-                                ? "var(--swatch-teal)"
-                                : "var(--swatch-antique-coin)",
+                            background: badgeBackground,
+                            color: badgeColor,
                             boxShadow: isComplete ? "0 10px 22px rgba(45,104,112,0.16)" : "none",
                           }}
                         >
                           {isComplete ? <Check className="w-5 h-5" /> : <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>{sprint.id}</span>}
                         </div>
 
-                        <span className="text-[11px] tabular-nums shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: hasProgress ? "var(--swatch-teal)" : "var(--swatch-antique-coin)" }}>
+                        <span className="text-[11px] tabular-nums shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: accentColor }}>
                           {prog.answered}/{prog.total}
                         </span>
                       </div>
@@ -857,7 +872,7 @@ const Questionnaires = () => {
                         <h3 className="text-[26px] leading-[0.98] mb-2 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
                           {sprint.name}
                         </h3>
-                        <p className="text-[11px] uppercase tracking-[0.14em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: hasProgress ? "var(--swatch-teal)" : "var(--swatch-antique-coin)" }}>
+                        <p className="text-[11px] uppercase tracking-[0.14em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: accentColor }}>
                           Sprint {sprint.id}
                         </p>
 
@@ -868,9 +883,11 @@ const Questionnaires = () => {
                               width: `${(prog.answered / prog.total) * 100}%`,
                               background: isComplete
                                 ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.84), rgba(var(--swatch-teal-rgb), 0.62))"
-                                : hasProgress
-                                  ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))"
-                                  : "rgba(var(--swatch-antique-coin-rgb), 0.18)",
+                                : overlayTheme === 1
+                                  ? "linear-gradient(90deg, rgba(var(--swatch-cedar-grove-rgb), 0.54), rgba(var(--swatch-cedar-grove-rgb), 0.80))"
+                                  : overlayTheme === 0
+                                    ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))"
+                                    : "linear-gradient(90deg, rgba(var(--swatch-antique-coin-rgb), 0.28), rgba(var(--swatch-antique-coin-rgb), 0.44))",
                             }}
                           />
                         </div>
@@ -880,7 +897,7 @@ const Questionnaires = () => {
                         <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                           {isComplete ? "Completed" : hasProgress ? "Continue" : "Start now"}
                         </span>
-                        {!isComplete && <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: hasProgress ? "var(--swatch-teal)" : "var(--swatch-antique-coin)" }} />}
+                        {!isComplete && <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} />}
                       </div>
                     </div>
 
@@ -888,7 +905,7 @@ const Questionnaires = () => {
                       <motion.div
                         layoutId="active-sprint"
                         className="absolute left-0 top-6 bottom-6 w-[3px] rounded-r-full"
-                        style={{ background: "var(--swatch-teal)" }}
+                        style={{ background: accentColor }}
                       />
                     )}
                   </motion.button>
@@ -904,9 +921,9 @@ const Questionnaires = () => {
               transition={{ delay: 0.18, type: "spring", stiffness: 250, damping: 24 }}
               className="lg:col-span-12 rounded-[28px] px-5 py-4"
               style={{
-                background: "linear-gradient(145deg, rgba(var(--swatch-gypsum-rose-rgb), 0.74) 0%, rgba(var(--swatch-sand-rgb), 0.88) 100%)",
+                background: "linear-gradient(145deg, rgba(var(--swatch-gypsum-rose-rgb), 0.80) 0%, rgba(var(--swatch-sand-rgb), 0.92) 100%)",
                 border: "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.10)",
-                boxShadow: "0 14px 34px rgba(212,84,58,0.06), inset 0 1px 0 rgba(255,255,255,0.52)",
+                boxShadow: "0 14px 34px rgba(212,84,58,0.06), inset 0 1px 0 rgba(255,255,255,0.46)",
               }}
             >
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
