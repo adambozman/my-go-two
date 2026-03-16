@@ -423,26 +423,31 @@ const Questionnaires = () => {
   if (view === "thisorthat") {
     const remaining = totQueue.length - totIndex;
     const progress = totQueue.length > 0 ? ((totQueue.length - remaining) / totQueue.length) * 100 : 100;
+    const fallbackImage = totIndex % 2 === 0 ? cityFallbackImage : natureFallbackImage;
+    const cardImage = totCurrent?.image || fallbackImage;
 
     return (
-      <div className="h-full flex flex-col" style={{ background: "#0a0a0a" }}>
+      <div
+        className="h-full min-h-0 flex flex-col overflow-hidden px-4 pt-4 pb-5"
+        style={{ background: "linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.06) 0%, rgba(var(--swatch-antique-coin-rgb), 0.08) 100%)" }}
+      >
         {/* Top bar */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-2">
+        <div className="flex items-center justify-between pb-2">
           <button
             onClick={() => setView("dashboard")}
             className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(255,255,255,0.1)" }}
+            style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.12)" }}
           >
-            <ArrowLeft className="w-4 h-4 text-white/70" />
+            <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
           </button>
-          <span className="text-[11px] text-white/40" style={{ fontFamily: "'Jost', sans-serif" }}>
-            {remaining} remaining
+          <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            {Math.max(remaining, 0)} remaining
           </span>
         </div>
 
         {/* Progress bar */}
-        <div className="px-4 mb-3">
-          <div className="h-[3px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+        <div className="mb-3">
+          <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.15)" }}>
             <motion.div
               className="h-full rounded-full"
               style={{ background: "var(--swatch-teal)" }}
@@ -453,38 +458,35 @@ const Questionnaires = () => {
         </div>
 
         {/* Card area */}
-        <div className="flex-1 flex items-center justify-center px-4">
+        <div className="flex-1 min-h-0 flex items-center justify-center py-2">
           {totCurrent ? (
             <AnimatePresence mode="wait">
               <motion.div
                 key={totCurrent.id}
-                initial={{ opacity: 0, scale: 0.92 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{
                   opacity: totSwipeDir ? 0 : 1,
-                  x: totSwipeDir === "left" ? -350 : totSwipeDir === "right" ? 350 : 0,
-                  rotate: totSwipeDir === "left" ? -12 : totSwipeDir === "right" ? 12 : 0,
-                  scale: totSwipeDir ? 0.85 : 1,
+                  x: totSwipeDir === "left" ? -260 : totSwipeDir === "right" ? 260 : 0,
+                  rotate: totSwipeDir === "left" ? -8 : totSwipeDir === "right" ? 8 : 0,
+                  scale: totSwipeDir ? 0.92 : 1,
                 }}
                 transition={{ type: "spring", stiffness: 280, damping: 26 }}
-                className="w-full max-w-[380px] rounded-3xl overflow-hidden relative"
+                className="w-full max-w-[320px] rounded-3xl overflow-hidden relative"
                 style={{
-                  height: "min(65vh, 500px)",
-                  boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+                  height: "clamp(320px, 52vh, 420px)",
+                  boxShadow: "0 12px 40px rgba(30,74,82,0.18)",
                   background: "var(--swatch-viridian-odyssey)",
                 }}
               >
-                {/* Image — only render if available */}
-                {totCurrent.image && (
-                  <img
-                    src={totCurrent.image}
-                    alt={totCurrent.prompt}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                )}
-                {/* Gradient overlay */}
-                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 60%)" }} />
+                <img
+                  src={cardImage}
+                  alt={totCurrent.prompt}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  loading="lazy"
+                />
 
-                {/* Category badge */}
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.18) 45%, transparent 72%)" }} />
+
                 <div className="absolute top-4 left-4">
                   <span
                     className="text-[10px] uppercase tracking-[0.15em] px-3 py-1.5 rounded-full"
@@ -492,40 +494,37 @@ const Questionnaires = () => {
                       fontFamily: "'Jost', sans-serif",
                       fontWeight: 500,
                       color: "#fff",
-                      background: "rgba(255,255,255,0.15)",
-                      backdropFilter: "blur(12px)",
-                      border: "1px solid rgba(255,255,255,0.2)",
+                      background: "rgba(255,255,255,0.18)",
+                      backdropFilter: "blur(8px)",
                     }}
                   >
                     {totCurrent.category}
                   </span>
                 </div>
 
-                {/* Swipe indicators */}
                 {totSwipeDir === "right" && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.5 }}
+                    initial={{ opacity: 0, scale: 0.7 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="absolute top-6 right-6 px-4 py-2 rounded-xl border-2"
-                    style={{ borderColor: "var(--swatch-teal)", color: "var(--swatch-teal)" }}
+                    className="absolute top-5 right-5 px-3 py-1.5 rounded-lg border-2"
+                    style={{ borderColor: "var(--swatch-teal)", color: "var(--swatch-teal)", background: "rgba(0,0,0,0.35)" }}
                   >
-                    <span className="text-[18px] font-bold" style={{ fontFamily: "'Jost', sans-serif" }}>YES</span>
+                    <span className="text-[15px] font-bold" style={{ fontFamily: "'Jost', sans-serif" }}>YES</span>
                   </motion.div>
                 )}
                 {totSwipeDir === "left" && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.5 }}
+                    initial={{ opacity: 0, scale: 0.7 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="absolute top-6 left-6 px-4 py-2 rounded-xl border-2"
-                    style={{ borderColor: "#c45c5c", color: "#c45c5c" }}
+                    className="absolute top-5 left-5 px-3 py-1.5 rounded-lg border-2"
+                    style={{ borderColor: "var(--swatch-antique-coin)", color: "var(--swatch-antique-coin)", background: "rgba(0,0,0,0.35)" }}
                   >
-                    <span className="text-[18px] font-bold" style={{ fontFamily: "'Jost', sans-serif" }}>NOPE</span>
+                    <span className="text-[15px] font-bold" style={{ fontFamily: "'Jost', sans-serif" }}>NO</span>
                   </motion.div>
                 )}
 
-                {/* Prompt text */}
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h2 className="text-[26px] leading-[1.15] text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <h2 className="text-[22px] leading-[1.15] text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}>
                     {totCurrent.prompt}
                   </h2>
                 </div>
@@ -533,8 +532,8 @@ const Questionnaires = () => {
             </AnimatePresence>
           ) : (
             <div className="text-center">
-              <Check className="w-14 h-14 mx-auto mb-4" style={{ color: "var(--swatch-teal)" }} />
-              <p className="text-[20px] text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}>
+              <Check className="w-12 h-12 mx-auto mb-3" style={{ color: "var(--swatch-teal)" }} />
+              <p className="text-[20px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
                 All done!
               </p>
             </div>
@@ -543,30 +542,30 @@ const Questionnaires = () => {
 
         {/* Yes / No buttons */}
         {totCurrent && (
-          <div className="flex items-center justify-center gap-10 pb-8 pt-4">
+          <div className="flex items-center justify-center gap-8 pt-3">
             <motion.button
-              whileTap={{ scale: 0.85 }}
+              whileTap={{ scale: 0.9 }}
               onClick={() => pickThisOrThat("B")}
-              className="w-[72px] h-[72px] rounded-full flex flex-col items-center justify-center gap-0.5"
+              className="w-[64px] h-[64px] rounded-full flex flex-col items-center justify-center gap-0.5"
               style={{
-                background: "rgba(196,92,92,0.12)",
-                border: "2.5px solid rgba(196,92,92,0.5)",
+                background: "rgba(var(--swatch-antique-coin-rgb), 0.15)",
+                border: "2px solid rgba(var(--swatch-antique-coin-rgb), 0.6)",
               }}
             >
-              <X className="w-8 h-8" style={{ color: "#c45c5c" }} />
-              <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ fontFamily: "'Jost', sans-serif", color: "#c45c5c" }}>No</span>
+              <X className="w-7 h-7" style={{ color: "var(--swatch-antique-coin)" }} />
+              <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>No</span>
             </motion.button>
 
             <motion.button
-              whileTap={{ scale: 0.85 }}
+              whileTap={{ scale: 0.9 }}
               onClick={() => pickThisOrThat("A")}
-              className="w-[72px] h-[72px] rounded-full flex flex-col items-center justify-center gap-0.5"
+              className="w-[64px] h-[64px] rounded-full flex flex-col items-center justify-center gap-0.5"
               style={{
-                background: "rgba(45,104,112,0.15)",
-                border: "2.5px solid var(--swatch-teal)",
+                background: "rgba(var(--swatch-teal-rgb), 0.14)",
+                border: "2px solid var(--swatch-teal)",
               }}
             >
-              <Check className="w-8 h-8" style={{ color: "var(--swatch-teal)" }} />
+              <Check className="w-7 h-7" style={{ color: "var(--swatch-teal)" }} />
               <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>Yes</span>
             </motion.button>
           </div>
