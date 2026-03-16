@@ -716,7 +716,7 @@ const MyGoTwo = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
-        style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}
+        style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
         onScroll={(e) => {
           const el = e.currentTarget;
           const idx = Math.round(el.scrollTop / el.clientHeight);
