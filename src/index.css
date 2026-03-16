@@ -213,10 +213,10 @@ body {
 }
 @media (min-width: 768px) {
   :root {
-    --header-height: 205px;
+    --header-height: 230px;
     --header-icons-row-height: 72px;
     --header-divider-margin-top: 18px;
-    --header-tagline-margin-top: 22px;
+    --header-tagline-margin-top: 16px;
   }
   .header-tagline-quote {
     font-size: 20px;
@@ -357,12 +357,13 @@ body {
 
 @media (min-width: 1024px) {
   :root {
-    --header-tagline-margin-top: 90px;
+    --header-height: 230px;
+    --header-tagline-margin-top: 14px;
   }
   .section-header {
     font-size: 29px;
   }
   .header-tagline-wrapper {
-    display: none;
+    display: block;
   }
 }
