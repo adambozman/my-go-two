@@ -589,7 +589,6 @@ const MyGoTwo = () => {
     setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     setActiveEntryPage(1);
-    setShowCategoryPaywall(false);
   };
 
   const goBackFromEntries = () => {
@@ -628,12 +627,6 @@ const MyGoTwo = () => {
     }
   }, [coverFlowState, activeSubcategory, cardKey, leafSubtype]);
 
-  const canAccessCardKey = useCallback((nextCardKey: string) => {
-    if (subscribed) return true;
-    if (unlockedCardKeys.includes(nextCardKey)) return true;
-    return unlockedCardKeys.length < FREE_CARD_KEY_LIMIT;
-  }, [subscribed, unlockedCardKeys]);
-
   const handleCategoryClick = (item: CategoryItem) => {
     if (scrollRef.current) {
       savedScrollTop.current = scrollRef.current.scrollTop;
@@ -645,7 +638,6 @@ const MyGoTwo = () => {
       setFocusedMainCategoryBySection((prev) => ({ ...prev, [item.section]: item.key }));
       setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
       setFocusedDrilldownItemId(null);
-      setShowCategoryPaywall(false);
     }
   };
 
@@ -675,12 +667,6 @@ const MyGoTwo = () => {
     }
 
     const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
-    if (!canAccessCardKey(key)) {
-      setShowCategoryPaywall(true);
-      return;
-    }
-
-    setShowCategoryPaywall(false);
     setFocusedDrilldownItemId(sc.id);
     setActiveSubcategory(sc);
     setCardKey(key);
@@ -694,12 +680,6 @@ const MyGoTwo = () => {
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
     const key = `${coverFlowState?.name}__${subcategoryName || ""}__${subtype.name}`;
-    if (!canAccessCardKey(key)) {
-      setShowCategoryPaywall(true);
-      return;
-    }
-
-    setShowCategoryPaywall(false);
     setFocusedDrilldownItemId(subtype.id);
     setCardKey(key);
     setLeafSubtype(subtype);
