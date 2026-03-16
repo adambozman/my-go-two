@@ -665,10 +665,17 @@ const MyGoTwo = () => {
     }
   };
 
-  const handleSelect = (categoryKey: string) => {
-    for (const sectionKey of sectionOrder) {
-      const items = sections[sectionKey] || [];
-      const item = items.find((c) => c.key === categoryKey);
+  const handleSelect = (sectionKey: string, categoryKey: string) => {
+    const sectionItems = sections[sectionKey] || [];
+    const directMatch = sectionItems.find((c) => c.key === categoryKey);
+    if (directMatch) {
+      handleCategoryClick(directMatch);
+      return;
+    }
+
+    // Defensive fallback if section data shifts while user is interacting.
+    for (const key of sectionOrder) {
+      const item = (sections[key] || []).find((c) => c.key === categoryKey);
       if (item) {
         handleCategoryClick(item);
         return;
@@ -1019,7 +1026,7 @@ const MyGoTwo = () => {
             <h2 className="section-header text-center mb-4">{section.label}</h2>
             <GoTwoCoverFlow
               items={section.items}
-              onSelect={handleSelect}
+              onSelect={(categoryId) => handleSelect(section.key, categoryId)}
               focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
               showPagination={index === activeSectionIndex}
             />

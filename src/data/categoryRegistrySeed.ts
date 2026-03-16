@@ -34,30 +34,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "everyday-male-tops",
         "products": [
           {
-            "id": "basic-tees",
-            "name": "Basic Tees",
-            "image": "everyday-male-tops-basic-tees",
+            "id": "classic-crew",
+            "name": "Classic Crew-Neck",
+            "image": "everyday-male-tops-classic-crew",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -72,30 +70,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "hoodies",
-            "name": "Hoodies",
-            "image": "everyday-male-tops-hoodies",
+            "id": "boxy-tee",
+            "name": "Oversized Boxy Tee",
+            "image": "everyday-male-tops-boxy-tee",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -110,30 +106,37 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "flannels",
-            "name": "Flannels",
-            "image": "everyday-male-tops-flannels",
+            "id": "henley",
+            "name": "Henley",
+            "image": "everyday-male-tops-henley",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Sleeve",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Short",
+                  "Long"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -148,30 +151,38 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "polos",
-            "name": "Polos",
-            "image": "everyday-male-tops-polos",
+            "id": "textured-tee",
+            "name": "Textured T-Shirt",
+            "image": "everyday-male-tops-textured-tee",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Texture",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Waffle-Knit",
+                  "Popcorn",
+                  "Other"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -186,30 +197,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "henleys",
-            "name": "Henleys",
-            "image": "everyday-male-tops-henleys",
+            "id": "tank-top",
+            "name": "Tank Top",
+            "image": "everyday-male-tops-tank-top",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -224,30 +233,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "denim-shirts",
-            "name": "Denim Shirts",
-            "image": "everyday-male-tops-denim-shirts",
+            "id": "pocket-tee",
+            "name": "Pocket Tee",
+            "image": "everyday-male-tops-pocket-tee",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -269,30 +276,24 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "everyday-male-bottoms",
         "products": [
           {
-            "id": "jeans",
-            "name": "Jeans",
-            "image": "everyday-male-bottoms-jeans",
+            "id": "relaxed-chinos",
+            "name": "Relaxed-Fit Chinos",
+            "image": "everyday-male-bottoms-relaxed-chinos",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Inseam",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -307,30 +308,36 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "chinos",
-            "name": "Chinos",
-            "image": "everyday-male-bottoms-chinos",
+            "id": "straight-denim",
+            "name": "Straight-Leg Denim",
+            "image": "everyday-male-bottoms-straight-denim",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Inseam",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Fit",
+                "label": "Wash",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Medium",
+                  "Vintage",
+                  "Raw",
+                  "Light",
+                  "Black"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -345,30 +352,56 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "shorts",
-            "name": "Shorts",
-            "image": "everyday-male-bottoms-shorts",
+            "id": "linen-trousers",
+            "name": "Linen Trousers",
+            "image": "everyday-male-bottoms-linen-trousers",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Inseam",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "corduroy-pants",
+            "name": "Corduroy Pants",
+            "image": "everyday-male-bottoms-corduroy-pants",
+            "fields": [
+              {
+                "label": "Waist",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Inseam",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -384,29 +417,23 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           },
           {
             "id": "cargo-pants",
-            "name": "Cargo Pants",
+            "name": "Refined Cargo Pants",
             "image": "everyday-male-bottoms-cargo-pants",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Inseam",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -421,68 +448,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "corduroys",
-            "name": "Corduroys",
-            "image": "everyday-male-bottoms-corduroys",
+            "id": "knit-trousers",
+            "name": "Knit Drawstring Trousers",
+            "image": "everyday-male-bottoms-knit-trousers",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
               },
               {
-                "label": "Keywords",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
-            ]
-          },
-          {
-            "id": "joggers",
-            "name": "Joggers",
-            "image": "everyday-male-bottoms-joggers",
-            "fields": [
-              {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -504,30 +491,29 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "everyday-male-footwear",
         "products": [
           {
-            "id": "casual-sneakers",
-            "name": "Casual Sneakers",
-            "image": "everyday-male-footwear-casual-sneakers",
+            "id": "leather-sneaker",
+            "name": "Minimalist Leather Sneaker",
+            "image": "everyday-male-footwear-leather-sneaker",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
+                "label": "Width",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
+                  "Narrow",
                   "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Wide"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -542,30 +528,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "leather-boots",
-            "name": "Leather Boots",
-            "image": "everyday-male-footwear-leather-boots",
+            "id": "suede-chukka",
+            "name": "Suede Chukka Boot",
+            "image": "everyday-male-footwear-suede-chukka",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -580,30 +555,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "slides",
-            "name": "Slides",
-            "image": "everyday-male-footwear-slides",
+            "id": "retro-runner",
+            "name": "Retro Slim Runner",
+            "image": "everyday-male-footwear-retro-runner",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -618,30 +582,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "loafers",
-            "name": "Loafers",
-            "image": "everyday-male-footwear-loafers",
+            "id": "canvas-slip-on",
+            "name": "Canvas Slip-On",
+            "image": "everyday-male-footwear-canvas-slip-on",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -656,30 +609,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "boat-shoes",
-            "name": "Boat Shoes",
-            "image": "everyday-male-footwear-boat-shoes",
+            "id": "artisan-boot",
+            "name": "Artisan Low Boot",
+            "image": "everyday-male-footwear-artisan-boot",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -694,30 +636,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "slippers",
-            "name": "Slippers",
-            "image": "everyday-male-footwear-slippers",
+            "id": "casual-chelsea",
+            "name": "Casual Chelsea Boot",
+            "image": "everyday-male-footwear-casual-chelsea",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -739,30 +670,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "everyday-male-outerwear",
         "products": [
           {
-            "id": "denim-jackets",
-            "name": "Denim Jackets",
-            "image": "everyday-male-outerwear-denim-jackets",
+            "id": "barn-coat",
+            "name": "Barn Coat",
+            "image": "everyday-male-outerwear-barn-coat",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -777,30 +706,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "bomber-jackets",
-            "name": "Bomber Jackets",
-            "image": "everyday-male-outerwear-bomber-jackets",
+            "id": "harrington",
+            "name": "Harrington Jacket",
+            "image": "everyday-male-outerwear-harrington",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -815,30 +742,39 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "field-jackets",
-            "name": "Field Jackets",
-            "image": "everyday-male-outerwear-field-jackets",
+            "id": "denim-trucker",
+            "name": "Denim Trucker Jacket",
+            "image": "everyday-male-outerwear-denim-trucker",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Wash",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Vintage",
+                  "Indigo",
+                  "Washed",
+                  "Raw"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -853,30 +789,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "puffer-jackets",
-            "name": "Puffer Jackets",
-            "image": "everyday-male-outerwear-puffer-jackets",
+            "id": "quilted-liner",
+            "name": "Quilted Liner Jacket",
+            "image": "everyday-male-outerwear-quilted-liner",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -891,30 +825,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "windbreakers",
-            "name": "Windbreakers",
-            "image": "everyday-male-outerwear-windbreakers",
+            "id": "sherpa-fleece",
+            "name": "Sherpa-Lined Fleece",
+            "image": "everyday-male-outerwear-sherpa-fleece",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -929,30 +861,39 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "cardigans",
-            "name": "Cardigans",
-            "image": "everyday-male-outerwear-cardigans",
+            "id": "bomber",
+            "name": "Bomber Jacket",
+            "image": "everyday-male-outerwear-bomber",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Material",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Nylon",
+                  "Twill",
+                  "Satin",
+                  "Leather"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -974,29 +915,95 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "everyday-male-accessories",
         "products": [
           {
-            "id": "baseball-hats",
-            "name": "Baseball Hats",
-            "image": "everyday-male-accessories-baseball-hats",
+            "id": "leather-watch",
+            "name": "Leather Strap Watch",
+            "image": "everyday-male-accessories-leather-watch",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Keywords",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Fit",
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "slim-wallet",
+            "name": "Minimalist Slim Wallet",
+            "image": "everyday-male-accessories-slim-wallet",
+            "fields": [
+              {
+                "label": "Material",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Leather",
+                  "Metal",
+                  "Carbon Fiber"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "wayfarer-shades",
+            "name": "Classic Wayfarer Sunglasses",
+            "image": "everyday-male-accessories-wayfarer-shades",
+            "fields": [
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "beaded-bracelet",
+            "name": "Beaded or Leather Bracelet",
+            "image": "everyday-male-accessories-beaded-bracelet",
+            "fields": [
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Beaded",
+                  "Leather",
+                  "Braided Cord",
+                  "Lava Rock"
                 ]
               },
               {
@@ -1012,30 +1019,14 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "sunglasses",
-            "name": "Sunglasses",
-            "image": "everyday-male-accessories-sunglasses",
+            "id": "canvas-weekender",
+            "name": "Canvas Weekender Bag",
+            "image": "everyday-male-accessories-canvas-weekender",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -1050,30 +1041,61 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "leather-belts",
-            "name": "Leather Belts",
-            "image": "everyday-male-accessories-leather-belts",
+            "id": "casual-belt",
+            "name": "Casual Leather Belt",
+            "image": "everyday-male-accessories-casual-belt",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist Size",
                 "type": "text",
                 "value": ""
               },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "underwear",
+        "name": "Underwear",
+        "image": "everyday-male-underwear",
+        "products": [
+          {
+            "id": "cotton-boxer-brief",
+            "name": "Cotton-Stretch Boxer Brief",
+            "image": "everyday-male-underwear-cotton-boxer-brief",
+            "fields": [
               {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1088,30 +1110,27 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "casual-watches",
-            "name": "Casual Watches",
-            "image": "everyday-male-accessories-casual-watches",
+            "id": "micromodal-trunk",
+            "name": "MicroModal Trunk",
+            "image": "everyday-male-underwear-micromodal-trunk",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1126,30 +1145,27 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "backpacks",
-            "name": "Backpacks",
-            "image": "everyday-male-accessories-backpacks",
+            "id": "woven-boxer",
+            "name": "Woven Boxer Shorts",
+            "image": "everyday-male-underwear-woven-boxer",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1164,30 +1180,97 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "beanies",
-            "name": "Beanies",
-            "image": "everyday-male-accessories-beanies",
+            "id": "low-rise-brief",
+            "name": "Low-Rise Brief",
+            "image": "everyday-male-underwear-low-rise-brief",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "seamless-boxer-brief",
+            "name": "Seamless Boxer Brief",
+            "image": "everyday-male-underwear-seamless-boxer-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "bamboo-trunk",
+            "name": "Bamboo Viscose Trunk",
+            "image": "everyday-male-underwear-bamboo-trunk",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1224,19 +1307,23 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "dress-male-tops",
         "products": [
           {
-            "id": "button-downs",
-            "name": "Button-Downs",
-            "image": "dress-male-tops-button-downs",
+            "id": "ocbd",
+            "name": "Oxford Button-Down (OCBD)",
+            "image": "dress-male-tops-ocbd",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
               },
               {
                 "label": "Fit",
@@ -1245,9 +1332,13 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "options": [
                   "Slim",
                   "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Relaxed"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1262,30 +1353,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "blazers",
-            "name": "Blazers",
-            "image": "dress-male-tops-blazers",
+            "id": "linen-shirt",
+            "name": "Linen Shirt",
+            "image": "dress-male-tops-linen-shirt",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1300,30 +1389,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "suit-jackets",
-            "name": "Suit Jackets",
-            "image": "dress-male-tops-suit-jackets",
+            "id": "cuban-collar",
+            "name": "Cuban Collar Shirt",
+            "image": "dress-male-tops-cuban-collar",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1338,17 +1425,17 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "dress-vests",
-            "name": "Dress Vests",
-            "image": "dress-male-tops-dress-vests",
+            "id": "poplin-dress-shirt",
+            "name": "Poplin Dress Shirt",
+            "image": "dress-male-tops-poplin-dress-shirt",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Neck Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Sleeve Length",
                 "type": "text",
                 "value": ""
               },
@@ -1359,9 +1446,13 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "options": [
                   "Slim",
                   "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Relaxed"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1376,30 +1467,38 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "turtlenecks",
-            "name": "Turtlenecks",
-            "image": "dress-male-tops-turtlenecks",
+            "id": "merino-sweater",
+            "name": "Merino Wool Sweater",
+            "image": "dress-male-tops-merino-sweater",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Crewneck",
+                  "V-Neck",
+                  "Turtleneck"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1414,30 +1513,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "tuxedo-shirts",
-            "name": "Tuxedo Shirts",
-            "image": "dress-male-tops-tuxedo-shirts",
+            "id": "knitted-polo",
+            "name": "Knitted Polo",
+            "image": "dress-male-tops-knitted-polo",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1459,30 +1556,24 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "dress-male-bottoms",
         "products": [
           {
-            "id": "trousers",
-            "name": "Trousers",
-            "image": "dress-male-bottoms-trousers",
+            "id": "wool-trousers",
+            "name": "Tailored Wool Trousers",
+            "image": "dress-male-bottoms-wool-trousers",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Inseam",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1497,30 +1588,24 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "dress-pants",
-            "name": "Dress Pants",
-            "image": "dress-male-bottoms-dress-pants",
+            "id": "smart-chinos",
+            "name": "Creased Smart Chinos",
+            "image": "dress-male-bottoms-smart-chinos",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Inseam",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1535,30 +1620,24 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "suit-pants",
-            "name": "Suit Pants",
-            "image": "dress-male-bottoms-suit-pants",
+            "id": "flannel-trousers",
+            "name": "Flannel Trousers",
+            "image": "dress-male-bottoms-flannel-trousers",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Inseam",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1573,30 +1652,24 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "chinos-slim",
-            "name": "Chinos (Slim)",
-            "image": "dress-male-bottoms-chinos-slim",
+            "id": "pleated-pants",
+            "name": "Pleated Dress Pants",
+            "image": "dress-male-bottoms-pleated-pants",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Inseam",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1611,30 +1684,24 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "wool-slacks",
-            "name": "Wool Slacks",
-            "image": "dress-male-bottoms-wool-slacks",
+            "id": "linen-wool-trousers",
+            "name": "Linen-Wool Blend Trousers",
+            "image": "dress-male-bottoms-linen-wool-trousers",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Inseam",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1649,30 +1716,24 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "tuxedo-pants",
-            "name": "Tuxedo Pants",
-            "image": "dress-male-bottoms-tuxedo-pants",
+            "id": "velvet-trousers",
+            "name": "Velvet Evening Trousers",
+            "image": "dress-male-bottoms-velvet-trousers",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Inseam",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1694,30 +1755,29 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "dress-male-footwear",
         "products": [
           {
-            "id": "oxford-shoes",
-            "name": "Oxford Shoes",
-            "image": "dress-male-footwear-oxford-shoes",
+            "id": "oxford-wingtip",
+            "name": "Oxford Wingtip",
+            "image": "dress-male-footwear-oxford-wingtip",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
+                "label": "Width",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
+                  "Narrow",
                   "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Wide"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1732,30 +1792,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "derbies",
-            "name": "Derbies",
-            "image": "dress-male-footwear-derbies",
+            "id": "penny-loafer",
+            "name": "Penny Loafer",
+            "image": "dress-male-footwear-penny-loafer",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
+                "label": "Material",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Leather",
+                  "Suede"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1770,30 +1828,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "monk-straps",
-            "name": "Monk Straps",
-            "image": "dress-male-footwear-monk-straps",
+            "id": "plain-toe-derby",
+            "name": "Plain-Toe Derby",
+            "image": "dress-male-footwear-plain-toe-derby",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -1808,30 +1855,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "chelsea-boots",
-            "name": "Chelsea Boots",
-            "image": "dress-male-footwear-chelsea-boots",
+            "id": "monk-strap",
+            "name": "Monk Strap Shoe",
+            "image": "dress-male-footwear-monk-strap",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
+                "label": "Style",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Single Monk",
+                  "Double Monk"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1846,30 +1891,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "loafers-dress",
-            "name": "Loafers (Dress)",
-            "image": "dress-male-footwear-loafers-dress",
+            "id": "hybrid-dress-sneaker",
+            "name": "Hybrid Dress-Sneaker",
+            "image": "dress-male-footwear-hybrid-dress-sneaker",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -1884,30 +1918,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "wingtips",
-            "name": "Wingtips",
-            "image": "dress-male-footwear-wingtips",
+            "id": "polished-chelsea",
+            "name": "Polished Chelsea Boot",
+            "image": "dress-male-footwear-polished-chelsea",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -1929,30 +1952,40 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "dress-male-outerwear",
         "products": [
           {
-            "id": "overcoats",
-            "name": "Overcoats",
-            "image": "dress-male-outerwear-overcoats",
+            "id": "wool-overcoat",
+            "name": "Wool Overcoat",
+            "image": "dress-male-outerwear-wool-overcoat",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Color",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Camel",
+                  "Charcoal",
+                  "Navy",
+                  "Black",
+                  "Grey"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -1967,30 +2000,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "trench-coats",
-            "name": "Trench Coats",
-            "image": "dress-male-outerwear-trench-coats",
+            "id": "trench-coat",
+            "name": "Trench Coat",
+            "image": "dress-male-outerwear-trench-coat",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2005,30 +2036,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "peacoats",
-            "name": "Peacoats",
-            "image": "dress-male-outerwear-peacoats",
+            "id": "mac-coat",
+            "name": "Mac Coat",
+            "image": "dress-male-outerwear-mac-coat",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2043,30 +2072,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "topcoats",
-            "name": "Topcoats",
-            "image": "dress-male-outerwear-topcoats",
+            "id": "peacoat",
+            "name": "Peacoat",
+            "image": "dress-male-outerwear-peacoat",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2081,30 +2108,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "mac-coats",
-            "name": "Mac Coats",
-            "image": "dress-male-outerwear-mac-coats",
+            "id": "chesterfield",
+            "name": "Chesterfield Coat",
+            "image": "dress-male-outerwear-chesterfield",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2119,30 +2144,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "harrington-jackets",
-            "name": "Harrington Jackets",
-            "image": "dress-male-outerwear-harrington-jackets",
+            "id": "suede-racer",
+            "name": "Suede Racer Jacket",
+            "image": "dress-male-outerwear-suede-racer",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2164,30 +2187,24 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "dress-male-accessories",
         "products": [
           {
-            "id": "ties",
-            "name": "Ties",
-            "image": "dress-male-accessories-ties",
+            "id": "dress-watch",
+            "name": "Dress Watch",
+            "image": "dress-male-accessories-dress-watch",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
+                "label": "Strap",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Metal Link",
+                  "Black Leather",
+                  "Brown Leather"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2202,29 +2219,51 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "tie-clips",
-            "name": "Tie Clips",
-            "image": "dress-male-accessories-tie-clips",
+            "id": "silk-tie",
+            "name": "Silk or Knit Tie",
+            "image": "dress-male-accessories-silk-tie",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
+                "label": "Style",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Silk",
+                  "Knit",
+                  "Grenadine"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "pocket-square",
+            "name": "White Linen Pocket Square",
+            "image": "dress-male-accessories-pocket-square",
+            "fields": [
+              {
+                "label": "Fold Style",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "Flat",
+                  "Puff",
+                  "One-Point",
+                  "TV Fold"
                 ]
               },
               {
@@ -2241,29 +2280,24 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           },
           {
             "id": "cufflinks",
-            "name": "Cufflinks",
+            "name": "Polished Cufflinks",
             "image": "dress-male-accessories-cufflinks",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
+                "label": "Metal",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Silver",
+                  "Gold",
+                  "Onyx",
+                  "Rose Gold"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2278,30 +2312,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "pocket-squares",
-            "name": "Pocket Squares",
-            "image": "dress-male-accessories-pocket-squares",
+            "id": "dress-belt",
+            "name": "Slim Dress Belt",
+            "image": "dress-male-accessories-dress-belt",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Waist Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -2316,30 +2339,61 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "dress-watches",
-            "name": "Dress Watches",
-            "image": "dress-male-accessories-dress-watches",
+            "id": "tie-bar",
+            "name": "Tie Bar",
+            "image": "dress-male-accessories-tie-bar",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
+                "label": "Metal",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Silver",
+                  "Gold",
+                  "Matte Black"
                 ]
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "underwear",
+        "name": "Underwear",
+        "image": "dress-male-underwear",
+        "products": [
+          {
+            "id": "luxury-modal-brief",
+            "name": "Luxury MicroModal Boxer Brief",
+            "image": "dress-male-underwear-luxury-modal-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2354,30 +2408,167 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "leather-dress-belts",
-            "name": "Leather Dress Belts",
-            "image": "dress-male-accessories-leather-dress-belts",
+            "id": "contour-trunk",
+            "name": "Contour-Pouch Trunk",
+            "image": "dress-male-underwear-contour-trunk",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "high-rise-brief",
+            "name": "High-Rise Dress Brief",
+            "image": "dress-male-underwear-high-rise-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "silver-boxer-brief",
+            "name": "Silver-Infused Boxer Brief",
+            "image": "dress-male-underwear-silver-boxer-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "air-mesh-brief",
+            "name": "Ultra-Thin Air-Mesh Brief",
+            "image": "dress-male-underwear-air-mesh-brief",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "tapered-knit-boxer",
+            "name": "Tapered Knit Boxer",
+            "image": "dress-male-underwear-tapered-knit-boxer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2414,30 +2605,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "athletic-male-tops",
         "products": [
           {
-            "id": "tanks",
-            "name": "Tanks",
-            "image": "athletic-male-tops-tanks",
+            "id": "performance-tee",
+            "name": "Performance Tee",
+            "image": "athletic-male-tops-performance-tee",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2452,30 +2641,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "tech-tees",
-            "name": "Tech Tees",
-            "image": "athletic-male-tops-tech-tees",
+            "id": "pullover-hoodie",
+            "name": "Pullover Hoodie",
+            "image": "athletic-male-tops-pullover-hoodie",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2490,30 +2677,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "quarter-zips",
-            "name": "Quarter-Zips",
-            "image": "athletic-male-tops-quarter-zips",
+            "id": "crewneck-sweatshirt",
+            "name": "Crewneck Sweatshirt",
+            "image": "athletic-male-tops-crewneck-sweatshirt",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2528,30 +2713,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "compression-shirts",
-            "name": "Compression Shirts",
-            "image": "athletic-male-tops-compression-shirts",
+            "id": "quarter-zip",
+            "name": "Quarter-Zip Pullover",
+            "image": "athletic-male-tops-quarter-zip",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2566,30 +2749,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "performance-hoodies",
-            "name": "Performance Hoodies",
-            "image": "athletic-male-tops-performance-hoodies",
+            "id": "sleeveless-top",
+            "name": "Sleeveless Training Top",
+            "image": "athletic-male-tops-sleeveless-top",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2604,30 +2785,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "mesh-jerseys",
-            "name": "Mesh Jerseys",
-            "image": "athletic-male-tops-mesh-jerseys",
+            "id": "compression-layer",
+            "name": "Compression Base Layer",
+            "image": "athletic-male-tops-compression-layer",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2649,68 +2828,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "athletic-male-bottoms",
         "products": [
           {
-            "id": "gym-shorts",
-            "name": "Gym Shorts",
-            "image": "athletic-male-bottoms-gym-shorts",
-            "fields": [
-              {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
-            ]
-          },
-          {
             "id": "performance-joggers",
             "name": "Performance Joggers",
             "image": "athletic-male-bottoms-performance-joggers",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2725,30 +2864,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "compression-leggings",
-            "name": "Compression Leggings",
-            "image": "athletic-male-bottoms-compression-leggings",
+            "id": "running-shorts",
+            "name": "7\" Running Shorts",
+            "image": "athletic-male-bottoms-running-shorts",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2764,29 +2901,27 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           },
           {
             "id": "track-pants",
-            "name": "Track Pants",
+            "name": "Tech-Fleece Track Pants",
             "image": "athletic-male-bottoms-track-pants",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2801,30 +2936,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "basketball-shorts",
-            "name": "Basketball Shorts",
-            "image": "athletic-male-bottoms-basketball-shorts",
+            "id": "training-pants",
+            "name": "Stretch Woven Training Pants",
+            "image": "athletic-male-bottoms-training-pants",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2839,30 +2972,64 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "bike-shorts",
-            "name": "Bike Shorts",
-            "image": "athletic-male-bottoms-bike-shorts",
+            "id": "fleece-shorts",
+            "name": "Heavyweight Fleece Shorts",
+            "image": "athletic-male-bottoms-fleece-shorts",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "hybrid-shorts",
+            "name": "Hybrid Shorts",
+            "image": "athletic-male-bottoms-hybrid-shorts",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2884,30 +3051,29 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "athletic-male-footwear",
         "products": [
           {
-            "id": "running-shoes",
-            "name": "Running Shoes",
-            "image": "athletic-male-footwear-running-shoes",
+            "id": "trail-runner",
+            "name": "Technical Trail Runner",
+            "image": "athletic-male-footwear-trail-runner",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
+                "label": "Width",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
+                  "Narrow",
                   "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Wide"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -2922,30 +3088,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "training-shoes",
-            "name": "Training Shoes",
-            "image": "athletic-male-footwear-training-shoes",
+            "id": "training-shoe",
+            "name": "Performance Training Shoe",
+            "image": "athletic-male-footwear-training-shoe",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -2960,30 +3115,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "basketball-shoes",
-            "name": "Basketball Shoes",
-            "image": "athletic-male-footwear-basketball-shoes",
+            "id": "tech-runner",
+            "name": "Modern Tech-Runner",
+            "image": "athletic-male-footwear-tech-runner",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -2998,30 +3142,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "hiking-boots",
-            "name": "Hiking Boots",
-            "image": "athletic-male-footwear-hiking-boots",
+            "id": "slip-in",
+            "name": "Hands-Free Slip-In",
+            "image": "athletic-male-footwear-slip-in",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -3036,30 +3169,19 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "recovery-slides",
-            "name": "Recovery Slides",
-            "image": "athletic-male-footwear-recovery-slides",
+            "id": "tech-utility-boot",
+            "name": "Tech-Utility Boot",
+            "image": "athletic-male-footwear-tech-utility-boot",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -3074,30 +3196,29 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "soccer-cleats",
-            "name": "Soccer Cleats",
-            "image": "athletic-male-footwear-soccer-cleats",
+            "id": "road-runner",
+            "name": "High-Performance Road Runner",
+            "image": "athletic-male-footwear-road-runner",
             "fields": [
               {
-                "label": "Brand",
+                "label": "US Size",
                 "type": "text",
                 "value": ""
               },
               {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
+                "label": "Arch Support",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "Neutral",
+                  "Stability",
+                  "Motion Control"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -3119,30 +3240,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "athletic-male-outerwear",
         "products": [
           {
-            "id": "track-jackets",
-            "name": "Track Jackets",
-            "image": "athletic-male-outerwear-track-jackets",
+            "id": "tech-shell",
+            "name": "Technical Shell",
+            "image": "athletic-male-outerwear-tech-shell",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -3157,30 +3276,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "rain-shells",
-            "name": "Rain Shells",
-            "image": "athletic-male-outerwear-rain-shells",
+            "id": "down-puffer",
+            "name": "Down Puffer Jacket",
+            "image": "athletic-male-outerwear-down-puffer",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -3195,30 +3312,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "puffer-vests",
-            "name": "Puffer Vests",
-            "image": "athletic-male-outerwear-puffer-vests",
+            "id": "softshell-windbreaker",
+            "name": "Softshell Windbreaker",
+            "image": "athletic-male-outerwear-softshell-windbreaker",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -3233,30 +3348,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "fleece-jackets",
-            "name": "Fleece Jackets",
-            "image": "athletic-male-outerwear-fleece-jackets",
+            "id": "insulated-parka",
+            "name": "Insulated Parka",
+            "image": "athletic-male-outerwear-insulated-parka",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -3271,30 +3384,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "windshirts",
-            "name": "Windshirts",
-            "image": "athletic-male-outerwear-windshirts",
+            "id": "rain-anorak",
+            "name": "Packable Rain Anorak",
+            "image": "athletic-male-outerwear-rain-anorak",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -3309,30 +3420,28 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "thermal-layers",
-            "name": "Thermal Layers",
-            "image": "athletic-male-outerwear-thermal-layers",
+            "id": "hybrid-trekking",
+            "name": "Hybrid Trekking Jacket",
+            "image": "athletic-male-outerwear-hybrid-trekking",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL",
+                  "XXXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -3354,30 +3463,14 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "athletic-male-accessories",
         "products": [
           {
-            "id": "gym-bags",
-            "name": "Gym Bags",
-            "image": "athletic-male-accessories-gym-bags",
+            "id": "smartwatch",
+            "name": "Smartwatch / Fitness Tracker",
+            "image": "athletic-male-accessories-smartwatch",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -3392,30 +3485,14 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "sports-watches",
-            "name": "Sports Watches",
-            "image": "athletic-male-accessories-sports-watches",
+            "id": "performance-cap",
+            "name": "Performance Baseball Cap",
+            "image": "athletic-male-accessories-performance-cap",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -3430,30 +3507,14 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "sweatbands",
-            "name": "Sweatbands",
-            "image": "athletic-male-accessories-sweatbands",
+            "id": "sport-sunglasses",
+            "name": "Polarized Sport Sunglasses",
+            "image": "athletic-male-accessories-sport-sunglasses",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -3468,30 +3529,14 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "water-bottles",
-            "name": "Water Bottles",
-            "image": "athletic-male-accessories-water-bottles",
+            "id": "gym-bag",
+            "name": "Technical Gym Bag",
+            "image": "athletic-male-accessories-gym-bag",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
-              },
-              {
-                "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
-                ]
               },
               {
                 "label": "Keywords",
@@ -3506,30 +3551,25 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "training-gloves",
-            "name": "Training Gloves",
-            "image": "athletic-male-accessories-training-gloves",
+            "id": "water-bottle",
+            "name": "Insulated Water Bottle",
+            "image": "athletic-male-accessories-water-bottle",
             "fields": [
               {
-                "label": "Brand",
-                "type": "text",
-                "value": ""
-              },
-              {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "16oz",
+                  "24oz",
+                  "32oz",
+                  "40oz"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
@@ -3544,30 +3584,231 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "athletic-socks",
-            "name": "Athletic Socks",
-            "image": "athletic-male-accessories-athletic-socks",
+            "id": "sweatband",
+            "name": "Smart Sweatband",
+            "image": "athletic-male-accessories-sweatband",
             "fields": [
               {
-                "label": "Brand",
+                "label": "Preferred Brands",
                 "type": "text",
                 "value": ""
               },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "underwear",
+        "name": "Underwear",
+        "image": "athletic-male-underwear",
+        "products": [
+          {
+            "id": "compression-short",
+            "name": "Performance Compression Short",
+            "image": "athletic-male-underwear-compression-short",
+            "fields": [
               {
                 "label": "Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed",
-                  "Oversized"
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
                 ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "hammock-boxer",
+            "name": "Hammock-Pouch Boxer Brief",
+            "image": "athletic-male-underwear-hammock-boxer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "long-leg-boxer",
+            "name": "Long-Leg Tech Boxer Brief",
+            "image": "athletic-male-underwear-long-leg-boxer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "merino-boxer",
+            "name": "Active Merino Wool Boxer Brief",
+            "image": "athletic-male-underwear-merino-boxer",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "jockstrap",
+            "name": "Ventilated Mesh Jockstrap",
+            "image": "athletic-male-underwear-jockstrap",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Keywords",
+                "type": "text",
+                "value": ""
+              },
+              {
+                "label": "Notes",
+                "type": "text",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "id": "microfiber-trunk",
+            "name": "Quick-Dry Microfiber Trunk",
+            "image": "athletic-male-underwear-microfiber-trunk",
+            "fields": [
+              {
+                "label": "Size",
+                "type": "select",
+                "value": "",
+                "options": [
+                  "XS",
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "XXL"
+                ]
+              },
+              {
+                "label": "Preferred Brands",
+                "type": "text",
+                "value": ""
               },
               {
                 "label": "Keywords",
