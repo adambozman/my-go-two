@@ -561,9 +561,8 @@ const MyGoTwo = () => {
     setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     setActiveEntryPage(1);
-    if (activeSubcategory) {
-      setFocusedDrilldownItemId(activeSubcategory.id);
-    }
+    const fallbackFocusId = leafSubtype?.id || activeSubcategory?.id || null;
+    setFocusedDrilldownItemId(fallbackFocusId);
   };
 
   useEffect(() => {
