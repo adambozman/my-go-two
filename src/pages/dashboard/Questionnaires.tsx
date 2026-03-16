@@ -332,7 +332,6 @@ const Questionnaires = () => {
     const section = getSectionForQuestion(currentQuestion);
     const effectiveSelected = selections[currentQuestion.id] || currentSelected;
     const categoryTitle = activeCategory.title;
-    const categoryTitle = activeCategory.title;
 
     return (
       <div className="h-full flex flex-col items-center justify-start px-3 py-3 overflow-y-auto">
