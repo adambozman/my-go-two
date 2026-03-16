@@ -34,8 +34,8 @@ const STYLE_FIT: QuizQuestion[] = [
   {
     id: "sf-01", section: "style-fit",
     title: "How would you describe your everyday style?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("casual", "Casual"), opt("classic", "Classic"), opt("trendy", "Trendy"), opt("minimalist", "Minimalist"), opt("sporty", "Sporty"), opt("bohemian", "Bohemian")],
   },
   {
@@ -48,8 +48,8 @@ const STYLE_FIT: QuizQuestion[] = [
   {
     id: "sf-03", section: "style-fit",
     title: "If someone is buying you a shirt, which colors should they AVOID?",
-    subtitle: "Select up to three colors you wouldn't wear.",
-    type: "pill-select", multiSelect: true, maxSelect: 3,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("black", "Black"), opt("white", "White"), opt("red", "Red"), opt("navy", "Navy"), opt("green", "Green"), opt("beige", "Beige"), opt("yellow", "Yellow"), opt("gray", "Gray"), opt("purple", "Purple")],
   },
   {
@@ -69,8 +69,8 @@ const STYLE_FIT: QuizQuestion[] = [
   {
     id: "sf-06", section: "style-fit",
     title: "What's your shoe style?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("sneakers", "Sneakers"), opt("boots", "Boots"), opt("loafers", "Loafers"), opt("sandals", "Sandals"), opt("heels", "Heels"), opt("flats", "Flats")],
     genderOptions: {
       male: [opt("sneakers", "Sneakers"), opt("boots", "Boots"), opt("loafers", "Loafers"), opt("sandals", "Sandals"), opt("dress-shoes", "Dress Shoes"), opt("slides", "Slides")],
@@ -105,8 +105,8 @@ const STYLE_FIT: QuizQuestion[] = [
   {
     id: "sf-10", section: "style-fit",
     title: "Which brand vibe resonates with you?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("luxury", "Luxury / Designer"), opt("high-street", "High Street"), opt("sustainable", "Sustainable / Ethical"), opt("vintage", "Vintage / Thrift"), opt("athletic", "Athletic / Performance"), opt("indie", "Indie / Local")],
   },
   {
@@ -179,8 +179,8 @@ const STYLE_FIT: QuizQuestion[] = [
   {
     id: "sf-20", section: "style-fit",
     title: "What's missing from your wardrobe?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("basics", "Quality Basics"), opt("outerwear", "Great Outerwear"), opt("formalwear", "Formalwear"), opt("activewear", "Activewear"), opt("accessories", "Accessories"), opt("shoes", "Shoes")],
   },
 ];
@@ -338,8 +338,8 @@ const GIFTS_WISHLIST: QuizQuestion[] = [
   {
     id: "gw-01", section: "gifts-wishlist",
     title: "What kind of gifts do you actually enjoy getting?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("experiences", "Experiences"), opt("practical", "Practical Items"), opt("luxury", "Small Luxuries"), opt("handmade", "Handmade / Personal"), opt("tech", "Tech & Gadgets"), opt("gift-cards", "Gift Cards")],
   },
   {
@@ -641,15 +641,15 @@ const ENTERTAINMENT: QuizQuestion[] = [
   {
     id: "en-02", section: "entertainment",
     title: "Favorite movie genre?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("action", "Action / Thriller"), opt("comedy", "Comedy"), opt("drama", "Drama"), opt("romance", "Romance"), opt("sci-fi", "Sci-Fi / Fantasy"), opt("documentary", "Documentary"), opt("horror", "Horror"), opt("indie", "Indie / Art House")],
   },
   {
     id: "en-03", section: "entertainment",
     title: "Music taste?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("pop", "Pop"), opt("rock", "Rock / Alternative"), opt("hip-hop", "Hip-Hop / R&B"), opt("electronic", "Electronic"), opt("classical", "Classical / Jazz"), opt("country", "Country"), opt("indie", "Indie"), opt("latin", "Latin / Reggaeton")],
   },
   {
@@ -718,8 +718,8 @@ const ENTERTAINMENT: QuizQuestion[] = [
   {
     id: "en-13", section: "entertainment",
     title: "Preferred exercise?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("gym", "Gym / Weights"), opt("running", "Running / Cardio"), opt("yoga", "Yoga / Pilates"), opt("sports", "Team Sports"), opt("swimming", "Swimming"), opt("hiking", "Hiking / Walking"), opt("cycling", "Cycling"), opt("dance", "Dance")],
   },
   {

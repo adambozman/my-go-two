@@ -102,9 +102,7 @@ const Questionnaires = () => {
     setSelections((prev) => {
       const current = prev[currentQuestion.id] || [];
       if (isSingle) return { ...prev, [currentQuestion.id]: [optId] };
-      const maxSel = currentQuestion.maxSelect || 99;
       if (current.includes(optId)) return { ...prev, [currentQuestion.id]: current.filter((x) => x !== optId) };
-      if (current.length >= maxSel) return prev;
       return { ...prev, [currentQuestion.id]: [...current, optId] };
     });
 
