@@ -222,7 +222,7 @@ const Questionnaires = () => {
           </div>
 
           {/* Question */}
-          <div className="px-5 pt-4 pb-2 min-h-[320px] flex flex-col">
+          <div className="px-5 pt-4 pb-2 flex-1 overflow-y-auto flex flex-col min-h-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentQuestion.id}
