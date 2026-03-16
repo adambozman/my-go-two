@@ -247,8 +247,24 @@ function SponsoredAwareCard({
                       : "1px solid var(--chip-border)",
                   }}
                 >
-                  {/* Partner Pick badge */}
-                  {product.is_partner_pick && (
+                  {/* Sponsored / Partner Pick badge */}
+                  {product.is_sponsored ? (
+                    <div
+                      className="px-3 py-1 text-[10px] font-semibold tracking-wide uppercase flex items-center justify-between"
+                      style={{
+                        background: "rgba(212,84,58,0.06)",
+                        color: "var(--swatch-antique-coin)",
+                        borderBottom: "1px solid rgba(212,84,58,0.10)",
+                      }}
+                    >
+                      <span>Curated Pick</span>
+                      {product.affiliate_url && (
+                        <button onClick={handleClick} className="flex items-center gap-0.5 opacity-60 hover:opacity-100">
+                          <ExternalLink className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  ) : product.is_partner_pick ? (
                     <div
                       className="px-3 py-1 text-[10px] font-semibold tracking-wide uppercase"
                       style={{
@@ -259,7 +275,7 @@ function SponsoredAwareCard({
                     >
                       ★ Partner Pick
                     </div>
-                  )}
+                  ) : null}
 
                   <div className="p-4 space-y-2.5">
                     {/* Hook — the conversational "why" */}
