@@ -744,42 +744,32 @@ const Questionnaires = () => {
               </div>
             </motion.button>
 
-            <motion.button
+            <motion.div
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={openStyleChat}
-              className="lg:col-span-5 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden min-h-[260px] text-left"
+              className="lg:col-span-5 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden min-h-[260px]"
               style={{ borderRadius: 30, boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
-              <div className="relative flex h-full flex-col justify-between gap-6">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Style chat with AI
-                  </p>
-                  <p className="text-[34px] leading-[0.96] mb-4 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                    Ask the AI what it thinks your style is.
-                  </p>
-                  <p className="text-[14px] leading-relaxed max-w-[34ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    Open a live style chat to ask how the AI sees your vibe so far, why it is asking certain questions, how it picks what comes next, and what kinds of recommendations it is building toward from your answers.
-                  </p>
-                </div>
-
-                <div className="rounded-[24px] p-4 backdrop-blur-md flex items-center justify-between gap-4" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                      Open chat
-                    </p>
-                    <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                      Ask about your vibe, logic, and next recommendations.
-                    </p>
-                  </div>
-                  <MessageCircle className="w-5 h-5 shrink-0" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-                </div>
+              <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                Style chat with AI
+              </p>
+              <p className="text-[34px] leading-[0.96] mb-4 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                Ask the AI what it thinks your style is.
+              </p>
+              <p className="text-[14px] leading-relaxed max-w-[34ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                Open a live style chat to ask how the AI sees your vibe so far, why it is asking certain questions, how it picks what comes next, and what kinds of recommendations it is building toward from your answers.
+              </p>
+              <div className="rounded-[24px] p-4 backdrop-blur-md" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                <p className="text-[11px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  Open style chat
+                </p>
+                <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Ask about your vibe, logic, and next recommendations.
+                </p>
               </div>
-            </motion.button>
+            </motion.div>
 ...
             <motion.div
               initial={{ opacity: 0, y: 18 }}
