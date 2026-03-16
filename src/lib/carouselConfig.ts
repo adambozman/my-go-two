@@ -42,14 +42,14 @@ export const CAROUSEL_LAYOUT_DESKTOP = {
 /** Form card layout — taller active card for entry forms */
 export const FORM_CAROUSEL_LAYOUT = {
   ...CAROUSEL_LAYOUT,
-  cardWidth: 300,
-  cardHeight: 500,
-  stageHeight: 560,
+  cardWidth: 280,
+  cardHeight: 460,
+  stageHeight: 520,
   pills: [
-    { w: 300, h: 500, r: 16  }, // center
-    { w: 76,  h: 320, r: 999 }, // ±1
-    { w: 45,  h: 260, r: 999 }, // ±2
-    { w: 17,  h: 190, r: 999 }, // ±3
+    { w: 280, h: 460, r: 16  }, // center
+    { w: 66,  h: 290, r: 999 }, // ±1
+    { w: 40,  h: 230, r: 999 }, // ±2
+    { w: 15,  h: 170, r: 999 }, // ±3
   ],
 };
 
