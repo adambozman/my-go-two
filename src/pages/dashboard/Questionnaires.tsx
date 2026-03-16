@@ -74,6 +74,7 @@ const Questionnaires = () => {
   const totAnsweredCount = THIS_OR_THAT.length - totQueue.length;
 
   const openThisOrThat = () => {
+    if (!subscribed && totQueue.length === 0) return;
     setTotIndex(0);
     setTotSwipeDir(null);
     setView("thisorthat");
