@@ -168,15 +168,16 @@ const Questionnaires = () => {
     const effectiveSelected = selections[currentQuestion.id] || currentSelected;
 
     return (
-      <div className="h-full flex flex-col items-center justify-start px-4 py-5 overflow-y-auto">
+      <div className="h-full flex flex-col items-center justify-start px-3 py-3 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: "spring", stiffness: 280, damping: 24 }}
-          className="w-full max-w-[520px] rounded-3xl overflow-hidden relative"
+          className="w-full max-w-[520px] rounded-3xl overflow-hidden relative flex flex-col"
           style={{
             background: "#FFFFFF",
             boxShadow: "0 8px 40px rgba(30,74,82,0.08), 0 2px 12px rgba(0,0,0,0.04)",
+            maxHeight: "calc(100vh - 180px)",
           }}
         >
           {/* Header */}
@@ -221,7 +222,7 @@ const Questionnaires = () => {
           </div>
 
           {/* Question */}
-          <div className="px-5 pt-4 pb-2 min-h-[320px] flex flex-col">
+          <div className="px-5 pt-4 pb-2 flex-1 overflow-y-auto flex flex-col min-h-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentQuestion.id}
