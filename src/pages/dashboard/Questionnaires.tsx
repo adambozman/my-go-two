@@ -603,14 +603,14 @@ const Questionnaires = () => {
             transition={{ type: "spring", stiffness: 240, damping: 24 }}
             className="lg:col-span-8 rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[320px]"
             style={{
-              background: "linear-gradient(135deg, hsl(var(--primary)) 0%, color-mix(in hsl, hsl(var(--primary)) 72%, hsl(var(--background))) 55%, color-mix(in hsl, hsl(var(--accent)) 88%, hsl(var(--background))) 100%)",
+              background: "linear-gradient(135deg, rgba(var(--swatch-teal-rgb), 0.92) 0%, rgba(var(--swatch-teal-rgb), 0.78) 48%, rgba(var(--swatch-antique-coin-rgb), 0.88) 100%)",
               boxShadow: "0 24px 60px rgba(30,74,82,0.22)",
             }}
           >
             <div
               className="absolute inset-0"
               style={{
-                background: "radial-gradient(circle at 85% 18%, rgba(255,255,255,0.18), transparent 26%), radial-gradient(circle at 100% 100%, rgba(var(--swatch-cedar-grove-rgb), 0.22), transparent 28%)",
+                background: "radial-gradient(circle at 85% 18%, rgba(255,255,255,0.14), transparent 26%), radial-gradient(circle at 100% 100%, rgba(var(--swatch-cedar-grove-rgb), 0.18), transparent 28%)",
               }}
             />
             <div className="relative h-full flex flex-col justify-between gap-8">
@@ -656,7 +656,7 @@ const Questionnaires = () => {
                   <div className="h-2 rounded-full overflow-hidden bg-primary-foreground/15">
                     <motion.div
                       className="h-full rounded-full"
-                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.92), rgba(var(--swatch-cedar-grove-rgb), 0.88))" }}
+                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.92), rgba(var(--swatch-cedar-grove-rgb), 0.72))" }}
                       initial={{ width: 0 }}
                       animate={{
                         width: `${subscribed
@@ -671,8 +671,8 @@ const Questionnaires = () => {
 
                 {!subscribed && (
                   <div className="rounded-[28px] p-4 backdrop-blur-md" style={{
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1px solid rgba(255,255,255,0.18)",
+                    background: "rgba(var(--swatch-gypsum-rose-rgb), 0.16)",
+                    border: "1px solid rgba(255,255,255,0.16)",
                   }}>
                     <p className="text-[10px] uppercase tracking-[0.18em] mb-1 text-primary-foreground/70" style={{ fontFamily: "'Jost', sans-serif" }}>
                       Partial access
@@ -694,11 +694,11 @@ const Questionnaires = () => {
             onClick={openThisOrThat}
             className="lg:col-span-4 rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left min-h-[320px] flex flex-col justify-between"
             style={{
-              background: "linear-gradient(160deg, rgba(var(--swatch-cedar-grove-rgb), 0.96) 0%, rgba(var(--swatch-teal-rgb), 0.92) 100%)",
-              boxShadow: "0 22px 54px rgba(212,84,58,0.22)",
+              background: "linear-gradient(160deg, rgba(var(--swatch-cedar-grove-rgb), 0.84) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.66) 52%, rgba(var(--swatch-teal-rgb), 0.78) 100%)",
+              boxShadow: "0 22px 54px rgba(212,84,58,0.18)",
             }}
           >
-            <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(255,255,255,0.18), transparent 28%), linear-gradient(180deg, rgba(255,255,255,0.04), transparent 40%)" }} />
+            <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(255,255,255,0.16), transparent 28%), linear-gradient(180deg, rgba(255,255,255,0.04), transparent 40%)" }} />
             <div className="relative flex items-center justify-between gap-3">
               <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 bg-primary-foreground/10 text-primary-foreground/80">
                 <Shuffle className="w-4 h-4" />
@@ -741,12 +741,12 @@ const Questionnaires = () => {
             transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
             className="lg:col-span-5 rounded-[30px] p-5 relative overflow-hidden min-h-[220px]"
             style={{
-              background: "linear-gradient(145deg, rgba(var(--swatch-sand-rgb), 0.92) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.72) 100%)",
-              border: "1px solid rgba(var(--swatch-antique-coin-rgb), 0.10)",
-              boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.78)",
+              background: "linear-gradient(145deg, rgba(var(--swatch-gypsum-rose-rgb), 0.82) 0%, rgba(var(--swatch-sand-rgb), 0.92) 100%)",
+              border: "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.08)",
+              boxShadow: "0 18px 44px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.62)",
             }}
           >
-            <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-cedar-grove-rgb), 0.10)" }} />
+            <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-cedar-grove-rgb), 0.12)" }} />
             <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
               Profile reading
             </p>
@@ -764,9 +764,9 @@ const Questionnaires = () => {
             transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
             className="lg:col-span-7 rounded-[30px] p-5 md:p-6"
             style={{
-              background: "linear-gradient(145deg, rgba(255,255,255,0.78) 0%, rgba(var(--swatch-sand-rgb), 0.58) 100%)",
-              border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
-              boxShadow: "0 18px 50px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.84)",
+              background: "linear-gradient(145deg, rgba(var(--swatch-sand-rgb), 0.94) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.74) 100%)",
+              border: "1px solid rgba(var(--swatch-teal-rgb), 0.10)",
+              boxShadow: "0 18px 50px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.62)",
               backdropFilter: "blur(10px)",
             }}
           >
@@ -804,18 +804,18 @@ const Questionnaires = () => {
                     className={`relative overflow-hidden text-left rounded-[28px] p-5 transition-all ${isTall ? "md:row-span-2 min-h-[220px]" : "min-h-[168px]"}`}
                     style={{
                       background: hasProgress
-                        ? "linear-gradient(155deg, rgba(var(--swatch-teal-rgb), 0.18) 0%, rgba(255,255,255,0.78) 100%)"
+                        ? "linear-gradient(155deg, rgba(var(--swatch-teal-rgb), 0.22) 0%, rgba(var(--swatch-sand-rgb), 0.92) 100%)"
                         : isComplete
-                          ? "linear-gradient(155deg, rgba(var(--swatch-teal-rgb), 0.14) 0%, rgba(var(--swatch-sand-rgb), 0.62) 100%)"
-                          : "linear-gradient(155deg, rgba(255,255,255,0.82) 0%, rgba(var(--swatch-sand-rgb), 0.66) 100%)",
+                          ? "linear-gradient(155deg, rgba(var(--swatch-teal-rgb), 0.16) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.82) 100%)"
+                          : "linear-gradient(155deg, rgba(var(--swatch-sand-rgb), 0.94) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.68) 100%)",
                       border: hasProgress
-                        ? "1px solid rgba(var(--swatch-teal-rgb), 0.22)"
+                        ? "1px solid rgba(var(--swatch-teal-rgb), 0.20)"
                         : isComplete
-                          ? "1px solid rgba(var(--swatch-teal-rgb), 0.16)"
+                          ? "1px solid rgba(var(--swatch-teal-rgb), 0.14)"
                           : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.10)",
                       boxShadow: hasProgress
-                        ? "0 16px 36px rgba(45,104,112,0.12), inset 0 1px 0 rgba(255,255,255,0.88)"
-                        : "0 12px 28px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.88)",
+                        ? "0 16px 36px rgba(45,104,112,0.10), inset 0 1px 0 rgba(255,255,255,0.56)"
+                        : "0 12px 28px rgba(30,74,82,0.05), inset 0 1px 0 rgba(255,255,255,0.52)",
                       backdropFilter: "blur(10px)",
                     }}
                   >
@@ -823,7 +823,7 @@ const Questionnaires = () => {
                       background: hasProgress
                         ? "rgba(var(--swatch-teal-rgb), 0.12)"
                         : isComplete
-                          ? "rgba(var(--swatch-teal-rgb), 0.10)"
+                          ? "rgba(var(--swatch-teal-rgb), 0.08)"
                           : "rgba(var(--swatch-cedar-grove-rgb), 0.08)",
                     }} />
 
@@ -833,16 +833,16 @@ const Questionnaires = () => {
                           className="w-12 h-12 rounded-[18px] flex items-center justify-center flex-shrink-0"
                           style={{
                             background: isComplete
-                              ? "var(--swatch-teal)"
+                              ? "rgba(var(--swatch-teal-rgb), 0.84)"
                               : hasProgress
-                                ? "rgba(var(--swatch-teal-rgb), 0.12)"
-                                : "rgba(var(--swatch-antique-coin-rgb), 0.06)",
+                                ? "rgba(var(--swatch-teal-rgb), 0.14)"
+                                : "rgba(var(--swatch-gypsum-rose-rgb), 0.62)",
                             color: isComplete
                               ? "rgba(255,255,255,0.96)"
                               : hasProgress
                                 ? "var(--swatch-teal)"
                                 : "var(--swatch-antique-coin)",
-                            boxShadow: isComplete ? "0 10px 22px rgba(45,104,112,0.18)" : "none",
+                            boxShadow: isComplete ? "0 10px 22px rgba(45,104,112,0.16)" : "none",
                           }}
                         >
                           {isComplete ? <Check className="w-5 h-5" /> : <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>{sprint.id}</span>}
@@ -867,9 +867,9 @@ const Questionnaires = () => {
                             style={{
                               width: `${(prog.answered / prog.total) * 100}%`,
                               background: isComplete
-                                ? "linear-gradient(90deg, var(--swatch-teal), var(--swatch-teal-mid))"
+                                ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.84), rgba(var(--swatch-teal-rgb), 0.62))"
                                 : hasProgress
-                                  ? "linear-gradient(90deg, var(--swatch-teal-mid), var(--swatch-teal))"
+                                  ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))"
                                   : "rgba(var(--swatch-antique-coin-rgb), 0.18)",
                             }}
                           />
@@ -904,9 +904,9 @@ const Questionnaires = () => {
               transition={{ delay: 0.18, type: "spring", stiffness: 250, damping: 24 }}
               className="lg:col-span-12 rounded-[28px] px-5 py-4"
               style={{
-                background: "linear-gradient(145deg, rgba(var(--swatch-gypsum-rose-rgb), 0.62) 0%, rgba(255,255,255,0.58) 100%)",
-                border: "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.12)",
-                boxShadow: "0 14px 34px rgba(212,84,58,0.08), inset 0 1px 0 rgba(255,255,255,0.78)",
+                background: "linear-gradient(145deg, rgba(var(--swatch-gypsum-rose-rgb), 0.74) 0%, rgba(var(--swatch-sand-rgb), 0.88) 100%)",
+                border: "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.10)",
+                boxShadow: "0 14px 34px rgba(212,84,58,0.06), inset 0 1px 0 rgba(255,255,255,0.52)",
               }}
             >
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
