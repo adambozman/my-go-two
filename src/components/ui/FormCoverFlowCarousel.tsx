@@ -128,8 +128,8 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                         </div>
                       ) : (
                         <>
-                          {/* Flanking cards — use item image when available */}
-                          <div className="absolute inset-0" style={{ background: getFlankBackground(item.image) }} />
+                          {/* Flanking cards — use previous card image */}
+                          <div className="absolute inset-0" style={{ background: getFlankBackground(previousItem?.image) }} />
                           <div className="absolute bottom-6 left-6">
                             <span
                               style={{
