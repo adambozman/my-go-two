@@ -484,13 +484,13 @@ const Questionnaires = () => {
                 </div>
 
                 {/* Arrow */}
-                {!isLocked && !isComplete && (
-                  <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "var(--swatch-teal)" }} />
+                {!isComplete && (
+                  <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: hasProgress ? "var(--swatch-teal)" : "var(--swatch-antique-coin)" }} />
                 )}
               </div>
 
-              {/* Active indicator */}
-              {isActive && (
+              {/* In-progress indicator */}
+              {hasProgress && (
                 <motion.div
                   layoutId="active-sprint"
                   className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full"
