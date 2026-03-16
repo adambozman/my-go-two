@@ -739,13 +739,13 @@ const Questionnaires = () => {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
-            className="lg:col-span-5 card-design-overlay-coral rounded-[30px] p-5 relative overflow-hidden min-h-[220px]"
+            className="lg:col-span-5 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden min-h-[220px]"
             style={{
               borderRadius: 30,
-              boxShadow: "0 18px 44px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.58)",
+              boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
             }}
           >
-            <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-cedar-grove-rgb), 0.12)" }} />
+            <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
             <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
               Profile reading
             </p>
