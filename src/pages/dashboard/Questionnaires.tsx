@@ -852,11 +852,7 @@ const Questionnaires = () => {
                               width: `${(prog.answered / prog.total) * 100}%`,
                               background: isComplete
                                 ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.84), rgba(var(--swatch-teal-rgb), 0.62))"
-                                : overlayTheme === 3
-                                  ? "linear-gradient(90deg, rgba(var(--swatch-cedar-grove-rgb), 0.44), rgba(var(--swatch-cedar-grove-rgb), 0.66))"
-                                  : overlayTheme === 0 || overlayTheme === 2
-                                    ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))"
-                                    : "linear-gradient(90deg, rgba(var(--swatch-antique-coin-rgb), 0.28), rgba(var(--swatch-antique-coin-rgb), 0.44))",
+                                : "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))",
                             }}
                           />
                         </div>
