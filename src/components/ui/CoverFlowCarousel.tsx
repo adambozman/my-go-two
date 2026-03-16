@@ -62,6 +62,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
     const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
     const n = items.length;
     const touchStartX = useRef<number | null>(null);
+    const touchStartY = useRef<number | null>(null);
 
     // Keyboard navigation
     useEffect(() => {
