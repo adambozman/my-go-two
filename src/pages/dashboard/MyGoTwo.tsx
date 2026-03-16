@@ -715,8 +715,8 @@ const MyGoTwo = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="h-full overflow-y-auto snap-y snap-mandatory relative"
-        style={{ scrollbarWidth: "none" }}
+        className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
+        style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}
         onScroll={(e) => {
           const el = e.currentTarget;
           const idx = Math.round(el.scrollTop / el.clientHeight);
@@ -724,8 +724,8 @@ const MyGoTwo = () => {
         }}
       >
         {orderedSections.map((section) => (
-          <div key={section.key} className="snap-start h-full flex flex-col items-center justify-center">
-            <h2 className="section-header text-center mb-6">{section.label}</h2>
+          <div key={section.key} className="snap-start snap-always h-full flex flex-col items-center justify-center overflow-hidden flex-shrink-0">
+            <h2 className="section-header text-center mb-4">{section.label}</h2>
             <GoTwoCoverFlow items={section.items} onSelect={handleSelect} />
           </div>
         ))}

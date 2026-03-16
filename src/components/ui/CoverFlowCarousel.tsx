@@ -62,6 +62,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
     const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
     const n = items.length;
     const touchStartX = useRef<number | null>(null);
+    const touchStartY = useRef<number | null>(null);
 
     // Keyboard navigation
     useEffect(() => {
@@ -81,15 +82,18 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
       <div
         ref={ref}
         className="relative w-full flex flex-col items-center"
-        onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+        onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY; }}
         onTouchEnd={(e) => {
-          if (touchStartX.current === null) return;
-          const diff = touchStartX.current - e.changedTouches[0].clientX;
-          if (Math.abs(diff) > 40) {
-            if (diff > 0) setActiveIndex((i) => (i + 1) % n);
+          if (touchStartX.current === null || touchStartY.current === null) return;
+          const dx = touchStartX.current - e.changedTouches[0].clientX;
+          const dy = touchStartY.current - e.changedTouches[0].clientY;
+          // Only handle horizontal swipes — ignore if vertical movement is greater
+          if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+            if (dx > 0) setActiveIndex((i) => (i + 1) % n);
             else setActiveIndex((i) => (i - 1 + n) % n);
           }
           touchStartX.current = null;
+          touchStartY.current = null;
         }}
       >
         {/* Stage */}
