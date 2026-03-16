@@ -967,10 +967,15 @@ const MyGoTwo = () => {
             </div>
           </div>
         )}
-        {orderedSections.map((section) => (
+        {orderedSections.map((section, index) => (
           <div key={section.key} className="snap-start snap-always h-full flex flex-col items-center justify-center overflow-hidden flex-shrink-0">
             <h2 className="section-header text-center mb-4">{section.label}</h2>
-            <GoTwoCoverFlow items={section.items} onSelect={handleSelect} focusedItemId={focusedMainCategoryId} />
+            <GoTwoCoverFlow
+              items={section.items}
+              onSelect={handleSelect}
+              focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+              showPagination={index === activeSectionIndex}
+            />
           </div>
         ))}
         {orderedSections.length === 0 && (
