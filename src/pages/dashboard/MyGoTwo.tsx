@@ -561,8 +561,8 @@ const MyGoTwo = () => {
     setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     setActiveEntryPage(1);
-    if (activeSubcategory && (!activeSubcategory.products || activeSubcategory.products.length === 0)) {
-      setActiveSubcategory(null);
+    if (activeSubcategory) {
+      setFocusedDrilldownItemId(activeSubcategory.id);
     }
   };
 
