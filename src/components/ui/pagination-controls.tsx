@@ -1,3 +1,5 @@
+import { forwardRef } from "react";
+
 interface PaginationControlsProps {
   currentPage: number;
   totalPages: number;
@@ -8,20 +10,23 @@ interface PaginationControlsProps {
   style?: React.CSSProperties;
 }
 
-export function PaginationControls({
-  currentPage,
-  totalPages,
-  onPageChange,
-  className,
-  orientation = "horizontal",
-  style,
-}: PaginationControlsProps) {
+export const PaginationControls = forwardRef<HTMLDivElement, PaginationControlsProps>(function PaginationControls(
+  {
+    currentPage,
+    totalPages,
+    onPageChange,
+    className,
+    orientation = "horizontal",
+    style,
+  },
+  ref,
+) {
   if (totalPages <= 1) return null;
 
   const isVertical = orientation === "vertical";
 
   return (
-    <div className={className ?? "mt-6"} style={style}>
+    <div ref={ref} className={className ?? "mt-6"} style={style}>
       <div className={`flex items-center justify-center ${isVertical ? "flex-col gap-2" : "gap-2"}`}>
         {Array.from({ length: totalPages }, (_, index) => {
           const page = index + 1;
@@ -46,4 +51,5 @@ export function PaginationControls({
       </div>
     </div>
   );
-}
+});
+
