@@ -437,6 +437,67 @@ const Questionnaires = () => {
         </p>
       </div>
 
+      {/* This or That card */}
+      <div className="px-4 mt-3 mb-2">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 24 }}
+          className="rounded-2xl p-4 relative overflow-hidden"
+          style={{
+            background: "var(--swatch-viridian-odyssey)",
+            boxShadow: "0 6px 24px rgba(30,74,82,0.15)",
+          }}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Shuffle className="w-4 h-4 text-white/60" />
+            <span className="text-[11px] uppercase tracking-[0.12em] text-white/60" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500 }}>
+              This or That
+            </span>
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={totItem.id}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              className="flex gap-3"
+            >
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => !totPicked && pickThisOrThat("A")}
+                className="flex-1 py-4 rounded-xl text-center text-[15px] font-medium transition-all"
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontWeight: 700,
+                  background: totPicked === "A" ? "var(--swatch-teal)" : "rgba(255,255,255,0.12)",
+                  color: "#fff",
+                  border: totPicked === "A" ? "1.5px solid var(--swatch-teal)" : "1.5px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                {totItem.optionA}
+              </motion.button>
+              <span className="self-center text-white/30 text-[11px] font-medium" style={{ fontFamily: "'Jost', sans-serif" }}>or</span>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => !totPicked && pickThisOrThat("B")}
+                className="flex-1 py-4 rounded-xl text-center text-[15px] font-medium transition-all"
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontWeight: 700,
+                  background: totPicked === "B" ? "var(--swatch-teal)" : "rgba(255,255,255,0.12)",
+                  color: "#fff",
+                  border: totPicked === "B" ? "1.5px solid var(--swatch-teal)" : "1.5px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                {totItem.optionB}
+              </motion.button>
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
       {/* Sprint list */}
       <div className="flex-1 px-4 pb-8 space-y-3 mt-2">
         {sprints.map((sprint, idx) => {
