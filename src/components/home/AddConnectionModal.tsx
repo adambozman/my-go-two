@@ -106,7 +106,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
             role="dialog"
             aria-modal="true"
             aria-labelledby="add-connection-title"
-            className="fixed inset-x-4 bottom-4 z-50 max-w-[460px] mx-auto rounded-2xl overflow-hidden"
+            className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100vh-2rem)] w-auto max-w-[460px] -translate-y-1/2 overflow-y-auto rounded-2xl md:inset-x-0"
             style={{
               background: "var(--swatch-sand)",
               border: "1px solid rgba(255,255,255,0.85)",
