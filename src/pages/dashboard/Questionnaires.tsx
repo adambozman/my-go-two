@@ -769,11 +769,13 @@ const Questionnaires = () => {
               </div>
             </motion.div>
 
-            <motion.div
+            <motion.button
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
-              className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 md:p-6"
+              whileTap={{ scale: 0.99 }}
+              onClick={openCategoriesDashboard}
+              className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 md:p-6 text-left"
               style={{ borderRadius: 30, boxShadow: "0 18px 50px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.48)", backdropFilter: "blur(10px)" }}
             >
               <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
@@ -785,7 +787,7 @@ const Questionnaires = () => {
                     Questions by category
                   </h2>
                   <p className="text-[14px] leading-relaxed max-w-[42ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    Pick a category and the app will resume exactly where you left off. Every answer saves as soon as you tap it.
+                    Open a separate dashboard with all categories, descriptions, and your progress. Then choose where you want to continue.
                   </p>
                 </div>
                 {!subscribed && (
@@ -795,80 +797,17 @@ const Questionnaires = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {categories.map((category, idx) => {
-                  const isComplete = category.complete;
-                  const hasProgress = category.answered > 0 && !isComplete;
-                  const isLocked = category.isLocked;
-                  const badgeBackground = isComplete ? "rgba(var(--swatch-teal-rgb), 0.84)" : "rgba(var(--swatch-teal-rgb), 0.14)";
-                  const badgeColor = isComplete ? "rgba(255,255,255,0.96)" : "var(--swatch-teal)";
-
-                  return (
-                    <motion.button
-                      key={category.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.04, type: "spring", stiffness: 280, damping: 25 }}
-                      whileTap={{ scale: 0.99 }}
-                      onClick={() => startCategory(category.id)}
-                      className="relative overflow-hidden text-left card-design-overlay-teal rounded-[28px] p-5 transition-all min-h-[250px]"
-                      style={{
-                        borderRadius: 28,
-                        boxShadow: hasProgress ? "0 16px 36px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.46)" : "0 12px 28px rgba(30,74,82,0.05), inset 0 1px 0 rgba(255,255,255,0.42)",
-                        backdropFilter: "blur(10px)",
-                      }}
-                    >
-                      <div className="absolute right-0 top-0 w-24 h-24 rounded-full translate-x-7 -translate-y-7" style={{ background: "rgba(var(--swatch-teal-rgb), 0.12)" }} />
-
-                      <div className="relative h-full flex flex-col justify-between gap-6">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="w-12 h-12 rounded-[18px] flex items-center justify-center flex-shrink-0" style={{ background: badgeBackground, color: badgeColor, boxShadow: isComplete ? "0 10px 22px rgba(45,104,112,0.16)" : "none" }}>
-                            {isComplete ? <Check className="w-5 h-5" /> : isLocked ? <Lock className="w-5 h-5" /> : <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>{idx + 1}</span>}
-                          </div>
-
-                          <span className="text-[11px] tabular-nums shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                            {category.visibleAnswered}/{category.visibleTotal}
-                          </span>
-                        </div>
-
-                        <div>
-                          <h3 className="text-[26px] leading-[0.98] mb-2 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                            {category.title}
-                          </h3>
-                          <p className="text-[11px] uppercase tracking-[0.14em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                            {category.label}
-                          </p>
-                          <p className="text-[13px] leading-relaxed mb-4 max-w-[24ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                            {isLocked
-                              ? "You’ve reached the free limit in this category. Upgrade to keep going."
-                              : hasProgress
-                                ? "You’ve started here — tap to resume exactly where you left off."
-                                : category.description}
-                          </p>
-
-                          <div className="h-[5px] rounded-full overflow-hidden mb-3" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}>
-                            <div
-                              className="h-full rounded-full transition-all duration-500"
-                              style={{
-                                width: `${(category.visibleAnswered / Math.max(1, category.visibleTotal)) * 100}%`,
-                                background: isComplete ? "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.84), rgba(var(--swatch-teal-rgb), 0.62))" : "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.58), rgba(var(--swatch-teal-rgb), 0.82))",
-                              }}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                            {isComplete ? "Complete" : isLocked ? "Premium" : hasProgress ? "Resume" : "Start now"}
-                          </span>
-                          {!isComplete && <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "var(--swatch-teal)" }} />}
-                        </div>
-                      </div>
-                    </motion.button>
-                  );
-                })}
+              <div className="flex items-end justify-between gap-4">
+                <div className="max-w-[30ch]">
+                  <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    Nice and neat boxes, uneven layout, and resume exactly where you left off.
+                  </p>
+                </div>
+                <div className="w-16 h-16 rounded-[22px] backdrop-blur-md flex items-center justify-center" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                  <ChevronRight className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+                </div>
               </div>
-            </motion.div>
+            </motion.button>
 
             <motion.div
               initial={{ opacity: 0, y: 18 }}
