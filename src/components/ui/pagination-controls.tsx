@@ -14,13 +14,14 @@ export function PaginationControls({
   onPageChange,
   className,
   orientation = "horizontal",
+  style,
 }: PaginationControlsProps) {
   if (totalPages <= 1) return null;
 
   const isVertical = orientation === "vertical";
 
   return (
-    <div className={className ?? "mt-6"}>
+    <div className={className ?? "mt-6"} style={style}>
       <div className={`flex items-center justify-center ${isVertical ? "flex-col gap-2" : "gap-2"}`}>
         {Array.from({ length: totalPages }, (_, index) => {
           const page = index + 1;
