@@ -136,6 +136,8 @@ const Questionnaires = () => {
   }, []);
 
   const openCategoriesDashboard = () => setView("categories");
+
+  const openStyleChat = () => {
     setStyleChatMessages([
       {
         role: "assistant",
