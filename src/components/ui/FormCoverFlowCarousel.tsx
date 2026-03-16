@@ -44,6 +44,9 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
 
 const FALLBACK_GRADIENT = "linear-gradient(160deg, #2d6870 0%, #1e4a52 100%)";
 
+const getFlankBackground = (image?: string) =>
+  image ? `center / cover no-repeat url(${image})` : FALLBACK_GRADIENT;
+
 const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselProps>(
   ({ items, activeIndex, onActiveIndexChange, renderActiveCard }, ref) => {
     const touchStartX = useRef<number | null>(null);
