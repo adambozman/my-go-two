@@ -287,19 +287,10 @@ const DashboardHome = () => {
     [connections]
   );
 
+  const [showAddModal, setShowAddModal] = useState(false);
+
   const handleAddConnection = useCallback(() => {
-    const tempId = `new-${Date.now()}`;
-    setConnections((prev) => [
-      ...prev,
-      {
-        id: tempId,
-        name: "New Connection",
-        image: DEFAULT_IMAGE,
-        email: "",
-        status: "pending",
-        isNew: true,
-      },
-    ]);
+    setShowAddModal(true);
   }, []);
 
   return (
