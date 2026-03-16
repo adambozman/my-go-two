@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { supabase } from "@/integrations/supabase/client";
-import { RefreshCw, Loader2, UtensilsCrossed, Shirt, Cpu, Home, Bookmark, Share2, Award } from "lucide-react";
+import { RefreshCw, Loader2, UtensilsCrossed, Shirt, Cpu, Home, Bookmark, Share2, Award, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackAdEvent } from "@/lib/adTracking";
 
 interface Product {
   name: string;
@@ -13,6 +14,9 @@ interface Product {
   hook: string;
   why: string;
   is_partner_pick: boolean;
+  is_sponsored?: boolean;
+  affiliate_url?: string | null;
+  sponsored_id?: string | null;
 }
 
 const PILLARS = [
