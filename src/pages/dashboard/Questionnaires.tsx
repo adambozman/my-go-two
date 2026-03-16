@@ -58,6 +58,33 @@ const Questionnaires = () => {
     });
   }, []);
 
+  /* ── This or That state ── */
+  const getRandomTot = useCallback(() => {
+    const answered = profileAnswers ? Object.keys(profileAnswers).filter(k => k.startsWith("tot-")) : [];
+    const unanswered = THIS_OR_THAT.filter(t => !answered.includes(t.id));
+    const pool = unanswered.length > 0 ? unanswered : THIS_OR_THAT;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }, [profileAnswers]);
+  const [totItem, setTotItem] = useState<ThisOrThatItem>(() => THIS_OR_THAT[0]);
+  const [totPicked, setTotPicked] = useState<string | null>(null);
+
+  const pickThisOrThat = async (choice: "A" | "B") => {
+    setTotPicked(choice);
+    const value = choice === "A" ? totItem.optionA : totItem.optionB;
+    try {
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+      if (userId) {
+        const updated = { ...(profileAnswers || {}), [totItem.id]: value };
+        await supabase.from("user_preferences").update({ profile_answers: updated, updated_at: new Date().toISOString() }).eq("user_id", userId);
+        await refetch();
+      }
+    } catch { /* silent */ }
+    setTimeout(() => {
+      setTotPicked(null);
+      setTotItem(getRandomTot());
+    }, 800);
+  };
+
   const [aiFeedback, setAiFeedback] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
