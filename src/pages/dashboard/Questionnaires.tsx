@@ -109,6 +109,10 @@ const Questionnaires = () => {
 
   /* ── Start a sprint quiz ── */
   const startSprint = (idx: number) => {
+    if (!subscribed && idx >= FREE_SPRINT_LIMIT) {
+      toast("More blueprint sprints unlock with Premium");
+      return;
+    }
     const sprint = sprints[idx];
     const firstUnanswered = sprint.questions.findIndex((q) => !profileAnswers?.[q.id]);
     setQuizSprintIdx(idx);

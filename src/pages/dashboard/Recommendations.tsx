@@ -163,35 +163,9 @@ const Recommendations = () => {
     );
   }
 
-  if (!subscribed) {
-    return (
-      <div className="h-full overflow-y-auto pb-20">
-        <PremiumLockCard
-          title="Gift recommendations are Premium"
-          description="Weekly picks should feel like a real advantage, so the AI-curated recommendation feed unlocks with Premium."
-          bullets={[
-            "Get a fresh set of recommendations once a week",
-            "See picks generated from your saved profile data",
-            "Use Premium alongside reminders and multiple connections",
-          ]}
-          preview={
-            <div className="space-y-3">
-              {LOCKED_PREVIEW.map((product, index) => (
-                <ProductCard
-                  key={`${product.brand}-${product.name}-${index}`}
-                  product={product}
-                  index={index}
-                  isSaved={false}
-                  onToggleSave={() => undefined}
-                  onShare={() => undefined}
-                />
-              ))}
-            </div>
-          }
-        />
-      </div>
-    );
-  }
+  const previewProducts = LOCKED_PREVIEW.filter((product) =>
+    activePillar === "all" ? true : product.category === activePillar,
+  );
 
   return (
     <div className="h-full overflow-y-auto pb-20">
