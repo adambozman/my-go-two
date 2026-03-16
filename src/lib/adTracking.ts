@@ -9,13 +9,13 @@ export async function trackAdEvent(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
-  await supabase.from("ad_events").insert({
+  await supabase.from("ad_events").insert([{
     product_id: productId,
     user_id: user.id,
     event_type: eventType,
     placement,
-    metadata: metadata || {},
-  });
+    metadata: (metadata || {}) as any,
+  }]);
 }
 
 export function buildAffiliateUrl(
