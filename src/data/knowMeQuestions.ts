@@ -105,8 +105,8 @@ const STYLE_FIT: QuizQuestion[] = [
   {
     id: "sf-10", section: "style-fit",
     title: "Which brand vibe resonates with you?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("luxury", "Luxury / Designer"), opt("high-street", "High Street"), opt("sustainable", "Sustainable / Ethical"), opt("vintage", "Vintage / Thrift"), opt("athletic", "Athletic / Performance"), opt("indie", "Indie / Local")],
   },
   {
