@@ -787,7 +787,7 @@ const Questionnaires = () => {
                 const prog = displayedSprintProgress[idx];
                 const isComplete = prog.complete;
                 const hasProgress = prog.answered > 0 && !isComplete;
-                const isTall = idx % 3 === 0;
+                const isTall = true;
                 const overlayClass = "card-design-overlay-teal";
                 const orbColor = "rgba(var(--swatch-teal-rgb), 0.12)";
                 const badgeBackground = isComplete
@@ -806,7 +806,7 @@ const Questionnaires = () => {
                     transition={{ delay: idx * 0.04, type: "spring", stiffness: 280, damping: 25 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={() => startSprint(idx)}
-                    className={`relative overflow-hidden text-left ${overlayClass} rounded-[28px] p-5 transition-all ${isTall ? "md:row-span-2 min-h-[220px]" : "min-h-[168px]"}`}
+                    className={`relative overflow-hidden text-left ${overlayClass} rounded-[28px] p-5 transition-all min-h-[220px]`}
                     style={{
                       borderRadius: 28,
                       boxShadow: hasProgress
