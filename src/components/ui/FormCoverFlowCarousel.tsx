@@ -90,8 +90,6 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
             {slots.map((offset) => {
               const itemIndex = (activeIndex + offset + n) % n;
               const item = items[itemIndex];
-              const previousActiveIndex = (activeIndex - 1 + n) % n;
-              const previousActiveItem = items[previousActiveIndex];
               const absOffset = Math.abs(offset);
               const isActive = offset === 0;
 
