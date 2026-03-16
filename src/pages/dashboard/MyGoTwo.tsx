@@ -554,6 +554,7 @@ const MyGoTwo = () => {
     setLeafCategoryName(coverFlowState?.name);
     setLeafImage((sc as any).image || "");
     setActiveEntryIndex(0);
+    setActiveEntryPage(1);
   };
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
