@@ -625,9 +625,9 @@ const Questionnaires = () => {
                 </div>
 
                 <div className="rounded-[26px] px-5 py-4 min-w-[150px] backdrop-blur-md" style={{
-                  background: "rgba(255,255,255,0.12)",
-                  border: "1px solid rgba(255,255,255,0.16)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18)",
+                  background: "rgba(var(--swatch-teal-rgb), 0.34)",
+                  border: "1px solid rgba(var(--swatch-teal-rgb), 0.46)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
                 }}>
                   <p className="text-[42px] leading-none text-primary-foreground" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}>
                     {Math.round(
@@ -637,7 +637,7 @@ const Questionnaires = () => {
                             Math.max(1, freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0))) * 100,
                     )}%
                   </p>
-                  <p className="text-[10px] uppercase tracking-[0.16em] text-primary-foreground/70" style={{ fontFamily: "'Jost', sans-serif" }}>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     profile complete
                   </p>
                 </div>
@@ -656,7 +656,7 @@ const Questionnaires = () => {
                   <div className="h-2 rounded-full overflow-hidden bg-primary-foreground/15">
                     <motion.div
                       className="h-full rounded-full"
-                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.92), rgba(var(--swatch-cedar-grove-rgb), 0.72))" }}
+                      style={{ background: "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.92), rgba(var(--swatch-cedar-grove-rgb), 0.9))" }}
                       initial={{ width: 0 }}
                       animate={{
                         width: `${subscribed
@@ -671,10 +671,10 @@ const Questionnaires = () => {
 
                 {!subscribed && (
                   <div className="rounded-[28px] p-4 backdrop-blur-md" style={{
-                    background: "rgba(var(--swatch-gypsum-rose-rgb), 0.18)",
-                    border: "1px solid rgba(255,255,255,0.16)",
+                    background: "rgba(var(--swatch-teal-rgb), 0.28)",
+                    border: "1px solid rgba(var(--swatch-teal-rgb), 0.42)",
                   }}>
-                    <p className="text-[10px] uppercase tracking-[0.18em] mb-1 text-primary-foreground/70" style={{ fontFamily: "'Jost', sans-serif" }}>
+                    <p className="text-[10px] uppercase tracking-[0.18em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                       Partial access
                     </p>
                     <p className="text-[12px] leading-relaxed text-primary-foreground/82" style={{ fontFamily: "'Jost', sans-serif" }}>
