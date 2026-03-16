@@ -237,8 +237,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                     </span>
                     <button
                       onClick={handleCopyLink}
-                      className="shrink-0 p-2 rounded-lg active:scale-90 transition-transform"
-                      style={{ background: "rgba(45,104,112,0.08)" }}
+                       className="surface-pill shrink-0 p-2 rounded-full active:scale-90 transition-transform"
+                       style={{}}
                     >
                       {copied ? (
                         <Check className="w-4 h-4" style={{ color: "var(--swatch-teal)" }} />
