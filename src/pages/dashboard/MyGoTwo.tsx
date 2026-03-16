@@ -12,7 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 import GoTwoCoverFlow from "@/components/GoTwoCoverFlow";
 import TemplateCoverFlow, { type SubtypeItem, type SubcategoryGroup } from "@/components/TemplateCoverFlow";
 import FormCoverFlowCarousel from "@/components/ui/FormCoverFlowCarousel";
-import PremiumLockCard from "@/components/PremiumLockCard";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import {
   Dialog,
