@@ -1,21 +1,18 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import ConnectionPage from "./ConnectionPage";
-import { getDefaultPhotoForLabel, assignUniquePhotos } from "@/data/stockPhotos";
+import { assignUniquePhotos } from "@/data/stockPhotos";
 import { type Milestone } from "@/components/home/MilestoneCountdown";
 import { EventCalendar } from "@/components/home/EventCalendar";
 import { type DirectoryEntry } from "@/components/home/ConnectionDirectory";
 import { ConnectionAvatarRow } from "@/components/home/ConnectionAvatarRow";
 import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { RecentUpdates, type RecentUpdate } from "@/components/home/RecentUpdates";
-import { SmartBanner } from "@/components/home/SmartBanner";
+import { HomeNotifications, type HomeNotificationItem } from "@/components/home/HomeNotifications";
 import { AddConnectionModal } from "@/components/home/AddConnectionModal";
-
-const DEFAULT_IMAGE = getDefaultPhotoForLabel("friend");
 
 interface ConnectionCard {
   id: string;
@@ -39,14 +36,15 @@ const DashboardHome = () => {
   const navigate = useNavigate();
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [notifications, setNotifications] = useState<HomeNotificationItem[]>([]);
   const [recentUpdates, setRecentUpdates] = useState<RecentUpdate[]>([]);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [openConnection, setOpenConnection] = useState<{
     card: ConnectionCard;
     rect: { x: number; y: number; width: number; height: number };
   } | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  // Load display name
   useEffect(() => {
     if (!user) return;
     supabase
@@ -59,7 +57,6 @@ const DashboardHome = () => {
       });
   }, [user]);
 
-  // Load connections
   const loadConnections = useCallback(async () => {
     if (!user) return;
 
@@ -73,9 +70,8 @@ const DashboardHome = () => {
     const cards: ConnectionCard[] = data.map((row: any) => {
       const isInviter = row.inviter_id === user.id;
       const partnerId = isInviter ? row.invitee_id : row.inviter_id;
-      const label =
-        row.display_label ||
-        (isInviter && row.invitee_email ? row.invitee_email.split("@")[0] : "Connection");
+      const label = row.display_label || (isInviter && row.invitee_email ? row.invitee_email.split("@")[0] : "Connection");
+
       return {
         id: row.id,
         name: label,
@@ -90,19 +86,17 @@ const DashboardHome = () => {
     if (cards.length < 3) {
       const remainingSlots = 3 - cards.length;
       const usedNames = new Set(cards.map((c) => c.name.toLowerCase()));
-      const placeholders = PLACEHOLDER_CONNECTIONS.filter(
-        (p) => !usedNames.has(p.name.toLowerCase())
-      )
+      const placeholders = PLACEHOLDER_CONNECTIONS.filter((p) => !usedNames.has(p.name.toLowerCase()))
         .slice(0, remainingSlots)
         .map((p) => ({ ...p, image: "" }));
-      const allCards = assignUniquePhotos([...cards, ...placeholders], (c) => !!c.image);
-      setConnections(allCards);
-    } else {
-      setConnections(assignUniquePhotos(cards, (c) => !!c.image));
+
+      setConnections(assignUniquePhotos([...cards, ...placeholders], (c) => !!c.image));
+      return;
     }
+
+    setConnections(assignUniquePhotos(cards, (c) => !!c.image));
   }, [user]);
 
-  // Load milestones from linked profiles
   const loadMilestones = useCallback(async () => {
     if (!user) return;
 
@@ -113,7 +107,6 @@ const DashboardHome = () => {
       .eq("status", "accepted");
 
     if (!couples?.length) {
-      // Show demo milestones for new users
       const now = new Date();
       setMilestones([
         {
@@ -136,10 +129,7 @@ const DashboardHome = () => {
       return;
     }
 
-    const partnerIds = couples.map((c: any) =>
-      c.inviter_id === user.id ? c.invitee_id : c.inviter_id
-    ).filter(Boolean);
-
+    const partnerIds = couples.map((c: any) => (c.inviter_id === user.id ? c.invitee_id : c.inviter_id)).filter(Boolean);
     if (!partnerIds.length) return;
 
     const { data: profiles } = await supabase
@@ -165,9 +155,7 @@ const DashboardHome = () => {
         const next = new Date(now.getFullYear(), bd.getMonth(), bd.getDate());
         if (next < now) next.setFullYear(next.getFullYear() + 1);
         const days = Math.ceil((next.getTime() - now.getTime()) / 86400000);
-        if (days <= 90) {
-          upcoming.push({ id: `bd-${p.user_id}`, label: "Birthday", person: name, date: next, daysOut: days, type: "birthday" });
-        }
+        if (days <= 90) upcoming.push({ id: `bd-${p.user_id}`, label: "Birthday", person: name, date: next, daysOut: days, type: "birthday" });
       }
 
       if (p.anniversary) {
@@ -175,9 +163,7 @@ const DashboardHome = () => {
         const next = new Date(now.getFullYear(), an.getMonth(), an.getDate());
         if (next < now) next.setFullYear(next.getFullYear() + 1);
         const days = Math.ceil((next.getTime() - now.getTime()) / 86400000);
-        if (days <= 90) {
-          upcoming.push({ id: `an-${p.user_id}`, label: "Anniversary", person: name, date: next, daysOut: days, type: "anniversary" });
-        }
+        if (days <= 90) upcoming.push({ id: `an-${p.user_id}`, label: "Anniversary", person: name, date: next, daysOut: days, type: "anniversary" });
       }
     }
 
@@ -185,7 +171,30 @@ const DashboardHome = () => {
     setMilestones(upcoming.slice(0, 5));
   }, [user]);
 
-  // Load recent updates from linked card_entries
+  const loadNotifications = useCallback(async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("notifications")
+      .select("id, type, title, body, created_at, is_read")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(4);
+
+    if (error || !data) return;
+
+    setNotifications(
+      data.map((notification) => ({
+        id: notification.id,
+        type: notification.type,
+        title: notification.title,
+        body: notification.body,
+        createdAt: notification.created_at,
+        isRead: notification.is_read,
+      }))
+    );
+  }, [user]);
+
   const loadRecentUpdates = useCallback(async () => {
     if (!user) return;
 
@@ -196,7 +205,6 @@ const DashboardHome = () => {
       .eq("status", "accepted");
 
     if (!couples?.length) {
-      // Demo updates
       setRecentUpdates([
         { id: "demo-u1", person: "Wife", action: "updated her", category: "Gift Preferences", timestamp: new Date(Date.now() - 3600000).toISOString() },
         { id: "demo-u2", person: "Mom", action: "added to her", category: "Favorite Restaurants", timestamp: new Date(Date.now() - 86400000).toISOString() },
@@ -204,10 +212,7 @@ const DashboardHome = () => {
       return;
     }
 
-    const partnerIds = couples
-      .map((c: any) => (c.inviter_id === user.id ? c.invitee_id : c.inviter_id))
-      .filter(Boolean);
-
+    const partnerIds = couples.map((c: any) => (c.inviter_id === user.id ? c.invitee_id : c.inviter_id)).filter(Boolean);
     if (!partnerIds.length) return;
 
     const { data: entries } = await supabase
@@ -219,40 +224,26 @@ const DashboardHome = () => {
 
     if (!entries?.length) return;
 
-    const updates: RecentUpdate[] = entries.map((e: any) => {
-      const couple = couples.find(
-        (c: any) =>
-          (c.inviter_id === e.user_id || c.invitee_id === e.user_id)
-      );
-      return {
-        id: e.id,
-        person: couple?.display_label || "Connection",
-        action: `updated`,
-        category: e.group_name || e.card_key,
-        timestamp: e.updated_at,
-      };
-    });
-
-    setRecentUpdates(updates);
+    setRecentUpdates(
+      entries.map((entry: any) => {
+        const couple = couples.find((c: any) => c.inviter_id === entry.user_id || c.invitee_id === entry.user_id);
+        return {
+          id: entry.id,
+          person: couple?.display_label || "Connection",
+          action: "updated",
+          category: entry.group_name || entry.card_key,
+          timestamp: entry.updated_at,
+        };
+      })
+    );
   }, [user]);
 
   useEffect(() => {
     loadConnections();
+    loadNotifications();
     loadMilestones();
     loadRecentUpdates();
-  }, [loadConnections, loadMilestones, loadRecentUpdates]);
-
-  // Smart banner logic
-  const smartBanner = useMemo(() => {
-    if (milestones.length > 0 && milestones[0].daysOut <= 21) {
-      const m = milestones[0];
-      return {
-        title: `${m.person}'s ${m.label} in ${m.daysOut} days`,
-        subtitle: `Check their Go To list for the perfect gift`,
-      };
-    }
-    return null;
-  }, [milestones]);
+  }, [loadConnections, loadNotifications, loadMilestones, loadRecentUpdates]);
 
   const directoryEntries: DirectoryEntry[] = connections.map((c) => ({
     id: c.id,
@@ -265,13 +256,14 @@ const DashboardHome = () => {
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
-      // Placeholder connections open the add modal
       if (entry.isPlaceholder) {
         setShowAddModal(true);
         return;
       }
+
       const card = connections.find((c) => c.id === entry.id);
       if (!card) return;
+
       setOpenConnection({
         card,
         rect: { x: window.innerWidth / 2 - 50, y: 100, width: 100, height: 100 },
@@ -280,58 +272,26 @@ const DashboardHome = () => {
     [connections]
   );
 
-  const handleOpenConnection = useCallback(
-    (entry: DirectoryEntry, rect: DOMRect) => {
-      const card = connections.find((c) => c.id === entry.id);
-      if (!card) return;
-      setOpenConnection({
-        card,
-        rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
-      });
-    },
-    [connections]
-  );
-
-  const [showAddModal, setShowAddModal] = useState(false);
-
   const handleAddConnection = useCallback(() => {
     setShowAddModal(true);
   }, []);
 
   return (
-    <div className="h-full overflow-y-auto relative">
-      <div className="max-w-[520px] mx-auto space-y-6 py-4 px-1">
-        {/* Greeting */}
-        <GreetingHeader displayName={displayName} connectionCount={connections.filter(c => !c.id.startsWith("placeholder-")).length} />
+    <div className="relative h-full overflow-y-auto">
+      <div className="mx-auto max-w-[520px] space-y-6 px-1 py-4">
+        <GreetingHeader displayName={displayName} connectionCount={connections.filter((c) => !c.id.startsWith("placeholder-")).length} />
 
-        {/* Smart notification banner */}
-        {smartBanner && (
-          <SmartBanner
-            title={smartBanner.title}
-            subtitle={smartBanner.subtitle}
-            onAction={() => navigate("/dashboard/my-go-two")}
-            actionLabel="Go To List"
-          />
-        )}
+        <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
 
-        {/* Connection avatar row — single spot for connections */}
-        <ConnectionAvatarRow
-          entries={directoryEntries}
-          onSelect={handleOpenConnectionFromAvatar}
-          onAdd={handleAddConnection}
-        />
+        <HomeNotifications notifications={notifications} onOpenAll={() => navigate("/dashboard/notifications")} />
 
-        {/* Calendar + upcoming events */}
         <EventCalendar milestones={milestones} />
 
-        {/* Recent activity feed */}
         <RecentUpdates updates={recentUpdates} />
 
-        {/* Bottom spacer */}
         <div className="h-4" />
       </div>
 
-      {/* Connection detail overlay */}
       <AnimatePresence>
         {openConnection && (
           <ConnectionPage
@@ -348,12 +308,7 @@ const DashboardHome = () => {
         )}
       </AnimatePresence>
 
-      {/* Add Connection Modal */}
-      <AddConnectionModal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onConnectionCreated={loadConnections}
-      />
+      <AddConnectionModal open={showAddModal} onClose={() => setShowAddModal(false)} onConnectionCreated={loadConnections} />
     </div>
   );
 };
