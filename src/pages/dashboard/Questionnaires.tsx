@@ -77,9 +77,9 @@ const Questionnaires = () => {
 
   const pickThisOrThat = async (choice: "A" | "B") => {
     if (!totCurrent) return;
-    const dir = choice === "A" ? "left" : "right";
+    const dir = choice === "A" ? "right" : "left";
     setTotSwipeDir(dir);
-    const value = choice === "A" ? totCurrent.optionA : totCurrent.optionB;
+    const value = choice === "A" ? "Yes" : "No";
     try {
       const userId = (await supabase.auth.getUser()).data.user?.id;
       if (userId) {
@@ -91,7 +91,7 @@ const Questionnaires = () => {
     setTimeout(() => {
       setTotSwipeDir(null);
       if (totIndex + 1 >= totQueue.length) {
-        toast.success("All This or That questions answered!");
+        toast.success("All done! Nice work.");
         setView("dashboard");
       } else {
         setTotIndex(i => i + 1);
