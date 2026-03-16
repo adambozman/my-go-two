@@ -865,44 +865,44 @@ export interface ThisOrThatItem {
 
 export const THIS_OR_THAT: ThisOrThatItem[] = [
   // Date Ideas
-  { id: "tot-01", prompt: "Dinner and a movie for a first date?", category: "Date Ideas", image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-02", prompt: "Picnic in the park?", category: "Date Ideas", image: "https://images.unsplash.com/photo-1526382925646-27b5eb86796e?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-03", prompt: "Cooking together at home?", category: "Date Ideas", image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-04", prompt: "A surprise weekend getaway?", category: "Date Ideas", image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-05", prompt: "Wine tasting date?", category: "Date Ideas", image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-01", prompt: "Dinner and a movie for a first date?", category: "Date Ideas", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-02", prompt: "Picnic in the park?", category: "Date Ideas", image: "https://images.unsplash.com/photo-1529168797398-299d4c95fede?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-03", prompt: "Cooking together at home?", category: "Date Ideas", image: "https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-04", prompt: "A surprise weekend getaway?", category: "Date Ideas", image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-05", prompt: "Wine tasting date?", category: "Date Ideas", image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=800&q=80", optionA: "Yes", optionB: "No" },
 
   // Brands
-  { id: "tot-06", prompt: "Would you wear American Eagle?", category: "Brands", image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-06", prompt: "Would you wear American Eagle?", category: "Brands", image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80", optionA: "Yes", optionB: "No" },
   { id: "tot-07", prompt: "Are you a Nike person?", category: "Brands", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-08", prompt: "Do you like Lululemon?", category: "Brands", image: "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-09", prompt: "Would you shop at Zara?", category: "Brands", image: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-10", prompt: "Are you into Patagonia?", category: "Brands", image: "https://images.unsplash.com/photo-1483721310020-03333e577078?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-08", prompt: "Do you like Lululemon?", category: "Brands", image: "https://images.unsplash.com/photo-1518459031867-a89b944bffe4?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-09", prompt: "Would you shop at Zara?", category: "Brands", image: "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-10", prompt: "Are you into Patagonia?", category: "Brands", image: "https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=800&q=80", optionA: "Yes", optionB: "No" },
 
   // Spending
-  { id: "tot-11", prompt: "Would you spend $100 on a t-shirt?", category: "Spending", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-12", prompt: "Would you splurge on designer sunglasses?", category: "Spending", image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-13", prompt: "Would you pay $200+ for sneakers?", category: "Spending", image: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-14", prompt: "Worth it: a $50 candle?", category: "Spending", image: "https://images.unsplash.com/photo-1602523961358-f9f03dd557db?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-11", prompt: "Would you spend $100 on a t-shirt?", category: "Spending", image: "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-12", prompt: "Would you splurge on designer sunglasses?", category: "Spending", image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-13", prompt: "Would you pay $200+ for sneakers?", category: "Spending", image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-14", prompt: "Worth it: a $50 candle?", category: "Spending", image: "https://images.unsplash.com/photo-1608178398319-48f814d0750c?w=800&q=80", optionA: "Yes", optionB: "No" },
 
   // Preferences
-  { id: "tot-15", prompt: "Coffee over tea?", category: "Preferences", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-16", prompt: "Mountains over beach?", category: "Preferences", image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-17", prompt: "Are you an early bird?", category: "Preferences", image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-18", prompt: "Do you prefer sweet over savory?", category: "Preferences", image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-19", prompt: "City life over countryside?", category: "Preferences", image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-20", prompt: "Books over podcasts?", category: "Preferences", image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-15", prompt: "Coffee over tea?", category: "Preferences", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-16", prompt: "Mountains over beach?", category: "Preferences", image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-17", prompt: "Are you an early bird?", category: "Preferences", image: "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-18", prompt: "Do you prefer sweet over savory?", category: "Preferences", image: "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-19", prompt: "City life over countryside?", category: "Preferences", image: "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-20", prompt: "Books over podcasts?", category: "Preferences", image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80", optionA: "Yes", optionB: "No" },
 
   // Style
-  { id: "tot-21", prompt: "Gold jewelry over silver?", category: "Style", image: "https://images.unsplash.com/photo-1515562141589-67f0d569b6c4?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-22", prompt: "Are you minimalist?", category: "Style", image: "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-23", prompt: "Sneakers over dress shoes?", category: "Style", image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-24", prompt: "Do you prefer vintage over brand new?", category: "Style", image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-21", prompt: "Gold jewelry over silver?", category: "Style", image: "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-22", prompt: "Are you minimalist?", category: "Style", image: "https://images.unsplash.com/photo-1449247709967-d4461a6a6103?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-23", prompt: "Sneakers over dress shoes?", category: "Style", image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-24", prompt: "Do you prefer vintage over brand new?", category: "Style", image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80", optionA: "Yes", optionB: "No" },
 
   // Lifestyle
   { id: "tot-25", prompt: "Dog person?", category: "Lifestyle", image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-26", prompt: "Are you spontaneous?", category: "Lifestyle", image: "https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-27", prompt: "Netflix night over going out?", category: "Lifestyle", image: "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-28", prompt: "Brunch over dinner?", category: "Lifestyle", image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-29", prompt: "Concert over museum?", category: "Lifestyle", image: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&q=80", optionA: "Yes", optionB: "No" },
-  { id: "tot-30", prompt: "Candles over diffusers?", category: "Lifestyle", image: "https://images.unsplash.com/photo-1602523961358-f9f03dd557db?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-26", prompt: "Are you spontaneous?", category: "Lifestyle", image: "https://images.unsplash.com/photo-1503220317375-aaad61436b1b?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-27", prompt: "Netflix night over going out?", category: "Lifestyle", image: "https://images.unsplash.com/photo-1585647347483-22b66260dfff?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-28", prompt: "Brunch over dinner?", category: "Lifestyle", image: "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-29", prompt: "Concert over museum?", category: "Lifestyle", image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80", optionA: "Yes", optionB: "No" },
+  { id: "tot-30", prompt: "Candles over diffusers?", category: "Lifestyle", image: "https://images.unsplash.com/photo-1603006905003-be475563bc59?w=800&q=80", optionA: "Yes", optionB: "No" },
 ];
