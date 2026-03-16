@@ -11,6 +11,7 @@ export interface FormCoverFlowItem {
 interface FormCoverFlowCarouselProps {
   items: FormCoverFlowItem[];
   activeIndex: number;
+  previousImage?: string;
   onActiveIndexChange: (index: number) => void;
   renderActiveCard: (item: FormCoverFlowItem) => React.ReactNode;
 }
@@ -48,7 +49,7 @@ const getFlankBackground = (image?: string) =>
   image ? `center / cover no-repeat url(${image})` : FALLBACK_GRADIENT;
 
 const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselProps>(
-  ({ items, activeIndex, onActiveIndexChange, renderActiveCard }, ref) => {
+  ({ items, activeIndex, previousImage, onActiveIndexChange, renderActiveCard }, ref) => {
     const touchStartX = useRef<number | null>(null);
     const layout = useLayout();
     const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
@@ -89,8 +90,6 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
             {slots.map((offset) => {
               const itemIndex = (activeIndex + offset + n) % n;
               const item = items[itemIndex];
-              const previousActiveIndex = (activeIndex - 1 + n) % n;
-              const previousActiveItem = items[previousActiveIndex];
               const absOffset = Math.abs(offset);
               const isActive = offset === 0;
 
@@ -130,7 +129,7 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                       ) : (
                         <>
                           {/* Flanking cards — use previous card image */}
-                          <div className="absolute inset-0" style={{ background: getFlankBackground(previousActiveItem?.image) }} />
+                          <div className="absolute inset-0" style={{ background: getFlankBackground(previousImage || item.image) }} />
                           <div className="absolute bottom-6 left-6">
                             <span
                               style={{
@@ -192,7 +191,7 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                       </div>
                     ) : (
                       <>
-                        <div className="absolute inset-0" style={{ background: getFlankBackground(previousActiveItem?.image) }} />
+                        <div className="absolute inset-0" style={{ background: getFlankBackground(previousImage || item.image) }} />
                         <div className="absolute bottom-4 left-4">
                           <span
                             style={{

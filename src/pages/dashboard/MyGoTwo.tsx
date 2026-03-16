@@ -58,6 +58,11 @@ const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200
 const NEW_ENTRY_ID = "__new_entry__";
 const ENTRY_PAGE_SIZE = 5;
 
+const normalizeImageValue = (value?: string | null) => {
+  if (!value) return "";
+  return value.includes("/") ? value : "";
+};
+
 const TagInput = ({ value, onChange, fieldLabel }: { value: string; onChange: (val: string) => void; fieldLabel: string }) => {
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState("");
@@ -672,12 +677,12 @@ const MyGoTwo = () => {
     ...entries.map((entry) => ({
       id: entry.id,
       label: entryNames[entry.id] || entry.entry_name,
-      image: entryImages[entry.id] || entry.image_url || leafImage || BRANDED_CARD_SVG,
+      image: normalizeImageValue(entryImages[entry.id] || entry.image_url) || leafImage || BRANDED_CARD_SVG,
     })),
     {
       id: NEW_ENTRY_ID,
       label: entryNames[NEW_ENTRY_ID]?.trim() || "New Card",
-      image: entryImages[NEW_ENTRY_ID] || leafImage || BRANDED_CARD_SVG,
+      image: normalizeImageValue(entryImages[NEW_ENTRY_ID]) || leafImage || BRANDED_CARD_SVG,
     },
   ];
 
@@ -692,6 +697,12 @@ const MyGoTwo = () => {
     const nextPage = Math.min(entryTotalPages, Math.floor(activeEntryIndex / ENTRY_PAGE_SIZE) + 1);
     setActiveEntryPage(nextPage);
   }, [activeEntryIndex, entryTotalPages]);
+
+  const previousEntryImage = useMemo(() => {
+    if (entryCoverFlowItems.length === 0) return "";
+    const prevIndex = (activeEntryIndex - 1 + entryCoverFlowItems.length) % entryCoverFlowItems.length;
+    return entryCoverFlowItems[prevIndex]?.image || "";
+  }, [activeEntryIndex, entryCoverFlowItems]);
 
   const handleEntryPageChange = (page: number) => {
     setActiveEntryPage(page);
@@ -857,6 +868,7 @@ const MyGoTwo = () => {
             <FormCoverFlowCarousel
               items={paginatedEntryItems}
               activeIndex={activeEntryIndexOnPage}
+              previousImage={previousEntryImage}
               onActiveIndexChange={(index) => setActiveEntryIndex(entryPageStart + index)}
               renderActiveCard={(item) => (
                 <EntryFormCard
@@ -865,7 +877,7 @@ const MyGoTwo = () => {
                   categoryName={leafCategoryName}
                   entryName={entryNames[item.id] || ""}
                   values={entryDrafts[item.id] || defaultFieldValues}
-                  imageUrl={entryImages[item.id] || ""}
+                  imageUrl={normalizeImageValue(entryImages[item.id])}
                   saving={saving}
                   isEditing={item.id !== NEW_ENTRY_ID}
                   onEntryNameChange={(name) => handleNameChange(item.id, name)}
