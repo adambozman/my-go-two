@@ -177,10 +177,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                       value={label}
                       onChange={(e) => setLabel(e.target.value)}
                       placeholder="Wife"
-                      className="w-full px-3.5 py-2.5 rounded-xl text-[14px] outline-none transition-all"
+                      className="surface-field w-full px-3.5 py-2.5 rounded-2xl text-[14px] outline-none transition-all"
                       style={{
-                        background: "rgba(255,255,255,0.70)",
-                        border: "1px solid rgba(255,255,255,0.85)",
                         color: "var(--swatch-viridian-odyssey)",
                         fontFamily: "'Jost', sans-serif",
                       }}
