@@ -438,7 +438,7 @@ const EntryFormCard = ({
 };
 
 const MyGoTwo = () => {
-  const { user, subscribed } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const { gender, loading: genderLoading } = usePersonalization();
   const { categories, loading: registryLoading } = useCategoryRegistry(gender, "mygotwo");
@@ -451,10 +451,10 @@ const MyGoTwo = () => {
     }, {});
   }, [categories]);
 
-  const visibleSectionKeys = useMemo(
-    () => sectionOrder.filter((key) => sections[key] && sections[key].length > 0),
-    [sections],
-  );
+  const visibleSectionKeys = useMemo(() => {
+    const customKeys = Object.keys(sections).filter((key) => !sectionOrder.includes(key));
+    return [...sectionOrder, ...customKeys];
+  }, [sections]);
 
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [focusedDrilldownItemId, setFocusedDrilldownItemId] = useState<string | null>(null);
@@ -481,8 +481,6 @@ const MyGoTwo = () => {
   const [leafImage, setLeafImage] = useState<string>("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
   const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
-  const [unlockedCardKeys, setUnlockedCardKeys] = useState<string[]>([]);
-  const [showCategoryPaywall, setShowCategoryPaywall] = useState(false);
 
   const defaultFieldValues = useMemo(() => {
     if (!leafSubtype) return {} as Record<string, string>;
@@ -491,18 +489,6 @@ const MyGoTwo = () => {
       {} as Record<string, string>
     );
   }, [leafSubtype]);
-
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from("card_entries")
-      .select("card_key")
-      .eq("user_id", user.id)
-      .then(({ data }) => {
-        const keys = Array.from(new Set((data || []).map((row: any) => row.card_key).filter(Boolean)));
-        setUnlockedCardKeys(keys);
-      });
-  }, [user]);
 
   const fetchEntries = useCallback(async () => {
     if (!user || !cardKey) return;
