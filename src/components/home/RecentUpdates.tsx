@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 export interface RecentUpdate {
@@ -5,7 +6,7 @@ export interface RecentUpdate {
   person: string;
   action: string;
   category: string;
-  timestamp: string; // ISO
+  timestamp: string;
 }
 
 function timeAgo(iso: string): string {
@@ -22,19 +23,24 @@ export function RecentUpdates({ updates }: { updates: RecentUpdate[] }) {
   if (updates.length === 0) return null;
 
   return (
-    <section className="space-y-2.5">
-      <h2
-        className="text-[11px] font-semibold uppercase tracking-[0.14em] px-1"
-        style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
-      >
-        Recent Activity
-      </h2>
-      <div
+    <section className="space-y-3">
+      <div className="flex items-center justify-between px-1">
+        <h2
+          className="text-[11px] font-semibold uppercase tracking-[0.14em]"
+          style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
+        >
+          Recent Activity
+        </h2>
+      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
         className="rounded-2xl overflow-hidden"
         style={{
-          background: "rgba(255,255,255,0.60)",
+          background: "rgba(255,255,255,0.65)",
           border: "1px solid rgba(255,255,255,0.85)",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
         }}
       >
         {updates.map((u, i) => (
@@ -46,10 +52,10 @@ export function RecentUpdates({ updates }: { updates: RecentUpdate[] }) {
             }}
           >
             <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+              className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
               style={{ background: "rgba(45,104,112,0.08)" }}
             >
-              <ArrowUpRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
+              <ArrowUpRight className="w-4 h-4" style={{ color: "var(--swatch-teal)" }} />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[13px] leading-tight truncate" style={{ color: "var(--swatch-viridian-odyssey)" }}>
@@ -62,7 +68,7 @@ export function RecentUpdates({ updates }: { updates: RecentUpdate[] }) {
             </div>
           </div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 }
