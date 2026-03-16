@@ -1,12 +1,3 @@
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-
 interface PaginationControlsProps {
   currentPage: number;
   totalPages: number;
@@ -19,59 +10,34 @@ export function PaginationControls({
   currentPage,
   totalPages,
   onPageChange,
-  label,
   className,
 }: PaginationControlsProps) {
   if (totalPages <= 1) return null;
 
   return (
-    <div className={className ?? "mt-6 space-y-2"}>
-      {label ? (
-        <p className="text-center text-[11px] text-muted-foreground">{label}</p>
-      ) : null}
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                onPageChange(Math.max(1, currentPage - 1));
-              }}
-              className={currentPage === 1 ? "pointer-events-none opacity-50" : undefined}
-            />
-          </PaginationItem>
+    <div className={className ?? "mt-6"}>
+      <div className="flex items-center justify-center gap-2">
+        {Array.from({ length: totalPages }, (_, index) => {
+          const page = index + 1;
+          const isActive = currentPage === page;
 
-          {Array.from({ length: totalPages }, (_, index) => {
-            const page = index + 1;
-            return (
-              <PaginationItem key={page}>
-                <PaginationLink
-                  href="#"
-                  isActive={currentPage === page}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onPageChange(page);
-                  }}
-                >
-                  {page}
-                </PaginationLink>
-              </PaginationItem>
-            );
-          })}
-
-          <PaginationItem>
-            <PaginationNext
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                onPageChange(Math.min(totalPages, currentPage + 1));
+          return (
+            <button
+              key={page}
+              type="button"
+              aria-label={`Go to page ${page}`}
+              aria-current={isActive ? "page" : undefined}
+              onClick={() => onPageChange(page)}
+              className="rounded-full transition-all"
+              style={{
+                width: isActive ? 18 : 8,
+                height: 8,
+                background: isActive ? "var(--swatch-teal)" : "rgba(45,104,112,0.22)",
               }}
-              className={currentPage === totalPages ? "pointer-events-none opacity-50" : undefined}
             />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+          );
+        })}
+      </div>
     </div>
   );
 }
