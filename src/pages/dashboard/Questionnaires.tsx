@@ -694,15 +694,15 @@ const Questionnaires = () => {
             onClick={openThisOrThat}
             className="lg:col-span-4 rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left min-h-[320px] flex flex-col justify-between"
             style={{
-              background: "linear-gradient(160deg, rgba(var(--swatch-cedar-grove-rgb), 0.78) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.56) 50%, rgba(var(--swatch-teal-rgb), 0.64) 100%)",
-              boxShadow: "0 22px 54px rgba(212,84,58,0.18)",
+              background: "linear-gradient(160deg, rgba(var(--swatch-teal-rgb), 0.92) 0%, rgba(var(--swatch-teal-rgb), 0.80) 54%, rgba(var(--swatch-teal-rgb), 0.70) 100%)",
+              boxShadow: "0 22px 54px rgba(30,74,82,0.20)",
             }}
           >
             <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(255,255,255,0.16), transparent 28%), linear-gradient(180deg, rgba(255,255,255,0.04), transparent 40%)" }} />
             <div className="relative flex items-center justify-between gap-3">
               <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 bg-primary-foreground/10 text-primary-foreground/80">
                 <Shuffle className="w-4 h-4" />
-                <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif" }}>This or That</span>
+                <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>This or That</span>
               </div>
               <span className="text-[12px] text-primary-foreground/76" style={{ fontFamily: "'Jost', sans-serif" }}>
                 {visibleThisOrThatAnswered}/{visibleThisOrThatCount}
