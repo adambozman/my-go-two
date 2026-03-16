@@ -181,10 +181,16 @@ export function DashboardTopBar() {
               </DropdownMenuItem>
             )}
             {user?.email === "adambozman@gmail.com" && (
-              <DropdownMenuItem onClick={() => navigate("/dashboard/data-sync")}>
-                <Database className="mr-2 h-4 w-4" />
-                Data Sync
-              </DropdownMenuItem>
+              <>
+                <DropdownMenuItem onClick={() => navigate("/dashboard/data-sync")}>
+                  <Database className="mr-2 h-4 w-4" />
+                  Data Sync
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/dashboard/sponsored")}>
+                  <Megaphone className="mr-2 h-4 w-4" />
+                  Sponsored Ads
+                </DropdownMenuItem>
+              </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
