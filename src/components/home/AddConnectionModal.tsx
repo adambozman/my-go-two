@@ -143,11 +143,12 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                 <button
                   key={key}
                   onClick={() => setTab(key)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[12px] font-semibold transition-all"
+                  className="surface-pill flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full text-[12px] font-semibold transition-all"
                   style={{
-                    background: tab === key ? "var(--swatch-viridian-odyssey)" : "rgba(255,255,255,0.5)",
-                    color: tab === key ? "#fff" : "var(--swatch-antique-coin)",
+                    background: tab === key ? "var(--swatch-viridian-odyssey)" : undefined,
+                    color: tab === key ? "hsl(var(--primary-foreground))" : "var(--swatch-antique-coin)",
                     fontFamily: "'Jost', sans-serif",
+                    boxShadow: tab === key ? "0 8px 20px rgba(30,74,82,0.22), inset 0 1px 0 rgba(255,255,255,0.18)" : undefined,
                   }}
                 >
                   <Icon className="w-3.5 h-3.5" />
