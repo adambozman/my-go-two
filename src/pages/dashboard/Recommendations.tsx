@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackAdEvent } from "@/lib/adTracking";
 import { PaginationControls } from "@/components/ui/pagination-controls";
-import PremiumLockCard from "@/components/PremiumLockCard";
+import { usePagination } from "@/hooks/usePagination";
 import { usePagination } from "@/hooks/usePagination";
 
 interface Product {
