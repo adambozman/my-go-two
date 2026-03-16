@@ -449,12 +449,12 @@ const Questionnaires = () => {
                     fontFamily: "'Jost', sans-serif",
                     background: isComplete
                       ? "var(--swatch-teal)"
-                      : isActive
+                      : hasProgress
                         ? "rgba(var(--swatch-teal-rgb), 0.1)"
                         : "rgba(var(--swatch-antique-coin-rgb), 0.06)",
                     color: isComplete
                       ? "#fff"
-                      : isActive
+                      : hasProgress
                         ? "var(--swatch-teal)"
                         : "var(--swatch-antique-coin)",
                   }}
