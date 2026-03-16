@@ -8,7 +8,8 @@ import { toast } from "sonner";
 import { buildSprints, SECTIONS, THIS_OR_THAT, type QuizQuestion } from "@/data/knowMeQuestions";
 import cityFallbackImage from "@/assets/templates/travel-city.jpg";
 import natureFallbackImage from "@/assets/templates/travel-mountain.jpg";
-import PremiumLockCard from "@/components/PremiumLockCard";
+const FREE_SPRINT_LIMIT = 2;
+const FREE_THIS_OR_THAT_LIMIT = 8;
 
 /* ── AI feedback messages — rotate per question ── */
 const AI_FEEDBACK = [
@@ -73,6 +74,7 @@ const Questionnaires = () => {
   const totAnsweredCount = THIS_OR_THAT.length - totQueue.length;
 
   const openThisOrThat = () => {
+    if (!subscribed && totQueue.length === 0) return;
     setTotIndex(0);
     setTotSwipeDir(null);
     setView("thisorthat");
@@ -107,6 +109,10 @@ const Questionnaires = () => {
 
   /* ── Start a sprint quiz ── */
   const startSprint = (idx: number) => {
+    if (!subscribed && idx >= FREE_SPRINT_LIMIT) {
+      toast("More blueprint sprints unlock with Premium");
+      return;
+    }
     const sprint = sprints[idx];
     const firstUnanswered = sprint.questions.findIndex((q) => !profileAnswers?.[q.id]);
     setQuizSprintIdx(idx);
@@ -220,34 +226,17 @@ const Questionnaires = () => {
     );
   }
 
-  if (!subscribed) {
-    return (
-      <div className="h-full overflow-y-auto px-3 py-4">
-        <PremiumLockCard
-          title="Know Me AI is Premium"
-          description="The full question bank is part of Premium so the profile becomes useful enough for gifting, reminders, and weekly suggestions."
-          bullets={[
-            "Unlock the full 100-question blueprint",
-            "Build richer data for gift recommendations",
-            "Keep your profile useful long after onboarding",
-          ]}
-          preview={
-            <div className="grid grid-cols-2 gap-2.5">
-              {[cityFallbackImage, natureFallbackImage, cityFallbackImage, natureFallbackImage].map((src, index) => (
-                <div key={`${src}-${index}`} className="overflow-hidden rounded-2xl border border-white/70 bg-white/50">
-                  <img src={src} alt="Know Me preview" className="h-28 w-full object-cover" />
-                  <div className="p-3">
-                    <div className="mb-2 h-2.5 w-16 rounded-full bg-white/80" />
-                    <div className="h-2.5 w-24 rounded-full bg-white/70" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          }
-        />
-      </div>
-    );
-  }
+  const freeSprints = sprints.slice(0, FREE_SPRINT_LIMIT);
+  const displayedSprints = subscribed ? sprints : freeSprints;
+  const displayedSprintProgress = subscribed ? sprintProgress : sprintProgress.slice(0, FREE_SPRINT_LIMIT);
+  const visibleThisOrThatCount = subscribed
+    ? THIS_OR_THAT.length
+    : Math.min(THIS_OR_THAT.length, FREE_THIS_OR_THAT_LIMIT);
+  const visibleThisOrThatAnswered = subscribed
+    ? totAnsweredCount
+    : Math.min(totAnsweredCount, visibleThisOrThatCount);
+  const hasKnowMePreviewLimit = !subscribed;
+
 
   /* ═══════════════════════════════════════════════════════
      QUIZ VIEW — Active question
@@ -615,10 +604,29 @@ const Questionnaires = () => {
           Your Blueprint
         </h1>
         <p className="text-[13px] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-          {allDone
-            ? "All 100 questions answered — your blueprint is complete!"
-            : `${totalAnswered} of ${totalQuestions} questions answered`}
+          {subscribed
+            ? allDone
+              ? "All 100 questions answered — your blueprint is complete!"
+              : `${totalAnswered} of ${totalQuestions} questions answered`
+            : `Free access: ${displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0)} of ${freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0)} questions answered`}
         </p>
+
+        {!subscribed && (
+          <div
+            className="rounded-2xl px-4 py-3 mb-3"
+            style={{
+              background: "rgba(var(--swatch-teal-rgb), 0.08)",
+              border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)",
+            }}
+          >
+            <p className="text-[11px] uppercase tracking-[0.12em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+              Partial access
+            </p>
+            <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              You can use the first {FREE_SPRINT_LIMIT} blueprint sprints and {FREE_THIS_OR_THAT_LIMIT} This or That prompts here. No full-page block.
+            </p>
+          </div>
+        )}
 
         {/* Overall progress bar */}
         <div className="h-2 rounded-full overflow-hidden mb-1" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}>
@@ -626,12 +634,22 @@ const Questionnaires = () => {
             className="h-full rounded-full"
             style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-teal-mid))" }}
             initial={{ width: 0 }}
-            animate={{ width: `${(totalAnswered / totalQuestions) * 100}%` }}
+            animate={{
+              width: `${subscribed
+                ? (totalAnswered / totalQuestions) * 100
+                : (displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0) /
+                    Math.max(1, freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0))) * 100}%`,
+            }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
           />
         </div>
         <p className="text-[10px] text-right" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-          {Math.round((totalAnswered / totalQuestions) * 100)}% complete
+          {Math.round(
+            subscribed
+              ? (totalAnswered / totalQuestions) * 100
+              : (displayedSprintProgress.reduce((sum, sprint) => sum + sprint.answered, 0) /
+                  Math.max(1, freeSprints.reduce((sum, sprint) => sum + sprint.questions.length, 0))) * 100,
+          )}% complete
         </p>
       </div>
 
@@ -657,19 +675,24 @@ const Questionnaires = () => {
               </span>
             </div>
             <span className="text-[11px] text-white/40" style={{ fontFamily: "'Jost', sans-serif" }}>
-              {totAnsweredCount}/{THIS_OR_THAT.length}
+              {visibleThisOrThatAnswered}/{visibleThisOrThatCount}
             </span>
           </div>
           <p className="text-[15px] text-white/90 mt-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}>
-            {totQueue.length > 0 ? "Tap to play →" : "All answered ✓"}
+            {visibleThisOrThatAnswered < visibleThisOrThatCount ? "Tap to play →" : "All answered ✓"}
           </p>
+          {!subscribed && (
+            <p className="text-[11px] text-white/60 mt-2" style={{ fontFamily: "'Jost', sans-serif" }}>
+              Free preview includes {visibleThisOrThatCount} prompts.
+            </p>
+          )}
         </motion.button>
       </div>
 
       {/* Sprint list */}
       <div className="flex-1 px-4 pb-8 space-y-3 mt-2">
-        {sprints.map((sprint, idx) => {
-          const prog = sprintProgress[idx];
+        {displayedSprints.map((sprint, idx) => {
+          const prog = displayedSprintProgress[idx];
           const isComplete = prog.complete;
           const hasProgress = prog.answered > 0 && !isComplete;
 
@@ -699,7 +722,6 @@ const Questionnaires = () => {
               }}
             >
               <div className="flex items-center gap-3">
-                {/* Sprint number / check */}
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-bold"
                   style={{
@@ -719,7 +741,6 @@ const Questionnaires = () => {
                   {isComplete ? <Check className="w-5 h-5" /> : sprint.id}
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <h3 className="text-[15px] leading-tight mb-0.5 truncate" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
                     Sprint {sprint.id}: {sprint.name}
@@ -740,13 +761,11 @@ const Questionnaires = () => {
                   </div>
                 </div>
 
-                {/* Arrow */}
                 {!isComplete && (
                   <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: hasProgress ? "var(--swatch-teal)" : "var(--swatch-antique-coin)" }} />
                 )}
               </div>
 
-              {/* In-progress indicator */}
               {hasProgress && (
                 <motion.div
                   layoutId="active-sprint"
@@ -757,6 +776,23 @@ const Questionnaires = () => {
             </motion.button>
           );
         })}
+
+        {!subscribed && (
+          <div
+            className="rounded-2xl px-4 py-4"
+            style={{
+              background: "rgba(var(--swatch-antique-coin-rgb), 0.04)",
+              border: "1px dashed rgba(var(--swatch-antique-coin-rgb), 0.18)",
+            }}
+          >
+            <p className="text-[11px] uppercase tracking-[0.12em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+              More available with Premium
+            </p>
+            <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              The remaining {sprints.length - displayedSprints.length} blueprint sprints stay hidden, but this page no longer blocks access.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

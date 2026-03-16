@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackAdEvent } from "@/lib/adTracking";
 import { PaginationControls } from "@/components/ui/pagination-controls";
-import PremiumLockCard from "@/components/PremiumLockCard";
 import { usePagination } from "@/hooks/usePagination";
 
 interface Product {
@@ -49,6 +48,24 @@ const LOCKED_PREVIEW: Product[] = [
     category: "home",
     hook: "A daily ritual upgrade with minimal footprint.",
     why: "Fits the home + coffee pattern in the profile.",
+    is_partner_pick: false,
+  },
+  {
+    name: "Tasting Menu Night",
+    brand: "Luma Table",
+    price: "$72",
+    category: "food",
+    hook: "A date-night pick with a little ceremony.",
+    why: "Leans into shared dining and occasion-driven gifting.",
+    is_partner_pick: true,
+  },
+  {
+    name: "Pocket Film Camera",
+    brand: "Northline",
+    price: "$149",
+    category: "tech",
+    hook: "Playful enough to feel personal, useful enough to keep using.",
+    why: "Matches memory-making and travel-friendly signals.",
     is_partner_pick: false,
   },
 ];
@@ -145,35 +162,9 @@ const Recommendations = () => {
     );
   }
 
-  if (!subscribed) {
-    return (
-      <div className="h-full overflow-y-auto pb-20">
-        <PremiumLockCard
-          title="Gift recommendations are Premium"
-          description="Weekly picks should feel like a real advantage, so the AI-curated recommendation feed unlocks with Premium."
-          bullets={[
-            "Get a fresh set of recommendations once a week",
-            "See picks generated from your saved profile data",
-            "Use Premium alongside reminders and multiple connections",
-          ]}
-          preview={
-            <div className="space-y-3">
-              {LOCKED_PREVIEW.map((product, index) => (
-                <ProductCard
-                  key={`${product.brand}-${product.name}-${index}`}
-                  product={product}
-                  index={index}
-                  isSaved={false}
-                  onToggleSave={() => undefined}
-                  onShare={() => undefined}
-                />
-              ))}
-            </div>
-          }
-        />
-      </div>
-    );
-  }
+  const previewProducts = LOCKED_PREVIEW.filter((product) =>
+    activePillar === "all" ? true : product.category === activePillar,
+  );
 
   return (
     <div className="h-full overflow-y-auto pb-20">
@@ -194,9 +185,9 @@ const Recommendations = () => {
           )}
         </div>
         <button
-          onClick={() => fetchProducts(true)}
-          disabled={loading}
-          className="p-2 rounded-full transition-colors hover:bg-secondary"
+          onClick={() => subscribed && fetchProducts(true)}
+          disabled={loading || !subscribed}
+          className="p-2 rounded-full transition-colors hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ color: "var(--swatch-antique-coin)" }}
           aria-label="Refresh recommendations"
         >
@@ -225,23 +216,40 @@ const Recommendations = () => {
         })}
       </div>
 
-      {loading && products.length === 0 ? (
+      {!subscribed && (
+        <div
+          className="rounded-2xl px-4 py-3 mb-5"
+          style={{
+            background: "rgba(var(--swatch-teal-rgb), 0.08)",
+            border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)",
+          }}
+        >
+          <p className="text-[11px] uppercase tracking-[0.12em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+            Partial access
+          </p>
+          <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            You can browse a curated preview here without a full-page block. Premium unlocks the live weekly feed and refresh.
+          </p>
+        </div>
+      )}
+
+      {subscribed && loading && products.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-16">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground">Curating your picks…</p>
         </div>
-      ) : filtered.length > 0 ? (
+      ) : (subscribed ? filtered : previewProducts).length > 0 ? (
         <>
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${activePillar}-${currentPage}`}
+              key={`${activePillar}-${currentPage}-${subscribed ? "live" : "preview"}`}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25 }}
               className="space-y-3"
             >
-              {paginatedProducts.map((product, i) => {
+              {(subscribed ? paginatedProducts : previewProducts).map((product, i) => {
                 const itemId = `${product.brand}-${product.name}`;
                 const isSaved = savedItems.has(itemId);
                 return (
@@ -250,24 +258,30 @@ const Recommendations = () => {
                     product={product}
                     index={i}
                     isSaved={isSaved}
-                    onToggleSave={() => toggleSave(itemId)}
-                    onShare={() => handleShare(product)}
+                    onToggleSave={() => (subscribed ? toggleSave(itemId) : toast("Upgrade to save picks"))}
+                    onShare={() => (product.affiliate_url ? undefined : handleShare(product))}
                   />
                 );
               })}
             </motion.div>
           </AnimatePresence>
 
-          <PaginationControls
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            label={`Page ${currentPage} of ${totalPages}`}
-          />
+          {subscribed && (
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              label={`Page ${currentPage} of ${totalPages}`}
+            />
+          )}
         </>
       ) : hasLoaded ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-sm">Tap refresh to generate your curated picks.</p>
+        </div>
+      ) : !subscribed ? (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground text-sm">Preview picks will appear here by category.</p>
         </div>
       ) : null}
     </div>
