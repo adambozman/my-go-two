@@ -455,6 +455,7 @@ const MyGoTwo = () => {
 
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [focusedDrilldownItemId, setFocusedDrilldownItemId] = useState<string | null>(null);
+  const [focusedMainCategoryId, setFocusedMainCategoryId] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
@@ -613,6 +614,7 @@ const MyGoTwo = () => {
     const subtypes = (item.fields as unknown as SubtypeItem[]) || [];
     const subcategories = item.subcategories as unknown as SubcategoryGroup[] | undefined;
     if (subtypes.length > 0 || (subcategories && subcategories.length > 0)) {
+      setFocusedMainCategoryId(item.key);
       setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
       setFocusedDrilldownItemId(null);
       setShowCategoryPaywall(false);
@@ -968,7 +970,7 @@ const MyGoTwo = () => {
         {orderedSections.map((section) => (
           <div key={section.key} className="snap-start snap-always h-full flex flex-col items-center justify-center overflow-hidden flex-shrink-0">
             <h2 className="section-header text-center mb-4">{section.label}</h2>
-            <GoTwoCoverFlow items={section.items} onSelect={handleSelect} />
+            <GoTwoCoverFlow items={section.items} onSelect={handleSelect} focusedItemId={focusedMainCategoryId} />
           </div>
         ))}
         {orderedSections.length === 0 && (
