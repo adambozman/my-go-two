@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles } from "lucide-react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
@@ -47,6 +47,16 @@ const Questionnaires = () => {
   const [quizSprintIdx, setQuizSprintIdx] = useState(0);
   const [quizQuestionIdx, setQuizQuestionIdx] = useState(0);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
+  const selectionsRef = useRef(selections);
+  // Keep ref in sync
+  const updateSelections = useCallback((updater: (prev: Record<string, string[]>) => Record<string, string[]>) => {
+    setSelections((prev) => {
+      const next = updater(prev);
+      selectionsRef.current = next;
+      return next;
+    });
+  }, []);
+
   const [aiFeedback, setAiFeedback] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -57,21 +67,24 @@ const Questionnaires = () => {
     const firstUnanswered = sprint.questions.findIndex((q) => !profileAnswers?.[q.id]);
     setQuizSprintIdx(idx);
     setQuizQuestionIdx(firstUnanswered === -1 ? 0 : firstUnanswered);
-    setSelections({});
+    const empty: Record<string, string[]> = {};
+    setSelections(empty);
+    selectionsRef.current = empty;
     setAiFeedback(null);
     setView("quiz");
   };
 
   /* ── Save answers ── */
   const saveAndReturn = async () => {
-    if (Object.keys(selections).length === 0) {
+    const currentSelections = selectionsRef.current;
+    if (Object.keys(currentSelections).length === 0) {
       setView("dashboard");
       return;
     }
     setSaving(true);
     try {
       const userId = (await supabase.auth.getUser()).data.user!.id;
-      const updated = { ...(profileAnswers || {}), ...selections };
+      const updated = { ...(profileAnswers || {}), ...currentSelections };
       // Convert string[] to string for single-select
       const cleaned: Record<string, string | string[]> = {};
       for (const [k, v] of Object.entries(updated)) {
@@ -82,7 +95,7 @@ const Questionnaires = () => {
         .update({ profile_answers: cleaned, updated_at: new Date().toISOString() })
         .eq("user_id", userId);
       if (error) throw error;
-      toast.success(`${Object.keys(selections).length} answers saved!`);
+      toast.success(`${Object.keys(currentSelections).length} answers saved!`);
       await refetch();
     } catch {
       toast.error("Failed to save answers");
@@ -99,7 +112,7 @@ const Questionnaires = () => {
   const toggleOption = (optId: string) => {
     if (!currentQuestion) return;
     const isSingle = !currentQuestion.multiSelect;
-    setSelections((prev) => {
+    updateSelections((prev) => {
       const current = prev[currentQuestion.id] || [];
       if (isSingle) return { ...prev, [currentQuestion.id]: [optId] };
       if (current.includes(optId)) return { ...prev, [currentQuestion.id]: current.filter((x) => x !== optId) };
@@ -111,22 +124,34 @@ const Questionnaires = () => {
       setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
       setTimeout(() => {
         setAiFeedback(null);
-        advanceQuestion();
+        // Use ref to get latest selections to avoid stale closure
+        const latestSelections = selectionsRef.current;
+        if (!currentSprint) return;
+        let next = quizQuestionIdx + 1;
+        while (next < currentSprint.questions.length) {
+          const q = currentSprint.questions[next];
+          if (!profileAnswers?.[q.id] && !latestSelections[q.id]) break;
+          next++;
+        }
+        if (next >= currentSprint.questions.length) {
+          saveAndReturn();
+        } else {
+          setQuizQuestionIdx(next);
+        }
       }, 1200);
     }
   };
 
   const advanceQuestion = () => {
     if (!currentSprint) return;
-    // Find next unanswered in this sprint
+    const latestSelections = selectionsRef.current;
     let next = quizQuestionIdx + 1;
     while (next < currentSprint.questions.length) {
       const q = currentSprint.questions[next];
-      if (!profileAnswers?.[q.id] && !selections[q.id]) break;
+      if (!profileAnswers?.[q.id] && !latestSelections[q.id]) break;
       next++;
     }
     if (next >= currentSprint.questions.length) {
-      // Sprint done
       saveAndReturn();
     } else {
       setQuizQuestionIdx(next);
