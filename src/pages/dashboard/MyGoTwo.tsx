@@ -381,7 +381,7 @@ const MyGoTwo = () => {
   const [entryNames, setEntryNames] = useState<Record<string, string>>({});
   const [showGroupDialog, setShowGroupDialog] = useState(false);
   const [groupNameInput, setGroupNameInput] = useState("");
-  const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
+  const [activeGroup, setActiveGroup] = useState("");
   const [leafImage, setLeafImage] = useState<string>("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
   const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
