@@ -851,13 +851,11 @@ const MyGoTwo = () => {
     return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
 
-  const orderedSections = sectionOrder
-    .filter((key) => sections[key] && sections[key].length > 0)
-    .map((key) => ({
-      key,
-      label: sectionLabels[key] ?? key,
-      items: sections[key].map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
-    }));
+  const orderedSections = visibleSectionKeys.map((key) => ({
+    key,
+    label: sectionLabels[key] ?? key,
+    items: sections[key].map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
+  }));
 
   const renderContent = () => {
     if (showCategoryPaywall) {
