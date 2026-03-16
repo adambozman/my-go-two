@@ -677,12 +677,12 @@ const MyGoTwo = () => {
     ...entries.map((entry) => ({
       id: entry.id,
       label: entryNames[entry.id] || entry.entry_name,
-      image: entryImages[entry.id] || entry.image_url || leafImage || BRANDED_CARD_SVG,
+      image: normalizeImageValue(entryImages[entry.id] || entry.image_url) || leafImage || BRANDED_CARD_SVG,
     })),
     {
       id: NEW_ENTRY_ID,
       label: entryNames[NEW_ENTRY_ID]?.trim() || "New Card",
-      image: entryImages[NEW_ENTRY_ID] || leafImage || BRANDED_CARD_SVG,
+      image: normalizeImageValue(entryImages[NEW_ENTRY_ID]) || leafImage || BRANDED_CARD_SVG,
     },
   ];
 
