@@ -245,7 +245,7 @@ const ListDetail = () => {
         </div>
       ) : (
         <div className="space-y-6">
-          {cards.map((card) => {
+          {paginatedItems.map((card) => {
             const sections = groupFieldsBySection(card.fields);
             const useSections = hasSections(card.fields);
 
