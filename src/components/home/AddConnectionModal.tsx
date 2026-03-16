@@ -226,11 +226,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                   </p>
 
                   <div
-                    className="flex items-center gap-2 px-3.5 py-3 rounded-xl"
-                    style={{
-                      background: "rgba(255,255,255,0.70)",
-                      border: "1px solid rgba(255,255,255,0.85)",
-                    }}
+                    className="surface-pill flex items-center gap-2 px-3.5 py-3 rounded-2xl"
+                    style={{}}
                   >
                     <span
                       className="flex-1 text-[12px] truncate"
