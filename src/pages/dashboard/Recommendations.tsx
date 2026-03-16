@@ -186,9 +186,9 @@ const Recommendations = () => {
           )}
         </div>
         <button
-          onClick={() => fetchProducts(true)}
-          disabled={loading}
-          className="p-2 rounded-full transition-colors hover:bg-secondary"
+          onClick={() => subscribed && fetchProducts(true)}
+          disabled={loading || !subscribed}
+          className="p-2 rounded-full transition-colors hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ color: "var(--swatch-antique-coin)" }}
           aria-label="Refresh recommendations"
         >
