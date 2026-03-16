@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import CoverFlowCarousel, { type CoverFlowItem } from "@/components/ui/CoverFlowCarousel";
 import { usePagination } from "@/hooks/usePagination";
 import { PaginationControls } from "@/components/ui/pagination-controls";
@@ -7,6 +8,7 @@ interface PaginatedCoverFlowProps {
   onSelect: (id: string) => void;
   pageSize?: number;
   className?: string;
+  focusedItemId?: string | null;
 }
 
 const RIGHT_SIDE_DOT_STYLE = {
@@ -21,16 +23,33 @@ export default function PaginatedCoverFlow({
   onSelect,
   pageSize = 5,
   className,
+  focusedItemId,
 }: PaginatedCoverFlowProps) {
+  const focusedIndex = useMemo(
+    () => (focusedItemId ? items.findIndex((item) => item.id === focusedItemId) : -1),
+    [focusedItemId, items],
+  );
+  const initialPage = focusedIndex >= 0 ? Math.floor(focusedIndex / pageSize) + 1 : 1;
+
   const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination({
     items,
     pageSize,
-    resetKeys: [items.map((item) => item.id).join("|")],
+    initialPage,
+    resetKeys: [items.map((item) => item.id).join("|"), focusedItemId || ""],
   });
+
+  const initialActiveIndex =
+    focusedIndex >= 0
+      ? Math.max(0, Math.min(focusedIndex - (currentPage - 1) * pageSize, paginatedItems.length - 1))
+      : 0;
 
   return (
     <div className={className ?? "w-full flex flex-col items-center relative"}>
-      <CoverFlowCarousel items={paginatedItems} onSelect={onSelect} />
+      <CoverFlowCarousel
+        items={paginatedItems}
+        onSelect={onSelect}
+        initialActiveIndex={initialActiveIndex}
+      />
       <PaginationControls
         currentPage={currentPage}
         totalPages={totalPages}

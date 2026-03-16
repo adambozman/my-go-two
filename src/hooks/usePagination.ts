@@ -4,20 +4,23 @@ interface UsePaginationOptions<T> {
   items: T[];
   pageSize?: number;
   resetKeys?: unknown[];
+  initialPage?: number;
 }
+
+const clampPage = (page: number, totalPages: number) => Math.min(Math.max(page, 1), totalPages);
 
 export function usePagination<T>({
   items,
   pageSize = 6,
   resetKeys = [],
+  initialPage = 1,
 }: UsePaginationOptions<T>) {
-  const [currentPage, setCurrentPage] = useState(1);
-
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const [currentPage, setCurrentPage] = useState(() => clampPage(initialPage, totalPages));
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, resetKeys);
+    setCurrentPage(clampPage(initialPage, totalPages));
+  }, [initialPage, totalPages, ...resetKeys]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
