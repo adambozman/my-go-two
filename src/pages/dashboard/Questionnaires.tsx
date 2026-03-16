@@ -603,7 +603,7 @@ const Questionnaires = () => {
             transition={{ type: "spring", stiffness: 240, damping: 24 }}
             className="lg:col-span-8 rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[320px]"
             style={{
-              background: "linear-gradient(135deg, rgba(var(--swatch-teal-rgb), 0.90) 0%, rgba(var(--swatch-teal-rgb), 0.74) 44%, rgba(var(--swatch-antique-coin-rgb), 0.84) 100%)",
+              background: "linear-gradient(135deg, rgba(var(--swatch-teal-rgb), 0.92) 0%, rgba(var(--swatch-teal-rgb), 0.82) 58%, rgba(var(--swatch-teal-rgb), 0.72) 100%)",
               boxShadow: "0 24px 60px rgba(30,74,82,0.22)",
             }}
           >
