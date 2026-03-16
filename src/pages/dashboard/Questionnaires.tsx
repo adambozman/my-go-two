@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles } from "lucide-react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
