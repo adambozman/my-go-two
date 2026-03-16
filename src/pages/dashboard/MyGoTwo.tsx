@@ -845,23 +845,6 @@ const MyGoTwo = () => {
   }));
 
   const renderContent = () => {
-    if (showCategoryPaywall) {
-      return (
-        <div className="h-full flex items-center justify-center px-4 py-6">
-          <PremiumLockCard
-            title="Deeper preference cards are Premium"
-            description="Free includes a few categories so people can feel the product. Premium unlocks unlimited categories and entries for real everyday use."
-            bullets={[
-              `Free includes up to ${FREE_CARD_KEY_LIMIT} saved preference areas`,
-              "Unlock unlimited categories, cards, and richer preference tracking",
-              "Pair it with recommendations, reminders, and extra connections",
-            ]}
-            onDismiss={() => setShowCategoryPaywall(false)}
-          />
-        </div>
-      );
-    }
-
     if (cardKey && leafSubtype) {
       return (
         <motion.div
