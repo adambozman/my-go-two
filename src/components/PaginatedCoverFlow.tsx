@@ -9,6 +9,7 @@ interface PaginatedCoverFlowProps {
   pageSize?: number;
   className?: string;
   focusedItemId?: string | null;
+  showPagination?: boolean;
 }
 
 const RIGHT_SIDE_DOT_STYLE = {
