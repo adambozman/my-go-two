@@ -868,6 +868,7 @@ const MyGoTwo = () => {
             <FormCoverFlowCarousel
               items={paginatedEntryItems}
               activeIndex={activeEntryIndexOnPage}
+              previousImage={previousEntryImage}
               onActiveIndexChange={(index) => setActiveEntryIndex(entryPageStart + index)}
               renderActiveCard={(item) => (
                 <EntryFormCard
