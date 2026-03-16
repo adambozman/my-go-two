@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { type Gender, normalizeGender } from "@/lib/gender";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
 import type { Json } from "@/integrations/supabase/types";
+import { usePagination } from "@/hooks/usePagination";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 
 interface CardField {
   label: string;
@@ -211,7 +213,10 @@ const ListDetail = () => {
   };
   const hasSections = (fields: CardField[]) => fields.some((f) => f.section);
 
-
+  const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination({
+    items: cards,
+    pageSize: 5,
+  });
 
   return (
     <div className="max-w-4xl">
@@ -241,7 +246,7 @@ const ListDetail = () => {
         </div>
       ) : (
         <div className="space-y-6">
-          {cards.map((card) => {
+          {paginatedItems.map((card) => {
             const sections = groupFieldsBySection(card.fields);
             const useSections = hasSections(card.fields);
 
@@ -368,6 +373,13 @@ const ListDetail = () => {
           })}
         </div>
       )}
+
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        label={`Page ${currentPage} of ${totalPages}`}
+      />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[80vh] overflow-y-auto">

@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import PremiumLockCard from "@/components/PremiumLockCard";
+import { usePagination } from "@/hooks/usePagination";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 
 interface Notification {
   id: string;
@@ -176,8 +178,28 @@ export default function Notifications() {
             </p>
           </div>
         ) : (
-          <div className="flex flex-col" style={{ gap: 4 }}>
-            {notifications.map((n) => {
+          <NotificationList notifications={notifications} markOneRead={markOneRead} deleteOne={deleteOne} formatDate={formatDate} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function NotificationList({ notifications, markOneRead, deleteOne, formatDate }: {
+  notifications: Notification[];
+  markOneRead: (id: string) => void;
+  deleteOne: (id: string) => void;
+  formatDate: (d: string) => string;
+}) {
+  const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination({
+    items: notifications,
+    pageSize: 8,
+  });
+
+  return (
+    <>
+      <div className="flex flex-col" style={{ gap: 4 }}>
+        {paginatedItems.map((n) => {
               const Icon = typeIcon[n.type] || Bell;
               return (
                 <div
@@ -241,9 +263,13 @@ export default function Notifications() {
                 </div>
               );
             })}
-          </div>
-        )}
       </div>
-    </div>
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        label={`Page ${currentPage} of ${totalPages}`}
+      />
+    </>
   );
 }

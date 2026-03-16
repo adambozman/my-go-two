@@ -6,8 +6,9 @@ import { RefreshCw, Loader2, UtensilsCrossed, Shirt, Cpu, Home, Bookmark, Share2
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackAdEvent } from "@/lib/adTracking";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import PremiumLockCard from "@/components/PremiumLockCard";
+import { usePagination } from "@/hooks/usePagination";
 
 interface Product {
   name: string;
@@ -60,7 +61,6 @@ const Recommendations = () => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [activePillar, setActivePillar] = useState<string>("all");
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
-  const [currentPage, setCurrentPage] = useState(1);
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [isCached, setIsCached] = useState(false);
 
@@ -100,21 +100,11 @@ const Recommendations = () => {
     return products.filter((p) => p.category === activePillar);
   }, [products, activePillar]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginatedProducts = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return filtered.slice(start, start + PAGE_SIZE);
-  }, [filtered, currentPage]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activePillar]);
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
+  const { currentPage, setCurrentPage, totalPages, paginatedItems: paginatedProducts } = usePagination({
+    items: filtered,
+    pageSize: PAGE_SIZE,
+    resetKeys: [activePillar],
+  });
 
   const toggleSave = (id: string) => {
     setSavedItems((prev) => {
@@ -268,54 +258,12 @@ const Recommendations = () => {
             </motion.div>
           </AnimatePresence>
 
-          {totalPages > 1 && (
-            <div className="mt-6 space-y-2">
-              <p className="text-center text-[11px] text-muted-foreground">
-                Page {currentPage} of {totalPages}
-              </p>
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentPage((page) => Math.max(1, page - 1));
-                      }}
-                      className={currentPage === 1 ? "pointer-events-none opacity-50" : undefined}
-                    />
-                  </PaginationItem>
-                  {Array.from({ length: totalPages }, (_, index) => {
-                    const page = index + 1;
-                    return (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          href="#"
-                          isActive={currentPage === page}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(page);
-                          }}
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  })}
-                  <PaginationItem>
-                    <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentPage((page) => Math.min(totalPages, page + 1));
-                      }}
-                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : undefined}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
-          )}
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            label={`Page ${currentPage} of ${totalPages}`}
+          />
         </>
       ) : hasLoaded ? (
         <div className="text-center py-12">
