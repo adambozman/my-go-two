@@ -1026,7 +1026,7 @@ const MyGoTwo = () => {
             <h2 className="section-header text-center mb-4">{section.label}</h2>
             <GoTwoCoverFlow
               items={section.items}
-              onSelect={handleSelect}
+              onSelect={(categoryId) => handleSelect(section.key, categoryId)}
               focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
               showPagination={index === activeSectionIndex}
             />
