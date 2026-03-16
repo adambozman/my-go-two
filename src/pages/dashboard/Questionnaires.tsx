@@ -477,7 +477,9 @@ const Questionnaires = () => {
                   alt={totCurrent.prompt}
                   className="absolute inset-0 w-full h-full object-cover"
                   loading="eager"
-                  crossOrigin="anonymous"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
                 />
                 {/* Gradient overlay */}
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 60%)" }} />
