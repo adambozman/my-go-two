@@ -899,6 +899,7 @@ const MyGoTwo = () => {
           onSubcategorySelect={handleSubcategorySelect}
           onBack={clearCoverFlow}
           onSelect={handleSubtypeSelect}
+          focusedItemId={focusedDrilldownItemId}
           creating={false}
           gender={gender}
           section={coverFlowState.section}
