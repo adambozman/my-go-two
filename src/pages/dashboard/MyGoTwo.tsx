@@ -570,7 +570,7 @@ const MyGoTwo = () => {
     if (cardKey) {
       setBackState({ label: "", onBack: goBackFromEntries });
     } else if (activeSubcategory && coverFlowState) {
-      setBackState({ label: "", onBack: () => setActiveSubcategory(null) });
+      setBackState({ label: "", onBack: () => { setFocusedDrilldownItemId(activeSubcategory.id); setActiveSubcategory(null); } });
     } else if (coverFlowState) {
       setBackState({ label: "", onBack: clearCoverFlow });
     } else {
