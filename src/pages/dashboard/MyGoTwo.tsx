@@ -455,6 +455,7 @@ const MyGoTwo = () => {
 
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
   const [focusedDrilldownItemId, setFocusedDrilldownItemId] = useState<string | null>(null);
+  const [focusedMainCategoryId, setFocusedMainCategoryId] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
