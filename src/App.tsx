@@ -75,6 +75,7 @@ const App = () => {
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="search" element={<Search />} />
                 <Route path="data-sync" element={<CategorySync />} />
+                <Route path="sponsored" element={<SponsoredAdmin />} />
               </Route>
               <Route path="*" element={<NotFound />} />
               <Route path="/carousel-test" element={<CarouselTest />} />
