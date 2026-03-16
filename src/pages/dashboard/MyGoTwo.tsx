@@ -936,8 +936,9 @@ const MyGoTwo = () => {
         style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
         onScroll={(e) => {
           const el = e.currentTarget;
-          const idx = Math.round(el.scrollTop / el.clientHeight);
-          setActiveSectionIndex(Math.min(idx, orderedSections.length - 1));
+          const sectionHeight = el.clientHeight || 1;
+          const idx = Math.round(el.scrollTop / sectionHeight);
+          setActiveSectionIndex(Math.min(Math.max(idx, 0), orderedSections.length - 1));
         }}
       >
         {!subscribed && (
