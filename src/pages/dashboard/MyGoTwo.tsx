@@ -549,14 +549,28 @@ const MyGoTwo = () => {
   }, [entries, leafSubtype, defaultFieldValues, cardKey, activeGroup]);
 
   useEffect(() => {
-    if (!coverFlowState && !cardKey) {
-      requestAnimationFrame(() => {
-        if (scrollRef.current) {
-          scrollRef.current.scrollTop = savedScrollTop.current;
-        }
-      });
-    }
-  }, [coverFlowState, cardKey]);
+    setActiveSectionIndex((prev) => Math.min(prev, Math.max(visibleSectionKeys.length - 1, 0)));
+  }, [visibleSectionKeys.length]);
+
+  useEffect(() => {
+    if (coverFlowState || cardKey) return;
+
+    requestAnimationFrame(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+
+      const sectionHeight = el.clientHeight || 1;
+      const restoreSectionIndex = lastMainSectionKey ? visibleSectionKeys.indexOf(lastMainSectionKey) : -1;
+      const targetScrollTop =
+        restoreSectionIndex >= 0 ? restoreSectionIndex * sectionHeight : savedScrollTop.current;
+
+      el.scrollTop = targetScrollTop;
+      savedScrollTop.current = targetScrollTop;
+
+      const idx = Math.round(targetScrollTop / sectionHeight);
+      setActiveSectionIndex(Math.min(Math.max(idx, 0), Math.max(visibleSectionKeys.length - 1, 0)));
+    });
+  }, [coverFlowState, cardKey, lastMainSectionKey, visibleSectionKeys]);
 
   const clearCoverFlow = () => {
     setCoverFlowState(null);
