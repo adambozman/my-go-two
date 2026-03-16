@@ -698,6 +698,12 @@ const MyGoTwo = () => {
     setActiveEntryPage(nextPage);
   }, [activeEntryIndex, entryTotalPages]);
 
+  const previousEntryImage = useMemo(() => {
+    if (entryCoverFlowItems.length === 0) return "";
+    const prevIndex = (activeEntryIndex - 1 + entryCoverFlowItems.length) % entryCoverFlowItems.length;
+    return entryCoverFlowItems[prevIndex]?.image || "";
+  }, [activeEntryIndex, entryCoverFlowItems]);
+
   const handleEntryPageChange = (page: number) => {
     setActiveEntryPage(page);
     setActiveEntryIndex(Math.min((page - 1) * ENTRY_PAGE_SIZE, Math.max(entryCoverFlowItems.length - 1, 0)));
