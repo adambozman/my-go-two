@@ -265,6 +265,11 @@ const DashboardHome = () => {
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
+      // Placeholder connections open the add modal
+      if (entry.isPlaceholder) {
+        setShowAddModal(true);
+        return;
+      }
       const card = connections.find((c) => c.id === entry.id);
       if (!card) return;
       setOpenConnection({
