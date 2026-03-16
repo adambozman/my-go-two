@@ -461,6 +461,7 @@ const MyGoTwo = () => {
   const [activeEntryPage, setActiveEntryPage] = useState(1);
   const [entryDrafts, setEntryDrafts] = useState<Record<string, Record<string, string>>>({});
   const [entryNames, setEntryNames] = useState<Record<string, string>>({});
+  const [entryImages, setEntryImages] = useState<Record<string, string>>({});
   const [showGroupDialog, setShowGroupDialog] = useState(false);
   const [groupNameInput, setGroupNameInput] = useState("");
   const [activeGroup, setActiveGroup] = useState("");
@@ -512,17 +513,21 @@ const MyGoTwo = () => {
 
     const nextDrafts: Record<string, Record<string, string>> = {};
     const nextNames: Record<string, string> = {};
+    const nextImages: Record<string, string> = {};
 
     entries.forEach((entry) => {
       nextDrafts[entry.id] = (entry.field_values as Record<string, string>) || {};
       nextNames[entry.id] = entry.entry_name;
+      nextImages[entry.id] = entry.image_url || "";
     });
 
     nextDrafts[NEW_ENTRY_ID] = defaultFieldValues;
     nextNames[NEW_ENTRY_ID] = "";
+    nextImages[NEW_ENTRY_ID] = "";
 
     setEntryDrafts(nextDrafts);
     setEntryNames(nextNames);
+    setEntryImages(nextImages);
     setActiveEntryIndex((prev) => Math.min(prev, entries.length));
 
     if (!activeGroup) {
@@ -684,11 +689,16 @@ const MyGoTwo = () => {
     }));
   };
 
+  const handleImageChange = (itemId: string, imageUrl: string) => {
+    setEntryImages((prev) => ({ ...prev, [itemId]: imageUrl }));
+  };
+
   const handleSaveEntry = async (itemId: string) => {
     if (!user || !cardKey || !leafSubtype) return;
 
     const entryName = (entryNames[itemId] || "").trim() || `${leafSubtype.name} ${entries.length + 1}`;
     const fieldValues = entryDrafts[itemId] || defaultFieldValues;
+    const imageUrl = entryImages[itemId] || null;
 
     setSaving(true);
     try {
@@ -701,6 +711,7 @@ const MyGoTwo = () => {
             group_name: activeGroup || leafSubtype.name,
             entry_name: entryName,
             field_values: fieldValues,
+            image_url: imageUrl,
           })
           .select("*")
           .single();
@@ -720,17 +731,24 @@ const MyGoTwo = () => {
           [inserted.id]: entryName,
           [NEW_ENTRY_ID]: "",
         }));
+        setEntryImages((prev) => ({
+          ...prev,
+          [inserted.id]: imageUrl || "",
+          [NEW_ENTRY_ID]: "",
+        }));
         setActiveEntryIndex(entries.length);
         toast({ title: "Saved!", description: `${entryName} created.` });
       } else {
         const { error } = await supabase
           .from("card_entries")
-          .update({ entry_name: entryName, field_values: fieldValues })
+          .update({ entry_name: entryName, field_values: fieldValues, image_url: imageUrl })
           .eq("id", itemId);
 
         if (error) throw error;
 
-        setEntries((prev) => prev.map((entry) => (entry.id === itemId ? { ...entry, entry_name: entryName, field_values: fieldValues } : entry)));
+        setEntries((prev) => prev.map((entry) => (
+          entry.id === itemId ? { ...entry, entry_name: entryName, field_values: fieldValues, image_url: imageUrl } : entry
+        )));
         toast({ title: "Updated!", description: `${entryName} saved.` });
       }
     } catch (e: any) {
