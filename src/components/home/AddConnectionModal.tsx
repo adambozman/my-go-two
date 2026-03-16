@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, QrCode, Send, Copy, Check, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +20,17 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const [email, setEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [copied, setCopied] = useState(false);
+  const labelInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!open || tab !== "invite") return;
+
+    const timeout = window.setTimeout(() => {
+      labelInputRef.current?.focus();
+    }, 120);
+
+    return () => window.clearTimeout(timeout);
+  }, [open, tab]);
 
   const inviteLink = user
     ? `${window.location.origin}/connect?invite=${user.id}`
@@ -30,7 +41,6 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
 
     setSending(true);
     try {
-      // 1. Create the couples row (draft → pending)
       const { error: insertError } = await supabase.from("couples").insert({
         inviter_id: user.id,
         invitee_email: email.trim().toLowerCase(),
@@ -39,7 +49,6 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       });
 
       if (insertError) {
-        // Check for duplicate
         if (insertError.message.includes("duplicate") || insertError.code === "23505") {
           toast.error("An invite for this email already exists.");
         } else {
@@ -49,7 +58,6 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
         return;
       }
 
-      // 2. Send the invite email + notifications via edge function
       await supabase.functions.invoke("collaborations", {
         body: { action: "send-invite-email", invitee_email: email.trim().toLowerCase() },
       });
@@ -81,7 +89,6 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -91,12 +98,14 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
             onClick={onClose}
           />
 
-          {/* Modal */}
           <motion.div
             initial={{ opacity: 0, y: 40, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 40, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="add-connection-title"
             className="fixed inset-x-4 bottom-4 z-50 max-w-[460px] mx-auto rounded-2xl overflow-hidden"
             style={{
               background: "var(--swatch-sand)",
@@ -104,7 +113,6 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               boxShadow: "0 12px 48px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.9)",
             }}
           >
-            {/* Header */}
             <div className="flex items-center justify-between px-5 pt-5 pb-3">
               <div className="flex items-center gap-2.5">
                 <div
@@ -114,6 +122,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                   <UserPlus className="w-4 h-4" />
                 </div>
                 <h2
+                  id="add-connection-title"
                   className="text-[18px] font-semibold"
                   style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Cormorant Garamond', serif" }}
                 >
@@ -125,7 +134,6 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               </button>
             </div>
 
-            {/* Tabs */}
             <div className="flex gap-1 px-5 pb-3">
               {([
                 { key: "invite" as Tab, icon: Mail, label: "Email Invite" },
@@ -147,7 +155,6 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               ))}
             </div>
 
-            {/* Content */}
             <div className="px-5 pb-5">
               {tab === "invite" ? (
                 <div className="space-y-3">
@@ -156,11 +163,14 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                   </p>
 
                   <div>
-                    <label className="text-[10px] font-semibold uppercase tracking-wider mb-1 block"
-                      style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}>
+                    <label
+                      className="text-[10px] font-semibold uppercase tracking-wider mb-1 block"
+                      style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
+                    >
                       Label (e.g. Wife, Mom, Dad)
                     </label>
                     <input
+                      ref={labelInputRef}
                       type="text"
                       value={label}
                       onChange={(e) => setLabel(e.target.value)}
@@ -176,8 +186,10 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-semibold uppercase tracking-wider mb-1 block"
-                      style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}>
+                    <label
+                      className="text-[10px] font-semibold uppercase tracking-wider mb-1 block"
+                      style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
+                    >
                       Email Address
                     </label>
                     <input
@@ -216,7 +228,6 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                     Share this link with anyone you want to connect with. They'll create an account and link automatically.
                   </p>
 
-                  {/* Link display */}
                   <div
                     className="flex items-center gap-2 px-3.5 py-3 rounded-xl"
                     style={{
@@ -243,11 +254,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                     </button>
                   </div>
 
-                  {/* QR Code */}
-                  <div
-                    className="flex items-center justify-center py-6 rounded-xl"
-                    style={{ background: "#fff" }}
-                  >
+                  <div className="flex items-center justify-center py-6 rounded-xl" style={{ background: "#fff" }}>
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(inviteLink)}&color=1e4a52`}
                       alt="QR Code"
