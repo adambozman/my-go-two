@@ -376,9 +376,9 @@ const MyGoTwo = () => {
   const [cardKey, setCardKey] = useState<string | null>(null);
   const [entries, setEntries] = useState<CardEntry[]>([]);
   const [activeEntryIndex, setActiveEntryIndex] = useState(0);
+  const [activeEntryPage, setActiveEntryPage] = useState(1);
   const [entryDrafts, setEntryDrafts] = useState<Record<string, Record<string, string>>>({});
   const [entryNames, setEntryNames] = useState<Record<string, string>>({});
-  const [showGroupDialog, setShowGroupDialog] = useState(false);
   const [groupNameInput, setGroupNameInput] = useState("");
   const [activeGroup, setActiveGroup] = useState("");
   const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
