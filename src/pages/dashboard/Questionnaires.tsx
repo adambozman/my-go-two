@@ -588,7 +588,7 @@ const Questionnaires = () => {
             </div>
 
             <p className="text-[36px] md:text-[46px] leading-[0.94] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-              {totCurrent.question}
+              {totCurrent.prompt}
             </p>
             <p className="text-[14px] leading-relaxed mb-8 max-w-[42ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
               Choose the option that feels more like your taste without overthinking it.
