@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
-import { Gift, CalendarDays, Heart } from "lucide-react";
+import { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Gift, CalendarDays, Heart, ChevronDown } from "lucide-react";
 import type { Milestone } from "./MilestoneCountdown";
 
 interface EventCalendarProps {
@@ -41,17 +42,26 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
   const today = now.getDate();
   const grid = getMonthGrid(year, month);
 
-  // Map day -> milestones for current month
-  const dayEvents = new Map<number, Milestone[]>();
-  for (const m of milestones) {
-    if (m.date.getMonth() === month && m.date.getFullYear() === year) {
-      const d = m.date.getDate();
-      if (!dayEvents.has(d)) dayEvents.set(d, []);
-      dayEvents.get(d)!.push(m);
+  const dayEvents = useMemo(() => {
+    const mapped = new Map<number, Milestone[]>();
+    for (const milestone of milestones) {
+      if (milestone.date.getMonth() === month && milestone.date.getFullYear() === year) {
+        const day = milestone.date.getDate();
+        if (!mapped.has(day)) mapped.set(day, []);
+        mapped.get(day)!.push(milestone);
+      }
     }
-  }
+    return mapped;
+  }, [milestones, month, year]);
 
-  // Upcoming list (all milestones, not just this month)
+  const firstEventDay = useMemo(() => {
+    const days = Array.from(dayEvents.keys()).sort((a, b) => a - b);
+    return days[0] ?? null;
+  }, [dayEvents]);
+
+  const [expandedDay, setExpandedDay] = useState<number | null>(firstEventDay);
+
+  const selectedEvents = expandedDay ? dayEvents.get(expandedDay) ?? [] : [];
   const upcoming = milestones.slice(0, 4);
 
   return (
@@ -76,7 +86,6 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
         </span>
       </div>
 
-      {/* Calendar grid */}
       <div
         className="rounded-2xl px-3 py-3"
         style={{
@@ -85,7 +94,6 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
           boxShadow: "0 4px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
         }}
       >
-        {/* Day headers */}
         <div className="grid grid-cols-7 mb-1">
           {DAY_NAMES.map((d, i) => (
             <div
@@ -98,58 +106,145 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
           ))}
         </div>
 
-        {/* Weeks */}
         {grid.map((week, wi) => (
           <div key={wi} className="grid grid-cols-7">
             {week.map((day, di) => {
               const events = day ? dayEvents.get(day) : undefined;
+              const hasEvents = Boolean(events?.length);
               const isToday = day === today;
               const isPast = day !== null && day < today;
+              const isExpanded = day !== null && day === expandedDay;
 
               return (
-                <div
-                  key={di}
-                  className="relative flex flex-col items-center justify-center py-1.5"
-                >
+                <div key={di} className="relative flex flex-col items-center justify-center py-1.5">
                   {day !== null ? (
-                    <>
+                    <button
+                      type="button"
+                      disabled={!hasEvents}
+                      onClick={() => {
+                        if (!hasEvents) return;
+                        setExpandedDay((current) => (current === day ? null : day));
+                      }}
+                      className="flex flex-col items-center disabled:cursor-default"
+                    >
                       <div
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-medium"
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-medium transition-transform"
                         style={{
                           fontFamily: "'Jost', sans-serif",
+                          transform: isExpanded ? "scale(1.08)" : undefined,
                           background: isToday
                             ? "var(--swatch-viridian-odyssey)"
-                            : events?.length
-                            ? "rgba(212,84,58,0.12)"
+                            : hasEvents
+                            ? isExpanded
+                              ? "var(--swatch-cedar-grove)"
+                              : "rgba(212,84,58,0.12)"
                             : "transparent",
                           color: isToday
                             ? "#fff"
-                            : events?.length
-                            ? "var(--swatch-cedar-grove)"
+                            : hasEvents
+                            ? isExpanded
+                              ? "#fff"
+                              : "var(--swatch-cedar-grove)"
                             : isPast
                             ? "var(--swatch-text-light)"
                             : "var(--swatch-viridian-odyssey)",
-                          fontWeight: events?.length || isToday ? 700 : 400,
+                          fontWeight: hasEvents || isToday ? 700 : 400,
                         }}
                       >
                         {day}
                       </div>
-                      {events && events.length > 0 && !isToday && (
+                      {hasEvents && !isToday && (
                         <div
                           className="w-1 h-1 rounded-full mt-0.5"
-                          style={{ background: "var(--swatch-cedar-grove)" }}
+                          style={{ background: isExpanded ? "var(--swatch-teal)" : "var(--swatch-cedar-grove)" }}
                         />
                       )}
-                    </>
+                    </button>
                   ) : null}
                 </div>
               );
             })}
           </div>
         ))}
+
+        <AnimatePresence initial={false}>
+          {expandedDay !== null && selectedEvents.length > 0 && (
+            <motion.div
+              key={expandedDay}
+              initial={{ height: 0, opacity: 0, marginTop: 0 }}
+              animate={{ height: "auto", opacity: 1, marginTop: 12 }}
+              exit={{ height: 0, opacity: 0, marginTop: 0 }}
+              className="overflow-hidden"
+            >
+              <div
+                className="rounded-2xl px-3 py-3"
+                style={{
+                  background: "rgba(255,255,255,0.72)",
+                  border: "1px solid rgba(255,255,255,0.85)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9)",
+                }}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <p
+                    className="text-[11px] font-semibold uppercase tracking-[0.12em]"
+                    style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
+                  >
+                    {MONTH_NAMES[month]} {expandedDay}
+                  </p>
+                  <div
+                    className="flex items-center gap-1 text-[10px]"
+                    style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
+                  >
+                    <span>Tap day to close</span>
+                    <ChevronDown className="w-3 h-3" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {selectedEvents.map((milestone) => {
+                    const Icon = milestoneIcon(milestone.type);
+                    const urgent = milestone.daysOut <= 7;
+                    const accent = urgent ? "var(--swatch-cedar-grove)" : "var(--swatch-teal)";
+
+                    return (
+                      <div
+                        key={milestone.id}
+                        className="flex items-center gap-3 rounded-xl px-3 py-2"
+                        style={{ background: `${accent}10` }}
+                      >
+                        <div
+                          className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                          style={{ background: `${accent}18`, color: accent }}
+                        >
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className="text-[13px] font-semibold truncate leading-tight"
+                            style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+                          >
+                            {milestone.person}'s {milestone.label}
+                          </p>
+                          <p className="text-[10px] mt-0.5" style={{ color: "var(--swatch-antique-coin)" }}>
+                            {milestone.date.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
+                          </p>
+                        </div>
+                        <span
+                          className="text-[11px] font-bold tabular-nums shrink-0 px-2 py-0.5 rounded-full"
+                          style={{ color: accent, background: `${accent}12`, fontFamily: "'Jost', sans-serif" }}
+                        >
+                          {milestone.daysOut}d
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Upcoming events list below calendar */}
       {upcoming.length > 0 && (
         <div
           className="rounded-2xl overflow-hidden"
