@@ -761,7 +761,7 @@ const Questionnaires = () => {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
-            className="lg:col-span-7 card-design-overlay-white rounded-[30px] p-5 md:p-6"
+            className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 md:p-6"
             style={{
               borderRadius: 30,
               boxShadow: "0 18px 50px rgba(30,74,82,0.06), inset 0 1px 0 rgba(255,255,255,0.48)",
