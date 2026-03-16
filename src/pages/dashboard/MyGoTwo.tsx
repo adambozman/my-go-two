@@ -842,10 +842,12 @@ const MyGoTwo = () => {
                   categoryName={leafCategoryName}
                   entryName={entryNames[item.id] || ""}
                   values={entryDrafts[item.id] || defaultFieldValues}
+                  imageUrl={entryImages[item.id] || ""}
                   saving={saving}
                   isEditing={item.id !== NEW_ENTRY_ID}
                   onEntryNameChange={(name) => handleNameChange(item.id, name)}
                   onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
+                  onImageChange={(imageUrl) => handleImageChange(item.id, imageUrl)}
                   onSave={() => handleSaveEntry(item.id)}
                   onDelete={() => handleDeleteEntry(item.id)}
                 />
