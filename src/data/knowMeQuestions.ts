@@ -648,8 +648,8 @@ const ENTERTAINMENT: QuizQuestion[] = [
   {
     id: "en-03", section: "entertainment",
     title: "Music taste?",
-    subtitle: "Pick up to two.",
-    type: "pill-select", multiSelect: true, maxSelect: 2,
+    subtitle: "Select all that apply.",
+    type: "pill-select", multiSelect: true,
     options: [opt("pop", "Pop"), opt("rock", "Rock / Alternative"), opt("hip-hop", "Hip-Hop / R&B"), opt("electronic", "Electronic"), opt("classical", "Classical / Jazz"), opt("country", "Country"), opt("indie", "Indie"), opt("latin", "Latin / Reggaeton")],
   },
   {
