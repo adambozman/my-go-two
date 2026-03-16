@@ -61,7 +61,6 @@ const Recommendations = () => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [activePillar, setActivePillar] = useState<string>("all");
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
-  const [currentPage, setCurrentPage] = useState(1);
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [isCached, setIsCached] = useState(false);
 
