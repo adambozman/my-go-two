@@ -942,18 +942,6 @@ const MyGoTwo = () => {
           setActiveSectionIndex(getNearestSectionIndex(el.scrollTop));
         }}
       >
-        {!subscribed && (
-          <div className="px-4 pt-4">
-            <div className="rounded-2xl border px-4 py-3" style={{ background: "rgba(255,255,255,0.64)", borderColor: "rgba(255,255,255,0.84)", boxShadow: "0 8px 24px rgba(74,96,104,0.08), inset 0 1px 0 rgba(255,255,255,0.9)" }}>
-              <p className="text-[10px] uppercase tracking-[0.16em] font-semibold" style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}>
-                Free plan
-              </p>
-              <p className="mt-1 text-sm" style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}>
-                You can save up to {FREE_CARD_KEY_LIMIT} preference areas. Premium unlocks unlimited categories and entries.
-              </p>
-            </div>
-          </div>
-        )}
         {orderedSections.map((section, index) => (
           <div
             key={section.key}
