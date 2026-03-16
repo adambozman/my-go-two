@@ -5,6 +5,7 @@ import { RefreshCw, Loader2, UtensilsCrossed, Shirt, Cpu, Home, Bookmark, Share2
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackAdEvent } from "@/lib/adTracking";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 interface Product {
   name: string;
@@ -27,6 +28,8 @@ const PILLARS = [
   { key: "home", label: "Home", icon: Home },
 ] as const;
 
+const PAGE_SIZE = 4;
+
 const Recommendations = () => {
   const { personalization, loading: personalizationLoading } = usePersonalization();
   const [products, setProducts] = useState<Product[]>([]);
@@ -34,13 +37,23 @@ const Recommendations = () => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [activePillar, setActivePillar] = useState<string>("all");
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [generatedAt, setGeneratedAt] = useState<string | null>(null);
+  const [isCached, setIsCached] = useState(false);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (forceRefresh = false) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("ai-products");
+      const { data, error } = await supabase.functions.invoke("ai-products", {
+        body: forceRefresh ? { force_refresh: true } : {},
+      });
       if (error) throw error;
-      if (data?.products) setProducts(data.products);
+      if (data?.products) {
+        setProducts(data.products);
+        setGeneratedAt(data.generated_at ?? null);
+        setIsCached(Boolean(data.cached));
+        setCurrentPage(1);
+      }
     } catch (e: any) {
       console.error("Products error:", e);
       if (e?.status === 429) toast.error("Rate limit reached. Try again shortly.");
@@ -56,18 +69,39 @@ const Recommendations = () => {
     if (!personalizationLoading && personalization && !hasLoaded) {
       fetchProducts();
     }
-  }, [personalizationLoading, personalization]);
+  }, [personalizationLoading, personalization, hasLoaded]);
 
   const filtered = useMemo(() => {
     if (activePillar === "all") return products;
     return products.filter((p) => p.category === activePillar);
   }, [products, activePillar]);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
+  }, [filtered, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activePillar]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   const toggleSave = (id: string) => {
     setSavedItems((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); toast("Removed from profile"); }
-      else { next.add(id); toast.success("Saved to your profile"); }
+      if (next.has(id)) {
+        next.delete(id);
+        toast("Removed from profile");
+      } else {
+        next.add(id);
+        toast.success("Saved to your profile");
+      }
       return next;
     });
   };
@@ -75,6 +109,10 @@ const Recommendations = () => {
   const handleShare = (product: Product) => {
     toast.success(`Ready to share ${product.name} with your partner`);
   };
+
+  const generatedLabel = generatedAt
+    ? new Date(generatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+    : null;
 
   if (personalizationLoading) {
     return (
@@ -95,7 +133,7 @@ const Recommendations = () => {
 
   return (
     <div className="h-full overflow-y-auto pb-20">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-4">
         <div>
           <h1 className="text-lg font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
             Curated For You
@@ -105,8 +143,19 @@ const Recommendations = () => {
               {personalization.persona_summary}
             </p>
           )}
+          {generatedLabel && (
+            <p className="text-[11px] text-muted-foreground mt-1">
+              {isCached ? `Saved this week · ${generatedLabel}` : `Fresh this week · ${generatedLabel}`}
+            </p>
+          )}
         </div>
-        <button onClick={fetchProducts} disabled={loading} className="p-2 rounded-full transition-colors hover:bg-secondary" style={{ color: "var(--swatch-antique-coin)" }}>
+        <button
+          onClick={() => fetchProducts(true)}
+          disabled={loading}
+          className="p-2 rounded-full transition-colors hover:bg-secondary"
+          style={{ color: "var(--swatch-antique-coin)" }}
+          aria-label="Refresh recommendations"
+        >
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
         </button>
       </div>
@@ -138,31 +187,82 @@ const Recommendations = () => {
           <p className="text-sm text-muted-foreground">Curating your picks…</p>
         </div>
       ) : filtered.length > 0 ? (
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activePillar}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.25 }}
-            className="space-y-3"
-          >
-            {filtered.map((product, i) => {
-              const itemId = `${product.brand}-${product.name}`;
-              const isSaved = savedItems.has(itemId);
-              return (
-                <ProductCard
-                  key={itemId + i}
-                  product={product}
-                  index={i}
-                  isSaved={isSaved}
-                  onToggleSave={() => toggleSave(itemId)}
-                  onShare={() => handleShare(product)}
-                />
-              );
-            })}
-          </motion.div>
-        </AnimatePresence>
+        <>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${activePillar}-${currentPage}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+              className="space-y-3"
+            >
+              {paginatedProducts.map((product, i) => {
+                const itemId = `${product.brand}-${product.name}`;
+                const isSaved = savedItems.has(itemId);
+                return (
+                  <ProductCard
+                    key={itemId + i}
+                    product={product}
+                    index={i}
+                    isSaved={isSaved}
+                    onToggleSave={() => toggleSave(itemId)}
+                    onShare={() => handleShare(product)}
+                  />
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
+
+          {totalPages > 1 && (
+            <div className="mt-6 space-y-2">
+              <p className="text-center text-[11px] text-muted-foreground">
+                Page {currentPage} of {totalPages}
+              </p>
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage((page) => Math.max(1, page - 1));
+                      }}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : undefined}
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }, (_, index) => {
+                    const page = index + 1;
+                    return (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          href="#"
+                          isActive={currentPage === page}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(page);
+                          }}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage((page) => Math.min(totalPages, page + 1));
+                      }}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : undefined}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </>
       ) : hasLoaded ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-sm">Tap refresh to generate your curated picks.</p>
@@ -227,8 +327,8 @@ function ProductCard({
         border: product.is_sponsored
           ? "1px solid rgba(212,84,58,0.15)"
           : product.is_partner_pick
-          ? "1px solid rgba(45,104,112,0.25)"
-          : "1px solid var(--chip-border)",
+            ? "1px solid rgba(45,104,112,0.25)"
+            : "1px solid var(--chip-border)",
       }}
     >
       {product.is_sponsored ? (

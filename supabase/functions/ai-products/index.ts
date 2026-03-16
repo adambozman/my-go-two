@@ -73,6 +73,32 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error("Unauthorized");
 
+    const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
+    const forceRefresh = Boolean(body?.force_refresh);
+    const now = new Date();
+    const weekStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - ((now.getUTCDay() + 6) % 7)));
+    const weekStartKey = weekStart.toISOString().slice(0, 10);
+
+    if (!forceRefresh) {
+      const { data: cachedRecommendations } = await supabase
+        .from("weekly_recommendations")
+        .select("products, generated_at")
+        .eq("user_id", user.id)
+        .eq("week_start", weekStartKey)
+        .maybeSingle();
+
+      if (cachedRecommendations?.products) {
+        return new Response(JSON.stringify({
+          products: cachedRecommendations.products,
+          cached: true,
+          generated_at: cachedRecommendations.generated_at,
+          week_start: weekStartKey,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     // Fetch preferences, quiz answers, and sponsored products in parallel
     const [prefsResult, quizResult, sponsoredResult] = await Promise.all([
       supabase
@@ -98,7 +124,12 @@ serve(async (req) => {
     const personalization = prefsResult.data?.ai_personalization as any || {};
 
     if (!personalization.style_keywords?.length) {
-      return new Response(JSON.stringify({ products: [] }), {
+      return new Response(JSON.stringify({
+        products: [],
+        cached: false,
+        generated_at: null,
+        week_start: weekStartKey,
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -119,9 +150,7 @@ serve(async (req) => {
       .slice(0, 30)
       .join("\n");
 
-    // Filter sponsored products by user targeting
     const sponsoredProducts = (sponsoredResult.data || []).filter((sp: any) => {
-      const now = new Date();
       if (sp.start_date && new Date(sp.start_date) > now) return false;
       if (sp.end_date && new Date(sp.end_date) < now) return false;
       if (sp.target_gender?.length && !sp.target_gender.includes(gender)) return false;
@@ -242,11 +271,10 @@ Use the provided tool to return the recommendations.`;
     const parsed = JSON.parse(toolCall.function.arguments);
     const aiProducts = sanitizeProducts(parsed?.products);
 
-    // Blend sponsored products into the AI results
     const blendedProducts = [...aiProducts];
     const sponsoredMapped = sponsoredProducts
       .sort((a: any, b: any) => (b.priority || 0) - (a.priority || 0))
-      .slice(0, 3) // max 3 sponsored per load
+      .slice(0, 3)
       .map((sp: any) => ({
         name: sp.name,
         brand: sp.brand,
@@ -262,14 +290,27 @@ Use the provided tool to return the recommendations.`;
         sponsored_id: sp.id,
       }));
 
-    // Insert sponsored items at natural positions (after position 2, 6, 10)
     const insertPositions = [2, 6, 10];
     for (let i = 0; i < sponsoredMapped.length; i++) {
       const pos = Math.min(insertPositions[i] || blendedProducts.length, blendedProducts.length);
       blendedProducts.splice(pos, 0, sponsoredMapped[i]);
     }
 
-    return new Response(JSON.stringify({ products: blendedProducts }), {
+    await supabase.from("weekly_recommendations").upsert({
+      user_id: user.id,
+      week_start: weekStartKey,
+      products: blendedProducts,
+      generated_at: new Date().toISOString(),
+    }, {
+      onConflict: "user_id,week_start",
+    });
+
+    return new Response(JSON.stringify({
+      products: blendedProducts,
+      cached: false,
+      generated_at: new Date().toISOString(),
+      week_start: weekStartKey,
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
