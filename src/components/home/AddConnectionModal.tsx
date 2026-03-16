@@ -208,12 +208,11 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                   <button
                     onClick={handleSendInvite}
                     disabled={!email.trim() || sending}
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-[13px] font-semibold transition-all active:scale-[0.98] disabled:opacity-50"
+                    className="surface-button-primary w-full flex items-center justify-center gap-2 py-3 rounded-full text-[13px] font-semibold transition-all active:scale-[0.98] disabled:opacity-50"
                     style={{
                       background: "var(--swatch-cedar-grove)",
-                      color: "#fff",
+                      color: "hsl(var(--destructive-foreground))",
                       fontFamily: "'Jost', sans-serif",
-                      boxShadow: "0 4px 20px rgba(212, 84, 58, 0.30)",
                     }}
                   >
                     <Send className="w-4 h-4" />
