@@ -7,17 +7,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { type Gender } from "@/lib/gender";
-import { getTemplateImage } from "@/lib/imageResolver";
-import { getOverride, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
+import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 import { CATEGORY_REGISTRY_SEED } from "@/data/categoryRegistrySeed";
-
-/** Pull the image key out of a registry row's subcategories JSONB.
- *  Each subtype has an `image` string (e.g. "clothing-tops").
- *  We grab the first non-empty one to use as the card cover. */
-function extractImageKey(row: any): string {
-  return row.key ? row.key.replace(/-male$|-female$|-nb$/, "") : "";
-}
 
 export interface CategoryItem {
   key: string;
