@@ -168,54 +168,10 @@ const DashboardHome = () => {
     setMilestones(upcoming.slice(0, 5));
   }, [user]);
 
-  const loadRecentUpdates = useCallback(async () => {
-    if (!user) return;
-
-    const { data: couples } = await supabase
-      .from("couples")
-      .select("inviter_id, invitee_id, display_label, status")
-      .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`)
-      .eq("status", "accepted");
-
-    if (!couples?.length) {
-      setRecentUpdates([
-        { id: "demo-u1", person: "Wife", action: "updated her", category: "Gift Preferences", timestamp: new Date(Date.now() - 3600000).toISOString() },
-        { id: "demo-u2", person: "Mom", action: "added to her", category: "Favorite Restaurants", timestamp: new Date(Date.now() - 86400000).toISOString() },
-      ]);
-      return;
-    }
-
-    const partnerIds = couples.map((c: any) => (c.inviter_id === user.id ? c.invitee_id : c.inviter_id)).filter(Boolean);
-    if (!partnerIds.length) return;
-
-    const { data: entries } = await supabase
-      .from("card_entries")
-      .select("id, user_id, card_key, group_name, entry_name, updated_at")
-      .in("user_id", partnerIds)
-      .order("updated_at", { ascending: false })
-      .limit(5);
-
-    if (!entries?.length) return;
-
-    setRecentUpdates(
-      entries.map((entry: any) => {
-        const couple = couples.find((c: any) => c.inviter_id === entry.user_id || c.invitee_id === entry.user_id);
-        return {
-          id: entry.id,
-          person: couple?.display_label || "Connection",
-          action: "updated",
-          category: entry.group_name || entry.card_key,
-          timestamp: entry.updated_at,
-        };
-      })
-    );
-  }, [user]);
-
   useEffect(() => {
     loadConnections();
     loadMilestones();
-    loadRecentUpdates();
-  }, [loadConnections, loadMilestones, loadRecentUpdates]);
+  }, [loadConnections, loadMilestones]);
 
   const directoryEntries: DirectoryEntry[] = connections.map((c) => ({
     id: c.id,
