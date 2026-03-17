@@ -128,6 +128,7 @@ export function DashboardTopBar() {
 
   const isMyGoTwo = location.pathname === "/dashboard/my-go-two";
   const activeTagline = taglines[location.pathname] ?? taglines["/dashboard"];
+  const showQuote = isMyGoTwo;
 
   return (
     <header className="px-4 md:px-8 shrink-0 flex flex-col" style={{ height: (location.pathname.includes("recommendations") || location.pathname.endsWith("/dashboard")) ? "auto" : "var(--header-height)", paddingTop: "var(--header-top-padding)", paddingBottom: (location.pathname.includes("recommendations") || location.pathname.endsWith("/dashboard")) ? "12px" : undefined }}>
@@ -237,26 +238,18 @@ export function DashboardTopBar() {
 
       <div className="border-b border-border/30" style={{ marginTop: "var(--header-divider-margin-top)" }} />
 
-      {!location.pathname.includes("recommendations") && !location.pathname.includes("questionnaires") && !location.pathname.endsWith("/dashboard") && (
+      {showQuote && (
         <div
           className="header-tagline-wrapper"
           style={{
-            marginTop: backState ? 0 : "var(--header-tagline-margin-top)",
-            opacity: backState ? 0 : 1,
-            visibility: backState ? "hidden" : "visible",
-            height: backState ? 0 : "auto",
-            overflow: "hidden",
+            marginTop: "var(--header-tagline-margin-top)",
             transition: "opacity 0.8s ease",
             textAlign: "center",
           }}
         >
-          {!backState && (
-            <>
-              <p className="header-tagline-quote">"{rotatingQuote.text}"</p>
-              {rotatingQuote.author !== "Unknown" && (
-                <p className="header-tagline-author">— {rotatingQuote.author}</p>
-              )}
-            </>
+          <p className="header-tagline-quote">"{rotatingQuote.text}"</p>
+          {rotatingQuote.author !== "Unknown" && (
+            <p className="header-tagline-author">— {rotatingQuote.author}</p>
           )}
         </div>
       )}
