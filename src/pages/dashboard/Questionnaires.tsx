@@ -711,15 +711,15 @@ const Questionnaires = () => {
 
               <div className="relative">
                 <p className="text-[34px] md:text-[40px] leading-[0.95] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  {visibleThisOrThatAnswered < visibleThisOrThatCount ? "Fast preference training" : "Finished with taste"}
+                  Browse instinct categories
                 </p>
                 <p className="text-[14px] leading-relaxed max-w-[30ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  This or That is your instinct deck. Each quick choice teaches the AI your lean — cleaner or louder, classic or trendy, safe or bold — so recommendations feel more like your actual taste.
+                  This or That now opens a dedicated category dashboard. The categories are fixed, the future question banks are fixed by gender, and the AI only interprets the patterns in your answers.
                 </p>
                 <p className="text-[13px] leading-relaxed max-w-[32ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                   {subscribed
-                    ? "Use it whenever you want to sharpen the emotional tone of your profile in minutes."
-                    : `Your free preview includes ${visibleThisOrThatCount} fast prompts so the AI can start reading your instinct before the full profile is complete.`}
+                    ? "The flow is built and ready for your category banks next."
+                    : "The new per-category flow is ready — once banks are added, free limits can apply inside each category."}
                 </p>
               </div>
 
