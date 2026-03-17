@@ -14,7 +14,6 @@ import { useToast } from "@/hooks/use-toast";
 
 import { useTopBar } from "@/contexts/TopBarContext";
 import { useRotatingQuote } from "@/hooks/useRotatingQuote";
-import { cn } from "@/lib/utils";
 
 const taglines: Record<string, string> = {
   "/dashboard": "The people who matter most.",
@@ -39,6 +38,7 @@ export function DashboardTopBar() {
   const { backState } = useTopBar();
   const rotatingQuote = useRotatingQuote();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [, setAvatarUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -137,8 +137,6 @@ export function DashboardTopBar() {
       }}
     >
       <div className="relative flex items-center justify-between gap-2 md:gap-4" style={{ height: "var(--header-icons-row-height)" }}>
-        <div className="shrink-0" style={{ width: "var(--header-avatar-size)", height: "var(--header-avatar-size)" }} />
-
         <input
           ref={fileInputRef}
           type="file"
@@ -147,32 +145,24 @@ export function DashboardTopBar() {
           onChange={handleUpload}
         />
 
-        {/* GoTwo logo — left aligned */}
-        <GoTwoText className="absolute left-0 translate-x-0" />
+        <div className="flex min-w-0 flex-1 items-center justify-start">
+          <GoTwoText className="shrink-0" />
+        </div>
 
         <nav className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-start gap-2 md:gap-3">
           {navItems.map((item) => {
-            const isActive = item.end ? location.pathname === item.url : location.pathname.startsWith(item.url);
             return (
               <NavLink
                 key={item.url}
                 to={item.url}
                 aria-label={item.label}
-                className={cn(
-                  "flex w-[66px] flex-col items-center gap-1 text-center transition-all",
-                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                )}
+                className="flex w-[66px] flex-col items-center gap-1 text-center text-muted-foreground transition-all hover:text-foreground"
               >
                 <span
                   className="relative rounded-full card-design-neumorph flex items-center justify-center"
                   style={{
                     width: "var(--header-icon-btn-size)",
                     height: "var(--header-icon-btn-size)",
-                    background: isActive ? "rgba(245,233,220,0.92)" : undefined,
-                    borderColor: isActive ? "rgba(45,104,112,0.18)" : undefined,
-                    boxShadow: isActive
-                      ? "inset 0 1px 0 rgba(255,255,255,0.94), 0 8px 20px rgba(45,104,112,0.10), 0 0 0 1px rgba(45,104,112,0.06)"
-                      : undefined,
                   }}
                 >
                   <item.icon className="h-3.5 w-3.5 md:h-4 md:w-4" />
