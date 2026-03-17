@@ -9,7 +9,6 @@ import { EventCalendar } from "@/components/home/EventCalendar";
 import { type DirectoryEntry } from "@/components/home/ConnectionDirectory";
 import { ConnectionAvatarRow } from "@/components/home/ConnectionAvatarRow";
 import { GreetingHeader } from "@/components/home/GreetingHeader";
-import { RecentUpdates, type RecentUpdate } from "@/components/home/RecentUpdates";
 import { AddConnectionModal } from "@/components/home/AddConnectionModal";
 import PremiumLockCard from "@/components/PremiumLockCard";
 
