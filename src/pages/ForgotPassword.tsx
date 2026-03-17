@@ -83,16 +83,15 @@ const ForgotPassword = () => {
               <span className="two">Two</span>
             </span>
           </Link>
-          <Link to="/login">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-sm font-semibold"
-              style={{ color: "var(--swatch-viridian-odyssey)" }}
-            >
-              Log in
-            </Button>
-          </Link>
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="text-sm font-semibold"
+            style={{ color: "var(--swatch-viridian-odyssey)" }}
+          >
+            <Link to="/login">Log in</Link>
+          </Button>
         </nav>
 
         <div className="flex-1 flex items-center justify-center px-4 pb-12">
@@ -207,15 +206,16 @@ const ForgotPassword = () => {
                   <p className="text-sm mb-6" style={{ color: "var(--swatch-antique-coin)" }}>
                     We've sent a password reset link to <strong>{email}</strong>. Check your inbox.
                   </p>
-                  <Link to="/login">
-                    <Button
-                      className="rounded-full h-12 px-8 text-sm font-bold border-0 shadow-lg"
-                      style={{ background: "var(--swatch-viridian-odyssey)", color: "var(--swatch-cream-light)" }}
-                    >
+                  <Button
+                    asChild
+                    className="rounded-full h-12 px-8 text-sm font-bold border-0 shadow-lg"
+                    style={{ background: "var(--swatch-viridian-odyssey)", color: "var(--swatch-cream-light)" }}
+                  >
+                    <Link to="/login">
                       <ArrowLeft className="mr-2 w-4 h-4" />
                       Back to Login
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </div>
               )}
             </motion.div>
