@@ -244,7 +244,7 @@ body {
   :root {
     --header-height: 230px;
     --header-icons-row-height: 72px;
-    --header-divider-margin-top: 100px;
+    --header-divider-margin-top: 18px;
     --header-tagline-margin-top: 12px;
   }
   .header-tagline-quote {
