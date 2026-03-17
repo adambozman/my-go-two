@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Bell, Settings, Camera, Upload, Trash2, Database, Megaphone, Home, Heart, Star, ClipboardList, Search } from "lucide-react";
+import { Bell, Settings, Camera, Upload, Trash2, Database, Megaphone, Home, Heart, Sparkles, ClipboardList, Search } from "lucide-react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,7 +26,7 @@ const taglines: Record<string, string> = {
 const navItems = [
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
   { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
-  { icon: Star, url: "/dashboard/recommendations", label: "For You" },
+  { icon: Sparkles, url: "/dashboard/recommendations", label: "For You" },
   { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Know Me" },
   { icon: Search, url: "/dashboard/search", label: "Search" },
 ] as const;
