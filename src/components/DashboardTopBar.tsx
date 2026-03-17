@@ -237,7 +237,7 @@ export function DashboardTopBar() {
 
       <div className="border-b border-border/30" style={{ marginTop: "var(--header-divider-margin-top)" }} />
 
-      {!location.pathname.includes("recommendations") && location.pathname !== "/dashboard" && !location.pathname.endsWith("/dashboard") && (
+      {!location.pathname.includes("recommendations") && !location.pathname.includes("questionnaires") && location.pathname !== "/dashboard" && !location.pathname.endsWith("/dashboard") && (
         <div
           className="header-tagline-wrapper"
           style={{
