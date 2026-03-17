@@ -935,36 +935,28 @@ const Questionnaires = () => {
               className="lg:col-span-4 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left min-h-[340px] flex flex-col justify-between"
               style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
             >
-              <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 32%), linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.04), transparent 40%)" }} />
-              <div className="relative flex items-center justify-between gap-3">
-                <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                  <Shuffle className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-                  <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>This or That</span>
-                </div>
-
-              </div>
+              <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
               <div className="relative">
+                <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  Instinct deck
+                </p>
                 <p className="text-[34px] md:text-[40px] leading-[0.95] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  Browse instinct categories
+                  This or That
                 </p>
-                <p className="text-[14px] leading-relaxed max-w-[30ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  This or That now opens a dedicated category dashboard. The categories are fixed, the future question banks are fixed by gender, and the AI only interprets the patterns in your answers.
-                </p>
-                <p className="text-[13px] leading-relaxed max-w-[32ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  {subscribed
-                    ? "The flow is built and ready for your category banks next."
-                    : "The new per-category flow is ready — once banks are added, free limits can apply inside each category."}
+                <p className="text-[14px] leading-relaxed max-w-[30ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Two options. One instinct. Pick fast and let your pattern build across style, taste, romance, travel, and more.
                 </p>
               </div>
-              <div className="relative flex items-end justify-between gap-4">
-                <div className="w-16 h-16 rounded-[22px] backdrop-blur-md flex items-center justify-center" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                  <ChevronRight className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-                </div>
-                <div className="text-right">
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    instinct deck
+              <div className="relative mt-auto rounded-[24px] p-4 backdrop-blur-md flex items-center justify-between gap-4" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                    Browse categories
+                  </p>
+                  <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    11 instinct categories, fixed by gender.
                   </p>
                 </div>
+                <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: "var(--swatch-viridian-odyssey)" }} />
               </div>
             </motion.button>
 
