@@ -965,6 +965,15 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
     status: "coming-soon",
     promptIds: { male: [], female: [], "non-binary": [] },
   },
+  {
+    id: "food-orders",
+    title: "Your Go-To Orders",
+    description: "Your exact orders at the places you love — so the people in your life always get it right.",
+    eyebrow: "Go-to orders",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+    promptIds: { male: [], female: [], "non-binary": [] },
+  },
 ];
 
 export const THIS_OR_THAT: ThisOrThatItem[] = [
