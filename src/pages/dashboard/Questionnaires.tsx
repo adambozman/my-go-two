@@ -101,7 +101,7 @@ const Questionnaires = () => {
   );
   const allDone = totalAnswered >= totalQuestions;
 
-  const [view, setView] = useState<"dashboard" | "categories" | "quiz" | "thisorthat">("dashboard");
+  const [view, setView] = useState<"dashboard" | "categories" | "quiz" | "thisorthat_dashboard" | "thisorthat">("dashboard");
   const [activeCategoryId, setActiveCategoryId] = useState<string>(SECTIONS[0].id);
   const [quizQuestionIdx, setQuizQuestionIdx] = useState(0);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
