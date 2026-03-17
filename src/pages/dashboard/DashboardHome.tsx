@@ -181,7 +181,7 @@ const DashboardHome = () => {
 
   return (
     <div className="relative h-full overflow-y-auto px-1 pb-6">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6 space-y-4">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-1 md:pt-2 space-y-4">
 
         {/* ── Row 1: Hero + Connections ── */}
         <div className="grid lg:grid-cols-12 gap-4">
