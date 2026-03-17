@@ -1,13 +1,13 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles, Shuffle, MessageCircle, Send, Lock } from "lucide-react";
+import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles, Shuffle, Send, Lock } from "lucide-react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { buildSprints, SECTIONS, THIS_OR_THAT, type QuizQuestion } from "@/data/knowMeQuestions";
+import { buildSprints, SECTIONS, THIS_OR_THAT, THIS_OR_THAT_CATEGORIES, type QuizQuestion } from "@/data/knowMeQuestions";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -101,7 +101,7 @@ const Questionnaires = () => {
   );
   const allDone = totalAnswered >= totalQuestions;
 
-  const [view, setView] = useState<"dashboard" | "categories" | "quiz" | "thisorthat">("dashboard");
+  const [view, setView] = useState<"dashboard" | "categories" | "quiz" | "thisorthat_dashboard" | "thisorthat">("dashboard");
   const [activeCategoryId, setActiveCategoryId] = useState<string>(SECTIONS[0].id);
   const [quizQuestionIdx, setQuizQuestionIdx] = useState(0);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
@@ -276,10 +276,7 @@ const Questionnaires = () => {
   const visibleThisOrThatAnswered = subscribed ? totAnsweredCount : Math.min(totAnsweredCount, visibleThisOrThatCount);
 
   const openThisOrThat = () => {
-    if (!subscribed && totQueue.length === 0) return;
-    setTotIndex(0);
-    setTotSwipeDir(null);
-    setView("thisorthat");
+    setView("thisorthat_dashboard");
   };
 
   const getSectionForQuestion = (q: QuizQuestion) => SECTIONS.find((section) => section.id === q.section);
@@ -351,7 +348,7 @@ const Questionnaires = () => {
           <div className="px-5 pt-5 pb-3">
             <div className="flex items-center justify-between mb-3">
               <button
-                onClick={() => setView("dashboard")}
+                onClick={() => setView("categories")}
                 className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-105"
                 style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}
               >
@@ -525,37 +522,10 @@ const Questionnaires = () => {
     );
   }
 
-  if (view === "thisorthat") {
-    if (!totCurrent) {
-      return (
-        <div className="h-full flex items-center justify-center px-4">
-          <div className="text-center">
-            <p className="text-[28px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-              You’ve answered them all.
-            </p>
-            <p className="text-[14px] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Your instinct profile is already in the mix.
-            </p>
-            <button
-              onClick={() => setView("dashboard")}
-              className="rounded-full px-5 py-3"
-              style={{
-                background: "rgba(var(--swatch-teal-rgb), 0.16)",
-                color: "var(--swatch-viridian-odyssey)",
-                fontFamily: "'Jost', sans-serif",
-                border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)",
-              }}
-            >
-              Back to dashboard
-            </button>
-          </div>
-        </div>
-      );
-    }
-
+  if (view === "thisorthat_dashboard") {
     return (
-      <div className="h-full flex items-center justify-center px-4 py-6">
-        <div className="w-full max-w-[640px]">
+      <div className="h-full overflow-y-auto px-1 pb-6">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={() => setView("dashboard")}
@@ -564,60 +534,81 @@ const Questionnaires = () => {
             >
               <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
             </button>
-            <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              {Math.min(totIndex + 1, visibleThisOrThatCount)} / {visibleThisOrThatCount}
+            <span className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              This or That categories
             </span>
           </div>
 
-          <motion.div
-            key={totCurrent.id}
-            initial={{ opacity: 0, y: 8 }}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="card-design-overlay-teal rounded-[34px] p-6 md:p-8"
+            transition={{ type: "spring", stiffness: 260, damping: 24 }}
+            className="card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden mb-4"
             style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
-            <div className="flex items-center justify-between gap-3 mb-6">
-              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                <Shuffle className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-                <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  This or That
-                </span>
-              </div>
-              <span className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                quick instinct pick
-              </span>
-            </div>
-
-            <p className="text-[36px] md:text-[46px] leading-[0.94] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-              {totCurrent.prompt}
+            <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+              Fixed category map
             </p>
-            <p className="text-[14px] leading-relaxed mb-8 max-w-[42ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Choose the option that feels more like your taste without overthinking it.
+            <h2 className="text-[36px] md:text-[48px] leading-[0.92] mb-3 max-w-[14ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              Choose a category to train your instinct profile.
+            </h2>
+            <p className="text-[14px] leading-relaxed max-w-[64ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              Categories are fixed and question banks are fixed by gender. The AI does not generate these prompts — it reads your saved answers to infer your vibe.
             </p>
+          </motion.section>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <button
-                onClick={() => pickThisOrThat("B")}
-                className="rounded-[28px] p-5 text-left min-h-[160px]"
-                style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
-              >
-                <p className="text-[30px] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  No
-                </p>
-              </button>
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-[minmax(150px,auto)]">
+            {THIS_OR_THAT_CATEGORIES.map((category, index) => {
+              const spanClass =
+                index === 0
+                  ? "md:col-span-4 md:row-span-2"
+                  : index === 1 || index === 2
+                    ? "md:col-span-2"
+                    : index === 5
+                      ? "md:col-span-3"
+                      : index === 7
+                        ? "md:col-span-3"
+                        : "md:col-span-2";
 
-              <button
-                onClick={() => pickThisOrThat("A")}
-                className="rounded-[28px] p-5 text-left min-h-[160px]"
-                style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
-              >
-                <p className="text-[30px] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  Yes
-                </p>
-              </button>
-            </div>
-          </motion.div>
+              return (
+                <motion.button
+                  key={category.id}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
+                  disabled
+                  className={`card-design-overlay-teal rounded-[28px] p-5 text-left relative overflow-hidden disabled:opacity-95 ${spanClass}`}
+                  style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)" }}
+                >
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      {category.eyebrow}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)", background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                      <Lock className="w-3 h-3" />
+                      Coming soon
+                    </span>
+                  </div>
+
+                  <h3 className="text-[26px] leading-[0.96] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                    {category.title}
+                  </h3>
+                  <p className="text-[13px] leading-relaxed mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    {category.description}
+                  </p>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                      0 answered • per-category limit ready
+                    </span>
+                    <span className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                      Disabled
+                    </span>
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
@@ -720,15 +711,15 @@ const Questionnaires = () => {
 
               <div className="relative">
                 <p className="text-[34px] md:text-[40px] leading-[0.95] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  {visibleThisOrThatAnswered < visibleThisOrThatCount ? "Fast preference training" : "Finished with taste"}
+                  Browse instinct categories
                 </p>
                 <p className="text-[14px] leading-relaxed max-w-[30ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  This or That is your instinct deck. Each quick choice teaches the AI your lean — cleaner or louder, classic or trendy, safe or bold — so recommendations feel more like your actual taste.
+                  This or That now opens a dedicated category dashboard. The categories are fixed, the future question banks are fixed by gender, and the AI only interprets the patterns in your answers.
                 </p>
                 <p className="text-[13px] leading-relaxed max-w-[32ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                   {subscribed
-                    ? "Use it whenever you want to sharpen the emotional tone of your profile in minutes."
-                    : `Your free preview includes ${visibleThisOrThatCount} fast prompts so the AI can start reading your instinct before the full profile is complete.`}
+                    ? "The flow is built and ready for your category banks next."
+                    : "The new per-category flow is ready — once banks are added, free limits can apply inside each category."}
                 </p>
               </div>
 
@@ -827,7 +818,7 @@ const Questionnaires = () => {
                     It learns from patterns, not one answer.
                   </p>
                   <p className="text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    The AI combines your long-form profile answers, your rapid This or That instinct picks, and the signals inside your spending, style, and gifting preferences. It uses that mix to decide which questions matter next and what products, brands, and ideas fit you best.
+                    The AI combines your long-form profile answers and your future fixed This or That category answers to read patterns across your style, gifting, lifestyle, and preferences. It does not invent those category questions — it interprets what your answers reveal.
                   </p>
                 </div>
                 <div className="rounded-[24px] p-4 backdrop-blur-md md:min-w-[320px]" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
@@ -835,7 +826,7 @@ const Questionnaires = () => {
                     Recommendation logic
                   </p>
                   <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    More clarity in your answers means fewer generic suggestions and more specific recommendations around style, gifts, brands, and experiences.
+                    More clarity in your answers means fewer generic suggestions and a sharper read on style, gifts, brands, and experiences once each fixed bank is filled in.
                   </p>
                 </div>
               </div>
