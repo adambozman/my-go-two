@@ -63,6 +63,7 @@ const CATEGORY_COPY: Record<string, { title: string; description: string }> = {
 const Questionnaires = () => {
   const { subscribed } = useAuth();
   const { personalization, profileAnswers, gender, loading: contextLoading, refetch } = usePersonalization();
+  const { setBackState } = useTopBar();
 
   const allQuestions = useMemo(() => buildSprints(gender).flatMap((sprint) => sprint.questions), [gender]);
 
