@@ -558,7 +558,7 @@ const Questionnaires = () => {
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
-                    className={`rounded-[28px] p-6 md:p-7 text-left relative overflow-hidden aspect-square min-h-[220px] ${item.layoutClass}`}
+                    className={`rounded-[28px] p-6 md:p-7 text-left relative overflow-hidden ${item.layoutClass}`}
                     style={{ background: "#d4543a", boxShadow: "0 18px 44px rgba(212,84,58,0.3)" }}
                   >
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", height: "100%", textAlign: "center", padding: "20px", gap: 12 }}>
