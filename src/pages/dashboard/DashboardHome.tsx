@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
-import { ArrowRight, Radio } from "lucide-react";
+import { ArrowUpRight, CalendarDays, Clock3, Search, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import ConnectionPage from "./ConnectionPage";
@@ -37,17 +37,32 @@ const shellCardStyle = {
 const pillButtonStyle = {
   fontFamily: "'Jost', sans-serif",
   color: "var(--swatch-teal)",
-  background: "rgba(var(--swatch-paper-rgb), 0.76)",
-  border: "1px solid rgba(var(--swatch-paper-rgb), 0.88)",
-  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.7)",
+  background: "rgba(255,255,255,0.6)",
+  border: "1px solid rgba(255,255,255,0.78)",
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.76)",
 } as const;
+
+function formatRelativeDateLabel(value?: string | Date | null) {
+  if (!value) return "Just updated";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "Just updated";
+
+  const diffMs = date.getTime() - Date.now();
+  const diffDays = Math.round(diffMs / 86400000);
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Tomorrow";
+  if (diffDays > 1) return `In ${diffDays} days`;
+  if (diffDays === -1) return "Yesterday";
+  return `${Math.abs(diffDays)} days ago`;
+}
 
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
-  const showHomeCards = false;
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [homeSearch, setHomeSearch] = useState("");
   const [openConnection, setOpenConnection] = useState<{
     card: ConnectionCard;
     rect: { x: number; y: number; width: number; height: number };
@@ -269,134 +284,296 @@ const DashboardHome = () => {
     setShowAddModal(true);
   }, [canAddAnotherConnection]);
 
+  const sharedFeedItems = useMemo(() => {
+    const realEntries = connections.filter((c) => !c.id.startsWith("placeholder-"));
+    if (realEntries.length) {
+      return realEntries.slice(0, 3).map((connection) => ({
+        id: connection.id,
+        eyebrow: connection.status === "accepted" ? "Connected" : "Invite",
+        title: connection.name,
+        detail: connection.status === "accepted" ? "Profile syncing and preference sharing are active." : "Waiting for them to accept your invite.",
+        meta: formatRelativeDateLabel(connection.updatedAt),
+      }));
+    }
+
+    return [
+      {
+        id: "feed-demo-1",
+        eyebrow: "Connections",
+        title: "Start with one person who matters most.",
+        detail: "Once you add them, this area becomes your shared pulse for updates, reminders, and profile changes.",
+        meta: "Ready when you are",
+      },
+    ];
+  }, [connections]);
+
+  const notableItems = useMemo(() => {
+    if (milestones.length) {
+      return milestones.slice(0, 3).map((milestone) => ({
+        id: milestone.id,
+        eyebrow: milestone.label,
+        title: milestone.person,
+        detail: `${milestone.daysOut} day${milestone.daysOut === 1 ? "" : "s"} away`,
+      }));
+    }
+
+    return [
+      {
+        id: "notable-demo",
+        eyebrow: "Calendar",
+        title: "Your next big date lands here.",
+        detail: "Birthdays, anniversaries, and reminders will float up as soon as they exist.",
+      },
+    ];
+  }, [milestones]);
+
+  const recentActivityItems = useMemo(() => {
+    const milestoneActivity = milestones.slice(0, 5).map((milestone) => ({
+      id: `activity-${milestone.id}`,
+      title: milestone.person,
+      detail: `${milestone.label} is ${milestone.daysOut} day${milestone.daysOut === 1 ? "" : "s"} away.`,
+      meta: formatRelativeDateLabel(milestone.date),
+      accent: milestone.type === "birthday" ? "var(--swatch-cedar-grove)" : "var(--swatch-teal)",
+    }));
+
+    const connectionActivity = connections
+      .filter((c) => !c.id.startsWith("placeholder-"))
+      .slice(0, 4)
+      .map((connection) => ({
+        id: `connection-${connection.id}`,
+        title: connection.name,
+        detail: connection.status === "accepted" ? "Connection is live and ready for recommendations." : "Invite is still pending.",
+        meta: formatRelativeDateLabel(connection.updatedAt),
+        accent: "var(--swatch-viridian-odyssey)",
+      }));
+
+    return [...milestoneActivity, ...connectionActivity].slice(0, 8);
+  }, [connections, milestones]);
+
   return (
     <div className="relative h-full overflow-y-auto">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-0 space-y-4">
-        <div className="grid gap-4 pb-8">
+      <div className="mx-auto max-w-[1480px] px-4 pb-8 md:px-6">
+        <div className="pb-5">
           <GreetingHeader displayName={displayName} />
+        </div>
 
-          {showHomeCards && (
-            <>
-          <div
-            className="relative overflow-hidden rounded-[32px] px-4 py-4 md:px-6 md:py-5"
-            style={{
-              background: "linear-gradient(165deg, rgba(45,104,112,0.14) 0%, rgba(245,233,220,0.5) 100%)",
-              border: "1px solid rgba(45,104,112,0.18)",
-              boxShadow: "0 16px 36px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.64)",
-            }}
-          >
-            <div className="absolute -right-16 top-1/2 h-28 w-28 -translate-y-1/2 rounded-full" style={{ background: "rgba(255,255,255,0.18)" }} />
-            <div className="absolute left-6 top-0 h-px w-24" style={{ background: "rgba(212,84,58,0.4)" }} />
-            <div className="relative flex flex-col gap-3">
-              <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                Connections
-              </p>
-              <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
-            </div>
-          </div>
-
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,100%)] lg:items-start">
-
-            <div
-              className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-3 md:p-4"
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,320px)_minmax(0,1fr)_minmax(0,290px)]">
+          <div className="grid gap-5 xl:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
+            <section
+              className="relative overflow-hidden rounded-[30px] p-5"
               style={{
                 ...shellCardStyle,
-                width: "100%",
+                background: "linear-gradient(165deg, rgba(255,255,255,0.72) 0%, rgba(245,233,220,0.5) 100%)",
+                border: "1px solid rgba(255,255,255,0.85)",
+              }}
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Shared Feed
+                  </p>
+                  <h3 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                    Signals from your people.
+                  </h3>
+                </div>
+                <ArrowUpRight className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
+              </div>
+
+              <div className="space-y-3">
+                {sharedFeedItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-[22px] px-4 py-3"
+                    style={{
+                      background: "rgba(255,255,255,0.52)",
+                      border: "1px solid rgba(255,255,255,0.76)",
+                    }}
+                  >
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                      {item.eyebrow}
+                    </p>
+                    <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                      {item.title}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                      {item.detail}
+                    </p>
+                    <p className="mt-3 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
+                      {item.meta}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section
+              className="relative overflow-hidden rounded-[30px] p-5"
+              style={{
+                ...shellCardStyle,
+                background: "linear-gradient(165deg, rgba(45,104,112,0.12) 0%, rgba(245,233,220,0.46) 100%)",
+                border: "1px solid rgba(45,104,112,0.18)",
+              }}
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Notable
+                  </p>
+                  <h3 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                    What needs you next.
+                  </h3>
+                </div>
+                <Sparkles className="h-4 w-4" style={{ color: "var(--swatch-cedar-grove)" }} />
+              </div>
+
+              <div className="space-y-3">
+                {notableItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-[22px] px-4 py-3"
+                    style={{
+                      background: "rgba(245,233,220,0.58)",
+                      border: "1px solid rgba(255,255,255,0.7)",
+                    }}
+                  >
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      {item.eyebrow}
+                    </p>
+                    <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                      {item.title}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                      {item.detail}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <div className="min-w-0">
+            <section
+              className="rounded-[30px] px-2 py-1 md:px-3"
+              style={{
+                background: "linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 100%)",
+                border: "1px solid rgba(255,255,255,0.45)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.52)",
+              }}
+            >
+              <div className="mb-3 px-3 pt-3">
+                <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  Connections
+                </p>
+                <h2 className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                  Your circle at a glance.
+                </h2>
+              </div>
+              <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
+            </section>
+
+            <section
+              className="mt-5 rounded-[26px] p-3 md:p-4"
+              style={{
+                background: "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(245,233,220,0.56) 100%)",
+                border: "1px solid rgba(255,255,255,0.84)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.92), 0 10px 24px rgba(74,96,104,0.08)",
+              }}
+            >
+              <div className="flex items-center gap-3 rounded-[20px] px-4 py-3" style={{ background: "rgba(255,255,255,0.46)" }}>
+                <Search className="h-4 w-4 shrink-0" style={{ color: "var(--swatch-text-light)" }} />
+                <input
+                  value={homeSearch}
+                  onChange={(event) => setHomeSearch(event.target.value)}
+                  placeholder="Search a person, reminder, date, or idea"
+                  className="w-full border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                  style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+                />
+                <span className="hidden rounded-full px-2 py-1 text-[10px] uppercase tracking-[0.14em] md:inline-flex" style={pillButtonStyle}>
+                  Home Search
+                </span>
+              </div>
+            </section>
+
+            <section
+              className="mt-5 overflow-hidden rounded-[30px] p-3 md:p-4"
+              style={{
+                ...shellCardStyle,
+                background: "linear-gradient(165deg, rgba(45,104,112,0.12) 0%, rgba(245,233,220,0.48) 100%)",
+                border: "1px solid rgba(45,104,112,0.18)",
               }}
             >
               <EventCalendar milestones={milestones} connections={calendarConnections} />
-            </div>
+            </section>
+
+            {showConnectionsPaywall && !canAddAnotherConnection && (
+              <div className="mt-5">
+                <PremiumLockCard
+                  title="More than one connection is Premium"
+                  description="Free is built to show the value. Premium unlocks family, friends, and deeper everyday use."
+                  bullets={[
+                    "Keep one connection free to understand the core experience",
+                    "Unlock multiple connections for family and friends",
+                    "Combine this with reminders, recommendations, and richer preference tracking",
+                  ]}
+                  compact
+                  onDismiss={() => setShowConnectionsPaywall(false)}
+                />
+              </div>
+            )}
           </div>
 
-          {showConnectionsPaywall && !canAddAnotherConnection && (
-            <PremiumLockCard
-              title="More than one connection is Premium"
-              description="Free is built to show the value. Premium unlocks family, friends, and deeper everyday use."
-              bullets={[
-                "Keep one connection free to understand the core experience",
-                "Unlock multiple connections for family and friends",
-                "Combine this with reminders, recommendations, and richer preference tracking",
-              ]}
-              compact
-              onDismiss={() => setShowConnectionsPaywall(false)}
-            />
-          )}
-
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,38%)_minmax(0,62%)] lg:items-start">
-            <div
-              className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-6"
-              style={shellCardStyle}
-            >
-              <div className="flex h-full flex-col justify-between">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                    Social Access
-                  </p>
-                  <h3 className="mt-4 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
-                    Activity and permissions.
-                  </h3>
-                </div>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {["Public lists", "Activity access", "Connections only"].map((label) => (
-                    <span key={label} className="rounded-full px-3 py-1.5 text-[11px]" style={pillButtonStyle}>
-                      {label}
-                    </span>
-                  ))}
-                </div>
+          <aside
+            className="overflow-hidden rounded-[30px] p-4"
+            style={{
+              ...shellCardStyle,
+              background: "linear-gradient(180deg, rgba(255,255,255,0.76) 0%, rgba(245,233,220,0.56) 100%)",
+              border: "1px solid rgba(255,255,255,0.84)",
+            }}
+          >
+            <div className="flex items-center justify-between border-b border-white/50 pb-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  Recent Activity
+                </p>
+                <h3 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                  The long view.
+                </h3>
               </div>
+              <CalendarDays className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
             </div>
 
-            <div className="grid gap-4 md:grid-cols-[minmax(0,58%)_minmax(0,42%)]">
-              <div
-                className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-6"
-                style={shellCardStyle}
-              >
-                <div className="flex h-full flex-col">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-[14px]" style={{ background: "rgba(var(--swatch-paper-rgb), 0.62)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.86)" }}>
-                      <Radio className="h-4 w-4" style={{ color: "var(--swatch-cedar-grove)" }} />
+            <div className="mt-4 space-y-3 xl:max-h-[calc(100vh-240px)] xl:overflow-y-auto xl:pr-1">
+              {recentActivityItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-[22px] px-4 py-4"
+                  style={{
+                    background: "rgba(255,255,255,0.54)",
+                    border: "1px solid rgba(255,255,255,0.78)",
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <span
+                      className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{ background: item.accent }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[17px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                        {item.title}
+                      </p>
+                      <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                        {item.detail}
+                      </p>
+                      <div className="mt-3 flex items-center gap-2 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
+                        <Clock3 className="h-3.5 w-3.5" />
+                        <span>{item.meta}</span>
+                      </div>
                     </div>
-                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                      Shared Feed
-                    </p>
-                  </div>
-                  <h3 className="mt-4 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
-                    Public lists and visible activity.
-                  </h3>
-                  <div className="mt-auto pt-6">
-                    <button className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[11px] uppercase tracking-[0.14em]" style={pillButtonStyle}>
-                      Feed Coming Here
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </button>
                   </div>
                 </div>
-              </div>
-
-              <div
-                className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-6"
-                style={shellCardStyle}
-              >
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Notable
-                  </p>
-                  <h3 className="mt-4 text-[26px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
-                    One important thing, surfaced fast.
-                  </h3>
-                  <div className="mt-5 rounded-[24px] px-4 py-4" style={{ background: "rgba(var(--swatch-paper-rgb), 0.54)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.82)" }}>
-                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                      Next Up
-                    </p>
-                    <p className="mt-3 text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                      A spotlight card for one upcoming date, one shared list, or one connection update.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
-          </div>
-            </>
-          )}
+          </aside>
         </div>
       </div>
 
