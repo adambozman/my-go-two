@@ -316,22 +316,23 @@ body {
 .logo-text {
   display: inline-flex;
   align-items: baseline;
-  gap: 0;
+  gap: 0.04em;
   font-size: 46px;
+  line-height: 1;
 }
 .logo-text .go {
-  position: relative;
-  top: 0.05em;
   font-family: 'Dancing Script', cursive;
   font-weight: 600;
   color: #d4543a;
   font-size: 1em;
+  line-height: 1;
 }
 .logo-text .two {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 600;
   color: #2d6870;
   font-size: 1.26em;
+  line-height: 1;
 }
 @media (min-width: 768px) {
   .logo-text {

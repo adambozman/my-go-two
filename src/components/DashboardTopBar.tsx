@@ -163,8 +163,8 @@ export function DashboardTopBar() {
           onChange={handleUpload}
         />
 
-        {/* GoTwo logo — absolute center */}
-        <GoTwoText className="absolute left-1/2 -translate-x-1/2" />
+        {/* GoTwo logo — left aligned */}
+        <GoTwoText className="absolute left-0 translate-x-0" />
 
         {/* Settings + Bell — right */}
         <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0">
