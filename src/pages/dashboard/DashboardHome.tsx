@@ -285,7 +285,7 @@ const DashboardHome = () => {
 
             {/* Connections card */}
             <div
-              className="lg:col-span-8 card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5"
+              className="lg:col-span-8 card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5 mt-[90px]"
               style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
             >
               <div className="relative">
@@ -312,7 +312,7 @@ const DashboardHome = () => {
             />
           )}
 
-          <div className="grid gap-4 lg:grid-cols-12">
+          <div className="grid gap-4 lg:grid-cols-12 mt-[90px]">
             <div className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}>
               <EventCalendar milestones={milestones} />
             </div>
