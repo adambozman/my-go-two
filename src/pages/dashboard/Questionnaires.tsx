@@ -536,7 +536,7 @@ const Questionnaires = () => {
       <div className="h-full overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4" style={{ gridAutoRows: "280px" }}>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4" style={{ gridAutoRows: "calc((100vh - var(--header-height) - var(--footer-height) - 80px) / 3)" }}>
             {[
               { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[0],  layoutClass: "md:col-span-3" },
               { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[1],  layoutClass: "md:col-span-3" },
