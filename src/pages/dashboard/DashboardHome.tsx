@@ -13,6 +13,13 @@ import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { AddConnectionModal } from "@/components/home/AddConnectionModal";
 import PremiumLockCard from "@/components/PremiumLockCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ConnectionCard {
   id: string;
@@ -75,6 +82,7 @@ const DashboardHome = () => {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [homeSearch, setHomeSearch] = useState("");
+  const [searchScope, setSearchScope] = useState("everyone");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [mySearchResults, setMySearchResults] = useState<HomeSearchResult[]>([]);
@@ -270,6 +278,12 @@ const DashboardHome = () => {
     .filter((c) => !c.id.startsWith("placeholder-") && c.partnerId)
     .map((c) => ({ id: c.partnerId!, name: c.name }));
   const visibleConnectionEntries = directoryEntries.slice(0, 5);
+  const liveConnections = connections.filter((connection) => !connection.id.startsWith("placeholder-") && connection.partnerId);
+  const searchScopeLabel = searchScope === "everyone"
+    ? "Everyone"
+    : searchScope === "self"
+      ? "You"
+      : liveConnections.find((connection) => connection.partnerId === searchScope)?.name || "Connection";
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
@@ -394,7 +408,6 @@ const DashboardHome = () => {
     setIsSearchOpen(true);
     setSearchLoading(true);
 
-    const liveConnections = connections.filter((connection) => !connection.id.startsWith("placeholder-") && connection.partnerId);
     const partnerIds = liveConnections.map((connection) => connection.partnerId!).filter(Boolean);
     const ownerNames = new Map<string, string>();
 
@@ -403,24 +416,36 @@ const DashboardHome = () => {
       if (connection.partnerId) ownerNames.set(connection.partnerId, connection.name);
     });
 
+    const includeSelf = searchScope === "everyone" || searchScope === "self";
+    const scopedPartnerIds =
+      searchScope === "everyone"
+        ? partnerIds
+        : searchScope === "self"
+          ? []
+          : [searchScope];
+
     const [myEntriesRes, myListsRes, circleEntriesRes] = await Promise.all([
-      supabase
-        .from("card_entries")
-        .select("id, user_id, entry_name, group_name, card_key")
-        .eq("user_id", user.id)
-        .or(`group_name.ilike.%${query}%,entry_name.ilike.%${query}%`)
-        .limit(20),
-      supabase
-        .from("lists")
-        .select("id, user_id, title, description")
-        .eq("user_id", user.id)
-        .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
-        .limit(10),
-      partnerIds.length
+      includeSelf
         ? supabase
             .from("card_entries")
             .select("id, user_id, entry_name, group_name, card_key")
-            .in("user_id", partnerIds)
+            .eq("user_id", user.id)
+            .or(`group_name.ilike.%${query}%,entry_name.ilike.%${query}%`)
+            .limit(20)
+        : Promise.resolve({ data: [] as any[] }),
+      includeSelf
+        ? supabase
+            .from("lists")
+            .select("id, user_id, title, description")
+            .eq("user_id", user.id)
+            .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
+            .limit(10)
+        : Promise.resolve({ data: [] as any[] }),
+      scopedPartnerIds.length
+        ? supabase
+            .from("card_entries")
+            .select("id, user_id, entry_name, group_name, card_key")
+            .in("user_id", scopedPartnerIds)
             .or(`group_name.ilike.%${query}%,entry_name.ilike.%${query}%`)
             .limit(30)
         : Promise.resolve({ data: [] as any[] }),
@@ -438,7 +463,7 @@ const DashboardHome = () => {
     setMySearchResults(nextMine);
     setCircleSearchResults(nextCircle);
     setSearchLoading(false);
-  }, [buildEntryResult, buildListResult, connections, homeSearch, user]);
+  }, [buildEntryResult, buildListResult, homeSearch, liveConnections, searchScope, user]);
 
   return (
     <div className="relative h-full overflow-y-auto">
@@ -606,16 +631,33 @@ const DashboardHome = () => {
             </section>
 
             <section
-              className="mt-3 rounded-[28px] p-4 md:p-5"
+              className="mt-3 rounded-[28px] p-3 md:p-4"
               style={{
                 background: "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(245,233,220,0.56) 100%)",
                 border: "1px solid rgba(255,255,255,0.84)",
                 boxShadow: "inset 0 1px 0 rgba(255,255,255,0.92), 0 10px 24px rgba(74,96,104,0.08)",
               }}
             >
-              <div className="flex items-center gap-4 rounded-[22px] px-5 py-4 md:px-6 md:py-5" style={{ background: "rgba(255,255,255,0.46)" }}>
+              <div className="mb-3">
+                <Select value={searchScope} onValueChange={setSearchScope}>
+                  <SelectTrigger className="h-11 rounded-[18px] border border-white/75 bg-[rgba(255,255,255,0.46)] px-4 text-sm shadow-none focus:ring-1">
+                    <SelectValue placeholder="Choose who to search" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="everyone">Everyone</SelectItem>
+                    <SelectItem value="self">You</SelectItem>
+                    {liveConnections.map((connection) => (
+                      <SelectItem key={connection.id} value={connection.partnerId!}>
+                        {connection.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-3 rounded-[22px] px-4 py-3 md:px-5 md:py-4" style={{ background: "rgba(255,255,255,0.46)" }}>
                 <button onClick={runHomeSearch} aria-label="Search home" className="shrink-0">
-                  <Search className="h-5 w-5" style={{ color: "var(--swatch-text-light)" }} />
+                  <Search className="h-4 w-4" style={{ color: "var(--swatch-text-light)" }} />
                 </button>
                 <input
                   value={homeSearch}
@@ -627,7 +669,7 @@ const DashboardHome = () => {
                     }
                   }}
                   placeholder="Search a person, reminder, date, or idea"
-                  className="w-full border-0 bg-transparent text-base outline-none placeholder:text-muted-foreground"
+                  className="w-full border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                   style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
                 />
               </div>
@@ -741,12 +783,15 @@ const DashboardHome = () => {
                 <h2 className="mt-2 text-[32px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
                   Results for "{homeSearch.trim()}"
                 </h2>
+                <p className="mt-2 text-sm" style={{ color: "var(--swatch-text-light)" }}>
+                  Scope: {searchScopeLabel}
+                </p>
               </div>
 
               <div className="grid max-h-[calc(85vh-110px)] gap-0 overflow-y-auto md:grid-cols-2">
                 <section className="border-b border-white/60 px-6 py-5 md:border-b-0 md:border-r">
                   <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                    Your Results
+                    {searchScope === "self" ? "Your Results" : searchScope === "everyone" ? "Your Results" : "Your Results"}
                   </p>
                   <div className="mt-4 space-y-3">
                     {searchLoading && <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>Searching...</p>}
@@ -785,7 +830,7 @@ const DashboardHome = () => {
 
                 <section className="px-6 py-5">
                   <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Your Circle
+                    {searchScope === "self" ? "Your Circle" : searchScope === "everyone" ? "Your Circle" : searchScopeLabel}
                   </p>
                   <div className="mt-4 space-y-3">
                     {searchLoading && <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>Searching your circle...</p>}
