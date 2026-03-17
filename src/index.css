@@ -242,9 +242,9 @@ body {
 }
 @media (min-width: 768px) {
   :root {
-    --header-height: 160px;
+    --header-height: 230px;
     --header-icons-row-height: 72px;
-    --header-divider-margin-top: 18px;
+    --header-divider-margin-top: 100px;
     --header-tagline-margin-top: 12px;
   }
   .header-tagline-quote {
@@ -386,7 +386,7 @@ body {
 
 @media (min-width: 1024px) {
   :root {
-    --header-height: 160px;
+    --header-height: 230px;
     --header-tagline-margin-top: 12px;
   }
   .section-header {
