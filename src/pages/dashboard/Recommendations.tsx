@@ -242,10 +242,10 @@ const Recommendations = () => {
               <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 How it works
               </p>
-              <p className="text-[34px] leading-[0.96] mb-4 max-w-[14ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              <p className="text-[34px] leading-[0.96] mb-5 max-w-[14ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
                 Built from your profile, not a trending feed.
               </p>
-              <p className="text-[14px] leading-relaxed mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              <p className="text-[14px] leading-relaxed mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>
                 Every pick is generated from your Know Me answers. The more you fill in, the sharper the read.
               </p>
               <div className="mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
