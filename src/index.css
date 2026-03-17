@@ -242,10 +242,10 @@ body {
 }
 @media (min-width: 768px) {
   :root {
-    --header-height: 230px;
+    --header-height: 160px;
     --header-icons-row-height: 72px;
     --header-divider-margin-top: 18px;
-    --header-tagline-margin-top: 16px;
+    --header-tagline-margin-top: 12px;
   }
   .header-tagline-quote {
     font-size: 20px;
@@ -386,8 +386,8 @@ body {
 
 @media (min-width: 1024px) {
   :root {
-    --header-height: 230px;
-    --header-tagline-margin-top: 14px;
+    --header-height: 160px;
+    --header-tagline-margin-top: 12px;
   }
   .section-header {
     font-size: 29px;
