@@ -200,9 +200,7 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
                 <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.68)" }}>
                   Calendar
                 </p>
-                <p className="mt-2 text-[28px] leading-[0.92]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-paper)" }}>
-                  A clearer month.
-                </p>
+
               </div>
               <div className="flex items-center gap-1 rounded-full px-1.5 py-1" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.12)" }}>
                 <button onClick={() => changeMonth(-1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-paper)" }}>
@@ -220,20 +218,9 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
                   <p className="text-[18px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-paper)" }}>
                     {MONTH_NAMES[month]} {year}
                   </p>
-                  <p className="mt-1 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.68)" }}>
-                    Upcoming days glow brighter.
-                  </p>
+
                 </div>
-                {upcoming[0] && (
-                  <div className="rounded-[18px] px-3 py-2 text-right" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.08)" }}>
-                    <p className="text-[9px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.6)" }}>
-                      Next up
-                    </p>
-                    <p className="text-[14px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-paper)" }}>
-                      {upcoming[0].daysOut}d
-                    </p>
-                  </div>
-                )}
+
               </div>
             </div>
           </div>
