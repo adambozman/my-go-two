@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Bell, Settings, Camera, Upload, Trash2, Database, Megaphone, Home, Heart, Sparkles, ClipboardList } from "lucide-react";
+import { Bell, Settings, Upload, Trash2, ChevronDown, LogOut, Home, Heart, Sparkles, ClipboardList } from "lucide-react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 
 import { useTopBar } from "@/contexts/TopBarContext";
@@ -33,12 +34,14 @@ const navItems = [
 export function DashboardTopBar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { toast } = useToast();
   const { backState } = useTopBar();
   const rotatingQuote = useRotatingQuote();
   const [unreadCount, setUnreadCount] = useState(0);
-  const [, setAvatarUrl] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState("My Account");
+  const [initials, setInitials] = useState("?");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -51,6 +54,14 @@ export function DashboardTopBar() {
         .eq("user_id", user.id)
         .single();
       if (data) {
+        setAvatarUrl(data.avatar_url);
+        const resolvedName = data.display_name || user.user_metadata?.display_name || user.email || "My Account";
+        setDisplayName(resolvedName);
+        const parts = resolvedName.trim().split(/\s+/).filter(Boolean);
+        const nextInitials = parts.length >= 2
+          ? `${parts[0][0]}${parts[parts.length - 1][0]}`
+          : (resolvedName[0] || "?");
+        setInitials(nextInitials.toUpperCase());
       }
     };
 
@@ -124,6 +135,16 @@ export function DashboardTopBar() {
     toast({ title: "Photo removed" });
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate("/login");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to sign out right now.";
+      toast({ title: "Sign out failed", description: message, variant: "destructive" });
+    }
+  };
+
   const isMyGoTwo = location.pathname === "/dashboard/my-go-two";
   const activeTagline = taglines[location.pathname] ?? taglines["/dashboard"];
   const showQuote = isMyGoTwo;
@@ -183,15 +204,87 @@ export function DashboardTopBar() {
           })}
         </nav>
 
-        {/* Settings + Bell — right */}
-        <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0">
-          <button
-            onClick={() => navigate("/dashboard/settings")}
-            className="relative rounded-full card-design-neumorph flex items-center justify-center"
-            style={{ width: "var(--header-icon-btn-size)", height: "var(--header-icon-btn-size)" }}
-          >
-            <Settings className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground" />
-          </button>
+        <div className="flex shrink-0 items-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="group flex items-center gap-3 rounded-full border border-white/70 px-2.5 py-1.5 text-left transition-all hover:border-white hover:shadow-[0_10px_28px_rgba(74,96,104,0.12)] focus:outline-none"
+                style={{
+                  background: "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(245,233,220,0.56) 100%)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.92), 0 6px 18px rgba(74,96,104,0.08)",
+                  backdropFilter: "blur(8px)",
+                }}
+              >
+                <Avatar className="h-8 w-8 border border-white/70 shadow-[0_4px_10px_rgba(30,74,82,0.12)]">
+                  <AvatarImage src={avatarUrl ?? undefined} alt={displayName} className="object-cover" />
+                  <AvatarFallback
+                    className="text-[11px] font-semibold"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(45,104,112,0.92) 0%, rgba(30,74,82,0.92) 100%)",
+                      color: "var(--swatch-cream-light)",
+                    }}
+                  >
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="hidden min-w-0 sm:block">
+                  <p
+                    className="truncate text-sm font-medium leading-none"
+                    style={{ color: "var(--swatch-viridian-odyssey)", maxWidth: "9rem", fontFamily: "'Jost', sans-serif" }}
+                  >
+                    {displayName}
+                  </p>
+                </div>
+                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-56 rounded-2xl border border-white/70 p-2"
+              style={{
+                background: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(245,233,220,0.9) 100%)",
+                boxShadow: "0 18px 42px rgba(30,74,82,0.14), inset 0 1px 0 rgba(255,255,255,0.88)",
+                backdropFilter: "blur(14px)",
+              }}
+            >
+              <div className="mb-2 flex items-center gap-3 rounded-2xl px-2 py-2">
+                <Avatar className="h-10 w-10 border border-white/70">
+                  <AvatarImage src={avatarUrl ?? undefined} alt={displayName} className="object-cover" />
+                  <AvatarFallback
+                    className="text-xs font-semibold"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(45,104,112,0.92) 0%, rgba(30,74,82,0.92) 100%)",
+                      color: "var(--swatch-cream-light)",
+                    }}
+                  >
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                    {displayName}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">{user?.email}</p>
+                </div>
+              </div>
+              <DropdownMenuItem onClick={() => navigate("/dashboard/settings")} className="rounded-xl">
+                <Settings className="mr-2 h-4 w-4" />
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => fileInputRef.current?.click()} className="rounded-xl">
+                <Upload className="mr-2 h-4 w-4" />
+                Upload photo
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleRemovePhoto} className="rounded-xl">
+                <Trash2 className="mr-2 h-4 w-4" />
+                Remove photo
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleSignOut} className="rounded-xl text-destructive focus:text-destructive">
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
