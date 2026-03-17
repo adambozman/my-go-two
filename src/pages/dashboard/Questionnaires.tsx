@@ -818,7 +818,7 @@ const Questionnaires = () => {
                     It learns from patterns, not one answer.
                   </p>
                   <p className="text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    The AI combines your long-form profile answers, your rapid This or That instinct picks, and the signals inside your spending, style, and gifting preferences. It uses that mix to decide which questions matter next and what products, brands, and ideas fit you best.
+                    The AI combines your long-form profile answers and your future fixed This or That category answers to read patterns across your style, gifting, lifestyle, and preferences. It does not invent those category questions — it interprets what your answers reveal.
                   </p>
                 </div>
                 <div className="rounded-[24px] p-4 backdrop-blur-md md:min-w-[320px]" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
@@ -826,7 +826,7 @@ const Questionnaires = () => {
                     Recommendation logic
                   </p>
                   <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    More clarity in your answers means fewer generic suggestions and more specific recommendations around style, gifts, brands, and experiences.
+                    More clarity in your answers means fewer generic suggestions and a sharper read on style, gifts, brands, and experiences once each fixed bank is filled in.
                   </p>
                 </div>
               </div>
