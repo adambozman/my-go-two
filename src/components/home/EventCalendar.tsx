@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Plus, CalendarDays, Gift, Heart, Bell, Sparkles, Trash2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, CalendarDays, Gift, Heart, Bell, Sparkles, Trash2, X, Star } from "lucide-react";
 import type { Milestone } from "./MilestoneCountdown";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,6 +23,7 @@ interface PersistedCalendarEvent {
   id: string;
   source_type: CalendarEventSource;
   title: string;
+  user_id: string;
 }
 
 interface CalendarItem {
@@ -96,6 +97,10 @@ function buildOccurrenceDate(milestone: Milestone, year: number) {
   return new Date(year, milestone.month, milestone.day, 12, 0, 0);
 }
 
+function isPriorityEvent(item: Pick<CalendarItem, "type">) {
+  return item.type === "birthday" || item.type === "anniversary" || item.type === "reminder";
+}
+
 export function EventCalendar({ milestones, connections }: EventCalendarProps) {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -130,10 +135,12 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
 
     setLoadingEvents(true);
 
+    const relatedUserIds = Array.from(new Set([user.id, ...connections.map((connection) => connection.id)]));
+
     supabase
       .from("calendar_events")
-      .select("id, title, description, date, event_type, source_type, connection_user_id, created_at")
-      .eq("user_id", user.id)
+      .select("id, title, description, date, event_type, source_type, connection_user_id, created_at, user_id")
+      .in("user_id", relatedUserIds)
       .order("date", { ascending: true })
       .then(({ data, error }) => {
         if (cancelled) return;
@@ -152,7 +159,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
     return () => {
       cancelled = true;
     };
-  }, [toast, user]);
+  }, [connections, toast, user]);
 
   useEffect(() => {
     if (
@@ -191,23 +198,31 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
     return persistedEvents.map((event) => {
       const [eventYear, eventMonth, eventDay] = event.date.split("-").map(Number);
       const eventDate = new Date(eventYear, eventMonth - 1, eventDay, 12, 0, 0);
-      const connectionName = connections.find((connection) => connection.id === event.connection_user_id)?.name;
+      const ownerConnectionName = connections.find((connection) => connection.id === event.user_id)?.name;
+      const linkedConnectionName = connections.find((connection) => connection.id === event.connection_user_id)?.name;
+      const isOwnedByCurrentUser = event.user_id === user?.id;
+      const sourceType = isOwnedByCurrentUser ? event.source_type : "connection";
+      const personName = !isOwnedByCurrentUser
+        ? ownerConnectionName ?? "Connection"
+        : event.source_type === "connection"
+          ? linkedConnectionName ?? "Connection"
+          : "You";
 
       return {
         id: event.id,
         title: event.title,
         description: event.description,
         type: event.event_type,
-        sourceType: event.source_type,
-        personName: connectionName ?? "You",
+        sourceType,
+        personName,
         date: eventDate,
         dateKey: event.date,
         color: TYPE_META[event.event_type].color,
-        isReadOnly: false,
+        isReadOnly: !isOwnedByCurrentUser,
         connectionUserId: event.connection_user_id,
       } satisfies CalendarItem;
     });
-  }, [connections, persistedEvents]);
+  }, [connections, persistedEvents, user?.id]);
 
   const monthItems = useMemo(() => {
     return [...milestoneItems, ...savedItems].filter((item) => item.date.getFullYear() === year && item.date.getMonth() === month);
@@ -265,7 +280,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
     const { data, error } = await supabase
       .from("calendar_events")
       .insert(payload)
-      .select("id, title, description, date, event_type, source_type, connection_user_id, created_at")
+      .select("id, title, description, date, event_type, source_type, connection_user_id, created_at, user_id")
       .single();
 
     setSavingEvent(false);
@@ -332,7 +347,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
         <div className="absolute -bottom-14 -left-10 h-28 w-28 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
 
         <div className="relative space-y-3">
-          <div className="flex items-center justify-between gap-3 rounded-[22px] px-4 py-3" style={{ background: "rgba(var(--swatch-paper-rgb), 0.5)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.10)", boxShadow: "0 8px 18px rgba(30,74,82,0.07)" }}>
+          <div className="flex items-start justify-between gap-3 rounded-[22px] px-4 py-3" style={{ background: "rgba(var(--swatch-paper-rgb), 0.5)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.10)", boxShadow: "0 8px 18px rgba(30,74,82,0.07)" }}>
             <div className="min-w-0">
               <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                 Connection Calendar
@@ -349,6 +364,26 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                     <ChevronRight className="h-3.5 w-3.5" />
                   </button>
                 </div>
+              </div>
+            </div>
+
+            <div className="hidden shrink-0 rounded-[18px] px-3 py-2 md:block" style={{ background: "rgba(var(--swatch-paper-rgb), 0.72)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.10)" }}>
+              <p className="text-[9px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                Legend
+              </p>
+              <div className="mt-2 flex items-center gap-3 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="h-1.5 w-6 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
+                  Connection
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="h-1.5 w-6 rounded-full" style={{ background: "var(--swatch-teal)" }} />
+                  My event
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Star className="h-3.5 w-3.5 fill-current" style={{ color: "#f2c94c" }} />
+                  Priority
+                </span>
               </div>
             </div>
           </div>
@@ -376,6 +411,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                     const isSelected = key === selectedKey;
                     const connectionCount = events.filter((event) => event.sourceType === "connection").length;
                     const selfCount = events.filter((event) => event.sourceType === "self").length;
+                    const hasPriorityEvent = events.some((event) => isPriorityEvent(event));
 
                       return (
                         <button
@@ -403,9 +439,9 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                           <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: isToday || isSelected ? 700 : 500, color: "var(--swatch-paper)" }}>
                             {day}
                           </span>
-                          {events.length > 0 && (
-                            <span className="rounded-full px-1.5 py-0.5 text-[9px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-paper)", background: "rgba(var(--swatch-paper-rgb), 0.14)" }}>
-                              {events.length}
+                          {hasPriorityEvent && (
+                            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full" style={{ background: "rgba(242, 201, 76, 0.16)", color: "#f2c94c" }}>
+                              <Star className="h-2.5 w-2.5 fill-current" />
                             </span>
                           )}
                         </div>
@@ -418,9 +454,9 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                             </div>
                           )}
                           {!!events.length && (
-                            <div className="flex items-center justify-center gap-1">
-                              {!!connectionCount && <span className="h-3 w-3 rounded-[4px]" style={{ background: "var(--swatch-cedar-grove)" }} />}
-                              {!!selfCount && <span className="h-3 w-3 rounded-[4px]" style={{ background: "var(--swatch-teal)" }} />}
+                            <div className="flex w-full flex-col items-center justify-center gap-1 pt-1">
+                              {!!connectionCount && <span className="h-1.5 w-7 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />}
+                              {!!selfCount && <span className="h-1.5 w-7 rounded-full" style={{ background: "var(--swatch-teal)" }} />}
                             </div>
                           )}
                         </div>
