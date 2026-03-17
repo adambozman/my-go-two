@@ -139,7 +139,7 @@ export function DashboardTopBar() {
       }}
     >
       <div className="relative flex items-center justify-between gap-2 md:gap-4" style={{ height: "var(--header-icons-row-height)" }}>
-        {/* Back button or Profile circle — left */}
+        {/* Back button or spacer — left */}
         {backState ? (
           <button
             onClick={backState.onBack}
@@ -152,55 +152,7 @@ export function DashboardTopBar() {
             </span>
           </button>
         ) : (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="relative shrink-0 focus:outline-none">
-              <Avatar className="cursor-pointer" style={{ width: "var(--header-avatar-size)", height: "var(--header-avatar-size)" }}>
-                {avatarUrl ? <AvatarImage src={avatarUrl} alt="Profile" /> : null}
-                <AvatarFallback
-                  className="text-xs md:text-sm font-semibold"
-                  style={{ background: 'var(--swatch-viridian-odyssey)', color: '#fff' }}
-                >
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              {/* Camera icon overlay */}
-              <span
-                className="absolute -bottom-0.5 -right-0.5 w-[16px] h-[16px] md:w-[18px] md:h-[18px] rounded-full flex items-center justify-center border-2"
-                style={{
-                  background: 'var(--swatch-viridian-odyssey)',
-                  borderColor: 'var(--swatch-cream-light)',
-                }}
-              >
-                <Camera className="w-[8px] h-[8px] md:w-[10px] md:h-[10px] text-white" />
-              </span>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-44">
-            <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
-              <Upload className="mr-2 h-4 w-4" />
-              Upload Photo
-            </DropdownMenuItem>
-            {avatarUrl && (
-              <DropdownMenuItem onClick={handleRemovePhoto}>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Remove Photo
-              </DropdownMenuItem>
-            )}
-            {user?.email === "adambozman@gmail.com" && (
-              <>
-                <DropdownMenuItem onClick={() => navigate("/dashboard/data-sync")}>
-                  <Database className="mr-2 h-4 w-4" />
-                  Data Sync
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/dashboard/sponsored")}>
-                  <Megaphone className="mr-2 h-4 w-4" />
-                  Sponsored Ads
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <div className="shrink-0" style={{ width: "var(--header-avatar-size)", height: "var(--header-avatar-size)" }} />
         )}
 
         <input
