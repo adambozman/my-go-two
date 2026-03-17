@@ -196,7 +196,7 @@ const Recommendations = () => {
               <p className="text-[9px] uppercase tracking-[0.18em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                 Your AI knows you as
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-col gap-2">
                 {[
                   { label: "How it works", offset: false },
                   { label: "Style Strategist", offset: true },
@@ -205,13 +205,13 @@ const Recommendations = () => {
                 ].map(({ label, offset }) => (
                   <div
                     key={label}
-                    className={`rounded-full px-3 py-1.5 text-[11px]${offset ? " ml-4" : ""}`}
+                    className={`rounded-full px-3 py-1.5 text-[11px] self-start${offset ? " ml-6" : ""}`}
                     style={{
                       fontFamily: "'Jost', sans-serif",
                       background: "rgba(255,255,255,0.3)",
                       border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)",
                       color: "var(--swatch-viridian-odyssey)",
-                      display: "inline-block",
+                      whiteSpace: "nowrap",
                     }}
                   >
                     {label}
