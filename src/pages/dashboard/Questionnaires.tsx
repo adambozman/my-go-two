@@ -661,10 +661,7 @@ const Questionnaires = () => {
                       </p>
                     </div>
 
-                    <div className="relative flex items-end justify-between gap-4">
-                      <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                        {category.visibleAnswered}/{category.visibleTotal} answered
-                      </span>
+                    <div className="relative flex items-end justify-end gap-4">
                       <span className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                         {isDisabled ? "Unavailable" : "Open"}
                       </span>
