@@ -16,13 +16,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useTopBar } from "@/contexts/TopBarContext";
 import { useRotatingQuote } from "@/hooks/useRotatingQuote";
 
-const taglines: Record<string, string> = {
-  "/dashboard": "The people who matter most.",
-  "/dashboard/recommendations": "AI-curated picks, just for you.",
-  "/dashboard/questionnaires": "The more you share, the better they know you.",
-  "/dashboard/search": "Find anything, for anyone.",
-};
-
 const navItems = [
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
   { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
@@ -146,14 +139,14 @@ export function DashboardTopBar() {
   };
 
   const isMyGoTwo = location.pathname === "/dashboard/my-go-two";
-  const activeTagline = taglines[location.pathname] ?? taglines["/dashboard"];
   const showQuote = isMyGoTwo;
+  const collapsedHeaderHeight = "calc(var(--header-top-padding) + var(--header-icons-row-height) + var(--header-divider-margin-top) + 1px)";
 
   return (
     <header
       className="px-4 md:px-8 shrink-0 flex flex-col"
       style={{
-        height: "var(--header-height)",
+        height: showQuote ? "var(--header-height)" : collapsedHeaderHeight,
         paddingTop: "var(--header-top-padding)",
       }}
     >
