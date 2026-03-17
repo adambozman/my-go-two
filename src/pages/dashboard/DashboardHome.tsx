@@ -263,7 +263,7 @@ const DashboardHome = () => {
 
   return (
     <div className="relative h-full overflow-y-auto">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6 space-y-4">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-0 space-y-4">
         <div className="grid gap-4 pb-8">
 
           {/* Row 1: Greeting card + Connections card */}
