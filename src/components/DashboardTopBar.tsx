@@ -240,23 +240,21 @@ export function DashboardTopBar() {
       <div
         className="header-tagline-wrapper"
         style={{
-          marginTop: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? 0 : "var(--header-tagline-margin-top)",
-          opacity: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? 0 : 1,
-          visibility: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? "hidden" : "visible",
-          height: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? 0 : "auto",
+          marginTop: backState ? 0 : "var(--header-tagline-margin-top)",
+          opacity: backState ? 0 : 1,
+          visibility: backState ? "hidden" : "visible",
+          height: backState ? 0 : "auto",
           overflow: "hidden",
-          transition: `opacity ${isMyGoTwo ? "0.8s" : "0s"} ease`,
+          transition: "opacity 0.8s ease",
           textAlign: "center",
         }}
       >
-        {!backState && (isMyGoTwo ? (
+        {!backState && location.pathname !== "/dashboard/recommendations" && (
           <>
             <p className="header-tagline-quote">"{rotatingQuote.text}"</p>
             <p className="header-tagline-author">— {rotatingQuote.author}</p>
           </>
-        ) : (
-          <p className="header-tagline-quote" style={{ fontStyle: "normal" }}>{activeTagline}</p>
-        ))}
+        )}
       </div>
     </header>
   );
