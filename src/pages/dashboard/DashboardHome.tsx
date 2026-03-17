@@ -191,7 +191,7 @@ const DashboardHome = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 24 }}
-            className="lg:col-span-5 card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden"
+            className="lg:col-span-5 card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden flex flex-col justify-start"
             style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
             <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
@@ -199,7 +199,7 @@ const DashboardHome = () => {
               <p className="text-[10px] uppercase tracking-[0.22em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 The Vibe Today{firstName ? `, ${firstName}` : ""}
               </p>
-              <h1 className="text-[44px] md:text-[56px] leading-[0.9]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              <h1 className="text-[28px] md:text-[34px] leading-[1.0]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
                 Your<br />Dashboard
               </h1>
               <p className="text-[14px] leading-relaxed max-w-[38ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
