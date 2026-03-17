@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
+import { ArrowRight, CalendarDays, Radio, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import ConnectionPage from "./ConnectionPage";
@@ -28,6 +29,18 @@ const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
   { id: "placeholder-mom", name: "Mom", image: "", email: "", status: "placeholder" },
   { id: "placeholder-dad", name: "Dad", image: "", email: "", status: "placeholder" },
 ];
+
+const shellCardStyle = {
+  boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
+} as const;
+
+const pillButtonStyle = {
+  fontFamily: "'Jost', sans-serif",
+  color: "var(--swatch-teal)",
+  background: "rgba(var(--swatch-paper-rgb), 0.76)",
+  border: "1px solid rgba(var(--swatch-paper-rgb), 0.88)",
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.7)",
+} as const;
 
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
@@ -259,33 +272,105 @@ const DashboardHome = () => {
     <div className="relative h-full overflow-y-auto">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-0 space-y-4">
         <div className="grid gap-4 pb-8">
-
-          {/* Row 1: Greeting card alone — top left, natural size */}
-          <div className="flex">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_380px]">
             <div
-              className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5"
-              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)", width: "fit-content", minWidth: 320, maxWidth: 420 }}
+              className="card-design-overlay-teal relative overflow-hidden rounded-[32px] p-6 md:p-7"
+              style={shellCardStyle}
             >
-              <div className="absolute -right-8 -top-8 h-36 w-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
+              <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
               <div className="relative">
                 <GreetingHeader displayName={displayName} connectionCount={realConnections} />
-                <p className="mt-3 text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Keep your closest people, upcoming dates, and fresh updates in one calm place built for everyday use.
+                <p className="mt-4 max-w-[34rem] text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Home should feel like the front table at your favorite place: your people, your dates, and the social energy around Go Two all in one refined view.
                 </p>
+                <div className="mt-6 grid gap-4 md:grid-cols-[minmax(0,1fr)_260px] md:items-end">
+                  <p className="max-w-[34rem] text-[17px] leading-[1.55]" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
+                    Elegant, social, and useful enough to keep opening. This space should guide you into connections now, and into shared lists and activity next.
+                  </p>
+                  <div className="justify-self-start md:justify-self-end rounded-[28px] px-5 py-4" style={{ background: "rgba(var(--swatch-paper-rgb), 0.56)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.78)" }}>
+                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      Home Direction
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {["Connections first", "Shared lists", "Social feed"].map((label) => (
+                        <span
+                          key={label}
+                          className="rounded-full px-3 py-1.5 text-[11px]"
+                          style={pillButtonStyle}
+                        >
+                          {label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className="card-design-overlay-teal relative overflow-hidden rounded-[32px] p-6"
+              style={shellCardStyle}
+            >
+              <div className="absolute -bottom-8 -right-8 h-28 w-28 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.36)" }} />
+              <div className="relative">
+                <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  Social Pulse
+                </p>
+                <h2 className="mt-3 text-[42px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)", fontWeight: 600 }}>
+                  Gateway
+                </h2>
+                <p className="mt-4 text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  This is where the relationship layer opens into community: public Go Two lists, connection activity, and the social trail around what people share.
+                </p>
+                <div className="mt-6 space-y-2">
+                  {[
+                    "Public Go Two lists from people you follow",
+                    "Connection activity you have permission to see",
+                    "Shared social feed modules coming into this layout",
+                  ].map((line) => (
+                    <div key={line} className="flex items-center gap-2 rounded-full px-3 py-2" style={{ background: "rgba(var(--swatch-paper-rgb), 0.58)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.82)" }}>
+                      <span className="h-2 w-2 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
+                      <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>
+                        {line}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Row 2: Connections card */}
           <div
-            className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5"
-            style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+            className="card-design-overlay-teal relative overflow-hidden rounded-[32px] p-6"
+            style={shellCardStyle}
           >
-            <div className="relative">
-              <p className="mb-4 text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                Connections
-              </p>
-              <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
+            <div className="absolute -right-10 top-0 h-28 w-28 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.34)" }} />
+            <div className="relative grid gap-5 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-center">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  Connections
+                </p>
+                <h3 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                  Your people, kept close.
+                </h3>
+                <p className="mt-3 max-w-[38rem] text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  This row should stay tactile and personal. Open a connection, add someone new, and use Home as the entry point into the people side of the platform.
+                </p>
+                <div className="mt-5">
+                  <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
+                </div>
+              </div>
+              <div className="rounded-[28px] px-5 py-5" style={{ background: "rgba(var(--swatch-paper-rgb), 0.54)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.82)" }}>
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  Access Layer
+                </p>
+                <p className="mt-3 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)", fontWeight: 700 }}>
+                  {realConnections}
+                </p>
+                <p className="mt-2 text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Active connection{realConnections !== 1 ? "s" : ""} visible now, with room for richer social access rules later.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -303,17 +388,80 @@ const DashboardHome = () => {
             />
           )}
 
-          {/* Row 3: Calendar */}
-          <div className="flex">
+          <div className="grid gap-4 lg:grid-cols-[520px_minmax(0,1fr)]">
             <div
               className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-3 md:p-4"
               style={{
-                boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
+                ...shellCardStyle,
                 width: "100%",
                 maxWidth: 520,
               }}
             >
               <EventCalendar milestones={milestones} connections={calendarConnections} />
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div
+                className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-6"
+                style={shellCardStyle}
+              >
+                <div className="flex h-full flex-col">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-[14px]" style={{ background: "rgba(var(--swatch-paper-rgb), 0.62)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.86)" }}>
+                      <Radio className="h-4 w-4" style={{ color: "var(--swatch-cedar-grove)" }} />
+                    </div>
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      Shared Feed
+                    </p>
+                  </div>
+                  <h3 className="mt-4 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                    Public lists and visible activity belong here.
+                  </h3>
+                  <p className="mt-4 text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    This area is reserved for the social feed layer: public Go Two lists, saved ideas from people you follow, and connection updates you’re allowed to see.
+                  </p>
+                  <div className="mt-auto pt-6">
+                    <button className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[11px] uppercase tracking-[0.14em]" style={pillButtonStyle}>
+                      Feed Coming Here
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-6"
+                style={shellCardStyle}
+              >
+                <div className="flex h-full flex-col">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-[14px]" style={{ background: "rgba(var(--swatch-paper-rgb), 0.62)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.86)" }}>
+                      <Sparkles className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
+                    </div>
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                      Social Access
+                    </p>
+                  </div>
+                  <h3 className="mt-4 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                    Connection sharing should feel curated, not noisy.
+                  </h3>
+                  <p className="mt-4 text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    As new feed modules arrive, this side can hold selective access, recent contributions, and social signals without turning Home into a giant empty wall.
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {[
+                      { icon: CalendarDays, label: "Dates" },
+                      { icon: Radio, label: "Activity" },
+                      { icon: Sparkles, label: "Lists" },
+                    ].map(({ icon: Icon, label }) => (
+                      <span key={label} className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={pillButtonStyle}>
+                        <Icon className="h-3 w-3" />
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
