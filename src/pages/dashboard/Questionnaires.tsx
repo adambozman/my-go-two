@@ -688,76 +688,165 @@ const Questionnaires = () => {
           initial={{ opacity: 0, y: 20, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: "spring", stiffness: 280, damping: 24 }}
-          className="w-full max-w-[520px] rounded-3xl overflow-hidden relative flex flex-col"
+          className="w-full max-w-[480px] rounded-[28px] overflow-hidden relative flex flex-col"
           style={{
-            background: "hsl(var(--background))",
-            boxShadow: "0 8px 40px rgba(30,74,82,0.08), 0 2px 12px rgba(0,0,0,0.04)",
-            maxHeight: "calc(100vh - 180px)",
+            background: "linear-gradient(160deg, rgba(255,255,255,0.88) 0%, rgba(240,233,221,0.92) 100%)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border: "1px solid rgba(255,255,255,0.65)",
+            boxShadow: "0 12px 48px rgba(30,74,82,0.10), 0 2px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)",
+            maxHeight: "calc(100vh - 160px)",
           }}
         >
-          <div className="px-5 pt-5 pb-3">
-            <h2 className="text-lg mb-1" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-              {activeTotCategory.title}
-            </h2>
+          {/* Decorative teal orb */}
+          <div
+            className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none"
+            style={{ background: "radial-gradient(circle, rgba(var(--swatch-teal-rgb), 0.12), transparent 70%)" }}
+          />
+
+          {/* Header */}
+          <div className="px-5 pt-5 pb-3 relative">
+            <div className="flex items-center justify-between mb-3">
+              <span
+                className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-full"
+                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(var(--swatch-cedar-grove-rgb), 0.08)", border: "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.14)" }}
+              >
+                {activeTotCategory.eyebrow}
+              </span>
+              <span
+                className="text-[11px] tabular-nums px-2.5 py-1 rounded-full"
+                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}
+              >
+                {Math.min(questionNumber, visibleCategoryTotal)} / {visibleCategoryTotal}
+              </span>
+            </div>
+
+            {/* Progress dots */}
             <div className="flex items-center gap-1 mb-1">
-              {Array.from({ length: visibleCategoryTotal }).map((_, i) => (
-                <div
+              {Array.from({ length: Math.min(visibleCategoryTotal, 10) }).map((_, i) => (
+                <motion.div
                   key={i}
-                  className="flex-1 h-[5px] rounded-full transition-all duration-300"
+                  className="rounded-full transition-all duration-300"
                   style={{
-                    background: i < Math.min(questionNumber, visibleCategoryTotal) ? "var(--swatch-teal)" : "rgba(var(--swatch-antique-coin-rgb), 0.12)",
+                    height: i < questionNumber ? 4 : 3,
+                    flex: 1,
+                    background: i < questionNumber
+                      ? "linear-gradient(90deg, var(--swatch-teal), var(--swatch-viridian-odyssey))"
+                      : "rgba(var(--swatch-antique-coin-rgb), 0.15)",
                   }}
                 />
               ))}
             </div>
-            <p className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Question {Math.min(questionNumber, visibleCategoryTotal)} of {visibleCategoryTotal}
-            </p>
           </div>
 
-          <div className="px-5 pt-4 pb-5 flex-1 flex flex-col justify-center min-h-[360px]">
+          {/* Question area */}
+          <div className="px-5 pt-2 pb-4 flex-1 flex flex-col">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTotQuestion.id}
-                initial={{ opacity: 0, x: totSwipeDir === "left" ? -24 : 24 }}
+                initial={{ opacity: 0, x: totSwipeDir === "left" ? -28 : 28 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: totSwipeDir === "left" ? 24 : -24 }}
+                exit={{ opacity: 0, x: totSwipeDir === "left" ? 28 : -28 }}
                 transition={{ type: "spring", stiffness: 280, damping: 28 }}
                 className="flex flex-col flex-1"
               >
-                <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] mb-4 px-2.5 py-1 rounded-full self-start" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}>
-                  {activeTotCategory.eyebrow}
-                </span>
-                <h3 className="text-[28px] leading-[1.1] mb-8" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                {/* Big question */}
+                <h3
+                  className="text-[32px] leading-[1.05] mb-8 mt-2"
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontWeight: 700,
+                    color: "var(--swatch-viridian-odyssey)",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
                   {activeTotQuestion.prompt}
                 </h3>
 
-                <div className="grid grid-cols-2 gap-3 mt-auto">
+                {/* Split choice cards */}
+                <div className="grid grid-cols-2 gap-2.5 mt-auto">
                   {([
-                    { key: "A" as const, label: activeTotQuestion.categoryA },
-                    { key: "B" as const, label: activeTotQuestion.categoryB },
-                  ]).map((option) => {
+                    { key: "A" as const, label: activeTotQuestion.categoryA, side: "Left" },
+                    { key: "B" as const, label: activeTotQuestion.categoryB, side: "Right" },
+                  ]).map((option, i) => {
                     const isSelected = selectedSide === option.key;
                     return (
                       <motion.button
                         key={option.key}
-                        whileTap={{ scale: 0.97 }}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 26 }}
+                        whileTap={{ scale: 0.96 }}
                         onClick={() => void pickThisOrThat(activeTotQuestion, option.key)}
-                        className="relative rounded-2xl px-4 py-5 text-left transition-all duration-200"
+                        className="relative rounded-[20px] overflow-hidden text-left transition-all duration-200"
                         style={{
-                          fontFamily: "'Jost', sans-serif",
-                          background: isSelected ? "rgba(var(--swatch-teal-rgb), 0.1)" : "rgba(var(--swatch-antique-coin-rgb), 0.04)",
-                          border: isSelected ? "1.5px solid var(--swatch-teal)" : "1.5px solid rgba(var(--swatch-antique-coin-rgb), 0.12)",
-                          color: isSelected ? "var(--swatch-viridian-odyssey)" : "var(--swatch-antique-coin)",
+                          minHeight: 110,
+                          background: isSelected
+                            ? "linear-gradient(145deg, rgba(var(--swatch-teal-rgb), 0.18), rgba(var(--swatch-viridian-odyssey-rgb), 0.08))"
+                            : "rgba(255,255,255,0.52)",
+                          border: isSelected
+                            ? "1.5px solid var(--swatch-teal)"
+                            : "1.5px solid rgba(var(--swatch-antique-coin-rgb), 0.14)",
+                          boxShadow: isSelected
+                            ? "0 4px 20px rgba(45,104,112,0.14), inset 0 1px 0 rgba(255,255,255,0.6)"
+                            : "0 2px 8px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.5)",
                         }}
                       >
-                        <span className="block text-[12px] uppercase tracking-[0.12em] mb-2" style={{ color: "var(--swatch-teal)" }}>
-                          {option.key === "A" ? "Left" : "Right"}
-                        </span>
-                        <span className="block text-[18px] leading-snug">{option.label}</span>
+                        {/* Corner accent */}
+                        <div
+                          className="absolute top-0 right-0 w-16 h-16 pointer-events-none"
+                          style={{
+                            background: isSelected
+                              ? "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.2), transparent 70%)"
+                              : "radial-gradient(circle at top right, rgba(var(--swatch-antique-coin-rgb), 0.06), transparent 70%)",
+                          }}
+                        />
+
+                        <div className="relative p-4">
+                          <span
+                            className="block text-[9px] uppercase tracking-[0.18em] mb-2.5"
+                            style={{
+                              fontFamily: "'Jost', sans-serif",
+                              color: isSelected ? "var(--swatch-teal)" : "rgba(var(--swatch-antique-coin-rgb), 0.55)",
+                            }}
+                          >
+                            {option.side}
+                          </span>
+                          <span
+                            className="block text-[20px] leading-[1.1]"
+                            style={{
+                              fontFamily: "'Cormorant Garamond', serif",
+                              fontWeight: isSelected ? 700 : 600,
+                              color: isSelected ? "var(--swatch-viridian-odyssey)" : "var(--swatch-antique-coin)",
+                            }}
+                          >
+                            {option.label}
+                          </span>
+                        </div>
+
+                        {isSelected && (
+                          <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                            className="absolute bottom-3 right-3 w-5 h-5 rounded-full flex items-center justify-center"
+                            style={{ background: "var(--swatch-teal)" }}
+                          >
+                            <Check className="w-3 h-3 text-white" />
+                          </motion.div>
+                        )}
                       </motion.button>
                     );
                   })}
+                </div>
+
+                {/* OR divider hint */}
+                <div className="flex items-center gap-3 mt-3 mb-1">
+                  <div className="flex-1 h-px" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.12)" }} />
+                  <span className="text-[10px] uppercase tracking-[0.2em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-antique-coin-rgb), 0.4)" }}>
+                    or
+                  </span>
+                  <div className="flex-1 h-px" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.12)" }} />
                 </div>
               </motion.div>
             </AnimatePresence>
