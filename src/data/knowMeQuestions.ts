@@ -864,6 +864,109 @@ export interface ThisOrThatItem {
   optionB: string;
 }
 
+export interface ThisOrThatCategory {
+  id: string;
+  title: string;
+  description: string;
+  eyebrow: string;
+  supportedGenders: Gender[];
+  status: "coming-soon";
+  promptIds: Partial<Record<Gender, string[]>>;
+}
+
+export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
+  {
+    id: "style-aesthetic",
+    title: "Style & Aesthetic",
+    description: "Fixed instinct prompts around visual taste, silhouettes, and overall vibe.",
+    eyebrow: "Style lens",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+    promptIds: { male: [], female: [], "non-binary": [] },
+  },
+  {
+    id: "brands-shopping",
+    title: "Brands & Shopping",
+    description: "Quick picks about labels, stores, and the kinds of brands that feel like you.",
+    eyebrow: "Brand signals",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+    promptIds: { male: [], female: [], "non-binary": [] },
+  },
+  {
+    id: "colors-palette",
+    title: "Colors & Palette",
+    description: "Preference prompts for tones, contrast, color energy, and what feels most natural.",
+    eyebrow: "Color read",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+    promptIds: { male: [], female: [], "non-binary": [] },
+  },
+  {
+    id: "food-dining",
+    title: "Food & Dining",
+    description: "Taste cues around cravings, comfort meals, restaurants, and how you like to dine.",
+    eyebrow: "Taste cues",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+    promptIds: { male: [], female: [], "non-binary": [] },
+  },
+  {
+    id: "travel-trips",
+    title: "Travel & Trips",
+    description: "Instinctive picks about destinations, travel mood, and what kind of getaway fits you.",
+    eyebrow: "Travel mood",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+    promptIds: { male: [], female: [], "non-binary": [] },
+  },
+  {
+    id: "date-ideas-romance",
+    title: "Date Ideas & Romance",
+    description: "A future bank for chemistry, date-night energy, and the romantic experiences you lean toward.",
+    eyebrow: "Romance cues",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+    promptIds: { male: [], female: [], "non-binary": [] },
+  },
+  {
+    id: "home-living",
+    title: "Home & Living",
+    description: "Signals about comfort, décor, routines, and what makes a space feel right.",
+    eyebrow: "Home feel",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+    promptIds: { male: [], female: [], "non-binary": [] },
+  },
+  {
+    id: "love-language-relationships",
+    title: "Love Language & Relationships",
+    description: "Instinct questions for connection style, affection, and the relationship patterns that fit.",
+    eyebrow: "Connection read",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+    promptIds: { male: [], female: [], "non-binary": [] },
+  },
+  {
+    id: "hobbies-weekend",
+    title: "Hobbies & Weekend",
+    description: "Fast reads on downtime, interests, and the kind of weekend rhythm that feels good.",
+    eyebrow: "Weekend rhythm",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+    promptIds: { male: [], female: [], "non-binary": [] },
+  },
+  {
+    id: "gifting-actually-want",
+    title: "Gifting — what you actually want",
+    description: "A dedicated future bank for gift instincts, wish-list clues, and what feels genuinely thoughtful.",
+    eyebrow: "Gift instinct",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+    promptIds: { male: [], female: [], "non-binary": [] },
+  },
+];
+
 export const THIS_OR_THAT: ThisOrThatItem[] = [
   /* ── CLOTHING BRANDS (20) ── */
   { id: "tot-01", prompt: "Would you wear Nike?", category: "Clothing Brands", image: "", optionA: "Yes", optionB: "No" },
