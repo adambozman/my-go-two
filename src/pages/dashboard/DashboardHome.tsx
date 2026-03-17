@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
-import { ArrowUpRight, CalendarDays, Clock3, Search, Sparkles } from "lucide-react";
+import { ArrowUpRight, CalendarDays, Clock3, Search, Sparkles, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import ConnectionPage from "./ConnectionPage";
@@ -57,17 +58,27 @@ function formatRelativeDateLabel(value?: string | Date | null) {
   return `${Math.abs(diffDays)} days ago`;
 }
 
-function matchesSearch(query: string, ...values: Array<string | null | undefined>) {
-  if (!query) return true;
-  return values.some((value) => value?.toLowerCase().includes(query));
+interface HomeSearchResult {
+  id: string;
+  kind: "entry" | "list";
+  ownerId: string;
+  ownerLabel: string;
+  title: string;
+  subtitle: string;
+  meta: string;
 }
 
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
+  const navigate = useNavigate();
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [homeSearch, setHomeSearch] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [mySearchResults, setMySearchResults] = useState<HomeSearchResult[]>([]);
+  const [circleSearchResults, setCircleSearchResults] = useState<HomeSearchResult[]>([]);
   const [openConnection, setOpenConnection] = useState<{
     card: ConnectionCard;
     rect: { x: number; y: number; width: number; height: number };
@@ -258,7 +269,6 @@ const DashboardHome = () => {
   const calendarConnections = connections
     .filter((c) => !c.id.startsWith("placeholder-") && c.partnerId)
     .map((c) => ({ id: c.partnerId!, name: c.name }));
-  const searchQuery = homeSearch.trim().toLowerCase();
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
@@ -356,77 +366,78 @@ const DashboardHome = () => {
     return [...milestoneActivity, ...connectionActivity].slice(0, 8);
   }, [connections, milestones]);
 
-  const filteredDirectoryEntries = useMemo(
-    () =>
-      directoryEntries.filter((entry) =>
-        matchesSearch(searchQuery, entry.name, entry.status, entry.lastSync)
-      ),
-    [directoryEntries, searchQuery]
-  );
+  const buildEntryResult = useCallback((row: any, ownerLabel: string): HomeSearchResult => ({
+    id: row.id,
+    kind: "entry",
+    ownerId: row.user_id,
+    ownerLabel,
+    title: row.entry_name,
+    subtitle: row.group_name,
+    meta: row.card_key?.split("__").pop() || "Entry",
+  }), []);
 
-  const matchingConnectionCards = useMemo(
-    () =>
-      connections.filter(
-        (connection) =>
-          !connection.id.startsWith("placeholder-") &&
-          matchesSearch(searchQuery, connection.name, connection.email, connection.status)
-      ),
-    [connections, searchQuery]
-  );
+  const buildListResult = useCallback((row: any, ownerLabel: string): HomeSearchResult => ({
+    id: row.id,
+    kind: "list",
+    ownerId: row.user_id,
+    ownerLabel,
+    title: row.title,
+    subtitle: row.description || "Saved list",
+    meta: "List",
+  }), []);
 
-  const filteredSharedFeedItems = useMemo(
-    () =>
-      sharedFeedItems.filter((item) =>
-        matchesSearch(searchQuery, item.eyebrow, item.title, item.detail, item.meta)
-      ),
-    [searchQuery, sharedFeedItems]
-  );
+  const runHomeSearch = useCallback(async () => {
+    const query = homeSearch.trim();
+    if (!query || !user) return;
 
-  const filteredNotableItems = useMemo(
-    () =>
-      notableItems.filter((item) =>
-        matchesSearch(searchQuery, item.eyebrow, item.title, item.detail)
-      ),
-    [notableItems, searchQuery]
-  );
+    setIsSearchOpen(true);
+    setSearchLoading(true);
 
-  const filteredRecentActivityItems = useMemo(
-    () =>
-      recentActivityItems.filter((item) =>
-        matchesSearch(searchQuery, item.title, item.detail, item.meta)
-      ),
-    [recentActivityItems, searchQuery]
-  );
+    const liveConnections = connections.filter((connection) => !connection.id.startsWith("placeholder-") && connection.partnerId);
+    const partnerIds = liveConnections.map((connection) => connection.partnerId!).filter(Boolean);
+    const ownerNames = new Map<string, string>();
 
-  const filteredMilestones = useMemo(
-    () =>
-      milestones.filter((milestone) =>
-        matchesSearch(
-          searchQuery,
-          milestone.person,
-          milestone.label,
-          milestone.type,
-          String(milestone.daysOut)
-        )
-      ),
-    [milestones, searchQuery]
-  );
+    ownerNames.set(user.id, "You");
+    liveConnections.forEach((connection) => {
+      if (connection.partnerId) ownerNames.set(connection.partnerId, connection.name);
+    });
 
-  const filteredCalendarConnections = useMemo(
-    () =>
-      calendarConnections.filter((connection) =>
-        matchesSearch(searchQuery, connection.name)
-      ),
-    [calendarConnections, searchQuery]
-  );
+    const [myEntriesRes, myListsRes, circleEntriesRes] = await Promise.all([
+      supabase
+        .from("card_entries")
+        .select("id, user_id, entry_name, group_name, card_key")
+        .eq("user_id", user.id)
+        .or(`group_name.ilike.%${query}%,entry_name.ilike.%${query}%`)
+        .limit(20),
+      supabase
+        .from("lists")
+        .select("id, user_id, title, description")
+        .eq("user_id", user.id)
+        .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
+        .limit(10),
+      partnerIds.length
+        ? supabase
+            .from("card_entries")
+            .select("id, user_id, entry_name, group_name, card_key")
+            .in("user_id", partnerIds)
+            .or(`group_name.ilike.%${query}%,entry_name.ilike.%${query}%`)
+            .limit(30)
+        : Promise.resolve({ data: [] as any[] }),
+    ]);
 
-  const hasSearchResults =
-    !searchQuery ||
-    filteredDirectoryEntries.length > 0 ||
-    filteredSharedFeedItems.length > 0 ||
-    filteredNotableItems.length > 0 ||
-    filteredRecentActivityItems.length > 0 ||
-    filteredMilestones.length > 0;
+    const nextMine: HomeSearchResult[] = [
+      ...((myEntriesRes.data || []).map((row: any) => buildEntryResult(row, "You"))),
+      ...((myListsRes.data || []).map((row: any) => buildListResult(row, "You"))),
+    ];
+
+    const nextCircle: HomeSearchResult[] = ((circleEntriesRes as any).data || []).map((row: any) =>
+      buildEntryResult(row, ownerNames.get(row.user_id) || "Connection")
+    );
+
+    setMySearchResults(nextMine);
+    setCircleSearchResults(nextCircle);
+    setSearchLoading(false);
+  }, [buildEntryResult, buildListResult, connections, homeSearch, user]);
 
   return (
     <div className="relative h-full overflow-y-auto">
@@ -458,7 +469,7 @@ const DashboardHome = () => {
               </div>
 
               <div className="space-y-3">
-                {filteredSharedFeedItems.map((item) => (
+                {sharedFeedItems.map((item) => (
                   <div
                     key={item.id}
                     className="rounded-[22px] px-4 py-3"
@@ -481,11 +492,6 @@ const DashboardHome = () => {
                     </p>
                   </div>
                 ))}
-                {searchQuery && filteredSharedFeedItems.length === 0 && (
-                  <p className="px-1 text-sm" style={{ color: "var(--swatch-text-light)" }}>
-                    No shared feed matches for this search.
-                  </p>
-                )}
               </div>
             </section>
 
@@ -510,7 +516,7 @@ const DashboardHome = () => {
               </div>
 
               <div className="space-y-3">
-                {filteredNotableItems.map((item) => (
+                {notableItems.map((item) => (
                   <div
                     key={item.id}
                     className="rounded-[22px] px-4 py-3"
@@ -530,11 +536,6 @@ const DashboardHome = () => {
                     </p>
                   </div>
                 ))}
-                {searchQuery && filteredNotableItems.length === 0 && (
-                  <p className="px-1 text-sm" style={{ color: "var(--swatch-text-light)" }}>
-                    No notable items match this search.
-                  </p>
-                )}
               </div>
             </section>
           </div>
@@ -556,7 +557,7 @@ const DashboardHome = () => {
                   Your circle at a glance.
                 </h2>
               </div>
-              <ConnectionAvatarRow entries={filteredDirectoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
+              <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
             </section>
 
             <section
@@ -568,39 +569,23 @@ const DashboardHome = () => {
               }}
             >
               <div className="flex items-center gap-3 rounded-[20px] px-4 py-3" style={{ background: "rgba(255,255,255,0.46)" }}>
-                <Search className="h-4 w-4 shrink-0" style={{ color: "var(--swatch-text-light)" }} />
+                <button onClick={runHomeSearch} aria-label="Search home" className="shrink-0">
+                  <Search className="h-4 w-4" style={{ color: "var(--swatch-text-light)" }} />
+                </button>
                 <input
                   value={homeSearch}
                   onChange={(event) => setHomeSearch(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      runHomeSearch();
+                    }
+                  }}
                   placeholder="Search a person, reminder, date, or idea"
                   className="w-full border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                   style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
                 />
               </div>
-              {searchQuery && (
-                <div className="mt-3 flex flex-wrap gap-2 px-1">
-                  {matchingConnectionCards.map((connection) => (
-                    <button
-                      key={connection.id}
-                      onClick={() =>
-                        setOpenConnection({
-                          card: connection,
-                          rect: { x: window.innerWidth / 2 - 50, y: 100, width: 100, height: 100 },
-                        })
-                      }
-                      className="rounded-full px-3 py-1.5 text-[11px]"
-                      style={pillButtonStyle}
-                    >
-                      {connection.name}
-                    </button>
-                  ))}
-                  {!hasSearchResults && (
-                    <p className="px-1 text-sm" style={{ color: "var(--swatch-text-light)" }}>
-                      No matches yet. Try a connection name, event, or reminder.
-                    </p>
-                  )}
-                </div>
-              )}
             </section>
 
             <section
@@ -611,7 +596,7 @@ const DashboardHome = () => {
                 border: "1px solid rgba(45,104,112,0.18)",
               }}
             >
-              <EventCalendar milestones={filteredMilestones} connections={filteredCalendarConnections} />
+              <EventCalendar milestones={milestones} connections={calendarConnections} />
             </section>
 
             {showConnectionsPaywall && !canAddAnotherConnection && (
@@ -652,7 +637,7 @@ const DashboardHome = () => {
             </div>
 
             <div className="mt-4 space-y-3 xl:max-h-[calc(100vh-240px)] xl:overflow-y-auto xl:pr-1">
-              {filteredRecentActivityItems.map((item) => (
+              {recentActivityItems.map((item) => (
                 <div
                   key={item.id}
                   className="rounded-[22px] px-4 py-4"
@@ -681,17 +666,116 @@ const DashboardHome = () => {
                   </div>
                 </div>
               ))}
-              {searchQuery && filteredRecentActivityItems.length === 0 && (
-                <p className="px-1 text-sm" style={{ color: "var(--swatch-text-light)" }}>
-                  No recent activity matches for this search.
-                </p>
-              )}
             </div>
           </aside>
         </div>
       </div>
 
       <AnimatePresence>
+        {isSearchOpen && (
+          <div className="fixed inset-0 z-40 flex items-center justify-center bg-[rgba(30,74,82,0.22)] px-4 py-6 backdrop-blur-sm">
+            <div
+              className="relative max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-[32px] border border-white/80"
+              style={{
+                background: "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(245,233,220,0.92) 100%)",
+                boxShadow: "0 30px 80px rgba(30,74,82,0.20), inset 0 1px 0 rgba(255,255,255,0.9)",
+              }}
+            >
+              <button
+                onClick={() => setIsSearchOpen(false)}
+                className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full"
+                style={{ background: "rgba(255,255,255,0.74)", color: "var(--swatch-teal)" }}
+              >
+                <X className="h-4 w-4" />
+              </button>
+
+              <div className="border-b border-white/70 px-6 py-5">
+                <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  Home Search
+                </p>
+                <h2 className="mt-2 text-[32px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                  Results for "{homeSearch.trim()}"
+                </h2>
+              </div>
+
+              <div className="grid max-h-[calc(85vh-110px)] gap-0 overflow-y-auto md:grid-cols-2">
+                <section className="border-b border-white/60 px-6 py-5 md:border-b-0 md:border-r">
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                    Your Results
+                  </p>
+                  <div className="mt-4 space-y-3">
+                    {searchLoading && <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>Searching...</p>}
+                    {!searchLoading && mySearchResults.length === 0 && (
+                      <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>
+                        Nothing on your page matches this search yet.
+                      </p>
+                    )}
+                    {mySearchResults.map((result) => (
+                      <button
+                        key={`mine-${result.id}`}
+                        onClick={() => {
+                          setIsSearchOpen(false);
+                          if (result.kind === "list") {
+                            navigate("/dashboard/my-go-two");
+                            return;
+                          }
+                          navigate("/dashboard/my-go-two");
+                        }}
+                        className="block w-full rounded-[22px] px-4 py-3 text-left"
+                        style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.78)" }}
+                      >
+                        <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                          {result.meta}
+                        </p>
+                        <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                          {result.title}
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                          {result.subtitle}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="px-6 py-5">
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Your Circle
+                  </p>
+                  <div className="mt-4 space-y-3">
+                    {searchLoading && <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>Searching your circle...</p>}
+                    {!searchLoading && circleSearchResults.length === 0 && (
+                      <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>
+                        No shared matches were found across your connections.
+                      </p>
+                    )}
+                    {circleSearchResults.map((result) => (
+                      <div
+                        key={`circle-${result.id}`}
+                        className="rounded-[22px] px-4 py-3"
+                        style={{ background: "rgba(245,233,220,0.58)", border: "1px solid rgba(255,255,255,0.76)" }}
+                      >
+                        <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                          {result.ownerLabel}
+                        </p>
+                        <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                          {result.title}
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                          {result.subtitle}
+                        </p>
+                        <p className="mt-3 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
+                          {result.meta}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        )}
+
         {openConnection && (
           <ConnectionPage
             key={openConnection.card.id}
