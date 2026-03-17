@@ -262,16 +262,11 @@ const DashboardHome = () => {
             />
           )}
 
-          {/* Row 3: Calendar — quarter width, own row */}
-          <div className="flex">
-            <div className="card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)", width: "25%" }}>
+          {/* Row 3: Calendar */}
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
+            <div className="min-w-0 xl:col-span-1">
               <EventCalendar milestones={milestones} />
             </div>
-          </div>
-
-          {/* Row 4: Recent Activity */}
-          <div>
-            <RecentUpdates updates={recentUpdates} />
           </div>
         </div>
       </div>
