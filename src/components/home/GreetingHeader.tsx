@@ -23,9 +23,9 @@ export function GreetingHeader({ displayName, connectionCount }: GreetingHeaderP
     >
       <p
         className="text-[12px] font-medium uppercase tracking-[0.10em]"
-        style={{ color: "var(--swatch-cedar-grove)", fontFamily: "'Jost', sans-serif" }}
+        style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
       >
-        The Vibe Today
+        {getGreeting()}{firstName ? `, ${firstName}` : ""}
       </p>
       <h1
         className="text-[26px] font-semibold leading-tight mt-1"
