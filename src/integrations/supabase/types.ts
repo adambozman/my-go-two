@@ -112,6 +112,54 @@ export type Database = {
         }
         Relationships: []
       }
+      calendar_events: {
+        Row: {
+          connection_user_id: string | null
+          created_at: string
+          date: string
+          description: string | null
+          ends_at: string | null
+          event_type: string
+          id: string
+          is_all_day: boolean
+          source_type: string
+          starts_at: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connection_user_id?: string | null
+          created_at?: string
+          date: string
+          description?: string | null
+          ends_at?: string | null
+          event_type?: string
+          id?: string
+          is_all_day?: boolean
+          source_type?: string
+          starts_at?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connection_user_id?: string | null
+          created_at?: string
+          date?: string
+          description?: string | null
+          ends_at?: string | null
+          event_type?: string
+          id?: string
+          is_all_day?: boolean
+          source_type?: string
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       card_entries: {
         Row: {
           card_key: string

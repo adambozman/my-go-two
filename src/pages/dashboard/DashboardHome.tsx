@@ -112,6 +112,9 @@ const DashboardHome = () => {
           date: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 12),
           daysOut: 12,
           type: "birthday",
+          day: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 12).getDate(),
+          month: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 12).getMonth(),
+          source: "connection",
         },
         {
           id: "demo-2",
@@ -120,25 +123,68 @@ const DashboardHome = () => {
           date: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 28),
           daysOut: 28,
           type: "anniversary",
+          day: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 28).getDate(),
+          month: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 28).getMonth(),
+          source: "connection",
         },
       ]);
       return;
     }
 
     const partnerIds = couples.map((c: any) => (c.inviter_id === user.id ? c.invitee_id : c.inviter_id)).filter(Boolean);
-    if (!partnerIds.length) return;
-
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("user_id, display_name, birthday, anniversary")
-      .in("user_id", partnerIds);
-
-    if (!profiles) return;
+    const [{ data: ownProfile }, { data: profiles }] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("user_id, display_name, birthday, anniversary")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      partnerIds.length
+        ? supabase
+            .from("profiles")
+            .select("user_id, display_name, birthday, anniversary")
+            .in("user_id", partnerIds)
+        : Promise.resolve({ data: [] as Array<{ user_id: string; display_name: string | null; birthday: string | null; anniversary: string | null }> }),
+    ]);
 
     const now = new Date();
     const upcoming: Milestone[] = [];
+    const addMilestone = (
+      id: string,
+      label: "Birthday" | "Anniversary",
+      person: string,
+      isoDate: string,
+      type: "birthday" | "anniversary",
+      source: "self" | "connection",
+      personId?: string,
+    ) => {
+      const original = new Date(isoDate);
+      const next = new Date(now.getFullYear(), original.getMonth(), original.getDate());
+      if (next < now) next.setFullYear(next.getFullYear() + 1);
+      const days = Math.ceil((next.getTime() - now.getTime()) / 86400000);
 
-    for (const p of profiles) {
+      upcoming.push({
+        id,
+        label,
+        person,
+        date: next,
+        daysOut: days,
+        type,
+        day: original.getDate(),
+        month: original.getMonth(),
+        personId,
+        source,
+      });
+    };
+
+    if (ownProfile?.birthday) {
+      addMilestone("self-birthday", "Birthday", ownProfile.display_name || "You", ownProfile.birthday, "birthday", "self", ownProfile.user_id);
+    }
+
+    if (ownProfile?.anniversary) {
+      addMilestone("self-anniversary", "Anniversary", ownProfile.display_name || "You", ownProfile.anniversary, "anniversary", "self", ownProfile.user_id);
+    }
+
+    for (const p of profiles ?? []) {
       const couple = couples.find(
         (c: any) =>
           (c.inviter_id === p.user_id || c.invitee_id === p.user_id) &&
@@ -147,24 +193,16 @@ const DashboardHome = () => {
       const name = couple?.display_label || p.display_name || "Connection";
 
       if (p.birthday) {
-        const bd = new Date(p.birthday);
-        const next = new Date(now.getFullYear(), bd.getMonth(), bd.getDate());
-        if (next < now) next.setFullYear(next.getFullYear() + 1);
-        const days = Math.ceil((next.getTime() - now.getTime()) / 86400000);
-        if (days <= 90) upcoming.push({ id: `bd-${p.user_id}`, label: "Birthday", person: name, date: next, daysOut: days, type: "birthday" });
+        addMilestone(`bd-${p.user_id}`, "Birthday", name, p.birthday, "birthday", "connection", p.user_id);
       }
 
       if (p.anniversary) {
-        const an = new Date(p.anniversary);
-        const next = new Date(now.getFullYear(), an.getMonth(), an.getDate());
-        if (next < now) next.setFullYear(next.getFullYear() + 1);
-        const days = Math.ceil((next.getTime() - now.getTime()) / 86400000);
-        if (days <= 90) upcoming.push({ id: `an-${p.user_id}`, label: "Anniversary", person: name, date: next, daysOut: days, type: "anniversary" });
+        addMilestone(`an-${p.user_id}`, "Anniversary", name, p.anniversary, "anniversary", "connection", p.user_id);
       }
     }
 
     upcoming.sort((a, b) => a.daysOut - b.daysOut);
-    setMilestones(upcoming.slice(0, 5));
+    setMilestones(upcoming);
   }, [user]);
 
   useEffect(() => {
@@ -183,6 +221,9 @@ const DashboardHome = () => {
 
   const realConnections = connections.filter((c) => !c.id.startsWith("placeholder-")).length;
   const canAddAnotherConnection = subscribed || realConnections < 1;
+  const calendarConnections = connections
+    .filter((c) => !c.id.startsWith("placeholder-") && c.partnerId)
+    .map((c) => ({ id: c.partnerId!, name: c.name }));
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
@@ -262,10 +303,10 @@ const DashboardHome = () => {
             />
           )}
 
-          {/* Row 3: Calendar — quarter width, own row */}
-          <div className="grid lg:grid-cols-4 gap-4">
-            <div className="lg:col-span-2 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}>
-              <EventCalendar milestones={milestones} />
+          {/* Row 3: Calendar */}
+          <div className="grid gap-4">
+            <div className="card-design-overlay-teal rounded-[30px] p-4 md:p-5 relative overflow-hidden" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}>
+              <EventCalendar milestones={milestones} connections={calendarConnections} />
             </div>
           </div>
         </div>

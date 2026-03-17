@@ -8,6 +8,10 @@ export interface Milestone {
   date: Date;
   daysOut: number;
   type: "birthday" | "anniversary" | "custom";
+  day: number;
+  month: number;
+  personId?: string;
+  source: "self" | "connection";
 }
 
 function urgencyGradient(days: number) {
