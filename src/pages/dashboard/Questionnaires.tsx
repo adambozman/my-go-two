@@ -551,26 +551,20 @@ const Questionnaires = () => {
             <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
               Fixed category map
             </p>
-            <h2 className="text-[36px] md:text-[48px] leading-[0.92] mb-3 max-w-[14ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-              Choose a category to train your instinct profile.
+            <h2 className="text-[28px] leading-[0.96] mb-3 max-w-[14ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              Choose a category.
             </h2>
             <p className="text-[14px] leading-relaxed max-w-[64ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
               Categories are fixed and question banks are fixed by gender. The AI does not generate these prompts — it reads your saved answers to infer your vibe.
             </p>
           </motion.section>
 
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-[minmax(150px,auto)]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 auto-rows-[minmax(140px,auto)]">
             {THIS_OR_THAT_CATEGORIES.map((category, index) => {
               const spanClass =
-                index === 0
-                  ? "md:col-span-4 md:row-span-2"
-                  : index === 1 || index === 2
-                    ? "md:col-span-2"
-                    : index === 5
-                      ? "md:col-span-3"
-                      : index === 7
-                        ? "md:col-span-3"
-                        : "md:col-span-2";
+                index === 2 || index === 6
+                  ? "md:col-span-2"
+                  : "md:col-span-1";
 
               return (
                 <motion.button
