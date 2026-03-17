@@ -159,12 +159,24 @@ export function DashboardTopBar() {
                 to={item.url}
                 aria-label={item.label}
                 className={cn(
-                  "flex w-[58px] flex-col items-center gap-1 rounded-xl px-1 py-0.5 text-center transition-all",
+                  "flex w-[58px] flex-col items-center gap-1 text-center transition-all",
                   isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 )}
-                style={isActive ? { background: "rgba(232,198,174,0.22)" } : undefined}
               >
-                <item.icon className="h-4.5 w-4.5" />
+                <span
+                  className="relative rounded-full card-design-neumorph flex items-center justify-center"
+                  style={{
+                    width: "var(--header-icon-btn-size)",
+                    height: "var(--header-icon-btn-size)",
+                    background: isActive ? "rgba(245,233,220,0.92)" : undefined,
+                    borderColor: isActive ? "rgba(45,104,112,0.18)" : undefined,
+                    boxShadow: isActive
+                      ? "inset 0 1px 0 rgba(255,255,255,0.94), 0 8px 20px rgba(45,104,112,0.10), 0 0 0 1px rgba(45,104,112,0.06)"
+                      : undefined,
+                  }}
+                >
+                  <item.icon className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                </span>
                 <span className="text-[10px] font-medium leading-none" style={{ fontFamily: "'Jost', sans-serif" }}>
                   {item.label}
                 </span>
