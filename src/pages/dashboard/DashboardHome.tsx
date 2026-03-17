@@ -310,8 +310,8 @@ const DashboardHome = () => {
           )}
 
           {/* Row 3: Calendar — quarter width, own row */}
-          <div className="flex">
-            <div className="card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)", width: "25%" }}>
+          <div className="grid lg:grid-cols-4 gap-4">
+            <div className="lg:col-span-1 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}>
               <EventCalendar milestones={milestones} />
             </div>
           </div>
