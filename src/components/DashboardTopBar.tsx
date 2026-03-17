@@ -1,10 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { Bell, Settings, Camera, Upload, Trash2, Database, ArrowLeft, Megaphone } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Bell, Settings, Camera, Upload, Trash2, Database, Megaphone, Home, Heart, Sparkles, ClipboardList, Search } from "lucide-react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 
 import { useTopBar } from "@/contexts/TopBarContext";
 import { useRotatingQuote } from "@/hooks/useRotatingQuote";
+import { cn } from "@/lib/utils";
 
 const taglines: Record<string, string> = {
   "/dashboard": "The people who matter most.",
@@ -22,6 +22,14 @@ const taglines: Record<string, string> = {
   "/dashboard/questionnaires": "The more you share, the better they know you.",
   "/dashboard/search": "Find anything, for anyone.",
 };
+
+const navItems = [
+  { icon: Home, url: "/dashboard", end: true, label: "Home" },
+  { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
+  { icon: Sparkles, url: "/dashboard/recommendations", label: "Recommendations" },
+  { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Know Me" },
+  { icon: Search, url: "/dashboard/search", label: "Search" },
+] as const;
 
 export function DashboardTopBar() {
   const navigate = useNavigate();
@@ -31,8 +39,6 @@ export function DashboardTopBar() {
   const { backState } = useTopBar();
   const rotatingQuote = useRotatingQuote();
   const [unreadCount, setUnreadCount] = useState(0);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [initials, setInitials] = useState("?");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -45,14 +51,6 @@ export function DashboardTopBar() {
         .eq("user_id", user.id)
         .single();
       if (data) {
-        setAvatarUrl(data.avatar_url);
-        const name = data.display_name || user.user_metadata?.display_name || user.email || "";
-        const parts = name.trim().split(/\s+/);
-        setInitials(
-          parts.length >= 2
-            ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-            : (name[0] || "?").toUpperCase()
-        );
       }
     };
 
@@ -139,21 +137,7 @@ export function DashboardTopBar() {
       }}
     >
       <div className="relative flex items-center justify-between gap-2 md:gap-4" style={{ height: "var(--header-icons-row-height)" }}>
-        {/* Back button or spacer — left */}
-        {backState ? (
-          <button
-            onClick={backState.onBack}
-            className="relative shrink-0 focus:outline-none flex items-center gap-2"
-            style={{ color: 'var(--swatch-teal)' }}
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="hidden sm:block" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "var(--swatch-teal)" }}>
-              {backState.label}
-            </span>
-          </button>
-        ) : (
-          <div className="shrink-0" style={{ width: "var(--header-avatar-size)", height: "var(--header-avatar-size)" }} />
-        )}
+        <div className="shrink-0" style={{ width: "var(--header-avatar-size)", height: "var(--header-avatar-size)" }} />
 
         <input
           ref={fileInputRef}
@@ -165,6 +149,26 @@ export function DashboardTopBar() {
 
         {/* GoTwo logo — left aligned */}
         <GoTwoText className="absolute left-0 translate-x-0" />
+
+        <nav className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 md:gap-3">
+          {navItems.map((item) => {
+            const isActive = item.end ? location.pathname === item.url : location.pathname.startsWith(item.url);
+            return (
+              <NavLink
+                key={item.url}
+                to={item.url}
+                aria-label={item.label}
+                className={cn(
+                  "flex h-9 w-9 items-center justify-center rounded-full transition-all",
+                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                )}
+                style={isActive ? { background: "rgba(232,198,174,0.34)" } : undefined}
+              >
+                <item.icon className="h-4.5 w-4.5" />
+              </NavLink>
+            );
+          })}
+        </nav>
 
         {/* Settings + Bell — right */}
         <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0">

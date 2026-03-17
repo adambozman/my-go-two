@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import { AppSidebar } from "@/components/AppSidebar";
 import { DashboardTopBar } from "@/components/DashboardTopBar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,10 +38,9 @@ const DashboardLayout = () => {
   return (
     <div className="app-page h-screen flex flex-col overflow-hidden">
       <DashboardTopBar />
-      <main className="flex-1 min-h-0 px-8" style={{ paddingBottom: "var(--footer-height)" }}>
+      <main className="flex-1 min-h-0 px-8">
         <Outlet />
       </main>
-      <AppSidebar />
     </div>
   );
 };
