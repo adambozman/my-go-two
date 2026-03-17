@@ -242,6 +242,9 @@ export function DashboardTopBar() {
         style={{
           marginTop: "var(--header-tagline-margin-top)",
           opacity: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? 0 : 1,
+          visibility: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? "hidden" : "visible",
+          height: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? 0 : "auto",
+          overflow: "hidden",
           transition: `opacity ${isMyGoTwo ? "0.8s" : "0s"} ease`,
           textAlign: "center",
         }}
