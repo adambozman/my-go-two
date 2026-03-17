@@ -488,9 +488,6 @@ const DashboardHome = () => {
                   className="w-full border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                   style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
                 />
-                <span className="hidden rounded-full px-2 py-1 text-[10px] uppercase tracking-[0.14em] md:inline-flex" style={pillButtonStyle}>
-                  Home Search
-                </span>
               </div>
             </section>
 
