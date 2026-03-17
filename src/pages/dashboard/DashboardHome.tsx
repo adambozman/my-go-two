@@ -75,6 +75,14 @@ interface HomeSearchResult {
   meta: string;
 }
 
+interface ActivityFeedItem {
+  id: string;
+  title: string;
+  detail: string;
+  meta: string;
+  accent: string;
+}
+
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
   const navigate = useNavigate();
@@ -87,6 +95,7 @@ const DashboardHome = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [mySearchResults, setMySearchResults] = useState<HomeSearchResult[]>([]);
   const [circleSearchResults, setCircleSearchResults] = useState<HomeSearchResult[]>([]);
+  const [recentActivityItems, setRecentActivityItems] = useState<ActivityFeedItem[]>([]);
   const [openConnection, setOpenConnection] = useState<{
     card: ConnectionCard;
     rect: { x: number; y: number; width: number; height: number };
@@ -358,28 +367,52 @@ const DashboardHome = () => {
     ];
   }, [milestones]);
 
-  const recentActivityItems = useMemo(() => {
-    const milestoneActivity = milestones.slice(0, 5).map((milestone) => ({
-      id: `activity-${milestone.id}`,
-      title: milestone.person,
-      detail: `${milestone.label} is ${milestone.daysOut} day${milestone.daysOut === 1 ? "" : "s"} away.`,
-      meta: formatRelativeDateLabel(milestone.date),
-      accent: milestone.type === "birthday" ? "var(--swatch-cedar-grove)" : "var(--swatch-teal)",
-    }));
+  useEffect(() => {
+    let cancelled = false;
 
-    const connectionActivity = connections
-      .filter((c) => !c.id.startsWith("placeholder-"))
-      .slice(0, 4)
-      .map((connection) => ({
-        id: `connection-${connection.id}`,
-        title: connection.name,
-        detail: connection.status === "accepted" ? "Connection is live and ready for recommendations." : "Invite is still pending.",
-        meta: formatRelativeDateLabel(connection.updatedAt),
-        accent: "var(--swatch-viridian-odyssey)",
+    const loadRecentActivity = async () => {
+      if (!user) return;
+
+      const partnerIds = liveConnections.map((connection) => connection.partnerId!).filter(Boolean);
+      const visibleUserIds = [user.id, ...partnerIds];
+
+      if (!visibleUserIds.length) {
+        if (!cancelled) setRecentActivityItems([]);
+        return;
+      }
+
+      const { data } = await supabase
+        .from("card_entries")
+        .select("id, user_id, entry_name, group_name, updated_at")
+        .in("user_id", visibleUserIds)
+        .order("updated_at", { ascending: false })
+        .limit(12);
+
+      if (cancelled) return;
+
+      const ownerNames = new Map<string, string>();
+      ownerNames.set(user.id, "You");
+      liveConnections.forEach((connection) => {
+        if (connection.partnerId) ownerNames.set(connection.partnerId, connection.name);
+      });
+
+      const nextItems = (data || []).map((entry: any) => ({
+        id: entry.id,
+        title: ownerNames.get(entry.user_id) || "Connection",
+        detail: `Updated ${entry.entry_name} in ${entry.group_name}.`,
+        meta: formatRelativeDateLabel(entry.updated_at),
+        accent: entry.user_id === user.id ? "var(--swatch-teal)" : "var(--swatch-cedar-grove)",
       }));
 
-    return [...milestoneActivity, ...connectionActivity].slice(0, 8);
-  }, [connections, milestones]);
+      setRecentActivityItems(nextItems);
+    };
+
+    loadRecentActivity();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [liveConnections, user]);
 
   const buildEntryResult = useCallback((row: any, ownerLabel: string): HomeSearchResult => ({
     id: row.id,
@@ -724,35 +757,58 @@ const DashboardHome = () => {
             </div>
 
             <div className="mt-4 space-y-3 xl:max-h-[calc(100vh-240px)] xl:overflow-y-auto xl:pr-1">
-              {recentActivityItems.map((item) => (
+              {recentActivityItems.length === 0 ? (
                 <div
-                  key={item.id}
                   className="rounded-[22px] px-4 py-4"
                   style={{
                     background: "rgba(255,255,255,0.54)",
                     border: "1px solid rgba(255,255,255,0.78)",
                   }}
                 >
-                  <div className="flex items-start gap-3">
-                    <span
-                      className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
-                      style={{ background: item.accent }}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[17px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
-                        {item.title}
-                      </p>
-                      <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                        {item.detail}
-                      </p>
-                      <div className="mt-3 flex items-center gap-2 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
-                        <Clock3 className="h-3.5 w-3.5" />
-                        <span>{item.meta}</span>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                    Connections
+                  </p>
+                  <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                    Start with one person who matters most.
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                    Once you add them, this area becomes your shared pulse for updates, reminders, and profile changes.
+                  </p>
+                  <p className="mt-3 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
+                    Ready when you are
+                  </p>
+                </div>
+              ) : (
+                recentActivityItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-[22px] px-4 py-4"
+                    style={{
+                      background: "rgba(255,255,255,0.54)",
+                      border: "1px solid rgba(255,255,255,0.78)",
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span
+                        className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
+                        style={{ background: item.accent }}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[17px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                          {item.title}
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                          {item.detail}
+                        </p>
+                        <div className="mt-3 flex items-center gap-2 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
+                          <Clock3 className="h-3.5 w-3.5" />
+                          <span>{item.meta}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </aside>
         </div>
