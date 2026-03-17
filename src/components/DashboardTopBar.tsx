@@ -237,25 +237,29 @@ export function DashboardTopBar() {
 
       <div className="border-b border-border/30" style={{ marginTop: "var(--header-divider-margin-top)" }} />
 
-      <div
-        className="header-tagline-wrapper"
-        style={{
-          marginTop: backState ? 0 : "var(--header-tagline-margin-top)",
-          opacity: backState ? 0 : 1,
-          visibility: backState ? "hidden" : "visible",
-          height: backState ? 0 : "auto",
-          overflow: "hidden",
-          transition: "opacity 0.8s ease",
-          textAlign: "center",
-        }}
-      >
-        {!backState && location.pathname !== "/dashboard/recommendations" && (
-          <>
-            <p className="header-tagline-quote">"{rotatingQuote.text}"</p>
-            <p className="header-tagline-author">— {rotatingQuote.author}</p>
-          </>
-        )}
-      </div>
+      {location.pathname !== "/dashboard/recommendations" && (
+        <div
+          className="header-tagline-wrapper"
+          style={{
+            marginTop: backState ? 0 : "var(--header-tagline-margin-top)",
+            opacity: backState ? 0 : 1,
+            visibility: backState ? "hidden" : "visible",
+            height: backState ? 0 : "auto",
+            overflow: "hidden",
+            transition: "opacity 0.8s ease",
+            textAlign: "center",
+          }}
+        >
+          {!backState && (
+            <>
+              <p className="header-tagline-quote">"{rotatingQuote.text}"</p>
+              {rotatingQuote.author !== "Unknown" && (
+                <p className="header-tagline-author">— {rotatingQuote.author}</p>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </header>
   );
 }
