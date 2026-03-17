@@ -874,6 +874,31 @@ export interface ThisOrThatCategory {
   promptIds: Partial<Record<Gender, string[]>>;
 }
 
+export interface BrandBankEntry {
+  brand: string;
+  dnaTags: string[];
+}
+
+export interface BrandBankCategory {
+  id: string;
+  title: string;
+  brands: BrandBankEntry[];
+}
+
+export interface BrandBankQuestion {
+  id: string;
+  prompt: string;
+  categoryA: string;
+  categoryB: string;
+  tagsForA: string[];
+  tagsForB: string[];
+}
+
+export interface GenderedBrandBank {
+  categories: BrandBankCategory[];
+  questions: BrandBankQuestion[];
+}
+
 export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
   {
     id: "style-aesthetic",
@@ -1093,3 +1118,252 @@ export const THIS_OR_THAT: ThisOrThatItem[] = [
   { id: "tot-99", prompt: "Are you an early bird?", category: "Lifestyle", image: "", optionA: "Yes", optionB: "No" },
   { id: "tot-100", prompt: "Do you journal?", category: "Lifestyle", image: "", optionA: "Yes", optionB: "No" },
 ];
+
+export const BRANDS_RETAILERS_BANKS: Partial<Record<Gender, GenderedBrandBank>> = {
+  male: {
+    categories: [
+      {
+        id: "everyday-essentials",
+        title: "Everyday Essentials",
+        brands: [
+          { brand: "Uniqlo", dnaTags: ["minimal", "affordable", "everyday"] },
+          { brand: "Everlane", dnaTags: ["minimal", "modern", "ethical"] },
+          { brand: "Buck Mason", dnaTags: ["classic", "rugged", "premium-basic"] },
+          { brand: "Mack Weldon", dnaTags: ["technical", "clean", "everyday"] },
+          { brand: "Mackintosh", dnaTags: ["heritage", "luxury", "outerwear"] },
+          { brand: "Kotn", dnaTags: ["minimal", "ethical", "soft-basic"] },
+          { brand: "Colorful Standard", dnaTags: ["colorful", "minimal", "ethical"] },
+          { brand: "Asket", dnaTags: ["minimal", "premium-basic", "intentional"] },
+          { brand: "Alex Mill", dnaTags: ["classic", "casual", "creative"] },
+          { brand: "Sunspel", dnaTags: ["luxury", "minimal", "refined"] },
+        ],
+      },
+      {
+        id: "rugged-workwear",
+        title: "Rugged / Workwear",
+        brands: [
+          { brand: "Carhartt", dnaTags: ["rugged", "affordable", "street"] },
+          { brand: "Filson", dnaTags: ["rugged", "heritage", "outdoors"] },
+          { brand: "Dickies", dnaTags: ["workwear", "affordable", "street"] },
+          { brand: "Flint and Tinder", dnaTags: ["rugged", "modern", "americana"] },
+          { brand: "Red Wing", dnaTags: ["heritage", "rugged", "craft"] },
+          { brand: "Barbour", dnaTags: ["heritage", "outdoors", "classic"] },
+          { brand: "Levi’s", dnaTags: ["heritage", "everyday", "americana"] },
+          { brand: "Wrangler", dnaTags: ["western", "rugged", "affordable"] },
+          { brand: "Ben Davis", dnaTags: ["workwear", "street", "rugged"] },
+          { brand: "Rogue Territory", dnaTags: ["selvedge", "craft", "rugged"] },
+        ],
+      },
+      {
+        id: "high-street-mall",
+        title: "High-Street / Mall",
+        brands: [
+          { brand: "J.Crew", dnaTags: ["classic", "preppy", "accessible"] },
+          { brand: "Banana Republic", dnaTags: ["modern", "professional", "accessible"] },
+          { brand: "Gap", dnaTags: ["everyday", "affordable", "casual"] },
+          { brand: "Abercrombie & Fitch", dnaTags: ["trendy", "mall", "polished"] },
+          { brand: "Zara Man", dnaTags: ["trendy", "fashion-forward", "fast"] },
+          { brand: "H&M", dnaTags: ["affordable", "fast", "trend-driven"] },
+          { brand: "Madewell Men", dnaTags: ["casual", "denim", "modern"] },
+          { brand: "Bonobos", dnaTags: ["modern", "fit-focused", "smart-casual"] },
+          { brand: "Club Monaco", dnaTags: ["minimal", "polished", "urban"] },
+          { brand: "Old Navy", dnaTags: ["affordable", "casual", "everyday"] },
+        ],
+      },
+      {
+        id: "streetwear-hype",
+        title: "Streetwear & Hype",
+        brands: [
+          { brand: "Supreme", dnaTags: ["hype", "street", "logo-driven"] },
+          { brand: "Stüssy", dnaTags: ["street", "surf", "cool-kid"] },
+          { brand: "Kith", dnaTags: ["street", "premium", "curated"] },
+          { brand: "Aimé Leon Dore", dnaTags: ["street", "heritage", "refined"] },
+          { brand: "Palace", dnaTags: ["skate", "street", "irreverent"] },
+          { brand: "Fear of God (Essentials)", dnaTags: ["street", "minimal", "oversized"] },
+          { brand: "Noah", dnaTags: ["street", "ethical", "preppy"] },
+          { brand: "Bodega", dnaTags: ["street", "curated", "niche"] },
+          { brand: "A Bathing Ape (BAPE)", dnaTags: ["hype", "street", "bold"] },
+          { brand: "Off-White", dnaTags: ["designer", "street", "statement"] },
+        ],
+      },
+      {
+        id: "gorpcore-outdoors",
+        title: "Gorpcore / Outdoors",
+        brands: [
+          { brand: "Patagonia", dnaTags: ["outdoors", "ethical", "casual"] },
+          { brand: "Arc'teryx", dnaTags: ["technical", "outdoors", "premium"] },
+          { brand: "The North Face", dnaTags: ["outdoors", "everyday", "technical"] },
+          { brand: "Snow Peak", dnaTags: ["outdoors", "design-led", "premium"] },
+          { brand: "Salomon", dnaTags: ["technical", "trail", "fashion-crossover"] },
+          { brand: "Gramicci", dnaTags: ["climbing", "casual", "outdoors"] },
+          { brand: "Helly Hansen", dnaTags: ["performance", "weatherproof", "outdoors"] },
+          { brand: "Cotopaxi", dnaTags: ["colorful", "ethical", "outdoors"] },
+          { brand: "L.L. Bean", dnaTags: ["heritage", "outdoors", "accessible"] },
+          { brand: "Eddie Bauer", dnaTags: ["outdoors", "accessible", "classic"] },
+        ],
+      },
+      {
+        id: "athletic-lifestyle",
+        title: "Athletic / Lifestyle",
+        brands: [
+          { brand: "Nike", dnaTags: ["athletic", "iconic", "street"] },
+          { brand: "Adidas", dnaTags: ["athletic", "classic-sport", "street"] },
+          { brand: "Lululemon", dnaTags: ["athleisure", "premium", "clean"] },
+          { brand: "Vuori", dnaTags: ["athleisure", "soft", "west-coast"] },
+          { brand: "Rhone", dnaTags: ["performance", "professional", "technical"] },
+          { brand: "On Running", dnaTags: ["running", "premium", "modern"] },
+          { brand: "Hoka", dnaTags: ["running", "comfort", "performance"] },
+          { brand: "Ten Thousand", dnaTags: ["training", "technical", "minimal"] },
+          { brand: "Gymshark", dnaTags: ["gym", "body-conscious", "trendy"] },
+          { brand: "Alo Yoga (Men)", dnaTags: ["athleisure", "premium", "wellness"] },
+        ],
+      },
+      {
+        id: "modern-professional",
+        title: "Modern Professional",
+        brands: [
+          { brand: "Theory", dnaTags: ["minimal", "professional", "sleek"] },
+          { brand: "Vince", dnaTags: ["luxury", "minimal", "relaxed"] },
+          { brand: "Suitsupply", dnaTags: ["tailoring", "modern", "sharp"] },
+          { brand: "Todd Snyder", dnaTags: ["americana", "designer-lite", "polished"] },
+          { brand: "Spier & Mackay", dnaTags: ["tailoring", "value", "classic"] },
+          { brand: "Reiss", dnaTags: ["modern", "elevated", "urban"] },
+          { brand: "Massimo Dutti", dnaTags: ["refined", "european", "minimal"] },
+          { brand: "Ministry of Supply", dnaTags: ["technical", "professional", "performance"] },
+          { brand: "Public Rec", dnaTags: ["comfort", "professional-casual", "athleisure"] },
+          { brand: "Indochino", dnaTags: ["custom", "tailoring", "professional"] },
+        ],
+      },
+      {
+        id: "luxury-designer",
+        title: "Luxury / Designer",
+        brands: [
+          { brand: "Loro Piana", dnaTags: ["luxury", "quiet", "ultra-premium"] },
+          { brand: "Brunello Cucinelli", dnaTags: ["luxury", "soft-tailoring", "quiet"] },
+          { brand: "Stone Island", dnaTags: ["designer", "technical", "cult"] },
+          { brand: "Acne Studios", dnaTags: ["designer", "minimal", "fashion"] },
+          { brand: "Tom Ford", dnaTags: ["luxury", "sexy", "sharp"] },
+          { brand: "Gucci", dnaTags: ["luxury", "maximal", "statement"] },
+          { brand: "Prada", dnaTags: ["designer", "intellectual", "minimal"] },
+          { brand: "Saint Laurent", dnaTags: ["designer", "rock", "sleek"] },
+          { brand: "Zegna", dnaTags: ["luxury", "tailoring", "quiet"] },
+          { brand: "Bottega Veneta", dnaTags: ["luxury", "quiet", "craft"] },
+        ],
+      },
+      {
+        id: "heritage-classic",
+        title: "Heritage / Classic",
+        brands: [
+          { brand: "Ralph Lauren (Polo)", dnaTags: ["heritage", "preppy", "classic"] },
+          { brand: "Brooks Brothers", dnaTags: ["classic", "preppy", "professional"] },
+          { brand: "Lacoste", dnaTags: ["sport-classic", "preppy", "european"] },
+          { brand: "Fred Perry", dnaTags: ["heritage", "subculture", "sport-classic"] },
+          { brand: "Baracuta", dnaTags: ["heritage", "british", "classic"] },
+          { brand: "Pendleton", dnaTags: ["heritage", "americana", "patterned"] },
+          { brand: "Filson", dnaTags: ["heritage", "rugged", "outdoors"] },
+          { brand: "Dr. Martens", dnaTags: ["heritage", "alternative", "boots"] },
+          { brand: "Birkenstock", dnaTags: ["comfort", "heritage", "casual"] },
+          { brand: "Clarks", dnaTags: ["classic", "comfort", "british"] },
+        ],
+      },
+      {
+        id: "multi-brand-retailers",
+        title: "Multi-Brand Retailers",
+        brands: [
+          { brand: "Mr Porter", dnaTags: ["luxury", "curated", "editorial"] },
+          { brand: "Ssense", dnaTags: ["designer", "street", "fashion-forward"] },
+          { brand: "End Clothing", dnaTags: ["street", "designer", "curated"] },
+          { brand: "Nordstrom", dnaTags: ["accessible", "broad", "reliable"] },
+          { brand: "Nordstrom Rack", dnaTags: ["discount", "value", "treasure-hunt"] },
+          { brand: "Saks Fifth Avenue", dnaTags: ["luxury", "department-store", "classic"] },
+          { brand: "Farfetch", dnaTags: ["designer", "global", "fashion-forward"] },
+          { brand: "Grailed", dnaTags: ["resale", "street", "archive"] },
+          { brand: "Huckberry", dnaTags: ["rugged", "outdoors", "curated"] },
+          { brand: "Culture Kings", dnaTags: ["street", "hype", "logo-driven"] },
+        ],
+      },
+    ],
+    questions: [
+      {
+        id: "male-br-01",
+        prompt: "Do you lean more clean essentials or heavy-duty workwear?",
+        categoryA: "Everyday Essentials",
+        categoryB: "Rugged / Workwear",
+        tagsForA: ["minimal", "everyday", "clean"],
+        tagsForB: ["rugged", "workwear", "heritage"],
+      },
+      {
+        id: "male-br-02",
+        prompt: "Are you more mall staples or streetwear drops?",
+        categoryA: "High-Street / Mall",
+        categoryB: "Streetwear & Hype",
+        tagsForA: ["accessible", "trend-driven", "smart-casual"],
+        tagsForB: ["street", "hype", "statement"],
+      },
+      {
+        id: "male-br-03",
+        prompt: "Would you rather dress for the trail or the gym-to-coffee run?",
+        categoryA: "Gorpcore / Outdoors",
+        categoryB: "Athletic / Lifestyle",
+        tagsForA: ["outdoors", "technical", "weatherproof"],
+        tagsForB: ["athletic", "athleisure", "performance"],
+      },
+      {
+        id: "male-br-04",
+        prompt: "Is your ideal wardrobe more boardroom-polished or luxury-designer?",
+        categoryA: "Modern Professional",
+        categoryB: "Luxury / Designer",
+        tagsForA: ["professional", "tailoring", "modern"],
+        tagsForB: ["luxury", "designer", "premium"],
+      },
+      {
+        id: "male-br-05",
+        prompt: "Do you skew timeless classics or retailer-led discovery?",
+        categoryA: "Heritage / Classic",
+        categoryB: "Multi-Brand Retailers",
+        tagsForA: ["heritage", "classic", "preppy"],
+        tagsForB: ["curated", "discovery", "multi-brand"],
+      },
+      {
+        id: "male-br-06",
+        prompt: "Quiet luxury basics or logo-heavy hype pieces?",
+        categoryA: "Everyday Essentials",
+        categoryB: "Streetwear & Hype",
+        tagsForA: ["quiet", "minimal", "premium-basic"],
+        tagsForB: ["logo-driven", "hype", "bold"],
+      },
+      {
+        id: "male-br-07",
+        prompt: "Technical outerwear or classic tailoring?",
+        categoryA: "Gorpcore / Outdoors",
+        categoryB: "Modern Professional",
+        tagsForA: ["technical", "outdoors", "functional"],
+        tagsForB: ["tailoring", "professional", "sharp"],
+      },
+      {
+        id: "male-br-08",
+        prompt: "Do you trust heritage labels more than fast-moving high street?",
+        categoryA: "Heritage / Classic",
+        categoryB: "High-Street / Mall",
+        tagsForA: ["heritage", "classic", "americana"],
+        tagsForB: ["affordable", "fast", "trend-driven"],
+      },
+      {
+        id: "male-br-09",
+        prompt: "Performance-first brands or designer fashion houses?",
+        categoryA: "Athletic / Lifestyle",
+        categoryB: "Luxury / Designer",
+        tagsForA: ["performance", "comfort", "athletic"],
+        tagsForB: ["designer", "fashion", "luxury"],
+      },
+      {
+        id: "male-br-10",
+        prompt: "Would you rather shop one trusted brand or browse a curated retailer?",
+        categoryA: "Everyday Essentials",
+        categoryB: "Multi-Brand Retailers",
+        tagsForA: ["loyal", "everyday", "consistent"],
+        tagsForB: ["curated", "editorial", "discovery"],
+      },
+    ],
+  },
+};
