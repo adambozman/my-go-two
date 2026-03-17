@@ -124,9 +124,9 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
           style={{ background: "rgba(255,255,255,0.28)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}
         >
           <div className="mb-3 grid grid-cols-7">
-            {DAY_NAMES.map((dayName) => (
+            {DAY_NAMES.map((dayName, index) => (
               <div
-                key={dayName}
+                key={`${dayName}-${index}`}
                 className="py-1 text-center text-[10px] font-semibold uppercase"
                 style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
               >
@@ -185,23 +185,6 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
           </div>
         </div>
       </div>
-    </motion.section>
-  );
-}
-                  className="text-[12px] font-bold tabular-nums shrink-0 px-2 py-0.5 rounded-full"
-                  style={{
-                    color: accent,
-                    background: `${accent}10`,
-                    fontFamily: "'Jost', sans-serif",
-                  }}
-                >
-                  {m.daysOut}d
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      )}
     </motion.section>
   );
 }
