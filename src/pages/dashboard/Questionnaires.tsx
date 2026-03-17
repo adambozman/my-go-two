@@ -276,10 +276,7 @@ const Questionnaires = () => {
   const visibleThisOrThatAnswered = subscribed ? totAnsweredCount : Math.min(totAnsweredCount, visibleThisOrThatCount);
 
   const openThisOrThat = () => {
-    if (!subscribed && totQueue.length === 0) return;
-    setTotIndex(0);
-    setTotSwipeDir(null);
-    setView("thisorthat");
+    setView("thisorthat_dashboard");
   };
 
   const getSectionForQuestion = (q: QuizQuestion) => SECTIONS.find((section) => section.id === q.section);
