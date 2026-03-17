@@ -169,58 +169,60 @@ const Recommendations = () => {
           style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
         >
           <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
-          <div className="relative flex flex-col gap-5">
+          <div className="relative flex items-start gap-6">
 
-            {/* Top — eyebrow + title + how it works box (uneven) */}
-            <div className="flex items-start justify-between gap-6 flex-wrap">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Go Two / Recommendations
+            {/* Left — title + persona */}
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                Go Two / Recommendations
+              </p>
+              <h1 className="text-[44px] md:text-[60px] leading-[0.9] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                Curated<br />Just For You
+              </h1>
+              {personalization?.persona_summary && (
+                <p className="text-[16px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
+                  {personalization.persona_summary}
                 </p>
-                <h1 className="text-[44px] md:text-[60px] leading-[0.9] mb-0" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  Curated<br />For You
-                </h1>
-              </div>
-              <div className="rounded-[26px] px-5 py-4 backdrop-blur-md" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)", maxWidth: 220 }}>
-                <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                  How it works
+              )}
+              {generatedLabel && (
+                <p className="text-[11px] mt-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
                 </p>
-                <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Every pick comes from your Know Me and My Go Two — not a trending feed.
-                </p>
-              </div>
+              )}
             </div>
 
-            {/* Body */}
-            <p className="text-[16px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Think of this as your personal style assistant and gift connoisseur. The AI reads your answers across every category — taste, style, home, gifting — and curates a list built entirely around you. Answer more, get sharper picks.
-            </p>
-
-            {/* Persona */}
-            {personalization?.persona_summary && (
-              <p className="text-[18px] leading-snug max-w-[52ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
-                {personalization.persona_summary}
+            {/* Right — glass box with staggered pills inside */}
+            <div className="rounded-[26px] p-5 backdrop-blur-md flex-shrink-0 w-[260px]" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)" }}>
+              <p className="text-[9px] uppercase tracking-[0.18em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                Your AI knows you as
               </p>
-            )}
-
-            {/* Bottom row — smaller pill + access */}
-            <div className="flex items-center gap-3 flex-wrap">
-              {generatedLabel && (
-                <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
-                </span>
-              )}
-              {!subscribed && (
-                <div className="rounded-[14px] px-3 py-1.5 backdrop-blur-md inline-flex items-center gap-1.5" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                  <span className="text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>Preview mode</span>
-                  <span className="text-[10px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>· Premium unlocks the live weekly feed</span>
-                </div>
-              )}
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: "How it works", offset: false },
+                  { label: "Style Strategist", offset: true },
+                  { label: "Atmosphere Architect", offset: false },
+                  { label: "The Intentional Giver", offset: true },
+                ].map(({ label, offset }) => (
+                  <div
+                    key={label}
+                    className={`rounded-full px-3 py-1.5 text-[11px]${offset ? " ml-4" : ""}`}
+                    style={{
+                      fontFamily: "'Jost', sans-serif",
+                      background: "rgba(255,255,255,0.3)",
+                      border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)",
+                      color: "var(--swatch-viridian-odyssey)",
+                      display: "inline-block",
+                    }}
+                  >
+                    {label}
+                  </div>
+                ))}
+              </div>
               {subscribed && (
                 <button
                   onClick={() => fetchProducts(true)}
                   disabled={loading}
-                  className="rounded-[14px] px-3 py-1.5 backdrop-blur-md inline-flex items-center gap-1.5 transition-opacity disabled:opacity-50"
+                  className="mt-4 rounded-full px-3 py-1.5 inline-flex items-center gap-1.5 transition-opacity disabled:opacity-50"
                   style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
                 >
                   <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} style={{ color: "var(--swatch-teal)" }} />
@@ -230,6 +232,7 @@ const Recommendations = () => {
                 </button>
               )}
             </div>
+
           </div>
         </motion.div>
 
