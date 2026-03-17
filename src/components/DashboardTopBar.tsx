@@ -129,16 +129,13 @@ export function DashboardTopBar() {
   const isMyGoTwo = location.pathname === "/dashboard/my-go-two";
   const activeTagline = taglines[location.pathname] ?? taglines["/dashboard"];
   const showQuote = isMyGoTwo;
-  const isRecommendations = location.pathname.includes("recommendations");
-  const isDashboardHome = location.pathname.endsWith("/dashboard");
 
   return (
     <header
       className="px-4 md:px-8 shrink-0 flex flex-col"
       style={{
-        height: showQuote ? "224px" : (isRecommendations || isDashboardHome) ? "auto" : "var(--header-height)",
+        height: "var(--header-height)",
         paddingTop: "var(--header-top-padding)",
-        paddingBottom: showQuote ? "8px" : (isRecommendations || isDashboardHome) ? "12px" : undefined,
       }}
     >
       <div className="relative flex items-center justify-between gap-2 md:gap-4" style={{ height: "var(--header-icons-row-height)" }}>
@@ -251,7 +248,7 @@ export function DashboardTopBar() {
         <div
           className="header-tagline-wrapper"
           style={{
-            marginTop: "42px",
+            marginTop: "var(--header-tagline-margin-top)",
             transition: "opacity 0.8s ease",
             textAlign: "center",
           }}
