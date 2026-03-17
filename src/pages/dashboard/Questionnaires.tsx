@@ -688,13 +688,8 @@ const Questionnaires = () => {
           initial={{ opacity: 0, y: 20, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: "spring", stiffness: 280, damping: 24 }}
-          className="w-full max-w-[480px] rounded-[28px] overflow-hidden relative flex flex-col"
+          className="card-design-overlay-teal w-full max-w-[480px] rounded-[28px] overflow-hidden relative flex flex-col"
           style={{
-            background: "linear-gradient(160deg, rgba(255,255,255,0.88) 0%, rgba(240,233,221,0.92) 100%)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(255,255,255,0.65)",
-            boxShadow: "0 12px 48px rgba(30,74,82,0.10), 0 2px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)",
             maxHeight: "calc(100vh - 160px)",
           }}
         >
@@ -782,14 +777,14 @@ const Questionnaires = () => {
                         style={{
                           minHeight: 110,
                           background: isSelected
-                            ? "linear-gradient(145deg, rgba(var(--swatch-teal-rgb), 0.18), rgba(var(--swatch-viridian-odyssey-rgb), 0.08))"
-                            : "rgba(255,255,255,0.52)",
+                            ? "linear-gradient(145deg, rgba(var(--swatch-teal-rgb), 0.22), rgba(var(--swatch-viridian-odyssey-rgb), 0.10))"
+                            : "rgba(255,255,255,0.28)",
                           border: isSelected
                             ? "1.5px solid var(--swatch-teal)"
-                            : "1.5px solid rgba(var(--swatch-antique-coin-rgb), 0.14)",
+                            : "1.5px solid rgba(255,255,255,0.42)",
                           boxShadow: isSelected
-                            ? "0 4px 20px rgba(45,104,112,0.14), inset 0 1px 0 rgba(255,255,255,0.6)"
-                            : "0 2px 8px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.5)",
+                            ? "0 4px 20px rgba(45,104,112,0.18), inset 0 1px 0 rgba(255,255,255,0.5)"
+                            : "0 2px 8px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.4)",
                         }}
                       >
                         {/* Corner accent */}
