@@ -9,7 +9,6 @@ import { EventCalendar } from "@/components/home/EventCalendar";
 import { type DirectoryEntry } from "@/components/home/ConnectionDirectory";
 import { ConnectionAvatarRow } from "@/components/home/ConnectionAvatarRow";
 import { GreetingHeader } from "@/components/home/GreetingHeader";
-import { RecentUpdates, type RecentUpdate } from "@/components/home/RecentUpdates";
 import { AddConnectionModal } from "@/components/home/AddConnectionModal";
 import PremiumLockCard from "@/components/PremiumLockCard";
 
@@ -34,7 +33,6 @@ const DashboardHome = () => {
   const { user, subscribed } = useAuth();
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
-  const [recentUpdates, setRecentUpdates] = useState<RecentUpdate[]>([]);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [openConnection, setOpenConnection] = useState<{
     card: ConnectionCard;
@@ -169,54 +167,10 @@ const DashboardHome = () => {
     setMilestones(upcoming.slice(0, 5));
   }, [user]);
 
-  const loadRecentUpdates = useCallback(async () => {
-    if (!user) return;
-
-    const { data: couples } = await supabase
-      .from("couples")
-      .select("inviter_id, invitee_id, display_label, status")
-      .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`)
-      .eq("status", "accepted");
-
-    if (!couples?.length) {
-      setRecentUpdates([
-        { id: "demo-u1", person: "Wife", action: "updated her", category: "Gift Preferences", timestamp: new Date(Date.now() - 3600000).toISOString() },
-        { id: "demo-u2", person: "Mom", action: "added to her", category: "Favorite Restaurants", timestamp: new Date(Date.now() - 86400000).toISOString() },
-      ]);
-      return;
-    }
-
-    const partnerIds = couples.map((c: any) => (c.inviter_id === user.id ? c.invitee_id : c.inviter_id)).filter(Boolean);
-    if (!partnerIds.length) return;
-
-    const { data: entries } = await supabase
-      .from("card_entries")
-      .select("id, user_id, card_key, group_name, entry_name, updated_at")
-      .in("user_id", partnerIds)
-      .order("updated_at", { ascending: false })
-      .limit(5);
-
-    if (!entries?.length) return;
-
-    setRecentUpdates(
-      entries.map((entry: any) => {
-        const couple = couples.find((c: any) => c.inviter_id === entry.user_id || c.invitee_id === entry.user_id);
-        return {
-          id: entry.id,
-          person: couple?.display_label || "Connection",
-          action: "updated",
-          category: entry.group_name || entry.card_key,
-          timestamp: entry.updated_at,
-        };
-      })
-    );
-  }, [user]);
-
   useEffect(() => {
     loadConnections();
     loadMilestones();
-    loadRecentUpdates();
-  }, [loadConnections, loadMilestones, loadRecentUpdates]);
+  }, [loadConnections, loadMilestones]);
 
   const directoryEntries: DirectoryEntry[] = connections.map((c) => ({
     id: c.id,
@@ -229,7 +183,6 @@ const DashboardHome = () => {
 
   const realConnections = connections.filter((c) => !c.id.startsWith("placeholder-")).length;
   const canAddAnotherConnection = subscribed || realConnections < 1;
-  const nextMilestone = milestones[0] ?? null;
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
@@ -314,11 +267,6 @@ const DashboardHome = () => {
             <div className="lg:col-span-1 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}>
               <EventCalendar milestones={milestones} />
             </div>
-          </div>
-
-          {/* Row 4: Recent Activity */}
-          <div>
-            <RecentUpdates updates={recentUpdates} />
           </div>
         </div>
       </div>
