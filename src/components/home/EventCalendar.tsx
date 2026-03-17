@@ -61,7 +61,7 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
   const today = now.getDate();
 
   const [visibleDate, setVisibleDate] = useState(() => new Date(currentYear, currentMonth, 1));
-  const [selectedDay, setSelectedDay] = useState<number | null>(today);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [localEvents, setLocalEvents] = useState<LocalEvent[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newEventTitle, setNewEventTitle] = useState("");
@@ -149,7 +149,7 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
 
   const selectedDateLabel = selectedDay !== null
     ? new Date(year, month, selectedDay).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
-    : "Select a day";
+    : "";
 
   const changeMonth = (dir: number) => {
     setVisibleDate((value) => new Date(value.getFullYear(), value.getMonth() + dir, 1));
@@ -193,7 +193,7 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
         <div className="absolute -right-16 -top-12 h-40 w-40 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)" }} />
         <div className="absolute -bottom-20 -left-14 h-40 w-40 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.24)" }} />
 
-        <div className="relative flex min-h-[620px] flex-col gap-4">
+        <div className="relative flex min-h-[560px] flex-col gap-4">
           <div className="space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -267,7 +267,7 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
                       <button
                         key={key}
                         onClick={() => {
-                          setSelectedDay(day);
+                          setSelectedDay((prev) => (prev === day ? null : day));
                           setShowAddForm(false);
                         }}
                         className="relative flex h-11 flex-col items-center justify-center rounded-[16px] transition-all duration-200"
@@ -299,15 +299,20 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
             </div>
           </div>
 
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             {selectedDay !== null && (
               <motion.div
                 key={selectedKey}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="mt-auto rounded-[28px] px-4 py-4"
-                style={{ background: "rgba(var(--swatch-paper-rgb), 0.12)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.14)", backdropFilter: "blur(12px)" }}
+                exit={{ opacity: 0, y: 14 }}
+                className="absolute inset-x-2 bottom-2 z-20 rounded-[28px] px-4 py-4"
+                style={{
+                  background: "rgba(var(--swatch-paper-rgb), 0.12)",
+                  border: "1px solid rgba(var(--swatch-paper-rgb), 0.14)",
+                  backdropFilter: "blur(12px)",
+                  boxShadow: "0 14px 34px rgba(30,74,82,0.2)",
+                }}
               >
                 <div className="mb-3 flex items-start justify-between gap-3">
                   <div>

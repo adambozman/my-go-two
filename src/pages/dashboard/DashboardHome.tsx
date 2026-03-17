@@ -263,8 +263,8 @@ const DashboardHome = () => {
           )}
 
           {/* Row 3: Calendar */}
-          <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
-            <div className="min-w-0 xl:col-span-1 xl:w-[25vw] xl:max-w-[380px]">
+          <div className="flex">
+            <div className="w-full min-w-[320px] xl:w-[25vw]">
               <EventCalendar milestones={milestones} />
             </div>
           </div>
