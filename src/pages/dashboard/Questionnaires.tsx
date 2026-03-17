@@ -535,29 +535,6 @@ const Questionnaires = () => {
     return (
       <div className="h-full overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
-          <div className="flex justify-end mb-4">
-            <span className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              This or That categories
-            </span>
-          </div>
-
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 260, damping: 24 }}
-            className="card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden mb-4"
-            style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
-          >
-            <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-              Fixed category map
-            </p>
-            <h2 className="text-[28px] leading-[0.96] mb-3 max-w-[14ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-              Choose a category.
-            </h2>
-            <p className="text-[14px] leading-relaxed max-w-[64ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Categories are fixed and question banks are fixed by gender. The AI does not generate these prompts — it reads your saved answers to infer your vibe.
-            </p>
-          </motion.section>
 
           <div className="grid grid-cols-1 md:grid-cols-6 gap-3 auto-rows-[minmax(140px,auto)]">
             {THIS_OR_THAT_CATEGORIES.map((category, index) => {
