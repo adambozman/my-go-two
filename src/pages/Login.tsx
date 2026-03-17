@@ -69,18 +69,17 @@ const Login = () => {
               <span className="two">Two</span>
             </span>
           </Link>
-          <Link to="/signup">
-            <Button
-              size="sm"
-              className="rounded-full px-6 text-sm font-bold border-0"
-              style={{
-                background: "var(--swatch-viridian-odyssey)",
-                color: "var(--swatch-cream-light)",
-              }}
-            >
-              Sign Up
-            </Button>
-          </Link>
+          <Button
+            asChild
+            size="sm"
+            className="rounded-full px-6 text-sm font-bold border-0"
+            style={{
+              background: "var(--swatch-viridian-odyssey)",
+              color: "var(--swatch-cream-light)",
+            }}
+          >
+            <Link to="/signup">Sign Up</Link>
+          </Button>
         </nav>
 
         {/* Content */}
