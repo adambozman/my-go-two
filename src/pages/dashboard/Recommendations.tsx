@@ -169,7 +169,7 @@ const Recommendations = () => {
           style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
         >
           <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
-          <div className="relative flex flex-col h-full gap-5">
+          <div className="relative flex flex-col gap-4">
 
             <div className="flex items-start justify-between gap-6 flex-wrap">
               <div>
@@ -191,15 +191,13 @@ const Recommendations = () => {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-[minmax(0,1fr)_auto] gap-4 items-end">
-              {personalization?.persona_summary && (
-                <p className="text-[18px] leading-snug max-w-[52ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
-                  {personalization.persona_summary}
-                </p>
-              )}
-            </div>
+            {personalization?.persona_summary && (
+              <p className="text-[18px] leading-snug max-w-[52ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
+                {personalization.persona_summary}
+              </p>
+            )}
 
-            <div className="flex items-center gap-3 flex-wrap mt-auto">
+            <div className="flex items-center gap-3 flex-wrap">
               {generatedLabel && (
                 <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                   {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
