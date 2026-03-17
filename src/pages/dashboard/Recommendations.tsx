@@ -160,103 +160,77 @@ const Recommendations = () => {
     <div className="h-full overflow-y-auto px-1 pb-6">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6 space-y-4">
 
-        {/* ── Hero row ── */}
-        <div className="grid lg:grid-cols-12 gap-4">
+        {/* ── Hero card ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 24 }}
+          className="card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[340px]"
+          style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+        >
+          <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
+          <div className="relative flex flex-col h-full gap-5">
 
-          {/* Hero card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 260, damping: 24 }}
-            className="lg:col-span-8 card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden"
-            style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
-          >
-            <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
-            <div className="relative flex flex-col h-full gap-5">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Go Two / Recommendations
-                  </p>
-                  <h1 className="text-[44px] md:text-[56px] leading-[0.9] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                    Curated<br />For You
-                  </h1>
-                </div>
-
-                {/* Refresh */}
-                {subscribed && (
-                  <button
-                    onClick={() => fetchProducts(true)}
-                    disabled={loading}
-                    className="rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 flex-shrink-0 transition-opacity disabled:opacity-50"
-                    style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
-                  >
-                    <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} style={{ color: "var(--swatch-teal)" }} />
-                    <span className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                      {loading ? "Loading" : "Refresh"}
-                    </span>
-                  </button>
-                )}
+            <div className="flex items-start justify-between gap-6 flex-wrap">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  Go Two / Recommendations
+                </p>
+                <h1 className="text-[44px] md:text-[60px] leading-[0.9] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                  Curated<br />For You
+                </h1>
               </div>
 
-              {/* Persona summary */}
+              <div className="rounded-[26px] px-5 py-4 backdrop-blur-md" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)" }}>
+                <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  How it works
+                </p>
+                <p className="text-[13px] leading-relaxed max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Every pick comes from your Know Me answers — not an algorithm. The more you fill in, the sharper the read.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-[minmax(0,1fr)_auto] gap-4 items-end">
               {personalization?.persona_summary && (
                 <p className="text-[18px] leading-snug max-w-[52ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
                   {personalization.persona_summary}
                 </p>
               )}
-
-              <div className="flex items-center gap-3 flex-wrap mt-auto">
-                {/* Freshness */}
-                {generatedLabel && (
-                  <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
-                  </span>
-                )}
-
-                {/* Partial access pill */}
-                {!subscribed && (
-                  <div className="rounded-[16px] px-3 py-1.5 backdrop-blur-md inline-flex items-center gap-2" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                    <span className="text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                      Preview mode
-                    </span>
-                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                      · Premium unlocks the live weekly feed
-                    </span>
-                  </div>
-                )}
-              </div>
             </div>
-          </motion.div>
 
-          {/* Side stat card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
-            className="lg:col-span-4 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden flex flex-col"
-            style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
-          >
-            <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
-            <div className="relative flex flex-col flex-1">
-              <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                How it works
-              </p>
-              <p className="text-[34px] leading-[0.96] mb-5 max-w-[14ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                Built from your profile, not a trending feed.
-              </p>
-              <p className="text-[14px] leading-relaxed mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>
-                Every pick is generated from your Know Me answers. The more you fill in, the sharper the read.
-              </p>
-              <div className="mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                <span className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                  {subscribed ? `${products.length} picks this week` : "Preview — 4 picks"}
+            <div className="flex items-center gap-3 flex-wrap mt-auto">
+              {generatedLabel && (
+                <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
                 </span>
-                <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
-              </div>
+              )}
+              {!subscribed && (
+                <div className="rounded-[16px] px-3 py-1.5 backdrop-blur-md inline-flex items-center gap-2" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                  <span className="text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                    Preview mode
+                  </span>
+                  <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    · Premium unlocks the live weekly feed
+                  </span>
+                </div>
+              )}
+              {subscribed && (
+                <button
+                  onClick={() => fetchProducts(true)}
+                  disabled={loading}
+                  className="rounded-[16px] px-3 py-1.5 backdrop-blur-md inline-flex items-center gap-2 transition-opacity disabled:opacity-50"
+                  style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} style={{ color: "var(--swatch-teal)" }} />
+                  <span className="text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                    {loading ? "Loading" : "Refresh"}
+                  </span>
+                </button>
+              )}
             </div>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
 
         {/* ── Category pills ── */}
         <motion.div
