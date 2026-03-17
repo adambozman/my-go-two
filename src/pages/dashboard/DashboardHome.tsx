@@ -44,6 +44,7 @@ const pillButtonStyle = {
 
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
+  const showHomeCards = false;
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [displayName, setDisplayName] = useState<string | null>(null);
@@ -274,6 +275,8 @@ const DashboardHome = () => {
         <div className="grid gap-4 pb-8">
           <GreetingHeader displayName={displayName} />
 
+          {showHomeCards && (
+            <>
           <div
             className="relative overflow-hidden rounded-[32px] px-4 py-4 md:px-6 md:py-5"
             style={{
@@ -392,6 +395,8 @@ const DashboardHome = () => {
               </div>
             </div>
           </div>
+            </>
+          )}
         </div>
       </div>
 
