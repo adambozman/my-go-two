@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Plus, X, Gift, Heart, CalendarDays } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, X, CalendarDays, Gift, Heart, Bell } from "lucide-react";
 import type { Milestone } from "./MilestoneCountdown";
 
 interface EventCalendarProps {
@@ -9,41 +9,50 @@ interface EventCalendarProps {
 
 interface LocalEvent {
   id: string;
-  date: string; // "YYYY-MM-DD"
+  date: string;
   title: string;
   type: "personal" | "birthday" | "anniversary" | "reminder";
 }
 
-const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const DAY_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function getMonthGrid(year: number, month: number) {
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const rows: (number | null)[][] = [];
   let row: (number | null)[] = Array(firstDay).fill(null);
+
   for (let d = 1; d <= daysInMonth; d++) {
     row.push(d);
-    if (row.length === 7) { rows.push(row); row = []; }
+    if (row.length === 7) {
+      rows.push(row);
+      row = [];
+    }
   }
+
   if (row.length) {
     while (row.length < 7) row.push(null);
     rows.push(row);
   }
+
   return rows;
 }
 
-function pad(n: number) { return String(n).padStart(2, "0"); }
+function pad(n: number) {
+  return String(n).padStart(2, "0");
+}
+
 function dateKey(year: number, month: number, day: number) {
   return `${year}-${pad(month + 1)}-${pad(day)}`;
 }
 
-const TYPE_COLORS: Record<string, string> = {
-  birthday: "var(--swatch-cedar-grove)",
-  anniversary: "var(--swatch-teal)",
-  personal: "var(--swatch-viridian-odyssey)",
-  reminder: "var(--swatch-antique-coin)",
-};
+const TYPE_META = {
+  birthday: { color: "var(--swatch-cedar-grove)", icon: Gift },
+  anniversary: { color: "var(--swatch-teal)", icon: Heart },
+  personal: { color: "var(--swatch-viridian-odyssey)", icon: CalendarDays },
+  reminder: { color: "var(--swatch-antique-coin)", icon: Bell },
+} satisfies Record<LocalEvent["type"], { color: string; icon: typeof CalendarDays }>;
 
 export function EventCalendar({ milestones }: EventCalendarProps) {
   const now = new Date();
@@ -62,263 +71,343 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
   const month = visibleDate.getMonth();
   const grid = getMonthGrid(year, month);
 
-  // Merge milestones into a day map
   const dayEvents = useMemo(() => {
-    const map = new Map<string, Array<{ title: string; type: string; color: string }>>();
+    const map = new Map<string, Array<{ id: string; title: string; type: LocalEvent["type"]; color: string }>>();
 
-    for (const m of milestones) {
-      if (m.date.getMonth() === month && m.date.getFullYear() === year) {
-        const key = dateKey(year, month, m.date.getDate());
+    for (const milestone of milestones) {
+      if (milestone.date.getMonth() === month && milestone.date.getFullYear() === year) {
+        const key = dateKey(year, month, milestone.date.getDate());
         if (!map.has(key)) map.set(key, []);
         map.get(key)!.push({
-          title: `${m.person}'s ${m.label}`,
-          type: m.type,
-          color: m.type === "birthday" ? TYPE_COLORS.birthday : TYPE_COLORS.anniversary,
+          id: milestone.id,
+          title: `${milestone.person}'s ${milestone.label}`,
+          type: milestone.type === "birthday" ? "birthday" : "anniversary",
+          color: milestone.type === "birthday" ? TYPE_META.birthday.color : TYPE_META.anniversary.color,
         });
       }
     }
 
-    for (const e of localEvents) {
-      const [ey, em, ed] = e.date.split("-").map(Number);
+    for (const event of localEvents) {
+      const [ey, em, ed] = event.date.split("-").map(Number);
       if (ey === year && em - 1 === month) {
         const key = dateKey(year, month, ed);
         if (!map.has(key)) map.set(key, []);
-        map.get(key)!.push({ title: e.title, type: e.type, color: TYPE_COLORS[e.type] });
+        map.get(key)!.push({
+          id: event.id,
+          title: event.title,
+          type: event.type,
+          color: TYPE_META[event.type].color,
+        });
       }
     }
 
     return map;
-  }, [milestones, localEvents, month, year]);
+  }, [localEvents, milestones, month, year]);
 
   const selectedKey = selectedDay !== null ? dateKey(year, month, selectedDay) : null;
   const selectedEvents = selectedKey ? dayEvents.get(selectedKey) ?? [] : [];
 
+  const upcoming = useMemo(() => {
+    const all: Array<{ id: string; title: string; type: LocalEvent["type"]; color: string; date: Date; daysOut: number }> = [];
+    const cutoff = new Date(now.getTime() + 45 * 86400000);
+
+    for (const milestone of milestones) {
+      if (milestone.date >= now && milestone.date <= cutoff) {
+        const type = milestone.type === "birthday" ? "birthday" : "anniversary";
+        all.push({
+          id: milestone.id,
+          title: `${milestone.person}'s ${milestone.label}`,
+          type,
+          color: TYPE_META[type].color,
+          date: milestone.date,
+          daysOut: Math.ceil((milestone.date.getTime() - now.getTime()) / 86400000),
+        });
+      }
+    }
+
+    for (const event of localEvents) {
+      const date = new Date(`${event.date}T12:00:00`);
+      if (date >= now && date <= cutoff) {
+        all.push({
+          id: event.id,
+          title: event.title,
+          type: event.type,
+          color: TYPE_META[event.type].color,
+          date,
+          daysOut: Math.ceil((date.getTime() - now.getTime()) / 86400000),
+        });
+      }
+    }
+
+    return all.sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 3);
+  }, [localEvents, milestones]);
+
+  const highlightedDates = useMemo(
+    () => new Set(upcoming.map((event) => dateKey(event.date.getFullYear(), event.date.getMonth(), event.date.getDate()))),
+    [upcoming],
+  );
+
+  const selectedDateLabel = selectedDay !== null
+    ? new Date(year, month, selectedDay).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+    : "";
+
   const changeMonth = (dir: number) => {
-    setVisibleDate((d) => new Date(d.getFullYear(), d.getMonth() + dir, 1));
+    setVisibleDate((value) => new Date(value.getFullYear(), value.getMonth() + dir, 1));
     setSelectedDay(null);
+    setShowAddForm(false);
   };
 
   const handleAddEvent = () => {
     if (!newEventTitle.trim() || selectedDay === null) return;
-    setLocalEvents((prev) => [...prev, {
-      id: `${Date.now()}`,
-      date: dateKey(year, month, selectedDay),
-      title: newEventTitle.trim(),
-      type: newEventType,
-    }]);
+
+    setLocalEvents((prev) => [
+      ...prev,
+      {
+        id: `${Date.now()}`,
+        date: dateKey(year, month, selectedDay),
+        title: newEventTitle.trim(),
+        type: newEventType,
+      },
+    ]);
+
     setNewEventTitle("");
     setShowAddForm(false);
   };
 
-  // Upcoming events across all months (next 60 days)
-  const upcoming = useMemo(() => {
-    const all: Array<{ title: string; date: Date; color: string; type: string }> = [];
-    const cutoff = new Date(now.getTime() + 60 * 86400000);
-
-    for (const m of milestones) {
-      if (m.date >= now && m.date <= cutoff) {
-        all.push({ title: `${m.person}'s ${m.label}`, date: m.date, color: m.type === "birthday" ? TYPE_COLORS.birthday : TYPE_COLORS.anniversary, type: m.type });
-      }
-    }
-    for (const e of localEvents) {
-      const d = new Date(e.date);
-      if (d >= now && d <= cutoff) {
-        all.push({ title: e.title, date: d, color: TYPE_COLORS[e.type], type: e.type });
-      }
-    }
-    return all.sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 4);
-  }, [milestones, localEvents]);
-
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative overflow-visible rounded-[34px] p-[1px]"
+      style={{
+        background: "linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.44) 0%, rgba(var(--swatch-viridian-odyssey-rgb), 0.92) 100%)",
+        boxShadow: "0 26px 56px rgba(30,74,82,0.22)",
+      }}
+    >
+      <div
+        className="relative overflow-hidden rounded-[33px] px-4 py-4 md:px-5 md:py-5"
+        style={{
+          background: "linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.94) 0%, rgba(var(--swatch-viridian-odyssey-rgb), 0.98) 100%)",
+        }}
+      >
+        <div className="absolute -right-16 -top-12 h-40 w-40 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)" }} />
+        <div className="absolute -bottom-20 -left-14 h-40 w-40 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.24)" }} />
 
-      {/* Month header */}
-      <div className="flex items-center justify-between">
-        <p className="text-[26px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-          {MONTH_NAMES[month]} {year}
-        </p>
-        <div className="flex items-center gap-1.5">
-          <button onClick={() => changeMonth(-1)} className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-105" style={{ background: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.5)", color: "var(--swatch-viridian-odyssey)" }}>
-            <ChevronLeft className="w-3.5 h-3.5" />
-          </button>
-          <button onClick={() => changeMonth(1)} className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-105" style={{ background: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.5)", color: "var(--swatch-viridian-odyssey)" }}>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Day headers */}
-      <div className="grid grid-cols-7">
-        {DAY_NAMES.map((d, i) => (
-          <div key={i} className="text-center text-[9px] uppercase tracking-[0.12em] pb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-            {d}
-          </div>
-        ))}
-      </div>
-
-      {/* Grid */}
-      <div className="flex-1">
-        {grid.map((week, wi) => (
-          <div key={wi} className="grid grid-cols-7 mb-1">
-            {week.map((day, di) => {
-              const key = day ? dateKey(year, month, day) : null;
-              const events = key ? dayEvents.get(key) : undefined;
-              const hasEvents = Boolean(events?.length);
-              const isToday = day === today && month === currentMonth && year === currentYear;
-              const isSelected = day === selectedDay;
-              const isPast = day !== null && year === currentYear && month === currentMonth && day < today;
-
-              return (
-                <div key={di} className="flex flex-col items-center py-0.5">
-                  {day !== null ? (
-                    <button
-                      onClick={() => { setSelectedDay(day === selectedDay ? null : day); setShowAddForm(false); }}
-                      className="relative flex flex-col items-center gap-0.5 w-full rounded-lg py-1 transition-all hover:bg-white/20"
-                    >
-                      <div
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-[12px]"
-                        style={{
-                          fontFamily: "'Jost', sans-serif",
-                          fontWeight: isToday || isSelected ? 700 : 400,
-                          background: isToday
-                            ? "var(--swatch-viridian-odyssey)"
-                            : isSelected
-                            ? "rgba(255,255,255,0.45)"
-                            : "transparent",
-                          color: isToday
-                            ? "#fff"
-                            : isSelected
-                            ? "var(--swatch-viridian-odyssey)"
-                            : isPast
-                            ? "rgba(var(--swatch-antique-coin-rgb), 0.4)"
-                            : "var(--swatch-viridian-odyssey)",
-                          boxShadow: isSelected ? "0 2px 8px rgba(30,74,82,0.15)" : undefined,
-                        }}
-                      >
-                        {day}
-                      </div>
-                      {/* Event dots */}
-                      {hasEvents && (
-                        <div className="flex gap-0.5 justify-center">
-                          {events!.slice(0, 3).map((e, ei) => (
-                            <div key={ei} className="w-1 h-1 rounded-full" style={{ background: e.color }} />
-                          ))}
-                        </div>
-                      )}
-                    </button>
-                  ) : <div className="w-7 h-7" />}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-
-      {/* Day popup */}
-      <AnimatePresence>
-        {selectedDay !== null && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            className="rounded-[20px] p-4 backdrop-blur-md"
-            style={{ background: "rgba(255,255,255,0.28)", border: "1px solid rgba(255,255,255,0.5)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)" }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-[13px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                {MONTH_NAMES[month]} {selectedDay}
-              </p>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setShowAddForm(!showAddForm)}
-                  className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.1em] transition-all"
-                  style={{ background: "rgba(var(--swatch-teal-rgb), 0.12)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)", color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
-                >
-                  <Plus className="w-3 h-3" /> Add
-                </button>
-                <button onClick={() => setSelectedDay(null)} className="w-5 h-5 flex items-center justify-center rounded-full" style={{ color: "var(--swatch-antique-coin)" }}>
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {selectedEvents.length > 0 ? (
-              <div className="space-y-2 mb-3">
-                {selectedEvents.map((e, i) => (
-                  <div key={i} className="flex items-center gap-2.5">
-                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: e.color }} />
-                    <p className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>{e.title}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              !showAddForm && <p className="text-[11px] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>No events. Add one.</p>
-            )}
-
-            <AnimatePresence>
-              {showAddForm && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                  <div className="space-y-2 pt-2 border-t border-white/30">
-                    <input
-                      value={newEventTitle}
-                      onChange={(e) => setNewEventTitle(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleAddEvent()}
-                      placeholder="Event name..."
-                      className="w-full rounded-xl px-3 py-2 text-[12px] outline-none"
-                      style={{ background: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.5)", fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}
-                    />
-                    <div className="flex gap-1.5 flex-wrap">
-                      {(["personal","birthday","anniversary","reminder"] as const).map((t) => (
-                        <button
-                          key={t}
-                          onClick={() => setNewEventType(t)}
-                          className="rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.08em] transition-all"
-                          style={{
-                            fontFamily: "'Jost', sans-serif",
-                            background: newEventType === t ? TYPE_COLORS[t] : "rgba(255,255,255,0.3)",
-                            color: newEventType === t ? "#fff" : "var(--swatch-antique-coin)",
-                            border: `1px solid ${newEventType === t ? TYPE_COLORS[t] : "rgba(255,255,255,0.4)"}`,
-                          }}
-                        >
-                          {t}
-                        </button>
-                      ))}
-                    </div>
-                    <button
-                      onClick={handleAddEvent}
-                      className="w-full rounded-xl py-2 text-[11px] uppercase tracking-[0.1em] transition-all"
-                      style={{ background: "var(--swatch-viridian-odyssey)", color: "#fff", fontFamily: "'Jost', sans-serif" }}
-                    >
-                      Save event
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Upcoming events */}
-      {upcoming.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-[9px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>Upcoming</p>
-          {upcoming.map((e, i) => (
-            <div key={i} className="flex items-center gap-3 rounded-[14px] px-3 py-2.5" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(255,255,255,0.38)" }}>
-              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: e.color }} />
-              <div className="flex-1 min-w-0">
-                <p className="text-[12px] truncate" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", fontWeight: 500 }}>{e.title}</p>
-                <p className="text-[10px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  {e.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+        <div className="relative flex min-h-[560px] flex-col gap-4">
+          <div className="space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.68)" }}>
+                  Calendar
+                </p>
+                <p className="mt-2 text-[28px] leading-[0.92]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-paper)" }}>
+                  A clearer month.
                 </p>
               </div>
-              <p className="text-[11px] flex-shrink-0" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: e.color }}>
-                {Math.ceil((e.date.getTime() - now.getTime()) / 86400000)}d
-              </p>
+              <div className="flex items-center gap-1 rounded-full px-1.5 py-1" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.12)" }}>
+                <button onClick={() => changeMonth(-1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-paper)" }}>
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button onClick={() => changeMonth(1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-paper)" }}>
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
             </div>
-          ))}
+
+            <div className="rounded-[24px] px-3 py-3" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.1)" }}>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[18px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-paper)" }}>
+                    {MONTH_NAMES[month]} {year}
+                  </p>
+                  <p className="mt-1 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.68)" }}>
+                    Upcoming days glow brighter.
+                  </p>
+                </div>
+                {upcoming[0] && (
+                  <div className="rounded-[18px] px-3 py-2 text-right" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.08)" }}>
+                    <p className="text-[9px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.6)" }}>
+                      Next up
+                    </p>
+                    <p className="text-[14px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-paper)" }}>
+                      {upcoming[0].daysOut}d
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[28px] px-3 py-3" style={{ background: "rgba(var(--swatch-viridian-odyssey-rgb), 0.22)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.1)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)" }}>
+            <div className="mb-2 grid grid-cols-7 gap-1">
+              {DAY_NAMES.map((day) => (
+                <div key={day} className="pb-1 text-center text-[9px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.54)" }}>
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-1.5">
+              {grid.map((week, weekIndex) => (
+                <div key={weekIndex} className="grid grid-cols-7 gap-1.5">
+                  {week.map((day, dayIndex) => {
+                    if (day === null) {
+                      return <div key={`${weekIndex}-${dayIndex}`} className="h-11 rounded-[16px]" />;
+                    }
+
+                    const key = dateKey(year, month, day);
+                    const events = dayEvents.get(key) ?? [];
+                    const hasEvents = events.length > 0;
+                    const isToday = day === today && month === currentMonth && year === currentYear;
+                    const isSelected = day === selectedDay;
+                    const isUpcoming = highlightedDates.has(key);
+                    const accentColor = events[0]?.color ?? "var(--swatch-cedar-grove)";
+
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => {
+                          setSelectedDay((prev) => (prev === day ? null : day));
+                          setShowAddForm(false);
+                        }}
+                        className="relative flex h-11 flex-col items-center justify-center rounded-[16px] transition-all duration-200"
+                        style={{
+                          background: isSelected
+                            ? "rgba(var(--swatch-paper-rgb), 0.18)"
+                            : isUpcoming
+                              ? "rgba(var(--swatch-cedar-grove-rgb), 0.28)"
+                              : isToday
+                                ? "rgba(var(--swatch-paper-rgb), 0.14)"
+                                : "rgba(var(--swatch-paper-rgb), 0.05)",
+                          border: isSelected
+                            ? "1px solid rgba(var(--swatch-paper-rgb), 0.3)"
+                            : isUpcoming
+                              ? "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.42)"
+                              : "1px solid rgba(var(--swatch-paper-rgb), 0.08)",
+                          boxShadow: isUpcoming ? `0 0 0 1px ${accentColor}22 inset` : "none",
+                        }}
+                      >
+                        <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: isToday || isSelected ? 700 : 500, color: "var(--swatch-paper)" }}>
+                          {day}
+                        </span>
+                        {hasEvents && <span className="mt-1 h-1.5 w-1.5 rounded-full" style={{ background: accentColor }} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <AnimatePresence>
+            {selectedDay !== null && (
+              <motion.div
+                key={selectedKey}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 14 }}
+                className="absolute inset-x-2 bottom-2 z-20 rounded-[28px] px-4 py-4"
+                style={{
+                  background: "rgba(var(--swatch-paper-rgb), 0.12)",
+                  border: "1px solid rgba(var(--swatch-paper-rgb), 0.14)",
+                  backdropFilter: "blur(12px)",
+                  boxShadow: "0 14px 34px rgba(30,74,82,0.2)",
+                }}
+              >
+                <div className="mb-3 flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.56)" }}>
+                      Selected day
+                    </p>
+                    <p className="mt-1 text-[22px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-paper)" }}>
+                      {selectedDateLabel}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setShowAddForm((value) => !value)}
+                      className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.14em]"
+                      style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-paper)", background: "rgba(var(--swatch-paper-rgb), 0.1)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.14)" }}
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Add
+                    </button>
+                    <button onClick={() => setSelectedDay(null)} className="flex h-8 w-8 items-center justify-center rounded-full" style={{ color: "rgba(var(--swatch-paper-rgb), 0.74)" }}>
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {selectedEvents.length > 0 && (
+                  <div className="mb-3 space-y-2">
+                    {selectedEvents.map((event) => {
+                      const Icon = TYPE_META[event.type].icon;
+                      return (
+                        <div key={event.id} className="flex items-center gap-3 rounded-[18px] px-3 py-3" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.08)" }}>
+                          <div className="flex h-9 w-9 items-center justify-center rounded-[14px]" style={{ background: "rgba(var(--swatch-paper-rgb), 0.12)", color: event.color }}>
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <p className="min-w-0 flex-1 truncate text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-paper)", fontWeight: 600 }}>
+                            {event.title}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {!selectedEvents.length && !showAddForm && (
+                  <div className="mb-3 rounded-[18px] px-3 py-3" style={{ background: "rgba(var(--swatch-paper-rgb), 0.06)", border: "1px dashed rgba(var(--swatch-paper-rgb), 0.16)" }}>
+                    <p className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.62)" }}>
+                      Nothing saved for this day yet.
+                    </p>
+                  </div>
+                )}
+
+                <AnimatePresence>
+                  {showAddForm && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                      <div className="space-y-3 border-t pt-3" style={{ borderColor: "rgba(var(--swatch-paper-rgb), 0.1)" }}>
+                        <input
+                          value={newEventTitle}
+                          onChange={(e) => setNewEventTitle(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleAddEvent()}
+                          placeholder="Event name"
+                          className="w-full rounded-[18px] px-3 py-2.5 text-[12px] outline-none"
+                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.12)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.12)", color: "var(--swatch-paper)", fontFamily: "'Jost', sans-serif" }}
+                        />
+                        <div className="flex flex-wrap gap-2">
+                          {(["personal", "birthday", "anniversary", "reminder"] as const).map((type) => (
+                            <button
+                              key={type}
+                              onClick={() => setNewEventType(type)}
+                              className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.12em]"
+                              style={{
+                                fontFamily: "'Jost', sans-serif",
+                                color: newEventType === type ? "var(--swatch-paper)" : TYPE_META[type].color,
+                                background: newEventType === type ? TYPE_META[type].color : "rgba(var(--swatch-paper-rgb), 0.08)",
+                                border: `1px solid ${TYPE_META[type].color}`,
+                              }}
+                            >
+                              {type}
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={handleAddEvent}
+                          className="w-full rounded-[18px] py-2.5 text-[11px] uppercase tracking-[0.14em]"
+                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.16)", color: "var(--swatch-paper)", fontFamily: "'Jost', sans-serif", border: "1px solid rgba(var(--swatch-paper-rgb), 0.16)" }}
+                        >
+                          Save event
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      )}
-    </div>
+      </div>
+    </motion.section>
   );
 }
