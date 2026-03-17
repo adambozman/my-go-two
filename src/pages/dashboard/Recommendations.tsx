@@ -180,7 +180,7 @@ const Recommendations = () => {
                 Curated Just For You
               </h1>
               {personalization?.persona_summary && (
-                <p className="text-[18px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
+                <p className="text-[22px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
                   {personalization.persona_summary}
                 </p>
               )}
@@ -192,29 +192,29 @@ const Recommendations = () => {
             </div>
 
             {/* Right — glass box with staggered pills inside */}
-            <div className="rounded-[26px] p-5 backdrop-blur-md flex-shrink-0 w-[260px]" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)" }}>
-              <p className="text-[10px] uppercase tracking-[0.18em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+            <div className="rounded-[26px] p-6 backdrop-blur-md flex-shrink-0 w-[300px] flex flex-col justify-between" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)", minHeight: "100%" }}>
+              <p className="text-[10px] uppercase tracking-[0.18em] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 Think of the AI as your
               </p>
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col gap-3 flex-1 justify-center">
                 {[
-                  { label: "Personal Style Strategist", offset: false, teal: true },
-                  { label: "Atmosphere Architect", offset: true, teal: false },
-                  { label: "Intentional Gift Connoisseur", offset: false, teal: true },
-                ].map(({ label, offset, teal }) => (
+                  { label: "Personal Style Strategist", offset: false },
+                  { label: "Atmosphere Architect", offset: true },
+                  { label: "Intentional Gift Connoisseur", offset: false },
+                ].map(({ label, offset }) => (
                   <div
                     key={label}
-                    className={`rounded-full px-4 py-2 text-[12px] self-start${offset ? " ml-5" : ""}`}
+                    className={`rounded-full px-4 py-2.5 self-start${offset ? " ml-6" : ""}`}
                     style={{
                       fontFamily: "'Cormorant Garamond', serif",
                       fontWeight: 600,
                       fontStyle: "italic",
-                      fontSize: 14,
-                      background: teal ? "rgba(var(--swatch-teal-rgb), 0.10)" : "rgba(255,255,255,0.35)",
-                      border: teal ? "1px solid rgba(var(--swatch-teal-rgb), 0.25)" : "1px solid rgba(255,255,255,0.5)",
+                      fontSize: 15,
+                      background: "rgba(255,255,255,0.35)",
+                      border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)",
                       color: "var(--swatch-viridian-odyssey)",
                       whiteSpace: "nowrap",
-                      letterSpacing: "0.01em",
+                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
                     }}
                   >
                     {label}
