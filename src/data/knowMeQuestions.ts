@@ -1003,19 +1003,55 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
   },
 ];
 
-const THIS_OR_THAT_BANKS: Record<string, ThisOrThatBankMap> = {
-  "brands-shopping": BRANDS_RETAILERS_BANKS,
-  "colors-palette": COLORS_PALETTE_BANKS,
-  "food-dining": FOOD_DINING_BANKS,
-  "travel-trips": TRAVEL_TRIP_BANKS,
-  "date-ideas-romance": DATE_IDEAS_ROMANCE_BANKS,
-  "home-living": HOME_LIVING_BANKS,
-  "love-language-relationships": LOVE_LANGUAGE_RELATIONSHIPS_BANKS,
-  "hobbies-weekend": HOBBIES_WEEKEND_BANKS,
-  "gifting-actually-want": GIFTING_BANKS,
-};
-
 export const getThisOrThatBank = (categoryId: string, gender: Gender): GenderedBrandBank | null => {
+  if (categoryId === "style-aesthetic") {
+    return {
+      categories: [
+        {
+          id: "style-aesthetic",
+          title: "Style & Aesthetic",
+          brands: [],
+        },
+      ],
+      questions: THIS_OR_THAT_CATEGORIES.find((category) => category.id === categoryId)?.promptIds[gender]?.map((id) => {
+        const item = THIS_OR_THAT.find((entry) => entry.id === id);
+        return item
+          ? {
+              id: item.id,
+              prompt: item.prompt,
+              categoryA: item.optionA,
+              categoryB: item.optionB,
+              tagsForA: [item.optionA.toLowerCase().replace(/[^a-z0-9]+/g, "-")],
+              tagsForB: [item.optionB.toLowerCase().replace(/[^a-z0-9]+/g, "-")],
+            }
+          : null;
+      }).filter(Boolean) as BrandBankQuestion[] ?? [],
+    };
+  }
+
+  switch (categoryId) {
+    case "brands-shopping":
+      return BRANDS_RETAILERS_BANKS[gender] ?? null;
+    case "colors-palette":
+      return COLORS_PALETTE_BANKS[gender] ?? null;
+    case "food-dining":
+      return FOOD_DINING_BANKS[gender] ?? null;
+    case "travel-trips":
+      return TRAVEL_TRIP_BANKS[gender] ?? null;
+    case "date-ideas-romance":
+      return DATE_IDEAS_ROMANCE_BANKS[gender] ?? null;
+    case "home-living":
+      return HOME_LIVING_BANKS[gender] ?? null;
+    case "love-language-relationships":
+      return LOVE_LANGUAGE_RELATIONSHIPS_BANKS[gender] ?? null;
+    case "hobbies-weekend":
+      return HOBBIES_WEEKEND_BANKS[gender] ?? null;
+    case "gifting-actually-want":
+      return GIFTING_BANKS[gender] ?? null;
+    default:
+      return null;
+  }
+};
   if (categoryId === "style-aesthetic") {
     return {
       categories: [

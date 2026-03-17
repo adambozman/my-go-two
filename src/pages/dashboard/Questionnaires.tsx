@@ -583,18 +583,18 @@ const Questionnaires = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4" style={{ gridAutoRows: "calc((100vh - var(--header-height) - var(--footer-height) - 80px) / 3)" }}>
             {[
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[0],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[1],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[2],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[3],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[4],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[5],  layoutClass: "md:col-span-3" },
-              { type: "feature" as const,                                          layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[6],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[7],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[8],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[9],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[10], layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[0],  layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[1],  layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[2],  layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[3],  layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[4],  layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[5],  layoutClass: "md:col-span-3" },
+              { type: "feature" as const,                                         layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[6],  layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[7],  layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[8],  layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[9],  layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[10], layoutClass: "md:col-span-3" },
             ].map((item, index) => {
               if (item.type === "feature") {
                 return (
@@ -618,6 +618,8 @@ const Questionnaires = () => {
 
               const category = item.category;
               const isTall = [0, 2, 7, 9, 10].includes(index);
+              const isDisabled = !category?.isLive || category?.questions.length === 0;
+              const statusLabel = isDisabled ? "Coming soon" : category.complete ? "Complete" : category.isLocked ? "Locked" : "Ready";
 
               return (
                 <motion.button
@@ -625,9 +627,10 @@ const Questionnaires = () => {
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
-                  disabled
-                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden disabled:opacity-95 ${item.layoutClass}`}
-                  style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)" }}
+                  disabled={isDisabled}
+                  onClick={() => startThisOrThatCategory(category.id)}
+                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden ${item.layoutClass}`}
+                  style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)", opacity: isDisabled ? 0.8 : 1 }}
                 >
                   <div
                     className="absolute inset-0"
@@ -644,8 +647,8 @@ const Questionnaires = () => {
                         {category.eyebrow}
                       </span>
                       <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)", background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                        <Lock className="w-3 h-3" />
-                        Coming soon
+                        {isDisabled && <Lock className="w-3 h-3" />}
+                        {statusLabel}
                       </span>
                     </div>
 
@@ -660,10 +663,10 @@ const Questionnaires = () => {
 
                     <div className="relative flex items-end justify-between gap-4">
                       <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                        0 answered • per-category limit ready
+                        {category.visibleAnswered}/{category.visibleTotal} answered
                       </span>
                       <span className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                        Disabled
+                        {isDisabled ? "Unavailable" : "Open"}
                       </span>
                     </div>
                   </div>
@@ -672,6 +675,97 @@ const Questionnaires = () => {
             })}
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (view === "thisorthat" && activeTotCategory && activeTotQuestion) {
+    const questionNumber = quizQuestionIdx + 1;
+    const visibleCategoryTotal = subscribed ? activeTotCategory.questions.length : Math.min(activeTotCategory.questions.length, FREE_THIS_OR_THAT_LIMIT);
+    const savedValue = profileAnswers?.[activeTotQuestion.id];
+    const selectedSide = savedValue === activeTotQuestion.categoryA ? "A" : savedValue === activeTotQuestion.categoryB ? "B" : null;
+
+    return (
+      <div className="h-full flex flex-col items-center justify-start px-3 py-3 overflow-y-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 280, damping: 24 }}
+          className="w-full max-w-[520px] rounded-3xl overflow-hidden relative flex flex-col"
+          style={{
+            background: "hsl(var(--background))",
+            boxShadow: "0 8px 40px rgba(30,74,82,0.08), 0 2px 12px rgba(0,0,0,0.04)",
+            maxHeight: "calc(100vh - 180px)",
+          }}
+        >
+          <div className="px-5 pt-5 pb-3">
+            <h2 className="text-lg mb-1" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              {activeTotCategory.title}
+            </h2>
+            <div className="flex items-center gap-1 mb-1">
+              {Array.from({ length: visibleCategoryTotal }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex-1 h-[5px] rounded-full transition-all duration-300"
+                  style={{
+                    background: i < Math.min(questionNumber, visibleCategoryTotal) ? "var(--swatch-teal)" : "rgba(var(--swatch-antique-coin-rgb), 0.12)",
+                  }}
+                />
+              ))}
+            </div>
+            <p className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              Question {Math.min(questionNumber, visibleCategoryTotal)} of {visibleCategoryTotal}
+            </p>
+          </div>
+
+          <div className="px-5 pt-4 pb-5 flex-1 flex flex-col justify-center min-h-[360px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTotQuestion.id}
+                initial={{ opacity: 0, x: totSwipeDir === "left" ? -24 : 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: totSwipeDir === "left" ? 24 : -24 }}
+                transition={{ type: "spring", stiffness: 280, damping: 28 }}
+                className="flex flex-col flex-1"
+              >
+                <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] mb-4 px-2.5 py-1 rounded-full self-start" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}>
+                  {activeTotCategory.eyebrow}
+                </span>
+                <h3 className="text-[28px] leading-[1.1] mb-8" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                  {activeTotQuestion.prompt}
+                </h3>
+
+                <div className="grid grid-cols-2 gap-3 mt-auto">
+                  {([
+                    { key: "A" as const, label: activeTotQuestion.categoryA },
+                    { key: "B" as const, label: activeTotQuestion.categoryB },
+                  ]).map((option) => {
+                    const isSelected = selectedSide === option.key;
+                    return (
+                      <motion.button
+                        key={option.key}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => void pickThisOrThat(activeTotQuestion, option.key)}
+                        className="relative rounded-2xl px-4 py-5 text-left transition-all duration-200"
+                        style={{
+                          fontFamily: "'Jost', sans-serif",
+                          background: isSelected ? "rgba(var(--swatch-teal-rgb), 0.1)" : "rgba(var(--swatch-antique-coin-rgb), 0.04)",
+                          border: isSelected ? "1.5px solid var(--swatch-teal)" : "1.5px solid rgba(var(--swatch-antique-coin-rgb), 0.12)",
+                          color: isSelected ? "var(--swatch-viridian-odyssey)" : "var(--swatch-antique-coin)",
+                        }}
+                      >
+                        <span className="block text-[12px] uppercase tracking-[0.12em] mb-2" style={{ color: "var(--swatch-teal)" }}>
+                          {option.key === "A" ? "Left" : "Right"}
+                        </span>
+                        <span className="block text-[18px] leading-snug">{option.label}</span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </motion.div>
       </div>
     );
   }
