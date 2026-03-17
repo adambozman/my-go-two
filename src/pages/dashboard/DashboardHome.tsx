@@ -57,6 +57,11 @@ function formatRelativeDateLabel(value?: string | Date | null) {
   return `${Math.abs(diffDays)} days ago`;
 }
 
+function matchesSearch(query: string, ...values: Array<string | null | undefined>) {
+  if (!query) return true;
+  return values.some((value) => value?.toLowerCase().includes(query));
+}
+
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
@@ -253,6 +258,7 @@ const DashboardHome = () => {
   const calendarConnections = connections
     .filter((c) => !c.id.startsWith("placeholder-") && c.partnerId)
     .map((c) => ({ id: c.partnerId!, name: c.name }));
+  const searchQuery = homeSearch.trim().toLowerCase();
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
@@ -350,6 +356,78 @@ const DashboardHome = () => {
     return [...milestoneActivity, ...connectionActivity].slice(0, 8);
   }, [connections, milestones]);
 
+  const filteredDirectoryEntries = useMemo(
+    () =>
+      directoryEntries.filter((entry) =>
+        matchesSearch(searchQuery, entry.name, entry.status, entry.lastSync)
+      ),
+    [directoryEntries, searchQuery]
+  );
+
+  const matchingConnectionCards = useMemo(
+    () =>
+      connections.filter(
+        (connection) =>
+          !connection.id.startsWith("placeholder-") &&
+          matchesSearch(searchQuery, connection.name, connection.email, connection.status)
+      ),
+    [connections, searchQuery]
+  );
+
+  const filteredSharedFeedItems = useMemo(
+    () =>
+      sharedFeedItems.filter((item) =>
+        matchesSearch(searchQuery, item.eyebrow, item.title, item.detail, item.meta)
+      ),
+    [searchQuery, sharedFeedItems]
+  );
+
+  const filteredNotableItems = useMemo(
+    () =>
+      notableItems.filter((item) =>
+        matchesSearch(searchQuery, item.eyebrow, item.title, item.detail)
+      ),
+    [notableItems, searchQuery]
+  );
+
+  const filteredRecentActivityItems = useMemo(
+    () =>
+      recentActivityItems.filter((item) =>
+        matchesSearch(searchQuery, item.title, item.detail, item.meta)
+      ),
+    [recentActivityItems, searchQuery]
+  );
+
+  const filteredMilestones = useMemo(
+    () =>
+      milestones.filter((milestone) =>
+        matchesSearch(
+          searchQuery,
+          milestone.person,
+          milestone.label,
+          milestone.type,
+          String(milestone.daysOut)
+        )
+      ),
+    [milestones, searchQuery]
+  );
+
+  const filteredCalendarConnections = useMemo(
+    () =>
+      calendarConnections.filter((connection) =>
+        matchesSearch(searchQuery, connection.name)
+      ),
+    [calendarConnections, searchQuery]
+  );
+
+  const hasSearchResults =
+    !searchQuery ||
+    filteredDirectoryEntries.length > 0 ||
+    filteredSharedFeedItems.length > 0 ||
+    filteredNotableItems.length > 0 ||
+    filteredRecentActivityItems.length > 0 ||
+    filteredMilestones.length > 0;
+
   return (
     <div className="relative h-full overflow-y-auto">
       <div className="mx-auto max-w-[1480px] px-4 pb-8 md:px-6">
@@ -380,7 +458,7 @@ const DashboardHome = () => {
               </div>
 
               <div className="space-y-3">
-                {sharedFeedItems.map((item) => (
+                {filteredSharedFeedItems.map((item) => (
                   <div
                     key={item.id}
                     className="rounded-[22px] px-4 py-3"
@@ -403,6 +481,11 @@ const DashboardHome = () => {
                     </p>
                   </div>
                 ))}
+                {searchQuery && filteredSharedFeedItems.length === 0 && (
+                  <p className="px-1 text-sm" style={{ color: "var(--swatch-text-light)" }}>
+                    No shared feed matches for this search.
+                  </p>
+                )}
               </div>
             </section>
 
@@ -427,7 +510,7 @@ const DashboardHome = () => {
               </div>
 
               <div className="space-y-3">
-                {notableItems.map((item) => (
+                {filteredNotableItems.map((item) => (
                   <div
                     key={item.id}
                     className="rounded-[22px] px-4 py-3"
@@ -447,6 +530,11 @@ const DashboardHome = () => {
                     </p>
                   </div>
                 ))}
+                {searchQuery && filteredNotableItems.length === 0 && (
+                  <p className="px-1 text-sm" style={{ color: "var(--swatch-text-light)" }}>
+                    No notable items match this search.
+                  </p>
+                )}
               </div>
             </section>
           </div>
@@ -468,7 +556,7 @@ const DashboardHome = () => {
                   Your circle at a glance.
                 </h2>
               </div>
-              <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
+              <ConnectionAvatarRow entries={filteredDirectoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
             </section>
 
             <section
@@ -489,6 +577,30 @@ const DashboardHome = () => {
                   style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
                 />
               </div>
+              {searchQuery && (
+                <div className="mt-3 flex flex-wrap gap-2 px-1">
+                  {matchingConnectionCards.map((connection) => (
+                    <button
+                      key={connection.id}
+                      onClick={() =>
+                        setOpenConnection({
+                          card: connection,
+                          rect: { x: window.innerWidth / 2 - 50, y: 100, width: 100, height: 100 },
+                        })
+                      }
+                      className="rounded-full px-3 py-1.5 text-[11px]"
+                      style={pillButtonStyle}
+                    >
+                      {connection.name}
+                    </button>
+                  ))}
+                  {!hasSearchResults && (
+                    <p className="px-1 text-sm" style={{ color: "var(--swatch-text-light)" }}>
+                      No matches yet. Try a connection name, event, or reminder.
+                    </p>
+                  )}
+                </div>
+              )}
             </section>
 
             <section
@@ -499,7 +611,7 @@ const DashboardHome = () => {
                 border: "1px solid rgba(45,104,112,0.18)",
               }}
             >
-              <EventCalendar milestones={milestones} connections={calendarConnections} />
+              <EventCalendar milestones={filteredMilestones} connections={filteredCalendarConnections} />
             </section>
 
             {showConnectionsPaywall && !canAddAnotherConnection && (
@@ -540,7 +652,7 @@ const DashboardHome = () => {
             </div>
 
             <div className="mt-4 space-y-3 xl:max-h-[calc(100vh-240px)] xl:overflow-y-auto xl:pr-1">
-              {recentActivityItems.map((item) => (
+              {filteredRecentActivityItems.map((item) => (
                 <div
                   key={item.id}
                   className="rounded-[22px] px-4 py-4"
@@ -569,6 +681,11 @@ const DashboardHome = () => {
                   </div>
                 </div>
               ))}
+              {searchQuery && filteredRecentActivityItems.length === 0 && (
+                <p className="px-1 text-sm" style={{ color: "var(--swatch-text-light)" }}>
+                  No recent activity matches for this search.
+                </p>
+              )}
             </div>
           </aside>
         </div>
