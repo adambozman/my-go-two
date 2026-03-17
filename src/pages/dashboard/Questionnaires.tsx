@@ -348,14 +348,7 @@ const Questionnaires = () => {
           }}
         >
           <div className="px-5 pt-5 pb-3">
-            <div className="flex items-center justify-between mb-3">
-              <button
-                onClick={() => setView("categories")}
-                className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-105"
-                style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}
-              >
-                <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-              </button>
+            <div className="flex justify-end mb-3">
               <div className="text-right">
                 <span
                   className="text-[10px] uppercase tracking-[0.1em] block"
