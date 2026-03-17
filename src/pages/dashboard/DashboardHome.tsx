@@ -264,7 +264,7 @@ const DashboardHome = () => {
 
           {/* Row 3: Calendar */}
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
-            <div className="min-w-0 xl:col-span-1 xl:max-w-[360px]">
+            <div className="min-w-0 xl:col-span-1 xl:w-[25vw] xl:max-w-[380px]">
               <EventCalendar milestones={milestones} />
             </div>
           </div>
