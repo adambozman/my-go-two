@@ -522,37 +522,10 @@ const Questionnaires = () => {
     );
   }
 
-  if (view === "thisorthat") {
-    if (!totCurrent) {
-      return (
-        <div className="h-full flex items-center justify-center px-4">
-          <div className="text-center">
-            <p className="text-[28px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-              You’ve answered them all.
-            </p>
-            <p className="text-[14px] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Your instinct profile is already in the mix.
-            </p>
-            <button
-              onClick={() => setView("dashboard")}
-              className="rounded-full px-5 py-3"
-              style={{
-                background: "rgba(var(--swatch-teal-rgb), 0.16)",
-                color: "var(--swatch-viridian-odyssey)",
-                fontFamily: "'Jost', sans-serif",
-                border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)",
-              }}
-            >
-              Back to dashboard
-            </button>
-          </div>
-        </div>
-      );
-    }
-
+  if (view === "thisorthat_dashboard") {
     return (
-      <div className="h-full flex items-center justify-center px-4 py-6">
-        <div className="w-full max-w-[640px]">
+      <div className="h-full overflow-y-auto px-1 pb-6">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={() => setView("dashboard")}
@@ -561,60 +534,81 @@ const Questionnaires = () => {
             >
               <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
             </button>
-            <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              {Math.min(totIndex + 1, visibleThisOrThatCount)} / {visibleThisOrThatCount}
+            <span className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              This or That categories
             </span>
           </div>
 
-          <motion.div
-            key={totCurrent.id}
-            initial={{ opacity: 0, y: 8 }}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="card-design-overlay-teal rounded-[34px] p-6 md:p-8"
+            transition={{ type: "spring", stiffness: 260, damping: 24 }}
+            className="card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden mb-4"
             style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
-            <div className="flex items-center justify-between gap-3 mb-6">
-              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                <Shuffle className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-                <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  This or That
-                </span>
-              </div>
-              <span className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                quick instinct pick
-              </span>
-            </div>
-
-            <p className="text-[36px] md:text-[46px] leading-[0.94] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-              {totCurrent.prompt}
+            <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+              Fixed category map
             </p>
-            <p className="text-[14px] leading-relaxed mb-8 max-w-[42ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Choose the option that feels more like your taste without overthinking it.
+            <h2 className="text-[36px] md:text-[48px] leading-[0.92] mb-3 max-w-[14ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              Choose a category to train your instinct profile.
+            </h2>
+            <p className="text-[14px] leading-relaxed max-w-[64ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              Categories are fixed and question banks are fixed by gender. The AI does not generate these prompts — it reads your saved answers to infer your vibe.
             </p>
+          </motion.section>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <button
-                onClick={() => pickThisOrThat("B")}
-                className="rounded-[28px] p-5 text-left min-h-[160px]"
-                style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
-              >
-                <p className="text-[30px] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  No
-                </p>
-              </button>
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-[minmax(150px,auto)]">
+            {THIS_OR_THAT_CATEGORIES.map((category, index) => {
+              const spanClass =
+                index === 0
+                  ? "md:col-span-4 md:row-span-2"
+                  : index === 1 || index === 2
+                    ? "md:col-span-2"
+                    : index === 5
+                      ? "md:col-span-3"
+                      : index === 7
+                        ? "md:col-span-3"
+                        : "md:col-span-2";
 
-              <button
-                onClick={() => pickThisOrThat("A")}
-                className="rounded-[28px] p-5 text-left min-h-[160px]"
-                style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
-              >
-                <p className="text-[30px] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  Yes
-                </p>
-              </button>
-            </div>
-          </motion.div>
+              return (
+                <motion.button
+                  key={category.id}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
+                  disabled
+                  className={`card-design-overlay-teal rounded-[28px] p-5 text-left relative overflow-hidden disabled:opacity-95 ${spanClass}`}
+                  style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)" }}
+                >
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      {category.eyebrow}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)", background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                      <Lock className="w-3 h-3" />
+                      Coming soon
+                    </span>
+                  </div>
+
+                  <h3 className="text-[26px] leading-[0.96] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                    {category.title}
+                  </h3>
+                  <p className="text-[13px] leading-relaxed mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    {category.description}
+                  </p>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                      0 answered • per-category limit ready
+                    </span>
+                    <span className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                      Disabled
+                    </span>
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
