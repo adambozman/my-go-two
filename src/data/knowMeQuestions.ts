@@ -870,7 +870,7 @@ export interface ThisOrThatCategory {
   description: string;
   eyebrow: string;
   supportedGenders: Gender[];
-  status: "coming-soon";
+  status: "live" | "coming-soon";
   promptIds: Partial<Record<Gender, string[]>>;
 }
 
@@ -899,6 +899,8 @@ export interface GenderedBrandBank {
   questions: BrandBankQuestion[];
 }
 
+export type ThisOrThatBankMap = Partial<Record<Gender, GenderedBrandBank>>;
+
 export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
   {
     id: "style-aesthetic",
@@ -906,8 +908,8 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
     description: "Fixed instinct prompts around visual taste, silhouettes, and overall vibe.",
     eyebrow: "Style lens",
     supportedGenders: ["male", "female", "non-binary"],
-    status: "coming-soon",
-    promptIds: { male: [], female: [], "non-binary": [] },
+    status: "live",
+    promptIds: { male: ["tot-53", "tot-54", "tot-55", "tot-56", "tot-57", "tot-58", "tot-59", "tot-60", "tot-61", "tot-62"], female: [], "non-binary": [] },
   },
   {
     id: "brands-shopping",
@@ -915,8 +917,8 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
     description: "Quick picks about labels, stores, and the kinds of brands that feel like you.",
     eyebrow: "Brand signals",
     supportedGenders: ["male", "female", "non-binary"],
-    status: "coming-soon",
-    promptIds: { male: [], female: [], "non-binary": [] },
+    status: "live",
+    promptIds: { male: ["male-br-01", "male-br-02", "male-br-03", "male-br-04", "male-br-05", "male-br-06", "male-br-07", "male-br-08", "male-br-09", "male-br-10"], female: [], "non-binary": [] },
   },
   {
     id: "colors-palette",
@@ -924,8 +926,8 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
     description: "Preference prompts for tones, contrast, color energy, and what feels most natural.",
     eyebrow: "Color read",
     supportedGenders: ["male", "female", "non-binary"],
-    status: "coming-soon",
-    promptIds: { male: [], female: [], "non-binary": [] },
+    status: "live",
+    promptIds: { male: ["male-color-01", "male-color-02", "male-color-03", "male-color-04", "male-color-05", "male-color-06", "male-color-07", "male-color-08", "male-color-09", "male-color-10"], female: [], "non-binary": [] },
   },
   {
     id: "food-dining",
@@ -933,8 +935,8 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
     description: "Taste cues around cravings, comfort meals, restaurants, and how you like to dine.",
     eyebrow: "Taste cues",
     supportedGenders: ["male", "female", "non-binary"],
-    status: "coming-soon",
-    promptIds: { male: [], female: [], "non-binary": [] },
+    status: "live",
+    promptIds: { male: ["male-food-01", "male-food-02", "male-food-03", "male-food-04", "male-food-05", "male-food-06", "male-food-07", "male-food-08", "male-food-09", "male-food-10"], female: [], "non-binary": [] },
   },
   {
     id: "travel-trips",
@@ -942,17 +944,17 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
     description: "Instinctive picks about destinations, travel mood, and what kind of getaway fits you.",
     eyebrow: "Travel mood",
     supportedGenders: ["male", "female", "non-binary"],
-    status: "coming-soon",
-    promptIds: { male: [], female: [], "non-binary": [] },
+    status: "live",
+    promptIds: { male: ["male-trip-01", "male-trip-02", "male-trip-03", "male-trip-04", "male-trip-05", "male-trip-06", "male-trip-07", "male-trip-08", "male-trip-09", "male-trip-10"], female: [], "non-binary": [] },
   },
   {
     id: "date-ideas-romance",
     title: "Date Ideas & Romance",
-    description: "A future bank for chemistry, date-night energy, and the romantic experiences you lean toward.",
+    description: "Chemistry, date-night energy, and the romantic experiences you lean toward.",
     eyebrow: "Romance cues",
     supportedGenders: ["male", "female", "non-binary"],
-    status: "coming-soon",
-    promptIds: { male: [], female: [], "non-binary": [] },
+    status: "live",
+    promptIds: { male: ["male-date-01", "male-date-02", "male-date-03", "male-date-04", "male-date-05", "male-date-06", "male-date-07", "male-date-08", "male-date-09", "male-date-10"], female: [], "non-binary": [] },
   },
   {
     id: "home-living",
@@ -960,8 +962,8 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
     description: "Signals about comfort, décor, routines, and what makes a space feel right.",
     eyebrow: "Home feel",
     supportedGenders: ["male", "female", "non-binary"],
-    status: "coming-soon",
-    promptIds: { male: [], female: [], "non-binary": [] },
+    status: "live",
+    promptIds: { male: ["male-home-01", "male-home-02", "male-home-03", "male-home-04", "male-home-05", "male-home-06", "male-home-07", "male-home-08", "male-home-09", "male-home-10"], female: [], "non-binary": [] },
   },
   {
     id: "love-language-relationships",
@@ -969,8 +971,8 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
     description: "Instinct questions for connection style, affection, and the relationship patterns that fit.",
     eyebrow: "Connection read",
     supportedGenders: ["male", "female", "non-binary"],
-    status: "coming-soon",
-    promptIds: { male: [], female: [], "non-binary": [] },
+    status: "live",
+    promptIds: { male: ["male-love-01", "male-love-02", "male-love-03", "male-love-04", "male-love-05", "male-love-06", "male-love-07", "male-love-08", "male-love-09", "male-love-10"], female: [], "non-binary": [] },
   },
   {
     id: "hobbies-weekend",
@@ -978,17 +980,17 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
     description: "Fast reads on downtime, interests, and the kind of weekend rhythm that feels good.",
     eyebrow: "Weekend rhythm",
     supportedGenders: ["male", "female", "non-binary"],
-    status: "coming-soon",
-    promptIds: { male: [], female: [], "non-binary": [] },
+    status: "live",
+    promptIds: { male: ["male-hobby-01", "male-hobby-02", "male-hobby-03", "male-hobby-04", "male-hobby-05", "male-hobby-06", "male-hobby-07", "male-hobby-08", "male-hobby-09", "male-hobby-10"], female: [], "non-binary": [] },
   },
   {
     id: "gifting-actually-want",
     title: "Gifting — what you actually want",
-    description: "A dedicated future bank for gift instincts, wish-list clues, and what feels genuinely thoughtful.",
+    description: "Gift instincts, wish-list clues, and what feels genuinely thoughtful.",
     eyebrow: "Gift instinct",
     supportedGenders: ["male", "female", "non-binary"],
-    status: "coming-soon",
-    promptIds: { male: [], female: [], "non-binary": [] },
+    status: "live",
+    promptIds: { male: ["male-gift-01", "male-gift-02", "male-gift-03", "male-gift-04", "male-gift-05", "male-gift-06", "male-gift-07", "male-gift-08", "male-gift-09", "male-gift-10"], female: [], "non-binary": [] },
   },
   {
     id: "food-orders",
@@ -1000,6 +1002,56 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
     promptIds: { male: [], female: [], "non-binary": [] },
   },
 ];
+
+export const getThisOrThatBank = (categoryId: string, gender: Gender): GenderedBrandBank | null => {
+  if (categoryId === "style-aesthetic") {
+    return {
+      categories: [
+        {
+          id: "style-aesthetic",
+          title: "Style & Aesthetic",
+          brands: [],
+        },
+      ],
+      questions: THIS_OR_THAT_CATEGORIES.find((category) => category.id === categoryId)?.promptIds[gender]?.map((id) => {
+        const item = THIS_OR_THAT.find((entry) => entry.id === id);
+        return item
+          ? {
+              id: item.id,
+              prompt: item.prompt,
+              categoryA: item.optionA,
+              categoryB: item.optionB,
+              tagsForA: [item.optionA.toLowerCase().replace(/[^a-z0-9]+/g, "-")],
+              tagsForB: [item.optionB.toLowerCase().replace(/[^a-z0-9]+/g, "-")],
+            }
+          : null;
+      }).filter(Boolean) as BrandBankQuestion[] ?? [],
+    };
+  }
+
+  switch (categoryId) {
+    case "brands-shopping":
+      return BRANDS_RETAILERS_BANKS[gender] ?? null;
+    case "colors-palette":
+      return COLORS_PALETTE_BANKS[gender] ?? null;
+    case "food-dining":
+      return FOOD_DINING_BANKS[gender] ?? null;
+    case "travel-trips":
+      return TRAVEL_TRIP_BANKS[gender] ?? null;
+    case "date-ideas-romance":
+      return DATE_IDEAS_ROMANCE_BANKS[gender] ?? null;
+    case "home-living":
+      return HOME_LIVING_BANKS[gender] ?? null;
+    case "love-language-relationships":
+      return LOVE_LANGUAGE_RELATIONSHIPS_BANKS[gender] ?? null;
+    case "hobbies-weekend":
+      return HOBBIES_WEEKEND_BANKS[gender] ?? null;
+    case "gifting-actually-want":
+      return GIFTING_BANKS[gender] ?? null;
+    default:
+      return null;
+  }
+};
 
 export const THIS_OR_THAT: ThisOrThatItem[] = [
   /* ── CLOTHING BRANDS (20) ── */
