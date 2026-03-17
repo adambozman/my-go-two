@@ -273,12 +273,6 @@ const DashboardHome = () => {
             <div className="relative space-y-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
-                  <p
-                    className="mb-3 text-[10px] uppercase tracking-[0.16em]"
-                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
-                  >
-                    Home overview
-                  </p>
                   <GreetingHeader displayName={displayName} connectionCount={realConnections} />
                 </div>
                 {nextMilestone && (
