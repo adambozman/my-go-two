@@ -558,54 +558,30 @@ const Questionnaires = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
                     className={`rounded-[28px] p-6 md:p-7 text-left relative overflow-hidden aspect-square min-h-[220px] ${item.layoutClass}`}
-                    style={{
-                      background: "linear-gradient(155deg, rgba(var(--swatch-cedar-grove-rgb), 0.92) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.78) 100%)",
-                      border: "1px solid rgba(var(--swatch-cream-light-rgb), 0.34)",
-                      boxShadow: "0 18px 40px rgba(212,84,58,0.16), inset 0 1px 0 rgba(255,255,255,0.18)",
-                    }}
+                    style={{ background: "#d4543a", boxShadow: "0 18px 44px rgba(212,84,58,0.3)" }}
                   >
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        background: "radial-gradient(circle at top right, rgba(var(--swatch-cream-light-rgb), 0.16), transparent 34%), linear-gradient(145deg, rgba(var(--swatch-cream-light-rgb), 0.10), transparent 58%)",
-                      }}
-                    />
-
                     <div className="relative flex h-full flex-col justify-between gap-5">
-                      <span
-                        className="inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.16em]"
-                        style={{
-                          fontFamily: "'Jost', sans-serif",
-                          color: "hsl(var(--background))",
-                          background: "rgba(var(--swatch-cream-light-rgb), 0.14)",
-                          border: "1px solid rgba(var(--swatch-cream-light-rgb), 0.24)",
-                        }}
-                      >
-                        <Shuffle className="w-3.5 h-3.5" />
-                        This or That
-                      </span>
-
-                      <div className="max-w-[18ch]">
-                        <h3
-                          className="text-[30px] md:text-[38px] leading-[0.94] mb-3"
-                          style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "hsl(var(--background))" }}
-                        >
-                          Choose a category. Follow your instinct.
-                        </h3>
-                        <p
-                          className="text-[13px] md:text-[14px] leading-relaxed"
-                          style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-cream-light-rgb), 0.92)" }}
-                        >
-                          Each category uses fixed either-or prompts. You simply pick what feels more like you, and your pattern becomes your vibe read.
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", fontFamily: "'Jost', sans-serif", fontWeight: 700 }}>This or That</span>
+                        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif" }}>{visibleThisOrThatAnswered}/{visibleThisOrThatCount}</span>
+                      </div>
+                      <div>
+                        <p style={{ fontSize: 38, lineHeight: 1.0, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", marginBottom: 10 }}>
+                          This or That
+                        </p>
+                        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5, marginBottom: 8 }}>
+                          Two options. One choice. Your pattern builds over time.
+                        </p>
+                        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5 }}>
+                          Help the AI learn your vibe.
                         </p>
                       </div>
-
-                      <p
-                        className="text-[11px] md:text-[12px] uppercase tracking-[0.14em]"
-                        style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-cream-light-rgb), 0.84)" }}
-                      >
-                        Start with any tile once unlocked
-                      </p>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <span style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif" }}>Browse categories</span>
+                        <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <ChevronRight style={{ width: 16, height: 16, color: "#fff" }} />
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
                 );
@@ -752,34 +728,30 @@ const Questionnaires = () => {
               transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
               whileTap={{ scale: 0.985 }}
               onClick={openThisOrThat}
-              className="lg:col-span-12 flex items-center justify-center py-4"
-              style={{ background: "transparent", boxShadow: "none" }}
+              className="lg:col-span-4 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left min-h-[340px] flex flex-col justify-between"
+              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
             >
-              <div style={{
-                width: 320, height: 320, background: "#d4543a", borderRadius: 32,
-                padding: 28, display: "flex", flexDirection: "column", justifyContent: "space-between",
-                boxShadow: "0 18px 44px rgba(212,84,58,0.3)",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", fontFamily: "'Jost', sans-serif", fontWeight: 700 }}>This or That</span>
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif" }}>{visibleThisOrThatAnswered}/{visibleThisOrThatCount}</span>
+              <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 32%), linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.04), transparent 40%)" }} />
+              <div className="relative flex items-center justify-between gap-3">
+                <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                  <Shuffle className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+                  <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>This or That</span>
                 </div>
-                <div>
-                  <p style={{ fontSize: 38, lineHeight: 1.0, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", marginBottom: 10 }}>
-                    This or That
-                  </p>
-                  <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5, marginBottom: 8 }}>
-                    Two options. One choice. Your pattern builds over time.
-                  </p>
-                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5 }}>
-                    Help the AI learn your vibe.
-                  </p>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif" }}>Browse categories</span>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <ChevronRight style={{ width: 16, height: 16, color: "#fff" }} />
-                  </div>
+                <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  {visibleThisOrThatAnswered}/{visibleThisOrThatCount}
+                </span>
+              </div>
+              <div className="relative">
+                <p className="text-[34px] md:text-[40px] leading-[0.95] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                  Browse instinct categories
+                </p>
+                <p className="text-[13px] leading-relaxed max-w-[32ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Two options. One choice. Your pattern builds over time.
+                </p>
+              </div>
+              <div className="relative flex items-end justify-between gap-4">
+                <div className="w-16 h-16 rounded-[22px] backdrop-blur-md flex items-center justify-center" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                  <ChevronRight className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
                 </div>
               </div>
             </motion.button>
