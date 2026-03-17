@@ -180,7 +180,7 @@ const Recommendations = () => {
                 Curated<br />Just For You
               </h1>
               {personalization?.persona_summary && (
-                <p className="text-[16px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
+                <p className="text-[18px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
                   {personalization.persona_summary}
                 </p>
               )}
