@@ -949,14 +949,16 @@ const MyGoTwo = () => {
             ref={(node) => {
               sectionRefs.current[section.key] = node;
             }}
-            className="snap-start snap-always h-full flex flex-col items-center justify-center overflow-hidden flex-shrink-0"
+            className="snap-start snap-always h-full flex flex-col items-center justify-start overflow-hidden flex-shrink-0"
+            style={{ paddingTop: 18 }}
           >
-            <h2 className="section-header text-center mb-4">{section.label}</h2>
+            <h2 className="section-header text-center mb-1 md:mb-2">{section.label}</h2>
             <GoTwoCoverFlow
               items={section.items}
               onSelect={(categoryId) => handleSelect(section.key, categoryId)}
               focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
               showPagination={index === activeSectionIndex}
+              tallActiveCard
             />
           </div>
         ))}
