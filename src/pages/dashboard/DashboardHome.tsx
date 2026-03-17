@@ -274,7 +274,7 @@ const DashboardHome = () => {
         <div className="grid gap-4 pb-8">
           <GreetingHeader displayName={displayName} />
 
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_520px] lg:items-start">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,44%)_minmax(0,56%)] lg:items-start">
             <div
               className="card-design-overlay-teal relative overflow-hidden rounded-[32px] p-6 md:p-7"
               style={shellCardStyle}
@@ -318,32 +318,7 @@ const DashboardHome = () => {
             />
           )}
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div
-              className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-6"
-              style={shellCardStyle}
-            >
-              <div className="flex h-full flex-col">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-[14px]" style={{ background: "rgba(var(--swatch-paper-rgb), 0.62)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.86)" }}>
-                    <Radio className="h-4 w-4" style={{ color: "var(--swatch-cedar-grove)" }} />
-                  </div>
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Shared Feed
-                  </p>
-                </div>
-                <h3 className="mt-4 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
-                  Public lists and visible activity.
-                </h3>
-                <div className="mt-auto pt-6">
-                  <button className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[11px] uppercase tracking-[0.14em]" style={pillButtonStyle}>
-                    Feed Coming Here
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,38%)_minmax(0,62%)] lg:items-start">
             <div
               className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-6"
               style={shellCardStyle}
@@ -363,6 +338,55 @@ const DashboardHome = () => {
                       {label}
                     </span>
                   ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-[minmax(0,58%)_minmax(0,42%)]">
+              <div
+                className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-6"
+                style={shellCardStyle}
+              >
+                <div className="flex h-full flex-col">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-[14px]" style={{ background: "rgba(var(--swatch-paper-rgb), 0.62)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.86)" }}>
+                      <Radio className="h-4 w-4" style={{ color: "var(--swatch-cedar-grove)" }} />
+                    </div>
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      Shared Feed
+                    </p>
+                  </div>
+                  <h3 className="mt-4 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                    Public lists and visible activity.
+                  </h3>
+                  <div className="mt-auto pt-6">
+                    <button className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[11px] uppercase tracking-[0.14em]" style={pillButtonStyle}>
+                      Feed Coming Here
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-6"
+                style={shellCardStyle}
+              >
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Notable
+                  </p>
+                  <h3 className="mt-4 text-[26px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                    One important thing, surfaced fast.
+                  </h3>
+                  <div className="mt-5 rounded-[24px] px-4 py-4" style={{ background: "rgba(var(--swatch-paper-rgb), 0.54)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.82)" }}>
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                      Next Up
+                    </p>
+                    <p className="mt-3 text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                      A spotlight card for one upcoming date, one shared list, or one connection update.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
