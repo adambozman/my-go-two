@@ -745,13 +745,23 @@ const Questionnaires = () => {
                 <p className="text-[34px] md:text-[40px] leading-[0.95] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
                   Browse instinct categories
                 </p>
+                <p className="text-[14px] leading-relaxed max-w-[30ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  This or That now opens a dedicated category dashboard. The categories are fixed, the future question banks are fixed by gender, and the AI only interprets the patterns in your answers.
+                </p>
                 <p className="text-[13px] leading-relaxed max-w-[32ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Two options. One choice. Your pattern builds over time.
+                  {subscribed
+                    ? "The flow is built and ready for your category banks next."
+                    : "The new per-category flow is ready — once banks are added, free limits can apply inside each category."}
                 </p>
               </div>
               <div className="relative flex items-end justify-between gap-4">
                 <div className="w-16 h-16 rounded-[22px] backdrop-blur-md flex items-center justify-center" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
                   <ChevronRight className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    instinct deck
+                  </p>
                 </div>
               </div>
             </motion.button>
