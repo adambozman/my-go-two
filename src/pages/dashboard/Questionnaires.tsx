@@ -752,42 +752,31 @@ const Questionnaires = () => {
               transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
               whileTap={{ scale: 0.985 }}
               onClick={openThisOrThat}
-              className="lg:col-span-4 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left min-h-[340px] flex flex-col justify-between"
-              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+              className="lg:col-span-12 flex items-center justify-center py-4"
+              style={{ background: "transparent", boxShadow: "none" }}
             >
-              <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 32%), linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.04), transparent 40%)" }} />
-              <div className="relative flex items-center justify-between gap-3">
-                <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                  <Shuffle className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-                  <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>This or That</span>
+              <div style={{
+                width: 320, height: 320, background: "#d4543a", borderRadius: 32,
+                padding: 28, display: "flex", flexDirection: "column", justifyContent: "space-between",
+                boxShadow: "0 18px 44px rgba(212,84,58,0.3)",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", fontFamily: "'Jost', sans-serif", fontWeight: 700 }}>This or That</span>
+                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif" }}>{visibleThisOrThatAnswered}/{visibleThisOrThatCount}</span>
                 </div>
-                <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  {visibleThisOrThatAnswered}/{visibleThisOrThatCount}
-                </span>
-              </div>
-
-              <div className="relative">
-                <p className="text-[34px] md:text-[40px] leading-[0.95] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  Browse instinct categories
-                </p>
-                <p className="text-[14px] leading-relaxed max-w-[30ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  This or That now opens a dedicated category dashboard. The categories are fixed, the future question banks are fixed by gender, and the AI only interprets the patterns in your answers.
-                </p>
-                <p className="text-[13px] leading-relaxed max-w-[32ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  {subscribed
-                    ? "The flow is built and ready for your category banks next."
-                    : "The new per-category flow is ready — once banks are added, free limits can apply inside each category."}
-                </p>
-              </div>
-
-              <div className="relative flex items-end justify-between gap-4">
-                <div className="w-16 h-16 rounded-[22px] backdrop-blur-md flex items-center justify-center" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                  <ChevronRight className="w-6 h-6" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-                </div>
-                <div className="text-right">
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    instinct deck
+                <div>
+                  <p style={{ fontSize: 34, lineHeight: 1.0, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", marginBottom: 10 }}>
+                    Quick picks that teach the AI your instincts.
                   </p>
+                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5 }}>
+                    Two options. One choice. Your pattern builds over time.
+                  </p>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif" }}>Browse categories</span>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <ChevronRight style={{ width: 16, height: 16, color: "#fff" }} />
+                  </div>
                 </div>
               </div>
             </motion.button>
