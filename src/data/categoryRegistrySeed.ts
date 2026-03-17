@@ -1307,245 +1307,62 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "dress-male-tops",
         "products": [
           {
-            "id": "ocbd",
-            "name": "Oxford Button-Down (OCBD)",
-            "image": "dress-male-tops-ocbd",
+            "id": "button-up",
+            "name": "Button-Up Shirt",
+            "image": "dress-male-tops-button-up",
             "fields": [
-              {
-                "label": "Size",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "XS",
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
-                  "XXL",
-                  "XXXL"
-                ]
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed"
-                ]
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
+              { "label": "Size", "type": "select", "value": "", "options": ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Slim", "Regular", "Relaxed"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
             ]
           },
           {
-            "id": "linen-shirt",
-            "name": "Linen Shirt",
-            "image": "dress-male-tops-linen-shirt",
+            "id": "dress-shirt",
+            "name": "Dress Shirt",
+            "image": "dress-male-tops-dress-shirt",
             "fields": [
-              {
-                "label": "Size",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "XS",
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
-                  "XXL",
-                  "XXXL"
-                ]
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
+              { "label": "Neck Size", "type": "text", "value": "" },
+              { "label": "Sleeve Length", "type": "text", "value": "" },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Slim", "Regular", "Relaxed"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
             ]
           },
           {
-            "id": "cuban-collar",
-            "name": "Cuban Collar Shirt",
-            "image": "dress-male-tops-cuban-collar",
+            "id": "undershirt",
+            "name": "Undershirt",
+            "image": "dress-male-tops-undershirt",
             "fields": [
-              {
-                "label": "Size",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "XS",
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
-                  "XXL",
-                  "XXXL"
-                ]
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
+              { "label": "Size", "type": "select", "value": "", "options": ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Style", "type": "select", "value": "", "options": ["Crew Neck", "V-Neck", "Tank"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
             ]
           },
           {
-            "id": "poplin-dress-shirt",
-            "name": "Poplin Dress Shirt",
-            "image": "dress-male-tops-poplin-dress-shirt",
+            "id": "sweater",
+            "name": "Sweater",
+            "image": "dress-male-tops-sweater",
             "fields": [
-              {
-                "label": "Neck Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Sleeve Length",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Fit",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Slim",
-                  "Regular",
-                  "Relaxed"
-                ]
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
+              { "label": "Size", "type": "select", "value": "", "options": ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Style", "type": "select", "value": "", "options": ["Crewneck", "V-Neck", "Turtleneck", "Quarter-Zip"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
             ]
           },
           {
-            "id": "merino-sweater",
-            "name": "Merino Wool Sweater",
-            "image": "dress-male-tops-merino-sweater",
+            "id": "polo",
+            "name": "Polo",
+            "image": "dress-male-tops-polo",
             "fields": [
-              {
-                "label": "Size",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "XS",
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
-                  "XXL",
-                  "XXXL"
-                ]
-              },
-              {
-                "label": "Style",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Crewneck",
-                  "V-Neck",
-                  "Turtleneck"
-                ]
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
-            ]
-          },
-          {
-            "id": "knitted-polo",
-            "name": "Knitted Polo",
-            "image": "dress-male-tops-knitted-polo",
-            "fields": [
-              {
-                "label": "Size",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "XS",
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
-                  "XXL",
-                  "XXXL"
-                ]
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
+              { "label": "Size", "type": "select", "value": "", "options": ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
             ]
           }
         ]
