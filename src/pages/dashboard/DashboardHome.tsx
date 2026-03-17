@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 import ConnectionPage from "./ConnectionPage";
 import { assignUniquePhotos } from "@/data/stockPhotos";
 import { type Milestone } from "@/components/home/MilestoneCountdown";
@@ -11,7 +10,6 @@ import { type DirectoryEntry } from "@/components/home/ConnectionDirectory";
 import { ConnectionAvatarRow } from "@/components/home/ConnectionAvatarRow";
 import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { RecentUpdates, type RecentUpdate } from "@/components/home/RecentUpdates";
-import { HomeNotifications, type HomeNotificationItem } from "@/components/home/HomeNotifications";
 import { AddConnectionModal } from "@/components/home/AddConnectionModal";
 import PremiumLockCard from "@/components/PremiumLockCard";
 
@@ -34,10 +32,8 @@ const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
 
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
-  const navigate = useNavigate();
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
-  const [notifications, setNotifications] = useState<HomeNotificationItem[]>([]);
   const [recentUpdates, setRecentUpdates] = useState<RecentUpdate[]>([]);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [openConnection, setOpenConnection] = useState<{
@@ -173,30 +169,6 @@ const DashboardHome = () => {
     setMilestones(upcoming.slice(0, 5));
   }, [user]);
 
-  const loadNotifications = useCallback(async () => {
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from("notifications")
-      .select("id, type, title, body, created_at, is_read")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(4);
-
-    if (error || !data) return;
-
-    setNotifications(
-      data.map((notification) => ({
-        id: notification.id,
-        type: notification.type,
-        title: notification.title,
-        body: notification.body,
-        createdAt: notification.created_at,
-        isRead: notification.is_read,
-      }))
-    );
-  }, [user]);
-
   const loadRecentUpdates = useCallback(async () => {
     if (!user) return;
 
@@ -242,10 +214,9 @@ const DashboardHome = () => {
 
   useEffect(() => {
     loadConnections();
-    loadNotifications();
     loadMilestones();
     loadRecentUpdates();
-  }, [loadConnections, loadNotifications, loadMilestones, loadRecentUpdates]);
+  }, [loadConnections, loadMilestones, loadRecentUpdates]);
 
   const directoryEntries: DirectoryEntry[] = connections.map((c) => ({
     id: c.id,
@@ -258,6 +229,7 @@ const DashboardHome = () => {
 
   const realConnections = connections.filter((c) => !c.id.startsWith("placeholder-")).length;
   const canAddAnotherConnection = subscribed || realConnections < 1;
+  const nextMilestone = milestones[0] ?? null;
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
@@ -291,32 +263,96 @@ const DashboardHome = () => {
 
   return (
     <div className="relative h-full overflow-y-auto">
-      <div className="mx-auto max-w-[520px] space-y-6 px-1 py-4">
-        <GreetingHeader displayName={displayName} connectionCount={realConnections} />
+      <div className="mx-auto max-w-[520px] px-1 py-4">
+        <div className="grid gap-4 pb-8">
+          <section
+            className="card-design-overlay-teal relative overflow-hidden rounded-[30px] px-5 py-5"
+            style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+          >
+            <div className="absolute -right-8 -top-8 h-36 w-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
+            <div className="relative space-y-5">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <p
+                    className="mb-3 text-[10px] uppercase tracking-[0.16em]"
+                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
+                  >
+                    Home overview
+                  </p>
+                  <GreetingHeader displayName={displayName} connectionCount={realConnections} />
+                </div>
+                {nextMilestone && (
+                  <div
+                    className="rounded-[24px] px-4 py-3 backdrop-blur-md"
+                    style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
+                  >
+                    <p
+                      className="mb-1 text-[10px] uppercase tracking-[0.16em]"
+                      style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}
+                    >
+                      Next milestone
+                    </p>
+                    <p
+                      className="text-[24px] leading-none"
+                      style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}
+                    >
+                      {nextMilestone.daysOut}d
+                    </p>
+                    <p
+                      className="mt-1 text-[12px] leading-snug"
+                      style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
+                    >
+                      {nextMilestone.person}'s {nextMilestone.label}
+                    </p>
+                  </div>
+                )}
+              </div>
 
-        <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
+              <p
+                className="max-w-[38ch] text-[14px] leading-relaxed"
+                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
+              >
+                Keep your closest people, upcoming dates, and fresh updates in one calm place built for everyday use.
+              </p>
 
-        {showConnectionsPaywall && !canAddAnotherConnection && (
-          <PremiumLockCard
-            title="More than one connection is Premium"
-            description="Free is built to show the value. Premium unlocks family, friends, and deeper everyday use."
-            bullets={[
-              "Keep one connection free to understand the core experience",
-              "Unlock multiple connections for family and friends",
-              "Combine this with reminders, recommendations, and richer preference tracking",
-            ]}
-            compact
-            onDismiss={() => setShowConnectionsPaywall(false)}
-          />
-        )}
+              <div
+                className="rounded-[24px] p-4 backdrop-blur-md"
+                style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
+              >
+                <p
+                  className="mb-3 text-[10px] uppercase tracking-[0.16em]"
+                  style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}
+                >
+                  Connections
+                </p>
+                <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
+              </div>
+            </div>
+          </section>
 
-        <HomeNotifications notifications={notifications} onOpenAll={() => navigate("/dashboard/notifications")} />
+          {showConnectionsPaywall && !canAddAnotherConnection && (
+            <PremiumLockCard
+              title="More than one connection is Premium"
+              description="Free is built to show the value. Premium unlocks family, friends, and deeper everyday use."
+              bullets={[
+                "Keep one connection free to understand the core experience",
+                "Unlock multiple connections for family and friends",
+                "Combine this with reminders, recommendations, and richer preference tracking",
+              ]}
+              compact
+              onDismiss={() => setShowConnectionsPaywall(false)}
+            />
+          )}
 
-        <EventCalendar milestones={milestones} />
-
-        <RecentUpdates updates={recentUpdates} />
-
-        <div className="h-4" />
+          <div className="grid gap-4 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <EventCalendar milestones={milestones} />
+            </div>
+            <div className="lg:col-span-5">
+              <RecentUpdates updates={recentUpdates} />
+            </div>
+          </div>
+        </div>
       </div>
 
       <AnimatePresence>
