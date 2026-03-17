@@ -560,28 +560,12 @@ const Questionnaires = () => {
                     className={`rounded-[28px] p-6 md:p-7 text-left relative overflow-hidden aspect-square min-h-[220px] ${item.layoutClass}`}
                     style={{ background: "#d4543a", boxShadow: "0 18px 44px rgba(212,84,58,0.3)" }}
                   >
-                    <div className="relative flex h-full flex-col justify-between gap-5">
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", fontFamily: "'Jost', sans-serif", fontWeight: 700 }}>This or That</span>
-                        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif" }}>{visibleThisOrThatAnswered}/{visibleThisOrThatCount}</span>
-                      </div>
-                      <div>
-                        <p style={{ fontSize: 38, lineHeight: 1.0, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", marginBottom: 10 }}>
-                          This or That
-                        </p>
-                        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5, marginBottom: 8 }}>
-                          Two options. One choice. Your pattern builds over time.
-                        </p>
-                        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5 }}>
-                          Help the AI learn your vibe.
-                        </p>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <span style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif" }}>Browse categories</span>
-                        <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <ChevronRight style={{ width: 16, height: 16, color: "#fff" }} />
-                        </div>
-                      </div>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", textAlign: "center", gap: 12 }}>
+                      <p style={{ fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", fontFamily: "'Jost', sans-serif", fontWeight: 700, margin: 0 }}>This or That</p>
+                      <p style={{ fontSize: 38, lineHeight: 1.0, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", margin: 0 }}>This or That</p>
+                      <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5, margin: 0 }}>Two Options. One Choice.</p>
+                      <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5, margin: 0 }}>Your Pattern Builds Over Time.</p>
+                      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5, margin: 0, marginTop: 8 }}>Help the AI learn your vibe.</p>
                     </div>
                   </motion.div>
                 );
