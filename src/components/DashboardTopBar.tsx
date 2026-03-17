@@ -240,7 +240,7 @@ export function DashboardTopBar() {
       <div
         className="header-tagline-wrapper"
         style={{
-          marginTop: "var(--header-tagline-margin-top)",
+          marginTop: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? 0 : "var(--header-tagline-margin-top)",
           opacity: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? 0 : 1,
           visibility: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? "hidden" : "visible",
           height: (backState || (isMyGoTwo && !rotatingQuote.visible)) ? 0 : "auto",
