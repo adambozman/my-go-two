@@ -33,7 +33,6 @@ const DashboardHome = () => {
   const { user, subscribed } = useAuth();
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
-  const [recentUpdates, setRecentUpdates] = useState<RecentUpdate[]>([]);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [openConnection, setOpenConnection] = useState<{
     card: ConnectionCard;
