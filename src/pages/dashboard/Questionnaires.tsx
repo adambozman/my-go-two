@@ -1,12 +1,13 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Check, ArrowLeft, SkipForward, Sparkles, Shuffle, Send, Lock } from "lucide-react";
+import { ChevronRight, Check, SkipForward, Sparkles, Shuffle, Send, Lock } from "lucide-react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useTopBar } from "@/contexts/TopBarContext";
 import { buildSprints, SECTIONS, THIS_OR_THAT, THIS_OR_THAT_CATEGORIES, type QuizQuestion } from "@/data/knowMeQuestions";
 
 type ChatMessage = {
