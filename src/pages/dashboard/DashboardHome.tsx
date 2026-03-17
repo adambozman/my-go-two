@@ -183,7 +183,6 @@ const DashboardHome = () => {
 
   const realConnections = connections.filter((c) => !c.id.startsWith("placeholder-")).length;
   const canAddAnotherConnection = subscribed || realConnections < 1;
-  const nextMilestone = milestones[0] ?? null;
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
