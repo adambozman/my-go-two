@@ -290,7 +290,7 @@ const DashboardHome = () => {
             >
               <div className="relative">
                 <p className="mb-4 text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Your People
+                  Connections
                 </p>
                 <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
               </div>
