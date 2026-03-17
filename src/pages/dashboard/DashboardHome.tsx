@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
-import { ArrowUpRight, CalendarDays, Clock3, Search, Sparkles, X } from "lucide-react";
+import { ArrowUpRight, Clock3, Search, Sparkles, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -758,7 +758,7 @@ const DashboardHome = () => {
               border: "1px solid rgba(255,255,255,0.84)",
             }}
           >
-            <div className="flex items-center justify-between border-b border-white/50 pb-4">
+            <div className="border-b border-white/50 pb-4">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   Recent Activity
@@ -767,7 +767,6 @@ const DashboardHome = () => {
                   The long view.
                 </h3>
               </div>
-              <CalendarDays className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
             </div>
 
             <div className="mt-4 space-y-3 xl:max-h-[calc(100vh-240px)] xl:overflow-y-auto xl:pr-1">
