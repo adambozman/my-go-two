@@ -536,20 +536,20 @@ const Questionnaires = () => {
       <div className="h-full overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
 
-          <div className="grid grid-cols-1 md:grid-cols-12 md:grid-rows-12 gap-3 md:gap-4 md:aspect-square">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4" style={{ gridAutoRows: "120px" }}>
             {[
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[0],  layoutClass: "md:col-start-1  md:col-span-3 md:row-start-1 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[1],  layoutClass: "md:col-start-4  md:col-span-4 md:row-start-1 md:row-span-2" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[2],  layoutClass: "md:col-start-8  md:col-span-3 md:row-start-1 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[3],  layoutClass: "md:col-start-11 md:col-span-2 md:row-start-1 md:row-span-2" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[4],  layoutClass: "md:col-start-1  md:col-span-2 md:row-start-4 md:row-span-3" },
-              { type: "feature" as const,                                          layoutClass: "md:col-start-3  md:col-span-4 md:row-start-3 md:row-span-4" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[5],  layoutClass: "md:col-start-7  md:col-span-3 md:row-start-4 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[6],  layoutClass: "md:col-start-10 md:col-span-3 md:row-start-3 md:row-span-4" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[7],  layoutClass: "md:col-start-1  md:col-span-4 md:row-start-7 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[8],  layoutClass: "md:col-start-5  md:col-span-3 md:row-start-7 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[9],  layoutClass: "md:col-start-8  md:col-span-3 md:row-start-7 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[10], layoutClass: "md:col-start-11 md:col-span-2 md:row-start-3 md:row-span-4" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[0],  layoutClass: "md:col-span-3 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[1],  layoutClass: "md:col-span-4 md:row-span-1" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[2],  layoutClass: "md:col-span-3 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[3],  layoutClass: "md:col-span-2 md:row-span-1" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[4],  layoutClass: "md:col-span-2 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[5],  layoutClass: "md:col-span-4 md:row-span-1" },
+              { type: "feature" as const,                                          layoutClass: "md:col-span-3 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[6],  layoutClass: "md:col-span-2 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[7],  layoutClass: "md:col-span-3 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[8],  layoutClass: "md:col-span-2 md:row-span-1" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[9],  layoutClass: "md:col-span-3 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[10], layoutClass: "md:col-span-2 md:row-span-1" },
             ].map((item, index) => {
               if (item.type === "feature") {
                 return (
