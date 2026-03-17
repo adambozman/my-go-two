@@ -1052,34 +1052,6 @@ export const getThisOrThatBank = (categoryId: string, gender: Gender): GenderedB
       return null;
   }
 };
-  if (categoryId === "style-aesthetic") {
-    return {
-      categories: [
-        {
-          id: "style-aesthetic",
-          title: "Style & Aesthetic",
-          brands: [],
-        },
-      ],
-      questions: THIS_OR_THAT_CATEGORIES.find((category) => category.id === categoryId)?.promptIds[gender]?.map((id) => {
-        const item = THIS_OR_THAT.find((entry) => entry.id === id);
-        return item
-          ? {
-              id: item.id,
-              prompt: item.prompt,
-              categoryA: item.optionA,
-              categoryB: item.optionB,
-              tagsForA: [item.optionA.toLowerCase().replace(/[^a-z0-9]+/g, "-")],
-              tagsForB: [item.optionB.toLowerCase().replace(/[^a-z0-9]+/g, "-")],
-            }
-          : null;
-      }).filter(Boolean) as BrandBankQuestion[] ?? [],
-    };
-  }
-
-  const bank = THIS_OR_THAT_BANKS[categoryId];
-  return bank?.[gender] ?? null;
-};
 
 export const THIS_OR_THAT: ThisOrThatItem[] = [
   /* ── CLOTHING BRANDS (20) ── */
