@@ -941,9 +941,7 @@ const Questionnaires = () => {
                   <Shuffle className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
                   <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>This or That</span>
                 </div>
-                <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  {visibleThisOrThatAnswered}/{visibleThisOrThatCount}
-                </span>
+
               </div>
               <div className="relative">
                 <p className="text-[34px] md:text-[40px] leading-[0.95] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
