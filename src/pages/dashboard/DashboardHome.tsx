@@ -265,64 +265,38 @@ const DashboardHome = () => {
     <div className="relative h-full overflow-y-auto">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6 space-y-4">
         <div className="grid gap-4 pb-8">
-          <section
-            className="card-design-overlay-teal relative overflow-hidden rounded-[30px] px-5 py-5"
-            style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
-          >
-            <div className="absolute -right-8 -top-8 h-36 w-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
-            <div className="relative space-y-5">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <GreetingHeader displayName={displayName} connectionCount={realConnections} />
-                </div>
-                {nextMilestone && (
-                  <div
-                    className="rounded-[24px] px-4 py-3 backdrop-blur-md"
-                    style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
-                  >
-                    <p
-                      className="mb-1 text-[10px] uppercase tracking-[0.16em]"
-                      style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}
-                    >
-                      Next milestone
-                    </p>
-                    <p
-                      className="text-[24px] leading-none"
-                      style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}
-                    >
-                      {nextMilestone.daysOut}d
-                    </p>
-                    <p
-                      className="mt-1 text-[12px] leading-snug"
-                      style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
-                    >
-                      {nextMilestone.person}'s {nextMilestone.label}
-                    </p>
-                  </div>
-                )}
+
+          {/* Row 1: Greeting card + Connections card */}
+          <div className="grid lg:grid-cols-12 gap-4">
+
+            {/* Greeting card — small, top left */}
+            <div
+              className="lg:col-span-4 card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5"
+              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+            >
+              <div className="absolute -right-8 -top-8 h-36 w-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
+              <div className="relative">
+                <GreetingHeader displayName={displayName} connectionCount={realConnections} />
+                <p className="mt-3 text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Keep your closest people, upcoming dates, and fresh updates in one calm place built for everyday use.
+                </p>
               </div>
+            </div>
 
-              <p
-                className="max-w-[38ch] text-[14px] leading-relaxed"
-                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
-              >
-                Keep your closest people, upcoming dates, and fresh updates in one calm place built for everyday use.
-              </p>
-
-              <div
-                className="rounded-[24px] p-4 backdrop-blur-md"
-                style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
-              >
-                <p
-                  className="mb-3 text-[10px] uppercase tracking-[0.16em]"
-                  style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}
-                >
-                  Connections
+            {/* Connections card */}
+            <div
+              className="lg:col-span-8 card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5"
+              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+            >
+              <div className="relative">
+                <p className="mb-4 text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  Your People
                 </p>
                 <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
               </div>
             </div>
-          </section>
+
+          </div>
 
           {showConnectionsPaywall && !canAddAnotherConnection && (
             <PremiumLockCard
