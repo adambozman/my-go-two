@@ -233,28 +233,7 @@ const DashboardHome = () => {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
-            className="lg:col-span-5 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden"
-            style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
-          >
-            <div className="relative">
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Notifications
-                </p>
-                <button onClick={() => navigate("/dashboard/notifications")} className="inline-flex items-center gap-1 rounded-full px-3 py-1 backdrop-blur-md" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                  <span className="text-[10px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>View all</span>
-                  <ChevronRight className="w-3 h-3" style={{ color: "var(--swatch-teal)" }} />
-                </button>
-              </div>
-              <HomeNotifications notifications={notifications} onOpenAll={() => navigate("/dashboard/notifications")} />
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
-            className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden"
+            className="lg:col-span-12 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden"
             style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
             <div className="relative">
