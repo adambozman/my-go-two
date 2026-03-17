@@ -191,7 +191,7 @@ const DashboardHome = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 24 }}
-            className="lg:col-span-5 card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden flex flex-col justify-start"
+            className="lg:col-span-7 card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden"
             style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
             <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
@@ -199,7 +199,7 @@ const DashboardHome = () => {
               <p className="text-[10px] uppercase tracking-[0.22em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 The Vibe Today{firstName ? `, ${firstName}` : ""}
               </p>
-              <h1 className="text-[28px] md:text-[34px] leading-[1.0]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              <h1 className="text-[44px] md:text-[56px] leading-[0.9]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
                 Your<br />Dashboard
               </h1>
               <p className="text-[14px] leading-relaxed max-w-[38ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -213,7 +213,7 @@ const DashboardHome = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
-            className="lg:col-span-7 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden"
+            className="lg:col-span-5 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden"
             style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
             <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
@@ -233,10 +233,34 @@ const DashboardHome = () => {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
-            className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden min-h-[420px]"
+            className="lg:col-span-5 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden"
             style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
             <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  Notifications
+                </p>
+                <button onClick={() => navigate("/dashboard/notifications")} className="inline-flex items-center gap-1 rounded-full px-3 py-1 backdrop-blur-md" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                  <span className="text-[10px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>View all</span>
+                  <ChevronRight className="w-3 h-3" style={{ color: "var(--swatch-teal)" }} />
+                </button>
+              </div>
+              <HomeNotifications notifications={notifications} onOpenAll={() => navigate("/dashboard/notifications")} />
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
+            className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden"
+            style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+          >
+            <div className="relative">
+              <p className="text-[10px] uppercase tracking-[0.16em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                Calendar
+              </p>
               <EventCalendar milestones={milestones} />
             </div>
           </motion.div>
