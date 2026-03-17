@@ -317,7 +317,7 @@ body {
   display: inline-flex;
   align-items: baseline;
   gap: 0.04em;
-  font-size: 46px;
+  font-size: 38px;
   line-height: 1;
 }
 .logo-text .go {
@@ -336,7 +336,7 @@ body {
 }
 @media (min-width: 768px) {
   .logo-text {
-    font-size: 68px;
+    font-size: 54px;
   }
 }
 
