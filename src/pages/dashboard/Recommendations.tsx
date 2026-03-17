@@ -192,7 +192,7 @@ const Recommendations = () => {
             </div>
 
             {/* Body */}
-            <p className="text-[16px] leading-relaxed max-w-[62ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            <p className="text-[16px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
               Think of this as your personal style assistant and gift connoisseur. The AI reads your answers across every category — taste, style, home, gifting — and curates a list built entirely around you. Answer more, get sharper picks.
             </p>
 
