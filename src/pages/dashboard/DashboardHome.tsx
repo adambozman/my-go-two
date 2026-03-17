@@ -266,13 +266,11 @@ const DashboardHome = () => {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-0 space-y-4">
         <div className="grid gap-4 pb-8">
 
-          {/* Row 1: Greeting card + Connections card */}
-          <div className="grid lg:grid-cols-12 gap-4">
-
-            {/* Greeting card — small, top left */}
+          {/* Row 1: Greeting card alone — top left, natural size */}
+          <div className="flex">
             <div
-              className="lg:col-span-4 card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5"
-              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+              className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5"
+              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)", width: "fit-content", minWidth: 320, maxWidth: 420 }}
             >
               <div className="absolute -right-8 -top-8 h-36 w-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
               <div className="relative">
@@ -282,20 +280,19 @@ const DashboardHome = () => {
                 </p>
               </div>
             </div>
+          </div>
 
-            {/* Connections card */}
-            <div
-              className="lg:col-span-8 card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5 mt-[90px]"
-              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
-            >
-              <div className="relative">
-                <p className="mb-4 text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Connections
-                </p>
-                <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
-              </div>
+          {/* Row 2: Connections card */}
+          <div
+            className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5"
+            style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+          >
+            <div className="relative">
+              <p className="mb-4 text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                Connections
+              </p>
+              <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
             </div>
-
           </div>
 
           {showConnectionsPaywall && !canAddAnotherConnection && (
@@ -312,7 +309,8 @@ const DashboardHome = () => {
             />
           )}
 
-          <div className="grid gap-4 lg:grid-cols-12 mt-[90px]">
+          {/* Row 3: Calendar + Recent Activity */}
+          <div className="grid gap-4 lg:grid-cols-12">
             <div className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}>
               <EventCalendar milestones={milestones} />
             </div>
