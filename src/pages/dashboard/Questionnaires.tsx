@@ -536,18 +536,10 @@ const Questionnaires = () => {
       <div className="h-full overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
 
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-3 auto-rows-[minmax(140px,auto)]">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 auto-rows-[minmax(160px,auto)]">
             {THIS_OR_THAT_CATEGORIES.map((category, index) => {
-              const spanClass =
-                index === 0 || index === 4
-                  ? "md:col-span-3"
-                  : index === 1 || index === 6
-                    ? "md:col-span-3"
-                    : index === 2 || index === 5
-                      ? "md:col-span-2"
-                      : index === 3
-                        ? "md:col-span-4"
-                        : "md:col-span-2";
+              const SPANS = [7,5,4,4,4,5,7,4,4,4,12];
+              const spanClass = `md:col-span-${SPANS[index] ?? 6}`;
 
               return (
                 <motion.button
