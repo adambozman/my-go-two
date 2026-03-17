@@ -83,16 +83,15 @@ const ForgotPassword = () => {
               <span className="two">Two</span>
             </span>
           </Link>
-          <Link to="/login">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-sm font-semibold"
-              style={{ color: "var(--swatch-viridian-odyssey)" }}
-            >
-              Log in
-            </Button>
-          </Link>
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="text-sm font-semibold"
+            style={{ color: "var(--swatch-viridian-odyssey)" }}
+          >
+            <Link to="/login">Log in</Link>
+          </Button>
         </nav>
 
         <div className="flex-1 flex items-center justify-center px-4 pb-12">

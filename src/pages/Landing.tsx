@@ -98,25 +98,19 @@ const Landing = () => {
 
           {/* CTAs */}
           <motion.div {...riseIn(0.3)} className="flex items-center" style={{ gap: 14, marginBottom: 12 }}>
-            <Link to="/signup">
-              <button
-                className="surface-button-primary"
-                style={{ background: "var(--swatch-cedar-grove)", color: "hsl(var(--destructive-foreground))", border: "none", padding: "14px 32px", borderRadius: 40, fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 500, letterSpacing: "0.3px", cursor: "pointer", transition: "all 0.2s ease" }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}
-              >
-                Get Started Free &nbsp;→
-              </button>
+            <Link
+              to="/signup"
+              className="surface-button-primary inline-flex items-center justify-center rounded-full"
+              style={{ background: "var(--swatch-cedar-grove)", color: "hsl(var(--destructive-foreground))", border: "none", padding: "14px 32px", fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 500, letterSpacing: "0.3px", cursor: "pointer", transition: "all 0.2s ease" }}
+            >
+              Get Started Free &nbsp;→
             </Link>
-            <a href="#how-it-works">
-              <button
-                className="surface-button-secondary"
-                style={{ color: "var(--swatch-teal)", border: "none", padding: "13px 28px", borderRadius: 40, fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 400, cursor: "pointer", transition: "all 0.2s ease" }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}
-              >
-                See How It Works
-              </button>
+            <a
+              href="#how-it-works"
+              className="surface-button-secondary inline-flex items-center justify-center rounded-full"
+              style={{ color: "var(--swatch-teal)", border: "none", padding: "13px 28px", fontFamily: "'Jost', sans-serif", fontSize: 13.5, fontWeight: 400, cursor: "pointer", transition: "all 0.2s ease" }}
+            >
+              See How It Works
             </a>
           </motion.div>
 
