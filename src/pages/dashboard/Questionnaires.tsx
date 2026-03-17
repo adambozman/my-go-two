@@ -536,22 +536,93 @@ const Questionnaires = () => {
       <div className="h-full overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 auto-rows-[148px] md:auto-rows-[88px]">
-            {THIS_OR_THAT_CATEGORIES.map((category, index) => {
-              const layoutClasses = [
-                "md:col-span-5 md:row-span-3",
-                "md:col-span-3 md:row-span-2",
-                "md:col-span-4 md:row-span-2",
-                "md:col-span-4 md:row-span-3",
-                "md:col-span-3 md:row-span-2",
-                "md:col-span-5 md:row-span-2",
-                "md:col-span-6 md:row-span-3",
-                "md:col-span-3 md:row-span-2",
-                "md:col-span-3 md:row-span-2",
-                "md:col-span-4 md:row-span-2",
-              ];
-              const layoutClass = layoutClasses[index] ?? "md:col-span-4 md:row-span-2";
-              const isTall = [0, 3, 6].includes(index);
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 md:aspect-square md:auto-rows-fr">
+            {[
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[0], layoutClass: "md:col-span-4 md:row-span-3" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[1], layoutClass: "md:col-span-4 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[2], layoutClass: "md:col-span-4 md:row-span-3" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[3], layoutClass: "md:col-span-3 md:row-span-3" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[4], layoutClass: "md:col-span-3 md:row-span-3" },
+              { type: "feature" as const, layoutClass: "md:col-span-6 md:row-span-6" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[5], layoutClass: "md:col-span-3 md:row-span-3" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[6], layoutClass: "md:col-span-3 md:row-span-3" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[7], layoutClass: "md:col-span-4 md:row-span-3" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[8], layoutClass: "md:col-span-4 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[9], layoutClass: "md:col-span-4 md:row-span-3" },
+            ].map((item, index) => {
+              if (item.type === "feature") {
+                return (
+                  <motion.div
+                    key="this-or-that-feature-tile"
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
+                    className={`rounded-[28px] p-6 md:p-8 text-left relative overflow-hidden min-h-[148px] ${item.layoutClass}`}
+                    style={{
+                      background: "linear-gradient(155deg, rgba(var(--swatch-cedar-grove-rgb), 0.90) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.76) 100%)",
+                      border: "1px solid rgba(var(--swatch-cream-light-rgb), 0.34)",
+                      boxShadow: "0 18px 40px rgba(212,84,58,0.16), inset 0 1px 0 rgba(255,255,255,0.18)",
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background: "radial-gradient(circle at top right, rgba(var(--swatch-cream-light-rgb), 0.16), transparent 34%), linear-gradient(145deg, rgba(var(--swatch-cream-light-rgb), 0.10), transparent 58%)",
+                      }}
+                    />
+
+                    <div className="relative flex h-full flex-col justify-between gap-6 md:gap-8">
+                      <div>
+                        <span
+                          className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.16em]"
+                          style={{
+                            fontFamily: "'Jost', sans-serif",
+                            color: "hsl(var(--background))",
+                            background: "rgba(var(--swatch-cream-light-rgb), 0.14)",
+                            border: "1px solid rgba(var(--swatch-cream-light-rgb), 0.24)",
+                          }}
+                        >
+                          <Shuffle className="w-3.5 h-3.5" />
+                          This or That
+                        </span>
+                      </div>
+
+                      <div className="max-w-[24ch]">
+                        <h3
+                          className="text-[34px] md:text-[42px] leading-[0.92] mb-4"
+                          style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "hsl(var(--background))" }}
+                        >
+                          Pick the tile that fits your instinct.
+                        </h3>
+                        <p
+                          className="text-[14px] md:text-[15px] leading-relaxed"
+                          style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-cream-light-rgb), 0.92)" }}
+                        >
+                          Each category will hold a fixed question bank. You will move through quick either-or choices, and the system will read the patterns in your answers to understand your vibe.
+                        </p>
+                      </div>
+
+                      <div className="flex items-end justify-between gap-4">
+                        <p
+                          className="text-[12px] uppercase tracking-[0.14em]"
+                          style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-cream-light-rgb), 0.84)" }}
+                        >
+                          Choose a category when they unlock
+                        </p>
+                        <div
+                          className="w-12 h-12 md:w-14 md:h-14 rounded-[20px] flex items-center justify-center"
+                          style={{ background: "rgba(var(--swatch-cream-light-rgb), 0.14)", border: "1px solid rgba(var(--swatch-cream-light-rgb), 0.22)" }}
+                        >
+                          <ChevronRight className="w-5 h-5" style={{ color: "hsl(var(--background))" }} />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              }
+
+              const category = item.category;
+              const isTall = [0, 2, 7, 9, 10].includes(index);
 
               return (
                 <motion.button
@@ -560,7 +631,7 @@ const Questionnaires = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
                   disabled
-                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden disabled:opacity-95 min-h-[148px] ${layoutClass}`}
+                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden disabled:opacity-95 min-h-[148px] ${item.layoutClass}`}
                   style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)" }}
                 >
                   <div
