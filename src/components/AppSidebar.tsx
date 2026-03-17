@@ -1,4 +1,4 @@
-import { Home, Heart, Sparkles, ClipboardList, Search } from "lucide-react";
+import { Home, Heart, Star, ClipboardList, Search } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 const navItems = [
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
   { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
-  { icon: Sparkles, url: "/dashboard/recommendations", label: "Recommendations" },
+  { icon: Star, url: "/dashboard/recommendations", label: "For You" },
   { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Know Me" },
   { icon: Search, url: "/dashboard/search", label: "Search" },
 ];
