@@ -130,7 +130,7 @@ export function DashboardTopBar() {
   const activeTagline = taglines[location.pathname] ?? taglines["/dashboard"];
 
   return (
-    <header className="px-4 md:px-8 shrink-0 flex flex-col" style={{ height: "var(--header-height)", paddingTop: "var(--header-top-padding)" }}>
+    <header className="px-4 md:px-8 shrink-0 flex flex-col" style={{ height: location.pathname.includes("recommendations") ? "auto" : "var(--header-height)", paddingTop: "var(--header-top-padding)", paddingBottom: location.pathname.includes("recommendations") ? "12px" : undefined }}>
       <div className="relative flex items-center justify-between gap-2 md:gap-4" style={{ height: "var(--header-icons-row-height)" }}>
         {/* Back button or Profile circle — left */}
         {backState ? (
