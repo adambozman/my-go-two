@@ -176,8 +176,8 @@ const Recommendations = () => {
               <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 Go Two / Recommendations
               </p>
-              <h1 className="text-[44px] md:text-[60px] leading-[0.9] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                Curated<br />Just For You
+              <h1 className="text-[28px] md:text-[34px] leading-[1.0] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                Curated Just For You
               </h1>
               {personalization?.persona_summary && (
                 <p className="text-[18px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
@@ -193,25 +193,28 @@ const Recommendations = () => {
 
             {/* Right — glass box with staggered pills inside */}
             <div className="rounded-[26px] p-5 backdrop-blur-md flex-shrink-0 w-[260px]" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)" }}>
-              <p className="text-[9px] uppercase tracking-[0.18em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                Your AI knows you as
+              <p className="text-[10px] uppercase tracking-[0.18em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                Think of the AI as your
               </p>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2.5">
                 {[
-                  { label: "How it works", offset: false },
-                  { label: "Style Strategist", offset: true },
-                  { label: "Atmosphere Architect", offset: false },
-                  { label: "The Intentional Giver", offset: true },
-                ].map(({ label, offset }) => (
+                  { label: "Personal Style Strategist", offset: false, teal: true },
+                  { label: "Atmosphere Architect", offset: true, teal: false },
+                  { label: "Intentional Gift Connoisseur", offset: false, teal: true },
+                ].map(({ label, offset, teal }) => (
                   <div
                     key={label}
-                    className={`rounded-full px-3 py-1.5 text-[11px] self-start${offset ? " ml-6" : ""}`}
+                    className={`rounded-full px-4 py-2 text-[12px] self-start${offset ? " ml-5" : ""}`}
                     style={{
-                      fontFamily: "'Jost', sans-serif",
-                      background: "rgba(255,255,255,0.3)",
-                      border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)",
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontWeight: 600,
+                      fontStyle: "italic",
+                      fontSize: 14,
+                      background: teal ? "rgba(var(--swatch-teal-rgb), 0.10)" : "rgba(255,255,255,0.35)",
+                      border: teal ? "1px solid rgba(var(--swatch-teal-rgb), 0.25)" : "1px solid rgba(255,255,255,0.5)",
                       color: "var(--swatch-viridian-odyssey)",
                       whiteSpace: "nowrap",
+                      letterSpacing: "0.01em",
                     }}
                   >
                     {label}
