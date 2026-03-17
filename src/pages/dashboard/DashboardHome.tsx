@@ -274,24 +274,25 @@ const DashboardHome = () => {
         <div className="grid gap-4 pb-8">
           <GreetingHeader displayName={displayName} />
 
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,44%)_minmax(0,56%)] lg:items-start">
-            <div
-              className="card-design-overlay-teal relative overflow-hidden rounded-[32px] p-6 md:p-7"
-              style={shellCardStyle}
-            >
-              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.3)" }} />
-              <div className="relative">
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Connections
-                </p>
-                <h3 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
-                  Your people, kept close.
-                </h3>
-                <div className="mt-5">
-                  <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
-                </div>
-              </div>
+          <div
+            className="relative overflow-hidden rounded-[32px] px-4 py-4 md:px-6 md:py-5"
+            style={{
+              background: "linear-gradient(165deg, rgba(45,104,112,0.14) 0%, rgba(245,233,220,0.5) 100%)",
+              border: "1px solid rgba(45,104,112,0.18)",
+              boxShadow: "0 16px 36px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.64)",
+            }}
+          >
+            <div className="absolute -right-16 top-1/2 h-28 w-28 -translate-y-1/2 rounded-full" style={{ background: "rgba(255,255,255,0.18)" }} />
+            <div className="absolute left-6 top-0 h-px w-24" style={{ background: "rgba(212,84,58,0.4)" }} />
+            <div className="relative flex flex-col gap-3">
+              <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                Connections
+              </p>
+              <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
             </div>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,100%)] lg:items-start">
 
             <div
               className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-3 md:p-4"
