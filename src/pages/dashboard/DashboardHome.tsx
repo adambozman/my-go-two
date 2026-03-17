@@ -233,7 +233,7 @@ const DashboardHome = () => {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
-            className="lg:col-span-12 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden"
+            className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden"
             style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
             <div className="relative">
