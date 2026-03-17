@@ -263,7 +263,7 @@ const DashboardHome = () => {
 
   return (
     <div className="relative h-full overflow-y-auto">
-      <div className="mx-auto max-w-[520px] px-1 py-4">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6 space-y-4">
         <div className="grid gap-4 pb-8">
           <section
             className="card-design-overlay-teal relative overflow-hidden rounded-[30px] px-5 py-5"
