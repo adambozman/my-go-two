@@ -150,7 +150,7 @@ export function DashboardTopBar() {
         {/* GoTwo logo — left aligned */}
         <GoTwoText className="absolute left-0 translate-x-0" />
 
-        <nav className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 md:gap-3">
+        <nav className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-start gap-2 md:gap-3">
           {navItems.map((item) => {
             const isActive = item.end ? location.pathname === item.url : location.pathname.startsWith(item.url);
             return (
@@ -159,12 +159,15 @@ export function DashboardTopBar() {
                 to={item.url}
                 aria-label={item.label}
                 className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-full transition-all",
+                  "flex w-[58px] flex-col items-center gap-1 rounded-xl px-1 py-0.5 text-center transition-all",
                   isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 )}
-                style={isActive ? { background: "rgba(232,198,174,0.34)" } : undefined}
+                style={isActive ? { background: "rgba(232,198,174,0.22)" } : undefined}
               >
                 <item.icon className="h-4.5 w-4.5" />
+                <span className="text-[10px] font-medium leading-none" style={{ fontFamily: "'Jost', sans-serif" }}>
+                  {item.label}
+                </span>
               </NavLink>
             );
           })}
