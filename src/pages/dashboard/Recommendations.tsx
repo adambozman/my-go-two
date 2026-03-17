@@ -165,7 +165,7 @@ const Recommendations = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 24 }}
-          className="card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden"
+          className="card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden lg:max-w-[760px]"
           style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
         >
           <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
