@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Gift, CalendarDays, Heart, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Milestone } from "./MilestoneCountdown";
 
 interface EventCalendarProps {
   milestones: Milestone[];
 }
 
-const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const DAY_NAMES = ["S", "M", "T", "W", "T", "F", "S"];
 
 function getMonthGrid(year: number, month: number) {
@@ -17,22 +17,13 @@ function getMonthGrid(year: number, month: number) {
   let row: (number | null)[] = Array(firstDay).fill(null);
   for (let d = 1; d <= daysInMonth; d++) {
     row.push(d);
-    if (row.length === 7) {
-      rows.push(row);
-      row = [];
-    }
+    if (row.length === 7) { rows.push(row); row = []; }
   }
   if (row.length) {
     while (row.length < 7) row.push(null);
     rows.push(row);
   }
   return rows;
-}
-
-function milestoneIcon(type: string) {
-  if (type === "birthday") return Gift;
-  if (type === "anniversary") return Heart;
-  return CalendarDays;
 }
 
 export function EventCalendar({ milestones }: EventCalendarProps) {
@@ -58,154 +49,94 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
     return mapped;
   }, [milestones, month, year]);
 
-  const firstEventDay = useMemo(() => {
-    const days = Array.from(dayEvents.keys()).sort((a, b) => a - b);
-    return days[0] ?? null;
-  }, [dayEvents]);
-
-  const [expandedDay, setExpandedDay] = useState<number | null>(null);
-
-  useEffect(() => {
-    setExpandedDay(firstEventDay);
-  }, [firstEventDay, month, year]);
-
-  const selectedEvents = expandedDay ? dayEvents.get(expandedDay) ?? [] : [];
-  const upcoming = useMemo(
-    () => milestones.filter((milestone) => milestone.date.getMonth() === month && milestone.date.getFullYear() === year),
-    [milestones, month, year]
-  );
-
   const changeMonth = (direction: number) => {
     setVisibleDate((current) => new Date(current.getFullYear(), current.getMonth() + direction, 1));
   };
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15 }}
-      className="space-y-3"
+      transition={{ delay: 0.1 }}
     >
-      <div className="flex items-center justify-between px-1">
-        <h2
-          className="text-[11px] font-semibold uppercase tracking-[0.14em]"
-          style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
-        >
-          Calendar
-        </h2>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+            Upcoming
+          </p>
+          <p className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+            {MONTH_NAMES[month]} {year}
+          </p>
+        </div>
         <div className="flex items-center gap-2">
           <button
-            type="button"
             onClick={() => changeMonth(-1)}
-            aria-label="View previous month"
-            className="flex h-7 w-7 items-center justify-center rounded-full transition-transform hover:scale-105"
-            style={{ background: "rgba(255,255,255,0.72)", color: "var(--swatch-viridian-odyssey)", border: "1px solid rgba(255,255,255,0.85)" }}
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-105"
+            style={{ background: "rgba(255,255,255,0.28)", border: "1px solid rgba(255,255,255,0.45)", color: "var(--swatch-viridian-odyssey)" }}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="w-4 h-4" />
           </button>
-          <span
-            className="min-w-[72px] text-center text-[10px] font-medium"
-            style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
-          >
-            {MONTH_NAMES[month]} {year}
-          </span>
           <button
-            type="button"
             onClick={() => changeMonth(1)}
-            aria-label="View next month"
-            className="flex h-7 w-7 items-center justify-center rounded-full transition-transform hover:scale-105"
-            style={{ background: "rgba(255,255,255,0.72)", color: "var(--swatch-viridian-odyssey)", border: "1px solid rgba(255,255,255,0.85)" }}
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-105"
+            style={{ background: "rgba(255,255,255,0.28)", border: "1px solid rgba(255,255,255,0.45)", color: "var(--swatch-viridian-odyssey)" }}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      <div
-        className="rounded-2xl px-3 py-3"
-        style={{
-          background: "rgba(255,255,255,0.70)",
-          border: "1px solid rgba(255,255,255,0.85)",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
-        }}
-      >
-        <div className="grid grid-cols-7 mb-1">
-          {DAY_NAMES.map((d, i) => (
-            <div
-              key={i}
-              className="text-center text-[9px] font-semibold uppercase py-1"
-              style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
-            >
-              {d}
-            </div>
-          ))}
-        </div>
-
-        {grid.map((week, wi) => (
-          <div key={wi} className="grid grid-cols-7">
-            {week.map((day, di) => {
-              const events = day ? dayEvents.get(day) : undefined;
-              const hasEvents = Boolean(events?.length);
-              const isToday = day === today && month === currentMonth && year === currentYear;
-              const isPast = day !== null && year === currentYear && month === currentMonth && day < today;
-              const isExpanded = day !== null && day === expandedDay;
-
-              return (
-                <div key={di} className="relative flex flex-col items-center justify-center py-1.5">
-                  {day !== null ? (
-                    <button
-                      type="button"
-                      disabled={!hasEvents}
-                      onClick={() => {
-                        if (!hasEvents) return;
-                        setExpandedDay((current) => (current === day ? null : day));
-                      }}
-                      className="flex flex-col items-center disabled:cursor-default"
-                    >
-                      <div
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-medium transition-transform"
-                        style={{
-                          fontFamily: "'Jost', sans-serif",
-                          transform: isExpanded ? "scale(1.08)" : undefined,
-                          background: isToday
-                            ? "var(--swatch-viridian-odyssey)"
-                            : hasEvents
-                            ? isExpanded
-                              ? "var(--swatch-cedar-grove)"
-                              : "rgba(212,84,58,0.12)"
-                            : "transparent",
-                          color: isToday
-                            ? "#fff"
-                            : hasEvents
-                            ? isExpanded
-                              ? "#fff"
-                              : "var(--swatch-cedar-grove)"
-                            : isPast
-                            ? "var(--swatch-text-light)"
-                            : "var(--swatch-viridian-odyssey)",
-                          fontWeight: hasEvents || isToday ? 700 : 400,
-                        }}
-                      >
-                        {day}
-                      </div>
-                      {hasEvents && !isToday && (
-                        <div
-                          className="w-1 h-1 rounded-full mt-0.5"
-                          style={{ background: isExpanded ? "var(--swatch-teal)" : "var(--swatch-cedar-grove)" }}
-                        />
-                      )}
-                    </button>
-                  ) : null}
-                </div>
-              );
-            })}
+      {/* Day headers */}
+      <div className="grid grid-cols-7 mb-2">
+        {DAY_NAMES.map((d, i) => (
+          <div key={i} className="text-center text-[10px] uppercase tracking-[0.1em] py-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            {d}
           </div>
         ))}
-
-
       </div>
 
+      {/* Grid */}
+      {grid.map((week, wi) => (
+        <div key={wi} className="grid grid-cols-7">
+          {week.map((day, di) => {
+            const hasEvents = Boolean(day && dayEvents.get(day)?.length);
+            const isToday = day === today && month === currentMonth && year === currentYear;
+            const isPast = day !== null && year === currentYear && month === currentMonth && day < today;
 
-    </motion.section>
+            return (
+              <div key={di} className="flex flex-col items-center justify-center py-1.5">
+                {day !== null ? (
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] relative"
+                    style={{
+                      fontFamily: "'Jost', sans-serif",
+                      fontWeight: isToday || hasEvents ? 700 : 400,
+                      background: isToday
+                        ? "var(--swatch-viridian-odyssey)"
+                        : hasEvents
+                        ? "rgba(var(--swatch-cedar-grove-rgb), 0.15)"
+                        : "transparent",
+                      color: isToday
+                        ? "#fff"
+                        : hasEvents
+                        ? "var(--swatch-cedar-grove)"
+                        : isPast
+                        ? "rgba(var(--swatch-antique-coin-rgb), 0.4)"
+                        : "var(--swatch-viridian-odyssey)",
+                    }}
+                  >
+                    {day}
+                    {hasEvents && !isToday && (
+                      <div className="absolute bottom-0.5 w-1 h-1 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </motion.div>
   );
 }

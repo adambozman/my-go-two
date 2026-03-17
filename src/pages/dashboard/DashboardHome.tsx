@@ -237,9 +237,6 @@ const DashboardHome = () => {
             style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
             <div className="relative">
-              <p className="text-[10px] uppercase tracking-[0.16em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                Calendar
-              </p>
               <EventCalendar milestones={milestones} />
             </div>
           </motion.div>
