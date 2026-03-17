@@ -191,7 +191,7 @@ const DashboardHome = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 24 }}
-            className="lg:col-span-7 card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden"
+            className="lg:col-span-5 card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden"
             style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
             <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
@@ -213,7 +213,7 @@ const DashboardHome = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
-            className="lg:col-span-5 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden"
+            className="lg:col-span-7 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden"
             style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
           >
             <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
