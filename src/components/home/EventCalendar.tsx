@@ -96,14 +96,6 @@ function buildOccurrenceDate(milestone: Milestone, year: number) {
   return new Date(year, milestone.month, milestone.day, 12, 0, 0);
 }
 
-function buildNextOccurrence(milestone: Milestone, now: Date) {
-  const next = buildOccurrenceDate(milestone, now.getFullYear());
-  if (startOfLocalDay(next) < startOfLocalDay(now)) {
-    next.setFullYear(next.getFullYear() + 1);
-  }
-  return next;
-}
-
 export function EventCalendar({ milestones, connections }: EventCalendarProps) {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -324,57 +316,57 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
     <motion.section
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-visible rounded-[34px] p-[1px]"
+      className="relative overflow-visible rounded-[30px] p-[1px]"
       style={{
         background: "linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.44) 0%, rgba(var(--swatch-viridian-odyssey-rgb), 0.92) 100%)",
-        boxShadow: "0 26px 56px rgba(30,74,82,0.22)",
+        boxShadow: "0 18px 36px rgba(30,74,82,0.18)",
       }}
     >
       <div
-        className="relative overflow-hidden rounded-[33px] px-4 py-4 md:px-5 md:py-5"
+        className="relative overflow-hidden rounded-[29px] px-3 py-3 md:px-3.5 md:py-3.5"
         style={{
           background: "linear-gradient(180deg, rgba(var(--swatch-paper-rgb), 0.88) 0%, rgba(var(--swatch-paper-rgb), 0.72) 100%)",
         }}
       >
-        <div className="absolute -right-16 -top-12 h-40 w-40 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.35)" }} />
-        <div className="absolute -bottom-20 -left-14 h-40 w-40 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.18)" }} />
+        <div className="absolute -right-14 -top-10 h-28 w-28 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.28)" }} />
+        <div className="absolute -bottom-14 -left-10 h-28 w-28 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
 
-        <div className="relative space-y-4">
-          <div className="flex items-center justify-between gap-4 rounded-[28px] px-4 py-4 md:px-5" style={{ background: "rgba(var(--swatch-paper-rgb), 0.5)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.10)", boxShadow: "0 10px 28px rgba(30,74,82,0.08)" }}>
+        <div className="relative space-y-3">
+          <div className="flex items-center justify-between gap-3 rounded-[22px] px-4 py-3" style={{ background: "rgba(var(--swatch-paper-rgb), 0.5)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.10)", boxShadow: "0 8px 18px rgba(30,74,82,0.07)" }}>
             <div className="min-w-0">
               <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                 Connection Calendar
               </p>
-              <p className="mt-2 text-[32px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              <p className="mt-1.5 text-[24px] leading-none md:text-[26px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
                 {MONTH_NAMES[month]} {year}
               </p>
             </div>
 
-            <div className="flex items-center gap-1 rounded-full px-1.5 py-1" style={{ background: "rgba(var(--swatch-paper-rgb), 0.75)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
-              <button onClick={() => changeMonth(-1)} className="flex h-9 w-9 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
-                <ChevronLeft className="h-4 w-4" />
+            <div className="flex items-center gap-0.5 rounded-full px-1 py-0.5" style={{ background: "rgba(var(--swatch-paper-rgb), 0.75)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
+              <button onClick={() => changeMonth(-1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                <ChevronLeft className="h-3.5 w-3.5" />
               </button>
-              <button onClick={() => changeMonth(1)} className="flex h-9 w-9 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
-                <ChevronRight className="h-4 w-4" />
+              <button onClick={() => changeMonth(1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
 
-          <div className="rounded-[30px] px-3 py-3 md:px-4 md:py-4" style={{ background: "linear-gradient(180deg, rgba(var(--swatch-viridian-odyssey-rgb), 0.95) 0%, rgba(var(--swatch-teal-rgb), 0.92) 100%)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.18)", boxShadow: "0 22px 54px rgba(30,74,82,0.18)" }}>
-            <div className="mb-3 grid grid-cols-7 gap-2">
+          <div className="rounded-[24px] px-2.5 py-2.5" style={{ background: "linear-gradient(180deg, rgba(var(--swatch-viridian-odyssey-rgb), 0.95) 0%, rgba(var(--swatch-teal-rgb), 0.92) 100%)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.18)", boxShadow: "0 14px 32px rgba(30,74,82,0.16)" }}>
+            <div className="mb-2 grid grid-cols-7 gap-1">
               {DAY_NAMES.map((day) => (
-                <div key={day} className="pb-1 text-center text-[10px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.62)" }}>
+                <div key={day} className="pb-1 text-center text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.62)" }}>
                   {day}
                 </div>
               ))}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1">
               {grid.map((week, weekIndex) => (
-                <div key={weekIndex} className="grid grid-cols-7 gap-2">
+                <div key={weekIndex} className="grid grid-cols-7 gap-1">
                   {week.map((day, dayIndex) => {
                     if (day === null) {
-                      return <div key={`${weekIndex}-${dayIndex}`} className="min-h-[88px] rounded-[20px] opacity-30" />;
+                      return <div key={`${weekIndex}-${dayIndex}`} className="min-h-[52px] rounded-[14px] opacity-30" />;
                     }
 
                     const key = dateKey(year, month, day);
@@ -384,17 +376,17 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                     const connectionCount = events.filter((event) => event.sourceType === "connection").length;
                     const selfCount = events.filter((event) => event.sourceType === "self").length;
 
-                    return (
-                      <button
-                        key={key}
+                      return (
+                        <button
+                          key={key}
                         onClick={() => {
                           setSelectedDate(new Date(year, month, day));
                           setShowAddForm(false);
                         }}
-                        className="flex min-h-[88px] flex-col rounded-[20px] px-2 py-2 text-left transition-transform duration-200 hover:-translate-y-0.5"
-                        style={{
-                          background: isSelected
-                            ? "rgba(var(--swatch-paper-rgb), 0.22)"
+                          className="flex min-h-[52px] flex-col rounded-[14px] px-1.5 py-1.5 text-left transition-transform duration-200 hover:-translate-y-0.5"
+                          style={{
+                            background: isSelected
+                              ? "rgba(var(--swatch-paper-rgb), 0.22)"
                             : isToday
                               ? "rgba(var(--swatch-paper-rgb), 0.14)"
                               : "rgba(var(--swatch-paper-rgb), 0.06)",
@@ -404,24 +396,24 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                               ? "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.38)"
                               : "1px solid rgba(var(--swatch-paper-rgb), 0.10)",
                           boxShadow: isSelected ? "0 12px 26px rgba(0,0,0,0.12)" : "none",
-                        }}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="text-[14px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: isToday || isSelected ? 700 : 500, color: "var(--swatch-paper)" }}>
+                          }}
+                        >
+                        <div className="flex items-start justify-between gap-1">
+                          <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: isToday || isSelected ? 700 : 500, color: "var(--swatch-paper)" }}>
                             {day}
                           </span>
                           {events.length > 0 && (
-                            <span className="rounded-full px-2 py-0.5 text-[10px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-paper)", background: "rgba(var(--swatch-paper-rgb), 0.14)" }}>
+                            <span className="rounded-full px-1.5 py-0.5 text-[9px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-paper)", background: "rgba(var(--swatch-paper-rgb), 0.14)" }}>
                               {events.length}
                             </span>
                           )}
                         </div>
 
                         <div className="mt-auto space-y-1">
-                          {events.slice(0, 2).map((event) => (
+                          {events.slice(0, 1).map((event) => (
                             <div
                               key={event.id}
-                              className="truncate rounded-full px-2 py-1 text-[9px]"
+                              className="truncate rounded-full px-1.5 py-0.5 text-[8px]"
                               style={{
                                 fontFamily: "'Jost', sans-serif",
                                 background: "rgba(var(--swatch-paper-rgb), 0.12)",
@@ -432,21 +424,21 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                               {event.title}
                             </div>
                           ))}
-                          {events.length > 2 && (
-                            <p className="text-[10px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.72)" }}>
-                              +{events.length - 2} more
+                          {events.length > 1 && (
+                            <p className="text-[8px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.72)" }}>
+                              +{events.length - 1}
                             </p>
                           )}
                           {!events.length && (
-                            <div className="flex gap-1.5 pt-2">
-                              <span className="h-1.5 w-1.5 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.35)" }} />
-                              <span className="h-1.5 w-1.5 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.18)" }} />
+                            <div className="flex gap-1 pt-1.5">
+                              <span className="h-1 w-1 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.35)" }} />
+                              <span className="h-1 w-1 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.18)" }} />
                             </div>
                           )}
                           {!!events.length && (
-                            <div className="flex gap-1.5 pt-1">
-                              {!!connectionCount && <span className="h-1.5 w-5 rounded-full" style={{ background: TYPE_META.birthday.color }} />}
-                              {!!selfCount && <span className="h-1.5 w-5 rounded-full" style={{ background: TYPE_META.personal.color }} />}
+                            <div className="flex gap-1 pt-0.5">
+                              {!!connectionCount && <span className="h-1 w-4 rounded-full" style={{ background: TYPE_META.birthday.color }} />}
+                              {!!selfCount && <span className="h-1 w-4 rounded-full" style={{ background: TYPE_META.personal.color }} />}
                             </div>
                           )}
                         </div>
@@ -464,7 +456,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 z-20 flex items-start justify-center rounded-[33px] bg-[rgba(20,35,38,0.22)] p-3 md:p-6"
+                className="fixed inset-0 z-40 flex items-start justify-center bg-[rgba(20,35,38,0.22)] p-3 md:p-8"
                 onClick={() => {
                   setSelectedDate(null);
                   setShowAddForm(false);

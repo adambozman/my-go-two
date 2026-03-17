@@ -304,8 +304,15 @@ const DashboardHome = () => {
           )}
 
           {/* Row 3: Calendar */}
-          <div className="grid gap-4">
-            <div className="card-design-overlay-teal rounded-[30px] p-4 md:p-5 relative overflow-hidden" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}>
+          <div className="flex">
+            <div
+              className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-3 md:p-4"
+              style={{
+                boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
+                width: "100%",
+                maxWidth: 520,
+              }}
+            >
               <EventCalendar milestones={milestones} connections={calendarConnections} />
             </div>
           </div>
