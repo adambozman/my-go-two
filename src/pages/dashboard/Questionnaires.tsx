@@ -558,7 +558,7 @@ const Questionnaires = () => {
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
-                    className={`rounded-[28px] p-6 md:p-7 text-left relative overflow-hidden ${item.layoutClass}`}
+                    className={`rounded-[28px] p-6 md:p-7 text-left relative overflow-hidden aspect-square ${item.layoutClass}`}
                     style={{ background: "#d4543a", boxShadow: "0 18px 44px rgba(212,84,58,0.3)" }}
                   >
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", height: "100%", textAlign: "center", padding: "20px", gap: 12 }}>
@@ -581,7 +581,7 @@ const Questionnaires = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
                   disabled
-                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden disabled:opacity-95 min-h-[148px] ${item.layoutClass}`}
+                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden disabled:opacity-95 aspect-square ${item.layoutClass}`}
                   style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)" }}
                 >
                   <div
