@@ -178,33 +178,44 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
     <motion.section
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative"
+      className="relative overflow-visible rounded-[34px] p-[1px]"
+      style={{
+        background: "linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.44) 0%, rgba(var(--swatch-viridian-odyssey-rgb), 0.92) 100%)",
+        boxShadow: "0 26px 56px rgba(30,74,82,0.22)",
+      }}
     >
-      <div className="relative">
+      <div
+        className="relative overflow-hidden rounded-[33px] px-4 py-4 md:px-5 md:py-5"
+        style={{
+          background: "linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.94) 0%, rgba(var(--swatch-viridian-odyssey-rgb), 0.98) 100%)",
+        }}
+      >
+        <div className="absolute -right-16 -top-12 h-40 w-40 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)" }} />
+        <div className="absolute -bottom-20 -left-14 h-40 w-40 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.24)" }} />
 
         <div className="relative flex min-h-[560px] flex-col gap-4">
           <div className="space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.68)" }}>
                   Calendar
                 </p>
 
               </div>
-              <div className="flex items-center gap-1 rounded-full px-1.5 py-1" style={{ background: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.5)" }}>
-                <button onClick={() => changeMonth(-1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+              <div className="flex items-center gap-1 rounded-full px-1.5 py-1" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.12)" }}>
+                <button onClick={() => changeMonth(-1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-paper)" }}>
                   <ChevronLeft className="h-4 w-4" />
                 </button>
-                <button onClick={() => changeMonth(1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                <button onClick={() => changeMonth(1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-paper)" }}>
                   <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
             </div>
 
-            <div className="rounded-[24px] px-3 py-3" style={{ background: "transparent" }}>
+            <div className="rounded-[24px] px-3 py-3" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.1)" }}>
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-[18px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                  <p className="text-[18px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-paper)" }}>
                     {MONTH_NAMES[month]} {year}
                   </p>
 
@@ -214,10 +225,10 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
             </div>
           </div>
 
-          <div className="rounded-[28px] px-3 py-3" style={{ background: "transparent" }}>
+          <div className="rounded-[28px] px-3 py-3" style={{ background: "rgba(var(--swatch-viridian-odyssey-rgb), 0.22)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.1)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)" }}>
             <div className="mb-2 grid grid-cols-7 gap-1">
               {DAY_NAMES.map((day) => (
-                <div key={day} className="pb-1 text-center text-[9px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                <div key={day} className="pb-1 text-center text-[9px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.54)" }}>
                   {day}
                 </div>
               ))}
@@ -263,7 +274,7 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
                           boxShadow: isUpcoming ? `0 0 0 1px ${accentColor}22 inset` : "none",
                         }}
                       >
-                        <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: isToday || isSelected ? 700 : 500, color: "var(--swatch-viridian-odyssey)" }}>
+                        <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: isToday || isSelected ? 700 : 500, color: "var(--swatch-paper)" }}>
                           {day}
                         </span>
                         {hasEvents && <span className="mt-1 h-1.5 w-1.5 rounded-full" style={{ background: accentColor }} />}
@@ -295,7 +306,7 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
                     <p className="text-[10px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.56)" }}>
                       Selected day
                     </p>
-                    <p className="mt-1 text-[22px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                    <p className="mt-1 text-[22px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-paper)" }}>
                       {selectedDateLabel}
                     </p>
                   </div>
@@ -303,7 +314,7 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
                     <button
                       onClick={() => setShowAddForm((value) => !value)}
                       className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.14em]"
-                      style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", background: "rgba(var(--swatch-paper-rgb), 0.1)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.14)" }}
+                      style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-paper)", background: "rgba(var(--swatch-paper-rgb), 0.1)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.14)" }}
                     >
                       <Plus className="h-3.5 w-3.5" /> Add
                     </button>
@@ -318,11 +329,11 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
                     {selectedEvents.map((event) => {
                       const Icon = TYPE_META[event.type].icon;
                       return (
-                        <div key={event.id} className="flex items-center gap-3 rounded-[18px] px-3 py-3" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.08)" }}>
+                        <div key={event.id} className="flex items-center gap-3 rounded-[18px] px-3 py-3" style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.08)" }}>
                           <div className="flex h-9 w-9 items-center justify-center rounded-[14px]" style={{ background: "rgba(var(--swatch-paper-rgb), 0.12)", color: event.color }}>
                             <Icon className="h-4 w-4" />
                           </div>
-                          <p className="min-w-0 flex-1 truncate text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", fontWeight: 600 }}>
+                          <p className="min-w-0 flex-1 truncate text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-paper)", fontWeight: 600 }}>
                             {event.title}
                           </p>
                         </div>
@@ -349,7 +360,7 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
                           onKeyDown={(e) => e.key === "Enter" && handleAddEvent()}
                           placeholder="Event name"
                           className="w-full rounded-[18px] px-3 py-2.5 text-[12px] outline-none"
-                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.12)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.12)", color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.12)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.12)", color: "var(--swatch-paper)", fontFamily: "'Jost', sans-serif" }}
                         />
                         <div className="flex flex-wrap gap-2">
                           {(["personal", "birthday", "anniversary", "reminder"] as const).map((type) => (
@@ -371,7 +382,7 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
                         <button
                           onClick={handleAddEvent}
                           className="w-full rounded-[18px] py-2.5 text-[11px] uppercase tracking-[0.14em]"
-                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.16)", color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif", border: "1px solid rgba(var(--swatch-paper-rgb), 0.16)" }}
+                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.16)", color: "var(--swatch-paper)", fontFamily: "'Jost', sans-serif", border: "1px solid rgba(var(--swatch-paper-rgb), 0.16)" }}
                         >
                           Save event
                         </button>
