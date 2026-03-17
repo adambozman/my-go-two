@@ -536,19 +536,19 @@ const Questionnaires = () => {
       <div className="h-full overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 md:aspect-square md:auto-rows-fr">
+          <div className="grid grid-cols-1 md:grid-cols-12 md:grid-rows-12 gap-3 md:gap-4 md:aspect-square">
             {[
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[0], layoutClass: "md:col-span-4 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[1], layoutClass: "md:col-span-4 md:row-span-2" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[2], layoutClass: "md:col-span-4 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[3], layoutClass: "md:col-span-3 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[4], layoutClass: "md:col-span-3 md:row-span-3" },
-              { type: "feature" as const, layoutClass: "md:col-span-6 md:row-span-6" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[5], layoutClass: "md:col-span-3 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[6], layoutClass: "md:col-span-3 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[7], layoutClass: "md:col-span-4 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[8], layoutClass: "md:col-span-4 md:row-span-2" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[9], layoutClass: "md:col-span-4 md:row-span-3" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[0], layoutClass: "md:col-start-1 md:col-span-4 md:row-start-1 md:row-span-4" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[1], layoutClass: "md:col-start-5 md:col-span-4 md:row-start-1 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[2], layoutClass: "md:col-start-9 md:col-span-4 md:row-start-1 md:row-span-4" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[3], layoutClass: "md:col-start-1 md:col-span-2 md:row-start-5 md:row-span-4" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[4], layoutClass: "md:col-start-3 md:col-span-2 md:row-start-5 md:row-span-4" },
+              { type: "feature" as const, layoutClass: "md:col-start-5 md:col-span-4 md:row-start-5 md:row-span-4" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[5], layoutClass: "md:col-start-9 md:col-span-2 md:row-start-5 md:row-span-4" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[6], layoutClass: "md:col-start-11 md:col-span-2 md:row-start-5 md:row-span-4" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[7], layoutClass: "md:col-start-1 md:col-span-4 md:row-start-9 md:row-span-4" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[8], layoutClass: "md:col-start-5 md:col-span-4 md:row-start-11 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[9], layoutClass: "md:col-start-9 md:col-span-4 md:row-start-9 md:row-span-4" },
             ].map((item, index) => {
               if (item.type === "feature") {
                 return (
@@ -557,9 +557,9 @@ const Questionnaires = () => {
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
-                    className={`rounded-[28px] p-6 md:p-8 text-left relative overflow-hidden min-h-[148px] ${item.layoutClass}`}
+                    className={`rounded-[28px] p-6 md:p-7 text-left relative overflow-hidden aspect-square min-h-[220px] ${item.layoutClass}`}
                     style={{
-                      background: "linear-gradient(155deg, rgba(var(--swatch-cedar-grove-rgb), 0.90) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.76) 100%)",
+                      background: "linear-gradient(155deg, rgba(var(--swatch-cedar-grove-rgb), 0.92) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.78) 100%)",
                       border: "1px solid rgba(var(--swatch-cream-light-rgb), 0.34)",
                       boxShadow: "0 18px 40px rgba(212,84,58,0.16), inset 0 1px 0 rgba(255,255,255,0.18)",
                     }}
@@ -571,51 +571,41 @@ const Questionnaires = () => {
                       }}
                     />
 
-                    <div className="relative flex h-full flex-col justify-between gap-6 md:gap-8">
-                      <div>
-                        <span
-                          className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.16em]"
-                          style={{
-                            fontFamily: "'Jost', sans-serif",
-                            color: "hsl(var(--background))",
-                            background: "rgba(var(--swatch-cream-light-rgb), 0.14)",
-                            border: "1px solid rgba(var(--swatch-cream-light-rgb), 0.24)",
-                          }}
-                        >
-                          <Shuffle className="w-3.5 h-3.5" />
-                          This or That
-                        </span>
-                      </div>
+                    <div className="relative flex h-full flex-col justify-between gap-5">
+                      <span
+                        className="inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.16em]"
+                        style={{
+                          fontFamily: "'Jost', sans-serif",
+                          color: "hsl(var(--background))",
+                          background: "rgba(var(--swatch-cream-light-rgb), 0.14)",
+                          border: "1px solid rgba(var(--swatch-cream-light-rgb), 0.24)",
+                        }}
+                      >
+                        <Shuffle className="w-3.5 h-3.5" />
+                        This or That
+                      </span>
 
-                      <div className="max-w-[24ch]">
+                      <div className="max-w-[18ch]">
                         <h3
-                          className="text-[34px] md:text-[42px] leading-[0.92] mb-4"
+                          className="text-[30px] md:text-[38px] leading-[0.94] mb-3"
                           style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "hsl(var(--background))" }}
                         >
-                          Pick the tile that fits your instinct.
+                          Choose a category. Follow your instinct.
                         </h3>
                         <p
-                          className="text-[14px] md:text-[15px] leading-relaxed"
+                          className="text-[13px] md:text-[14px] leading-relaxed"
                           style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-cream-light-rgb), 0.92)" }}
                         >
-                          Each category will hold a fixed question bank. You will move through quick either-or choices, and the system will read the patterns in your answers to understand your vibe.
+                          Each category uses fixed either-or prompts. You simply pick what feels more like you, and your pattern becomes your vibe read.
                         </p>
                       </div>
 
-                      <div className="flex items-end justify-between gap-4">
-                        <p
-                          className="text-[12px] uppercase tracking-[0.14em]"
-                          style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-cream-light-rgb), 0.84)" }}
-                        >
-                          Choose a category when they unlock
-                        </p>
-                        <div
-                          className="w-12 h-12 md:w-14 md:h-14 rounded-[20px] flex items-center justify-center"
-                          style={{ background: "rgba(var(--swatch-cream-light-rgb), 0.14)", border: "1px solid rgba(var(--swatch-cream-light-rgb), 0.22)" }}
-                        >
-                          <ChevronRight className="w-5 h-5" style={{ color: "hsl(var(--background))" }} />
-                        </div>
-                      </div>
+                      <p
+                        className="text-[11px] md:text-[12px] uppercase tracking-[0.14em]"
+                        style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-cream-light-rgb), 0.84)" }}
+                      >
+                        Start with any tile once unlocked
+                      </p>
                     </div>
                   </motion.div>
                 );
