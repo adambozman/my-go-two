@@ -536,20 +536,20 @@ const Questionnaires = () => {
       <div className="h-full overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
 
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-12 md:grid-rows-12 md:gap-4 md:aspect-square">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4" style={{ gridAutoRows: "160px" }}>
             {[
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[0],  layoutClass: "md:col-start-1 md:col-span-4 md:row-start-1 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[1],  layoutClass: "md:col-start-5 md:col-span-4 md:row-start-1 md:row-span-2" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[2],  layoutClass: "md:col-start-9 md:col-span-4 md:row-start-1 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[3],  layoutClass: "md:col-start-1 md:col-span-3 md:row-start-4 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[4],  layoutClass: "md:col-start-4 md:col-span-2 md:row-start-3 md:row-span-2" },
-              { type: "feature" as const,                                          layoutClass: "md:col-start-6 md:col-span-2 md:row-start-5 md:row-span-2" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[5],  layoutClass: "md:col-start-8 md:col-span-2 md:row-start-3 md:row-span-2" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[6],  layoutClass: "md:col-start-10 md:col-span-3 md:row-start-4 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[7],  layoutClass: "md:col-start-1 md:col-span-4 md:row-start-7 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[8],  layoutClass: "md:col-start-5 md:col-span-3 md:row-start-8 md:row-span-2" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[9],  layoutClass: "md:col-start-8 md:col-span-4 md:row-start-7 md:row-span-3" },
-              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[10], layoutClass: "md:col-start-3 md:col-span-8 md:row-start-10 md:row-span-3" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[0],  layoutClass: "md:col-start-1  md:col-span-3 md:row-start-1 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[1],  layoutClass: "md:col-start-4  md:col-span-4 md:row-start-1 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[2],  layoutClass: "md:col-start-8  md:col-span-3 md:row-start-1 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[3],  layoutClass: "md:col-start-11 md:col-span-2 md:row-start-1 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[4],  layoutClass: "md:col-start-1  md:col-span-2 md:row-start-3 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[5],  layoutClass: "md:col-start-3  md:col-span-3 md:row-start-3 md:row-span-2" },
+              { type: "feature" as const,                                          layoutClass: "md:col-start-6  md:col-span-4 md:row-start-3 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[6],  layoutClass: "md:col-start-10 md:col-span-3 md:row-start-3 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[7],  layoutClass: "md:col-start-1  md:col-span-3 md:row-start-5 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[8],  layoutClass: "md:col-start-4  md:col-span-3 md:row-start-5 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[9],  layoutClass: "md:col-start-7  md:col-span-4 md:row-start-5 md:row-span-2" },
+              { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[10], layoutClass: "md:col-start-11 md:col-span-2 md:row-start-5 md:row-span-2" },
             ].map((item, index) => {
               if (item.type === "feature") {
                 return (
@@ -558,37 +558,21 @@ const Questionnaires = () => {
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
-                    className={`rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden aspect-square min-h-[220px] ${item.layoutClass}`}
-                    style={{
-                      background: "linear-gradient(145deg, rgba(var(--swatch-cedar-grove-rgb), 0.96), rgba(var(--swatch-cedar-grove-rgb), 0.82))",
-                      boxShadow: "0 18px 44px rgba(212,84,58,0.22)",
-                    }}
+                    className={`rounded-[28px] p-6 md:p-7 text-left relative overflow-hidden aspect-square min-h-[220px] ${item.layoutClass}`}
+                    style={{ background: "#d4543a", boxShadow: "0 18px 44px rgba(212,84,58,0.3)" }}
                   >
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        background: "radial-gradient(circle at top left, rgba(var(--swatch-cream-light-rgb), 0.18), transparent 44%), linear-gradient(180deg, rgba(255,255,255,0.1), transparent 60%)",
-                      }}
-                    />
-                    <div className="relative flex h-full flex-col items-center justify-center text-center gap-2">
-                      <p className="text-[26px] md:text-[30px] leading-[0.95]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "rgba(var(--swatch-cream-light-rgb), 1)" }}>
-                        This or That
-                      </p>
-                      <p className="text-[11px] md:text-[12px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-cream-light-rgb), 0.92)" }}>
-                        Pick fast. Trust instinct.
-                      </p>
-                      <p className="text-[12px] leading-relaxed max-w-[16ch]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-cream-light-rgb), 0.72)" }}>
-                        Choose the option that feels more like you each time.
-                      </p>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", height: "100%", textAlign: "center", padding: "20px", gap: 12 }}>
+                      <p style={{ fontSize: 38, lineHeight: 1.0, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", margin: 0 }}>This or That</p>
+                      <p style={{ fontSize: 15, color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Two Options. One Choice.</p>
+                      <p style={{ fontSize: 15, color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Your Pattern Builds Over Time.</p>
+                      <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Help the AI learn your vibe.</p>
                     </div>
                   </motion.div>
                 );
               }
 
               const category = item.category;
-              const layoutClass = item.layoutClass;
-              const isWide = layoutClass.includes("md:col-span-8") || layoutClass.includes("md:col-span-4");
-              const isCompact = layoutClass.includes("md:col-span-2") || layoutClass.includes("md:col-span-3 md:row-span-2");
+              const isTall = [0, 2, 7, 9, 10].includes(index);
 
               return (
                 <motion.button
@@ -603,11 +587,9 @@ const Questionnaires = () => {
                   <div
                     className="absolute inset-0"
                     style={{
-                      background: isWide
-                        ? "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.18), transparent 34%), linear-gradient(145deg, rgba(255,255,255,0.16), transparent 58%)"
-                        : isCompact
-                          ? "radial-gradient(circle at bottom left, rgba(var(--swatch-cedar-grove-rgb), 0.1), transparent 32%), linear-gradient(145deg, rgba(255,255,255,0.14), transparent 60%)"
-                          : "radial-gradient(circle at center right, rgba(var(--swatch-teal-rgb), 0.12), transparent 38%), linear-gradient(155deg, rgba(255,255,255,0.12), transparent 60%)",
+                      background: isTall
+                        ? "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.16), transparent 34%), linear-gradient(145deg, rgba(255,255,255,0.16), transparent 58%)"
+                        : "radial-gradient(circle at bottom left, rgba(var(--swatch-cedar-grove-rgb), 0.08), transparent 30%), linear-gradient(145deg, rgba(255,255,255,0.14), transparent 60%)",
                     }}
                   />
 
@@ -622,11 +604,11 @@ const Questionnaires = () => {
                       </span>
                     </div>
 
-                    <div className={`relative ${isWide ? "max-w-[28ch]" : "max-w-[22ch]"}`}>
-                      <h3 className={`${isCompact ? "text-[21px] md:text-[24px]" : "text-[24px] md:text-[28px]"} leading-[0.96] mb-3`} style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                    <div className="relative max-w-[26ch]">
+                      <h3 className="text-[24px] md:text-[28px] leading-[0.96] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
                         {category.title}
                       </h3>
-                      <p className={`leading-relaxed ${isCompact ? "text-[12px]" : "text-[13px]"}`} style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                      <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                         {category.description}
                       </p>
                     </div>
