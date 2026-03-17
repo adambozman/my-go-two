@@ -337,18 +337,19 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
               <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                 Connection Calendar
               </p>
-              <p className="mt-1.5 text-[24px] leading-none md:text-[26px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                {MONTH_NAMES[month]} {year}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-0.5 rounded-full px-1 py-0.5" style={{ background: "rgba(var(--swatch-paper-rgb), 0.75)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
-              <button onClick={() => changeMonth(-1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
-                <ChevronLeft className="h-3.5 w-3.5" />
-              </button>
-              <button onClick={() => changeMonth(1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
+              <div className="mt-1.5 flex items-center gap-2">
+                <p className="text-[24px] leading-none md:text-[26px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                  {MONTH_NAMES[month]} {year}
+                </p>
+                <div className="flex items-center gap-0.5 rounded-full px-1 py-0.5" style={{ background: "rgba(var(--swatch-paper-rgb), 0.75)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
+                  <button onClick={() => changeMonth(-1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={() => changeMonth(1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -409,26 +410,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                           )}
                         </div>
 
-                        <div className="mt-auto space-y-1">
-                          {events.slice(0, 1).map((event) => (
-                            <div
-                              key={event.id}
-                              className="truncate rounded-full px-1.5 py-0.5 text-[8px]"
-                              style={{
-                                fontFamily: "'Jost', sans-serif",
-                                background: "rgba(var(--swatch-paper-rgb), 0.12)",
-                                color: "var(--swatch-paper)",
-                                border: `1px solid ${event.color}55`,
-                              }}
-                            >
-                              {event.title}
-                            </div>
-                          ))}
-                          {events.length > 1 && (
-                            <p className="text-[8px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.72)" }}>
-                              +{events.length - 1}
-                            </p>
-                          )}
+                        <div className="mt-auto flex min-h-[22px] items-center justify-center">
                           {!events.length && (
                             <div className="flex gap-1 pt-1.5">
                               <span className="h-1 w-1 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.35)" }} />
@@ -436,9 +418,9 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                             </div>
                           )}
                           {!!events.length && (
-                            <div className="flex gap-1 pt-0.5">
-                              {!!connectionCount && <span className="h-1 w-4 rounded-full" style={{ background: TYPE_META.birthday.color }} />}
-                              {!!selfCount && <span className="h-1 w-4 rounded-full" style={{ background: TYPE_META.personal.color }} />}
+                            <div className="flex items-center justify-center gap-1">
+                              {!!connectionCount && <span className="h-3 w-3 rounded-[4px]" style={{ background: "var(--swatch-cedar-grove)" }} />}
+                              {!!selfCount && <span className="h-3 w-3 rounded-[4px]" style={{ background: "var(--swatch-teal)" }} />}
                             </div>
                           )}
                         </div>
@@ -456,7 +438,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-40 flex items-start justify-center bg-[rgba(20,35,38,0.22)] p-3 md:p-8"
+                className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgba(20,35,38,0.44)] p-3 md:p-8"
                 onClick={() => {
                   setSelectedDate(null);
                   setShowAddForm(false);
@@ -469,9 +451,9 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                   transition={{ duration: 0.18 }}
                   className="max-h-[80vh] w-full max-w-[560px] overflow-y-auto rounded-[30px] px-4 py-4 md:px-5"
                   style={{
-                    background: "linear-gradient(180deg, rgba(var(--swatch-paper-rgb), 0.97) 0%, rgba(var(--swatch-paper-rgb), 0.88) 100%)",
-                    border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
-                    boxShadow: "0 24px 60px rgba(30,74,82,0.18)",
+                    background: "linear-gradient(180deg, rgba(var(--swatch-paper-rgb), 0.995) 0%, rgba(var(--swatch-paper-rgb), 0.96) 100%)",
+                    border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)",
+                    boxShadow: "0 28px 80px rgba(10,20,24,0.28)",
                   }}
                   onClick={(event) => event.stopPropagation()}
                 >
