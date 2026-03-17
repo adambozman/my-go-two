@@ -420,7 +420,7 @@ function ProductCard({
 
         {/* Hook — big Cormorant italic */}
         <p className="text-[20px] leading-[1.1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
-          "{product.hook}"
+          {product.hook}
         </p>
 
         {/* Name / brand / price */}
