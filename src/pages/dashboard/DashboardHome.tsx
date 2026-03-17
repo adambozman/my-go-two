@@ -673,7 +673,14 @@ const DashboardHome = () => {
             >
               <div className="mb-3">
                 <Select value={searchScope} onValueChange={setSearchScope}>
-                  <SelectTrigger className="h-11 rounded-[18px] border border-white/75 bg-[rgba(255,255,255,0.46)] px-4 text-sm shadow-none focus:ring-1">
+                  <SelectTrigger
+                    className="h-11 rounded-[18px] border px-4 text-sm shadow-none focus:ring-1"
+                    style={{
+                      background: "linear-gradient(180deg, rgba(245,233,220,0.88) 0%, rgba(232,212,190,0.72) 100%)",
+                      borderColor: "rgba(45,104,112,0.16)",
+                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.82), 0 4px 12px rgba(74,96,104,0.06)",
+                    }}
+                  >
                     <SelectValue placeholder="Choose who to search" />
                   </SelectTrigger>
                   <SelectContent>
@@ -688,7 +695,14 @@ const DashboardHome = () => {
                 </Select>
               </div>
 
-              <div className="flex items-center gap-3 rounded-[22px] px-4 py-3 md:px-5 md:py-4" style={{ background: "rgba(255,255,255,0.46)" }}>
+              <div
+                className="flex items-center gap-3 rounded-[22px] border px-4 py-3 md:px-5 md:py-4"
+                style={{
+                  background: "rgba(255,255,255,0.62)",
+                  borderColor: "rgba(255,255,255,0.9)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.94)",
+                }}
+              >
                 <button onClick={runHomeSearch} aria-label="Search home" className="shrink-0">
                   <Search className="h-4 w-4" style={{ color: "var(--swatch-text-light)" }} />
                 </button>
