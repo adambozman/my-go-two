@@ -559,12 +559,18 @@ const Questionnaires = () => {
             </p>
           </motion.section>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 auto-rows-[minmax(140px,auto)]">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-3 auto-rows-[minmax(140px,auto)]">
             {THIS_OR_THAT_CATEGORIES.map((category, index) => {
               const spanClass =
-                index === 2 || index === 6
-                  ? "md:col-span-2"
-                  : "md:col-span-1";
+                index === 0
+                  ? "md:col-span-4"
+                  : index === 1 || index === 2
+                    ? "md:col-span-2"
+                    : index === 5
+                      ? "md:col-span-3"
+                      : index === 7
+                        ? "md:col-span-3"
+                        : "md:col-span-2";
 
               return (
                 <motion.button
