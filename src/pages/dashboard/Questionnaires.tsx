@@ -893,13 +893,13 @@ const Questionnaires = () => {
                     <p className="text-[18px] leading-snug mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
                       {personalization?.persona_summary || "You're still early, but the AI is already building a point of view on whether your style leans cleaner, louder, softer, practical, elevated, or more trend-driven."}
                     </p>
-                    <p className="text-[14px] leading-relaxed max-w-[62ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                      {subscribed
-                        ? allDone
+                    {subscribed && (
+                      <p className="text-[14px] leading-relaxed max-w-[62ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                        {allDone
                           ? "You've given the system a full profile, so your vibe summary and downstream recommendations can now get much more specific."
-                          : `${totalAnswered} of ${totalQuestions} questions answered so far. Every answer sharpens how the AI describes your style and what it recommends next.`
-                        : `Free access includes up to ${FREE_CATEGORY_LIMIT} questions in each category before Premium unlocks the rest.`}
-                    </p>
+                          : `${totalAnswered} of ${totalQuestions} questions answered so far. Every answer sharpens how the AI describes your style and what it recommends next.`}
+                      </p>
+                    )}
 
                     <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }}>
                       <motion.div

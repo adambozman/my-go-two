@@ -169,10 +169,10 @@ const Recommendations = () => {
           style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
         >
           <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
-          <div className="relative flex items-stretch gap-6">
+          <div className="relative flex items-start gap-6">
 
             {/* Left — title + persona */}
-            <div className="flex-1 min-w-0 flex flex-col">
+            <div className="flex-1 min-w-0">
               <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 Go Two / Recommendations
               </p>
@@ -180,7 +180,7 @@ const Recommendations = () => {
                 Curated Just For You
               </h1>
               {personalization?.persona_summary && (
-                <p className="text-[22px] leading-snug flex-1" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
+                <p className="text-[22px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
                   {personalization.persona_summary}
                 </p>
               )}
