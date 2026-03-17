@@ -36,7 +36,7 @@ export function AppSidebar() {
                 <NavLink
                   to={item.url}
                   className={cn(
-                    "flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all",
+                    "flex w-[66px] flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all",
                     isActive
                       ? "text-primary"
                       : "text-muted-foreground hover:text-foreground"
@@ -44,7 +44,7 @@ export function AppSidebar() {
                   style={isActive ? { background: 'rgba(232,198,174,0.4)' } : undefined}
                 >
                   <item.icon className="h-6 w-6" />
-                  <span className="text-[11px] font-medium leading-none">{item.label}</span>
+                  <span className="whitespace-nowrap text-[11px] font-medium leading-none">{item.label}</span>
                 </NavLink>
               </TooltipTrigger>
               <TooltipContent side="top" sideOffset={8}>

@@ -159,7 +159,7 @@ export function DashboardTopBar() {
                 to={item.url}
                 aria-label={item.label}
                 className={cn(
-                  "flex w-[58px] flex-col items-center gap-1 text-center transition-all",
+                  "flex w-[66px] flex-col items-center gap-1 text-center transition-all",
                   isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -177,7 +177,7 @@ export function DashboardTopBar() {
                 >
                   <item.icon className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 </span>
-                <span className="text-[10px] font-medium leading-none" style={{ fontFamily: "'Jost', sans-serif" }}>
+                <span className="whitespace-nowrap text-[10px] font-medium leading-none" style={{ fontFamily: "'Jost', sans-serif" }}>
                   {item.label}
                 </span>
               </NavLink>
