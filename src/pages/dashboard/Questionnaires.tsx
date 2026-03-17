@@ -765,11 +765,14 @@ const Questionnaires = () => {
                   <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif" }}>{visibleThisOrThatAnswered}/{visibleThisOrThatCount}</span>
                 </div>
                 <div>
-                  <p style={{ fontSize: 34, lineHeight: 1.0, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", marginBottom: 10 }}>
-                    Quick picks that teach the AI your instincts.
+                  <p style={{ fontSize: 38, lineHeight: 1.0, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", marginBottom: 10 }}>
+                    This or That
                   </p>
-                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5, marginBottom: 8 }}>
                     Two options. One choice. Your pattern builds over time.
+                  </p>
+                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", lineHeight: 1.5 }}>
+                    Help the AI learn your vibe.
                   </p>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
