@@ -56,7 +56,7 @@ const CATEGORY_COPY: Record<string, { title: string; description: string }> = {
   },
   entertainment: {
     title: "Everything Else",
-    description: "Travel, hobbies, entertainment, and the extra signals that sharpen the AI’s read on you.",
+    description: "Travel, hobbies, entertainment, and the extra signals that sharpen the AI's read on you.",
   },
 };
 
@@ -118,7 +118,7 @@ const Questionnaires = () => {
       role: "assistant",
       content:
         personalization?.persona_summary ||
-        "Ask me what your style looks like so far, why I’m asking certain questions, or what kinds of recommendations I’m building toward.",
+        "Ask me what your style looks like so far, why I'm asking certain questions, or what kinds of recommendations I'm building toward.",
     },
   ]);
 
@@ -145,7 +145,7 @@ const Questionnaires = () => {
         role: "assistant",
         content:
           personalization?.persona_summary ||
-          "Ask me what your style looks like so far, why I’m asking certain questions, or what kinds of recommendations I’m building toward.",
+          "Ask me what your style looks like so far, why I'm asking certain questions, or what kinds of recommendations I'm building toward.",
       },
     ]);
     setStylePrompt("");
@@ -184,7 +184,7 @@ const Questionnaires = () => {
         ? "The style chat is busy right now. Try again in a moment."
         : error?.message?.includes("402")
           ? "AI credits are unavailable right now. Please try again later."
-          : "I couldn’t reach the style chat right now.";
+          : "I couldn't reach the style chat right now.";
       toast.error(messageText);
     } finally {
       setStyleChatLoading(false);
@@ -314,6 +314,20 @@ const Questionnaires = () => {
       }
     }, 400);
   };
+
+  useEffect(() => {
+    if (view === "quiz") {
+      setBackState({ label: "", onBack: () => setView("categories") });
+      return;
+    }
+
+    if (view === "thisorthat_dashboard") {
+      setBackState({ label: "", onBack: () => setView("dashboard") });
+      return;
+    }
+
+    setBackState(null);
+  }, [setBackState, view]);
 
   if (contextLoading) {
     return (
@@ -625,7 +639,7 @@ const Questionnaires = () => {
                       Your Vibe
                     </h1>
                     <p className="text-[16px] leading-relaxed max-w-[44ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                      Your Vibe is the AI’s live read of your taste so far. It watches for patterns across what you answer, what you skip, what you value, and how you react to quick instinct prompts.
+                      Your Vibe is the AI's live read of your taste so far. It watches for patterns across what you answer, what you skip, what you value, and how you react to quick instinct prompts.
                     </p>
                   </div>
 
@@ -642,12 +656,12 @@ const Questionnaires = () => {
                 <div className="grid md:grid-cols-[minmax(0,1fr)_260px] gap-4 items-end">
                   <div>
                     <p className="text-[18px] leading-snug mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                      {personalization?.persona_summary || "You’re still early, but the AI is already building a point of view on whether your style leans cleaner, louder, softer, practical, elevated, or more trend-driven."}
+                      {personalization?.persona_summary || "You're still early, but the AI is already building a point of view on whether your style leans cleaner, louder, softer, practical, elevated, or more trend-driven."}
                     </p>
                     <p className="text-[14px] leading-relaxed max-w-[62ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                       {subscribed
                         ? allDone
-                          ? "You’ve given the system a full profile, so your vibe summary and downstream recommendations can now get much more specific."
+                          ? "You've given the system a full profile, so your vibe summary and downstream recommendations can now get much more specific."
                           : `${totalAnswered} of ${totalQuestions} questions answered so far. Every answer sharpens how the AI describes your style and what it recommends next.`
                         : `Free access includes up to ${FREE_CATEGORY_LIMIT} questions in each category before Premium unlocks the rest.`}
                     </p>
@@ -831,7 +845,7 @@ const Questionnaires = () => {
                 Style chat
               </DialogTitle>
               <DialogDescription style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                Ask the AI what it thinks your vibe is, why it’s asking certain questions, and what recommendations it’s forming from your answers.
+                Ask the AI what it thinks your vibe is, why it's asking certain questions, and what recommendations it's forming from your answers.
               </DialogDescription>
             </DialogHeader>
 
