@@ -536,10 +536,22 @@ const Questionnaires = () => {
       <div className="h-full overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 auto-rows-[minmax(160px,auto)]">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 auto-rows-[148px] md:auto-rows-[88px]">
             {THIS_OR_THAT_CATEGORIES.map((category, index) => {
-              const SPANS = [7,5,4,4,4,5,7,4,4,4,12];
-              const spanClass = `md:col-span-${SPANS[index] ?? 6}`;
+              const layoutClasses = [
+                "md:col-span-5 md:row-span-3",
+                "md:col-span-3 md:row-span-2",
+                "md:col-span-4 md:row-span-2",
+                "md:col-span-4 md:row-span-3",
+                "md:col-span-3 md:row-span-2",
+                "md:col-span-5 md:row-span-2",
+                "md:col-span-6 md:row-span-3",
+                "md:col-span-3 md:row-span-2",
+                "md:col-span-3 md:row-span-2",
+                "md:col-span-4 md:row-span-2",
+              ];
+              const layoutClass = layoutClasses[index] ?? "md:col-span-4 md:row-span-2";
+              const isTall = [0, 3, 6].includes(index);
 
               return (
                 <motion.button
@@ -548,33 +560,46 @@ const Questionnaires = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
                   disabled
-                  className={`card-design-overlay-teal rounded-[28px] p-5 text-left relative overflow-hidden disabled:opacity-95 ${spanClass}`}
+                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden disabled:opacity-95 min-h-[148px] ${layoutClass}`}
                   style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)" }}
                 >
-                  <div className="flex items-center justify-between gap-3 mb-4">
-                    <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                      {category.eyebrow}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)", background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                      <Lock className="w-3 h-3" />
-                      Coming soon
-                    </span>
-                  </div>
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: isTall
+                        ? "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.16), transparent 34%), linear-gradient(145deg, rgba(255,255,255,0.16), transparent 58%)"
+                        : "radial-gradient(circle at bottom left, rgba(var(--swatch-cedar-grove-rgb), 0.08), transparent 30%), linear-gradient(145deg, rgba(255,255,255,0.14), transparent 60%)",
+                    }}
+                  />
 
-                  <h3 className="text-[26px] leading-[0.96] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                    {category.title}
-                  </h3>
-                  <p className="text-[13px] leading-relaxed mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    {category.description}
-                  </p>
+                  <div className="relative flex h-full flex-col justify-between gap-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                        {category.eyebrow}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)", background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                        <Lock className="w-3 h-3" />
+                        Coming soon
+                      </span>
+                    </div>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                      0 answered • per-category limit ready
-                    </span>
-                    <span className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                      Disabled
-                    </span>
+                    <div className="relative max-w-[26ch]">
+                      <h3 className="text-[24px] md:text-[28px] leading-[0.96] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                        {category.title}
+                      </h3>
+                      <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                        {category.description}
+                      </p>
+                    </div>
+
+                    <div className="relative flex items-end justify-between gap-4">
+                      <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                        0 answered • per-category limit ready
+                      </span>
+                      <span className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                        Disabled
+                      </span>
+                    </div>
                   </div>
                 </motion.button>
               );
