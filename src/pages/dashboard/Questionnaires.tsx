@@ -947,16 +947,11 @@ const Questionnaires = () => {
                   Two options. One instinct. Pick fast and let your pattern build across style, taste, romance, travel, and more.
                 </p>
               </div>
-              <div className="relative mt-auto rounded-[24px] p-4 backdrop-blur-md flex items-center justify-between gap-4" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                    Browse categories
-                  </p>
-                  <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    11 instinct categories, fixed by gender.
-                  </p>
-                </div>
-                <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+              <div className="relative mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  Browse categories
+                </p>
+                <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
               </div>
             </motion.button>
 
@@ -977,13 +972,11 @@ const Questionnaires = () => {
               <p className="text-[14px] leading-relaxed max-w-[34ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                 Open a live style chat to ask how the AI sees your vibe so far, why it is asking certain questions, how it picks what comes next, and what kinds of recommendations it is building toward from your answers.
               </p>
-              <div className="rounded-[24px] p-4 backdrop-blur-md" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                <p className="text-[11px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+              <div className="rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                   Open style chat
                 </p>
-                <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Ask about your vibe, logic, and next recommendations.
-                </p>
+                <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
               </div>
             </motion.div>
 
@@ -1006,16 +999,11 @@ const Questionnaires = () => {
               <p className="text-[14px] leading-relaxed max-w-[44ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                 Five categories — Clothes & Style, Food & Drink, Gifts, Home, and Everything Else. Each one builds a deeper read on your taste. Answer at your own pace and pick up right where you left off.
               </p>
-              <div className="mt-auto rounded-[24px] p-4 backdrop-blur-md flex items-center justify-between gap-4" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                    Browse categories
-                  </p>
-                  <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    {!subscribed ? "Free users get 4 questions per category before Premium unlocks the rest." : "Resume exactly where you left off in any category."}
-                  </p>
-                </div>
-                <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+              <div className="mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  Browse categories
+                </p>
+                <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
               </div>
             </motion.button>
 
