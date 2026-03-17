@@ -521,14 +521,7 @@ const Questionnaires = () => {
     return (
       <div className="h-full overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => setView("dashboard")}
-              className="w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.08)" }}
-            >
-              <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
-            </button>
+          <div className="flex justify-end mb-4">
             <span className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
               This or That categories
             </span>
