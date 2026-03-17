@@ -101,6 +101,16 @@ function isPriorityEvent(item: Pick<CalendarItem, "type">) {
   return item.type === "birthday" || item.type === "anniversary" || item.type === "reminder";
 }
 
+function getPriorityStarColor(events: CalendarItem[]) {
+  const hasSelfPriority = events.some((event) => event.sourceType === "self" && isPriorityEvent(event));
+  if (hasSelfPriority) return "#f2c94c";
+
+  const hasConnectionPriority = events.some((event) => event.sourceType === "connection" && isPriorityEvent(event));
+  if (hasConnectionPriority) return "var(--swatch-cedar-grove)";
+
+  return null;
+}
+
 export function EventCalendar({ milestones, connections }: EventCalendarProps) {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -371,7 +381,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
               <p className="text-[9px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                 Legend
               </p>
-              <div className="mt-2 flex items-center gap-3 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="h-1.5 w-6 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
                   Connection
@@ -382,7 +392,11 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <Star className="h-3.5 w-3.5 fill-current" style={{ color: "#f2c94c" }} />
-                  Priority
+                  My priority
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Star className="h-3.5 w-3.5 fill-current" style={{ color: "var(--swatch-cedar-grove)" }} />
+                  Connection priority
                 </span>
               </div>
             </div>
@@ -411,7 +425,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                     const isSelected = key === selectedKey;
                     const connectionCount = events.filter((event) => event.sourceType === "connection").length;
                     const selfCount = events.filter((event) => event.sourceType === "self").length;
-                    const hasPriorityEvent = events.some((event) => isPriorityEvent(event));
+                    const priorityStarColor = getPriorityStarColor(events);
 
                       return (
                         <button
@@ -439,8 +453,14 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                           <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: isToday || isSelected ? 700 : 500, color: "var(--swatch-paper)" }}>
                             {day}
                           </span>
-                          {hasPriorityEvent && (
-                            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full" style={{ background: "rgba(242, 201, 76, 0.16)", color: "#f2c94c" }}>
+                          {priorityStarColor && (
+                            <span
+                              className="inline-flex h-4 w-4 items-center justify-center rounded-full"
+                              style={{
+                                background: priorityStarColor === "#f2c94c" ? "rgba(242, 201, 76, 0.16)" : "rgba(var(--swatch-cedar-grove-rgb), 0.16)",
+                                color: priorityStarColor,
+                              }}
+                            >
                               <Star className="h-2.5 w-2.5 fill-current" />
                             </span>
                           )}
