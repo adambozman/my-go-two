@@ -23,52 +23,62 @@ export function RecentUpdates({ updates }: { updates: RecentUpdate[] }) {
   if (updates.length === 0) return null;
 
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between px-1">
-        <h2
-          className="text-[11px] font-semibold uppercase tracking-[0.14em]"
-          style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+      className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5"
+      style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+    >
+      <div className="absolute -right-8 -top-8 h-36 w-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
+      <div className="relative">
+        <p
+          className="mb-3 text-[10px] uppercase tracking-[0.16em]"
+          style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
         >
           Recent Activity
-        </h2>
-      </div>
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: "rgba(255,255,255,0.65)",
-          border: "1px solid rgba(255,255,255,0.85)",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
-        }}
-      >
-        {updates.map((u, i) => (
-          <div
-            key={u.id}
-            className="flex items-center gap-3 px-4 py-3.5"
-            style={{
-              borderTop: i > 0 ? "1px solid rgba(0,0,0,0.04)" : undefined,
-            }}
-          >
+        </p>
+        <p
+          className="mb-5 text-[30px] leading-[0.96]"
+          style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}
+        >
+          What changed most recently.
+        </p>
+
+        <div className="space-y-3">
+          {updates.map((u) => (
             <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: "rgba(45,104,112,0.08)" }}
+              key={u.id}
+              className="rounded-[24px] px-4 py-3 backdrop-blur-md"
+              style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
             >
-              <ArrowUpRight className="w-4 h-4" style={{ color: "var(--swatch-teal)" }} />
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px]"
+                  style={{ background: "rgba(var(--swatch-teal-rgb), 0.12)", color: "var(--swatch-teal)" }}
+                >
+                  <ArrowUpRight className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p
+                    className="truncate text-[13px] leading-tight"
+                    style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+                  >
+                    <span className="font-semibold">{u.person}</span>{" "}
+                    <span style={{ color: "var(--swatch-antique-coin)" }}>{u.action}</span>
+                  </p>
+                  <p
+                    className="mt-1 text-[10px]"
+                    style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
+                  >
+                    {u.category} · {timeAgo(u.timestamp)}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] leading-tight truncate" style={{ color: "var(--swatch-viridian-odyssey)" }}>
-                <span className="font-semibold">{u.person}</span>{" "}
-                <span style={{ color: "var(--swatch-antique-coin)" }}>{u.action}</span>
-              </p>
-              <p className="text-[10px] mt-1" style={{ color: "var(--swatch-text-light)" }}>
-                {u.category} · {timeAgo(u.timestamp)}
-              </p>
-            </div>
-          </div>
-        ))}
-      </motion.div>
-    </section>
+          ))}
+        </div>
+      </div>
+    </motion.section>
   );
 }
