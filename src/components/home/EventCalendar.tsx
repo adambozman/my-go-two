@@ -299,33 +299,6 @@ export function EventCalendar({ milestones }: EventCalendarProps) {
             </div>
           </div>
 
-          <div className="grid gap-2">
-            {upcoming.map((event) => (
-              <button
-                key={event.id}
-                onClick={() => {
-                  setVisibleDate(new Date(event.date.getFullYear(), event.date.getMonth(), 1));
-                  setSelectedDay(event.date.getDate());
-                  setShowAddForm(false);
-                }}
-                className="flex items-center justify-between rounded-[20px] px-3 py-3 text-left"
-                style={{ background: "rgba(var(--swatch-paper-rgb), 0.08)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.1)" }}
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-paper)", fontWeight: 600 }}>
-                    {event.title}
-                  </p>
-                  <p className="mt-1 text-[10px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.62)" }}>
-                    {event.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                  </p>
-                </div>
-                <div className="rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-paper)", background: event.color }}>
-                  {event.daysOut}d
-                </div>
-              </button>
-            ))}
-          </div>
-
           <AnimatePresence mode="wait">
             {selectedDay !== null && (
               <motion.div
