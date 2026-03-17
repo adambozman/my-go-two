@@ -271,7 +271,7 @@ const DashboardHome = () => {
 
             {/* Greeting card — small, top left */}
             <div
-              className="lg:col-span-4 card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5"
+              className="lg:col-span-4 card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5 -mt-[90px]"
               style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
             >
               <div className="absolute -right-8 -top-8 h-36 w-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
