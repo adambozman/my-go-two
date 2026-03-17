@@ -536,7 +536,7 @@ const Questionnaires = () => {
       <div className="h-full overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4" style={{ gridAutoRows: "200px" }}>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4" style={{ gridAutoRows: "280px" }}>
             {[
               { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[0],  layoutClass: "md:col-span-3" },
               { type: "category" as const, category: THIS_OR_THAT_CATEGORIES[1],  layoutClass: "md:col-span-3" },
@@ -581,7 +581,7 @@ const Questionnaires = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
                   disabled
-                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden disabled:opacity-95 aspect-square ${item.layoutClass}`}
+                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden disabled:opacity-95 ${item.layoutClass}`}
                   style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)" }}
                 >
                   <div
