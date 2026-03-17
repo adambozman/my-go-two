@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Bell, Settings, Camera, Upload, Trash2, Database, Megaphone, Home, Heart, Sparkles, ClipboardList, Search } from "lucide-react";
+import { Bell, Settings, Camera, Upload, Trash2, Database, Megaphone, Home, Heart, Sparkles, ClipboardList } from "lucide-react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,7 +27,7 @@ const navItems = [
   { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
   { icon: Sparkles, url: "/dashboard/recommendations", label: "For You" },
   { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Know Me" },
-  { icon: Search, url: "/dashboard/search", label: "Search" },
+  { icon: Bell, url: "/dashboard/notifications", label: "Notifications" },
 ] as const;
 
 export function DashboardTopBar() {
@@ -166,6 +166,14 @@ export function DashboardTopBar() {
                   }}
                 >
                   <item.icon className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                  {item.url === "/dashboard/notifications" && unreadCount > 0 && (
+                    <span
+                      className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold"
+                      style={{ background: "var(--swatch-viridian-odyssey)", color: "var(--swatch-cream-light)" }}
+                    >
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
                 </span>
                 <span className="whitespace-nowrap text-[10px] font-medium leading-none" style={{ fontFamily: "'Jost', sans-serif" }}>
                   {item.label}
@@ -183,22 +191,6 @@ export function DashboardTopBar() {
             style={{ width: "var(--header-icon-btn-size)", height: "var(--header-icon-btn-size)" }}
           >
             <Settings className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground" />
-          </button>
-
-          <button
-            onClick={() => navigate("/dashboard/notifications")}
-            className="relative rounded-full card-design-neumorph flex items-center justify-center"
-            style={{ width: "var(--header-icon-btn-size)", height: "var(--header-icon-btn-size)" }}
-          >
-            <Bell className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground" />
-            {unreadCount > 0 && (
-              <span
-                className="absolute -top-1 -right-1 w-5 h-5 text-[10px] font-bold rounded-full flex items-center justify-center"
-                style={{ background: 'var(--swatch-viridian-odyssey)', color: 'var(--swatch-cream-light)' }}
-              >
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
-            )}
           </button>
         </div>
       </div>
