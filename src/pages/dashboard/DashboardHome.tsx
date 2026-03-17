@@ -9,10 +9,10 @@ import { assignUniquePhotos } from "@/data/stockPhotos";
 import { type Milestone } from "@/components/home/MilestoneCountdown";
 import { EventCalendar } from "@/components/home/EventCalendar";
 import { type DirectoryEntry } from "@/components/home/ConnectionDirectory";
-import { ConnectionAvatarRow } from "@/components/home/ConnectionAvatarRow";
 import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { AddConnectionModal } from "@/components/home/AddConnectionModal";
 import PremiumLockCard from "@/components/PremiumLockCard";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ConnectionCard {
   id: string;
@@ -269,6 +269,7 @@ const DashboardHome = () => {
   const calendarConnections = connections
     .filter((c) => !c.id.startsWith("placeholder-") && c.partnerId)
     .map((c) => ({ id: c.partnerId!, name: c.name }));
+  const visibleConnectionEntries = directoryEntries.slice(0, 5);
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
@@ -541,36 +542,80 @@ const DashboardHome = () => {
           </div>
 
           <div className="min-w-0">
-            <section
-              className="rounded-[30px] px-2 py-1 md:px-3"
-              style={{
-                background: "linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 100%)",
-                border: "1px solid rgba(255,255,255,0.45)",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.52)",
-              }}
-            >
-              <div className="mb-3 px-3 pt-3">
-                <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Connections
-                </p>
-                <h2 className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
-                  Your circle at a glance.
-                </h2>
+            <section className="px-1 pt-1">
+              <div className="flex items-start justify-center gap-4 overflow-x-auto pb-2">
+                <button
+                  onClick={handleAddConnection}
+                  className="flex shrink-0 flex-col items-center gap-2"
+                >
+                  <div
+                    className="flex h-[68px] w-[68px] items-center justify-center rounded-full"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(45,104,112,0.08), rgba(45,104,112,0.03))",
+                      border: "2px dashed rgba(45,104,112,0.30)",
+                    }}
+                  >
+                    <span className="text-[30px] leading-none" style={{ color: "var(--swatch-teal)" }}>+</span>
+                  </div>
+                  <span className="text-[11px]" style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}>
+                    Add
+                  </span>
+                </button>
+
+                {visibleConnectionEntries.map((entry) => (
+                  <button
+                    key={entry.id}
+                    onClick={() => handleOpenConnectionFromAvatar(entry)}
+                    className="flex shrink-0 flex-col items-center gap-2"
+                  >
+                    <div
+                      className="rounded-full p-[3px]"
+                      style={{
+                        background: entry.isPlaceholder
+                          ? "linear-gradient(135deg, #8a9ea4, #b0bec5)"
+                          : entry.status === "accepted"
+                            ? "linear-gradient(135deg, var(--swatch-cedar-grove), var(--swatch-teal))"
+                            : "linear-gradient(135deg, var(--swatch-teal), var(--swatch-teal-mid))",
+                      }}
+                    >
+                      <Avatar className="h-[68px] w-[68px] border-[3px]" style={{ borderColor: "var(--swatch-sand)" }}>
+                        {entry.image ? <AvatarImage src={entry.image} alt={entry.name} className="object-cover" /> : null}
+                        <AvatarFallback
+                          className="text-sm font-bold"
+                          style={{
+                            background: "linear-gradient(135deg, var(--swatch-viridian-odyssey), var(--swatch-teal))",
+                            color: "#fff",
+                          }}
+                        >
+                          {entry.name[0]?.toUpperCase() || "?"}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <span
+                      className="max-w-[72px] truncate text-[11px]"
+                      style={{
+                        color: entry.isPlaceholder ? "var(--swatch-text-light)" : "var(--swatch-viridian-odyssey)",
+                        fontFamily: "'Jost', sans-serif",
+                      }}
+                    >
+                      {entry.name}
+                    </span>
+                  </button>
+                ))}
               </div>
-              <ConnectionAvatarRow entries={directoryEntries} onSelect={handleOpenConnectionFromAvatar} onAdd={handleAddConnection} />
             </section>
 
             <section
-              className="mt-5 rounded-[26px] p-3 md:p-4"
+              className="mt-3 rounded-[28px] p-4 md:p-5"
               style={{
                 background: "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(245,233,220,0.56) 100%)",
                 border: "1px solid rgba(255,255,255,0.84)",
                 boxShadow: "inset 0 1px 0 rgba(255,255,255,0.92), 0 10px 24px rgba(74,96,104,0.08)",
               }}
             >
-              <div className="flex items-center gap-3 rounded-[20px] px-4 py-3" style={{ background: "rgba(255,255,255,0.46)" }}>
+              <div className="flex items-center gap-4 rounded-[22px] px-5 py-4 md:px-6 md:py-5" style={{ background: "rgba(255,255,255,0.46)" }}>
                 <button onClick={runHomeSearch} aria-label="Search home" className="shrink-0">
-                  <Search className="h-4 w-4" style={{ color: "var(--swatch-text-light)" }} />
+                  <Search className="h-5 w-5" style={{ color: "var(--swatch-text-light)" }} />
                 </button>
                 <input
                   value={homeSearch}
@@ -582,7 +627,7 @@ const DashboardHome = () => {
                     }
                   }}
                   placeholder="Search a person, reminder, date, or idea"
-                  className="w-full border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                  className="w-full border-0 bg-transparent text-base outline-none placeholder:text-muted-foreground"
                   style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
                 />
               </div>
