@@ -1012,7 +1012,7 @@ const Questionnaires = () => {
                 Questions by category
               </p>
               <p className="text-[14px] leading-relaxed max-w-[44ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                Open a separate dashboard with all categories, descriptions, and your progress. Then choose where you want to continue.
+                Five categories — Clothes & Style, Food & Drink, Gifts, Home, and Everything Else. Each one builds a deeper read on your taste. Answer at your own pace and pick up right where you left off.
               </p>
               <div className="mt-auto rounded-[24px] p-4 backdrop-blur-md flex items-center justify-between gap-4" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
                 <div>
