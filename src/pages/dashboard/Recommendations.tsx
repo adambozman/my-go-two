@@ -7,6 +7,9 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { usePagination } from "@/hooks/usePagination";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Pill } from "@/components/ui/pill";
 import clothingJacketImage from "@/assets/templates/clothing-jacket.jpg";
 import dressShirtImage from "@/assets/templates/clothing-dress-shirt.jpg";
 import espressoImage from "@/assets/templates/coffee-espresso.jpg";
@@ -24,11 +27,9 @@ interface Product {
   hook: string;
   why: string;
   is_partner_pick: boolean;
-  is_sponsored?: boolean;
   affiliate_url?: string | null;
   search_url?: string | null;
   product_query?: string | null;
-  sponsored_id?: string | null;
   image_url?: string | null;
   source_kind?: string;
   source_version?: string;
@@ -177,125 +178,96 @@ const Recommendations = () => {
   return (
     <div className="h-full overflow-y-auto px-1 pb-6">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6 space-y-4">
+        {/* ── Category pills ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05, type: "spring", stiffness: 260, damping: 24 }}
+          className="flex gap-2 flex-wrap"
+        >
+          {PILLARS.map(({ key, label }) => {
+            const isActive = activePillar === key;
+            return (
+              <button key={key} onClick={() => setActivePillar(key)} type="button">
+                <Pill variant={isActive ? "active" : "default"}>{label}</Pill>
+              </button>
+            );
+          })}
+        </motion.div>
 
         {/* ── Hero card ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 24 }}
-          className="card-design-sand rounded-[34px] p-5 md:p-6 relative overflow-hidden"
+          className="relative"
         >
-          <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
-          <div className="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_260px] md:items-end">
-
-            {/* Left — title + persona */}
-            <div className="min-w-0 max-w-[780px]">
-              <p className="mb-2 text-[10px] uppercase tracking-[0.22em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                Go Two / Recommendations
-              </p>
-              <h1 className="mb-3 text-[28px] md:text-[36px] leading-[0.96]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                Curated Just For You
-              </h1>
-              {personalization?.persona_summary && (
-                <p className="max-w-[42ch] text-[19px] md:text-[21px] leading-[1.36]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-teal)" }}>
-                  {personalization.persona_summary}
-                </p>
-              )}
-              {generatedLabel && (
-                <p className="mt-3 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
-                </p>
-              )}
-            </div>
-
-            {/* Right — compact role rail */}
+          <Card variant="sand" className="relative overflow-hidden rounded-[34px] p-5 md:p-6">
             <div
-              className="rounded-[26px] p-4 md:p-5 backdrop-blur-md md:self-stretch"
-              style={{
-                background: "rgba(255,255,255,0.22)",
-                border: "1px solid rgba(var(--swatch-teal-rgb), 0.16)",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)",
-              }}
-            >
-              <p className="mb-3 text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                Think of the AI as your
-              </p>
-              <div className="space-y-2.5">
-                {[
-                  "Personal Style Strategist",
-                  "Atmosphere Architect",
-                  "Intentional Gift Connoisseur",
-                ].map((label) => (
-                  <div
-                    key={label}
-                    className="rounded-full px-3.5 py-2"
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontWeight: 600,
-                      fontStyle: "italic",
-                      fontSize: 14,
-                      background: "rgba(255,255,255,0.34)",
-                      border: "1px solid rgba(var(--swatch-teal-rgb), 0.16)",
-                      color: "var(--swatch-teal)",
-                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
-                    }}
-                  >
-                    {label}
-                  </div>
-                ))}
+              className="absolute inset-0"
+              style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }}
+            />
+            <div className="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_260px] md:items-end">
+
+              {/* Left — title + persona */}
+              <div className="min-w-0 max-w-[780px]">
+                <p className="surface-eyebrow-coral mb-2">Go Two / Recommendations</p>
+                <h1 className="surface-heading-lg mb-3 text-[30px] md:text-[38px] leading-[0.96]">
+                  Curated Just For You
+                </h1>
+                {personalization?.persona_summary && (
+                  <p className="max-w-[32ch] text-[19px] md:text-[21px] leading-[1.4] font-semibold italic text-[var(--logo-two-color)]">
+                    {personalization.persona_summary}
+                  </p>
+                )}
+                {generatedLabel && (
+                  <p className="surface-meta mt-3">
+                    {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
+                  </p>
+                )}
               </div>
-              {subscribed && (
-                <button
-                  onClick={() => fetchProducts(true)}
-                  disabled={loading}
-                  className="mt-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-opacity disabled:opacity-50"
-                  style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.16)" }}
-                >
-                  <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} style={{ color: "var(--swatch-teal)" }} />
-                  <span className="text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                    {loading ? "Loading" : "Refresh"}
-                  </span>
-                </button>
-              )}
+
+              {/* Right — compact role rail */}
+              <div className="rounded-[26px] p-4 md:p-5 md:self-stretch surface-pill">
+                <p className="surface-eyebrow-coral mb-3">Think of the AI as your</p>
+                <div className="space-y-2.5">
+                  {[
+                    "Personal Style Strategist",
+                    "Atmosphere Architect",
+                    "Intentional Gift Connoisseur",
+                  ].map((label) => (
+                    <Pill
+                      key={label}
+                      variant="teal"
+                      size="lg"
+                      className="w-full justify-start normal-case tracking-normal font-semibold italic text-[14px] px-4"
+                    >
+                      {label}
+                    </Pill>
+                  ))}
+                </div>
+                {subscribed && (
+                  <Button
+                    onClick={() => fetchProducts(true)}
+                    disabled={loading}
+                    variant="outline"
+                    size="sm"
+                    className="mt-4"
+                  >
+                    <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} />
+                    <span>{loading ? "Loading" : "Refresh"}</span>
+                  </Button>
+                )}
+              </div>
             </div>
-
-          </div>
-        </motion.div>
-
-        {/* ── Category pills ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 24 }}
-          className="flex gap-2 flex-wrap"
-        >
-          {PILLARS.map(({ key, label }) => {
-            const isActive = activePillar === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setActivePillar(key)}
-                className="px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.12em] transition-all"
-                style={{
-                  fontFamily: "'Jost', sans-serif",
-                  fontWeight: 500,
-                  background: isActive ? "var(--swatch-teal)" : "rgba(255,255,255,0.22)",
-                  color: isActive ? "#fff" : "var(--swatch-antique-coin)",
-                  border: isActive ? "1px solid var(--swatch-teal)" : "1px solid rgba(var(--swatch-teal-rgb), 0.2)",
-                  backdropFilter: "blur(8px)",
-                }}
-              >
-                {label}
-              </button>
-            );
-          })}
+          </Card>
         </motion.div>
 
         {/* ── Product grid ── */}
         {loading && products.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-16">
             <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--swatch-teal)" }} />
-            <p className="text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            <p className="surface-body text-[13px]">
               Curating your picks…
             </p>
           </div>
@@ -337,23 +309,23 @@ const Recommendations = () => {
             )}
           </>
         ) : hasLoaded ? (
-          <div className="card-design-sand rounded-[28px] p-8 text-center">
-            <p className="text-[18px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+          <Card variant="sand" className="rounded-[28px] p-8 text-center">
+            <p className="surface-heading-md mb-2 text-[18px] font-bold">
               No picks in this category yet.
             </p>
-            <p className="text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            <p className="surface-body text-[13px]">
               Try refreshing or answer more Know Me questions to sharpen the read.
             </p>
-          </div>
+          </Card>
         ) : !subscribed ? (
-          <div className="card-design-sand rounded-[28px] p-8 text-center">
-            <p className="text-[18px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+          <Card variant="sand" className="rounded-[28px] p-8 text-center">
+            <p className="surface-heading-md mb-2 text-[18px] font-bold">
               Your curated picks load here.
             </p>
-            <p className="text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            <p className="surface-body text-[13px]">
               Upgrade to unlock the full weekly set and saving.
             </p>
-          </div>
+          </Card>
         ) : null}
       </div>
     </div>
@@ -391,73 +363,64 @@ function ProductCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, type: "spring", stiffness: 260, damping: 24 }}
-      className="card-design-sand rounded-[28px] relative overflow-hidden flex flex-col"
+      className="relative"
     >
-      <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--swatch-teal-rgb), 0.10), transparent 70%)" }} />
+      <Card variant="sand" className="relative flex h-full flex-col overflow-hidden rounded-[28px]">
+        <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--swatch-teal-rgb), 0.10), transparent 70%)" }} />
 
-      <div className="relative">
         <div className="relative h-[220px] overflow-hidden rounded-[24px] rounded-b-[18px]">
           <img src={getProductImage(product)} alt={product.name} className="h-full w-full object-cover" />
           <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(12,16,18,0.04) 0%, rgba(12,16,18,0.18) 100%)" }} />
           {product.is_partner_pick && (
-            <div className="absolute left-4 top-4 rounded-full px-3 py-1.5 text-[9px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", background: "rgba(255,255,255,0.82)", color: "var(--swatch-cedar-grove)", border: "1px solid rgba(255,255,255,0.7)" }}>
+            <Pill variant="coral" size="sm" className="absolute left-4 top-4 bg-white/85">
               {product.source_kind === "specific-product" ? "Exact Match" : "Search Match"}
-            </div>
+            </Pill>
           )}
-          <div className="absolute right-4 top-4 rounded-full px-3 py-1.5 text-[14px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, background: "rgba(255,255,255,0.86)", color: "var(--swatch-cedar-grove)", border: "1px solid rgba(255,255,255,0.74)" }}>
+          <Pill
+            variant="coral"
+            size="sm"
+            className="absolute right-4 top-4 bg-white/85 normal-case tracking-normal text-[14px] font-semibold"
+          >
             {product.price}
-          </div>
+          </Pill>
         </div>
 
         <div className="p-5 pt-4 flex flex-col gap-3">
           <div className="min-w-0">
-            <p className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            <p className="surface-meta text-[11px] uppercase tracking-[0.14em]">
               {product.brand}
             </p>
-            <h3 className="mt-1 text-[22px] leading-[1.02]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+            <h3 className="surface-heading-md mt-1 text-[22px] leading-[1.02] font-bold">
               {product.name}
             </h3>
           </div>
 
-          <p className="text-[18px] leading-[1.18]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-teal)" }}>
+          <p className="text-[18px] leading-[1.18] font-semibold italic text-[var(--logo-two-color)]">
             {product.hook}
           </p>
 
-          <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+          <p className="surface-body text-[12px] leading-relaxed">
             {product.why}
           </p>
 
           <div className="mt-auto pt-1 flex items-center gap-2">
-          <button
-            onClick={onToggleSave}
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.1em] transition-all"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              background: isSaved ? "rgba(var(--swatch-teal-rgb), 0.14)" : "rgba(255,255,255,0.28)",
-              color: isSaved ? "var(--swatch-teal)" : "var(--swatch-antique-coin)",
-              border: isSaved ? "1px solid rgba(var(--swatch-teal-rgb), 0.3)" : "1px solid rgba(255,255,255,0.4)",
-            }}
-          >
-            <Bookmark className="h-3 w-3" />
-            {isSaved ? "Saved" : "Save"}
-          </button>
+            <Button onClick={onToggleSave} variant="outline" size="sm" className="gap-1.5">
+              <Bookmark className="h-3 w-3" />
+              {isSaved ? "Saved" : "Save"}
+            </Button>
 
-          <button
-            onClick={product.affiliate_url || product.search_url ? handleAction : onShare}
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.1em] transition-all"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              background: "rgba(var(--swatch-cedar-grove-rgb), 0.08)",
-              color: "var(--swatch-cedar-grove)",
-              border: "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.18)",
-            }}
-          >
-            {product.affiliate_url || product.search_url ? <ExternalLink className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
-            {product.affiliate_url ? "View Product" : product.search_url ? "Search Brand" : "Share"}
-          </button>
+            <Button
+              onClick={product.affiliate_url || product.search_url ? handleAction : onShare}
+              variant={product.affiliate_url || product.search_url ? "default" : "outline"}
+              size="sm"
+              className="gap-1.5"
+            >
+              {product.affiliate_url || product.search_url ? <ExternalLink className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
+              {product.affiliate_url ? "View Product" : product.search_url ? "Search Brand" : "Share"}
+            </Button>
           </div>
         </div>
-      </div>
+      </Card>
     </motion.div>
   );
 }

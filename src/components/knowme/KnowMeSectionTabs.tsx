@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { Pill } from "@/components/ui/pill";
 
 interface KnowMeSectionTabsProps {
   sections: { id: string; label: string; count: number }[];
@@ -15,27 +15,23 @@ const KnowMeSectionTabs = ({ sections, activeSection, onSelect }: KnowMeSectionT
           <button
             key={s.id}
             onClick={() => onSelect(s.id)}
-            className="relative flex-shrink-0 px-4 py-2 rounded-full text-sm transition-colors whitespace-nowrap"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              fontWeight: isActive ? 600 : 400,
-              background: isActive ? "var(--swatch-teal)" : "rgba(255,255,255,0.45)",
-              color: isActive ? "#fff" : "var(--swatch-antique-coin)",
-              border: isActive ? "none" : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.2)",
-            }}
+            type="button"
+            className="relative flex-shrink-0 whitespace-nowrap"
           >
-            {s.label}
-            {s.count > 0 && (
-              <span
-                className="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold"
-                style={{
-                  background: isActive ? "rgba(255,255,255,0.25)" : "rgba(var(--swatch-teal-rgb), 0.15)",
-                  color: isActive ? "#fff" : "var(--swatch-teal)",
-                }}
-              >
-                {s.count}
-              </span>
-            )}
+            <Pill variant={isActive ? "active" : "default"} className="gap-1.5 normal-case tracking-normal text-sm">
+              <span>{s.label}</span>
+              {s.count > 0 && (
+                <span
+                  className="inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold"
+                  style={{
+                    background: isActive ? "rgba(255,255,255,0.25)" : "rgba(var(--swatch-teal-rgb), 0.15)",
+                    color: isActive ? "#fff" : "var(--swatch-teal)",
+                  }}
+                >
+                  {s.count}
+                </span>
+              )}
+            </Pill>
           </button>
         );
       })}
