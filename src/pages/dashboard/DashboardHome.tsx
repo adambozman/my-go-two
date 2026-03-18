@@ -30,14 +30,6 @@ interface ConnectionCard {
   updatedAt?: string;
 }
 
-const pillButtonStyle = {
-  fontFamily: "'Jost', sans-serif",
-  color: "var(--swatch-teal)",
-  background: "rgba(255,255,255,0.6)",
-  border: "1px solid rgba(255,255,255,0.78)",
-  boxShadow: "0 10px 28px rgba(255,255,255,0.28), 0 8px 20px rgba(212,84,58,0.10), inset 0 1px 0 rgba(255,255,255,0.92)",
-} as const;
-
 function formatRelativeDateLabel(value?: string | Date | null) {
   if (!value) return "Just updated";
   const date = value instanceof Date ? value : new Date(value);
@@ -448,8 +440,8 @@ const DashboardHome = () => {
                 </div>
                 <button
                   onClick={() => navigate("/dashboard/public-feed")}
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
-                  style={pillButtonStyle}
+                  className="surface-button-soft-glow inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
+                  style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}
                 >
                   Go to feed
                   <ArrowUpRight className="h-3.5 w-3.5" />
@@ -536,19 +528,11 @@ const DashboardHome = () => {
 
             <section
               className="card-design-sand mt-3 rounded-[28px] p-3 md:p-4"
-              style={{
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.94), 0 18px 34px rgba(212,84,58,0.08), 0 14px 28px rgba(74,96,104,0.08), 0 0 0 1px rgba(255,255,255,0.18)",
-              }}
             >
               <div className="mb-3">
                 <Select value={searchScope} onValueChange={setSearchScope}>
                   <SelectTrigger
-                    className="h-11 rounded-[18px] border px-4 text-sm shadow-none focus:ring-1"
-                    style={{
-                      background: "linear-gradient(180deg, rgba(245,233,220,0.88) 0%, rgba(232,212,190,0.72) 100%)",
-                      borderColor: "rgba(45,104,112,0.16)",
-                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.82), 0 4px 12px rgba(74,96,104,0.06)",
-                    }}
+                    className="surface-field h-11 rounded-[18px] border px-4 text-sm shadow-none focus:ring-1"
                   >
                     <SelectValue placeholder="Choose who to search" />
                   </SelectTrigger>
@@ -565,12 +549,7 @@ const DashboardHome = () => {
               </div>
 
               <div
-                className="flex items-center gap-3 rounded-[22px] border px-4 py-3 md:px-5 md:py-4"
-                style={{
-                  background: "rgba(255,255,255,0.62)",
-                  borderColor: "rgba(255,255,255,0.9)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.94)",
-                }}
+                className="surface-field flex items-center gap-3 rounded-[22px] border px-4 py-3 md:px-5 md:py-4"
               >
                 <button onClick={runHomeSearch} aria-label="Search home" className="shrink-0">
                   <Search className="h-4 w-4" style={{ color: "var(--swatch-text-light)" }} />
@@ -680,16 +659,13 @@ const DashboardHome = () => {
         {isSearchOpen && (
           <div className="fixed inset-0 z-40 flex items-center justify-center bg-[rgba(30,74,82,0.22)] px-4 py-6 backdrop-blur-sm">
             <div
-              className="relative max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-[32px] border border-white/80"
-              style={{
-                background: "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(245,233,220,0.92) 100%)",
-                boxShadow: "0 30px 80px rgba(30,74,82,0.20), inset 0 1px 0 rgba(255,255,255,0.9)",
-              }}
+              className="card-design-login relative max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-[32px]"
+              style={{ boxShadow: "0 30px 80px rgba(30,74,82,0.20)" }}
             >
               <button
                 onClick={() => setIsSearchOpen(false)}
-                className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full"
-                style={{ background: "rgba(255,255,255,0.74)", color: "var(--swatch-teal)" }}
+                className="surface-button-secondary absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full"
+                style={{ color: "var(--swatch-teal)" }}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -729,8 +705,7 @@ const DashboardHome = () => {
                           }
                           navigate("/dashboard/my-go-two");
                         }}
-                        className="block w-full rounded-[22px] px-4 py-3 text-left"
-                        style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.78)" }}
+                        className="card-inset-white block w-full rounded-[22px] px-4 py-3 text-left"
                       >
                         <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                           {result.meta}
@@ -760,8 +735,7 @@ const DashboardHome = () => {
                     {circleSearchResults.map((result) => (
                       <div
                         key={`circle-${result.id}`}
-                        className="rounded-[22px] px-4 py-3"
-                        style={{ background: "rgba(245,233,220,0.58)", border: "1px solid rgba(255,255,255,0.76)" }}
+                        className="card-inset-white rounded-[22px] px-4 py-3"
                       >
                         <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                           {result.ownerLabel}
