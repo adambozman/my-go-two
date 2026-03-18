@@ -391,7 +391,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                   <button
                     onClick={() => setShowAddForm((value) => !value)}
                     className="inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[11px] uppercase tracking-[0.12em]"
-                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-paper)", background: "var(--swatch-teal)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.16)" }}
+                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cream-light)", background: "var(--swatch-teal)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.16)", textShadow: "0 1px 0 rgba(0,0,0,0.12)" }}
                   >
                     <Plus className="h-3.5 w-3.5" />
                     Add date
