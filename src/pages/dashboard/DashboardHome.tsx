@@ -570,7 +570,7 @@ const DashboardHome = () => {
             </section>
 
             <section
-              className="card-design-coral mt-5 overflow-hidden rounded-[30px] p-3 md:p-4"
+              className="card-design-sand mt-5 overflow-hidden rounded-[30px] p-3 md:p-4"
             >
               <EventCalendar milestones={milestones} connections={calendarConnections} />
             </section>
