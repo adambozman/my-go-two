@@ -203,20 +203,16 @@ const Recommendations = () => {
           className="relative"
         >
           <Card variant="sand" className="relative overflow-hidden rounded-[34px] p-5 md:p-6">
-            <div
-              className="absolute inset-0"
-              style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }}
-            />
             <div className="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_260px] md:items-end">
 
               {/* Left — title + persona */}
               <div className="min-w-0 max-w-[780px]">
                 <p className="surface-eyebrow-coral mb-2">Go Two / Recommendations</p>
-                <h1 className="surface-heading-lg mb-3 text-[30px] md:text-[38px] leading-[0.96]">
+                <h1 className="surface-heading-lg mb-3 text-[30px] md:text-[38px]">
                   Curated Just For You
                 </h1>
                 {personalization?.persona_summary && (
-                  <p className="max-w-[32ch] text-[19px] md:text-[21px] leading-[1.4] font-semibold italic text-[var(--logo-two-color)]">
+                  <p className="surface-heading-md max-w-[32ch] text-[19px] md:text-[21px] leading-[1.4]">
                     {personalization.persona_summary}
                   </p>
                 )}
@@ -240,7 +236,7 @@ const Recommendations = () => {
                       key={label}
                       variant="teal"
                       size="lg"
-                      className="w-full justify-start normal-case tracking-normal font-semibold italic text-[14px] px-4"
+                      className="w-full justify-start px-4"
                     >
                       {label}
                     </Pill>
@@ -366,20 +362,17 @@ function ProductCard({
       className="relative"
     >
       <Card variant="sand" className="relative flex h-full flex-col overflow-hidden rounded-[28px]">
-        <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--swatch-teal-rgb), 0.10), transparent 70%)" }} />
-
         <div className="relative h-[220px] overflow-hidden rounded-[24px] rounded-b-[18px]">
           <img src={getProductImage(product)} alt={product.name} className="h-full w-full object-cover" />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(12,16,18,0.04) 0%, rgba(12,16,18,0.18) 100%)" }} />
           {product.is_partner_pick && (
-            <Pill variant="coral" size="sm" className="absolute left-4 top-4 bg-white/85">
+            <Pill variant="coral" size="sm" className="absolute left-4 top-4">
               {product.source_kind === "specific-product" ? "Exact Match" : "Search Match"}
             </Pill>
           )}
           <Pill
             variant="coral"
             size="sm"
-            className="absolute right-4 top-4 bg-white/85 normal-case tracking-normal text-[14px] font-semibold"
+            className="absolute right-4 top-4"
           >
             {product.price}
           </Pill>
@@ -387,15 +380,15 @@ function ProductCard({
 
         <div className="p-5 pt-4 flex flex-col gap-3">
           <div className="min-w-0">
-            <p className="surface-meta text-[11px] uppercase tracking-[0.14em]">
+            <p className="surface-meta text-[11px]">
               {product.brand}
             </p>
-            <h3 className="surface-heading-md mt-1 text-[22px] leading-[1.02] font-bold">
+            <h3 className="surface-heading-md mt-1 text-[22px]">
               {product.name}
             </h3>
           </div>
 
-          <p className="text-[18px] leading-[1.18] font-semibold italic text-[var(--logo-two-color)]">
+          <p className="surface-heading-md text-[18px] leading-[1.18]">
             {product.hook}
           </p>
 
