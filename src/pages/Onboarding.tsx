@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Check, ChevronLeft, ChevronRight, ClipboardList, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Check, ChevronLeft, ChevronRight, ClipboardList, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { normalizeGender } from "@/lib/gender";
@@ -331,27 +331,6 @@ const Onboarding = () => {
               >
                 We prioritize your personal signals taste, spending, and lifestyle to create a foundation that grows with you. Start with a profile that actually knows you.
               </p>
-
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <div className="surface-pill inline-flex items-center gap-2 rounded-full px-4 py-2">
-                  <ShieldCheck className="h-4 w-4" style={{ color: "var(--logo-two-color)" }} />
-                  <span
-                    className="text-[11px] uppercase tracking-[0.14em]"
-                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
-                  >
-                    Saved to profile first
-                  </span>
-                </div>
-                <div className="surface-pill inline-flex items-center gap-2 rounded-full px-4 py-2">
-                  <ClipboardList className="h-4 w-4" style={{ color: "var(--logo-two-color)" }} />
-                  <span
-                    className="text-[11px] uppercase tracking-[0.14em]"
-                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
-                  >
-                    Know Me continues later
-                  </span>
-                </div>
-              </div>
 
               <button
                 onClick={() => setPhase("profile")}
