@@ -84,8 +84,8 @@ const TemplateCoverFlow = ({
       imageKey: sc.image || sc.id,
     }));
     return (
-      <div className="h-full flex flex-col items-center justify-center">
-        <h2 className="section-header text-center mb-6">{templateName}</h2>
+      <div className="coverflow-stage-shell">
+        <h2 className="section-header coverflow-stage-title text-center">{templateName}</h2>
         <PaginatedCoverFlow
           items={items}
           focusedItemId={focusedItemId}
@@ -109,8 +109,8 @@ const TemplateCoverFlow = ({
   }));
 
   return (
-    <div className="h-full flex flex-col items-center justify-center">
-      <h2 className="section-header text-center mb-6">{activeSubcategory?.name || templateName}</h2>
+    <div className="coverflow-stage-shell">
+      <h2 className="section-header coverflow-stage-title text-center">{activeSubcategory?.name || templateName}</h2>
       <PaginatedCoverFlow
         items={productItems}
         focusedItemId={focusedItemId}
