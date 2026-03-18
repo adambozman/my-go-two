@@ -8,6 +8,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { trackAdEvent } from "@/lib/adTracking";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { usePagination } from "@/hooks/usePagination";
+import clothingJacketImage from "@/assets/templates/clothing-jacket.jpg";
+import dressShirtImage from "@/assets/templates/clothing-dress-shirt.jpg";
+import espressoImage from "@/assets/templates/coffee-espresso.jpg";
+import homeDecorImage from "@/assets/templates/home-decor.jpg";
+import cameraImage from "@/assets/templates/tech-camera.jpg";
+import headphonesImage from "@/assets/templates/tech-headphones.jpg";
+import thoughtfulGiftImage from "@/assets/styles/thoughtful-gift.jpg";
+import luxuriousGiftImage from "@/assets/styles/luxurious-gift.jpg";
 
 interface Product {
   name: string;
@@ -70,6 +78,21 @@ const LOCKED_PREVIEW: Product[] = [
     is_partner_pick: false,
   },
 ];
+
+const PRODUCT_IMAGE_BANK: Record<Product["category"], string[]> = {
+  clothes: [clothingJacketImage, dressShirtImage],
+  food: [espressoImage, thoughtfulGiftImage],
+  home: [homeDecorImage, luxuriousGiftImage],
+  tech: [cameraImage, headphonesImage],
+};
+
+function getProductImage(product: Product) {
+  const bank = PRODUCT_IMAGE_BANK[product.category] || PRODUCT_IMAGE_BANK.clothes;
+  const seed = `${product.brand}-${product.name}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  return bank[hash % bank.length];
+}
 
 const Recommendations = () => {
   const { personalization, loading: personalizationLoading } = usePersonalization();
@@ -172,18 +195,18 @@ const Recommendations = () => {
           className="card-design-sand rounded-[34px] p-5 md:p-6 relative overflow-hidden"
         >
           <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
-          <div className="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_260px] md:items-start">
+          <div className="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_260px] md:items-end">
 
             {/* Left — title + persona */}
-            <div className="min-w-0 max-w-[760px]">
+            <div className="min-w-0 max-w-[780px]">
               <p className="mb-2 text-[10px] uppercase tracking-[0.22em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 Go Two / Recommendations
               </p>
-              <h1 className="mb-3 text-[24px] md:text-[30px] leading-[0.98]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+              <h1 className="mb-3 text-[28px] md:text-[36px] leading-[0.96]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                 Curated Just For You
               </h1>
               {personalization?.persona_summary && (
-                <p className="max-w-[34ch] text-[17px] md:text-[18px] leading-[1.45]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-teal)" }}>
+                <p className="max-w-[42ch] text-[19px] md:text-[21px] leading-[1.36]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-teal)" }}>
                   {personalization.persona_summary}
                 </p>
               )}
@@ -196,7 +219,7 @@ const Recommendations = () => {
 
             {/* Right — compact role rail */}
             <div
-              className="rounded-[24px] p-4 md:p-5 backdrop-blur-md"
+              className="rounded-[26px] p-4 md:p-5 backdrop-blur-md md:self-stretch"
               style={{
                 background: "rgba(255,255,255,0.22)",
                 border: "1px solid rgba(var(--swatch-teal-rgb), 0.16)",
@@ -395,45 +418,43 @@ function ProductCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, type: "spring", stiffness: 260, damping: 24 }}
-      className="card-design-sand rounded-[28px] p-5 relative overflow-hidden flex flex-col"
+      className="card-design-sand rounded-[28px] relative overflow-hidden flex flex-col"
     >
       <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--swatch-teal-rgb), 0.10), transparent 70%)" }} />
 
-      <div className="relative flex flex-col flex-1 gap-3">
-        {/* Eyebrow */}
-        {(product.is_partner_pick || product.is_sponsored) && (
-          <p className="text-[9px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-            {product.is_sponsored ? "Curated Pick" : "★ Partner Pick"}
-          </p>
-        )}
-
-        {/* Hook — big Cormorant italic */}
-        <p className="text-[20px] leading-[1.1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-teal)" }}>
-          {product.hook}
-        </p>
-
-        {/* Name / brand / price */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h3 className="text-[15px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-              {product.name}
-            </h3>
-            <p className="text-[11px] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              {product.brand}
-            </p>
-          </div>
-          <span className="text-[15px] flex-shrink-0 mt-0.5" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-cedar-grove)" }}>
+      <div className="relative">
+        <div className="relative h-[220px] overflow-hidden rounded-[24px] rounded-b-[18px]">
+          <img src={getProductImage(product)} alt={product.name} className="h-full w-full object-cover" />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(12,16,18,0.04) 0%, rgba(12,16,18,0.18) 100%)" }} />
+          {(product.is_partner_pick || product.is_sponsored) && (
+            <div className="absolute left-4 top-4 rounded-full px-3 py-1.5 text-[9px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", background: "rgba(255,255,255,0.82)", color: "var(--swatch-cedar-grove)", border: "1px solid rgba(255,255,255,0.7)" }}>
+              {product.is_sponsored ? "Curated Pick" : "Partner Pick"}
+            </div>
+          )}
+          <div className="absolute right-4 top-4 rounded-full px-3 py-1.5 text-[14px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, background: "rgba(255,255,255,0.86)", color: "var(--swatch-cedar-grove)", border: "1px solid rgba(255,255,255,0.74)" }}>
             {product.price}
-          </span>
+          </div>
         </div>
 
-        {/* Why */}
-        <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-          {product.why}
-        </p>
+        <div className="p-5 pt-4 flex flex-col gap-3">
+          <div className="min-w-0">
+            <p className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              {product.brand}
+            </p>
+            <h3 className="mt-1 text-[22px] leading-[1.02]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+              {product.name}
+            </h3>
+          </div>
 
-        {/* Actions */}
-        <div className="mt-auto pt-2 flex items-center gap-2">
+          <p className="text-[18px] leading-[1.18]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-teal)" }}>
+            {product.hook}
+          </p>
+
+          <p className="text-[12px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            {product.why}
+          </p>
+
+          <div className="mt-auto pt-1 flex items-center gap-2">
           <button
             onClick={onToggleSave}
             className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.1em] transition-all"
@@ -461,6 +482,7 @@ function ProductCard({
             {product.affiliate_url ? <ExternalLink className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
             {product.affiliate_url ? "Open" : "Share"}
           </button>
+          </div>
         </div>
       </div>
     </motion.div>
