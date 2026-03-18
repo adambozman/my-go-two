@@ -138,7 +138,7 @@ export default function Notifications() {
       </button>
 
       <div
-        className="card-design-neumorph mx-auto"
+        className="card-design-sand mx-auto"
         style={{ maxWidth: 520, padding: "40px 40px 32px" }}
       >
         <div className="flex items-center justify-between mb-8">

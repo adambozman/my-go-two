@@ -629,8 +629,8 @@ const Questionnaires = () => {
                   transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
                   disabled={isDisabled}
                   onClick={() => startThisOrThatCategory(category.id)}
-                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden ${item.layoutClass}`}
-                  style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)", opacity: isDisabled ? 0.8 : 1 }}
+                  className={`card-design-sand rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden ${item.layoutClass}`}
+                  style={{ opacity: isDisabled ? 0.8 : 1 }}
                 >
                   <div
                     className="absolute inset-0"
@@ -688,7 +688,7 @@ const Questionnaires = () => {
           initial={{ opacity: 0, y: 20, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: "spring", stiffness: 280, damping: 24 }}
-          className="card-design-overlay-teal w-full max-w-[480px] rounded-[28px] overflow-hidden relative flex flex-col"
+          className="card-design-sand w-full max-w-[480px] rounded-[28px] overflow-hidden relative flex flex-col"
           style={{
             maxHeight: "calc(100vh - 160px)",
           }}
@@ -860,8 +860,7 @@ const Questionnaires = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 260, damping: 24 }}
-              className="lg:col-span-8 card-design-overlay-teal rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[340px]"
-              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+              className="lg:col-span-8 card-design-sand rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[340px]"
             >
               <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
               <div className="relative flex h-full flex-col justify-between gap-8">
@@ -932,8 +931,7 @@ const Questionnaires = () => {
               transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
               whileTap={{ scale: 0.985 }}
               onClick={openThisOrThat}
-              className="lg:col-span-4 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left flex flex-col"
-              style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+              className="lg:col-span-4 card-design-sand rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left flex flex-col"
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
               <div className="relative flex flex-col flex-1">
@@ -959,8 +957,8 @@ const Questionnaires = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
-              className="lg:col-span-5 card-design-overlay-teal rounded-[30px] p-5 relative overflow-hidden min-h-[260px]"
-              style={{ borderRadius: 30, boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+              className="lg:col-span-5 card-design-sand rounded-[30px] p-5 relative overflow-hidden min-h-[260px]"
+              style={{ borderRadius: 30 }}
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
               <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
@@ -986,8 +984,8 @@ const Questionnaires = () => {
               transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
               whileTap={{ scale: 0.99 }}
               onClick={openCategoriesDashboard}
-              className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 md:p-6 text-left relative overflow-hidden min-h-[260px] flex flex-col"
-              style={{ borderRadius: 30, boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
+              className="lg:col-span-7 card-design-sand rounded-[30px] p-5 md:p-6 text-left relative overflow-hidden min-h-[260px] flex flex-col"
+              style={{ borderRadius: 30 }}
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
               <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
@@ -1011,8 +1009,8 @@ const Questionnaires = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18, type: "spring", stiffness: 250, damping: 24 }}
-              className="lg:col-span-12 card-design-overlay-teal rounded-[28px] px-5 py-5"
-              style={{ borderRadius: 28, boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.46)" }}
+              className="lg:col-span-12 card-design-sand rounded-[28px] px-5 py-5"
+              style={{ borderRadius: 28 }}
             >
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
                 <div className="max-w-[58rem]">
@@ -1042,7 +1040,7 @@ const Questionnaires = () => {
 
       <Dialog open={styleChatOpen} onOpenChange={setStyleChatOpen}>
         <DialogContent className="max-w-2xl rounded-[28px] border-border/40 bg-card p-0 overflow-hidden">
-          <div className="card-design-overlay-teal">
+          <div className="card-design-sand">
             <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/30">
               <DialogTitle style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 30, color: "var(--swatch-viridian-odyssey)" }}>
                 Style chat
