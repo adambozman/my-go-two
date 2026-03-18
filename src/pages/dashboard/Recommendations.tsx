@@ -120,7 +120,7 @@ const Recommendations = () => {
 
   const filtered = useMemo(() => {
     if (activePillar === "all") return products;
-    return products.filter((p) => activePillarConfig.matches.includes(p.category));
+    return products.filter((p) => (activePillarConfig.matches as readonly string[]).includes(p.category));
   }, [products, activePillar, activePillarConfig]);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems: paginatedProducts } = usePagination({
@@ -155,7 +155,7 @@ const Recommendations = () => {
   }
 
   const previewProducts = LOCKED_PREVIEW.filter((p) =>
-    activePillar === "all" ? true : activePillarConfig.matches.includes(p.category)
+    activePillar === "all" ? true : (activePillarConfig.matches as readonly string[]).includes(p.category)
   );
 
   const displayProducts = subscribed ? paginatedProducts : previewProducts;
