@@ -91,6 +91,7 @@ html::-webkit-scrollbar {
     --swatch-cream-light: #f5e9dc;
     --swatch-sand: #efe0cf;
     --swatch-sand-mid: #e8d4be;
+    --swatch-paper: var(--swatch-cream-light);
 
     /* RGB variants for transparency */
     --swatch-viridian-odyssey-rgb: 30 74 82;
@@ -193,16 +194,26 @@ body {
     0 10px 22px rgba(212,84,58,0.16);
 }
 
-.card-design-sand,
-.card-design-glass,
-.card-design-overlay-white {
+.card-design-sand {
   background: var(--swatch-sand);
   border: 1px solid rgba(255,255,255,0.82);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 1px 0 rgba(255,255,255,0.94),
+    0 0 0 1px rgba(255,255,255,0.18),
+    0 18px 42px rgba(255,255,255,0.28),
+    0 12px 28px rgba(255,255,255,0.22),
+    0 10px 24px rgba(74,96,104,0.08);
+}
+
+.card-design-glass,
+.card-design-overlay-white {
+  background: linear-gradient(180deg, rgba(var(--swatch-cream-light-rgb), 0.92) 0%, rgba(255,255,255,0.82) 100%);
+  border: 1px solid rgba(255,255,255,0.84);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.94),
     0 18px 42px rgba(212,84,58,0.08),
     0 16px 36px rgba(74,96,104,0.08),
-    0 4px 10px rgba(255,255,255,0.24);
+    0 4px 12px rgba(var(--swatch-cream-light-rgb), 0.32);
 }
 
 .card-inset-white {
@@ -211,8 +222,8 @@ body {
   border: 1px solid rgba(255,255,255,0.84);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.96),
-    0 10px 24px rgba(74,96,104,0.06),
-    0 2px 8px rgba(255,255,255,0.22);
+    0 10px 24px rgba(255,255,255,0.18),
+    0 10px 24px rgba(74,96,104,0.06);
 }
 
 .surface-eyebrow-coral,
