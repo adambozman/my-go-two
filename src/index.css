@@ -138,10 +138,10 @@ body {
   background-image:
     radial-gradient(circle at 100% 100%, rgb(var(--swatch-cedar-grove-rgb) / 0.01) 0%, transparent 60%),
     url("./assets/previews/bg-clean-linen.jpg");
-  background-size: auto, auto, auto, 560px 560px;
-  background-position: 0 0, 0 0, 0 0, 0 0;
-  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
-  background-blend-mode: normal, normal, normal, normal;
+  background-size: auto, 560px 560px;
+  background-position: 0 0, 0 0;
+  background-repeat: no-repeat, repeat;
+  background-blend-mode: normal, normal;
   background-attachment: fixed;
 }
 
