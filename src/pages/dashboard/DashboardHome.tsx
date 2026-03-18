@@ -595,7 +595,7 @@ const DashboardHome = () => {
           <aside
             className="card-design-sand overflow-hidden rounded-[30px] p-4"
           >
-            <div className="border-b border-white/50 pb-4">
+            <div className="pb-4">
               <div>
                 <p className="surface-eyebrow-coral">
                   Connection Feed
