@@ -349,7 +349,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[180] flex items-center justify-center bg-[rgba(14,30,33,0.52)] p-3 backdrop-blur-[3px] md:p-8"
+        className="fixed inset-0 z-[180] flex items-center justify-center bg-[rgba(14,30,33,0.62)] p-3 md:p-8"
         onClick={() => {
           setSelectedDate(null);
           setShowAddForm(false);
@@ -370,12 +370,9 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
           <div
             className="relative overflow-hidden rounded-[33px] px-4 py-4 md:px-5 md:py-5"
             style={{
-              background: "linear-gradient(180deg, rgba(var(--swatch-paper-rgb), 0.995) 0%, rgba(var(--swatch-paper-rgb), 0.975) 100%)",
+              background: "rgb(var(--swatch-paper-rgb))",
             }}
           >
-            <div className="absolute -right-10 -top-12 h-28 w-28 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.55)" }} />
-            <div className="absolute -bottom-10 -left-10 h-28 w-28 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.08)" }} />
-
             <div className="relative">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
@@ -413,22 +410,22 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", background: "rgba(var(--swatch-paper-rgb), 0.72)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.1)" }}>
+                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", background: "#f7f1e7", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
                   <span className="h-1.5 w-5 rounded-full" style={{ background: "var(--swatch-teal)" }} />
                   {selectedPersonalEvents.length} my events
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", background: "rgba(var(--swatch-paper-rgb), 0.72)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.1)" }}>
+                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", background: "#f7f1e7", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
                   <span className="h-1.5 w-5 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
                   {selectedConnectionEvents.length} connection events
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", background: "rgba(var(--swatch-paper-rgb), 0.72)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.1)" }}>
+                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", background: "#f7f1e7", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
                   <Star className="h-3.5 w-3.5 fill-current" style={{ color: getPriorityStarColor(selectedEvents) ?? "rgba(var(--swatch-antique-coin-rgb), 0.7)" }} />
                   {totalSelectedEvents ? "Day in focus" : "Open day"}
                 </span>
               </div>
 
               <div className="mt-5 space-y-4">
-                <div className="rounded-[26px] px-4 py-4" style={{ background: "rgba(var(--swatch-paper-rgb), 0.72)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.1)" }}>
+                <div className="rounded-[26px] px-4 py-4" style={{ background: "#fcf8f1", border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)" }}>
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <p className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                       What lands here
@@ -449,8 +446,8 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                             key={event.id}
                             className="rounded-[22px] px-3.5 py-3"
                             style={{
-                              background: event.sourceType === "connection" ? "rgba(var(--swatch-cedar-grove-rgb), 0.08)" : "rgba(var(--swatch-teal-rgb), 0.08)",
-                              border: `1px solid ${event.sourceType === "connection" ? "rgba(var(--swatch-cedar-grove-rgb), 0.12)" : "rgba(var(--swatch-teal-rgb), 0.12)"}`,
+                              background: event.sourceType === "connection" ? "#f7ece8" : "#edf7f5",
+                              border: `1px solid ${event.sourceType === "connection" ? "rgba(var(--swatch-cedar-grove-rgb), 0.18)" : "rgba(var(--swatch-teal-rgb), 0.18)"}`,
                             }}
                           >
                             <div className="flex items-start gap-3">
@@ -462,11 +459,11 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                                   <p className="truncate text-[14px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
                                     {event.title}
                                   </p>
-                                  <span className="rounded-full px-2 py-0.5 text-[10px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: getSourceAccent(event), background: "rgba(var(--swatch-paper-rgb), 0.7)" }}>
+                                  <span className="rounded-full px-2 py-0.5 text-[10px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: getSourceAccent(event), background: "rgba(255,255,255,0.88)" }}>
                                     {event.personName}
                                   </span>
                                   {isPriority && (
-                                    <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: event.sourceType === "connection" ? "var(--swatch-cedar-grove)" : "#d4a62a", background: "rgba(var(--swatch-paper-rgb), 0.7)" }}>
+                                    <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: event.sourceType === "connection" ? "var(--swatch-cedar-grove)" : "#d4a62a", background: "rgba(255,255,255,0.88)" }}>
                                       <Star className="h-3 w-3 fill-current" />
                                       Priority
                                     </span>
@@ -491,7 +488,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                       })}
                     </div>
                   ) : (
-                    <div className="rounded-[22px] px-4 py-4" style={{ background: "rgba(var(--swatch-paper-rgb), 0.55)", border: "1px dashed rgba(var(--swatch-teal-rgb), 0.12)" }}>
+                    <div className="rounded-[22px] px-4 py-4" style={{ background: "#faf6ee", border: "1px dashed rgba(var(--swatch-teal-rgb), 0.14)" }}>
                       <p className="text-[13px] leading-[1.6]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                         Nothing is saved on this day yet. You can keep it open and add something meaningful when you are ready.
                       </p>
@@ -507,7 +504,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden rounded-[26px]"
                     >
-                      <div className="space-y-3 rounded-[26px] px-4 py-4" style={{ background: "linear-gradient(180deg, rgba(var(--swatch-paper-rgb), 0.92) 0%, rgba(var(--swatch-paper-rgb), 0.84) 100%)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)" }}>
+                      <div className="space-y-3 rounded-[26px] px-4 py-4" style={{ background: "#f8f3eb", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
                         <div className="flex items-center gap-2">
                           <Sparkles className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
                           <p className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>
