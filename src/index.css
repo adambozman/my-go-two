@@ -80,27 +80,32 @@ html::-webkit-scrollbar {
     --sidebar-ring: 192 46% 22%;
 
     /* Brand swatches — new design system */
-    --swatch-viridian-odyssey: #1e4a52;
-    --swatch-teal: #2d6870;
+    --swatch-viridian-odyssey: #2f5f6d;
+    --swatch-teal: #2f5f6d;
     --swatch-teal-mid: #3a7880;
-    --swatch-cedar-grove: #d4543a;
-    --swatch-cedar-grove-hover: #c4432a;
+    --swatch-cedar-grove: #d9654f;
+    --swatch-cedar-grove-hover: #c85a45;
     --logo-go-color: var(--swatch-cedar-grove);
     --logo-two-color: var(--swatch-teal);
-    --swatch-antique-coin: #4a6068;
+    --swatch-antique-coin: #aeb0a1;
     --swatch-text-light: #8a9ea4;
-    --swatch-gypsum-rose: #e8d4be;
+    --swatch-gypsum-rose: #e8c6ae;
+    --swatch-sonoma-chardonnay: #e9cb74;
+    --swatch-purple-prose: #654655;
+    --swatch-gothic-revival-green: #9da64f;
+    --swatch-eagles-view: #d8d1d6;
+    --swatch-country-air: #afc7da;
     --swatch-cream-light: #f5e9dc;
     --swatch-sand: #efe0cf;
     --swatch-sand-mid: #e8d4be;
     --swatch-paper: var(--swatch-cream-light);
 
     /* RGB variants for transparency */
-    --swatch-viridian-odyssey-rgb: 30 74 82;
-    --swatch-antique-coin-rgb: 74 96 104;
-    --swatch-gypsum-rose-rgb: 232 212 190;
-    --swatch-cedar-grove-rgb: 212 84 58;
-    --swatch-teal-rgb: 45 104 112;
+    --swatch-viridian-odyssey-rgb: 47 95 109;
+    --swatch-antique-coin-rgb: 174 176 161;
+    --swatch-gypsum-rose-rgb: 232 198 174;
+    --swatch-cedar-grove-rgb: 217 101 79;
+    --swatch-teal-rgb: 47 95 109;
     --swatch-sand-rgb: 239 224 207;
     --swatch-cream-light-rgb: 245 233 220;
     --swatch-paper-rgb: 245 233 220;
