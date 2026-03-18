@@ -11,11 +11,31 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
-/* ── Build-time glob for mapping source paths → runtime URLs ── */
-const allAssets = import.meta.glob<string>(
-  "/src/assets/**/*.{jpg,jpeg,png,webp,svg}",
-  { eager: true, import: "default" },
-);
+/* ── Build-time glob for active asset buckets only ── */
+const activeAssetGlobs = [
+  import.meta.glob<string>("/src/assets/styles/**/*.{jpg,jpeg,png,webp,svg}", {
+    eager: true,
+    import: "default",
+  }),
+  import.meta.glob<string>("/src/assets/templates/**/*.{jpg,jpeg,png,webp,svg}", {
+    eager: true,
+    import: "default",
+  }),
+  import.meta.glob<string>("/src/assets/spare/**/*.{jpg,jpeg,png,webp,svg}", {
+    eager: true,
+    import: "default",
+  }),
+  import.meta.glob<string>("/src/assets/stock/**/*.{jpg,jpeg,png,webp,svg}", {
+    eager: true,
+    import: "default",
+  }),
+  import.meta.glob<string>("/src/assets/previews/**/*.{jpg,jpeg,png,webp,svg}", {
+    eager: true,
+    import: "default",
+  }),
+];
+
+const allAssets = Object.assign({}, ...activeAssetGlobs);
 
 /** Cached set of blocked runtime URLs (for resolver checks) */
 let blockedUrls = new Set<string>();
