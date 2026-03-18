@@ -127,8 +127,13 @@ html::-webkit-scrollbar {
 
 /* Global background — applied to body so every page inherits it */
 body {
-  background-color: var(--swatch-sand);
+  background-color: var(--swatch-paper);
   background-image:
+    linear-gradient(
+      180deg,
+      rgba(212,84,58,0.055) 0%,
+      rgba(212,84,58,0.04) 100%
+    ),
     repeating-linear-gradient(
       0deg,
       rgba(255,255,255,0.045) 0,
@@ -143,9 +148,9 @@ body {
       transparent 1px,
       transparent 5px
     );
-  background-size: 5px 5px, 5px 5px;
-  background-position: 0 0, 0 0;
-  background-repeat: repeat, repeat;
+  background-size: auto, 5px 5px, 5px 5px;
+  background-position: 0 0, 0 0, 0 0;
+  background-repeat: repeat, repeat, repeat;
   background-attachment: fixed;
 }
 
@@ -153,7 +158,7 @@ body {
 .landing-page,
 .app-page {
   position: relative;
-  background-color: var(--swatch-sand);
+  background-color: transparent;
   min-height: 100vh;
 }
 
