@@ -120,7 +120,7 @@ const Recommendations = () => {
 
   const filtered = useMemo(() => {
     if (activePillar === "all") return products;
-    return products.filter((p) => activePillarConfig.matches.includes(p.category));
+    return products.filter((p) => (activePillarConfig.matches as readonly string[]).includes(p.category));
   }, [products, activePillar, activePillarConfig]);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems: paginatedProducts } = usePagination({
