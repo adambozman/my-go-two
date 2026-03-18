@@ -1,6 +1,8 @@
 export type Gender = "male" | "female" | "non-binary";
 export type RecommendationCategory = "clothes" | "food" | "tech" | "home";
 export type PriceTier = "budget" | "mid-range" | "premium" | "luxury";
+export type RecommendationKind = "specific" | "generic" | "catalog";
+export type ResolverLinkKind = "product" | "search";
 
 export interface CatalogProduct {
   brand: string;
@@ -14,16 +16,69 @@ export interface CatalogProduct {
   productUrl?: string;
   searchUrl?: string;
   imageUrl?: string;
-  recommendationKind?: "specific" | "generic";
+  recommendationKind?: RecommendationKind;
+}
+
+export interface RecommendationIntent {
+  brand: string;
+  name: string;
+  price: string;
+  category: RecommendationCategory;
+  hook: string;
+  why: string;
+  recommendation_kind: RecommendationKind;
+  search_query?: string | null;
+}
+
+export interface ResolvedCatalogEntry {
+  fingerprint: string;
+  brand: string;
+  product_name: string;
+  category: RecommendationCategory;
+  recommendation_kind: RecommendationKind;
+  link_kind: ResolverLinkKind;
+  link_url: string;
+  search_query: string | null;
+  price: string;
+  image_url: string | null;
+  source_version: string;
+  resolver_source: string;
 }
 
 type ProfileAnswers = Record<string, unknown>;
 type Personalization = Record<string, unknown>;
 
-const CATALOG_VERSION = "know-me-catalog-v2";
+const CATALOG_VERSION = "know-me-catalog-v3";
 
 const siteSearch = (baseUrl: string, query: string) =>
   `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}${new URLSearchParams({ q: query }).toString()}`;
+
+const BRAND_SEARCH_TEMPLATES: Record<string, (query: string) => string> = {
+  "uniqlo": (query) => siteSearch("https://www.uniqlo.com/us/en/search/", query),
+  "buck mason": (query) => siteSearch("https://www.buckmason.com/search", query),
+  "everlane": (query) => siteSearch("https://www.everlane.com/search", query),
+  "cos": (query) => siteSearch("https://www.cos.com/en_usd/search.html", query),
+  "vince": (query) => siteSearch("https://www.vince.com/search", query),
+  "patagonia": (query) => siteSearch("https://www.patagonia.com/search/", query),
+  "lululemon": (query) => siteSearch("https://shop.lululemon.com/search", query),
+  "ralph lauren": (query) => `https://www.ralphlauren.com/search?q=${encodeURIComponent(query)}`,
+  "todd snyder": (query) => siteSearch("https://www.toddsnyder.com/search", query),
+  "aimé leon dore": (query) => siteSearch("https://www.aimeleondore.com/search", query),
+  "blue bottle": (query) => siteSearch("https://bluebottlecoffee.com/us/eng/search", query),
+  "omsom": (query) => siteSearch("https://omsom.com/search", query),
+  "fishwife": (query) => siteSearch("https://eatfishwife.com/search", query),
+  "brightland": (query) => siteSearch("https://brightland.co/search", query),
+  "nespresso": (query) => siteSearch("https://www.nespresso.com/us/en/search", query),
+  "parachute": (query) => siteSearch("https://www.parachutehome.com/search", query),
+  "dyson": (query) => siteSearch("https://www.dyson.com/search-results", query),
+  "our place": (query) => siteSearch("https://fromourplace.com/search", query),
+  "brooklinen": (query) => siteSearch("https://www.brooklinen.com/search", query),
+  "sony": (query) => siteSearch("https://electronics.sony.com/search", query),
+  "anker": (query) => siteSearch("https://www.anker.com/search", query),
+  "logitech": (query) => siteSearch("https://www.logitech.com/en-us/search.html", query),
+  "gopro": (query) => siteSearch("https://gopro.com/en/us/search", query),
+  "apple": (query) => `https://www.apple.com/us/search/${encodeURIComponent(query)}`,
+};
 
 const BRAND_BANK = {
   male: [
@@ -348,6 +403,9 @@ const CATEGORY_TARGETS: Record<RecommendationCategory, string[]> = {
 const normalizeText = (value: unknown): string =>
   typeof value === "string" ? value.trim().toLowerCase() : "";
 
+const normalizeLoose = (value: string) =>
+  value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
 const toArray = (value: unknown): string[] => {
   if (Array.isArray(value)) return value.map(normalizeText).filter(Boolean);
   const single = normalizeText(value);
@@ -406,6 +464,52 @@ const scoreTags = (candidateTags: string[], signals: string[]) =>
   candidateTags.reduce((score, tag) => (signals.includes(tag.toLowerCase()) ? score + 1 : score), 0);
 
 export const getCatalogVersion = () => CATALOG_VERSION;
+
+export const buildRecommendationFingerprint = (
+  category: RecommendationCategory,
+  brand: string,
+  name: string,
+  recommendationKind: RecommendationKind,
+) => [category, normalizeLoose(brand), normalizeLoose(name), recommendationKind].join("::");
+
+export const getSeedCatalogBrands = () =>
+  Array.from(new Set(PRODUCT_CATALOG.map((product) => product.brand)));
+
+export const findSeedCatalogProduct = (brand: string, name: string) =>
+  PRODUCT_CATALOG.find((product) =>
+    normalizeLoose(product.brand) === normalizeLoose(brand) &&
+    normalizeLoose(product.name) === normalizeLoose(name)
+  ) ?? null;
+
+const buildFallbackSearchUrl = (brand: string, name: string) => {
+  const template = BRAND_SEARCH_TEMPLATES[normalizeLoose(brand)];
+  const query = `${brand} ${name}`.trim();
+  if (template) return template(query);
+  return `https://www.google.com/search?q=${encodeURIComponent(`${brand} ${name} official`)}`;
+};
+
+export const resolveIntentToCatalogEntry = (intent: RecommendationIntent): ResolvedCatalogEntry => {
+  const seedProduct = findSeedCatalogProduct(intent.brand, intent.name);
+  const recommendationKind = intent.recommendation_kind;
+  const searchQuery = intent.search_query?.trim() || `${intent.brand} ${intent.name}`.trim();
+  const linkUrl = seedProduct?.productUrl || seedProduct?.searchUrl || buildFallbackSearchUrl(intent.brand, searchQuery);
+  const linkKind: ResolverLinkKind = seedProduct?.productUrl ? "product" : "search";
+
+  return {
+    fingerprint: buildRecommendationFingerprint(intent.category, intent.brand, intent.name, recommendationKind),
+    brand: intent.brand,
+    product_name: intent.name,
+    category: intent.category,
+    recommendation_kind: recommendationKind,
+    link_kind: linkKind,
+    link_url: linkUrl,
+    search_query: linkKind === "search" ? searchQuery : null,
+    price: intent.price,
+    image_url: seedProduct?.imageUrl ?? null,
+    source_version: CATALOG_VERSION,
+    resolver_source: seedProduct ? "seed-catalog" : "brand-search-template",
+  };
+};
 
 export const getBankPersonalization = (
   profileAnswers: ProfileAnswers,
