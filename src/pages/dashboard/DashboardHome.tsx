@@ -4,7 +4,6 @@ import { ArrowUpRight, Clock3, Search, Sparkles, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import ConnectionPage from "./ConnectionPage";
 import { assignUniquePhotos } from "@/data/stockPhotos";
 import { type Milestone } from "@/components/home/MilestoneCountdown";
 import { EventCalendar } from "@/components/home/EventCalendar";
@@ -95,10 +94,6 @@ const DashboardHome = () => {
   const [mySearchResults, setMySearchResults] = useState<HomeSearchResult[]>([]);
   const [circleSearchResults, setCircleSearchResults] = useState<HomeSearchResult[]>([]);
   const [recentActivityItems, setRecentActivityItems] = useState<ActivityFeedItem[]>([]);
-  const [openConnection, setOpenConnection] = useState<{
-    card: ConnectionCard;
-    rect: { x: number; y: number; width: number; height: number };
-  } | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showConnectionsPaywall, setShowConnectionsPaywall] = useState(false);
 
@@ -307,12 +302,9 @@ const DashboardHome = () => {
       const card = connections.find((c) => c.id === entry.id);
       if (!card) return;
 
-      setOpenConnection({
-        card,
-        rect: { x: window.innerWidth / 2 - 50, y: 100, width: 100, height: 100 },
-      });
+      navigate(`/dashboard/connections/${card.id}`);
     },
-    [canAddAnotherConnection, connections]
+    [canAddAnotherConnection, connections, navigate]
   );
 
   const handleAddConnection = useCallback(() => {
@@ -844,20 +836,6 @@ const DashboardHome = () => {
               </div>
             </div>
           </div>
-        )}
-
-        {openConnection && (
-          <ConnectionPage
-            key={openConnection.card.id}
-            connection={{
-              id: openConnection.card.id,
-              name: openConnection.card.name,
-              image: openConnection.card.image,
-              partnerId: openConnection.card.partnerId,
-            }}
-            cardRect={openConnection.rect}
-            onClose={() => setOpenConnection(null)}
-          />
         )}
       </AnimatePresence>
 
