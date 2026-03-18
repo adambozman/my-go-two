@@ -28,6 +28,9 @@ interface Product {
   is_sponsored?: boolean;
   affiliate_url?: string | null;
   sponsored_id?: string | null;
+  image_url?: string | null;
+  source_kind?: string;
+  source_version?: string;
 }
 
 const PILLARS = [
@@ -40,45 +43,6 @@ const PILLARS = [
 
 const PAGE_SIZE = 4;
 
-const LOCKED_PREVIEW: Product[] = [
-  {
-    name: "Sofi Wool Zip",
-    brand: "Aurel",
-    price: "$128",
-    category: "clothes",
-    hook: "A polished layer that still feels easy.",
-    why: "Based on saved fit and texture preferences.",
-    is_partner_pick: true,
-  },
-  {
-    name: "Countertop Espresso Set",
-    brand: "Forma",
-    price: "$89",
-    category: "home",
-    hook: "A daily ritual upgrade with minimal footprint.",
-    why: "Fits the home + coffee pattern in the profile.",
-    is_partner_pick: false,
-  },
-  {
-    name: "Tasting Menu Night",
-    brand: "Luma Table",
-    price: "$72",
-    category: "food",
-    hook: "A date-night pick with a little ceremony.",
-    why: "Leans into shared dining and occasion-driven gifting.",
-    is_partner_pick: true,
-  },
-  {
-    name: "Pocket Film Camera",
-    brand: "Northline",
-    price: "$149",
-    category: "tech",
-    hook: "Playful enough to feel personal, useful enough to keep using.",
-    why: "Matches memory-making and travel-friendly signals.",
-    is_partner_pick: false,
-  },
-];
-
 const PRODUCT_IMAGE_BANK: Record<Product["category"], string[]> = {
   clothes: [clothingJacketImage, dressShirtImage],
   food: [espressoImage, thoughtfulGiftImage],
@@ -86,7 +50,38 @@ const PRODUCT_IMAGE_BANK: Record<Product["category"], string[]> = {
   tech: [cameraImage, headphonesImage],
 };
 
+const PRODUCT_IMAGE_OVERRIDES: Record<string, string> = {
+  "uniqlo:supima cotton crew neck t-shirt": dressShirtImage,
+  "buck mason:pima curved hem tee": clothingJacketImage,
+  "everlane:the organic cotton oxford": dressShirtImage,
+  "cos:relaxed cotton overshirt": clothingJacketImage,
+  "vince:cashmere crew": clothingJacketImage,
+  "patagonia:better sweater jacket": clothingJacketImage,
+  "lululemon:abc classic-fit trouser": dressShirtImage,
+  "ralph lauren:custom fit mesh polo": dressShirtImage,
+  "todd snyder:made in l.a. jersey tee": clothingJacketImage,
+  "aimé leon dore:uniform crewneck tee": clothingJacketImage,
+  "blue bottle:whole bean coffee subscription": espressoImage,
+  "omsom:starter sauce set": thoughtfulGiftImage,
+  "fishwife:smoked salmon trio": thoughtfulGiftImage,
+  "brightland:artist capsule olive oil set": thoughtfulGiftImage,
+  "nespresso:vertuo pop+": espressoImage,
+  "parachute:linen sheet set": luxuriousGiftImage,
+  "dyson:purifier cool gen1": homeDecorImage,
+  "our place:cast iron always pan": homeDecorImage,
+  "brooklinen:super-plush bath towels": luxuriousGiftImage,
+  "sony:wh-1000xm5 headphones": headphonesImage,
+  "anker:prime 20k power bank": headphonesImage,
+  "logitech:mx mechanical mini": cameraImage,
+  "gopro:hero13 black": cameraImage,
+  "apple:apple watch se": headphonesImage,
+};
+
 function getProductImage(product: Product) {
+  if (product.image_url) return product.image_url;
+  const key = `${product.brand}:${product.name}`.toLowerCase();
+  const override = PRODUCT_IMAGE_OVERRIDES[key];
+  if (override) return override;
   const bank = PRODUCT_IMAGE_BANK[product.category] || PRODUCT_IMAGE_BANK.clothes;
   const seed = `${product.brand}-${product.name}`;
   let hash = 0;
@@ -130,11 +125,10 @@ const Recommendations = () => {
   };
 
   useEffect(() => {
-    if (!subscribed) return;
     if (!personalizationLoading && personalization && !hasLoaded) {
       fetchProducts();
     }
-  }, [personalizationLoading, personalization, hasLoaded, subscribed]);
+  }, [personalizationLoading, personalization, hasLoaded]);
 
   const activePillarConfig = useMemo(
     () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
@@ -177,11 +171,7 @@ const Recommendations = () => {
     );
   }
 
-  const previewProducts = LOCKED_PREVIEW.filter((p) =>
-    activePillar === "all" ? true : (activePillarConfig.matches as readonly string[]).includes(p.category)
-  );
-
-  const displayProducts = subscribed ? paginatedProducts : previewProducts;
+  const displayProducts = subscribed ? paginatedProducts : filtered.slice(0, PAGE_SIZE);
 
   return (
     <div className="h-full overflow-y-auto px-1 pb-6">
@@ -312,7 +302,7 @@ const Recommendations = () => {
           <>
             <AnimatePresence mode="wait">
               <motion.div
-                key={`${activePillar}-${currentPage}-${subscribed ? "live" : "preview"}`}
+                key={`${activePillar}-${currentPage}-${subscribed ? "live" : "guest"}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
@@ -357,10 +347,10 @@ const Recommendations = () => {
         ) : !subscribed ? (
           <div className="card-design-sand rounded-[28px] p-8 text-center">
             <p className="text-[18px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-              Preview picks appear here.
+              Your curated picks load here.
             </p>
             <p className="text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Select a category above to filter.
+              Upgrade to unlock the full weekly set and saving.
             </p>
           </div>
         ) : null}
