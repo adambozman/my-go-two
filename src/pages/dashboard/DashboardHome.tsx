@@ -431,17 +431,16 @@ const DashboardHome = () => {
             >
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  <p className="surface-eyebrow-coral">
                     Public Feed
                   </p>
-                  <h3 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                  <h3 className="surface-heading-lg mt-2">
                     Public feed.
                   </h3>
                 </div>
                 <button
                   onClick={() => navigate("/dashboard/public-feed")}
-                  className="surface-button-soft-glow inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
-                  style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}
+                  className="surface-action-text surface-button-soft-glow inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
                 >
                   Go to feed
                   <ArrowUpRight className="h-3.5 w-3.5" />
@@ -449,13 +448,13 @@ const DashboardHome = () => {
               </div>
 
               <div className="card-inset-white rounded-[22px] px-4 py-4">
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                <p className="surface-eyebrow-coral">
                   Discovery
                 </p>
-                <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                <p className="surface-heading-md mt-2">
                   Follow style without turning it into chat.
                 </p>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                <p className="surface-body mt-2">
                   This feed is for published looks, outfit bundles, trending public cards, and popular picks near you. Likes, loves, follows, and browsing all happen on the full page.
                 </p>
               </div>
@@ -598,10 +597,10 @@ const DashboardHome = () => {
           >
             <div className="border-b border-white/50 pb-4">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                <p className="surface-eyebrow-coral">
                   Connection Feed
                 </p>
-                <h3 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                <h3 className="surface-heading-lg mt-2">
                   From your people.
                 </h3>
               </div>
@@ -610,16 +609,16 @@ const DashboardHome = () => {
             <div className="mt-4 space-y-3 xl:max-h-[calc(100vh-240px)] xl:overflow-y-auto xl:pr-1">
               {recentActivityItems.length === 0 ? (
                 <div className="card-inset-white rounded-[22px] px-4 py-4">
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  <p className="surface-eyebrow-coral">
                     Connections
                   </p>
-                  <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                  <p className="surface-heading-md mt-2">
                     Start with one person who matters most.
                   </p>
-                  <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  <p className="surface-body mt-2">
                     Once you add them, this area becomes your shared pulse for updates, reminders, and profile changes.
                   </p>
-                  <p className="mt-3 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
+                  <p className="surface-meta mt-3">
                     Ready when you are
                   </p>
                 </div>
@@ -635,13 +634,13 @@ const DashboardHome = () => {
                         style={{ background: item.accent }}
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="text-[17px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                        <p className="surface-heading-md text-[17px]">
                           {item.title}
                         </p>
-                        <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                        <p className="surface-body mt-2">
                           {item.detail}
                         </p>
-                        <div className="mt-3 flex items-center gap-2 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
+                        <div className="surface-meta mt-3 flex items-center gap-2">
                           <Clock3 className="h-3.5 w-3.5" />
                           <span>{item.meta}</span>
                         </div>
@@ -671,26 +670,26 @@ const DashboardHome = () => {
               </button>
 
               <div className="border-b border-white/70 px-6 py-5">
-                <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                <p className="surface-eyebrow-coral">
                   Home Search
                 </p>
-                <h2 className="mt-2 text-[32px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                <h2 className="surface-heading-lg mt-2 text-[32px]">
                   Results for "{homeSearch.trim()}"
                 </h2>
-                <p className="mt-2 text-sm" style={{ color: "var(--swatch-text-light)" }}>
+                <p className="surface-meta mt-2 text-sm">
                   Scope: {searchScopeLabel}
                 </p>
               </div>
 
               <div className="grid max-h-[calc(85vh-110px)] gap-0 overflow-y-auto md:grid-cols-2">
                 <section className="border-b border-white/60 px-6 py-5 md:border-b-0 md:border-r">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  <p className="surface-eyebrow-teal">
                     {searchScope === "self" ? "Your Results" : searchScope === "everyone" ? "Your Results" : "Your Results"}
                   </p>
                   <div className="mt-4 space-y-3">
-                    {searchLoading && <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>Searching...</p>}
+                    {searchLoading && <p className="surface-meta text-sm">Searching...</p>}
                     {!searchLoading && mySearchResults.length === 0 && (
-                      <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>
+                      <p className="surface-meta text-sm">
                         Nothing on your page matches this search yet.
                       </p>
                     )}
@@ -707,13 +706,13 @@ const DashboardHome = () => {
                         }}
                         className="card-inset-white block w-full rounded-[22px] px-4 py-3 text-left"
                       >
-                        <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                        <p className="surface-eyebrow-teal">
                           {result.meta}
                         </p>
-                        <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                        <p className="surface-heading-md mt-2">
                           {result.title}
                         </p>
-                        <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                        <p className="surface-body mt-2">
                           {result.subtitle}
                         </p>
                       </button>
@@ -722,13 +721,13 @@ const DashboardHome = () => {
                 </section>
 
                 <section className="px-6 py-5">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  <p className="surface-eyebrow-coral">
                     {searchScope === "self" ? "Your Circle" : searchScope === "everyone" ? "Your Circle" : searchScopeLabel}
                   </p>
                   <div className="mt-4 space-y-3">
-                    {searchLoading && <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>Searching your circle...</p>}
+                    {searchLoading && <p className="surface-meta text-sm">Searching your circle...</p>}
                     {!searchLoading && circleSearchResults.length === 0 && (
-                      <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>
+                      <p className="surface-meta text-sm">
                         No shared matches were found across your connections.
                       </p>
                     )}
@@ -737,16 +736,16 @@ const DashboardHome = () => {
                         key={`circle-${result.id}`}
                         className="card-inset-white rounded-[22px] px-4 py-3"
                       >
-                        <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                        <p className="surface-eyebrow-coral">
                           {result.ownerLabel}
                         </p>
-                        <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                        <p className="surface-heading-md mt-2">
                           {result.title}
                         </p>
-                        <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                        <p className="surface-body mt-2">
                           {result.subtitle}
                         </p>
-                        <p className="mt-3 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
+                        <p className="surface-meta mt-3">
                           {result.meta}
                         </p>
                       </div>

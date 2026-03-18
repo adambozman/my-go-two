@@ -215,6 +215,55 @@ body {
     0 2px 8px rgba(255,255,255,0.22);
 }
 
+.surface-eyebrow-coral,
+.surface-eyebrow-teal {
+  font-family: 'Jost', sans-serif;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.surface-eyebrow-coral {
+  color: var(--swatch-cedar-grove);
+}
+
+.surface-eyebrow-teal {
+  color: var(--swatch-teal);
+}
+
+.surface-heading-lg,
+.surface-heading-md {
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--swatch-viridian-odyssey);
+  line-height: 1;
+}
+
+.surface-heading-lg {
+  font-size: 28px;
+}
+
+.surface-heading-md {
+  font-size: 18px;
+}
+
+.surface-body {
+  color: var(--swatch-antique-coin);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.surface-meta {
+  color: var(--swatch-text-light);
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.surface-action-text {
+  font-family: 'Jost', sans-serif;
+  color: var(--swatch-teal);
+}
+
 /* Global card title label — bottom-left, 16px from edges */
 .card-title {
   font-family: 'Cormorant Garamond', serif;
