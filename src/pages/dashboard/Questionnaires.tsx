@@ -629,7 +629,7 @@ const Questionnaires = () => {
                   transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
                   disabled={isDisabled}
                   onClick={() => startThisOrThatCategory(category.id)}
-                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden ${item.layoutClass}`}
+                  className={`card-design-sand rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden ${item.layoutClass}`}
                   style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)", opacity: isDisabled ? 0.8 : 1 }}
                 >
                   <div
@@ -932,7 +932,7 @@ const Questionnaires = () => {
               transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
               whileTap={{ scale: 0.985 }}
               onClick={openThisOrThat}
-              className="lg:col-span-4 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left flex flex-col"
+              className="lg:col-span-4 card-design-sand rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left flex flex-col"
               style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
@@ -986,7 +986,7 @@ const Questionnaires = () => {
               transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
               whileTap={{ scale: 0.99 }}
               onClick={openCategoriesDashboard}
-              className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 md:p-6 text-left relative overflow-hidden min-h-[260px] flex flex-col"
+              className="lg:col-span-7 card-design-sand rounded-[30px] p-5 md:p-6 text-left relative overflow-hidden min-h-[260px] flex flex-col"
               style={{ borderRadius: 30, boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
@@ -1011,7 +1011,7 @@ const Questionnaires = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18, type: "spring", stiffness: 250, damping: 24 }}
-              className="lg:col-span-12 card-design-overlay-teal rounded-[28px] px-5 py-5"
+              className="lg:col-span-12 card-design-sand rounded-[28px] px-5 py-5"
               style={{ borderRadius: 28, boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.46)" }}
             >
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">

@@ -27,7 +27,7 @@ export function RecentUpdates({ updates }: { updates: RecentUpdate[] }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="card-design-overlay-teal relative overflow-hidden rounded-[30px] p-5"
+      className="card-design-sand relative overflow-hidden rounded-[30px] p-5"
       style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
     >
       <div className="absolute -right-8 -top-8 h-36 w-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
