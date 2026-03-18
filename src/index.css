@@ -86,7 +86,7 @@ html::-webkit-scrollbar {
     --swatch-cedar-grove: #d4543a;
     --swatch-cedar-grove-hover: #c4432a;
     --logo-go-color: var(--swatch-cedar-grove);
-    --logo-two-color: var(--swatch-viridian-odyssey);
+    --logo-two-color: var(--swatch-teal);
     --swatch-antique-coin: #4a6068;
     --swatch-text-light: #8a9ea4;
     --swatch-gypsum-rose: #e8d4be;
@@ -267,7 +267,7 @@ body {
 .surface-heading-lg,
 .surface-heading-md {
   font-family: 'Cormorant Garamond', serif;
-  color: var(--swatch-viridian-odyssey);
+  color: var(--logo-two-color);
   line-height: 1;
 }
 
