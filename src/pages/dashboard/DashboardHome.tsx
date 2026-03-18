@@ -30,16 +30,12 @@ interface ConnectionCard {
   updatedAt?: string;
 }
 
-const shellCardStyle = {
-  boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
-} as const;
-
 const pillButtonStyle = {
   fontFamily: "'Jost', sans-serif",
   color: "var(--swatch-teal)",
   background: "rgba(255,255,255,0.6)",
   border: "1px solid rgba(255,255,255,0.78)",
-  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.76)",
+  boxShadow: "0 10px 28px rgba(255,255,255,0.28), 0 8px 20px rgba(212,84,58,0.10), inset 0 1px 0 rgba(255,255,255,0.92)",
 } as const;
 
 function formatRelativeDateLabel(value?: string | Date | null) {
@@ -440,9 +436,6 @@ const DashboardHome = () => {
           <div>
             <section
               className="card-design-sand relative flex h-full min-h-[740px] flex-col overflow-hidden rounded-[30px] p-5"
-              style={{
-                ...shellCardStyle,
-              }}
             >
               <div className="mb-4 flex items-center justify-between">
                 <div>
@@ -544,7 +537,7 @@ const DashboardHome = () => {
             <section
               className="card-design-sand mt-3 rounded-[28px] p-3 md:p-4"
               style={{
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.92), 0 10px 24px rgba(74,96,104,0.08)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.94), 0 18px 34px rgba(212,84,58,0.08), 0 14px 28px rgba(74,96,104,0.08), 0 0 0 1px rgba(255,255,255,0.18)",
               }}
             >
               <div className="mb-3">
@@ -600,9 +593,6 @@ const DashboardHome = () => {
 
             <section
               className="card-design-coral mt-5 overflow-hidden rounded-[30px] p-3 md:p-4"
-              style={{
-                ...shellCardStyle,
-              }}
             >
               <EventCalendar milestones={milestones} connections={calendarConnections} />
             </section>
@@ -626,9 +616,6 @@ const DashboardHome = () => {
 
           <aside
             className="card-design-sand overflow-hidden rounded-[30px] p-4"
-            style={{
-              ...shellCardStyle,
-            }}
           >
             <div className="border-b border-white/50 pb-4">
               <div>
