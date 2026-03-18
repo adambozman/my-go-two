@@ -131,62 +131,26 @@ body {
   background-image:
     linear-gradient(
       180deg,
-      rgba(212,84,58,0.09) 0%,
-      rgba(212,84,58,0.065) 100%
+      rgba(212,84,58,0.055) 0%,
+      rgba(212,84,58,0.04) 100%
     ),
     repeating-linear-gradient(
       0deg,
-      rgba(255,255,255,0.038) 0,
-      rgba(255,255,255,0.038) 1px,
+      rgba(255,255,255,0.045) 0,
+      rgba(255,255,255,0.045) 1px,
       transparent 1px,
-      transparent 7px,
-      rgba(255,255,255,0.018) 7px,
-      rgba(255,255,255,0.018) 8px,
-      transparent 8px,
-      transparent 13px
+      transparent 5px
     ),
     repeating-linear-gradient(
       90deg,
-      rgba(212,84,58,0.024) 0,
-      rgba(212,84,58,0.024) 1px,
+      rgba(30,74,82,0.028) 0,
+      rgba(30,74,82,0.028) 1px,
       transparent 1px,
-      transparent 6px,
-      rgba(30,74,82,0.014) 6px,
-      rgba(30,74,82,0.014) 7px,
-      transparent 7px,
-      transparent 12px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0,
-      transparent 3px,
-      rgba(255,255,255,0.018) 3px,
-      rgba(255,255,255,0.018) 4px,
-      transparent 4px,
-      transparent 11px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 4px,
-      rgba(212,84,58,0.014) 4px,
-      rgba(212,84,58,0.014) 5px,
-      transparent 5px,
-      transparent 10px
-    ),
-    radial-gradient(
-      circle at 18% 22%,
-      rgba(255,255,255,0.08) 0%,
-      transparent 34%
-    ),
-    radial-gradient(
-      circle at 78% 64%,
-      rgba(212,84,58,0.045) 0%,
-      transparent 38%
+      transparent 5px
     );
-  background-size: auto, 13px 13px, 12px 12px, 11px 11px, 10px 10px, 100% 100%, 100% 100%;
-  background-position: 0 0, 0 0, 1px 2px, 2px 1px, 3px 0, 0 0, 0 0;
-  background-repeat: repeat, repeat, repeat, repeat, repeat, no-repeat, no-repeat;
+  background-size: auto, 5px 5px, 5px 5px;
+  background-position: 0 0, 0 0, 0 0;
+  background-repeat: repeat, repeat, repeat;
   background-attachment: fixed;
 }
 
@@ -250,13 +214,14 @@ body {
 
 .card-design-sand {
   background:
-    linear-gradient(140deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.88) 42%, rgba(239,224,207,0.78) 100%);
-  border: 1px solid rgba(255,255,255,0.92);
+    linear-gradient(140deg, rgba(255,255,255,0.9) 0%, rgba(250,244,236,0.86) 42%, rgba(245,233,220,0.82) 100%);
+  border: 1px solid rgba(255,255,255,0.9);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.96),
-    0 18px 44px rgba(255,255,255,0.28),
-    0 10px 28px rgba(74,96,104,0.08),
-    0 2px 8px rgba(255,255,255,0.34);
+    inset 0 1px 0 rgba(255,255,255,0.94),
+    0 0 0 1px rgba(255,255,255,0.18),
+    0 18px 42px rgba(255,255,255,0.28),
+    0 12px 28px rgba(255,255,255,0.22),
+    0 10px 24px rgba(74,96,104,0.08);
 }
 
 .card-design-glass,
@@ -443,18 +408,6 @@ body {
     0 10px 28px rgba(255,255,255,0.28),
     0 8px 20px rgba(212,84,58,0.10),
     inset 0 1px 0 rgba(255,255,255,0.92);
-}
-
-.surface-card-warm-glow {
-  background:
-    linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(251,245,238,0.90) 44%, rgba(241,229,214,0.82) 100%);
-  border: 1px solid rgba(255,255,255,0.94);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.98),
-    0 34px 82px rgba(245,214,186,0.34),
-    0 20px 52px rgba(212,84,58,0.13),
-    0 12px 28px rgba(74,96,104,0.08),
-    0 4px 10px rgba(255,255,255,0.34);
 }
 
 /* Logo text */
