@@ -168,7 +168,7 @@ const Recommendations = () => {
   if (personalizationLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--swatch-teal)" }} />
+        <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
   }
@@ -202,17 +202,17 @@ const Recommendations = () => {
           transition={{ type: "spring", stiffness: 260, damping: 24 }}
           className="relative"
         >
-          <Card variant="sand" className="relative overflow-hidden rounded-[34px] p-5 md:p-6">
-            <div className="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_260px] md:items-end">
+          <Card variant="sand" className="relative overflow-hidden p-5 md:p-6">
+            <div className="relative">
 
               {/* Left — title + persona */}
               <div className="min-w-0 max-w-[780px]">
                 <p className="surface-eyebrow-coral mb-2">Go Two / Recommendations</p>
-                <h1 className="surface-heading-lg mb-3 text-[30px] md:text-[38px]">
+                <h1 className="surface-heading-lg mb-3">
                   Curated Just For You
                 </h1>
                 {personalization?.persona_summary && (
-                  <p className="surface-heading-md max-w-[32ch] text-[19px] md:text-[21px] leading-[1.4]">
+                  <p className="surface-heading-md max-w-[32ch] leading-[1.4]">
                     {personalization.persona_summary}
                   </p>
                 )}
@@ -224,37 +224,18 @@ const Recommendations = () => {
               </div>
 
               {/* Right — compact role rail */}
-              <div className="rounded-[26px] p-4 md:p-5 md:self-stretch surface-pill">
-                <p className="surface-eyebrow-coral mb-3">Think of the AI as your</p>
-                <div className="space-y-2.5">
-                  {[
-                    "Personal Style Strategist",
-                    "Atmosphere Architect",
-                    "Intentional Gift Connoisseur",
-                  ].map((label) => (
-                    <Pill
-                      key={label}
-                      variant="teal"
-                      size="lg"
-                      className="w-full justify-start px-4"
-                    >
-                      {label}
-                    </Pill>
-                  ))}
-                </div>
-                {subscribed && (
-                  <Button
-                    onClick={() => fetchProducts(true)}
-                    disabled={loading}
-                    variant="outline"
-                    size="sm"
-                    className="mt-4"
-                  >
-                    <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} />
-                    <span>{loading ? "Loading" : "Refresh"}</span>
-                  </Button>
-                )}
-              </div>
+              {subscribed && (
+                <Button
+                  onClick={() => fetchProducts(true)}
+                  disabled={loading}
+                  variant="outline"
+                  size="sm"
+                  className="mt-4"
+                >
+                  <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} />
+                  <span>{loading ? "Loading" : "Refresh"}</span>
+                </Button>
+              )}
             </div>
           </Card>
         </motion.div>
@@ -262,8 +243,8 @@ const Recommendations = () => {
         {/* ── Product grid ── */}
         {loading && products.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-16">
-            <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--swatch-teal)" }} />
-            <p className="surface-body text-[13px]">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <p className="surface-body">
               Curating your picks…
             </p>
           </div>
@@ -305,20 +286,20 @@ const Recommendations = () => {
             )}
           </>
         ) : hasLoaded ? (
-          <Card variant="sand" className="rounded-[28px] p-8 text-center">
-            <p className="surface-heading-md mb-2 text-[18px] font-bold">
+          <Card variant="sand" className="p-8 text-center">
+            <p className="surface-heading-md mb-2">
               No picks in this category yet.
             </p>
-            <p className="surface-body text-[13px]">
+            <p className="surface-body">
               Try refreshing or answer more Know Me questions to sharpen the read.
             </p>
           </Card>
         ) : !subscribed ? (
-          <Card variant="sand" className="rounded-[28px] p-8 text-center">
-            <p className="surface-heading-md mb-2 text-[18px] font-bold">
+          <Card variant="sand" className="p-8 text-center">
+            <p className="surface-heading-md mb-2">
               Your curated picks load here.
             </p>
-            <p className="surface-body text-[13px]">
+            <p className="surface-body">
               Upgrade to unlock the full weekly set and saving.
             </p>
           </Card>
@@ -361,38 +342,35 @@ function ProductCard({
       transition={{ delay: index * 0.05, type: "spring", stiffness: 260, damping: 24 }}
       className="relative"
     >
-      <Card variant="sand" className="relative flex h-full flex-col overflow-hidden rounded-[28px]">
-        <div className="relative h-[220px] overflow-hidden rounded-[24px] rounded-b-[18px]">
+      <Card variant="sand" className="relative flex h-full flex-col overflow-hidden">
+        <div className="relative h-[220px] overflow-hidden">
           <img src={getProductImage(product)} alt={product.name} className="h-full w-full object-cover" />
-          {product.is_partner_pick && (
-            <Pill variant="coral" size="sm" className="absolute left-4 top-4">
-              {product.source_kind === "specific-product" ? "Exact Match" : "Search Match"}
-            </Pill>
-          )}
-          <Pill
-            variant="coral"
-            size="sm"
-            className="absolute right-4 top-4"
-          >
-            {product.price}
-          </Pill>
         </div>
 
         <div className="p-5 pt-4 flex flex-col gap-3">
           <div className="min-w-0">
-            <p className="surface-meta text-[11px]">
+            <p className="surface-meta">
               {product.brand}
             </p>
-            <h3 className="surface-heading-md mt-1 text-[22px]">
+            <h3 className="surface-heading-md mt-1">
               {product.name}
             </h3>
           </div>
 
-          <p className="surface-heading-md text-[18px] leading-[1.18]">
+          <div className="flex flex-wrap items-center gap-2">
+            {product.is_partner_pick && (
+              <p className="surface-meta">
+                {product.source_kind === "specific-product" ? "Exact Match" : "Search Match"}
+              </p>
+            )}
+            <p className="surface-meta">{product.price}</p>
+          </div>
+
+          <p className="surface-heading-md leading-[1.18]">
             {product.hook}
           </p>
 
-          <p className="surface-body text-[12px] leading-relaxed">
+          <p className="surface-body leading-relaxed">
             {product.why}
           </p>
 
