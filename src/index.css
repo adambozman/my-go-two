@@ -85,6 +85,8 @@ html::-webkit-scrollbar {
     --swatch-teal-mid: #3a7880;
     --swatch-cedar-grove: #d4543a;
     --swatch-cedar-grove-hover: #c4432a;
+    --logo-go-color: var(--swatch-cedar-grove);
+    --logo-two-color: var(--swatch-viridian-odyssey);
     --swatch-antique-coin: #4a6068;
     --swatch-text-light: #8a9ea4;
     --swatch-gypsum-rose: #e8d4be;
@@ -255,11 +257,11 @@ body {
 }
 
 .surface-eyebrow-coral {
-  color: var(--swatch-cedar-grove);
+  color: var(--logo-go-color);
 }
 
 .surface-eyebrow-teal {
-  color: var(--swatch-teal);
+  color: var(--logo-two-color);
 }
 
 .surface-heading-lg,
@@ -291,7 +293,7 @@ body {
 
 .surface-action-text {
   font-family: 'Jost', sans-serif;
-  color: var(--swatch-teal);
+  color: var(--logo-two-color);
 }
 
 /* Global card title label — bottom-left, 16px from edges */
@@ -421,14 +423,14 @@ body {
 .logo-text .go {
   font-family: 'Dancing Script', cursive;
   font-weight: 600;
-  color: #d4543a;
+  color: var(--logo-go-color);
   font-size: 1em;
   line-height: 1;
 }
 .logo-text .two {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 600;
-  color: #2d6870;
+  color: var(--logo-two-color);
   font-size: 1.26em;
   line-height: 1;
 }
