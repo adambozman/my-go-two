@@ -439,11 +439,9 @@ const DashboardHome = () => {
         <div className="grid gap-5 xl:grid-cols-[minmax(0,300px)_minmax(0,1.18fr)_minmax(0,300px)]">
           <div>
             <section
-              className="relative flex h-full min-h-[740px] flex-col overflow-hidden rounded-[30px] p-5"
+              className="card-design-sand relative flex h-full min-h-[740px] flex-col overflow-hidden rounded-[30px] p-5"
               style={{
                 ...shellCardStyle,
-                background: "linear-gradient(165deg, rgba(45,104,112,0.12) 0%, rgba(245,233,220,0.46) 100%)",
-                border: "1px solid rgba(255,255,255,0.85)",
               }}
             >
               <div className="mb-4 flex items-center justify-between">
@@ -465,13 +463,7 @@ const DashboardHome = () => {
                 </button>
               </div>
 
-              <div
-                className="rounded-[22px] px-4 py-4"
-                style={{
-                  background: "rgba(245,233,220,0.58)",
-                  border: "1px solid rgba(255,255,255,0.7)",
-                }}
-              >
+              <div className="card-inset-white rounded-[22px] px-4 py-4">
                 <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   Discovery
                 </p>
@@ -550,10 +542,8 @@ const DashboardHome = () => {
             </section>
 
             <section
-              className="mt-3 rounded-[28px] p-3 md:p-4"
+              className="card-design-sand mt-3 rounded-[28px] p-3 md:p-4"
               style={{
-                background: "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(245,233,220,0.56) 100%)",
-                border: "1px solid rgba(255,255,255,0.84)",
                 boxShadow: "inset 0 1px 0 rgba(255,255,255,0.92), 0 10px 24px rgba(74,96,104,0.08)",
               }}
             >
@@ -609,11 +599,9 @@ const DashboardHome = () => {
             </section>
 
             <section
-              className="mt-5 overflow-hidden rounded-[30px] p-3 md:p-4"
+              className="card-design-coral mt-5 overflow-hidden rounded-[30px] p-3 md:p-4"
               style={{
                 ...shellCardStyle,
-                background: "linear-gradient(165deg, rgba(45,104,112,0.12) 0%, rgba(245,233,220,0.48) 100%)",
-                border: "1px solid rgba(45,104,112,0.18)",
               }}
             >
               <EventCalendar milestones={milestones} connections={calendarConnections} />
@@ -637,11 +625,9 @@ const DashboardHome = () => {
           </div>
 
           <aside
-            className="overflow-hidden rounded-[30px] p-4"
+            className="card-design-sand overflow-hidden rounded-[30px] p-4"
             style={{
               ...shellCardStyle,
-              background: "linear-gradient(180deg, rgba(255,255,255,0.76) 0%, rgba(245,233,220,0.56) 100%)",
-              border: "1px solid rgba(255,255,255,0.84)",
             }}
           >
             <div className="border-b border-white/50 pb-4">
@@ -657,13 +643,7 @@ const DashboardHome = () => {
 
             <div className="mt-4 space-y-3 xl:max-h-[calc(100vh-240px)] xl:overflow-y-auto xl:pr-1">
               {recentActivityItems.length === 0 ? (
-                <div
-                  className="rounded-[22px] px-4 py-4"
-                  style={{
-                    background: "rgba(255,255,255,0.54)",
-                    border: "1px solid rgba(255,255,255,0.78)",
-                  }}
-                >
+                <div className="card-inset-white rounded-[22px] px-4 py-4">
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                     Connections
                   </p>
@@ -681,11 +661,7 @@ const DashboardHome = () => {
                 recentActivityItems.map((item) => (
                   <div
                     key={item.id}
-                    className="rounded-[22px] px-4 py-4"
-                    style={{
-                      background: "rgba(255,255,255,0.54)",
-                      border: "1px solid rgba(255,255,255,0.78)",
-                    }}
+                    className="card-inset-white rounded-[22px] px-4 py-4"
                   >
                     <div className="flex items-start gap-3">
                       <span
