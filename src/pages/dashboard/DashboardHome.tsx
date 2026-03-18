@@ -427,7 +427,7 @@ const DashboardHome = () => {
         <div className="grid gap-5 xl:grid-cols-[minmax(0,300px)_minmax(0,1.18fr)_minmax(0,300px)]">
           <div>
             <section
-              className="card-design-sand relative flex h-full min-h-[740px] flex-col overflow-hidden rounded-[30px] p-5"
+              className="surface-card-warm-glow relative flex h-full min-h-[740px] flex-col overflow-hidden rounded-[30px] p-5"
             >
               <div className="mb-4 flex items-center justify-between">
                 <div>
