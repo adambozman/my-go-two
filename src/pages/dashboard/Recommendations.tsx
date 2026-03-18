@@ -155,7 +155,7 @@ const Recommendations = () => {
   }
 
   const previewProducts = LOCKED_PREVIEW.filter((p) =>
-    activePillar === "all" ? true : activePillarConfig.matches.includes(p.category)
+    activePillar === "all" ? true : (activePillarConfig.matches as readonly string[]).includes(p.category)
   );
 
   const displayProducts = subscribed ? paginatedProducts : previewProducts;
