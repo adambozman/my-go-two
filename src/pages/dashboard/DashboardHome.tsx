@@ -39,7 +39,7 @@ const pillButtonStyle = {
   color: "var(--swatch-teal)",
   background: "rgba(255,255,255,0.6)",
   border: "1px solid rgba(255,255,255,0.78)",
-  boxShadow: "0 8px 24px rgba(255,255,255,0.22), 0 6px 18px rgba(212,84,58,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.76)",
 } as const;
 
 function formatRelativeDateLabel(value?: string | Date | null) {
@@ -457,7 +457,7 @@ const DashboardHome = () => {
                 </div>
                 <button
                   onClick={() => navigate("/dashboard/public-feed")}
-                  className="surface-button-secondary surface-button-soft-glow inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
+                  className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
                   style={pillButtonStyle}
                 >
                   Go to feed
@@ -465,7 +465,13 @@ const DashboardHome = () => {
                 </button>
               </div>
 
-              <div className="card-inset-white rounded-[22px] px-4 py-4">
+              <div
+                className="rounded-[22px] px-4 py-4"
+                style={{
+                  background: "rgba(245,233,220,0.58)",
+                  border: "1px solid rgba(255,255,255,0.7)",
+                }}
+              >
                 <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   Discovery
                 </p>
@@ -651,7 +657,13 @@ const DashboardHome = () => {
 
             <div className="mt-4 space-y-3 xl:max-h-[calc(100vh-240px)] xl:overflow-y-auto xl:pr-1">
               {recentActivityItems.length === 0 ? (
-                <div className="card-inset-white rounded-[22px] px-4 py-4">
+                <div
+                  className="rounded-[22px] px-4 py-4"
+                  style={{
+                    background: "rgba(255,255,255,0.54)",
+                    border: "1px solid rgba(255,255,255,0.78)",
+                  }}
+                >
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                     Connections
                   </p>
@@ -669,7 +681,11 @@ const DashboardHome = () => {
                 recentActivityItems.map((item) => (
                   <div
                     key={item.id}
-                    className="card-inset-white rounded-[22px] px-4 py-4"
+                    className="rounded-[22px] px-4 py-4"
+                    style={{
+                      background: "rgba(255,255,255,0.54)",
+                      border: "1px solid rgba(255,255,255,0.78)",
+                    }}
                   >
                     <div className="flex items-start gap-3">
                       <span

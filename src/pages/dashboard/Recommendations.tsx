@@ -318,7 +318,7 @@ const Recommendations = () => {
             )}
           </>
         ) : hasLoaded ? (
-          <div className="card-design-sand rounded-[28px] p-8 text-center" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08)" }}>
+          <div className="card-design-overlay-teal rounded-[28px] p-8 text-center" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08)" }}>
             <p className="text-[18px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
               No picks in this category yet.
             </p>
@@ -327,7 +327,7 @@ const Recommendations = () => {
             </p>
           </div>
         ) : !subscribed ? (
-          <div className="card-design-sand rounded-[28px] p-8 text-center" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08)" }}>
+          <div className="card-design-overlay-teal rounded-[28px] p-8 text-center" style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08)" }}>
             <p className="text-[18px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
               Preview picks appear here.
             </p>
@@ -390,7 +390,7 @@ function ProductCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, type: "spring", stiffness: 260, damping: 24 }}
-      className="card-design-sand rounded-[28px] p-5 relative overflow-hidden flex flex-col"
+      className="card-design-overlay-teal rounded-[28px] p-5 relative overflow-hidden flex flex-col"
       style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)" }}
     >
       <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(var(--swatch-teal-rgb), 0.10), transparent 70%)" }} />

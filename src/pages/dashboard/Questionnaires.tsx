@@ -629,7 +629,7 @@ const Questionnaires = () => {
                   transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
                   disabled={isDisabled}
                   onClick={() => startThisOrThatCategory(category.id)}
-                  className={`card-design-sand rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden ${item.layoutClass}`}
+                  className={`card-design-overlay-teal rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden ${item.layoutClass}`}
                   style={{ boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.48)", opacity: isDisabled ? 0.8 : 1 }}
                 >
                   <div
@@ -932,11 +932,11 @@ const Questionnaires = () => {
               transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
               whileTap={{ scale: 0.985 }}
               onClick={openThisOrThat}
-              className="lg:col-span-4 card-design-sand rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left flex flex-col"
+              className="lg:col-span-4 card-design-overlay-teal rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left flex flex-col"
               style={{ boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
-              <div className="relative card-inset-white rounded-[24px] p-5 md:p-6 flex flex-col flex-1">
+              <div className="relative flex flex-col flex-1">
                 <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   Instinct deck
                 </p>
@@ -946,7 +946,7 @@ const Questionnaires = () => {
                 <p className="text-[14px] leading-relaxed max-w-[30ch] mb-6" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                   Two options. One instinct. No overthinking. Pick fast across style, taste, romance, travel, gifting, and more — and let your pattern build itself over time.
                 </p>
-                <div className="surface-button-secondary surface-button-soft-glow mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start">
+                <div className="mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
                   <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                     Browse categories
                   </p>
@@ -986,26 +986,24 @@ const Questionnaires = () => {
               transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
               whileTap={{ scale: 0.99 }}
               onClick={openCategoriesDashboard}
-              className="lg:col-span-7 card-design-sand rounded-[30px] p-5 md:p-6 text-left relative overflow-hidden min-h-[260px] flex flex-col"
+              className="lg:col-span-7 card-design-overlay-teal rounded-[30px] p-5 md:p-6 text-left relative overflow-hidden min-h-[260px] flex flex-col"
               style={{ borderRadius: 30, boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)" }}
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
-              <div className="card-inset-white rounded-[24px] p-5 md:p-6 flex flex-col flex-1">
-                <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Get to know you
+              <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                Get to know you
+              </p>
+              <p className="text-[34px] leading-[0.96] mb-4 max-w-[16ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                Questions by category
+              </p>
+              <p className="text-[14px] leading-relaxed max-w-[44ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                Five categories — Clothes & Style, Food & Drink, Gifts, Home, and Everything Else. Each one builds a deeper read on your taste. Answer at your own pace and pick up right where you left off.
+              </p>
+              <div className="mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  Browse categories
                 </p>
-                <p className="text-[34px] leading-[0.96] mb-4 max-w-[16ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
-                  Questions by category
-                </p>
-                <p className="text-[14px] leading-relaxed max-w-[44ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Five categories — Clothes & Style, Food & Drink, Gifts, Home, and Everything Else. Each one builds a deeper read on your taste. Answer at your own pace and pick up right where you left off.
-                </p>
-                <div className="surface-button-secondary surface-button-soft-glow mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start">
-                  <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                    Browse categories
-                  </p>
-                  <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
-                </div>
+                <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
               </div>
             </motion.button>
 
@@ -1013,7 +1011,7 @@ const Questionnaires = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18, type: "spring", stiffness: 250, damping: 24 }}
-              className="lg:col-span-12 card-design-sand rounded-[28px] px-5 py-5"
+              className="lg:col-span-12 card-design-overlay-teal rounded-[28px] px-5 py-5"
               style={{ borderRadius: 28, boxShadow: "0 14px 34px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.46)" }}
             >
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
