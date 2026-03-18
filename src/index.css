@@ -80,7 +80,7 @@ html::-webkit-scrollbar {
     --sidebar-ring: 192 46% 22%;
 
     /* Brand swatches — new design system */
-    --swatch-viridian-odyssey: #1e4a52;
+    --swatch-viridian-odyssey: var(--swatch-teal);
     --swatch-teal: #2d6870;
     --swatch-teal-mid: #3a7880;
     --swatch-cedar-grove: #d4543a;
@@ -96,7 +96,7 @@ html::-webkit-scrollbar {
     --swatch-paper: var(--swatch-cream-light);
 
     /* RGB variants for transparency */
-    --swatch-viridian-odyssey-rgb: 30 74 82;
+    --swatch-viridian-odyssey-rgb: 45 104 112;
     --swatch-antique-coin-rgb: 74 96 104;
     --swatch-gypsum-rose-rgb: 232 212 190;
     --swatch-cedar-grove-rgb: 212 84 58;
