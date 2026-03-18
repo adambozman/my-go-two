@@ -11,12 +11,19 @@ export interface CatalogProduct {
   answerTags: string[];
   priceTier: PriceTier;
   isPartnerPick?: boolean;
+  productUrl?: string;
+  searchUrl?: string;
+  imageUrl?: string;
+  recommendationKind?: "specific" | "generic";
 }
 
 type ProfileAnswers = Record<string, unknown>;
 type Personalization = Record<string, unknown>;
 
-const CATALOG_VERSION = "know-me-catalog-v1";
+const CATALOG_VERSION = "know-me-catalog-v2";
+
+const siteSearch = (baseUrl: string, query: string) =>
+  `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}${new URLSearchParams({ q: query }).toString()}`;
 
 const BRAND_BANK = {
   male: [
@@ -64,6 +71,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["essentials", "basics", "affordable", "minimal"],
     answerTags: ["minimal", "casual", "budget", "balanced"],
     priceTier: "budget",
+    productUrl: "https://www.uniqlo.com/us/en/search/?q=Supima%20Cotton%20Crew%20Neck%20T-Shirt",
+    recommendationKind: "specific",
   },
   {
     brand: "Buck Mason",
@@ -73,6 +82,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["american-basics", "rugged", "tailored"],
     answerTags: ["casual", "timeless", "fit", "quality"],
     priceTier: "mid-range",
+    searchUrl: siteSearch("https://www.buckmason.com/search", "Pima Curved Hem Tee"),
+    recommendationKind: "generic",
   },
   {
     brand: "Everlane",
@@ -82,6 +93,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["sustainable", "basics", "minimal"],
     answerTags: ["minimal", "professional", "timeless"],
     priceTier: "mid-range",
+    productUrl: "https://www.everlane.com/search?q=organic+cotton+oxford",
+    recommendationKind: "specific",
   },
   {
     brand: "COS",
@@ -91,6 +104,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["architectural", "minimal", "elevated"],
     answerTags: ["minimal", "creative", "elegant", "quality"],
     priceTier: "premium",
+    productUrl: "https://www.cos.com/en_usd/search.html?q=overshirt",
+    recommendationKind: "specific",
   },
   {
     brand: "Vince",
@@ -100,6 +115,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["quiet-luxury", "knits", "relaxed"],
     answerTags: ["luxury", "elegant", "bougie", "quality"],
     priceTier: "luxury",
+    searchUrl: siteSearch("https://www.vince.com/search", "cashmere crew"),
+    recommendationKind: "generic",
   },
   {
     brand: "Patagonia",
@@ -109,6 +126,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["outdoors", "ethical", "gorpcore"],
     answerTags: ["outdoors", "traveling", "fitness", "casual"],
     priceTier: "premium",
+    productUrl: "https://www.patagonia.com/search/?q=better+sweater+jacket",
+    recommendationKind: "specific",
   },
   {
     brand: "Lululemon",
@@ -118,6 +137,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["athleisure", "premium", "gym-to-street"],
     answerTags: ["athletic", "fitness", "polished", "comfort"],
     priceTier: "premium",
+    productUrl: "https://shop.lululemon.com/search?Ntt=ABC%20Classic-Fit%20Trouser",
+    recommendationKind: "specific",
   },
   {
     brand: "Ralph Lauren",
@@ -127,6 +148,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["prep", "heritage", "polo"],
     answerTags: ["preppy", "polished", "classic", "professional"],
     priceTier: "premium",
+    productUrl: "https://www.ralphlauren.com/search?q=custom%20fit%20mesh%20polo",
+    recommendationKind: "specific",
   },
   {
     brand: "Todd Snyder",
@@ -136,6 +159,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["designer-prep", "menswear", "polished"],
     answerTags: ["preppy", "elegant", "quality", "timeless"],
     priceTier: "mid-range",
+    searchUrl: siteSearch("https://www.toddsnyder.com/search", "Made in L.A. Jersey Tee"),
+    recommendationKind: "generic",
   },
   {
     brand: "Aimé Leon Dore",
@@ -145,6 +170,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["luxury-streetwear", "prep", "street"],
     answerTags: ["street", "bougie", "creative", "trend"],
     priceTier: "premium",
+    searchUrl: siteSearch("https://www.aimeleondore.com/search", "uniform crewneck tee"),
+    recommendationKind: "generic",
   },
   {
     brand: "Blue Bottle",
@@ -154,6 +181,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["coffee-led", "morning-ritual", "cafe"],
     answerTags: ["dining", "staying-in", "thoughtful", "practical"],
     priceTier: "budget",
+    searchUrl: siteSearch("https://bluebottlecoffee.com/us/eng/search", "coffee subscription"),
+    recommendationKind: "generic",
   },
   {
     brand: "Omsom",
@@ -163,6 +192,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["east-asian-specialties", "bold", "weeknight-cooking"],
     answerTags: ["dining", "creative", "events", "staying-in"],
     priceTier: "budget",
+    searchUrl: siteSearch("https://omsom.com/search", "starter sauce set"),
+    recommendationKind: "generic",
   },
   {
     brand: "Fishwife",
@@ -172,6 +203,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["coastal", "refined", "curated"],
     answerTags: ["thoughtful", "elegant", "dining", "luxurious"],
     priceTier: "budget",
+    searchUrl: siteSearch("https://eatfishwife.com/search", "smoked salmon trio"),
+    recommendationKind: "generic",
   },
   {
     brand: "Brightland",
@@ -181,6 +214,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["shared-plates", "refined", "hosting"],
     answerTags: ["events", "dining", "elegant", "quality"],
     priceTier: "mid-range",
+    searchUrl: siteSearch("https://brightland.co/search", "olive oil set"),
+    recommendationKind: "generic",
   },
   {
     brand: "Nespresso",
@@ -191,6 +226,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     answerTags: ["staying-in", "dining", "practical", "quality"],
     priceTier: "premium",
     isPartnerPick: true,
+    productUrl: "https://www.nespresso.com/us/en/search?text=Vertuo%20Pop",
+    recommendationKind: "specific",
   },
   {
     brand: "Parachute",
@@ -200,6 +237,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["linen-bedding", "relaxed-luxury", "textured"],
     answerTags: ["minimal", "elegant", "staying-in", "luxurious"],
     priceTier: "luxury",
+    productUrl: "https://www.parachutehome.com/search?q=linen%20sheet%20set",
+    recommendationKind: "specific",
   },
   {
     brand: "Dyson",
@@ -209,6 +248,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["clean-air", "wellness", "utility"],
     answerTags: ["staying-in", "quality", "practical", "luxury"],
     priceTier: "luxury",
+    productUrl: "https://www.dyson.com/search-results?query=Purifier%20Cool%20Gen1",
+    recommendationKind: "specific",
   },
   {
     brand: "Our Place",
@@ -218,6 +259,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["kitchen-essential", "hosting", "daily-ritual"],
     answerTags: ["dining", "events", "thoughtful", "quality"],
     priceTier: "premium",
+    productUrl: "https://fromourplace.com/search?q=cast%20iron%20always%20pan",
+    recommendationKind: "specific",
   },
   {
     brand: "Brooklinen",
@@ -227,6 +270,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["spa-touch", "comfort-luxury", "small-upgrade"],
     answerTags: ["staying-in", "luxurious", "thoughtful", "comfort"],
     priceTier: "mid-range",
+    productUrl: "https://www.brooklinen.com/search?q=super-plush%20bath%20towels",
+    recommendationKind: "specific",
   },
   {
     brand: "Sony",
@@ -237,6 +282,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     answerTags: ["traveling", "events", "fitness", "luxurious"],
     priceTier: "luxury",
     isPartnerPick: true,
+    productUrl: "https://electronics.sony.com/search?query=WH-1000XM5",
+    recommendationKind: "specific",
   },
   {
     brand: "Anker",
@@ -246,6 +293,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["portable-power-bank", "travel-tech", "fast-charge"],
     answerTags: ["traveling", "practical", "events", "quality"],
     priceTier: "premium",
+    productUrl: "https://www.anker.com/search?keyword=Prime%2020K%20Power%20Bank",
+    recommendationKind: "specific",
   },
   {
     brand: "Logitech",
@@ -255,6 +304,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["mechanical-keyboard", "desk-setup", "tactile"],
     answerTags: ["professional", "creative", "practical", "quality"],
     priceTier: "premium",
+    productUrl: "https://www.logitech.com/en-us/search.html?q=MX%20Mechanical%20Mini",
+    recommendationKind: "specific",
   },
   {
     brand: "GoPro",
@@ -264,6 +315,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["action-camera", "sports", "travel-content"],
     answerTags: ["outdoors", "traveling", "fitness", "events"],
     priceTier: "luxury",
+    productUrl: "https://gopro.com/en/us/search?q=HERO13%20Black",
+    recommendationKind: "specific",
   },
   {
     brand: "Apple",
@@ -273,6 +326,8 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["smart-watch", "fitness-tracking", "connected"],
     answerTags: ["fitness", "athletic", "traveling", "practical"],
     priceTier: "premium",
+    productUrl: "https://www.apple.com/us/search/Apple%20Watch%20SE",
+    recommendationKind: "specific",
   },
 ];
 
@@ -404,6 +459,8 @@ const buildWhy = (product: CatalogProduct, matchedSignals: string[]) => {
   return `Selected from the curated catalog because its tags line up with the strongest profile signals we have so far.`;
 };
 
+const buildSearchQuery = (product: CatalogProduct) => `${product.brand} ${product.name}`;
+
 const withinTier = (candidate: PriceTier, target: PriceTier) => {
   return PRICE_ORDER[candidate] <= PRICE_ORDER[target];
 };
@@ -448,9 +505,12 @@ export const getCatalogRecommendations = (
         why: buildWhy(product, product.matchedSignals),
         is_partner_pick: Boolean(product.isPartnerPick || index === 0),
         is_sponsored: false,
-        affiliate_url: null as string | null,
+        affiliate_url: product.productUrl ?? null,
+        search_url: product.productUrl ? null as string | null : (product.searchUrl ?? null as string | null),
+        product_query: buildSearchQuery(product),
         sponsored_id: null as string | null,
-        source_kind: "catalog",
+        image_url: product.imageUrl ?? null,
+        source_kind: product.productUrl ? "specific-product" : "brand-search",
         source_version: CATALOG_VERSION,
       }));
 

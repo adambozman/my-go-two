@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { trackAdEvent } from "@/lib/adTracking";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { usePagination } from "@/hooks/usePagination";
 import clothingJacketImage from "@/assets/templates/clothing-jacket.jpg";
@@ -27,6 +26,8 @@ interface Product {
   is_partner_pick: boolean;
   is_sponsored?: boolean;
   affiliate_url?: string | null;
+  search_url?: string | null;
+  product_query?: string | null;
   sponsored_id?: string | null;
   image_url?: string | null;
   source_kind?: string;
@@ -319,7 +320,7 @@ const Recommendations = () => {
                       index={i}
                       isSaved={isSaved}
                       onToggleSave={() => subscribed ? toggleSave(itemId) : toast("Upgrade to save picks")}
-                      onShare={() => product.affiliate_url ? undefined : handleShare(product)}
+                      onShare={() => (product.affiliate_url || product.search_url) ? undefined : handleShare(product)}
                     />
                   );
                 })}
@@ -373,32 +374,14 @@ function ProductCard({
   onShare: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const tracked = useRef(false);
-
-  useEffect(() => {
-    if (!product.is_sponsored || !product.sponsored_id || tracked.current) return;
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !tracked.current) {
-          tracked.current = true;
-          trackAdEvent(product.sponsored_id!, "impression", "blended");
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.5 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [product.is_sponsored, product.sponsored_id]);
 
   const handleAction = () => {
-    if (product.is_sponsored && product.sponsored_id) {
-      trackAdEvent(product.sponsored_id, "click", "blended");
-    }
     if (product.affiliate_url) {
       window.open(product.affiliate_url, "_blank", "noopener");
+      return;
+    }
+    if (product.search_url) {
+      window.open(product.search_url, "_blank", "noopener");
     }
   };
 
@@ -416,9 +399,9 @@ function ProductCard({
         <div className="relative h-[220px] overflow-hidden rounded-[24px] rounded-b-[18px]">
           <img src={getProductImage(product)} alt={product.name} className="h-full w-full object-cover" />
           <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(12,16,18,0.04) 0%, rgba(12,16,18,0.18) 100%)" }} />
-          {(product.is_partner_pick || product.is_sponsored) && (
+          {product.is_partner_pick && (
             <div className="absolute left-4 top-4 rounded-full px-3 py-1.5 text-[9px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", background: "rgba(255,255,255,0.82)", color: "var(--swatch-cedar-grove)", border: "1px solid rgba(255,255,255,0.7)" }}>
-              {product.is_sponsored ? "Curated Pick" : "Partner Pick"}
+              {product.source_kind === "specific-product" ? "Exact Match" : "Search Match"}
             </div>
           )}
           <div className="absolute right-4 top-4 rounded-full px-3 py-1.5 text-[14px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, background: "rgba(255,255,255,0.86)", color: "var(--swatch-cedar-grove)", border: "1px solid rgba(255,255,255,0.74)" }}>
@@ -460,7 +443,7 @@ function ProductCard({
           </button>
 
           <button
-            onClick={product.affiliate_url ? handleAction : onShare}
+            onClick={product.affiliate_url || product.search_url ? handleAction : onShare}
             className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.1em] transition-all"
             style={{
               fontFamily: "'Jost', sans-serif",
@@ -469,8 +452,8 @@ function ProductCard({
               border: "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.18)",
             }}
           >
-            {product.affiliate_url ? <ExternalLink className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
-            {product.affiliate_url ? "Open" : "Share"}
+            {product.affiliate_url || product.search_url ? <ExternalLink className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
+            {product.affiliate_url ? "View Product" : product.search_url ? "Search Brand" : "Share"}
           </button>
           </div>
         </div>

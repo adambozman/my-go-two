@@ -8,8 +8,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const ALLOWED_CATEGORIES = new Set(["food", "clothes", "tech", "home"]);
-
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -61,61 +59,16 @@ serve(async (req) => {
       }
     }
 
-    // Fetch preferences and sponsored products in parallel
-    const [prefsResult, sponsoredResult] = await Promise.all([
-      supabase
-        .from("user_preferences")
-        .select("profile_answers, ai_personalization")
-        .eq("user_id", user.id)
-        .single(),
-      supabase
-        .from("sponsored_products")
-        .select("*")
-        .eq("is_active", true)
-        .eq("placement", "blended"),
-    ]);
+    const { data: prefsData } = await supabase
+      .from("user_preferences")
+      .select("profile_answers, ai_personalization")
+      .eq("user_id", user.id)
+      .single();
+    const profileAnswers = prefsData?.profile_answers as Record<string, any> || {};
+    const personalization = prefsData?.ai_personalization as any || {};
 
-    const profileAnswers = prefsResult.data?.profile_answers as Record<string, any> || {};
-    const personalization = prefsResult.data?.ai_personalization as any || {};
-
-    const gender = profileAnswers?.identity?.[0] || profileAnswers?.identity || "unspecified";
-    const { products: catalogProducts, priceTier } = getCatalogRecommendations(profileAnswers, personalization);
-    const rawTier = priceTier;
-
-    const sponsoredProducts = (sponsoredResult.data || []).filter((sp: any) => {
-      if (sp.start_date && new Date(sp.start_date) > now) return false;
-      if (sp.end_date && new Date(sp.end_date) < now) return false;
-      if (sp.target_gender?.length && !sp.target_gender.includes(gender)) return false;
-      if (sp.target_price_tiers?.length && !sp.target_price_tiers.includes(rawTier)) return false;
-      return true;
-    });
-
+    const { products: catalogProducts } = getCatalogRecommendations(profileAnswers, personalization);
     const blendedProducts = [...catalogProducts];
-    const sponsoredMapped = sponsoredProducts
-      .sort((a: any, b: any) => (b.priority || 0) - (a.priority || 0))
-      .slice(0, 3)
-      .map((sp: any) => ({
-        name: sp.name,
-        brand: sp.brand,
-        price: sp.price || "",
-        category: ALLOWED_CATEGORIES.has(sp.category) ? sp.category : "clothes",
-        hook: sp.hook || `Curated pick from ${sp.brand}`,
-        why: sp.why || `A ${sp.brand} selection matched to your style`,
-        is_partner_pick: false,
-        is_sponsored: true,
-        affiliate_url: sp.affiliate_url
-          ? `${sp.affiliate_url}${sp.affiliate_url.includes("?") ? "&" : "?"}utm_source=${sp.utm_source || "gotwo"}&utm_medium=${sp.utm_medium || "app"}&utm_campaign=${sp.utm_campaign || "recs"}`
-          : null,
-        sponsored_id: sp.id,
-        source_kind: "sponsored",
-        source_version: getCatalogVersion(),
-      }));
-
-    const insertPositions = [2, 6, 10];
-    for (let i = 0; i < sponsoredMapped.length; i++) {
-      const pos = Math.min(insertPositions[i] || blendedProducts.length, blendedProducts.length);
-      blendedProducts.splice(pos, 0, sponsoredMapped[i]);
-    }
 
     await supabase.from("weekly_recommendations").upsert({
       user_id: user.id,
