@@ -136,31 +136,13 @@ html::-webkit-scrollbar {
 body {
   background-color: var(--swatch-paper);
   background-image:
-    radial-gradient(circle at 18% 16%, rgba(var(--swatch-cedar-grove-rgb), 0.15) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.07) 18%, transparent 48%),
-    radial-gradient(circle at 80% 22%, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.14) 20%, transparent 52%),
-    radial-gradient(circle at 52% 58%, rgba(var(--swatch-cedar-grove-rgb), 0.08) 0%, rgba(var(--swatch-gypsum-rose-rgb), 0.05) 24%, transparent 58%),
-    linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.045) 100%),
-    repeating-linear-gradient(
-      0deg,
-      rgba(255,255,255,0.05) 0,
-      rgba(255,255,255,0.05) 1px,
-      rgba(var(--swatch-cedar-grove-rgb), 0.014) 1px,
-      rgba(var(--swatch-cedar-grove-rgb), 0.014) 3px,
-      transparent 3px,
-      transparent 12px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(255,255,255,0.032) 0,
-      rgba(255,255,255,0.032) 1px,
-      rgba(var(--swatch-viridian-odyssey-rgb), 0.016) 1px,
-      rgba(var(--swatch-viridian-odyssey-rgb), 0.016) 2px,
-      transparent 2px,
-      transparent 11px
-    );
-  background-size: auto, auto, auto, auto, 12px 12px, 11px 11px;
-  background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, repeat;
+    radial-gradient(circle at 18% 16%, rgba(var(--swatch-cedar-grove-rgb), 0.11) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.05) 24%, transparent 58%),
+    linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.035) 100%),
+    url("./assets/previews/bg-clean-linen.jpg");
+  background-size: auto, auto, 560px 560px;
+  background-position: 0 0, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-blend-mode: normal, normal, multiply;
   background-attachment: fixed;
 }
 
