@@ -169,54 +169,60 @@ const Recommendations = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 24 }}
-          className="card-design-sand rounded-[34px] p-6 md:p-7 relative overflow-hidden"
+          className="card-design-sand rounded-[34px] p-5 md:p-6 relative overflow-hidden"
         >
           <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
-          <div className="relative flex items-start gap-6">
+          <div className="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_260px] md:items-start">
 
             {/* Left — title + persona */}
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+            <div className="min-w-0 max-w-[760px]">
+              <p className="mb-2 text-[10px] uppercase tracking-[0.22em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 Go Two / Recommendations
               </p>
-              <h1 className="text-[28px] md:text-[34px] leading-[1.0] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+              <h1 className="mb-3 text-[24px] md:text-[30px] leading-[0.98]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                 Curated Just For You
               </h1>
               {personalization?.persona_summary && (
-                <p className="text-[22px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: "italic", color: "var(--swatch-teal)" }}>
+                <p className="max-w-[34ch] text-[17px] md:text-[18px] leading-[1.45]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-teal)" }}>
                   {personalization.persona_summary}
                 </p>
               )}
               {generatedLabel && (
-                <p className="text-[11px] mt-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                <p className="mt-3 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                   {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
                 </p>
               )}
             </div>
 
-            {/* Right — glass box with staggered pills inside */}
-            <div className="rounded-[26px] p-6 backdrop-blur-md flex-shrink-0 w-[300px] flex flex-col justify-between" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)", minHeight: "100%" }}>
-              <p className="text-[10px] uppercase tracking-[0.18em] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+            {/* Right — compact role rail */}
+            <div
+              className="rounded-[24px] p-4 md:p-5 backdrop-blur-md"
+              style={{
+                background: "rgba(255,255,255,0.22)",
+                border: "1px solid rgba(var(--swatch-teal-rgb), 0.16)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)",
+              }}
+            >
+              <p className="mb-3 text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 Think of the AI as your
               </p>
-              <div className="flex flex-col gap-3 flex-1 justify-center">
+              <div className="space-y-2.5">
                 {[
-                  { label: "Personal Style Strategist", offset: false },
-                  { label: "Atmosphere Architect", offset: true },
-                  { label: "Intentional Gift Connoisseur", offset: false },
-                ].map(({ label, offset }) => (
+                  "Personal Style Strategist",
+                  "Atmosphere Architect",
+                  "Intentional Gift Connoisseur",
+                ].map((label) => (
                   <div
                     key={label}
-                    className={`rounded-full px-4 py-2.5 self-start${offset ? " ml-6" : ""}`}
+                    className="rounded-full px-3.5 py-2"
                     style={{
                       fontFamily: "'Cormorant Garamond', serif",
                       fontWeight: 600,
                       fontStyle: "italic",
-                      fontSize: 15,
-                      background: "rgba(255,255,255,0.35)",
-                      border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)",
+                      fontSize: 14,
+                      background: "rgba(255,255,255,0.34)",
+                      border: "1px solid rgba(var(--swatch-teal-rgb), 0.16)",
                       color: "var(--swatch-teal)",
-                      whiteSpace: "nowrap",
                       boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
                     }}
                   >
@@ -228,8 +234,8 @@ const Recommendations = () => {
                 <button
                   onClick={() => fetchProducts(true)}
                   disabled={loading}
-                  className="mt-4 rounded-full px-3 py-1.5 inline-flex items-center gap-1.5 transition-opacity disabled:opacity-50"
-                  style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
+                  className="mt-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-opacity disabled:opacity-50"
+                  style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.16)" }}
                 >
                   <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} style={{ color: "var(--swatch-teal)" }} />
                   <span className="text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
