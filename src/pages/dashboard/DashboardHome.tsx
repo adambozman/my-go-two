@@ -20,13 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  getPublicFeedViewItems,
-  togglePublicFeedFollow,
-  togglePublicFeedReaction,
-  type PublicFeedViewItem,
-} from "@/data/publicFeed";
-
 interface ConnectionCard {
   id: string;
   name: string;
@@ -89,19 +82,6 @@ interface ActivityFeedItem {
   accent: string;
 }
 
-interface PublicFeedPreviewItem {
-  id: string;
-  eyebrow: string;
-  title: string;
-  detail: string;
-  likes: number;
-  loves: number;
-  creatorName: string;
-  isFollowing: boolean;
-  isLiked: boolean;
-  isLoved: boolean;
-}
-
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
   const navigate = useNavigate();
@@ -115,7 +95,6 @@ const DashboardHome = () => {
   const [mySearchResults, setMySearchResults] = useState<HomeSearchResult[]>([]);
   const [circleSearchResults, setCircleSearchResults] = useState<HomeSearchResult[]>([]);
   const [recentActivityItems, setRecentActivityItems] = useState<ActivityFeedItem[]>([]);
-  const [publicFeedRefreshKey, setPublicFeedRefreshKey] = useState(0);
   const [openConnection, setOpenConnection] = useState<{
     card: ConnectionCard;
     rect: { x: number; y: number; width: number; height: number };
@@ -367,21 +346,6 @@ const DashboardHome = () => {
     ];
   }, [connections]);
 
-  const publicFeedItems: PublicFeedPreviewItem[] = useMemo(() => {
-    return getPublicFeedViewItems().slice(0, 3).map((item: PublicFeedViewItem) => ({
-      id: item.id,
-      eyebrow: item.category,
-      title: item.title,
-      detail: item.location,
-      likes: item.likes,
-      loves: item.loves,
-      creatorName: item.creatorName,
-      isFollowing: item.isFollowing,
-      isLiked: item.isLiked,
-      isLoved: item.isLoved,
-    }));
-  }, [publicFeedRefreshKey]);
-
   useEffect(() => {
     let cancelled = false;
 
@@ -513,10 +477,6 @@ const DashboardHome = () => {
     setSearchLoading(false);
   }, [buildEntryResult, buildListResult, homeSearch, liveConnections, searchScope, user]);
 
-  const refreshPublicFeedPreview = useCallback(() => {
-    setPublicFeedRefreshKey((value) => value + 1);
-  }, []);
-
   return (
     <div className="relative h-full overflow-y-auto">
       <div className="mx-auto max-w-[1480px] px-4 pb-8 md:px-6">
@@ -587,7 +547,7 @@ const DashboardHome = () => {
                     Public Feed
                   </p>
                   <h3 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
-                    Public looks near you.
+                    Public feed.
                   </h3>
                 </div>
                 <button
@@ -600,80 +560,22 @@ const DashboardHome = () => {
                 </button>
               </div>
 
-              <div className="space-y-3">
-                {publicFeedItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="rounded-[22px] px-4 py-3"
-                    style={{
-                      background: "rgba(245,233,220,0.58)",
-                      border: "1px solid rgba(255,255,255,0.7)",
-                    }}
-                  >
-                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                      {item.eyebrow}
-                    </p>
-                    <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
-                      {item.title}
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                      {item.detail}
-                    </p>
-                    <p className="mt-2 text-[11px]" style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}>
-                      {item.creatorName}
-                    </p>
-
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <button
-                        onClick={() => {
-                          togglePublicFeedReaction(item.id, "like");
-                          refreshPublicFeedPreview();
-                        }}
-                        className="rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.1em]"
-                        style={{
-                          fontFamily: "'Jost', sans-serif",
-                          color: item.isLiked ? "var(--swatch-paper)" : "var(--swatch-teal)",
-                          background: item.isLiked ? "var(--swatch-teal)" : "rgba(255,255,255,0.68)",
-                          border: "1px solid rgba(255,255,255,0.78)",
-                        }}
-                      >
-                        Like {item.likes}
-                      </button>
-                      <button
-                        onClick={() => {
-                          togglePublicFeedReaction(item.id, "love");
-                          refreshPublicFeedPreview();
-                        }}
-                        className="rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.1em]"
-                        style={{
-                          fontFamily: "'Jost', sans-serif",
-                          color: item.isLoved ? "var(--swatch-paper)" : "var(--swatch-cedar-grove)",
-                          background: item.isLoved ? "var(--swatch-cedar-grove)" : "rgba(255,255,255,0.68)",
-                          border: "1px solid rgba(255,255,255,0.78)",
-                        }}
-                      >
-                        Love {item.loves}
-                      </button>
-                      <button
-                        onClick={() => {
-                          const creator = getPublicFeedViewItems().find((feedItem) => feedItem.id === item.id);
-                          if (!creator) return;
-                          togglePublicFeedFollow(creator.creatorId);
-                          refreshPublicFeedPreview();
-                        }}
-                        className="rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.1em]"
-                        style={{
-                          fontFamily: "'Jost', sans-serif",
-                          color: item.isFollowing ? "var(--swatch-paper)" : "var(--swatch-teal)",
-                          background: item.isFollowing ? "var(--swatch-cedar-grove)" : "rgba(255,255,255,0.68)",
-                          border: "1px solid rgba(255,255,255,0.78)",
-                        }}
-                      >
-                        {item.isFollowing ? "Following" : "Follow"}
-                      </button>
-                    </div>
-                  </div>
-                ))}
+              <div
+                className="rounded-[22px] px-4 py-4"
+                style={{
+                  background: "rgba(245,233,220,0.58)",
+                  border: "1px solid rgba(255,255,255,0.7)",
+                }}
+              >
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  Discovery
+                </p>
+                <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                  Follow style without turning it into chat.
+                </p>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  This feed is for published looks, outfit bundles, trending public cards, and popular picks near you. Likes, loves, follows, and browsing all happen on the full page.
+                </p>
               </div>
             </section>
           </div>

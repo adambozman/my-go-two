@@ -29,50 +29,7 @@ interface PublicFeedState {
 
 const STORAGE_KEY = "gotwo-public-feed-state";
 
-export const PUBLIC_FEED_ITEMS: PublicFeedItem[] = [
-  {
-    id: "public-look-1",
-    creatorId: "creator-evie",
-    creatorName: "Evie Lane",
-    creatorTag: "@softtailored",
-    title: "Soft City Layers",
-    summary: "Relaxed camel trench, cream knit, straight denim, and low-profile sneakers.",
-    category: "Outfit",
-    location: "Popular in Dallas",
-    coverImage: "/lovable-uploads/3fd53357-cb5d-4917-b388-1a3f2f1638a8.png",
-    parts: ["Top", "Bottom", "Footwear", "Accessories"],
-    likes: 284,
-    loves: 76,
-  },
-  {
-    id: "public-look-2",
-    creatorId: "creator-mara",
-    creatorName: "Mara Sol",
-    creatorTag: "@maraafterdark",
-    title: "Dinner Outfit Formula",
-    summary: "A polished night-out combination people keep saving for date nights and events.",
-    category: "Bundle",
-    location: "Trending near you",
-    coverImage: "/lovable-uploads/89e4d813-508b-4168-8f25-bbfe2d1f8084.png",
-    parts: ["Top", "Bottom", "Footwear"],
-    likes: 198,
-    loves: 54,
-  },
-  {
-    id: "public-look-3",
-    creatorId: "creator-joel",
-    creatorName: "Joel Mercer",
-    creatorTag: "@joelbuildslooks",
-    title: "Everyday Go-To Uniform",
-    summary: "Neutral top, athletic taper, clean trainers, and one understated accessory.",
-    category: "Popular Near You",
-    location: "Popular in your location",
-    coverImage: "/lovable-uploads/10449c4d-9e5b-44f4-af03-9f131e3dbce3.png",
-    parts: ["Top", "Bottom", "Footwear", "Accessory"],
-    likes: 341,
-    loves: 102,
-  },
-];
+export const PUBLIC_FEED_ITEMS: PublicFeedItem[] = [];
 
 function readState(): PublicFeedState {
   if (typeof window === "undefined") {

@@ -188,12 +188,15 @@ export default function PublicFeed() {
         </div>
 
         {!visibleItems.length && (
-          <div className="mt-6 rounded-[24px] border px-5 py-6 text-center" style={{ background: "rgba(255,255,255,0.58)", borderColor: "rgba(255,255,255,0.82)" }}>
+          <div className="mt-6 rounded-[24px] border px-5 py-6" style={{ background: "rgba(255,255,255,0.58)", borderColor: "rgba(255,255,255,0.82)" }}>
             <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
               Public Feed
             </p>
             <p className="mt-2 text-[24px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
-              Nothing matches that view yet.
+              This page is ready for real public content.
+            </p>
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+              Published outfits, public bundles, trending cards, popular picks near you, followable creators, and lightweight reactions will live here. Nothing is being faked into the feed while the real data model catches up.
             </p>
           </div>
         )}
