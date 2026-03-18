@@ -77,6 +77,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
       return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
     }, []);
     const layout = useLayout(tallActiveCard);
+    const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
     const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
     const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
     const n = items.length;
@@ -124,7 +125,15 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
         }}
       >
         {/* Stage */}
-        <div className="relative w-full" style={{ height: stageHeight, marginTop: tallActiveCard ? 0 : 16 }}>
+        <div
+          className="relative w-full"
+          style={{
+            height: stageHeight,
+            marginTop: isDesktop
+              ? tallActiveCard ? 44 : 32
+              : tallActiveCard ? 24 : 16,
+          }}
+        >
           <div className="absolute inset-0 flex items-center justify-center">
             {slots.map((offset) => {
               const itemIndex = (activeIndex + offset + n) % n;
