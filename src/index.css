@@ -136,7 +136,7 @@ html::-webkit-scrollbar {
 body {
   background-color: var(--swatch-paper);
   background-image:
-    radial-gradient(circle at 100% 100%, rgb(var(--swatch-cedar-grove-rgb) / 0.01) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgb(var(--swatch-cedar-grove-rgb) / 0.15) 0%, rgb(var(--swatch-cedar-grove-rgb) / 0.08) 30%, transparent 70%),
     url("./assets/previews/bg-clean-linen.jpg");
   background-size: auto, 560px 560px;
   background-position: 0 0, 0 0;
