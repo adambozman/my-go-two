@@ -141,20 +141,6 @@ body {
   min-height: 100vh;
 }
 
-.landing-page::before,
-.app-page::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: url("/images/linen-texture-overlay.png");
-  background-size: 300px 300px;
-  background-repeat: repeat;
-  opacity: 0.05;
-  mix-blend-mode: multiply;
-  pointer-events: none;
-  z-index: 0;
-}
-
 /* Card styles — design system */
 .card-design-glass {
   background: linear-gradient(165deg, rgba(255,255,255,0.72) 0%, rgba(245,233,220,0.42) 100%);

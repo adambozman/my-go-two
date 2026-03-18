@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { RefreshCw, Loader2, Bookmark, Share2, Award, ExternalLink, ChevronRight } from "lucide-react";
+import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackAdEvent } from "@/lib/adTracking";
@@ -23,12 +23,11 @@ interface Product {
 }
 
 const PILLARS = [
-  { key: "all",           label: "For You" },
-  { key: "style-fit",     label: "Style & Fit" },
-  { key: "food-drink",    label: "Food & Drink" },
-  { key: "gifts-wishlist",label: "Gifts & Wishlist" },
-  { key: "home-living",   label: "Home & Living" },
-  { key: "entertainment", label: "Entertainment" },
+  { key: "all", label: "For You", matches: ["food", "clothes", "tech", "home"] },
+  { key: "clothes", label: "Style & Fit", matches: ["clothes"] },
+  { key: "food", label: "Food & Drink", matches: ["food"] },
+  { key: "home", label: "Home & Living", matches: ["home"] },
+  { key: "tech", label: "Tech & Gear", matches: ["tech"] },
 ] as const;
 
 const PAGE_SIZE = 4;
@@ -38,7 +37,7 @@ const LOCKED_PREVIEW: Product[] = [
     name: "Sofi Wool Zip",
     brand: "Aurel",
     price: "$128",
-    category: "style-fit",
+    category: "clothes",
     hook: "A polished layer that still feels easy.",
     why: "Based on saved fit and texture preferences.",
     is_partner_pick: true,
@@ -47,7 +46,7 @@ const LOCKED_PREVIEW: Product[] = [
     name: "Countertop Espresso Set",
     brand: "Forma",
     price: "$89",
-    category: "home-living",
+    category: "home",
     hook: "A daily ritual upgrade with minimal footprint.",
     why: "Fits the home + coffee pattern in the profile.",
     is_partner_pick: false,
@@ -56,7 +55,7 @@ const LOCKED_PREVIEW: Product[] = [
     name: "Tasting Menu Night",
     brand: "Luma Table",
     price: "$72",
-    category: "food-drink",
+    category: "food",
     hook: "A date-night pick with a little ceremony.",
     why: "Leans into shared dining and occasion-driven gifting.",
     is_partner_pick: true,
@@ -65,7 +64,7 @@ const LOCKED_PREVIEW: Product[] = [
     name: "Pocket Film Camera",
     brand: "Northline",
     price: "$149",
-    category: "entertainment",
+    category: "tech",
     hook: "Playful enough to feel personal, useful enough to keep using.",
     why: "Matches memory-making and travel-friendly signals.",
     is_partner_pick: false,
@@ -114,10 +113,15 @@ const Recommendations = () => {
     }
   }, [personalizationLoading, personalization, hasLoaded, subscribed]);
 
+  const activePillarConfig = useMemo(
+    () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
+    [activePillar],
+  );
+
   const filtered = useMemo(() => {
     if (activePillar === "all") return products;
-    return products.filter((p) => p.category === activePillar);
-  }, [products, activePillar]);
+    return products.filter((p) => activePillarConfig.matches.includes(p.category));
+  }, [products, activePillar, activePillarConfig]);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems: paginatedProducts } = usePagination({
     items: filtered,
@@ -151,7 +155,7 @@ const Recommendations = () => {
   }
 
   const previewProducts = LOCKED_PREVIEW.filter((p) =>
-    activePillar === "all" ? true : p.category === activePillar
+    activePillar === "all" ? true : activePillarConfig.matches.includes(p.category)
   );
 
   const displayProducts = subscribed ? paginatedProducts : previewProducts;
