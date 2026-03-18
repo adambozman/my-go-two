@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, QrCode, Send, Copy, Check, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,21 +16,9 @@ type Tab = "invite" | "qr";
 export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddConnectionModalProps) {
   const { user } = useAuth();
   const [tab, setTab] = useState<Tab>("invite");
-  const [label, setLabel] = useState("");
   const [email, setEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [copied, setCopied] = useState(false);
-  const labelInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!open || tab !== "invite") return;
-
-    const timeout = window.setTimeout(() => {
-      labelInputRef.current?.focus();
-    }, 120);
-
-    return () => window.clearTimeout(timeout);
-  }, [open, tab]);
 
   const inviteLink = user
     ? `${window.location.origin}/connect?invite=${user.id}`
@@ -44,7 +32,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       const { error: insertError } = await supabase.from("couples").insert({
         inviter_id: user.id,
         invitee_email: email.trim().toLowerCase(),
-        display_label: label.trim() || email.trim().split("@")[0],
+        display_label: email.trim().split("@")[0],
         status: "pending",
       });
 
@@ -65,7 +53,6 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       toast.success(`Invitation sent to ${email.trim()}`);
       onConnectionCreated?.();
       onClose();
-      setLabel("");
       setEmail("");
     } catch (err: any) {
       toast.error("Failed to send invite");
@@ -161,29 +148,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               {tab === "invite" ? (
                 <div className="space-y-3">
                   <p className="text-[12px]" style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}>
-                    Enter their name and email to send a connection invite.
+                    Enter their email to send a connection invite.
                   </p>
-
-                  <div>
-                    <label
-                      className="text-[10px] font-semibold uppercase tracking-wider mb-1 block"
-                      style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
-                    >
-                      Label (e.g. Wife, Mom, Dad)
-                    </label>
-                    <input
-                      ref={labelInputRef}
-                      type="text"
-                      value={label}
-                      onChange={(e) => setLabel(e.target.value)}
-                      placeholder="Wife"
-                      className="surface-field w-full px-3.5 py-2.5 rounded-2xl text-[14px] outline-none transition-all"
-                      style={{
-                        color: "var(--swatch-viridian-odyssey)",
-                        fontFamily: "'Jost', sans-serif",
-                      }}
-                    />
-                  </div>
 
                   <div>
                     <label
