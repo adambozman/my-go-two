@@ -52,7 +52,7 @@ const Connect = () => {
     return (
       <div className="landing-page min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: "var(--swatch-teal)" }} />
           <p style={{ color: "var(--swatch-antique-coin)" }}>{linking ? "Connecting accounts..." : "Loading..."}</p>
         </div>
       </div>
@@ -94,11 +94,11 @@ const Connect = () => {
                   boxShadow: "8px 8px 20px rgba(217,101,79,0.06), -6px -6px 16px rgba(255,255,255,0.45)",
                 }}
               >
-                <Users className="w-9 h-9" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+                <Users className="w-9 h-9" style={{ color: "var(--swatch-teal)" }} />
               </div>
               <h1
                 className="text-4xl md:text-5xl font-bold mb-3"
-                style={{ fontFamily: "'Playfair Display', serif", color: "var(--swatch-viridian-odyssey)" }}
+                style={{ fontFamily: "'Playfair Display', serif", color: "var(--swatch-teal)" }}
               >
                 You've Been Invited
               </h1>
@@ -139,7 +139,7 @@ const Connect = () => {
                   variant="outline"
                   className="w-full rounded-full h-14 text-base font-bold transition-all hover:scale-[1.02]"
                   onClick={() => storeInviteAndGo("/signup")}
-                  style={{ borderColor: "var(--swatch-viridian-odyssey)", color: "var(--swatch-viridian-odyssey)", background: "transparent" }}
+                  style={{ borderColor: "var(--swatch-teal)", color: "var(--swatch-teal)", background: "transparent" }}
                 >
                   Create an Account
                 </Button>

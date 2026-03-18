@@ -40,7 +40,7 @@ export function RecentUpdates({ updates }: { updates: RecentUpdate[] }) {
         </p>
         <p
           className="mb-5 text-[30px] leading-[0.96]"
-          style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}
+          style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}
         >
           What changed most recently.
         </p>
@@ -62,7 +62,7 @@ export function RecentUpdates({ updates }: { updates: RecentUpdate[] }) {
                 <div className="min-w-0 flex-1">
                   <p
                     className="truncate text-[13px] leading-tight"
-                    style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+                    style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
                   >
                     <span className="font-semibold">{u.person}</span>{" "}
                     <span style={{ color: "var(--swatch-antique-coin)" }}>{u.action}</span>

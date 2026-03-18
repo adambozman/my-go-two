@@ -420,7 +420,7 @@ const Questionnaires = () => {
 
             <h2
               className="text-lg mb-1"
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}
+              style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}
             >
               {categoryTitle}
             </h2>
@@ -462,7 +462,7 @@ const Questionnaires = () => {
 
                 <h3
                   className="text-[22px] leading-[1.2] mb-1.5"
-                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-teal)" }}
                 >
                   {currentQuestion.title}
                 </h3>
@@ -499,7 +499,7 @@ const Questionnaires = () => {
                           fontWeight: isSelected ? 600 : 400,
                           background: isSelected ? "rgba(var(--swatch-teal-rgb), 0.1)" : "rgba(var(--swatch-antique-coin-rgb), 0.04)",
                           border: isSelected ? "1.5px solid var(--swatch-teal)" : "1.5px solid rgba(var(--swatch-antique-coin-rgb), 0.12)",
-                          color: isSelected ? "var(--swatch-viridian-odyssey)" : "var(--swatch-antique-coin)",
+                          color: isSelected ? "var(--swatch-teal)" : "var(--swatch-antique-coin)",
                           boxShadow: isSelected ? "0 2px 12px rgba(45,104,112,0.1)" : "none",
                         }}
                       >
@@ -551,7 +551,7 @@ const Questionnaires = () => {
                 disabled={savingAnswer || effectiveSelected.length === 0}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-full disabled:opacity-50"
                 style={{
-                  background: effectiveSelected.length > 0 ? "var(--swatch-viridian-odyssey)" : "rgba(var(--swatch-antique-coin-rgb), 0.08)",
+                  background: effectiveSelected.length > 0 ? "var(--swatch-teal)" : "rgba(var(--swatch-antique-coin-rgb), 0.08)",
                   color: effectiveSelected.length > 0 ? "hsl(var(--background))" : "var(--swatch-antique-coin)",
                   fontFamily: "'Jost', sans-serif",
                   fontSize: 12,
@@ -653,7 +653,7 @@ const Questionnaires = () => {
                     </div>
 
                     <div className="relative max-w-[26ch]">
-                      <h3 className="text-[24px] md:text-[28px] leading-[0.96] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                      <h3 className="text-[24px] md:text-[28px] leading-[0.96] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                         {category.title}
                       </h3>
                       <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -726,7 +726,7 @@ const Questionnaires = () => {
                     height: i < questionNumber ? 4 : 3,
                     flex: 1,
                     background: i < questionNumber
-                      ? "linear-gradient(90deg, var(--swatch-teal), var(--swatch-viridian-odyssey))"
+                      ? "linear-gradient(90deg, var(--swatch-teal), var(--swatch-teal))"
                       : "rgba(var(--swatch-antique-coin-rgb), 0.15)",
                   }}
                 />
@@ -751,7 +751,7 @@ const Questionnaires = () => {
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
                     fontWeight: 700,
-                    color: "var(--swatch-viridian-odyssey)",
+                    color: "var(--swatch-teal)",
                     letterSpacing: "-0.01em",
                   }}
                 >
@@ -777,7 +777,7 @@ const Questionnaires = () => {
                         style={{
                           minHeight: 110,
                           background: isSelected
-                            ? "linear-gradient(145deg, rgba(var(--swatch-teal-rgb), 0.22), rgba(var(--swatch-viridian-odyssey-rgb), 0.10))"
+                            ? "linear-gradient(145deg, rgba(var(--swatch-teal-rgb), 0.22), rgba(var(--swatch-teal-rgb), 0.10))"
                             : "rgba(255,255,255,0.28)",
                           border: isSelected
                             ? "1.5px solid var(--swatch-teal)"
@@ -812,7 +812,7 @@ const Questionnaires = () => {
                             style={{
                               fontFamily: "'Cormorant Garamond', serif",
                               fontWeight: isSelected ? 700 : 600,
-                              color: isSelected ? "var(--swatch-viridian-odyssey)" : "var(--swatch-antique-coin)",
+                              color: isSelected ? "var(--swatch-teal)" : "var(--swatch-antique-coin)",
                             }}
                           >
                             {option.label}
@@ -869,7 +869,7 @@ const Questionnaires = () => {
                     <p className="text-[10px] uppercase tracking-[0.22em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                       Go Two / Know Me
                     </p>
-                    <h1 className="text-[44px] md:text-[60px] leading-[0.9] max-w-[9ch] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                    <h1 className="text-[44px] md:text-[60px] leading-[0.9] max-w-[9ch] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                       Your Vibe
                     </h1>
                     <p className="text-[16px] leading-relaxed max-w-[44ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -878,7 +878,7 @@ const Questionnaires = () => {
                   </div>
 
                   <div className="rounded-[26px] px-5 py-4 min-w-[172px] backdrop-blur-md" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)" }}>
-                    <p className="text-[42px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                    <p className="text-[42px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-teal)" }}>
                       {vibeProgressPercent}%
                     </p>
                     <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
@@ -889,7 +889,7 @@ const Questionnaires = () => {
 
                 <div className="grid md:grid-cols-[minmax(0,1fr)_260px] gap-4 items-end">
                   <div>
-                    <p className="text-[18px] leading-snug mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                    <p className="text-[18px] leading-snug mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                       {personalization?.persona_summary || "You're still early, but the AI is already building a point of view on whether your style leans cleaner, louder, softer, practical, elevated, or more trend-driven."}
                     </p>
                     {subscribed && (
@@ -938,7 +938,7 @@ const Questionnaires = () => {
                 <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   Instinct deck
                 </p>
-                <p className="text-[34px] md:text-[40px] leading-[0.95] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                <p className="text-[34px] md:text-[40px] leading-[0.95] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                   This or That
                 </p>
                 <p className="text-[14px] leading-relaxed max-w-[30ch] mb-6" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -964,7 +964,7 @@ const Questionnaires = () => {
               <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 Style chat with AI
               </p>
-              <p className="text-[34px] leading-[0.96] mb-4 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              <p className="text-[34px] leading-[0.96] mb-4 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                 Ask the AI what it thinks your style is.
               </p>
               <p className="text-[14px] leading-relaxed max-w-[34ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -991,7 +991,7 @@ const Questionnaires = () => {
               <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 Get to know you
               </p>
-              <p className="text-[34px] leading-[0.96] mb-4 max-w-[16ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              <p className="text-[34px] leading-[0.96] mb-4 max-w-[16ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                 Questions by category
               </p>
               <p className="text-[14px] leading-relaxed max-w-[44ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -1017,7 +1017,7 @@ const Questionnaires = () => {
                   <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     How the AI gets to know you
                   </p>
-                  <p className="text-[28px] leading-none mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                  <p className="text-[28px] leading-none mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                     It learns from patterns, not one answer.
                   </p>
                   <p className="text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -1042,7 +1042,7 @@ const Questionnaires = () => {
         <DialogContent className="max-w-2xl rounded-[28px] border-border/40 bg-card p-0 overflow-hidden">
           <div className="card-design-sand">
             <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/30">
-              <DialogTitle style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 30, color: "var(--swatch-viridian-odyssey)" }}>
+              <DialogTitle style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 30, color: "var(--swatch-teal)" }}>
                 Style chat
               </DialogTitle>
               <DialogDescription style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -1057,7 +1057,7 @@ const Questionnaires = () => {
                   type="button"
                   onClick={() => sendStyleChat(suggestion)}
                   className="rounded-full px-3 py-2 text-[12px]"
-                  style={{ fontFamily: "'Jost', sans-serif", background: "rgba(255,255,255,0.22)", color: "var(--swatch-viridian-odyssey)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
+                  style={{ fontFamily: "'Jost', sans-serif", background: "rgba(255,255,255,0.22)", color: "var(--swatch-teal)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
                 >
                   {suggestion}
                 </button>
@@ -1071,7 +1071,7 @@ const Questionnaires = () => {
                   className={`max-w-[85%] rounded-[24px] px-4 py-3 ${message.role === "user" ? "ml-auto" : "mr-auto"}`}
                   style={{ background: message.role === "user" ? "rgba(var(--swatch-teal-rgb), 0.18)" : "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}
                 >
-                  <p className="text-[13px] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>
+                  <p className="text-[13px] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                     {message.content}
                   </p>
                 </div>
@@ -1098,7 +1098,7 @@ const Questionnaires = () => {
                   onClick={() => sendStyleChat()}
                   disabled={styleChatLoading || !stylePrompt.trim()}
                   className="rounded-full w-12 h-12 flex items-center justify-center disabled:opacity-50"
-                  style={{ background: "rgba(var(--swatch-teal-rgb), 0.18)", color: "var(--swatch-viridian-odyssey)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)" }}
+                  style={{ background: "rgba(var(--swatch-teal-rgb), 0.18)", color: "var(--swatch-teal)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)" }}
                 >
                   <Send className="w-4 h-4" />
                 </button>

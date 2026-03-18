@@ -478,7 +478,7 @@ export default function ConnectionPage() {
           <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
             Connection
           </p>
-          <h1 className="mt-2 text-[36px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+          <h1 className="mt-2 text-[36px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
             This connection could not be opened.
           </h1>
           <button
@@ -531,7 +531,7 @@ export default function ConnectionPage() {
                 <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   Connection Feed
                 </p>
-                <h1 className="mt-2 text-[38px] leading-none md:text-[46px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                <h1 className="mt-2 text-[38px] leading-none md:text-[46px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                   {connection.name}
                 </h1>
                 <p className="mt-3 max-w-3xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
@@ -584,7 +584,7 @@ export default function ConnectionPage() {
                         style={{
                           background: "rgba(255,255,255,0.72)",
                           borderColor: "rgba(45,104,112,0.14)",
-                          color: "var(--swatch-viridian-odyssey)",
+                          color: "var(--swatch-teal)",
                           fontFamily: "'Jost', sans-serif",
                         }}
                       />
@@ -602,8 +602,8 @@ export default function ConnectionPage() {
                 </div>
 
                 <div className="space-y-2 text-sm" style={{ color: "var(--swatch-antique-coin)" }}>
-                  <p>Status: <span style={{ color: "var(--swatch-viridian-odyssey)" }}>{connection.status}</span></p>
-                  <p>Updated: <span style={{ color: "var(--swatch-viridian-odyssey)" }}>{formatRelativeDateLabel(connection.updatedAt)}</span></p>
+                  <p>Status: <span style={{ color: "var(--swatch-teal)" }}>{connection.status}</span></p>
+                  <p>Updated: <span style={{ color: "var(--swatch-teal)" }}>{formatRelativeDateLabel(connection.updatedAt)}</span></p>
                 </div>
               </div>
             </section>
@@ -619,7 +619,7 @@ export default function ConnectionPage() {
                 <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   Shared feed
                 </p>
-                <h2 className="mt-2 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                <h2 className="mt-2 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                   Nothing is landing here yet.
                 </h2>
                 <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
@@ -641,7 +641,7 @@ export default function ConnectionPage() {
                   </p>
                   <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
                     <div>
-                      <h2 className="text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                      <h2 className="text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                         {section.config.label}
                       </h2>
                       <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
@@ -679,7 +679,7 @@ export default function ConnectionPage() {
                           <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                             {item.subtitle}
                           </p>
-                          <h3 className="mt-2 text-[24px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                          <h3 className="mt-2 text-[24px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                             {item.title}
                           </h3>
 
@@ -720,7 +720,7 @@ export default function ConnectionPage() {
               <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 AI for {connection.name}
               </p>
-              <h2 className="mt-2 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+              <h2 className="mt-2 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                 Suggestions shaped to this person.
               </h2>
               <div className="mt-4 space-y-3">
@@ -735,7 +735,7 @@ export default function ConnectionPage() {
                         <Sparkles className="h-4 w-4" />
                       </span>
                       <div>
-                        <p className="text-[19px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                        <p className="text-[19px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                           {suggestion.title}
                         </p>
                         <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
@@ -763,7 +763,7 @@ export default function ConnectionPage() {
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     Your access controls
                   </p>
-                  <h2 className="mt-1 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+                  <h2 className="mt-1 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                     Add or revoke instantly.
                   </h2>
                 </div>
@@ -773,7 +773,7 @@ export default function ConnectionPage() {
                 {editablePermissionFields.map((field) => (
                   <div key={field.key} className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <p className="text-sm font-medium" style={{ color: "var(--swatch-viridian-odyssey)" }}>{field.label}</p>
+                      <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{field.label}</p>
                       <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
                         {field.description}
                       </p>
@@ -808,7 +808,7 @@ export default function ConnectionPage() {
               <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 What they share with you
               </p>
-              <h2 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
+              <h2 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                 Open windows into their profile.
               </h2>
 
@@ -834,8 +834,8 @@ export default function ConnectionPage() {
                     Connection dates
                   </p>
                   <div className="mt-3 space-y-2 text-sm" style={{ color: "var(--swatch-antique-coin)" }}>
-                    {profile?.birthday && <p>Birthday: <span style={{ color: "var(--swatch-viridian-odyssey)" }}>{new Date(profile.birthday).toLocaleDateString(undefined, { month: "long", day: "numeric" })}</span></p>}
-                    {profile?.anniversary && <p>Anniversary: <span style={{ color: "var(--swatch-viridian-odyssey)" }}>{new Date(profile.anniversary).toLocaleDateString(undefined, { month: "long", day: "numeric" })}</span></p>}
+                    {profile?.birthday && <p>Birthday: <span style={{ color: "var(--swatch-teal)" }}>{new Date(profile.birthday).toLocaleDateString(undefined, { month: "long", day: "numeric" })}</span></p>}
+                    {profile?.anniversary && <p>Anniversary: <span style={{ color: "var(--swatch-teal)" }}>{new Date(profile.anniversary).toLocaleDateString(undefined, { month: "long", day: "numeric" })}</span></p>}
                   </div>
                 </div>
               )}

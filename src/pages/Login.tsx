@@ -74,7 +74,7 @@ const Login = () => {
             size="sm"
             className="rounded-full px-6 text-sm font-bold border-0"
             style={{
-              background: "var(--swatch-viridian-odyssey)",
+              background: "var(--swatch-teal)",
               color: "var(--swatch-cream-light)",
             }}
           >
@@ -96,7 +96,7 @@ const Login = () => {
                 className="text-4xl md:text-5xl font-bold mb-3"
                 style={{
                   fontFamily: "'Playfair Display', serif",
-                  color: "var(--swatch-viridian-odyssey)",
+                  color: "var(--swatch-teal)",
                 }}
               >
                 Welcome Back
@@ -122,7 +122,7 @@ const Login = () => {
                   <Label
                     htmlFor="email"
                     className="text-sm font-semibold"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   >
                     Email
                   </Label>
@@ -146,7 +146,7 @@ const Login = () => {
                   <Label
                     htmlFor="password"
                     className="text-sm font-semibold"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   >
                     Password
                   </Label>
@@ -203,7 +203,7 @@ const Login = () => {
               <Link
                 to="/signup"
                 className="font-bold hover:underline"
-                style={{ color: "var(--swatch-viridian-odyssey)" }}
+                style={{ color: "var(--swatch-teal)" }}
               >
                 Get Started Free
               </Link>

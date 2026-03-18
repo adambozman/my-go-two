@@ -219,7 +219,7 @@ export default function SponsoredAdmin() {
           ) : (
             <h1
               className="text-lg font-semibold"
-              style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}
+              style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}
             >
               Sponsored Products
             </h1>
@@ -238,7 +238,7 @@ export default function SponsoredAdmin() {
                 <button
                   onClick={() => { setEditing({ ...emptyProduct }); setView("form"); }}
                   className="px-3 py-1.5 rounded-xl text-[11px] font-semibold"
-                  style={{ background: "var(--swatch-viridian-odyssey)", color: "var(--swatch-cream-light)" }}
+                  style={{ background: "var(--swatch-teal)", color: "var(--swatch-cream-light)" }}
                 >
                   <Plus className="w-3.5 h-3.5 inline mr-1" />
                   Add Product
@@ -276,7 +276,7 @@ export default function SponsoredAdmin() {
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0 flex-1">
-                          <p className="text-[14px] font-semibold truncate" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                          <p className="text-[14px] font-semibold truncate" style={{ color: "var(--swatch-teal)" }}>
                             {p.name}
                           </p>
                           <p className="text-[12px]" style={{ color: "var(--swatch-teal)" }}>{p.brand}</p>
@@ -341,27 +341,27 @@ export default function SponsoredAdmin() {
                     value={editing.name || ""}
                     onChange={(e) => setEditing({ ...editing, name: e.target.value })}
                     className="col-span-2 px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   />
                   <input
                     placeholder="Brand *"
                     value={editing.brand || ""}
                     onChange={(e) => setEditing({ ...editing, brand: e.target.value })}
                     className="px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   />
                   <input
                     placeholder="Price (e.g. $45)"
                     value={editing.price || ""}
                     onChange={(e) => setEditing({ ...editing, price: e.target.value })}
                     className="px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   />
                   <select
                     value={editing.category || "clothes"}
                     onChange={(e) => setEditing({ ...editing, category: e.target.value })}
                     className="px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   >
                     {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
@@ -369,7 +369,7 @@ export default function SponsoredAdmin() {
                     value={editing.placement || "blended"}
                     onChange={(e) => setEditing({ ...editing, placement: e.target.value })}
                     className="px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   >
                     {PLACEMENTS.map((p) => <option key={p} value={p}>{p}</option>)}
                   </select>
@@ -380,7 +380,7 @@ export default function SponsoredAdmin() {
                   onChange={(e) => setEditing({ ...editing, description: e.target.value })}
                   rows={2}
                   className="w-full px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none resize-none"
-                  style={{ color: "var(--swatch-viridian-odyssey)" }}
+                  style={{ color: "var(--swatch-teal)" }}
                 />
               </div>
 
@@ -393,21 +393,21 @@ export default function SponsoredAdmin() {
                   value={editing.hook || ""}
                   onChange={(e) => setEditing({ ...editing, hook: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none"
-                  style={{ color: "var(--swatch-viridian-odyssey)" }}
+                  style={{ color: "var(--swatch-teal)" }}
                 />
                 <input
                   placeholder="Why — deeper explanation"
                   value={editing.why || ""}
                   onChange={(e) => setEditing({ ...editing, why: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none"
-                  style={{ color: "var(--swatch-viridian-odyssey)" }}
+                  style={{ color: "var(--swatch-teal)" }}
                 />
                 <input
                   placeholder="Image URL"
                   value={editing.image_url || ""}
                   onChange={(e) => setEditing({ ...editing, image_url: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none"
-                  style={{ color: "var(--swatch-viridian-odyssey)" }}
+                  style={{ color: "var(--swatch-teal)" }}
                 />
               </div>
 
@@ -420,7 +420,7 @@ export default function SponsoredAdmin() {
                   value={editing.affiliate_url || ""}
                   onChange={(e) => setEditing({ ...editing, affiliate_url: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none"
-                  style={{ color: "var(--swatch-viridian-odyssey)" }}
+                  style={{ color: "var(--swatch-teal)" }}
                 />
                 <div className="grid grid-cols-3 gap-2">
                   <input
@@ -428,21 +428,21 @@ export default function SponsoredAdmin() {
                     value={editing.utm_source || ""}
                     onChange={(e) => setEditing({ ...editing, utm_source: e.target.value })}
                     className="px-3 py-2 rounded-xl text-[11px] bg-white/60 border border-white/80 outline-none"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   />
                   <input
                     placeholder="utm_medium"
                     value={editing.utm_medium || ""}
                     onChange={(e) => setEditing({ ...editing, utm_medium: e.target.value })}
                     className="px-3 py-2 rounded-xl text-[11px] bg-white/60 border border-white/80 outline-none"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   />
                   <input
                     placeholder="utm_campaign"
                     value={editing.utm_campaign || ""}
                     onChange={(e) => setEditing({ ...editing, utm_campaign: e.target.value })}
                     className="px-3 py-2 rounded-xl text-[11px] bg-white/60 border border-white/80 outline-none"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   />
                 </div>
                 <input
@@ -451,7 +451,7 @@ export default function SponsoredAdmin() {
                   value={editing.priority || 0}
                   onChange={(e) => setEditing({ ...editing, priority: parseInt(e.target.value) || 0 })}
                   className="w-full px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none"
-                  style={{ color: "var(--swatch-viridian-odyssey)" }}
+                  style={{ color: "var(--swatch-teal)" }}
                 />
               </div>
 
@@ -475,7 +475,7 @@ export default function SponsoredAdmin() {
                         className="px-3 py-1 rounded-full text-[11px] font-medium"
                         style={{
                           background: (editing.target_gender || []).includes(g)
-                            ? "var(--swatch-viridian-odyssey)"
+                            ? "var(--swatch-teal)"
                             : "var(--swatch-sand-mid)",
                           color: (editing.target_gender || []).includes(g)
                             ? "var(--swatch-cream-light)"
@@ -503,7 +503,7 @@ export default function SponsoredAdmin() {
                         className="px-3 py-1 rounded-full text-[11px] font-medium"
                         style={{
                           background: (editing.target_price_tiers || []).includes(t)
-                            ? "var(--swatch-viridian-odyssey)"
+                            ? "var(--swatch-teal)"
                             : "var(--swatch-sand-mid)",
                           color: (editing.target_price_tiers || []).includes(t)
                             ? "var(--swatch-cream-light)"
@@ -520,7 +520,7 @@ export default function SponsoredAdmin() {
               <button
                 onClick={handleSave}
                 className="w-full py-3 rounded-2xl text-[13px] font-semibold"
-                style={{ background: "var(--swatch-viridian-odyssey)", color: "var(--swatch-cream-light)" }}
+                style={{ background: "var(--swatch-teal)", color: "var(--swatch-cream-light)" }}
               >
                 {editing.id ? "Update Product" : "Create Product"}
               </button>
@@ -537,7 +537,7 @@ export default function SponsoredAdmin() {
             >
               <h2
                 className="text-[15px] font-semibold"
-                style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}
+                style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}
               >
                 Ad Performance
               </h2>
@@ -552,7 +552,7 @@ export default function SponsoredAdmin() {
                       className="rounded-2xl p-3.5"
                       style={{ background: "rgba(255,255,255,0.60)", border: "1px solid rgba(255,255,255,0.75)" }}
                     >
-                      <p className="text-[13px] font-semibold" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                      <p className="text-[13px] font-semibold" style={{ color: "var(--swatch-teal)" }}>
                         {product?.name || "Unknown"}
                       </p>
                       <p className="text-[11px]" style={{ color: "var(--swatch-teal)" }}>
@@ -560,13 +560,13 @@ export default function SponsoredAdmin() {
                       </p>
                       <div className="flex gap-4 mt-2">
                         <div>
-                          <p className="text-[18px] font-bold" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                          <p className="text-[18px] font-bold" style={{ color: "var(--swatch-teal)" }}>
                             {s.impressions}
                           </p>
                           <p className="text-[10px]" style={{ color: "var(--swatch-text-light)" }}>impressions</p>
                         </div>
                         <div>
-                          <p className="text-[18px] font-bold" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                          <p className="text-[18px] font-bold" style={{ color: "var(--swatch-teal)" }}>
                             {s.clicks}
                           </p>
                           <p className="text-[10px]" style={{ color: "var(--swatch-text-light)" }}>clicks</p>

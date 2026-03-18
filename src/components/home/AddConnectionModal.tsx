@@ -105,14 +105,14 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               <div className="flex items-center gap-2.5">
                 <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center"
-                  style={{ background: "var(--swatch-viridian-odyssey)", color: "#fff" }}
+                  style={{ background: "var(--swatch-teal)", color: "#fff" }}
                 >
                   <UserPlus className="w-4 h-4" />
                 </div>
                 <h2
                   id="add-connection-title"
                   className="text-[18px] font-semibold"
-                  style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ color: "var(--swatch-teal)", fontFamily: "'Cormorant Garamond', serif" }}
                 >
                   Add Connection
                 </h2>
@@ -132,7 +132,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                   onClick={() => setTab(key)}
                   className="surface-pill flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full text-[12px] font-semibold transition-all"
                   style={{
-                    background: tab === key ? "var(--swatch-viridian-odyssey)" : undefined,
+                    background: tab === key ? "var(--swatch-teal)" : undefined,
                     color: tab === key ? "hsl(var(--primary-foreground))" : "var(--swatch-antique-coin)",
                     fontFamily: "'Jost', sans-serif",
                     boxShadow: tab === key ? "0 8px 20px rgba(30,74,82,0.22), inset 0 1px 0 rgba(255,255,255,0.18)" : undefined,
@@ -165,7 +165,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                       placeholder="partner@email.com"
                       className="surface-field w-full px-3.5 py-2.5 rounded-2xl text-[14px] outline-none transition-all"
                       style={{
-                        color: "var(--swatch-viridian-odyssey)",
+                        color: "var(--swatch-teal)",
                         fontFamily: "'Jost', sans-serif",
                       }}
                     />
@@ -197,7 +197,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                   >
                     <span
                       className="flex-1 text-[12px] truncate"
-                      style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+                      style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
                     >
                       {inviteLink}
                     </span>

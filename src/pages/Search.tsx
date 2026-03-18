@@ -65,7 +65,7 @@ const Search = () => {
         className="text-2xl font-bold mb-6"
         style={{
           fontFamily: "'Cormorant Garamond', serif",
-          color: "var(--swatch-viridian-odyssey)",
+          color: "var(--swatch-teal)",
         }}
       >
         Search
@@ -94,7 +94,7 @@ const Search = () => {
                 className="text-lg font-semibold mb-3"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
-                  color: "var(--swatch-viridian-odyssey)",
+                  color: "var(--swatch-teal)",
                 }}
               >
                 My Entries
@@ -109,7 +109,7 @@ const Search = () => {
                   >
                     <p
                       className="font-medium"
-                      style={{ color: "var(--swatch-viridian-odyssey)" }}
+                      style={{ color: "var(--swatch-teal)" }}
                     >
                       {e.entry_name}
                     </p>
@@ -128,7 +128,7 @@ const Search = () => {
                 className="text-lg font-semibold mb-3"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
-                  color: "var(--swatch-viridian-odyssey)",
+                  color: "var(--swatch-teal)",
                 }}
               >
                 Templates
@@ -143,7 +143,7 @@ const Search = () => {
                   >
                     <p
                       className="font-medium"
-                      style={{ color: "var(--swatch-viridian-odyssey)" }}
+                      style={{ color: "var(--swatch-teal)" }}
                     >
                       {t.name}
                     </p>
@@ -162,7 +162,7 @@ const Search = () => {
                 className="text-lg font-semibold mb-3"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
-                  color: "var(--swatch-viridian-odyssey)",
+                  color: "var(--swatch-teal)",
                 }}
               >
                 My Lists
@@ -177,7 +177,7 @@ const Search = () => {
                   >
                     <p
                       className="font-medium"
-                      style={{ color: "var(--swatch-viridian-odyssey)" }}
+                      style={{ color: "var(--swatch-teal)" }}
                     >
                       {l.title}
                     </p>

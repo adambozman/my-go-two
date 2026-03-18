@@ -222,7 +222,7 @@ function NotificationList({ notifications, markOneRead, deleteOne, formatDate }:
                       style={{
                         fontFamily: "Jost",
                         fontWeight: n.is_read ? 400 : 600,
-                        color: "var(--swatch-viridian-odyssey)",
+                        color: "var(--swatch-teal)",
                       }}
                     >
                       {n.title}

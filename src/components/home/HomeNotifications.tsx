@@ -73,7 +73,7 @@ export function HomeNotifications({ notifications, onOpenAll }: HomeNotification
             <Bell className="h-5 w-5" style={{ color: "var(--swatch-text-light)" }} />
             <p
               className="text-[13px] font-medium"
-              style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+              style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
             >
               No notifications yet
             </p>
@@ -102,7 +102,7 @@ export function HomeNotifications({ notifications, onOpenAll }: HomeNotification
                   <div className="flex items-center justify-between gap-3">
                     <p
                       className="truncate text-[13px] font-semibold"
-                      style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+                      style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
                     >
                       {notification.title}
                     </p>

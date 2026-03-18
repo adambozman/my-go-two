@@ -77,7 +77,7 @@ function dateKey(year: number, month: number, day: number) {
 const TYPE_META = {
   birthday: { color: "var(--swatch-cedar-grove)", icon: Gift },
   anniversary: { color: "var(--swatch-teal)", icon: Heart },
-  personal: { color: "var(--swatch-viridian-odyssey)", icon: CalendarDays },
+  personal: { color: "var(--swatch-teal)", icon: CalendarDays },
   reminder: { color: "var(--swatch-antique-coin)", icon: Bell },
   custom: { color: "var(--swatch-sandstone, #c58b61)", icon: Sparkles },
 } satisfies Record<CalendarEventType, { color: string; icon: typeof CalendarDays }>;
@@ -362,7 +362,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
           transition={{ duration: 0.18 }}
           className="max-h-[84vh] w-full max-w-[640px] overflow-y-auto rounded-[34px] p-[1px]"
           style={{
-            background: "linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.35) 0%, rgba(var(--swatch-viridian-odyssey-rgb), 0.72) 100%)",
+            background: "linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.35) 0%, rgba(var(--swatch-teal-rgb), 0.72) 100%)",
             boxShadow: "0 36px 110px rgba(10,20,24,0.34)",
           }}
           onClick={(event) => event.stopPropagation()}
@@ -379,7 +379,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                     Date details
                   </p>
-                  <p className="mt-2 text-[34px] leading-none md:text-[40px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                  <p className="mt-2 text-[34px] leading-none md:text-[40px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                     {selectedDate.getDate()}
                   </p>
                   <p className="mt-1 text-[13px] md:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -402,7 +402,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                       setShowAddForm(false);
                     }}
                     className="flex h-10 w-10 items-center justify-center rounded-full"
-                    style={{ color: "var(--swatch-viridian-odyssey)", background: "rgba(var(--swatch-paper-rgb), 0.9)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)" }}
+                    style={{ color: "var(--swatch-teal)", background: "rgba(var(--swatch-paper-rgb), 0.9)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)" }}
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -410,15 +410,15 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", background: "#f7f1e7", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
+                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "#f7f1e7", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
                   <span className="h-1.5 w-5 rounded-full" style={{ background: "var(--swatch-teal)" }} />
                   {selectedPersonalEvents.length} my events
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", background: "#f7f1e7", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
+                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "#f7f1e7", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
                   <span className="h-1.5 w-5 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
                   {selectedConnectionEvents.length} connection events
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)", background: "#f7f1e7", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
+                <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "#f7f1e7", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
                   <Star className="h-3.5 w-3.5 fill-current" style={{ color: getPriorityStarColor(selectedEvents) ?? "rgba(var(--swatch-antique-coin-rgb), 0.7)" }} />
                   {totalSelectedEvents ? "Day in focus" : "Open day"}
                 </span>
@@ -456,7 +456,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                               </div>
                               <div className="min-w-0 flex-1">
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <p className="truncate text-[14px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600, color: "var(--swatch-viridian-odyssey)" }}>
+                                  <p className="truncate text-[14px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600, color: "var(--swatch-teal)" }}>
                                     {event.title}
                                   </p>
                                   <span className="rounded-full px-2 py-0.5 text-[10px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: getSourceAccent(event), background: "rgba(255,255,255,0.88)" }}>
@@ -507,7 +507,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                       <div className="space-y-3 rounded-[26px] px-4 py-4" style={{ background: "#f8f3eb", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
                         <div className="flex items-center gap-2">
                           <Sparkles className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
-                          <p className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>
+                          <p className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                             Add something meaningful
                           </p>
                         </div>
@@ -518,7 +518,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                           onKeyDown={(e) => e.key === "Enter" && void handleAddEvent()}
                           placeholder="Dinner reservation, birthday reminder, send flowers..."
                           className="w-full rounded-[18px] px-3 py-2.5 text-[13px] outline-none"
-                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.96)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)", color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.96)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)", color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
                         />
 
                         <textarea
@@ -527,7 +527,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                           rows={3}
                           placeholder="Optional note"
                           className="w-full resize-none rounded-[18px] px-3 py-2.5 text-[13px] outline-none"
-                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.96)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)", color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.96)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)", color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
                         />
 
                         <div className="flex flex-wrap gap-2">
@@ -552,7 +552,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                           value={newEventConnectionId}
                           onChange={(e) => setNewEventConnectionId(e.target.value)}
                           className="w-full rounded-[18px] px-3 py-2.5 text-[13px] outline-none"
-                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.96)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)", color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+                          style={{ background: "rgba(var(--swatch-paper-rgb), 0.96)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)", color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
                         >
                           <option value="">Just for me</option>
                           {connections.map((connection) => (
@@ -609,14 +609,14 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                 Connection Calendar
               </p>
               <div className="mt-1.5 flex items-center gap-2">
-                <p className="text-[24px] leading-none md:text-[26px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+                <p className="text-[24px] leading-none md:text-[26px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                   {MONTH_NAMES[month]} {year}
                 </p>
                 <div className="flex items-center gap-0.5 rounded-full px-1 py-0.5" style={{ background: "rgba(var(--swatch-paper-rgb), 0.75)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
-                  <button onClick={() => changeMonth(-1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                  <button onClick={() => changeMonth(-1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-teal)" }}>
                     <ChevronLeft className="h-3.5 w-3.5" />
                   </button>
-                  <button onClick={() => changeMonth(1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                  <button onClick={() => changeMonth(1)} className="flex h-8 w-8 items-center justify-center rounded-full transition-transform hover:scale-105" style={{ color: "var(--swatch-teal)" }}>
                     <ChevronRight className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -627,7 +627,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
               <p className="text-[9px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                 Legend
               </p>
-              <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-viridian-odyssey)" }}>
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="h-1.5 w-6 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
                   Connection
@@ -696,7 +696,7 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                           }}
                         >
                         <div className="flex items-start justify-between gap-1">
-                          <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: isToday || isSelected ? 700 : 500, color: "var(--swatch-viridian-odyssey)" }}>
+                          <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: isToday || isSelected ? 700 : 500, color: "var(--swatch-teal)" }}>
                             {day}
                           </span>
                           {priorityStarColor && (

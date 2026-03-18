@@ -19,7 +19,7 @@ const KnowMeSectionTabs = ({ sections, activeSection, onSelect }: KnowMeSectionT
             style={{
               fontFamily: "'Jost', sans-serif",
               fontWeight: isActive ? 600 : 400,
-              background: isActive ? "var(--swatch-viridian-odyssey)" : "rgba(255,255,255,0.45)",
+              background: isActive ? "var(--swatch-teal)" : "rgba(255,255,255,0.45)",
               color: isActive ? "#fff" : "var(--swatch-antique-coin)",
               border: isActive ? "none" : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.2)",
             }}

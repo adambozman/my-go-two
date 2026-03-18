@@ -16,7 +16,7 @@ export function SmartBanner({ title, subtitle, onAction, actionLabel }: SmartBan
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className="flex items-center gap-3.5 px-4 py-4 rounded-2xl relative overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, var(--swatch-viridian-odyssey) 0%, var(--swatch-teal) 100%)",
+        background: "linear-gradient(135deg, var(--swatch-teal) 0%, var(--swatch-teal) 100%)",
         boxShadow: "0 14px 34px rgba(30,74,82,0.22), inset 0 1px 0 rgba(255,255,255,0.12)",
       }}
     >

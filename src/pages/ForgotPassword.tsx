@@ -88,7 +88,7 @@ const ForgotPassword = () => {
             variant="ghost"
             size="sm"
             className="text-sm font-semibold"
-            style={{ color: "var(--swatch-viridian-odyssey)" }}
+            style={{ color: "var(--swatch-teal)" }}
           >
             <Link to="/login">Log in</Link>
           </Button>
@@ -104,7 +104,7 @@ const ForgotPassword = () => {
             <div className="text-center mb-10">
               <h1
                 className="text-4xl md:text-5xl font-bold mb-3"
-                style={{ fontFamily: "'Playfair Display', serif", color: "var(--swatch-viridian-odyssey)" }}
+                style={{ fontFamily: "'Playfair Display', serif", color: "var(--swatch-teal)" }}
               >
                 {heading}
               </h1>
@@ -123,7 +123,7 @@ const ForgotPassword = () => {
               {isRecovery ? (
                 <form onSubmit={handleUpdatePassword} className="space-y-5">
                   <div className="space-y-2">
-                    <Label htmlFor="new-password" className="text-sm font-semibold" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                    <Label htmlFor="new-password" className="text-sm font-semibold" style={{ color: "var(--swatch-teal)" }}>
                       New Password
                     </Label>
                     <Input
@@ -142,7 +142,7 @@ const ForgotPassword = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="confirm-password" className="text-sm font-semibold" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                    <Label htmlFor="confirm-password" className="text-sm font-semibold" style={{ color: "var(--swatch-teal)" }}>
                       Confirm Password
                     </Label>
                     <Input
@@ -173,7 +173,7 @@ const ForgotPassword = () => {
               ) : !sent ? (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-semibold" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                    <Label htmlFor="email" className="text-sm font-semibold" style={{ color: "var(--swatch-teal)" }}>
                       Email
                     </Label>
                     <Input
@@ -209,7 +209,7 @@ const ForgotPassword = () => {
                   <Button
                     asChild
                     className="rounded-full h-12 px-8 text-sm font-bold border-0 shadow-lg"
-                    style={{ background: "var(--swatch-viridian-odyssey)", color: "var(--swatch-cream-light)" }}
+                    style={{ background: "var(--swatch-teal)", color: "var(--swatch-cream-light)" }}
                   >
                     <Link to="/login">
                       <ArrowLeft className="mr-2 w-4 h-4" />
@@ -229,7 +229,7 @@ const ForgotPassword = () => {
                 style={{ color: "var(--swatch-antique-coin)" }}
               >
                 Remember your password?{" "}
-                <Link to="/login" className="font-bold hover:underline" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                <Link to="/login" className="font-bold hover:underline" style={{ color: "var(--swatch-teal)" }}>
                   Sign in
                 </Link>
               </motion.p>

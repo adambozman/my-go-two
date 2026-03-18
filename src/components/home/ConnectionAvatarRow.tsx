@@ -65,7 +65,7 @@ export function ConnectionAvatarRow({ entries, onSelect, onAdd }: ConnectionAvat
                 <AvatarFallback
                   className="text-sm font-bold"
                   style={{
-                    background: "linear-gradient(135deg, var(--swatch-viridian-odyssey), var(--swatch-teal))",
+                    background: "linear-gradient(135deg, var(--swatch-teal), var(--swatch-teal))",
                     color: "#fff",
                   }}
                 >
@@ -76,7 +76,7 @@ export function ConnectionAvatarRow({ entries, onSelect, onAdd }: ConnectionAvat
             <span
               className="text-[10px] font-medium truncate max-w-[68px]"
               style={{
-                color: isPlaceholder ? "var(--swatch-text-light)" : "var(--swatch-viridian-odyssey)",
+                color: isPlaceholder ? "var(--swatch-text-light)" : "var(--swatch-teal)",
                 fontFamily: "'Jost', sans-serif",
               }}
             >

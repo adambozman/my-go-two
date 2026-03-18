@@ -66,7 +66,7 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
         ← Back to Settings
       </button>
       <div className="card-design-neumorph text-center" style={{ padding: 40 }}>
-        <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6">Subscription</h2>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6">Subscription</h2>
 
         {subscriptionLoading ? (
           <p className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>Checking subscription…</p>
@@ -74,7 +74,7 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
           /* ── Active Subscriber ── */
           <div className="space-y-6">
             <div className="p-5 rounded-2xl" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.25)', border: '2px solid var(--swatch-teal)' }}>
-              <p className="text-sm font-semibold mb-2" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Current Plan</p>
+              <p className="text-sm font-semibold mb-2" style={{ color: 'var(--swatch-teal)' }}>Current Plan</p>
               <span className="text-xs font-medium px-2.5 py-1 rounded-full inline-block mb-2" style={{ background: 'var(--swatch-teal)', color: 'white' }}>
                 Premium
               </span>
@@ -103,12 +103,12 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
             {/* Free tier */}
             <div className="p-5 rounded-2xl text-left" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.25)', border: '2px solid var(--swatch-teal)' }}>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Free</p>
+                <p className="text-sm font-semibold" style={{ color: 'var(--swatch-teal)' }}>Free</p>
                 <span className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ background: 'var(--swatch-teal)', color: 'white' }}>
                   Your Plan
                 </span>
               </div>
-              <p className="text-xl font-bold mb-3" style={{ color: 'var(--swatch-viridian-odyssey)' }}>$0<span className="text-xs font-normal">/month</span></p>
+              <p className="text-xl font-bold mb-3" style={{ color: 'var(--swatch-teal)' }}>$0<span className="text-xs font-normal">/month</span></p>
               <ul className="space-y-1.5">
                 {["Basic lists & cards", "Limited AI recommendations"].map(f => (
                   <li key={f} className="flex items-center gap-2 text-xs" style={{ color: 'var(--swatch-text-light)' }}>
@@ -120,8 +120,8 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
 
             {/* Premium tier */}
             <div className="p-5 rounded-2xl text-left" style={{ border: '1px solid rgba(var(--swatch-teal-rgb), 0.2)' }}>
-              <p className="text-sm font-semibold mb-1" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Premium</p>
-              <p className="text-xl font-bold mb-3" style={{ color: 'var(--swatch-viridian-odyssey)' }}>$7.99<span className="text-xs font-normal">/month</span></p>
+              <p className="text-sm font-semibold mb-1" style={{ color: 'var(--swatch-teal)' }}>Premium</p>
+              <p className="text-xl font-bold mb-3" style={{ color: 'var(--swatch-teal)' }}>$7.99<span className="text-xs font-normal">/month</span></p>
               <ul className="space-y-1.5 mb-4">
                 {["No ads", "Increased AI usage", "Unlimited lists & cards", "Priority support"].map(f => (
                   <li key={f} className="flex items-center gap-2 text-xs" style={{ color: 'var(--swatch-text-light)' }}>

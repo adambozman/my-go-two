@@ -70,7 +70,7 @@ const Signup = () => {
             variant="ghost"
             size="sm"
             className="text-sm font-semibold"
-            style={{ color: "var(--swatch-viridian-odyssey)" }}
+            style={{ color: "var(--swatch-teal)" }}
           >
             <Link to="/login">Log in</Link>
           </Button>
@@ -90,7 +90,7 @@ const Signup = () => {
                 className="text-4xl md:text-5xl font-bold mb-3"
                 style={{
                   fontFamily: "'Playfair Display', serif",
-                  color: "var(--swatch-viridian-odyssey)",
+                  color: "var(--swatch-teal)",
                 }}
               >
                 Create Your Account
@@ -116,7 +116,7 @@ const Signup = () => {
                   <Label
                     htmlFor="name"
                     className="text-sm font-semibold"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   >
                     What should we call you?
                   </Label>
@@ -139,7 +139,7 @@ const Signup = () => {
                   <Label
                     htmlFor="email"
                     className="text-sm font-semibold"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   >
                     Email
                   </Label>
@@ -164,7 +164,7 @@ const Signup = () => {
                     <Label
                       htmlFor="age"
                       className="text-sm font-semibold"
-                      style={{ color: "var(--swatch-viridian-odyssey)" }}
+                      style={{ color: "var(--swatch-teal)" }}
                     >
                       Age
                     </Label>
@@ -187,7 +187,7 @@ const Signup = () => {
                   <div className="space-y-2">
                     <Label
                       className="text-sm font-semibold"
-                      style={{ color: "var(--swatch-viridian-odyssey)" }}
+                      style={{ color: "var(--swatch-teal)" }}
                     >
                       I am...
                     </Label>
@@ -215,7 +215,7 @@ const Signup = () => {
                   <Label
                     htmlFor="password"
                     className="text-sm font-semibold"
-                    style={{ color: "var(--swatch-viridian-odyssey)" }}
+                    style={{ color: "var(--swatch-teal)" }}
                   >
                     Password
                   </Label>
@@ -263,7 +263,7 @@ const Signup = () => {
               <Link
                 to="/login"
                 className="font-bold hover:underline"
-                style={{ color: "var(--swatch-viridian-odyssey)" }}
+                style={{ color: "var(--swatch-teal)" }}
               >
                 Sign in
               </Link>

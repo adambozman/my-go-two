@@ -53,7 +53,7 @@ export function MilestoneBanner({ milestone, index }: { milestone: Milestone; in
       <div className="flex-1 min-w-0">
         <p
           className="text-[14px] font-semibold truncate leading-tight"
-          style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+          style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
         >
           {milestone.person}'s {milestone.label}
         </p>

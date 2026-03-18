@@ -313,7 +313,7 @@ const Onboarding = () => {
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontWeight: 700,
-                  color: "var(--swatch-viridian-odyssey)",
+                  color: "var(--swatch-teal)",
                 }}
               >
                 Start with a profile,
@@ -326,7 +326,7 @@ const Onboarding = () => {
                   fontFamily: "'Cormorant Garamond', serif",
                   fontStyle: "italic",
                   fontWeight: 600,
-                  color: "var(--swatch-viridian-odyssey)",
+                  color: "var(--swatch-teal)",
                 }}
               >
                 We will save your taste, fit, spending, gifting, and lifestyle signals directly into your profile first. Everything deeper can build from there inside Know Me.
@@ -405,7 +405,7 @@ const Onboarding = () => {
             style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontWeight: 700,
-              color: "var(--swatch-viridian-odyssey)",
+              color: "var(--swatch-teal)",
             }}
           >
             Your answers are being written to the profile first.
@@ -439,7 +439,7 @@ const Onboarding = () => {
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontWeight: 700,
-                  color: "var(--swatch-viridian-odyssey)",
+                  color: "var(--swatch-teal)",
                 }}
               >
                 You are set up the right way now.
@@ -450,7 +450,7 @@ const Onboarding = () => {
                   fontFamily: "'Cormorant Garamond', serif",
                   fontStyle: "italic",
                   fontWeight: 600,
-                  color: "var(--swatch-viridian-odyssey)",
+                  color: "var(--swatch-teal)",
                 }}
               >
                 {completionSummary}
@@ -496,7 +496,7 @@ const Onboarding = () => {
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
                     fontWeight: 600,
-                    color: "var(--swatch-viridian-odyssey)",
+                    color: "var(--swatch-teal)",
                   }}
                 >
                   Your onboarding answers now belong to your profile.

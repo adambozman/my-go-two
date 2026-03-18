@@ -63,7 +63,7 @@ export default function PremiumLockCard({
               </div>
               <h2
                 className="text-[24px] leading-none"
-                style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)", fontWeight: 600 }}
+                style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)", fontWeight: 600 }}
               >
                 {title}
               </h2>
@@ -79,7 +79,7 @@ export default function PremiumLockCard({
                 <div key={bullet} className="flex items-start gap-2 rounded-2xl px-3 py-2.5"
                   style={{ background: "rgba(255,255,255,0.56)", border: "1px solid rgba(255,255,255,0.78)" }}>
                   <span className="mt-1 h-1.5 w-1.5 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
-                  <span className="text-[13px] leading-snug" style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}>
+                  <span className="text-[13px] leading-snug" style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}>
                     {bullet}
                   </span>
                 </div>

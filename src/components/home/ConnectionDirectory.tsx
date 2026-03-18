@@ -59,7 +59,7 @@ export function ConnectionFeedCard({
           <div
             className="w-full h-full flex items-center justify-center"
             style={{
-              background: "linear-gradient(135deg, var(--swatch-viridian-odyssey), var(--swatch-teal))",
+              background: "linear-gradient(135deg, var(--swatch-teal), var(--swatch-teal))",
             }}
           >
             <span className="text-4xl font-bold" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'Cormorant Garamond', serif" }}>

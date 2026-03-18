@@ -503,7 +503,7 @@ const DashboardHome = () => {
                         <AvatarFallback
                           className="text-sm font-bold"
                           style={{
-                            background: "linear-gradient(135deg, var(--swatch-viridian-odyssey), var(--swatch-teal))",
+                            background: "linear-gradient(135deg, var(--swatch-teal), var(--swatch-teal))",
                             color: "#fff",
                           }}
                         >
@@ -514,7 +514,7 @@ const DashboardHome = () => {
                     <span
                       className="max-w-[72px] truncate text-[11px]"
                       style={{
-                        color: entry.isPlaceholder ? "var(--swatch-text-light)" : "var(--swatch-viridian-odyssey)",
+                        color: entry.isPlaceholder ? "var(--swatch-text-light)" : "var(--swatch-teal)",
                         fontFamily: "'Jost', sans-serif",
                       }}
                     >
@@ -564,7 +564,7 @@ const DashboardHome = () => {
                   }}
                   placeholder="Search a person, reminder, date, or idea"
                   className="w-full border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-                  style={{ color: "var(--swatch-viridian-odyssey)", fontFamily: "'Jost', sans-serif" }}
+                  style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
                 />
               </div>
             </section>

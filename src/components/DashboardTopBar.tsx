@@ -183,7 +183,7 @@ export function DashboardTopBar() {
                   {item.url === "/dashboard/notifications" && unreadCount > 0 && (
                     <span
                       className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold"
-                      style={{ background: "var(--swatch-viridian-odyssey)", color: "var(--swatch-cream-light)" }}
+                      style={{ background: "var(--swatch-teal)", color: "var(--swatch-cream-light)" }}
                     >
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
@@ -223,7 +223,7 @@ export function DashboardTopBar() {
                 <div className="hidden min-w-0 sm:block">
                   <p
                     className="truncate text-sm font-medium leading-none"
-                    style={{ color: "var(--swatch-viridian-odyssey)", maxWidth: "9rem", fontFamily: "'Jost', sans-serif" }}
+                    style={{ color: "var(--swatch-teal)", maxWidth: "9rem", fontFamily: "'Jost', sans-serif" }}
                   >
                     {displayName}
                   </p>
@@ -254,7 +254,7 @@ export function DashboardTopBar() {
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold" style={{ color: "var(--swatch-viridian-odyssey)" }}>
+                  <p className="truncate text-sm font-semibold" style={{ color: "var(--swatch-teal)" }}>
                     {displayName}
                   </p>
                   <p className="truncate text-xs text-muted-foreground">{user?.email}</p>

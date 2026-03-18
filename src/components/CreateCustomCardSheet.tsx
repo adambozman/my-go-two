@@ -222,7 +222,7 @@ const CreateCustomCardSheet = ({
                 className="text-lg"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
-                  color: "var(--swatch-viridian-odyssey)",
+                  color: "var(--swatch-teal)",
                 }}
               >
                 Add to {categoryLabel}
@@ -261,7 +261,7 @@ const CreateCustomCardSheet = ({
                       className="text-xl font-semibold mb-1"
                       style={{
                         fontFamily: "'Cormorant Garamond', serif",
-                        color: "var(--swatch-viridian-odyssey)",
+                        color: "var(--swatch-teal)",
                       }}
                     >
                       What do you want to track?
@@ -299,7 +299,7 @@ const CreateCustomCardSheet = ({
                       className="text-xl font-semibold mb-1"
                       style={{
                         fontFamily: "'Cormorant Garamond', serif",
-                        color: "var(--swatch-viridian-odyssey)",
+                        color: "var(--swatch-teal)",
                       }}
                     >
                       {generatingFields ? "Setting up your card..." : "Review your fields"}
@@ -464,7 +464,7 @@ const CreateCustomCardSheet = ({
                       className="text-xl font-semibold mb-1"
                       style={{
                         fontFamily: "'Cormorant Garamond', serif",
-                        color: "var(--swatch-viridian-odyssey)",
+                        color: "var(--swatch-teal)",
                       }}
                     >
                       Cover Image
@@ -483,7 +483,7 @@ const CreateCustomCardSheet = ({
                     style={{
                       background: imageUrl
                         ? undefined
-                        : "linear-gradient(135deg, var(--swatch-viridian-odyssey), var(--swatch-teal))",
+                        : "linear-gradient(135deg, var(--swatch-teal), var(--swatch-teal))",
                     }}
                   >
                     {generatingImage ? (
@@ -546,7 +546,7 @@ const CreateCustomCardSheet = ({
                       className="text-xl font-semibold mb-1"
                       style={{
                         fontFamily: "'Cormorant Garamond', serif",
-                        color: "var(--swatch-viridian-odyssey)",
+                        color: "var(--swatch-teal)",
                       }}
                     >
                       Looking good!
@@ -574,7 +574,7 @@ const CreateCustomCardSheet = ({
                             className="w-full h-full"
                             style={{
                               background:
-                                "linear-gradient(135deg, var(--swatch-viridian-odyssey), var(--swatch-teal))",
+                                "linear-gradient(135deg, var(--swatch-teal), var(--swatch-teal))",
                             }}
                           />
                         )}

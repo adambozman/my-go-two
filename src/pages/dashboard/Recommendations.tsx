@@ -179,11 +179,11 @@ const Recommendations = () => {
               <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 Go Two / Recommendations
               </p>
-              <h1 className="text-[28px] md:text-[34px] leading-[1.0] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+              <h1 className="text-[28px] md:text-[34px] leading-[1.0] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                 Curated Just For You
               </h1>
               {personalization?.persona_summary && (
-                <p className="text-[22px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
+                <p className="text-[22px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: "italic", color: "var(--swatch-teal)" }}>
                   {personalization.persona_summary}
                 </p>
               )}
@@ -215,7 +215,7 @@ const Recommendations = () => {
                       fontSize: 15,
                       background: "rgba(255,255,255,0.35)",
                       border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)",
-                      color: "var(--swatch-viridian-odyssey)",
+                      color: "var(--swatch-teal)",
                       whiteSpace: "nowrap",
                       boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
                     }}
@@ -259,9 +259,9 @@ const Recommendations = () => {
                 style={{
                   fontFamily: "'Jost', sans-serif",
                   fontWeight: 500,
-                  background: isActive ? "var(--swatch-viridian-odyssey)" : "rgba(255,255,255,0.22)",
+                  background: isActive ? "var(--swatch-teal)" : "rgba(255,255,255,0.22)",
                   color: isActive ? "#fff" : "var(--swatch-antique-coin)",
-                  border: isActive ? "1px solid var(--swatch-viridian-odyssey)" : "1px solid rgba(var(--swatch-teal-rgb), 0.2)",
+                  border: isActive ? "1px solid var(--swatch-teal)" : "1px solid rgba(var(--swatch-teal-rgb), 0.2)",
                   backdropFilter: "blur(8px)",
                 }}
               >
@@ -318,7 +318,7 @@ const Recommendations = () => {
           </>
         ) : hasLoaded ? (
           <div className="card-design-sand rounded-[28px] p-8 text-center">
-            <p className="text-[18px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+            <p className="text-[18px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
               No picks in this category yet.
             </p>
             <p className="text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -327,7 +327,7 @@ const Recommendations = () => {
           </div>
         ) : !subscribed ? (
           <div className="card-design-sand rounded-[28px] p-8 text-center">
-            <p className="text-[18px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+            <p className="text-[18px] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
               Preview picks appear here.
             </p>
             <p className="text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -402,14 +402,14 @@ function ProductCard({
         )}
 
         {/* Hook — big Cormorant italic */}
-        <p className="text-[20px] leading-[1.1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-viridian-odyssey)" }}>
+        <p className="text-[20px] leading-[1.1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontStyle: "italic", color: "var(--swatch-teal)" }}>
           {product.hook}
         </p>
 
         {/* Name / brand / price */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="text-[15px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-viridian-odyssey)" }}>
+            <h3 className="text-[15px] leading-snug" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
               {product.name}
             </h3>
             <p className="text-[11px] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>

@@ -239,7 +239,7 @@ const SettingsPage = () => {
       {!activeSection && (
         <div className="mx-auto" style={{ maxWidth: 520 }}>
           <div className="card-design-neumorph" style={{ padding: '40px 40px 32px' }}>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-8 text-center">Your Account</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-8 text-center">Your Account</h2>
             <div className="flex flex-col" style={{ gap: 6 }}>
               {settingsItems.map((item) => (
                 <button
@@ -251,7 +251,7 @@ const SettingsPage = () => {
                     <item.icon className="h-4 w-4" style={{ color: 'var(--swatch-teal)' }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.title}</p>
+                    <p className="font-medium text-sm" style={{ color: 'var(--swatch-teal)' }}>{item.title}</p>
                     <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.description}</p>
                   </div>
                   <ChevronRight className="h-4 w-4 shrink-0" style={{ color: 'var(--swatch-text-light)' }} />
@@ -273,7 +273,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Profile</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Profile</h2>
             <div className="space-y-5">
               <div className="space-y-2">
                 <Label>Display Name</Label>
@@ -305,7 +305,7 @@ const SettingsPage = () => {
               </div>
               {/* Password Change */}
               <div className="border-t pt-6 mt-6" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }}>
-                <h3 className="text-base font-semibold mb-4" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Change Password</h3>
+                <h3 className="text-base font-semibold mb-4" style={{ color: 'var(--swatch-teal)' }}>Change Password</h3>
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label>New Password</Label>
@@ -360,7 +360,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Connections</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Connections</h2>
 
             {/* Invite Methods */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
@@ -372,7 +372,7 @@ const SettingsPage = () => {
                   <QrCode className="w-5 h-5" style={{ color: 'var(--swatch-teal)' }} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm group-hover:underline" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Share QR Code</h3>
+                  <h3 className="font-semibold text-sm group-hover:underline" style={{ color: 'var(--swatch-teal)' }}>Share QR Code</h3>
                   <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>Scan to connect</p>
                 </div>
               </button>
@@ -384,7 +384,7 @@ const SettingsPage = () => {
                   <Mail className="w-5 h-5" style={{ color: 'var(--swatch-teal)' }} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm group-hover:underline" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Invite by Email</h3>
+                  <h3 className="font-semibold text-sm group-hover:underline" style={{ color: 'var(--swatch-teal)' }}>Invite by Email</h3>
                   <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>Send an invitation</p>
                 </div>
               </button>
@@ -394,7 +394,7 @@ const SettingsPage = () => {
             {pendingForMe.length > 0 && (
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-semibold" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Pending Invitations</h3>
+                  <h3 className="text-sm font-semibold" style={{ color: 'var(--swatch-teal)' }}>Pending Invitations</h3>
                   {pendingForMe.length > 1 && (
                     <Button size="sm" variant="outline" className="rounded-full" onClick={handleAcceptAll}>Accept All</Button>
                   )}
@@ -415,7 +415,7 @@ const SettingsPage = () => {
 
             {/* Connections List */}
             <div>
-              <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Your Connections</h3>
+              <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--swatch-teal)' }}>Your Connections</h3>
               {connectionsLoading ? (
                 <p style={{ color: 'var(--swatch-text-light)' }} className="text-sm">Loading...</p>
               ) : couples.length === 0 && pendingForMe.length === 0 ? (
@@ -432,7 +432,7 @@ const SettingsPage = () => {
                         <div className="flex items-center gap-3">
                           {getStatusIcon(c.status)}
                           <div>
-                            <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{displayName}</p>
+                            <p className="text-sm font-medium" style={{ color: 'var(--swatch-teal)' }}>{displayName}</p>
                             <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>
                               {c.inviter_id === user?.id ? "You invited" : "Invited you"} · {new Date(c.created_at).toLocaleDateString()}
                             </p>
@@ -480,7 +480,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Notifications</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Notifications</h2>
             <div className="space-y-5">
               {([
                 { label: "Gift reminders", desc: "Get notified before birthdays and anniversaries", key: "gift_reminders" as SettingsKeys },
@@ -490,7 +490,7 @@ const SettingsPage = () => {
               ]).map((item) => (
                 <div key={item.key} className="flex items-center justify-between py-2">
                   <div>
-                    <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--swatch-teal)' }}>{item.label}</p>
                     <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
                   </div>
                   <Switch
@@ -519,7 +519,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Sharing & Privacy</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Sharing & Privacy</h2>
             <div className="space-y-5">
               {([
                 { label: "Share preferences with partner", desc: "Let your connected partner see your style and size preferences", key: "share_prefs" as SettingsKeys },
@@ -528,7 +528,7 @@ const SettingsPage = () => {
               ]).map((item) => (
                 <div key={item.key} className="flex items-center justify-between py-2">
                   <div>
-                    <p className="text-sm font-medium" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--swatch-teal)' }}>{item.label}</p>
                     <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
                   </div>
                   <Switch
@@ -559,7 +559,7 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">Help & Support</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Help & Support</h2>
             <div className="space-y-3">
               {[
                 { label: "FAQs", desc: "Common questions and quick answers", href: "#" },
@@ -573,7 +573,7 @@ const SettingsPage = () => {
                   style={{ border: '1px solid rgba(var(--swatch-teal-rgb), 0.08)' }}
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
+                    <p className="font-medium text-sm" style={{ color: 'var(--swatch-teal)' }}>{item.label}</p>
                     <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
                   </div>
                   <ChevronRight className="h-4 w-4 shrink-0" style={{ color: 'var(--swatch-text-light)' }} />
@@ -595,10 +595,10 @@ const SettingsPage = () => {
             ← Back to Settings
           </button>
           <div className="card-design-neumorph" style={{ padding: 40 }}>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-viridian-odyssey)' }} className="mb-6 text-center">About GoTwo</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">About GoTwo</h2>
             <div className="space-y-5">
               <div className="flex items-center justify-between py-1">
-                <p className="text-sm" style={{ color: 'var(--swatch-viridian-odyssey)' }}>Version</p>
+                <p className="text-sm" style={{ color: 'var(--swatch-teal)' }}>Version</p>
                 <p className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>1.0.0</p>
               </div>
               <div className="border-t" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }} />
@@ -608,7 +608,7 @@ const SettingsPage = () => {
                 { label: "Open Source Licenses", href: "#" },
               ].map((item) => (
                 <a key={item.label} href={item.href} className="flex items-center justify-between py-1 group">
-                  <p className="text-sm group-hover:underline" style={{ color: 'var(--swatch-viridian-odyssey)' }}>{item.label}</p>
+                  <p className="text-sm group-hover:underline" style={{ color: 'var(--swatch-teal)' }}>{item.label}</p>
                   <ChevronRight className="h-4 w-4" style={{ color: 'var(--swatch-text-light)' }} />
                 </a>
               ))}

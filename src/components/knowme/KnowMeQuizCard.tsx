@@ -88,7 +88,7 @@ const KnowMeQuizCard = ({ questions, categoryName, onComplete, onBack }: KnowMeQ
               background: "rgba(var(--swatch-antique-coin-rgb), 0.12)",
             }}
           >
-            <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-viridian-odyssey)" }} />
+            <ArrowLeft className="w-4 h-4" style={{ color: "var(--swatch-teal)" }} />
           </button>
           <div className="flex-1 min-w-0">
             <h2
@@ -96,7 +96,7 @@ const KnowMeQuizCard = ({ questions, categoryName, onComplete, onBack }: KnowMeQ
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
                 fontWeight: 700,
-                color: "var(--swatch-viridian-odyssey)",
+                color: "var(--swatch-teal)",
                 letterSpacing: "0.01em",
               }}
             >
@@ -146,7 +146,7 @@ const KnowMeQuizCard = ({ questions, categoryName, onComplete, onBack }: KnowMeQ
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontWeight: 600,
-                  color: "var(--swatch-viridian-odyssey)",
+                  color: "var(--swatch-teal)",
                 }}
               >
                 {q.title}
@@ -183,7 +183,7 @@ const KnowMeQuizCard = ({ questions, categoryName, onComplete, onBack }: KnowMeQ
                           ? "1.5px solid var(--swatch-teal)"
                           : "1.5px solid rgba(var(--swatch-antique-coin-rgb), 0.18)",
                         color: isSelected
-                          ? "var(--swatch-viridian-odyssey)"
+                          ? "var(--swatch-teal)"
                           : "var(--swatch-antique-coin)",
                         boxShadow: isSelected
                           ? "0 2px 12px rgba(45,104,112,0.1)"
@@ -234,7 +234,7 @@ const KnowMeQuizCard = ({ questions, categoryName, onComplete, onBack }: KnowMeQ
               style={{
                 fontFamily: "'Jost', sans-serif",
                 background: selected.length > 0
-                  ? "var(--swatch-viridian-odyssey)"
+                  ? "var(--swatch-teal)"
                   : "rgba(var(--swatch-antique-coin-rgb), 0.12)",
                 color: selected.length > 0 ? "#fff" : "var(--swatch-antique-coin)",
                 boxShadow: selected.length > 0
