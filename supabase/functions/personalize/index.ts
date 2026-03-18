@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getBankPersonalization } from "../_shared/knowMeCatalog.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -190,6 +191,13 @@ For image_themes, suggest Unsplash-style search terms that match their aesthetic
         };
       }
     }
+
+    const bankPersonalization = getBankPersonalization(profile_answers, personalization);
+    personalization = {
+      ...personalization,
+      recommended_brands: bankPersonalization.recommended_brands,
+      recommended_stores: bankPersonalization.recommended_stores,
+    };
 
     // Save both profile answers and AI personalization to DB
     const { error: updateError } = await supabase
