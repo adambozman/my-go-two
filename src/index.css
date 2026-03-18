@@ -104,7 +104,6 @@ html::-webkit-scrollbar {
     --swatch-paper-rgb: 245 233 220;
 
     --chip-border: rgba(174, 176, 161, 0.62);
-    --texture-linen-light: url("./assets/textures/linen-overlay-light.svg");
   }
 }
 
@@ -129,10 +128,24 @@ html::-webkit-scrollbar {
 /* Global background — applied to body so every page inherits it */
 body {
   background-color: var(--swatch-sand);
-  background-image: var(--texture-linen-light);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.045) 0,
+      rgba(255,255,255,0.045) 1px,
+      transparent 1px,
+      transparent 5px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(30,74,82,0.028) 0,
+      rgba(30,74,82,0.028) 1px,
+      transparent 1px,
+      transparent 5px
+    );
+  background-size: 5px 5px, 5px 5px;
+  background-position: 0 0, 0 0;
+  background-repeat: repeat, repeat;
   background-attachment: fixed;
 }
 
