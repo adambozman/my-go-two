@@ -316,9 +316,9 @@ const Onboarding = () => {
                   color: "var(--swatch-teal)",
                 }}
               >
-                Start with a profile,
+                Built around you,
                 <br />
-                not a scattered intake form.
+                not a template.
               </h1>
               <p
                 className="mx-auto mt-5 max-w-[720px] text-[23px] leading-[1.24] md:text-[28px]"
@@ -329,7 +329,7 @@ const Onboarding = () => {
                   color: "var(--swatch-teal)",
                 }}
               >
-                We will save your taste, fit, spending, gifting, and lifestyle signals directly into your profile first. Everything deeper can build from there inside Know Me.
+                We prioritize your personal signals taste, spending, and lifestyle to create a foundation that grows with you. Start with a profile that actually knows you.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
