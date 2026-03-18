@@ -323,29 +323,6 @@ const DashboardHome = () => {
     setShowAddModal(true);
   }, [canAddAnotherConnection]);
 
-  const sharedFeedItems = useMemo(() => {
-    const realEntries = connections.filter((c) => !c.id.startsWith("placeholder-"));
-    if (realEntries.length) {
-      return realEntries.slice(0, 3).map((connection) => ({
-        id: connection.id,
-        eyebrow: connection.status === "accepted" ? "Connected" : "Invite",
-        title: connection.name,
-        detail: connection.status === "accepted" ? "Profile syncing and preference sharing are active." : "Waiting for them to accept your invite.",
-        meta: formatRelativeDateLabel(connection.updatedAt),
-      }));
-    }
-
-    return [
-      {
-        id: "feed-demo-1",
-        eyebrow: "Connections",
-        title: "Start with one person who matters most.",
-        detail: "Once you add them, this area becomes your shared pulse for updates, reminders, and profile changes.",
-        meta: "Ready when you are",
-      },
-    ];
-  }, [connections]);
-
   useEffect(() => {
     let cancelled = false;
 
@@ -484,61 +461,14 @@ const DashboardHome = () => {
           <GreetingHeader displayName={displayName} />
         </div>
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,320px)_minmax(0,1fr)_minmax(0,290px)]">
-          <div className="grid gap-5 xl:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,300px)_minmax(0,1.18fr)_minmax(0,300px)]">
+          <div>
             <section
-              className="relative overflow-hidden rounded-[30px] p-5"
-              style={{
-                ...shellCardStyle,
-                background: "linear-gradient(165deg, rgba(255,255,255,0.72) 0%, rgba(245,233,220,0.5) 100%)",
-                border: "1px solid rgba(255,255,255,0.85)",
-              }}
-            >
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Shared Feed
-                  </p>
-                  <h3 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
-                    Signals from your people.
-                  </h3>
-                </div>
-                <ArrowUpRight className="h-4 w-4" style={{ color: "var(--swatch-teal)" }} />
-              </div>
-
-              <div className="space-y-3">
-                {sharedFeedItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="rounded-[22px] px-4 py-3"
-                    style={{
-                      background: "rgba(255,255,255,0.52)",
-                      border: "1px solid rgba(255,255,255,0.76)",
-                    }}
-                  >
-                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                      {item.eyebrow}
-                    </p>
-                    <p className="mt-2 text-[18px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
-                      {item.title}
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                      {item.detail}
-                    </p>
-                    <p className="mt-3 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
-                      {item.meta}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section
-              className="relative overflow-hidden rounded-[30px] p-5"
+              className="relative flex h-full min-h-[740px] flex-col overflow-hidden rounded-[30px] p-5"
               style={{
                 ...shellCardStyle,
                 background: "linear-gradient(165deg, rgba(45,104,112,0.12) 0%, rgba(245,233,220,0.46) 100%)",
-                border: "1px solid rgba(45,104,112,0.18)",
+                border: "1px solid rgba(255,255,255,0.85)",
               }}
             >
               <div className="mb-4 flex items-center justify-between">
@@ -742,10 +672,10 @@ const DashboardHome = () => {
             <div className="border-b border-white/50 pb-4">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Recent Activity
+                  Connection Feed
                 </p>
                 <h3 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
-                  The long view.
+                  From your people.
                 </h3>
               </div>
             </div>
