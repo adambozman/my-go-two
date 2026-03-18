@@ -136,9 +136,9 @@ html::-webkit-scrollbar {
 body {
   background-color: var(--swatch-paper);
   background-image:
-    radial-gradient(circle at 18% 16%, rgba(var(--swatch-cedar-grove-rgb), 0.2) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.1) 24%, transparent 62%),
-    radial-gradient(circle at 78% 22%, rgba(var(--swatch-cedar-grove-rgb), 0.12) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.05) 18%, transparent 52%),
-    linear-gradient(180deg, rgba(var(--swatch-cedar-grove-rgb), 0.09) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.06) 100%),
+    radial-gradient(circle at 18% 16%, rgba(var(--swatch-cedar-grove-rgb), 0.5) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.25) 24%, transparent 62%),
+    radial-gradient(circle at 78% 22%, rgba(var(--swatch-cedar-grove-rgb), 0.5) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.2) 18%, transparent 52%),
+    linear-gradient(180deg, rgba(var(--swatch-cedar-grove-rgb), 0.22) 0%, rgba(var(--swatch-cedar-grove-rgb), 0.15) 100%),
     url("./assets/previews/bg-clean-linen.jpg");
   background-size: auto, auto, auto, 560px 560px;
   background-position: 0 0, 0 0, 0 0, 0 0;
