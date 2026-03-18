@@ -22,6 +22,7 @@ import Recommendations from "./pages/dashboard/Recommendations";
 import Questionnaires from "./pages/dashboard/Questionnaires";
 import Notifications from "./pages/dashboard/Notifications";
 import SettingsPage from "./pages/dashboard/SettingsPage";
+import PublicFeed from "./pages/dashboard/PublicFeed";
 
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
@@ -74,6 +75,7 @@ const App = () => {
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="search" element={<Search />} />
+                <Route path="public-feed" element={<PublicFeed />} />
                 <Route path="data-sync" element={<CategorySync />} />
                 <Route path="sponsored" element={<SponsoredAdmin />} />
               </Route>

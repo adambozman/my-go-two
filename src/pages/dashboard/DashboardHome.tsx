@@ -20,6 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  getPublicFeedViewItems,
+  togglePublicFeedFollow,
+  togglePublicFeedReaction,
+  type PublicFeedViewItem,
+} from "@/data/publicFeed";
 
 interface ConnectionCard {
   id: string;
@@ -83,6 +89,19 @@ interface ActivityFeedItem {
   accent: string;
 }
 
+interface PublicFeedPreviewItem {
+  id: string;
+  eyebrow: string;
+  title: string;
+  detail: string;
+  likes: number;
+  loves: number;
+  creatorName: string;
+  isFollowing: boolean;
+  isLiked: boolean;
+  isLoved: boolean;
+}
+
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
   const navigate = useNavigate();
@@ -96,6 +115,7 @@ const DashboardHome = () => {
   const [mySearchResults, setMySearchResults] = useState<HomeSearchResult[]>([]);
   const [circleSearchResults, setCircleSearchResults] = useState<HomeSearchResult[]>([]);
   const [recentActivityItems, setRecentActivityItems] = useState<ActivityFeedItem[]>([]);
+  const [publicFeedRefreshKey, setPublicFeedRefreshKey] = useState(0);
   const [openConnection, setOpenConnection] = useState<{
     card: ConnectionCard;
     rect: { x: number; y: number; width: number; height: number };
@@ -347,25 +367,20 @@ const DashboardHome = () => {
     ];
   }, [connections]);
 
-  const notableItems = useMemo(() => {
-    if (milestones.length) {
-      return milestones.slice(0, 3).map((milestone) => ({
-        id: milestone.id,
-        eyebrow: milestone.label,
-        title: milestone.person,
-        detail: `${milestone.daysOut} day${milestone.daysOut === 1 ? "" : "s"} away`,
-      }));
-    }
-
-    return [
-      {
-        id: "notable-demo",
-        eyebrow: "Calendar",
-        title: "Your next big date lands here.",
-        detail: "Birthdays, anniversaries, and reminders will float up as soon as they exist.",
-      },
-    ];
-  }, [milestones]);
+  const publicFeedItems: PublicFeedPreviewItem[] = useMemo(() => {
+    return getPublicFeedViewItems().slice(0, 3).map((item: PublicFeedViewItem) => ({
+      id: item.id,
+      eyebrow: item.category,
+      title: item.title,
+      detail: item.location,
+      likes: item.likes,
+      loves: item.loves,
+      creatorName: item.creatorName,
+      isFollowing: item.isFollowing,
+      isLiked: item.isLiked,
+      isLoved: item.isLoved,
+    }));
+  }, [publicFeedRefreshKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -498,6 +513,10 @@ const DashboardHome = () => {
     setSearchLoading(false);
   }, [buildEntryResult, buildListResult, homeSearch, liveConnections, searchScope, user]);
 
+  const refreshPublicFeedPreview = useCallback(() => {
+    setPublicFeedRefreshKey((value) => value + 1);
+  }, []);
+
   return (
     <div className="relative h-full overflow-y-auto">
       <div className="mx-auto max-w-[1480px] px-4 pb-8 md:px-6">
@@ -565,17 +584,24 @@ const DashboardHome = () => {
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Notable
+                    Public Feed
                   </p>
                   <h3 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-viridian-odyssey)" }}>
-                    What needs you next.
+                    Public looks near you.
                   </h3>
                 </div>
-                <Sparkles className="h-4 w-4" style={{ color: "var(--swatch-cedar-grove)" }} />
+                <button
+                  onClick={() => navigate("/dashboard/public-feed")}
+                  className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
+                  style={pillButtonStyle}
+                >
+                  Go to feed
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </button>
               </div>
 
               <div className="space-y-3">
-                {notableItems.map((item) => (
+                {publicFeedItems.map((item) => (
                   <div
                     key={item.id}
                     className="rounded-[22px] px-4 py-3"
@@ -593,6 +619,59 @@ const DashboardHome = () => {
                     <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                       {item.detail}
                     </p>
+                    <p className="mt-2 text-[11px]" style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}>
+                      {item.creatorName}
+                    </p>
+
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => {
+                          togglePublicFeedReaction(item.id, "like");
+                          refreshPublicFeedPreview();
+                        }}
+                        className="rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.1em]"
+                        style={{
+                          fontFamily: "'Jost', sans-serif",
+                          color: item.isLiked ? "var(--swatch-paper)" : "var(--swatch-teal)",
+                          background: item.isLiked ? "var(--swatch-teal)" : "rgba(255,255,255,0.68)",
+                          border: "1px solid rgba(255,255,255,0.78)",
+                        }}
+                      >
+                        Like {item.likes}
+                      </button>
+                      <button
+                        onClick={() => {
+                          togglePublicFeedReaction(item.id, "love");
+                          refreshPublicFeedPreview();
+                        }}
+                        className="rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.1em]"
+                        style={{
+                          fontFamily: "'Jost', sans-serif",
+                          color: item.isLoved ? "var(--swatch-paper)" : "var(--swatch-cedar-grove)",
+                          background: item.isLoved ? "var(--swatch-cedar-grove)" : "rgba(255,255,255,0.68)",
+                          border: "1px solid rgba(255,255,255,0.78)",
+                        }}
+                      >
+                        Love {item.loves}
+                      </button>
+                      <button
+                        onClick={() => {
+                          const creator = getPublicFeedViewItems().find((feedItem) => feedItem.id === item.id);
+                          if (!creator) return;
+                          togglePublicFeedFollow(creator.creatorId);
+                          refreshPublicFeedPreview();
+                        }}
+                        className="rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.1em]"
+                        style={{
+                          fontFamily: "'Jost', sans-serif",
+                          color: item.isFollowing ? "var(--swatch-paper)" : "var(--swatch-teal)",
+                          background: item.isFollowing ? "var(--swatch-cedar-grove)" : "rgba(255,255,255,0.68)",
+                          border: "1px solid rgba(255,255,255,0.78)",
+                        }}
+                      >
+                        {item.isFollowing ? "Following" : "Follow"}
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
