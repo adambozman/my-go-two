@@ -114,7 +114,7 @@ const Login = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="card-design-login rounded-[28px] p-8 md:p-10"
+              className="card-design-neumorph rounded-[28px] p-8 md:p-10"
               style={{}}
             >
               <form onSubmit={handleSubmit} className="space-y-5">
