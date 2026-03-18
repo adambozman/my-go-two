@@ -30,12 +30,6 @@ interface ConnectionCard {
   updatedAt?: string;
 }
 
-const PLACEHOLDER_CONNECTIONS: ConnectionCard[] = [
-  { id: "placeholder-wife", name: "Wife", image: "", email: "", status: "placeholder" },
-  { id: "placeholder-mom", name: "Mom", image: "", email: "", status: "placeholder" },
-  { id: "placeholder-dad", name: "Dad", image: "", email: "", status: "placeholder" },
-];
-
 const shellCardStyle = {
   boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
 } as const;
@@ -134,17 +128,6 @@ const DashboardHome = () => {
         updatedAt: row.updated_at,
       };
     });
-
-    if (cards.length < 3) {
-      const remainingSlots = 3 - cards.length;
-      const usedNames = new Set(cards.map((c) => c.name.toLowerCase()));
-      const placeholders = PLACEHOLDER_CONNECTIONS.filter((p) => !usedNames.has(p.name.toLowerCase()))
-        .slice(0, remainingSlots)
-        .map((p) => ({ ...p, image: "" }));
-
-      setConnections(assignUniquePhotos([...cards, ...placeholders], (c) => !!c.image));
-      return;
-    }
 
     setConnections(assignUniquePhotos(cards, (c) => !!c.image));
   }, [user]);
@@ -272,16 +255,16 @@ const DashboardHome = () => {
     image: c.image,
     status: c.status,
     lastSync: c.updatedAt,
-    isPlaceholder: c.id.startsWith("placeholder-"),
+    isPlaceholder: false,
   }));
 
-  const realConnections = connections.filter((c) => !c.id.startsWith("placeholder-")).length;
+  const realConnections = connections.length;
   const canAddAnotherConnection = subscribed || realConnections < 1;
   const calendarConnections = connections
-    .filter((c) => !c.id.startsWith("placeholder-") && c.partnerId)
+    .filter((c) => c.partnerId)
     .map((c) => ({ id: c.partnerId!, name: c.name }));
   const visibleConnectionEntries = directoryEntries.slice(0, 5);
-  const liveConnections = connections.filter((connection) => !connection.id.startsWith("placeholder-") && connection.partnerId);
+  const liveConnections = connections.filter((connection) => connection.partnerId);
   const searchScopeLabel = searchScope === "everyone"
     ? "Everyone"
     : searchScope === "self"
