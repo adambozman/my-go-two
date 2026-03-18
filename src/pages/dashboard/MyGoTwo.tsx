@@ -951,7 +951,9 @@ const MyGoTwo = () => {
             }}
             className="coverflow-stage-shell snap-start snap-always"
           >
-            <h2 className="section-header coverflow-stage-title text-center">{section.label}</h2>
+            <div className="coverflow-stage-title-wrap">
+              <h2 className="section-header coverflow-stage-title text-center">{section.label}</h2>
+            </div>
             <GoTwoCoverFlow
               items={section.items}
               onSelect={(categoryId) => handleSelect(section.key, categoryId)}
