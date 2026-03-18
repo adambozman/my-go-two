@@ -59,13 +59,13 @@ const Landing = () => {
 
           {/* Logo */}
           <motion.div {...riseIn(0)} style={{ marginBottom: 36, display: "flex", alignItems: "baseline", gap: 3 }}>
-            <span style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600, fontSize: 56, color: "#d4543a", lineHeight: 1 }}>Go</span>
-            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 70, color: "#2d6870", lineHeight: 1, letterSpacing: "-0.5px" }}>Two</span>
+            <span style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600, fontSize: 56, color: "var(--logo-go-color)", lineHeight: 1 }}>Go</span>
+            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 70, color: "var(--logo-two-color)", lineHeight: 1, letterSpacing: "-0.5px" }}>Two</span>
           </motion.div>
 
           {/* Tagline */}
           <motion.div {...riseIn(0.1)} className="flex flex-col items-center" style={{ gap: 4, marginBottom: 44 }}>
-            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 600, color: "#1e4a52", letterSpacing: "0.2px" }}>
+            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 600, color: "var(--logo-two-color)", letterSpacing: "0.2px" }}>
               The Shortcut to Thoughtful.
             </span>
             <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 600, fontStyle: "italic", color: "#d4543a" }}>
@@ -124,7 +124,7 @@ const Landing = () => {
             <p style={{ fontSize: 10.5, letterSpacing: 3, textTransform: "uppercase", color: "#d4543a", fontWeight: 500, marginBottom: 10 }}>
               Everything that matters
             </p>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 38, fontWeight: 600, color: "#1e4a52", lineHeight: 1.15, marginBottom: 14 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 38, fontWeight: 600, color: "var(--logo-two-color)", lineHeight: 1.15, marginBottom: 14 }}>
               One place for all of it
             </h2>
             <p style={{ fontSize: 14, fontWeight: 300, color: "#4a6068", maxWidth: 380, lineHeight: 1.7 }}>
@@ -149,7 +149,7 @@ const Landing = () => {
             <p style={{ fontSize: 10.5, letterSpacing: 3, textTransform: "uppercase", color: "#d4543a", fontWeight: 500, marginBottom: 10 }}>
               Your journey
             </p>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 38, fontWeight: 600, color: "#1e4a52", lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 38, fontWeight: 600, color: "var(--logo-two-color)", lineHeight: 1.15 }}>
               How It Works
             </h2>
           </motion.div>
@@ -191,7 +191,7 @@ const Landing = () => {
                                 <Sparkles style={{ width: 10, height: 10 }} /> AI-Powered
                               </div>
                             )}
-                            <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 19, fontWeight: 700, color: "#1e4a52", marginBottom: 7, lineHeight: 1.2 }}>{step.title}</h3>
+                            <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 19, fontWeight: 700, color: "var(--logo-two-color)", marginBottom: 7, lineHeight: 1.2 }}>{step.title}</h3>
                             <p style={{ fontSize: 13, color: "#4a6068", lineHeight: 1.7, fontWeight: 300 }}>{step.description}</p>
                           </div>
                           <div style={nodeStyle}>
@@ -211,7 +211,7 @@ const Landing = () => {
                                 <Sparkles style={{ width: 10, height: 10 }} /> AI-Powered
                               </div>
                             )}
-                            <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 19, fontWeight: 700, color: "#1e4a52", marginBottom: 7, lineHeight: 1.2 }}>{step.title}</h3>
+                            <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 19, fontWeight: 700, color: "var(--logo-two-color)", marginBottom: 7, lineHeight: 1.2 }}>{step.title}</h3>
                             <p style={{ fontSize: 13, color: "#4a6068", lineHeight: 1.7, fontWeight: 300 }}>{step.description}</p>
                           </div>
                         </>
@@ -229,7 +229,7 @@ const Landing = () => {
                             <Sparkles style={{ width: 10, height: 10 }} /> AI-Powered
                           </div>
                         )}
-                        <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 19, fontWeight: 700, color: "#1e4a52", marginBottom: 7, lineHeight: 1.2 }}>{step.title}</h3>
+                        <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 19, fontWeight: 700, color: "var(--logo-two-color)", marginBottom: 7, lineHeight: 1.2 }}>{step.title}</h3>
                         <p style={{ fontSize: 13, color: "#4a6068", lineHeight: 1.7, fontWeight: 300 }}>{step.description}</p>
                       </div>
                     </div>
@@ -280,8 +280,8 @@ const Landing = () => {
         {/* ═══ FOOTER ═══ */}
         <footer style={{ padding: "26px 40px", borderTop: "1px solid rgba(45,104,112,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 8 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 3 }}>
-            <span style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600, fontSize: 20, color: "#d4543a", lineHeight: 1 }}>Go</span>
-            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 26, color: "#2d6870", lineHeight: 1 }}>Two</span>
+            <span style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600, fontSize: 20, color: "var(--logo-go-color)", lineHeight: 1 }}>Go</span>
+            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 26, color: "var(--logo-two-color)", lineHeight: 1 }}>Two</span>
           </div>
           <p style={{ fontSize: 11.5, color: "#8a9ea4", fontWeight: 300, letterSpacing: "0.3px" }}>
             © {new Date().getFullYear()} GoTwo. Made with love.
