@@ -589,18 +589,18 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
         animate={{ opacity: 1, y: 0 }}
         className="relative overflow-visible rounded-[30px] p-[1px]"
         style={{
-          background: "linear-gradient(180deg, rgba(var(--swatch-teal-rgb), 0.44) 0%, rgba(var(--swatch-viridian-odyssey-rgb), 0.92) 100%)",
-          boxShadow: "0 18px 36px rgba(30,74,82,0.18)",
+          background: "linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(var(--swatch-paper-rgb), 0.88) 100%)",
+          boxShadow: "0 18px 36px rgba(255,255,255,0.20), 0 14px 30px rgba(74,96,104,0.08)",
         }}
       >
         <div
           className="relative overflow-hidden rounded-[29px] px-3 py-3 md:px-3.5 md:py-3.5"
           style={{
-            background: "linear-gradient(180deg, rgba(var(--swatch-paper-rgb), 0.88) 0%, rgba(var(--swatch-paper-rgb), 0.72) 100%)",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.74) 0%, rgba(var(--swatch-paper-rgb), 0.96) 100%)",
           }}
         >
         <div className="absolute -right-14 -top-10 h-28 w-28 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.28)" }} />
-        <div className="absolute -bottom-14 -left-10 h-28 w-28 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
+        <div className="absolute -bottom-14 -left-10 h-28 w-28 rounded-full" style={{ background: "rgba(var(--swatch-cedar-grove-rgb), 0.08)" }} />
 
         <div className="relative space-y-3">
           <div className="flex items-start justify-between gap-3 rounded-[22px] px-4 py-3" style={{ background: "rgba(var(--swatch-paper-rgb), 0.5)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.10)", boxShadow: "0 8px 18px rgba(30,74,82,0.07)" }}>
@@ -648,10 +648,10 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
             </div>
           </div>
 
-          <div className="rounded-[24px] px-2.5 py-2.5" style={{ background: "linear-gradient(180deg, rgba(var(--swatch-viridian-odyssey-rgb), 0.95) 0%, rgba(var(--swatch-teal-rgb), 0.92) 100%)", border: "1px solid rgba(var(--swatch-paper-rgb), 0.18)", boxShadow: "0 14px 32px rgba(30,74,82,0.16)" }}>
+          <div className="rounded-[24px] px-2.5 py-2.5" style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.62) 0%, rgba(var(--swatch-paper-rgb), 0.98) 100%)", border: "1px solid rgba(255,255,255,0.82)", boxShadow: "0 12px 28px rgba(255,255,255,0.22), 0 10px 22px rgba(74,96,104,0.06)" }}>
             <div className="mb-2 grid grid-cols-7 gap-1">
               {DAY_NAMES.map((day) => (
-                <div key={day} className="pb-1 text-center text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-paper-rgb), 0.62)" }}>
+                <div key={day} className="pb-1 text-center text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-antique-coin-rgb), 0.62)" }}>
                   {day}
                 </div>
               ))}
@@ -683,20 +683,20 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                           className="flex min-h-[52px] flex-col rounded-[14px] px-1.5 py-1.5 text-left transition-transform duration-200 hover:-translate-y-0.5"
                           style={{
                             background: isSelected
-                              ? "rgba(var(--swatch-paper-rgb), 0.22)"
+                              ? "rgba(255,255,255,0.92)"
                             : isToday
-                              ? "rgba(var(--swatch-paper-rgb), 0.14)"
-                              : "rgba(var(--swatch-paper-rgb), 0.06)",
+                              ? "rgba(var(--swatch-cedar-grove-rgb), 0.08)"
+                              : "rgba(255,255,255,0.56)",
                           border: isSelected
-                            ? "1px solid rgba(var(--swatch-paper-rgb), 0.42)"
+                            ? "1px solid rgba(var(--swatch-teal-rgb), 0.18)"
                             : isToday
                               ? "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.38)"
-                              : "1px solid rgba(var(--swatch-paper-rgb), 0.10)",
-                          boxShadow: isSelected ? "0 12px 26px rgba(0,0,0,0.12)" : "none",
+                              : "1px solid rgba(255,255,255,0.42)",
+                          boxShadow: isSelected ? "0 10px 24px rgba(74,96,104,0.10)" : "none",
                           }}
                         >
                         <div className="flex items-start justify-between gap-1">
-                          <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: isToday || isSelected ? 700 : 500, color: "var(--swatch-paper)" }}>
+                          <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: isToday || isSelected ? 700 : 500, color: "var(--swatch-viridian-odyssey)" }}>
                             {day}
                           </span>
                           {priorityStarColor && (
@@ -715,8 +715,8 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
                         <div className="mt-auto flex min-h-[22px] items-center justify-center">
                           {!events.length && (
                             <div className="flex gap-1 pt-1.5">
-                              <span className="h-1 w-1 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.35)" }} />
-                              <span className="h-1 w-1 rounded-full" style={{ background: "rgba(var(--swatch-paper-rgb), 0.18)" }} />
+                              <span className="h-1 w-1 rounded-full" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.18)" }} />
+                              <span className="h-1 w-1 rounded-full" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.10)" }} />
                             </div>
                           )}
                           {!!events.length && (
