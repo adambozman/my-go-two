@@ -185,7 +185,7 @@ const Landing = () => {
                     <div className="hidden md:grid" style={{ gridTemplateColumns: "1fr 48px 1fr", alignItems: "center", gap: 20 }}>
                       {isLeft ? (
                         <>
-                          <div className={step.ai ? "card-design-ai" : "card-design-glass"} style={{ padding: "22px 22px" }}>
+                          <div className={step.ai ? "card-design-teal" : "card-design-sand"} style={{ padding: "22px 22px" }}>
                             {step.ai && (
                               <div style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 9.5, letterSpacing: 1.8, textTransform: "uppercase", color: "#3a7880", background: "rgba(45,104,112,0.1)", border: "1px solid rgba(45,104,112,0.18)", borderRadius: 20, padding: "3px 10px", marginBottom: 10, fontWeight: 500 }}>
                                 <Sparkles style={{ width: 10, height: 10 }} /> AI-Powered
@@ -205,7 +205,7 @@ const Landing = () => {
                           <div style={nodeStyle}>
                             <span style={{ fontSize: 12, fontWeight: 500, color: "white", letterSpacing: "0.2px" }}>{step.step}</span>
                           </div>
-                          <div className={step.ai ? "card-design-ai" : "card-design-glass"} style={{ padding: "22px 22px" }}>
+                          <div className={step.ai ? "card-design-teal" : "card-design-sand"} style={{ padding: "22px 22px" }}>
                             {step.ai && (
                               <div style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 9.5, letterSpacing: 1.8, textTransform: "uppercase", color: "#3a7880", background: "rgba(45,104,112,0.1)", border: "1px solid rgba(45,104,112,0.18)", borderRadius: 20, padding: "3px 10px", marginBottom: 10, fontWeight: 500 }}>
                                 <Sparkles style={{ width: 10, height: 10 }} /> AI-Powered
@@ -223,7 +223,7 @@ const Landing = () => {
                       <div className="flex-shrink-0" style={nodeStyle}>
                         <span style={{ fontSize: 12, fontWeight: 500, color: "white" }}>{step.step}</span>
                       </div>
-                      <div className={`flex-1 ${step.ai ? "card-design-ai" : "card-design-glass"}`} style={{ padding: "18px 18px" }}>
+                      <div className={`flex-1 ${step.ai ? "card-design-teal" : "card-design-sand"}`} style={{ padding: "18px 18px" }}>
                         {step.ai && (
                           <div style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 9.5, letterSpacing: 1.8, textTransform: "uppercase", color: "#3a7880", background: "rgba(45,104,112,0.1)", border: "1px solid rgba(45,104,112,0.18)", borderRadius: 20, padding: "3px 10px", marginBottom: 10, fontWeight: 500 }}>
                             <Sparkles style={{ width: 10, height: 10 }} /> AI-Powered
