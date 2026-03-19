@@ -52,6 +52,11 @@ interface CardEntry {
   updated_at: string;
 }
 
+interface GroupTab {
+  key: string;
+  label: string;
+}
+
 const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
 const NEW_ENTRY_ID = "__new_entry__";
 const ENTRY_PAGE_SIZE = 5;
@@ -59,6 +64,14 @@ const ENTRY_PAGE_SIZE = 5;
 const normalizeImageValue = (value?: string | null) => {
   if (!value) return "";
   return value.includes("/") ? value : "";
+};
+
+const GENERATED_GROUP_PATTERN = / - Group (\d+)$/;
+
+const getVisibleGroupLabel = (groupName: string) => {
+  const match = groupName.match(GENERATED_GROUP_PATTERN);
+  if (match) return `Group ${match[1]}`;
+  return groupName;
 };
 
 const TagInput = ({ value, onChange, fieldLabel }: { value: string; onChange: (val: string) => void; fieldLabel: string }) => {
@@ -506,6 +519,24 @@ const MyGoTwo = () => {
     fetchEntries();
   }, [fetchEntries]);
 
+  const groupsForCardKey = useMemo(() => {
+    const keys = Array.from(new Set(entries.map((entry) => entry.group_name).filter(Boolean)));
+    if (activeGroup && !keys.includes(activeGroup)) {
+      keys.push(activeGroup);
+    }
+    return keys;
+  }, [entries, activeGroup]);
+
+  const groupTabs = useMemo<GroupTab[]>(
+    () => groupsForCardKey.map((groupName) => ({ key: groupName, label: getVisibleGroupLabel(groupName) })),
+    [groupsForCardKey],
+  );
+
+  const activeGroupEntries = useMemo(
+    () => entries.filter((entry) => entry.group_name === activeGroup),
+    [entries, activeGroup],
+  );
+
   useEffect(() => {
     if (!leafSubtype || !cardKey) return;
 
@@ -526,12 +557,22 @@ const MyGoTwo = () => {
     setEntryDrafts(nextDrafts);
     setEntryNames(nextNames);
     setEntryImages(nextImages);
-    setActiveEntryIndex((prev) => Math.min(prev, entries.length));
+  }, [entries, leafSubtype, defaultFieldValues, cardKey]);
 
-    if (!activeGroup) {
-      setActiveGroup(leafSubtype.name);
-    }
-  }, [entries, leafSubtype, defaultFieldValues, cardKey, activeGroup]);
+  useEffect(() => {
+    if (!leafSubtype || !cardKey) return;
+
+    setActiveGroup((prev) => {
+      if (prev && groupsForCardKey.includes(prev)) return prev;
+      if (groupsForCardKey.length > 0) return groupsForCardKey[0];
+      return leafSubtype.name;
+    });
+  }, [leafSubtype, cardKey, groupsForCardKey]);
+
+  useEffect(() => {
+    setActiveEntryIndex((prev) => Math.min(prev, activeGroupEntries.length));
+    setActiveEntryPage(1);
+  }, [activeGroupEntries.length, activeGroup]);
 
   const getNearestSectionIndex = useCallback(
     (scrollTop: number) => {
@@ -589,6 +630,7 @@ const MyGoTwo = () => {
     setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     setActiveEntryPage(1);
+    setActiveGroup("");
   };
 
   const goBackFromEntries = () => {
@@ -607,6 +649,7 @@ const MyGoTwo = () => {
     setLeafCategoryName(undefined);
     setActiveEntryIndex(0);
     setActiveEntryPage(1);
+    setActiveGroup("");
 
     if (isLeafSubcategory) {
       setActiveSubcategory(null);
@@ -676,6 +719,7 @@ const MyGoTwo = () => {
     setLeafImage((sc as any).image || "");
     setActiveEntryIndex(0);
     setActiveEntryPage(1);
+    setActiveGroup("");
   };
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
@@ -688,10 +732,11 @@ const MyGoTwo = () => {
     setLeafImage((subtype as any).image || "");
     setActiveEntryIndex(0);
     setActiveEntryPage(1);
+    setActiveGroup("");
   };
 
   const entryCoverFlowItems = [
-    ...entries.map((entry) => ({
+    ...activeGroupEntries.map((entry) => ({
       id: entry.id,
       label: entryNames[entry.id] || entry.entry_name,
       image: normalizeImageValue(entryImages[entry.id] || entry.image_url) || leafImage || BRANDED_CARD_SVG,
@@ -747,7 +792,7 @@ const MyGoTwo = () => {
   const handleSaveEntry = async (itemId: string) => {
     if (!user || !cardKey || !leafSubtype) return;
 
-    const entryName = (entryNames[itemId] || "").trim() || `${leafSubtype.name} ${entries.length + 1}`;
+    const entryName = (entryNames[itemId] || "").trim() || `${leafSubtype.name} ${activeGroupEntries.length + 1}`;
     const fieldValues = entryDrafts[itemId] || defaultFieldValues;
     const imageUrl = entryImages[itemId] || null;
 
@@ -786,7 +831,7 @@ const MyGoTwo = () => {
           [inserted.id]: imageUrl || "",
           [NEW_ENTRY_ID]: "",
         }));
-        setActiveEntryIndex(entries.length);
+        setActiveEntryIndex(activeGroupEntries.length);
         toast({ title: "Saved!", description: `${entryName} created.` });
       } else {
         const { error } = await supabase
@@ -827,11 +872,32 @@ const MyGoTwo = () => {
   };
 
   const handleCreateGroup = () => {
-    if (!groupNameInput.trim()) return;
-    setActiveGroup(groupNameInput.trim());
+    const nextGroupName = groupNameInput.trim();
+    if (!nextGroupName) return;
+    setActiveGroup(nextGroupName);
+    setActiveEntryIndex(0);
+    setActiveEntryPage(1);
     setShowGroupDialog(false);
     setGroupNameInput("");
-    toast({ title: "Group selected", description: `New cards will save under ${groupNameInput.trim()}.` });
+    toast({ title: "Group created", description: `${getVisibleGroupLabel(nextGroupName)} is ready.` });
+  };
+
+  const getNextGeneratedGroupName = useCallback(() => {
+    const baseName = leafSubtype?.name || "Group";
+    const generatedNumbers = groupsForCardKey
+      .map((groupName) => {
+        const match = groupName.match(GENERATED_GROUP_PATTERN);
+        return match ? Number(match[1]) : null;
+      })
+      .filter((value): value is number => value !== null);
+    const hasLegacyBaseGroup = groupsForCardKey.includes(baseName);
+    const nextNumber = Math.max(hasLegacyBaseGroup ? 1 : 0, ...generatedNumbers, 0) + 1;
+    return `${baseName} - Group ${nextNumber}`;
+  }, [groupsForCardKey, leafSubtype?.name]);
+
+  const openCreateGroupDialog = () => {
+    setGroupNameInput(getNextGeneratedGroupName());
+    setShowGroupDialog(true);
   };
 
   if (registryLoading || genderLoading) {
@@ -855,7 +921,28 @@ const MyGoTwo = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full flex flex-col items-center justify-center px-4"
         >
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-center gap-4">
+            <div className="flex max-w-[min(90vw,920px)] flex-wrap items-center justify-center gap-2">
+              {groupTabs.map((group) => {
+                const isActive = group.key === activeGroup;
+                return (
+                  <button
+                    key={group.key}
+                    type="button"
+                    onClick={() => setActiveGroup(group.key)}
+                    className="rounded-full border px-4 py-2 text-sm transition-colors"
+                    style={{
+                      fontFamily: "'Jost', sans-serif",
+                      borderColor: isActive ? "rgba(45,104,112,0.45)" : "rgba(26,26,26,0.12)",
+                      background: isActive ? "rgba(45,104,112,0.12)" : "rgba(255,255,255,0.72)",
+                      color: isActive ? "#2d6870" : "#1a1a1a",
+                    }}
+                  >
+                    {group.label}
+                  </button>
+                );
+              })}
+            </div>
             <FormCoverFlowCarousel
               items={paginatedEntryItems}
               activeIndex={activeEntryIndexOnPage}
@@ -893,7 +980,7 @@ const MyGoTwo = () => {
             <Button
               variant="outline"
               className="rounded-full px-6 h-10 border-border text-foreground"
-              onClick={() => setShowGroupDialog(true)}
+              onClick={openCreateGroupDialog}
             >
               <Plus className="w-4 h-4 mr-2" />
               New Group
