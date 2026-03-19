@@ -52,11 +52,6 @@ interface CardEntry {
   updated_at: string;
 }
 
-interface GroupTab {
-  key: string;
-  label: string;
-}
-
 const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
 const NEW_ENTRY_ID = "__new_entry__";
 const ENTRY_PAGE_SIZE = 5;
@@ -65,6 +60,8 @@ const normalizeImageValue = (value?: string | null) => {
   if (!value) return "";
   return value.includes("/") ? value : "";
 };
+
+const getNewEntryId = (groupName: string) => `${NEW_ENTRY_ID}::${groupName}`;
 
 const GENERATED_GROUP_PATTERN = / - Group (\d+)$/;
 
@@ -482,8 +479,8 @@ const MyGoTwo = () => {
 
   const [cardKey, setCardKey] = useState<string | null>(null);
   const [entries, setEntries] = useState<CardEntry[]>([]);
-  const [activeEntryIndex, setActiveEntryIndex] = useState(0);
-  const [activeEntryPage, setActiveEntryPage] = useState(1);
+  const [activeEntryIndexByGroup, setActiveEntryIndexByGroup] = useState<Record<string, number>>({});
+  const [activeEntryPageByGroup, setActiveEntryPageByGroup] = useState<Record<string, number>>({});
   const [entryDrafts, setEntryDrafts] = useState<Record<string, Record<string, string>>>({});
   const [entryNames, setEntryNames] = useState<Record<string, string>>({});
   const [entryImages, setEntryImages] = useState<Record<string, string>>({});
@@ -494,6 +491,8 @@ const MyGoTwo = () => {
   const [leafImage, setLeafImage] = useState<string>("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
   const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
+  const productGroupScrollRef = useRef<HTMLDivElement>(null);
+  const productGroupSectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const defaultFieldValues = useMemo(() => {
     if (!leafSubtype) return {} as Record<string, string>;
@@ -527,15 +526,17 @@ const MyGoTwo = () => {
     return keys;
   }, [entries, activeGroup]);
 
-  const groupTabs = useMemo<GroupTab[]>(
-    () => groupsForCardKey.map((groupName) => ({ key: groupName, label: getVisibleGroupLabel(groupName) })),
-    [groupsForCardKey],
-  );
-
   const activeGroupEntries = useMemo(
     () => entries.filter((entry) => entry.group_name === activeGroup),
     [entries, activeGroup],
   );
+
+  const productGroups = useMemo(() => {
+    if (groupsForCardKey.length > 0) return groupsForCardKey;
+    if (activeGroup) return [activeGroup];
+    if (leafSubtype?.name) return [leafSubtype.name];
+    return [];
+  }, [groupsForCardKey, activeGroup, leafSubtype?.name]);
 
   useEffect(() => {
     if (!leafSubtype || !cardKey) return;
@@ -550,14 +551,22 @@ const MyGoTwo = () => {
       nextImages[entry.id] = entry.image_url || "";
     });
 
-    nextDrafts[NEW_ENTRY_ID] = defaultFieldValues;
-    nextNames[NEW_ENTRY_ID] = "";
-    nextImages[NEW_ENTRY_ID] = "";
+    const placeholderGroups = new Set([
+      ...(groupsForCardKey.length > 0 ? groupsForCardKey : []),
+      activeGroup || leafSubtype.name,
+    ]);
+
+    placeholderGroups.forEach((groupName) => {
+      const newEntryId = getNewEntryId(groupName);
+      nextDrafts[newEntryId] = defaultFieldValues;
+      nextNames[newEntryId] = "";
+      nextImages[newEntryId] = "";
+    });
 
     setEntryDrafts(nextDrafts);
     setEntryNames(nextNames);
     setEntryImages(nextImages);
-  }, [entries, leafSubtype, defaultFieldValues, cardKey]);
+  }, [entries, leafSubtype, defaultFieldValues, cardKey, groupsForCardKey, activeGroup]);
 
   useEffect(() => {
     if (!leafSubtype || !cardKey) return;
@@ -570,9 +579,30 @@ const MyGoTwo = () => {
   }, [leafSubtype, cardKey, groupsForCardKey]);
 
   useEffect(() => {
-    setActiveEntryIndex((prev) => Math.min(prev, activeGroupEntries.length));
-    setActiveEntryPage(1);
+    if (!activeGroup) return;
+
+    setActiveEntryIndexByGroup((prev) => ({
+      ...prev,
+      [activeGroup]: Math.min(prev[activeGroup] ?? 0, activeGroupEntries.length),
+    }));
+    setActiveEntryPageByGroup((prev) => ({
+      ...prev,
+      [activeGroup]: Math.min(
+        prev[activeGroup] ?? 1,
+        Math.max(1, Math.ceil((activeGroupEntries.length + 1) / ENTRY_PAGE_SIZE)),
+      ),
+    }));
   }, [activeGroupEntries.length, activeGroup]);
+
+  useEffect(() => {
+    if (!cardKey || !activeGroup) return;
+    requestAnimationFrame(() => {
+      const container = productGroupScrollRef.current;
+      const section = productGroupSectionRefs.current[activeGroup];
+      if (!container || !section) return;
+      container.scrollTop = section.offsetTop;
+    });
+  }, [activeGroup, cardKey, productGroups.length]);
 
   const getNearestSectionIndex = useCallback(
     (scrollTop: number) => {
@@ -628,8 +658,8 @@ const MyGoTwo = () => {
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
     setLeafCategoryName(undefined);
-    setActiveEntryIndex(0);
-    setActiveEntryPage(1);
+    setActiveEntryIndexByGroup({});
+    setActiveEntryPageByGroup({});
     setActiveGroup("");
   };
 
@@ -647,8 +677,8 @@ const MyGoTwo = () => {
     setLeafSubtype(null);
     setLeafSubcategoryName(undefined);
     setLeafCategoryName(undefined);
-    setActiveEntryIndex(0);
-    setActiveEntryPage(1);
+    setActiveEntryIndexByGroup({});
+    setActiveEntryPageByGroup({});
     setActiveGroup("");
 
     if (isLeafSubcategory) {
@@ -717,8 +747,8 @@ const MyGoTwo = () => {
     setLeafSubcategoryName(undefined);
     setLeafCategoryName(coverFlowState?.name);
     setLeafImage((sc as any).image || "");
-    setActiveEntryIndex(0);
-    setActiveEntryPage(1);
+    setActiveEntryIndexByGroup({});
+    setActiveEntryPageByGroup({});
     setActiveGroup("");
   };
 
@@ -730,45 +760,9 @@ const MyGoTwo = () => {
     setLeafSubcategoryName(subcategoryName);
     setLeafCategoryName(coverFlowState?.name);
     setLeafImage((subtype as any).image || "");
-    setActiveEntryIndex(0);
-    setActiveEntryPage(1);
+    setActiveEntryIndexByGroup({});
+    setActiveEntryPageByGroup({});
     setActiveGroup("");
-  };
-
-  const entryCoverFlowItems = [
-    ...activeGroupEntries.map((entry) => ({
-      id: entry.id,
-      label: entryNames[entry.id] || entry.entry_name,
-      image: normalizeImageValue(entryImages[entry.id] || entry.image_url) || leafImage || BRANDED_CARD_SVG,
-    })),
-    {
-      id: NEW_ENTRY_ID,
-      label: entryNames[NEW_ENTRY_ID]?.trim() || "",
-      image: normalizeImageValue(entryImages[NEW_ENTRY_ID]) || leafImage || BRANDED_CARD_SVG,
-    },
-  ];
-
-  const entryTotalPages = Math.max(1, Math.ceil(entryCoverFlowItems.length / ENTRY_PAGE_SIZE));
-  const entryPageStart = (activeEntryPage - 1) * ENTRY_PAGE_SIZE;
-  const paginatedEntryItems = entryCoverFlowItems.slice(entryPageStart, entryPageStart + ENTRY_PAGE_SIZE);
-  const activeEntryIndexOnPage = paginatedEntryItems.length === 0
-    ? 0
-    : Math.min(Math.max(activeEntryIndex - entryPageStart, 0), paginatedEntryItems.length - 1);
-
-  useEffect(() => {
-    const nextPage = Math.min(entryTotalPages, Math.floor(activeEntryIndex / ENTRY_PAGE_SIZE) + 1);
-    setActiveEntryPage(nextPage);
-  }, [activeEntryIndex, entryTotalPages]);
-
-  const previousEntryImage = useMemo(() => {
-    if (entryCoverFlowItems.length === 0) return "";
-    const prevIndex = (activeEntryIndex - 1 + entryCoverFlowItems.length) % entryCoverFlowItems.length;
-    return entryCoverFlowItems[prevIndex]?.image || "";
-  }, [activeEntryIndex, entryCoverFlowItems]);
-
-  const handleEntryPageChange = (page: number) => {
-    setActiveEntryPage(page);
-    setActiveEntryIndex(Math.min((page - 1) * ENTRY_PAGE_SIZE, Math.max(entryCoverFlowItems.length - 1, 0)));
   };
 
   const handleNameChange = (itemId: string, value: string) => {
@@ -792,19 +786,22 @@ const MyGoTwo = () => {
   const handleSaveEntry = async (itemId: string) => {
     if (!user || !cardKey || !leafSubtype) return;
 
-    const entryName = (entryNames[itemId] || "").trim() || `${leafSubtype.name} ${activeGroupEntries.length + 1}`;
+    const isNewEntry = itemId.startsWith(`${NEW_ENTRY_ID}::`);
+    const targetGroup = isNewEntry ? itemId.replace(`${NEW_ENTRY_ID}::`, "") : (entries.find((entry) => entry.id === itemId)?.group_name || activeGroup || leafSubtype.name);
+    const targetGroupEntries = entries.filter((entry) => entry.group_name === targetGroup);
+    const entryName = (entryNames[itemId] || "").trim() || `${leafSubtype.name} ${targetGroupEntries.length + 1}`;
     const fieldValues = entryDrafts[itemId] || defaultFieldValues;
     const imageUrl = entryImages[itemId] || null;
 
     setSaving(true);
     try {
-      if (itemId === NEW_ENTRY_ID) {
+      if (isNewEntry) {
         const { data, error } = await supabase
           .from("card_entries")
           .insert({
             user_id: user.id,
             card_key: cardKey,
-            group_name: activeGroup || leafSubtype.name,
+            group_name: targetGroup,
             entry_name: entryName,
             field_values: fieldValues,
             image_url: imageUrl,
@@ -819,19 +816,23 @@ const MyGoTwo = () => {
         setEntryDrafts((prev) => ({
           ...prev,
           [inserted.id]: fieldValues,
-          [NEW_ENTRY_ID]: defaultFieldValues,
+          [itemId]: defaultFieldValues,
         }));
         setEntryNames((prev) => ({
           ...prev,
           [inserted.id]: entryName,
-          [NEW_ENTRY_ID]: "",
+          [itemId]: "",
         }));
         setEntryImages((prev) => ({
           ...prev,
           [inserted.id]: imageUrl || "",
-          [NEW_ENTRY_ID]: "",
+          [itemId]: "",
         }));
-        setActiveEntryIndex(activeGroupEntries.length);
+        setActiveGroup(targetGroup);
+        setActiveEntryIndexByGroup((prev) => ({
+          ...prev,
+          [targetGroup]: targetGroupEntries.length,
+        }));
         toast({ title: "Saved!", description: `${entryName} created.` });
       } else {
         const { error } = await supabase
@@ -854,7 +855,7 @@ const MyGoTwo = () => {
   };
 
   const handleDeleteEntry = async (itemId: string) => {
-    if (!itemId || itemId === NEW_ENTRY_ID) return;
+    if (!itemId || itemId.startsWith(`${NEW_ENTRY_ID}::`)) return;
 
     setSaving(true);
     try {
@@ -862,7 +863,6 @@ const MyGoTwo = () => {
       if (error) throw error;
 
       setEntries((prev) => prev.filter((entry) => entry.id !== itemId));
-      setActiveEntryIndex(0);
       toast({ title: "Deleted", description: "Entry removed." });
     } catch (e: any) {
       toast({ title: "Error deleting", description: e.message, variant: "destructive" });
@@ -875,8 +875,8 @@ const MyGoTwo = () => {
     const nextGroupName = groupNameInput.trim();
     if (!nextGroupName) return;
     setActiveGroup(nextGroupName);
-    setActiveEntryIndex(0);
-    setActiveEntryPage(1);
+    setActiveEntryIndexByGroup((prev) => ({ ...prev, [nextGroupName]: 0 }));
+    setActiveEntryPageByGroup((prev) => ({ ...prev, [nextGroupName]: 1 }));
     setShowGroupDialog(false);
     setGroupNameInput("");
     toast({ title: "Group created", description: `${getVisibleGroupLabel(nextGroupName)} is ready.` });
@@ -912,6 +912,24 @@ const MyGoTwo = () => {
 
   const renderContent = () => {
     if (cardKey && leafSubtype) {
+      const getNearestGroupIndex = (scrollTop: number) => {
+        if (productGroups.length === 0) return 0;
+
+        let nearestIndex = 0;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+
+        productGroups.forEach((groupName, index) => {
+          const groupTop = productGroupSectionRefs.current[groupName]?.offsetTop ?? 0;
+          const distance = Math.abs(groupTop - scrollTop);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+
+        return nearestIndex;
+      };
+
       return (
         <motion.div
           key="entry-coverflow"
@@ -921,59 +939,103 @@ const MyGoTwo = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full flex flex-col items-center justify-center px-4"
         >
-          <div className="flex flex-col items-center justify-center gap-4">
-            <div className="flex max-w-[min(90vw,920px)] flex-wrap items-center justify-center gap-2">
-              {groupTabs.map((group) => {
-                const isActive = group.key === activeGroup;
-                return (
-                  <button
-                    key={group.key}
-                    type="button"
-                    onClick={() => setActiveGroup(group.key)}
-                    className="rounded-full border px-4 py-2 text-sm transition-colors"
-                    style={{
-                      fontFamily: "'Jost', sans-serif",
-                      borderColor: isActive ? "rgba(45,104,112,0.45)" : "rgba(26,26,26,0.12)",
-                      background: isActive ? "rgba(45,104,112,0.12)" : "rgba(255,255,255,0.72)",
-                      color: isActive ? "#2d6870" : "#1a1a1a",
-                    }}
-                  >
-                    {group.label}
-                  </button>
-                );
-              })}
-            </div>
-            <FormCoverFlowCarousel
-              items={paginatedEntryItems}
-              activeIndex={activeEntryIndexOnPage}
-              previousImage={previousEntryImage}
-              onActiveIndexChange={(index) => setActiveEntryIndex(entryPageStart + index)}
-              renderActiveCard={(item) => (
-                <EntryFormCard
-                  subtype={leafSubtype}
-                  subcategoryName={leafSubcategoryName}
-                  categoryName={leafCategoryName}
-                  entryName={entryNames[item.id] || ""}
-                  values={entryDrafts[item.id] || defaultFieldValues}
-                  imageUrl={normalizeImageValue(entryImages[item.id])}
-                  saving={saving}
-                  isEditing={item.id !== NEW_ENTRY_ID}
-                  onEntryNameChange={(name) => handleNameChange(item.id, name)}
-                  onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
-                  onImageChange={(imageUrl) => handleImageChange(item.id, imageUrl)}
-                  onSave={() => handleSaveEntry(item.id)}
-                  onDelete={() => handleDeleteEntry(item.id)}
-                />
-              )}
-            />
-            <PaginationControls
-              currentPage={activeEntryPage}
-              totalPages={entryTotalPages}
-              onPageChange={handleEntryPageChange}
-              orientation="vertical"
-              className="fixed"
-              style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
-            />
+          <div
+            ref={productGroupScrollRef}
+            className="h-full w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
+            style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
+            onScroll={(e) => {
+              const nextGroupIndex = getNearestGroupIndex(e.currentTarget.scrollTop);
+              const nextGroup = productGroups[nextGroupIndex];
+              if (nextGroup && nextGroup !== activeGroup) {
+                setActiveGroup(nextGroup);
+              }
+            }}
+          >
+            {productGroups.map((groupName) => {
+              const groupEntries = entries.filter((entry) => entry.group_name === groupName);
+              const newEntryId = getNewEntryId(groupName);
+              const items = [
+                ...groupEntries.map((entry) => ({
+                  id: entry.id,
+                  label: entryNames[entry.id] || entry.entry_name,
+                  image: normalizeImageValue(entryImages[entry.id] || entry.image_url) || leafImage || BRANDED_CARD_SVG,
+                })),
+                {
+                  id: newEntryId,
+                  label: entryNames[newEntryId]?.trim() || "",
+                  image: normalizeImageValue(entryImages[newEntryId]) || leafImage || BRANDED_CARD_SVG,
+                },
+              ];
+              const currentPage = activeEntryPageByGroup[groupName] ?? 1;
+              const totalPages = Math.max(1, Math.ceil(items.length / ENTRY_PAGE_SIZE));
+              const pageStart = (currentPage - 1) * ENTRY_PAGE_SIZE;
+              const paginatedItems = items.slice(pageStart, pageStart + ENTRY_PAGE_SIZE);
+              const activeIndex = activeEntryIndexByGroup[groupName] ?? 0;
+              const activeIndexOnPage = paginatedItems.length === 0
+                ? 0
+                : Math.min(Math.max(activeIndex - pageStart, 0), paginatedItems.length - 1);
+              const previousImage = items.length === 0
+                ? ""
+                : items[(activeIndex - 1 + items.length) % items.length]?.image || "";
+              const isActiveGroup = groupName === activeGroup;
+
+              return (
+                <div
+                  key={groupName}
+                  ref={(node) => {
+                    productGroupSectionRefs.current[groupName] = node;
+                  }}
+                  className="coverflow-stage-shell snap-start snap-always"
+                >
+                  <div className="flex flex-col items-center justify-center">
+                    <FormCoverFlowCarousel
+                      items={paginatedItems}
+                      activeIndex={activeIndexOnPage}
+                      previousImage={previousImage}
+                      onActiveIndexChange={(index) => {
+                        setActiveEntryIndexByGroup((prev) => ({
+                          ...prev,
+                          [groupName]: pageStart + index,
+                        }));
+                      }}
+                      renderActiveCard={(item) => (
+                        <EntryFormCard
+                          subtype={leafSubtype}
+                          subcategoryName={leafSubcategoryName}
+                          categoryName={leafCategoryName}
+                          entryName={entryNames[item.id] || ""}
+                          values={entryDrafts[item.id] || defaultFieldValues}
+                          imageUrl={normalizeImageValue(entryImages[item.id])}
+                          saving={saving}
+                          isEditing={!item.id.startsWith(`${NEW_ENTRY_ID}::`)}
+                          onEntryNameChange={(name) => handleNameChange(item.id, name)}
+                          onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
+                          onImageChange={(imageUrl) => handleImageChange(item.id, imageUrl)}
+                          onSave={() => handleSaveEntry(item.id)}
+                          onDelete={() => handleDeleteEntry(item.id)}
+                        />
+                      )}
+                    />
+                    {isActiveGroup ? (
+                      <PaginationControls
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={(page) => {
+                          setActiveEntryPageByGroup((prev) => ({ ...prev, [groupName]: page }));
+                          setActiveEntryIndexByGroup((prev) => ({
+                            ...prev,
+                            [groupName]: Math.min((page - 1) * ENTRY_PAGE_SIZE, Math.max(items.length - 1, 0)),
+                          }));
+                        }}
+                        orientation="vertical"
+                        className="fixed"
+                        style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
+                      />
+                    ) : null}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           <div className="absolute left-1/2 -translate-x-1/2 bottom-4 z-10">
