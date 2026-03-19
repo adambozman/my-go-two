@@ -927,106 +927,103 @@ const MyGoTwo = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -40 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="h-full flex flex-col items-center justify-center px-4"
+          ref={productGroupScrollRef}
+          className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
+          style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
+          onScroll={(e) => {
+            const nextGroupIndex = getNearestGroupIndex(e.currentTarget.scrollTop);
+            const nextGroup = productGroups[nextGroupIndex];
+            if (nextGroup && nextGroup !== activeGroup) {
+              setActiveGroup(nextGroup);
+            }
+          }}
         >
-          <div
-            ref={productGroupScrollRef}
-            className="h-full w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
-            style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
-            onScroll={(e) => {
-              const nextGroupIndex = getNearestGroupIndex(e.currentTarget.scrollTop);
-              const nextGroup = productGroups[nextGroupIndex];
-              if (nextGroup && nextGroup !== activeGroup) {
-                setActiveGroup(nextGroup);
-              }
-            }}
-          >
-            {productGroups.map((groupName) => {
-              const groupEntries = entries.filter((entry) => entry.group_name === groupName);
-              const newEntryId = getNewEntryId(groupName);
-              const items = [
-                ...groupEntries.map((entry) => ({
-                  id: entry.id,
-                  label: entryNames[entry.id] || entry.entry_name,
-                  image: normalizeImageValue(entryImages[entry.id] || entry.image_url) || leafImage || BRANDED_CARD_SVG,
-                })),
-                {
-                  id: newEntryId,
-                  label: entryNames[newEntryId]?.trim() || "",
-                  image: normalizeImageValue(entryImages[newEntryId]) || leafImage || BRANDED_CARD_SVG,
-                },
-              ];
-              const currentPage = activeEntryPageByGroup[groupName] ?? 1;
-              const totalPages = Math.max(1, Math.ceil(items.length / ENTRY_PAGE_SIZE));
-              const pageStart = (currentPage - 1) * ENTRY_PAGE_SIZE;
-              const paginatedItems = items.slice(pageStart, pageStart + ENTRY_PAGE_SIZE);
-              const activeIndex = activeEntryIndexByGroup[groupName] ?? 0;
-              const activeIndexOnPage = paginatedItems.length === 0
-                ? 0
-                : Math.min(Math.max(activeIndex - pageStart, 0), paginatedItems.length - 1);
-              const previousImage = items.length === 0
-                ? ""
-                : items[(activeIndex - 1 + items.length) % items.length]?.image || "";
-              const isActiveGroup = groupName === activeGroup;
+          {productGroups.map((groupName) => {
+            const groupEntries = entries.filter((entry) => entry.group_name === groupName);
+            const newEntryId = getNewEntryId(groupName);
+            const items = [
+              ...groupEntries.map((entry) => ({
+                id: entry.id,
+                label: entryNames[entry.id] || entry.entry_name,
+                image: normalizeImageValue(entryImages[entry.id] || entry.image_url) || leafImage || BRANDED_CARD_SVG,
+              })),
+              {
+                id: newEntryId,
+                label: entryNames[newEntryId]?.trim() || "",
+                image: normalizeImageValue(entryImages[newEntryId]) || leafImage || BRANDED_CARD_SVG,
+              },
+            ];
+            const currentPage = activeEntryPageByGroup[groupName] ?? 1;
+            const totalPages = Math.max(1, Math.ceil(items.length / ENTRY_PAGE_SIZE));
+            const pageStart = (currentPage - 1) * ENTRY_PAGE_SIZE;
+            const paginatedItems = items.slice(pageStart, pageStart + ENTRY_PAGE_SIZE);
+            const activeIndex = activeEntryIndexByGroup[groupName] ?? 0;
+            const activeIndexOnPage = paginatedItems.length === 0
+              ? 0
+              : Math.min(Math.max(activeIndex - pageStart, 0), paginatedItems.length - 1);
+            const previousImage = items.length === 0
+              ? ""
+              : items[(activeIndex - 1 + items.length) % items.length]?.image || "";
+            const isActiveGroup = groupName === activeGroup;
 
-              return (
-                <div
-                  key={groupName}
-                  ref={(node) => {
-                    productGroupSectionRefs.current[groupName] = node;
-                  }}
-                  className="coverflow-stage-shell snap-start snap-always"
-                >
-                  <div className="flex flex-col items-center justify-center">
-                    <FormCoverFlowCarousel
-                      items={paginatedItems}
-                      activeIndex={activeIndexOnPage}
-                      previousImage={previousImage}
-                      onActiveIndexChange={(index) => {
+            return (
+              <div
+                key={groupName}
+                ref={(node) => {
+                  productGroupSectionRefs.current[groupName] = node;
+                }}
+                className="coverflow-stage-shell snap-start snap-always"
+              >
+                <div className="coverflow-stage-title-wrap" aria-hidden="true" />
+                <div className="flex flex-col items-center justify-center">
+                  <FormCoverFlowCarousel
+                    items={paginatedItems}
+                    activeIndex={activeIndexOnPage}
+                    previousImage={previousImage}
+                    onActiveIndexChange={(index) => {
+                      setActiveEntryIndexByGroup((prev) => ({
+                        ...prev,
+                        [groupName]: pageStart + index,
+                      }));
+                    }}
+                    renderActiveCard={(item) => (
+                      <EntryFormCard
+                        subtype={leafSubtype}
+                        subcategoryName={leafSubcategoryName}
+                        categoryName={leafCategoryName}
+                        entryName={entryNames[item.id] || ""}
+                        values={entryDrafts[item.id] || defaultFieldValues}
+                        imageUrl={normalizeImageValue(entryImages[item.id])}
+                        saving={saving}
+                        isEditing={!item.id.startsWith(`${NEW_ENTRY_ID}::`)}
+                        onEntryNameChange={(name) => handleNameChange(item.id, name)}
+                        onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
+                        onImageChange={(imageUrl) => handleImageChange(item.id, imageUrl)}
+                        onSave={() => handleSaveEntry(item.id)}
+                        onDelete={() => handleDeleteEntry(item.id)}
+                      />
+                    )}
+                  />
+                  {isActiveGroup ? (
+                    <PaginationControls
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={(page) => {
+                        setActiveEntryPageByGroup((prev) => ({ ...prev, [groupName]: page }));
                         setActiveEntryIndexByGroup((prev) => ({
                           ...prev,
-                          [groupName]: pageStart + index,
+                          [groupName]: Math.min((page - 1) * ENTRY_PAGE_SIZE, Math.max(items.length - 1, 0)),
                         }));
                       }}
-                      renderActiveCard={(item) => (
-                        <EntryFormCard
-                          subtype={leafSubtype}
-                          subcategoryName={leafSubcategoryName}
-                          categoryName={leafCategoryName}
-                          entryName={entryNames[item.id] || ""}
-                          values={entryDrafts[item.id] || defaultFieldValues}
-                          imageUrl={normalizeImageValue(entryImages[item.id])}
-                          saving={saving}
-                          isEditing={!item.id.startsWith(`${NEW_ENTRY_ID}::`)}
-                          onEntryNameChange={(name) => handleNameChange(item.id, name)}
-                          onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
-                          onImageChange={(imageUrl) => handleImageChange(item.id, imageUrl)}
-                          onSave={() => handleSaveEntry(item.id)}
-                          onDelete={() => handleDeleteEntry(item.id)}
-                        />
-                      )}
+                      orientation="vertical"
+                      className="fixed"
+                      style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
                     />
-                    {isActiveGroup ? (
-                      <PaginationControls
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={(page) => {
-                          setActiveEntryPageByGroup((prev) => ({ ...prev, [groupName]: page }));
-                          setActiveEntryIndexByGroup((prev) => ({
-                            ...prev,
-                            [groupName]: Math.min((page - 1) * ENTRY_PAGE_SIZE, Math.max(items.length - 1, 0)),
-                          }));
-                        }}
-                        orientation="vertical"
-                        className="fixed"
-                        style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
-                      />
-                    ) : null}
-                  </div>
+                  ) : null}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
 
           <div className="absolute left-1/2 -translate-x-1/2 bottom-4 z-10">
             <Button
