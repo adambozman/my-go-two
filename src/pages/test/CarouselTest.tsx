@@ -295,7 +295,7 @@ const CarouselTest = () => {
       <DashboardTopBar />
       <main
         className="flex-1 min-h-0 px-8 flex flex-col items-center justify-center gap-6"
-        style={{ paddingBottom: "var(--footer-height)" }}
+      style={{ paddingBottom: 0 }}
       >
         <p style={{ ...LABEL_STYLE, marginBottom: 0 }}>Style & Fit</p>
         {isDesktop
