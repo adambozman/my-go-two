@@ -3660,37 +3660,432 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "id": "tops",
         "name": "Tops",
         "image": "everyday-female-tops",
-        "products": []
+        "products": [
+          {
+            "id": "t-shirt",
+            "name": "T-Shirt",
+            "image": "everyday-female-tops-t-shirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "long-sleeve-top",
+            "name": "Long Sleeve Top",
+            "image": "everyday-female-tops-long-sleeve-top",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "blouse",
+            "name": "Blouse",
+            "image": "everyday-female-tops-blouse",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Fitted", "Regular", "Relaxed", "Oversized"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "tank-top",
+            "name": "Tank Top",
+            "image": "everyday-female-tops-tank-top",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "sweater",
+            "name": "Sweater",
+            "image": "everyday-female-tops-sweater",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Weight", "type": "select", "value": "", "options": ["Lightweight", "Midweight", "Heavyweight"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "cardigan",
+            "name": "Cardigan",
+            "image": "everyday-female-tops-cardigan",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Cropped", "Regular", "Long"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "bottoms",
         "name": "Bottoms",
         "image": "everyday-female-bottoms",
-        "products": []
+        "products": [
+          {
+            "id": "jeans",
+            "name": "Jeans",
+            "image": "everyday-female-bottoms-jeans",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Skinny", "Slim", "Straight", "Wide Leg", "Relaxed"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "trousers",
+            "name": "Trousers",
+            "image": "everyday-female-bottoms-trousers",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Rise", "type": "select", "value": "", "options": ["Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "skirt",
+            "name": "Skirt",
+            "image": "everyday-female-bottoms-skirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Mini", "Midi", "Maxi"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "shorts",
+            "name": "Shorts",
+            "image": "everyday-female-bottoms-shorts",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Rise", "type": "select", "value": "", "options": ["Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "leggings",
+            "name": "Leggings",
+            "image": "everyday-female-bottoms-leggings",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["7/8", "Full Length", "Capri"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "joggers",
+            "name": "Joggers",
+            "image": "everyday-female-bottoms-joggers",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Slim", "Regular", "Relaxed"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "footwear",
         "name": "Footwear",
         "image": "everyday-female-footwear",
-        "products": []
+        "products": [
+          {
+            "id": "sneakers",
+            "name": "Sneakers",
+            "image": "everyday-female-footwear-sneakers",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Width", "type": "select", "value": "", "options": ["Narrow", "Standard", "Wide"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "boots",
+            "name": "Boots",
+            "image": "everyday-female-footwear-boots",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Boot Height", "type": "select", "value": "", "options": ["Ankle", "Mid", "Knee"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "running-shoes",
+            "name": "Running Shoes",
+            "image": "everyday-female-footwear-running-shoes",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Neutral", "Stability", "Max Cushion"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "flats",
+            "name": "Flats",
+            "image": "everyday-female-footwear-flats",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Toe Shape", "type": "select", "value": "", "options": ["Round", "Pointed", "Square"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "loafers",
+            "name": "Loafers",
+            "image": "everyday-female-footwear-loafers",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "sandals",
+            "name": "Sandals",
+            "image": "everyday-female-footwear-sandals",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Style", "type": "select", "value": "", "options": ["Slides", "Flat Sandals", "Sport Sandals", "Strappy"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "outerwear",
         "name": "Outerwear",
         "image": "everyday-female-outerwear",
-        "products": []
+        "products": [
+          {
+            "id": "coat",
+            "name": "Coat",
+            "image": "everyday-female-outerwear-coat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Short", "Mid", "Long"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "jacket",
+            "name": "Jacket",
+            "image": "everyday-female-outerwear-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Fitted", "Regular", "Oversized"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "overshirt",
+            "name": "Overshirt",
+            "image": "everyday-female-outerwear-overshirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "rain-jacket",
+            "name": "Rain Jacket",
+            "image": "everyday-female-outerwear-rain-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Waterproof Level", "type": "select", "value": "", "options": ["Light", "Medium", "Heavy"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "fleece",
+            "name": "Fleece",
+            "image": "everyday-female-outerwear-fleece",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Weight", "type": "select", "value": "", "options": ["Lightweight", "Midweight", "Heavyweight"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bomber-jacket",
+            "name": "Bomber Jacket",
+            "image": "everyday-female-outerwear-bomber-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "accessories",
         "name": "Accessories",
         "image": "everyday-female-accessories",
-        "products": []
+        "products": [
+          {
+            "id": "watch",
+            "name": "Watch",
+            "image": "everyday-female-accessories-watch",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Metal Tone", "type": "select", "value": "", "options": ["Gold", "Silver", "Rose Gold", "Mixed"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "wallet",
+            "name": "Wallet",
+            "image": "everyday-female-accessories-wallet",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Material", "type": "select", "value": "", "options": ["Leather", "Canvas", "Synthetic"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "sunglasses",
+            "name": "Sunglasses",
+            "image": "everyday-female-accessories-sunglasses",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Frame Shape", "type": "select", "value": "", "options": ["Cat Eye", "Round", "Square", "Aviator"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "necklace",
+            "name": "Necklace",
+            "image": "everyday-female-accessories-necklace",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Metal Tone", "type": "select", "value": "", "options": ["Gold", "Silver", "Rose Gold", "Mixed"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bag",
+            "name": "Bag",
+            "image": "everyday-female-accessories-bag",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Style", "type": "select", "value": "", "options": ["Tote", "Crossbody", "Shoulder", "Backpack"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "belt",
+            "name": "Belt",
+            "image": "everyday-female-accessories-belt",
+            "fields": [
+              { "label": "Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "underwear",
         "name": "Underwear",
         "image": "everyday-female-underwear",
-        "products": []
+        "products": [
+          {
+            "id": "bra",
+            "name": "Bra",
+            "image": "everyday-female-underwear-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bralette",
+            "name": "Bralette",
+            "image": "everyday-female-underwear-bralette",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "underwear",
+            "name": "Underwear",
+            "image": "everyday-female-underwear-underwear",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Cut", "type": "select", "value": "", "options": ["Brief", "Bikini", "Hipster", "Thong"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "briefs",
+            "name": "Briefs",
+            "image": "everyday-female-underwear-briefs",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Rise", "type": "select", "value": "", "options": ["Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "cami",
+            "name": "Cami",
+            "image": "everyday-female-underwear-cami",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "socks",
+            "name": "Socks",
+            "image": "everyday-female-underwear-socks",
+            "fields": [
+              { "label": "Sock Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       }
     ],
     "image": "everyday-female"
@@ -3711,37 +4106,422 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "id": "tops",
         "name": "Tops",
         "image": "dress-female-tops",
-        "products": []
+        "products": [
+          {
+            "id": "blouse",
+            "name": "Blouse",
+            "image": "dress-female-tops-blouse",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "collared-dress-shirt",
+            "name": "Collared Dress Shirt",
+            "image": "dress-female-tops-collared-dress-shirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "camisole",
+            "name": "Camisole",
+            "image": "dress-female-tops-camisole",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "formal-sweater",
+            "name": "Formal Sweater",
+            "image": "dress-female-tops-formal-sweater",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "dressy-top",
+            "name": "Dressy Top",
+            "image": "dress-female-tops-dressy-top",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Style", "type": "select", "value": "", "options": ["Structured", "Soft", "Statement"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bodysuit",
+            "name": "Bodysuit",
+            "image": "dress-female-tops-bodysuit",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "bottoms",
         "name": "Bottoms",
         "image": "dress-female-bottoms",
-        "products": []
+        "products": [
+          {
+            "id": "dress-pants",
+            "name": "Dress Pants",
+            "image": "dress-female-bottoms-dress-pants",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "formal-trousers",
+            "name": "Formal Trousers",
+            "image": "dress-female-bottoms-formal-trousers",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Rise", "type": "select", "value": "", "options": ["Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "skirt",
+            "name": "Skirt",
+            "image": "dress-female-bottoms-skirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Mini", "Midi", "Maxi"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "suit-skirt",
+            "name": "Suit Skirt",
+            "image": "dress-female-bottoms-suit-skirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Above Knee", "Knee", "Midi"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "tuxedo-pants",
+            "name": "Tuxedo Pants",
+            "image": "dress-female-bottoms-tuxedo-pants",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "wide-leg-pants",
+            "name": "Wide-Leg Pants",
+            "image": "dress-female-bottoms-wide-leg-pants",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "footwear",
         "name": "Footwear",
         "image": "dress-female-footwear",
-        "products": []
+        "products": [
+          {
+            "id": "heels",
+            "name": "Heels",
+            "image": "dress-female-footwear-heels",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Heel Height", "type": "select", "value": "", "options": ["Kitten", "Mid", "High", "Stiletto"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "loafers",
+            "name": "Loafers",
+            "image": "dress-female-footwear-loafers",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "pumps",
+            "name": "Pumps",
+            "image": "dress-female-footwear-pumps",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Heel Height", "type": "select", "value": "", "options": ["Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "slingbacks",
+            "name": "Slingbacks",
+            "image": "dress-female-footwear-slingbacks",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "dress-sandals",
+            "name": "Dress Sandals",
+            "image": "dress-female-footwear-dress-sandals",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Heel Height", "type": "select", "value": "", "options": ["Flat", "Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "formal-boots",
+            "name": "Formal Boots",
+            "image": "dress-female-footwear-formal-boots",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Boot Height", "type": "select", "value": "", "options": ["Ankle", "Mid", "Knee"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "outerwear",
         "name": "Outerwear",
         "image": "dress-female-outerwear",
-        "products": []
+        "products": [
+          {
+            "id": "overcoat",
+            "name": "Overcoat",
+            "image": "dress-female-outerwear-overcoat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Mid", "Long"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "trench-coat",
+            "name": "Trench Coat",
+            "image": "dress-female-outerwear-trench-coat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "car-coat",
+            "name": "Car Coat",
+            "image": "dress-female-outerwear-car-coat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "peacoat",
+            "name": "Peacoat",
+            "image": "dress-female-outerwear-peacoat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "wrap-coat",
+            "name": "Wrap Coat",
+            "image": "dress-female-outerwear-wrap-coat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "blazer",
+            "name": "Blazer",
+            "image": "dress-female-outerwear-blazer",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Tailored", "Regular", "Oversized"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "accessories",
         "name": "Accessories",
         "image": "dress-female-accessories",
-        "products": []
+        "products": [
+          {
+            "id": "watch",
+            "name": "Watch",
+            "image": "dress-female-accessories-watch",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Metal Tone", "type": "select", "value": "", "options": ["Gold", "Silver", "Rose Gold", "Mixed"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "clutch",
+            "name": "Clutch",
+            "image": "dress-female-accessories-clutch",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Material", "type": "select", "value": "", "options": ["Leather", "Satin", "Beaded", "Metallic"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "earrings",
+            "name": "Earrings",
+            "image": "dress-female-accessories-earrings",
+            "fields": [
+              { "label": "Metal Tone", "type": "select", "value": "", "options": ["Gold", "Silver", "Rose Gold", "Mixed"] },
+              { "label": "Style", "type": "select", "value": "", "options": ["Stud", "Hoop", "Drop", "Statement"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "necklace",
+            "name": "Necklace",
+            "image": "dress-female-accessories-necklace",
+            "fields": [
+              { "label": "Metal Tone", "type": "select", "value": "", "options": ["Gold", "Silver", "Rose Gold", "Mixed"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Choker", "Short", "Mid", "Long"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "belt",
+            "name": "Belt",
+            "image": "dress-female-accessories-belt",
+            "fields": [
+              { "label": "Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "scarf",
+            "name": "Scarf",
+            "image": "dress-female-accessories-scarf",
+            "fields": [
+              { "label": "Material", "type": "select", "value": "", "options": ["Silk", "Cashmere", "Wool", "Blend"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "underwear",
         "name": "Underwear",
         "image": "dress-female-underwear",
-        "products": []
+        "products": [
+          {
+            "id": "bra",
+            "name": "Bra",
+            "image": "dress-female-underwear-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "strapless-bra",
+            "name": "Strapless Bra",
+            "image": "dress-female-underwear-strapless-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "shapewear",
+            "name": "Shapewear",
+            "image": "dress-female-underwear-shapewear",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Coverage", "type": "select", "value": "", "options": ["Light", "Medium", "Firm"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "slip",
+            "name": "Slip",
+            "image": "dress-female-underwear-slip",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Mini", "Midi", "Maxi"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "tights",
+            "name": "Tights",
+            "image": "dress-female-underwear-tights",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XS/S", "M/L", "XL/XXL"] },
+              { "label": "Opacity", "type": "select", "value": "", "options": ["Sheer", "Semi-Opaque", "Opaque"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "hosiery",
+            "name": "Hosiery",
+            "image": "dress-female-underwear-hosiery",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XS/S", "M/L", "XL/XXL"] },
+              { "label": "Style", "type": "select", "value": "", "options": ["Sheer", "Patterned", "Control Top"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       }
     ],
     "image": "dress-female"
@@ -3762,37 +4542,427 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "id": "tops",
         "name": "Tops",
         "image": "athletic-female-tops",
-        "products": []
+        "products": [
+          {
+            "id": "sports-bra",
+            "name": "Sports Bra",
+            "image": "athletic-female-tops-sports-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Low", "Medium", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "performance-tee",
+            "name": "Performance Tee",
+            "image": "athletic-female-tops-performance-tee",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "quarter-zip",
+            "name": "Quarter-Zip",
+            "image": "athletic-female-tops-quarter-zip",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "performance-tank",
+            "name": "Performance Tank",
+            "image": "athletic-female-tops-performance-tank",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "performance-hoodie",
+            "name": "Performance Hoodie",
+            "image": "athletic-female-tops-performance-hoodie",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Weight", "type": "select", "value": "", "options": ["Lightweight", "Midweight", "Heavyweight"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "long-sleeve-performance-top",
+            "name": "Long Sleeve Performance Top",
+            "image": "athletic-female-tops-long-sleeve-performance-top",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "bottoms",
         "name": "Bottoms",
         "image": "athletic-female-bottoms",
-        "products": []
+        "products": [
+          {
+            "id": "leggings",
+            "name": "Leggings",
+            "image": "athletic-female-bottoms-leggings",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["7/8", "Full Length", "Capri"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "running-shorts",
+            "name": "Running Shorts",
+            "image": "athletic-female-bottoms-running-shorts",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Inseam", "type": "select", "value": "", "options": ["2 in", "3 in", "5 in", "7 in"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "track-pants",
+            "name": "Track Pants",
+            "image": "athletic-female-bottoms-track-pants",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bike-shorts",
+            "name": "Bike Shorts",
+            "image": "athletic-female-bottoms-bike-shorts",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Inseam", "type": "select", "value": "", "options": ["5 in", "7 in", "9 in"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "joggers",
+            "name": "Joggers",
+            "image": "athletic-female-bottoms-joggers",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Slim", "Regular", "Relaxed"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "tennis-skirt",
+            "name": "Tennis Skirt",
+            "image": "athletic-female-bottoms-tennis-skirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Short", "Regular"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "footwear",
         "name": "Footwear",
         "image": "athletic-female-footwear",
-        "products": []
+        "products": [
+          {
+            "id": "training-shoes",
+            "name": "Training Shoes",
+            "image": "athletic-female-footwear-training-shoes",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Neutral", "Stability", "Cross-Training"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "running-shoes",
+            "name": "Running Shoes",
+            "image": "athletic-female-footwear-running-shoes",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Neutral", "Stability", "Max Cushion"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "walking-shoes",
+            "name": "Walking Shoes",
+            "image": "athletic-female-footwear-walking-shoes",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "recovery-slides",
+            "name": "Recovery Slides",
+            "image": "athletic-female-footwear-recovery-slides",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "hiking-boots",
+            "name": "Hiking Boots",
+            "image": "athletic-female-footwear-hiking-boots",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Boot Height", "type": "select", "value": "", "options": ["Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "court-shoes",
+            "name": "Court Shoes",
+            "image": "athletic-female-footwear-court-shoes",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Sport", "type": "select", "value": "", "options": ["Tennis", "Pickleball", "Padel"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "outerwear",
         "name": "Outerwear",
         "image": "athletic-female-outerwear",
-        "products": []
+        "products": [
+          {
+            "id": "training-jacket",
+            "name": "Training Jacket",
+            "image": "athletic-female-outerwear-training-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "puffer-jacket",
+            "name": "Puffer Jacket",
+            "image": "athletic-female-outerwear-puffer-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Warmth", "type": "select", "value": "", "options": ["Light", "Mid", "Heavy"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "windbreaker",
+            "name": "Windbreaker",
+            "image": "athletic-female-outerwear-windbreaker",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "parka",
+            "name": "Parka",
+            "image": "athletic-female-outerwear-parka",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Warmth", "type": "select", "value": "", "options": ["Mid", "Heavy"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "rain-jacket",
+            "name": "Rain Jacket",
+            "image": "athletic-female-outerwear-rain-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Waterproof Level", "type": "select", "value": "", "options": ["Light", "Medium", "Heavy"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "hiking-jacket",
+            "name": "Hiking Jacket",
+            "image": "athletic-female-outerwear-hiking-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "accessories",
         "name": "Accessories",
         "image": "athletic-female-accessories",
-        "products": []
+        "products": [
+          {
+            "id": "fitness-watch",
+            "name": "Fitness Watch",
+            "image": "athletic-female-accessories-fitness-watch",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "hat",
+            "name": "Hat",
+            "image": "athletic-female-accessories-hat",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Style", "type": "select", "value": "", "options": ["Cap", "Visor", "Beanie"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "sport-sunglasses",
+            "name": "Sport Sunglasses",
+            "image": "athletic-female-accessories-sport-sunglasses",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "gym-bag",
+            "name": "Gym Bag",
+            "image": "athletic-female-accessories-gym-bag",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Style", "type": "select", "value": "", "options": ["Duffel", "Tote", "Backpack"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "water-bottle",
+            "name": "Water Bottle",
+            "image": "athletic-female-accessories-water-bottle",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Size", "type": "select", "value": "", "options": ["16 oz", "24 oz", "32 oz", "40 oz"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "headband",
+            "name": "Headband",
+            "image": "athletic-female-accessories-headband",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "underwear",
         "name": "Underwear",
         "image": "athletic-female-underwear",
-        "products": []
+        "products": [
+          {
+            "id": "sports-bra",
+            "name": "Sports Bra",
+            "image": "athletic-female-underwear-sports-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Low", "Medium", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "compression-shorts",
+            "name": "Compression Shorts",
+            "image": "athletic-female-underwear-compression-shorts",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Inseam", "type": "select", "value": "", "options": ["3 in", "5 in", "7 in"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "performance-underwear",
+            "name": "Performance Underwear",
+            "image": "athletic-female-underwear-performance-underwear",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Cut", "type": "select", "value": "", "options": ["Brief", "Bikini", "Hipster", "Thong"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "longline-sports-bra",
+            "name": "Longline Sports Bra",
+            "image": "athletic-female-underwear-longline-sports-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Low", "Medium", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bike-shorts",
+            "name": "Bike Shorts",
+            "image": "athletic-female-underwear-bike-shorts",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Inseam", "type": "select", "value": "", "options": ["5 in", "7 in", "9 in"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "socks",
+            "name": "Socks",
+            "image": "athletic-female-underwear-socks",
+            "fields": [
+              { "label": "Sock Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       }
     ],
     "image": "athletic-female"
