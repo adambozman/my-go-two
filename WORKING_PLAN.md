@@ -284,6 +284,14 @@ Specifically:
 - map current sharing categories to actual stored data
 - identify where app logic currently enforces privacy but the database does not
 
+## Tracked Follow-Up
+
+- `LINT_AUDIT.md` now tracks the current lint status and cleanup order
+- current status:
+  - build passes
+  - lint fails with repo-wide cleanup issues
+- when resumed, prioritize My Go Two and shared coverflow files first
+
 ## Notes For Future Sessions
 
 If work resumes after a crash, restart from this file and continue phase by phase.
