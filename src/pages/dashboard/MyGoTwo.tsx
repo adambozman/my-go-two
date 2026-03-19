@@ -340,7 +340,7 @@ const EntryFormCard = ({
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 22px" }}>
-        {subtype.fields.map((field, i) => (
+        {(subtype.fields || []).map((field, i) => (
           <div key={field.label} style={{
             paddingBottom: 12, marginBottom: 12,
             borderBottom: i < subtype.fields.length - 1 ? "1px solid rgba(26,26,26,0.1)" : "none",
