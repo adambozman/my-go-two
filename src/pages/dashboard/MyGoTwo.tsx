@@ -889,7 +889,7 @@ const MyGoTwo = () => {
             />
           </div>
 
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-4 flex items-center gap-3 z-10">
+          <div className="absolute left-1/2 -translate-x-1/2 bottom-4 z-10">
             <Button
               variant="outline"
               className="rounded-full px-6 h-10 border-border text-foreground"
@@ -898,11 +898,6 @@ const MyGoTwo = () => {
               <Plus className="w-4 h-4 mr-2" />
               New Group
             </Button>
-            {activeGroup && (
-              <span className="text-sm text-muted-foreground" style={{ fontFamily: "'Jost', sans-serif" }}>
-                Saving to: {activeGroup}
-              </span>
-            )}
           </div>
         </motion.div>
       );
