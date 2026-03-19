@@ -478,7 +478,7 @@ const MyGoTwo = () => {
   const productGroupSectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const defaultFieldValues = useMemo(() => {
-    if (!leafSubtype) return {} as Record<string, string>;
+    if (!leafSubtype?.fields) return {} as Record<string, string>;
     return leafSubtype.fields.reduce(
       (acc, field) => ({ ...acc, [field.label]: field.value || "" }),
       {} as Record<string, string>
