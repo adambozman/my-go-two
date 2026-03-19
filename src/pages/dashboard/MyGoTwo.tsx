@@ -698,7 +698,7 @@ const MyGoTwo = () => {
     })),
     {
       id: NEW_ENTRY_ID,
-      label: entryNames[NEW_ENTRY_ID]?.trim() || "New Card",
+      label: entryNames[NEW_ENTRY_ID]?.trim() || "",
       image: normalizeImageValue(entryImages[NEW_ENTRY_ID]) || leafImage || BRANDED_CARD_SVG,
     },
   ];

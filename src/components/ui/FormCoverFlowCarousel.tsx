@@ -130,26 +130,28 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                         <>
                           {/* Flanking cards — use previous card image */}
                           <div className="absolute inset-0" style={{ background: getFlankBackground(previousImage || item.image) }} />
-                          <div className="absolute bottom-6 left-6">
-                            <span
-                              style={{
-                                fontFamily: "'Cormorant Garamond', serif",
-                                fontSize: 16,
-                                letterSpacing: "0.02em",
-                                fontWeight: 600,
-                                color: "#fff",
-                                background: "rgba(255,255,255,0.18)",
-                                borderRadius: 999,
-                                backdropFilter: "blur(12px)",
-                                WebkitBackdropFilter: "blur(12px)",
-                                border: "1px solid rgba(255,255,255,0.35)",
-                                padding: "6px 18px",
-                                display: "inline-block",
-                              }}
-                            >
-                              {item.label}
-                            </span>
-                          </div>
+                          {item.label ? (
+                            <div className="absolute bottom-6 left-6">
+                              <span
+                                style={{
+                                  fontFamily: "'Cormorant Garamond', serif",
+                                  fontSize: 16,
+                                  letterSpacing: "0.02em",
+                                  fontWeight: 600,
+                                  color: "#fff",
+                                  background: "rgba(255,255,255,0.18)",
+                                  borderRadius: 999,
+                                  backdropFilter: "blur(12px)",
+                                  WebkitBackdropFilter: "blur(12px)",
+                                  border: "1px solid rgba(255,255,255,0.35)",
+                                  padding: "6px 18px",
+                                  display: "inline-block",
+                                }}
+                              >
+                                {item.label}
+                              </span>
+                            </div>
+                          ) : null}
                         </>
                       )}
                     </div>
@@ -192,23 +194,25 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                     ) : (
                       <>
                         <div className="absolute inset-0" style={{ background: getFlankBackground(previousImage || item.image) }} />
-                        <div className="absolute bottom-4 left-4">
-                          <span
-                            style={{
-                              fontFamily: "'Cormorant Garamond', serif",
-                              fontSize: 13,
-                              color: "#fff",
-                              background: "rgba(255,255,255,0.18)",
-                              borderRadius: 999,
-                              backdropFilter: "blur(12px)",
-                              border: "1px solid rgba(255,255,255,0.35)",
-                              padding: "4px 14px",
-                              display: "inline-block",
-                            }}
-                          >
-                            {item.label}
-                          </span>
-                        </div>
+                        {item.label ? (
+                          <div className="absolute bottom-4 left-4">
+                            <span
+                              style={{
+                                fontFamily: "'Cormorant Garamond', serif",
+                                fontSize: 13,
+                                color: "#fff",
+                                background: "rgba(255,255,255,0.18)",
+                                borderRadius: 999,
+                                backdropFilter: "blur(12px)",
+                                border: "1px solid rgba(255,255,255,0.35)",
+                                padding: "4px 14px",
+                                display: "inline-block",
+                              }}
+                            >
+                              {item.label}
+                            </span>
+                          </div>
+                        ) : null}
                       </>
                     )}
                   </div>
