@@ -5906,7 +5906,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       },
       {
         "id": "repair-restore",
-        "name": "Repair & Restore",
+        "name": "Daily Care",
         "image": "hygiene-male-repair-restore",
         "fields": [
           {
@@ -6162,7 +6162,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       },
       {
         "id": "muscle-sport",
-        "name": "Muscle & Sport",
+        "name": "Recovery",
         "image": "bodycare-male-muscle-sport",
         "fields": [
           {
@@ -6206,7 +6206,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       },
       {
         "id": "powders",
-        "name": "Powders",
+        "name": "Body Essentials",
         "image": "bodycare-male-powders",
         "fields": [
           {
@@ -6252,7 +6252,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
       },
       {
         "id": "supplements",
-        "name": "Supplements",
+        "name": "Wellness",
         "image": "bodycare-male-supplements",
         "fields": [
           {
