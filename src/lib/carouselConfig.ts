@@ -21,21 +21,21 @@ export const CAROUSEL_LAYOUT = {
 /** Desktop card dimensions — Figma originals × 1.4 × 1.4, website view only (≥1024px) */
 export const CAROUSEL_LAYOUT_DESKTOP = {
   cardWidth: 686,
-  cardHeight: 686,
-  flankWidth: 175,
-  flankHeight: 567,
+  cardHeight: 734,
+  flankWidth: 178,
+  flankHeight: 598,
   xGap: 0,
-  stageHeight: 686,
+  stageHeight: 734,
   maxVisibleOffset: 2,
   flankBlur: 0.2,
   flankOpacity: 1,
   borderRadius: 36,
   spring: { type: "spring" as const, stiffness: 300, damping: 30 },
   pills: [
-    { w: 686,  h: 686, r: 36  }, // center
-    { w: 175,  h: 567, r: 999 }, // ±1
-    { w: 104,  h: 466, r: 999 }, // ±2
-    { w: 38,   h: 339, r: 999 }, // ±3
+    { w: 686,  h: 734, r: 36  }, // center
+    { w: 178,  h: 598, r: 999 }, // ±1
+    { w: 106,  h: 488, r: 999 }, // ±2
+    { w: 40,   h: 354, r: 999 }, // ±3
   ],
 };
 

@@ -16,27 +16,13 @@ interface CoverFlowCarouselProps {
   items: CoverFlowItem[];
   onSelect: (id: string) => void;
   initialActiveIndex?: number;
-  tallActiveCard?: boolean;
 }
 
 const VISIBLE = 2;
-
-const MY_GO_TWO_LAYOUT_DESKTOP = {
-  ...CAROUSEL_LAYOUT_DESKTOP,
-  cardHeight: 734,
-  stageHeight: 734,
-  pills: [
-    { w: 686, h: 734, r: 36 },
-    { w: 178, h: 598, r: 999 },
-    { w: 106, h: 488, r: 999 },
-    { w: 40, h: 354, r: 999 },
-  ],
-};
-
-function useLayout(tallActiveCard: boolean) {
+function useLayout() {
   const get = () => {
     if (window.innerWidth >= 1024) {
-      return tallActiveCard ? MY_GO_TWO_LAYOUT_DESKTOP : CAROUSEL_LAYOUT_DESKTOP;
+      return CAROUSEL_LAYOUT_DESKTOP;
     }
     return CAROUSEL_LAYOUT;
   };
@@ -45,7 +31,7 @@ function useLayout(tallActiveCard: boolean) {
     const handler = () => setLayout(get());
     window.addEventListener("resize", handler);
     return () => window.removeEventListener("resize", handler);
-  }, [tallActiveCard]);
+  }, []);
   return layout;
 }
 
@@ -65,7 +51,7 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
 }
 
 const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
-  ({ items, onSelect, initialActiveIndex = 0, tallActiveCard = false }, ref) => {
+  ({ items, onSelect, initialActiveIndex = 0 }, ref) => {
     const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const [, forceImages] = useReducer(x => x + 1, 0);
@@ -76,7 +62,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
       window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
       return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
     }, []);
-    const layout = useLayout(tallActiveCard);
+    const layout = useLayout();
     const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
     const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
     const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
@@ -130,8 +116,8 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
           style={{
             height: stageHeight,
             marginTop: isDesktop
-              ? tallActiveCard ? 44 : 32
-              : tallActiveCard ? 24 : 16,
+              ? 44
+              : 24,
           }}
         >
           <div className="absolute inset-0 flex items-center justify-center">

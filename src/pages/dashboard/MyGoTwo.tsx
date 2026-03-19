@@ -1090,7 +1090,6 @@ const MyGoTwo = () => {
               onSelect={(categoryId) => handleSelect(section.key, categoryId)}
               focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
               showPagination={index === activeSectionIndex}
-              tallActiveCard
             />
           </div>
         ))}
