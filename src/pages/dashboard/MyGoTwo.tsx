@@ -1041,21 +1041,32 @@ const MyGoTwo = () => {
 
     if (coverFlowState) {
       return (
-        <TemplateCoverFlow
+        <motion.div
           key="drilldown"
-          templateName={coverFlowState.name}
-          subtypes={coverFlowState.subtypes}
-          subcategories={coverFlowState.subcategories}
-          activeSubcategory={activeSubcategory}
-          onSubcategorySelect={handleSubcategorySelect}
-          onBack={clearCoverFlow}
-          onSelect={handleSubtypeSelect}
-          focusedItemId={focusedDrilldownItemId}
-          creating={false}
-          gender={gender}
-          section={coverFlowState.section}
-          categoryId={coverFlowState.categoryId}
-        />
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -40 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
+          style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
+        >
+          <div className="snap-start snap-always">
+            <TemplateCoverFlow
+              templateName={coverFlowState.name}
+              subtypes={coverFlowState.subtypes}
+              subcategories={coverFlowState.subcategories}
+              activeSubcategory={activeSubcategory}
+              onSubcategorySelect={handleSubcategorySelect}
+              onBack={clearCoverFlow}
+              onSelect={handleSubtypeSelect}
+              focusedItemId={focusedDrilldownItemId}
+              creating={false}
+              gender={gender}
+              section={coverFlowState.section}
+              categoryId={coverFlowState.categoryId}
+            />
+          </div>
+        </motion.div>
       );
     }
 
