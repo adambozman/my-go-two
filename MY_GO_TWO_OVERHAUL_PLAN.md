@@ -318,6 +318,99 @@ Start with Phase A:
 - group categories into keep / merge / remove / redesign
 - identify where specificity is useful versus where it is just legacy complexity
 
+## Current Execution Scope
+
+This is the narrowed implementation scope for the next backend registry passes.
+
+Do this as source-of-truth registry work first:
+- update `src/data/categoryRegistrySeed.ts`
+- then commit and push one small block at a time
+- then use the existing Category Sync flow to move those rows into Supabase `category_registry`
+
+Do not expand scope during execution.
+
+### Non-Binary
+
+Build everything for non-binary:
+- `Style & Fit`
+- `Food & Drink`
+- `Personal`
+- `Gifts & Wishlist`
+- `Home & Living`
+- `Entertainment & Interests`
+
+### Male
+
+Build everything except:
+- `Style & Fit`
+- `Food & Drink`
+- `Personal`
+
+So the remaining male scope is:
+- `Gifts & Wishlist`
+- `Home & Living`
+- `Entertainment & Interests`
+
+### Female
+
+Build everything except:
+- `Style & Fit`
+- `Food & Drink`
+- `Personal`
+
+So the remaining female scope is:
+- `Gifts & Wishlist`
+- `Home & Living`
+- `Entertainment & Interests`
+
+## Execution Rules
+
+1. Backend/source-of-truth first
+- create or finish registry rows before doing UI work
+- do not build page behavior around missing registry content
+
+2. Follow the established path model
+- use the same My Go Two path logic already used for male and female `Style & Fit`
+- keep category/subcategory/product structure consistent
+
+3. Keep blocks small
+- one section or one gender-section block at a time
+- commit and push after each successful block
+
+4. Do not re-open solved sections
+- `Food & Drink` is considered good
+- `Female Style & Fit` is already built
+- `Male Personal` rename pass is already done
+
+## Recommended Push Order
+
+Use this order unless a later discovery forces a safer dependency order:
+
+1. `Non-Binary Style & Fit`
+2. `Non-Binary Food & Drink`
+3. `Non-Binary Personal`
+4. `Male Gifts & Wishlist`
+5. `Female Gifts & Wishlist`
+6. `Non-Binary Gifts & Wishlist`
+7. `Male Home & Living`
+8. `Female Home & Living`
+9. `Non-Binary Home & Living`
+10. `Male Entertainment & Interests`
+11. `Female Entertainment & Interests`
+12. `Non-Binary Entertainment & Interests`
+
+## Working Pattern For Each Block
+
+For each block:
+- inspect the current registry shells in `src/data/categoryRegistrySeed.ts`
+- populate only that block
+- do not mix unrelated sections in the same patch
+- commit
+- rebase if needed
+- push to `origin/main`
+
+This keeps the rollout recoverable if a later block needs revision.
+
 ## Notes For Future Sessions
 
 If work resumes after a crash:
