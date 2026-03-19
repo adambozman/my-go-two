@@ -481,6 +481,7 @@ const MyGoTwo = () => {
   const [entries, setEntries] = useState<CardEntry[]>([]);
   const [activeEntryIndexByGroup, setActiveEntryIndexByGroup] = useState<Record<string, number>>({});
   const [activeEntryPageByGroup, setActiveEntryPageByGroup] = useState<Record<string, number>>({});
+  const [draftProductGroups, setDraftProductGroups] = useState<string[]>([]);
   const [entryDrafts, setEntryDrafts] = useState<Record<string, Record<string, string>>>({});
   const [entryNames, setEntryNames] = useState<Record<string, string>>({});
   const [entryImages, setEntryImages] = useState<Record<string, string>>({});
@@ -519,12 +520,8 @@ const MyGoTwo = () => {
   }, [fetchEntries]);
 
   const groupsForCardKey = useMemo(() => {
-    const keys = Array.from(new Set(entries.map((entry) => entry.group_name).filter(Boolean)));
-    if (activeGroup && !keys.includes(activeGroup)) {
-      keys.push(activeGroup);
-    }
-    return keys;
-  }, [entries, activeGroup]);
+    return Array.from(new Set(entries.map((entry) => entry.group_name).filter(Boolean)));
+  }, [entries]);
 
   const activeGroupEntries = useMemo(
     () => entries.filter((entry) => entry.group_name === activeGroup),
@@ -532,11 +529,18 @@ const MyGoTwo = () => {
   );
 
   const productGroups = useMemo(() => {
-    if (groupsForCardKey.length > 0) return groupsForCardKey;
-    if (activeGroup) return [activeGroup];
+    const orderedGroups = [...groupsForCardKey];
+
+    draftProductGroups.forEach((groupName) => {
+      if (!orderedGroups.includes(groupName)) {
+        orderedGroups.push(groupName);
+      }
+    });
+
+    if (orderedGroups.length > 0) return orderedGroups;
     if (leafSubtype?.name) return [leafSubtype.name];
     return [];
-  }, [groupsForCardKey, activeGroup, leafSubtype?.name]);
+  }, [groupsForCardKey, draftProductGroups, leafSubtype?.name]);
 
   useEffect(() => {
     if (!leafSubtype || !cardKey) return;
@@ -572,11 +576,11 @@ const MyGoTwo = () => {
     if (!leafSubtype || !cardKey) return;
 
     setActiveGroup((prev) => {
-      if (prev && groupsForCardKey.includes(prev)) return prev;
-      if (groupsForCardKey.length > 0) return groupsForCardKey[0];
+      if (prev && productGroups.includes(prev)) return prev;
+      if (productGroups.length > 0) return productGroups[0];
       return leafSubtype.name;
     });
-  }, [leafSubtype, cardKey, groupsForCardKey]);
+  }, [leafSubtype, cardKey, productGroups]);
 
   useEffect(() => {
     if (!activeGroup) return;
@@ -660,6 +664,7 @@ const MyGoTwo = () => {
     setLeafCategoryName(undefined);
     setActiveEntryIndexByGroup({});
     setActiveEntryPageByGroup({});
+    setDraftProductGroups([]);
     setActiveGroup("");
   };
 
@@ -679,6 +684,7 @@ const MyGoTwo = () => {
     setLeafCategoryName(undefined);
     setActiveEntryIndexByGroup({});
     setActiveEntryPageByGroup({});
+    setDraftProductGroups([]);
     setActiveGroup("");
 
     if (isLeafSubcategory) {
@@ -749,6 +755,7 @@ const MyGoTwo = () => {
     setLeafImage((sc as any).image || "");
     setActiveEntryIndexByGroup({});
     setActiveEntryPageByGroup({});
+    setDraftProductGroups([]);
     setActiveGroup("");
   };
 
@@ -762,6 +769,7 @@ const MyGoTwo = () => {
     setLeafImage((subtype as any).image || "");
     setActiveEntryIndexByGroup({});
     setActiveEntryPageByGroup({});
+    setDraftProductGroups([]);
     setActiveGroup("");
   };
 
@@ -874,6 +882,9 @@ const MyGoTwo = () => {
   const handleCreateGroup = () => {
     const nextGroupName = groupNameInput.trim();
     if (!nextGroupName) return;
+    setDraftProductGroups((prev) => (
+      prev.includes(nextGroupName) ? prev : [...prev, nextGroupName]
+    ));
     setActiveGroup(nextGroupName);
     setActiveEntryIndexByGroup((prev) => ({ ...prev, [nextGroupName]: 0 }));
     setActiveEntryPageByGroup((prev) => ({ ...prev, [nextGroupName]: 1 }));
