@@ -9737,5 +9737,158 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         ]
       }
     ]
+  },
+  {
+    "key": "media-content-male",
+    "label": "Media & Content",
+    "section": "entertainment",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 10,
+    "is_active": true,
+    "fields": [],
+    "image": "media-content-male",
+    "subcategories": [
+      {
+        "id": "movies-and-shows",
+        "name": "Movies & Shows",
+        "image": "media-content-male-movies-shows",
+        "fields": [
+          { "label": "Go-To Way to Unwind", "type": "select", "value": "", "options": ["TV / Movies", "Reading", "Gaming", "Music", "Exercise", "Socializing"] },
+          { "label": "Favorite Movie Genres", "type": "multi-select", "value": [], "options": ["Action / Thriller", "Comedy", "Drama", "Romance", "Sci-Fi / Fantasy", "Documentary", "Horror", "Indie / Art House"] },
+          { "label": "Binge-Watch Style", "type": "select", "value": "", "options": ["Whole Season in a Day", "A Few Episodes at a Time", "One per Day", "I Don't Binge-Watch"] },
+          { "label": "Favorite Streaming Service", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "music-and-audio",
+        "name": "Music & Audio",
+        "image": "media-content-male-music-audio",
+        "fields": [
+          { "label": "Music Taste", "type": "multi-select", "value": [], "options": ["Pop", "Rock / Alternative", "Hip-Hop / R&B", "Electronic", "Classical / Jazz", "Country", "Indie", "Latin / Reggaeton"] },
+          { "label": "Favorite Type of Podcast", "type": "select", "value": "", "options": ["True Crime", "Comedy / Chat", "Business / Self-Dev", "News / Politics", "Storytelling", "Don't Listen to Podcasts"] },
+          { "label": "How I Consume Content", "type": "select", "value": "", "options": ["Streaming", "Podcasts", "Social Media", "Books / Kindle", "YouTube", "A Bit of Everything"] },
+          { "label": "Favorite Artist, Show, or Podcast", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "gaming-and-reading",
+        "name": "Gaming & Reading",
+        "image": "media-content-male-gaming-reading",
+        "fields": [
+          { "label": "Gamer Type", "type": "select", "value": "", "options": ["Hardcore Gamer", "Casual Gamer", "Mobile Games Only", "Board / Card Games", "Not a Gamer"] },
+          { "label": "Books per Year", "type": "select", "value": "", "options": ["Zero", "1-5", "5-15", "15-30", "30+", "Audiobooks Count"] },
+          { "label": "Favorite Game, Book, or Series", "type": "text", "value": "" },
+          { "label": "Platform or Reading Format", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "social-events-male",
+    "label": "Social & Events",
+    "section": "entertainment",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 20,
+    "is_active": true,
+    "fields": [],
+    "image": "social-events-male",
+    "subcategories": [
+      {
+        "id": "weekends-and-date-nights",
+        "name": "Weekends & Date Nights",
+        "image": "social-events-male-weekends-date-nights",
+        "fields": [
+          { "label": "Ideal Weekend Activity", "type": "select", "value": "", "options": ["Brunch with Friends", "Outdoor Adventure", "Museum / Gallery", "Binge-Watch", "Play / Watch Sports", "Absolutely Nothing"] },
+          { "label": "Ideal Date Night", "type": "select", "value": "", "options": ["Dinner Out", "Movie Night In", "Activity / Adventure", "Live Event", "Cook Together", "Surprise Me"] },
+          { "label": "Free Afternoon Choice", "type": "select", "value": "", "options": ["Nap", "Explore Somewhere New", "Create Something", "See Friends / Family", "Self-Care Ritual", "Learn Something New"] },
+          { "label": "Favorite Going-Out Plan", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "live-events-and-social",
+        "name": "Live Events & Social",
+        "image": "social-events-male-live-events-social",
+        "fields": [
+          { "label": "Live Events", "type": "select", "value": "", "options": ["Love Concerts & Shows", "Enjoy Occasionally", "Prefer Intimate Venues", "Not My Thing", "Festival Lover"] },
+          { "label": "Favorite Event Type", "type": "text", "value": "" },
+          { "label": "Social Media Style", "type": "select", "value": "", "options": ["Love It - Always Online", "Use It, Not Obsessed", "Lurker - Rarely Post", "Minimal Usage", "Off Grid"] },
+          { "label": "Favorite Way to Socialize", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "sports-and-hobbies",
+        "name": "Sports & Hobbies",
+        "image": "social-events-male-sports-hobbies",
+        "fields": [
+          { "label": "Watch Sports", "type": "select", "value": "", "options": ["Live at the Stadium", "At a Bar with Friends", "Home on the Couch", "I Don't Watch Sports"] },
+          { "label": "Hobby I Want to Try", "type": "select", "value": "", "options": ["Pottery / Ceramics", "Painting", "Surfing", "Photography", "Musical Instrument", "Martial Arts"] },
+          { "label": "Favorite Team or Hobby", "type": "text", "value": "" },
+          { "label": "Board Game or Group Activity", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "travel-activity-male",
+    "label": "Travel & Activity",
+    "section": "entertainment",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 30,
+    "is_active": true,
+    "fields": [],
+    "image": "travel-activity-male",
+    "subcategories": [
+      {
+        "id": "travel-style",
+        "name": "Travel Style",
+        "image": "travel-activity-male-travel-style",
+        "fields": [
+          { "label": "Ideal Vacation", "type": "select", "value": "", "options": ["Beach / Resort", "City Exploration", "Adventure / Outdoors", "Cultural / Historical", "Road Trip", "Staycation"] },
+          { "label": "Travel Feel", "type": "select", "value": "", "options": ["Passport Always Ready", "A Few Trips a Year", "Prefer Being Home", "Local Exploration", "Working Through a Bucket List"] },
+          { "label": "Dream Destination", "type": "text", "value": "" },
+          { "label": "Best Kind of Trip Partner", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "fitness-and-exercise",
+        "name": "Fitness & Exercise",
+        "image": "travel-activity-male-fitness-exercise",
+        "fields": [
+          { "label": "Activity Level", "type": "select", "value": "", "options": ["Daily Workout", "3-4 Times a Week", "Casually Active", "Trying to Be More Active", "Not Very Active"] },
+          { "label": "Preferred Exercise", "type": "multi-select", "value": [], "options": ["Gym / Weights", "Running / Cardio", "Yoga / Pilates", "Team Sports", "Swimming", "Hiking / Walking", "Cycling", "Dance"] },
+          { "label": "Workout Time Preference", "type": "text", "value": "" },
+          { "label": "Favorite Gear or Gym", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "pace-and-rhythm",
+        "name": "Pace & Rhythm",
+        "image": "travel-activity-male-pace-rhythm",
+        "fields": [
+          { "label": "Night Owl or Early Bird", "type": "select", "value": "", "options": ["Early Bird", "Night Owl", "Depends on the Day", "Mid-Day Person"] },
+          { "label": "Weekend Energy", "type": "text", "value": "" },
+          { "label": "Recovery Day Routine", "type": "text", "value": "" },
+          { "label": "Perfect Balance of Busy vs Quiet", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
   }
 ];
