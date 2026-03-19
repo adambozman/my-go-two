@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Check, Plus, Trash2, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useTopBar } from "@/contexts/TopBarContext";
@@ -13,13 +12,6 @@ import GoTwoCoverFlow from "@/components/GoTwoCoverFlow";
 import TemplateCoverFlow, { type SubtypeItem, type SubcategoryGroup } from "@/components/TemplateCoverFlow";
 import FormCoverFlowCarousel from "@/components/ui/FormCoverFlowCarousel";
 import { PaginationControls } from "@/components/ui/pagination-controls";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
@@ -62,14 +54,6 @@ const normalizeImageValue = (value?: string | null) => {
 };
 
 const getNewEntryId = (groupName: string) => `${NEW_ENTRY_ID}::${groupName}`;
-
-const GENERATED_GROUP_PATTERN = / - Group (\d+)$/;
-
-const getVisibleGroupLabel = (groupName: string) => {
-  const match = groupName.match(GENERATED_GROUP_PATTERN);
-  if (match) return `Group ${match[1]}`;
-  return groupName;
-};
 
 const TagInput = ({ value, onChange, fieldLabel }: { value: string; onChange: (val: string) => void; fieldLabel: string }) => {
   const [adding, setAdding] = useState(false);
@@ -485,8 +469,6 @@ const MyGoTwo = () => {
   const [entryDrafts, setEntryDrafts] = useState<Record<string, Record<string, string>>>({});
   const [entryNames, setEntryNames] = useState<Record<string, string>>({});
   const [entryImages, setEntryImages] = useState<Record<string, string>>({});
-  const [showGroupDialog, setShowGroupDialog] = useState(false);
-  const [groupNameInput, setGroupNameInput] = useState("");
   const [activeGroup, setActiveGroup] = useState("");
   const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
   const [leafImage, setLeafImage] = useState<string>("");
@@ -529,7 +511,14 @@ const MyGoTwo = () => {
   );
 
   const productGroups = useMemo(() => {
-    const orderedGroups = [...groupsForCardKey];
+    const baseGroup = leafSubtype?.name;
+    const orderedGroups = baseGroup ? [baseGroup] : [];
+
+    groupsForCardKey.forEach((groupName) => {
+      if (!orderedGroups.includes(groupName)) {
+        orderedGroups.push(groupName);
+      }
+    });
 
     draftProductGroups.forEach((groupName) => {
       if (!orderedGroups.includes(groupName)) {
@@ -537,9 +526,7 @@ const MyGoTwo = () => {
       }
     });
 
-    if (orderedGroups.length > 0) return orderedGroups;
-    if (leafSubtype?.name) return [leafSubtype.name];
-    return [];
+    return orderedGroups;
   }, [groupsForCardKey, draftProductGroups, leafSubtype?.name]);
 
   useEffect(() => {
@@ -879,36 +866,28 @@ const MyGoTwo = () => {
     }
   };
 
+  const getNextGeneratedGroupName = useCallback(() => {
+    const existingGroups = new Set([...productGroups, ...groupsForCardKey, ...draftProductGroups]);
+    let nextNumber = 1;
+    let nextGroupName = "__product_group_1";
+
+    while (existingGroups.has(nextGroupName)) {
+      nextNumber += 1;
+      nextGroupName = `__product_group_${nextNumber}`;
+    }
+
+    return nextGroupName;
+  }, [productGroups, groupsForCardKey, draftProductGroups]);
+
   const handleCreateGroup = () => {
-    const nextGroupName = groupNameInput.trim();
-    if (!nextGroupName) return;
+    const nextGroupName = getNextGeneratedGroupName();
     setDraftProductGroups((prev) => (
       prev.includes(nextGroupName) ? prev : [...prev, nextGroupName]
     ));
     setActiveGroup(nextGroupName);
     setActiveEntryIndexByGroup((prev) => ({ ...prev, [nextGroupName]: 0 }));
     setActiveEntryPageByGroup((prev) => ({ ...prev, [nextGroupName]: 1 }));
-    setShowGroupDialog(false);
-    setGroupNameInput("");
-    toast({ title: "Group created", description: `${getVisibleGroupLabel(nextGroupName)} is ready.` });
-  };
-
-  const getNextGeneratedGroupName = useCallback(() => {
-    const baseName = leafSubtype?.name || "Group";
-    const generatedNumbers = groupsForCardKey
-      .map((groupName) => {
-        const match = groupName.match(GENERATED_GROUP_PATTERN);
-        return match ? Number(match[1]) : null;
-      })
-      .filter((value): value is number => value !== null);
-    const hasLegacyBaseGroup = groupsForCardKey.includes(baseName);
-    const nextNumber = Math.max(hasLegacyBaseGroup ? 1 : 0, ...generatedNumbers, 0) + 1;
-    return `${baseName} - Group ${nextNumber}`;
-  }, [groupsForCardKey, leafSubtype?.name]);
-
-  const openCreateGroupDialog = () => {
-    setGroupNameInput(getNextGeneratedGroupName());
-    setShowGroupDialog(true);
+    toast({ title: "Group created" });
   };
 
   if (registryLoading || genderLoading) {
@@ -1053,7 +1032,7 @@ const MyGoTwo = () => {
             <Button
               variant="outline"
               className="rounded-full px-6 h-10 border-border text-foreground"
-              onClick={openCreateGroupDialog}
+              onClick={handleCreateGroup}
             >
               <Plus className="w-4 h-4 mr-2" />
               New Group
@@ -1138,30 +1117,6 @@ const MyGoTwo = () => {
       <AnimatePresence mode="wait">
         {renderContent()}
       </AnimatePresence>
-
-      <Dialog open={showGroupDialog} onOpenChange={() => setShowGroupDialog(false)}>
-        <DialogContent className="rounded-3xl bg-card">
-          <DialogHeader>
-            <DialogTitle style={{ fontFamily: "'Cormorant Garamond', serif" }}>Create Group</DialogTitle>
-          </DialogHeader>
-          <Input
-            value={groupNameInput}
-            onChange={(e) => setGroupNameInput(e.target.value)}
-            placeholder="e.g. Taco Bell, McDonald's"
-            className="rounded-xl h-12 mt-2"
-            autoFocus
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleCreateGroup();
-            }}
-          />
-          <DialogFooter>
-            <Button onClick={handleCreateGroup} disabled={!groupNameInput.trim()} className="rounded-full px-8 h-11">
-              <Plus className="w-4 h-4 mr-2" />
-              Save Group
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
