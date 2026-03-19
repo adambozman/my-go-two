@@ -4983,37 +4983,431 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "id": "tops",
         "name": "Tops",
         "image": "everyday-nb-tops",
-        "products": []
+        "products": [
+          {
+            "id": "t-shirt",
+            "name": "T-Shirt",
+            "image": "everyday-nb-tops-t-shirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "long-sleeve-top",
+            "name": "Long Sleeve Top",
+            "image": "everyday-nb-tops-long-sleeve-top",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "button-up-shirt",
+            "name": "Button-Up Shirt",
+            "image": "everyday-nb-tops-button-up-shirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Fitted", "Regular", "Relaxed", "Oversized"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "tank-top",
+            "name": "Tank Top",
+            "image": "everyday-nb-tops-tank-top",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "sweater",
+            "name": "Sweater",
+            "image": "everyday-nb-tops-sweater",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Weight", "type": "select", "value": "", "options": ["Lightweight", "Midweight", "Heavyweight"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "hoodie",
+            "name": "Hoodie",
+            "image": "everyday-nb-tops-hoodie",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Weight", "type": "select", "value": "", "options": ["Lightweight", "Midweight", "Heavyweight"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "bottoms",
         "name": "Bottoms",
         "image": "everyday-nb-bottoms",
-        "products": []
+        "products": [
+          {
+            "id": "jeans",
+            "name": "Jeans",
+            "image": "everyday-nb-bottoms-jeans",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Skinny", "Slim", "Straight", "Wide Leg", "Relaxed"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "trousers",
+            "name": "Trousers",
+            "image": "everyday-nb-bottoms-trousers",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Rise", "type": "select", "value": "", "options": ["Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "skirt",
+            "name": "Skirt",
+            "image": "everyday-nb-bottoms-skirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Mini", "Midi", "Maxi"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "shorts",
+            "name": "Shorts",
+            "image": "everyday-nb-bottoms-shorts",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Rise", "type": "select", "value": "", "options": ["Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "leggings",
+            "name": "Leggings",
+            "image": "everyday-nb-bottoms-leggings",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["7/8", "Full Length", "Capri"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "joggers",
+            "name": "Joggers",
+            "image": "everyday-nb-bottoms-joggers",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Slim", "Regular", "Relaxed"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "footwear",
         "name": "Footwear",
         "image": "everyday-nb-footwear",
-        "products": []
+        "products": [
+          {
+            "id": "sneakers",
+            "name": "Sneakers",
+            "image": "everyday-nb-footwear-sneakers",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Width", "type": "select", "value": "", "options": ["Narrow", "Standard", "Wide"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "boots",
+            "name": "Boots",
+            "image": "everyday-nb-footwear-boots",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Boot Height", "type": "select", "value": "", "options": ["Ankle", "Mid", "Knee"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "running-shoes",
+            "name": "Running Shoes",
+            "image": "everyday-nb-footwear-running-shoes",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Neutral", "Stability", "Max Cushion"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "loafers",
+            "name": "Loafers",
+            "image": "everyday-nb-footwear-loafers",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "sandals",
+            "name": "Sandals",
+            "image": "everyday-nb-footwear-sandals",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Style", "type": "select", "value": "", "options": ["Slides", "Flat Sandals", "Sport Sandals", "Strappy"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "slip-ons",
+            "name": "Slip-Ons",
+            "image": "everyday-nb-footwear-slip-ons",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "outerwear",
         "name": "Outerwear",
         "image": "everyday-nb-outerwear",
-        "products": []
+        "products": [
+          {
+            "id": "coat",
+            "name": "Coat",
+            "image": "everyday-nb-outerwear-coat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Short", "Mid", "Long"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "jacket",
+            "name": "Jacket",
+            "image": "everyday-nb-outerwear-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Fitted", "Regular", "Oversized"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "overshirt",
+            "name": "Overshirt",
+            "image": "everyday-nb-outerwear-overshirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "rain-jacket",
+            "name": "Rain Jacket",
+            "image": "everyday-nb-outerwear-rain-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Waterproof Level", "type": "select", "value": "", "options": ["Light", "Medium", "Heavy"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "fleece",
+            "name": "Fleece",
+            "image": "everyday-nb-outerwear-fleece",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Weight", "type": "select", "value": "", "options": ["Lightweight", "Midweight", "Heavyweight"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bomber-jacket",
+            "name": "Bomber Jacket",
+            "image": "everyday-nb-outerwear-bomber-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "accessories",
         "name": "Accessories",
         "image": "everyday-nb-accessories",
-        "products": []
+        "products": [
+          {
+            "id": "watch",
+            "name": "Watch",
+            "image": "everyday-nb-accessories-watch",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Metal Tone", "type": "select", "value": "", "options": ["Gold", "Silver", "Rose Gold", "Mixed"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "wallet",
+            "name": "Wallet",
+            "image": "everyday-nb-accessories-wallet",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Material", "type": "select", "value": "", "options": ["Leather", "Canvas", "Synthetic"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "sunglasses",
+            "name": "Sunglasses",
+            "image": "everyday-nb-accessories-sunglasses",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Frame Shape", "type": "select", "value": "", "options": ["Cat Eye", "Round", "Square", "Aviator"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "necklace",
+            "name": "Necklace",
+            "image": "everyday-nb-accessories-necklace",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Metal Tone", "type": "select", "value": "", "options": ["Gold", "Silver", "Rose Gold", "Mixed"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bag",
+            "name": "Bag",
+            "image": "everyday-nb-accessories-bag",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Style", "type": "select", "value": "", "options": ["Tote", "Crossbody", "Shoulder", "Backpack"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "belt",
+            "name": "Belt",
+            "image": "everyday-nb-accessories-belt",
+            "fields": [
+              { "label": "Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "underwear",
         "name": "Underwear",
         "image": "everyday-nb-underwear",
-        "products": []
+        "products": [
+          {
+            "id": "bra",
+            "name": "Bra",
+            "image": "everyday-nb-underwear-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bralette",
+            "name": "Bralette",
+            "image": "everyday-nb-underwear-bralette",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "underwear",
+            "name": "Underwear",
+            "image": "everyday-nb-underwear-underwear",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Cut", "type": "select", "value": "", "options": ["Brief", "Bikini", "Hipster", "Thong", "Boxer"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "briefs",
+            "name": "Briefs",
+            "image": "everyday-nb-underwear-briefs",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Rise", "type": "select", "value": "", "options": ["Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "boxers",
+            "name": "Boxers",
+            "image": "everyday-nb-underwear-boxers",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "socks",
+            "name": "Socks",
+            "image": "everyday-nb-underwear-socks",
+            "fields": [
+              { "label": "Sock Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       }
     ],
     "image": "everyday-nb"
@@ -5034,37 +5428,421 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "id": "tops",
         "name": "Tops",
         "image": "dress-nb-tops",
-        "products": []
+        "products": [
+          {
+            "id": "dress-shirt",
+            "name": "Dress Shirt",
+            "image": "dress-nb-tops-dress-shirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "collared-dress-shirt",
+            "name": "Collared Dress Shirt",
+            "image": "dress-nb-tops-collared-dress-shirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "formal-sweater",
+            "name": "Formal Sweater",
+            "image": "dress-nb-tops-formal-sweater",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "formal-polo",
+            "name": "Formal Polo",
+            "image": "dress-nb-tops-formal-polo",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "dressy-top",
+            "name": "Dressy Top",
+            "image": "dress-nb-tops-dressy-top",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Style", "type": "select", "value": "", "options": ["Structured", "Soft", "Statement"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bodysuit",
+            "name": "Bodysuit",
+            "image": "dress-nb-tops-bodysuit",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "bottoms",
         "name": "Bottoms",
         "image": "dress-nb-bottoms",
-        "products": []
+        "products": [
+          {
+            "id": "dress-pants",
+            "name": "Dress Pants",
+            "image": "dress-nb-bottoms-dress-pants",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "formal-trousers",
+            "name": "Formal Trousers",
+            "image": "dress-nb-bottoms-formal-trousers",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Rise", "type": "select", "value": "", "options": ["Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "skirt",
+            "name": "Skirt",
+            "image": "dress-nb-bottoms-skirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Mini", "Midi", "Maxi"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "suit-skirt",
+            "name": "Suit Skirt",
+            "image": "dress-nb-bottoms-suit-skirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Above Knee", "Knee", "Midi"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "tuxedo-pants",
+            "name": "Tuxedo Pants",
+            "image": "dress-nb-bottoms-tuxedo-pants",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "wide-leg-pants",
+            "name": "Wide-Leg Pants",
+            "image": "dress-nb-bottoms-wide-leg-pants",
+            "fields": [
+              { "label": "Waist", "type": "text", "value": "" },
+              { "label": "Inseam", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "footwear",
         "name": "Footwear",
         "image": "dress-nb-footwear",
-        "products": []
+        "products": [
+          {
+            "id": "dress-shoes",
+            "name": "Dress Shoes",
+            "image": "dress-nb-footwear-dress-shoes",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "loafers",
+            "name": "Loafers",
+            "image": "dress-nb-footwear-loafers",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "pumps",
+            "name": "Pumps",
+            "image": "dress-nb-footwear-pumps",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Heel Height", "type": "select", "value": "", "options": ["Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "slingbacks",
+            "name": "Slingbacks",
+            "image": "dress-nb-footwear-slingbacks",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "dress-sandals",
+            "name": "Dress Sandals",
+            "image": "dress-nb-footwear-dress-sandals",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Heel Height", "type": "select", "value": "", "options": ["Flat", "Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "formal-boots",
+            "name": "Formal Boots",
+            "image": "dress-nb-footwear-formal-boots",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Boot Height", "type": "select", "value": "", "options": ["Ankle", "Mid", "Knee"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "outerwear",
         "name": "Outerwear",
         "image": "dress-nb-outerwear",
-        "products": []
+        "products": [
+          {
+            "id": "overcoat",
+            "name": "Overcoat",
+            "image": "dress-nb-outerwear-overcoat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Mid", "Long"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "trench-coat",
+            "name": "Trench Coat",
+            "image": "dress-nb-outerwear-trench-coat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "car-coat",
+            "name": "Car Coat",
+            "image": "dress-nb-outerwear-car-coat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "peacoat",
+            "name": "Peacoat",
+            "image": "dress-nb-outerwear-peacoat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "wrap-coat",
+            "name": "Wrap Coat",
+            "image": "dress-nb-outerwear-wrap-coat",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "blazer",
+            "name": "Blazer",
+            "image": "dress-nb-outerwear-blazer",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Tailored", "Regular", "Oversized"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "accessories",
         "name": "Accessories",
         "image": "dress-nb-accessories",
-        "products": []
+        "products": [
+          {
+            "id": "watch",
+            "name": "Watch",
+            "image": "dress-nb-accessories-watch",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Metal Tone", "type": "select", "value": "", "options": ["Gold", "Silver", "Rose Gold", "Mixed"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "clutch",
+            "name": "Clutch",
+            "image": "dress-nb-accessories-clutch",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Material", "type": "select", "value": "", "options": ["Leather", "Satin", "Beaded", "Metallic"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "earrings",
+            "name": "Earrings",
+            "image": "dress-nb-accessories-earrings",
+            "fields": [
+              { "label": "Metal Tone", "type": "select", "value": "", "options": ["Gold", "Silver", "Rose Gold", "Mixed"] },
+              { "label": "Style", "type": "select", "value": "", "options": ["Stud", "Hoop", "Drop", "Statement"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "necklace",
+            "name": "Necklace",
+            "image": "dress-nb-accessories-necklace",
+            "fields": [
+              { "label": "Metal Tone", "type": "select", "value": "", "options": ["Gold", "Silver", "Rose Gold", "Mixed"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Choker", "Short", "Mid", "Long"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "belt",
+            "name": "Belt",
+            "image": "dress-nb-accessories-belt",
+            "fields": [
+              { "label": "Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "scarf",
+            "name": "Scarf",
+            "image": "dress-nb-accessories-scarf",
+            "fields": [
+              { "label": "Material", "type": "select", "value": "", "options": ["Silk", "Cashmere", "Wool", "Blend"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "underwear",
         "name": "Underwear",
         "image": "dress-nb-underwear",
-        "products": []
+        "products": [
+          {
+            "id": "bra",
+            "name": "Bra",
+            "image": "dress-nb-underwear-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "strapless-bra",
+            "name": "Strapless Bra",
+            "image": "dress-nb-underwear-strapless-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "shapewear",
+            "name": "Shapewear",
+            "image": "dress-nb-underwear-shapewear",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Coverage", "type": "select", "value": "", "options": ["Light", "Medium", "Firm"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "slip",
+            "name": "Slip",
+            "image": "dress-nb-underwear-slip",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Mini", "Midi", "Maxi"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "tights",
+            "name": "Tights",
+            "image": "dress-nb-underwear-tights",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XS/S", "M/L", "XL/XXL"] },
+              { "label": "Opacity", "type": "select", "value": "", "options": ["Sheer", "Semi-Opaque", "Opaque"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "boxers",
+            "name": "Boxers",
+            "image": "dress-nb-underwear-boxers",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       }
     ],
     "image": "dress-nb"
@@ -5085,37 +5863,427 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "id": "tops",
         "name": "Tops",
         "image": "athletic-nb-tops",
-        "products": []
+        "products": [
+          {
+            "id": "sports-bra",
+            "name": "Sports Bra",
+            "image": "athletic-nb-tops-sports-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Low", "Medium", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "performance-tee",
+            "name": "Performance Tee",
+            "image": "athletic-nb-tops-performance-tee",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "quarter-zip",
+            "name": "Quarter-Zip",
+            "image": "athletic-nb-tops-quarter-zip",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "performance-tank",
+            "name": "Performance Tank",
+            "image": "athletic-nb-tops-performance-tank",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "performance-hoodie",
+            "name": "Performance Hoodie",
+            "image": "athletic-nb-tops-performance-hoodie",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Weight", "type": "select", "value": "", "options": ["Lightweight", "Midweight", "Heavyweight"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "long-sleeve-performance-top",
+            "name": "Long Sleeve Performance Top",
+            "image": "athletic-nb-tops-long-sleeve-performance-top",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "bottoms",
         "name": "Bottoms",
         "image": "athletic-nb-bottoms",
-        "products": []
+        "products": [
+          {
+            "id": "leggings",
+            "name": "Leggings",
+            "image": "athletic-nb-bottoms-leggings",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["7/8", "Full Length", "Capri"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "running-shorts",
+            "name": "Running Shorts",
+            "image": "athletic-nb-bottoms-running-shorts",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Inseam", "type": "select", "value": "", "options": ["2 in", "3 in", "5 in", "7 in"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "track-pants",
+            "name": "Track Pants",
+            "image": "athletic-nb-bottoms-track-pants",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Keywords", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bike-shorts",
+            "name": "Bike Shorts",
+            "image": "athletic-nb-bottoms-bike-shorts",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Inseam", "type": "select", "value": "", "options": ["5 in", "7 in", "9 in"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "joggers",
+            "name": "Joggers",
+            "image": "athletic-nb-bottoms-joggers",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Fit", "type": "select", "value": "", "options": ["Slim", "Regular", "Relaxed"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "tennis-skirt",
+            "name": "Tennis Skirt",
+            "image": "athletic-nb-bottoms-tennis-skirt",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Length", "type": "select", "value": "", "options": ["Short", "Regular"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "footwear",
         "name": "Footwear",
         "image": "athletic-nb-footwear",
-        "products": []
+        "products": [
+          {
+            "id": "training-shoes",
+            "name": "Training Shoes",
+            "image": "athletic-nb-footwear-training-shoes",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Neutral", "Stability", "Cross-Training"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "running-shoes",
+            "name": "Running Shoes",
+            "image": "athletic-nb-footwear-running-shoes",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Neutral", "Stability", "Max Cushion"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "walking-shoes",
+            "name": "Walking Shoes",
+            "image": "athletic-nb-footwear-walking-shoes",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "recovery-slides",
+            "name": "Recovery Slides",
+            "image": "athletic-nb-footwear-recovery-slides",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "hiking-boots",
+            "name": "Hiking Boots",
+            "image": "athletic-nb-footwear-hiking-boots",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Boot Height", "type": "select", "value": "", "options": ["Low", "Mid", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "court-shoes",
+            "name": "Court Shoes",
+            "image": "athletic-nb-footwear-court-shoes",
+            "fields": [
+              { "label": "US Size", "type": "text", "value": "" },
+              { "label": "Sport", "type": "select", "value": "", "options": ["Tennis", "Pickleball", "Padel"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "outerwear",
         "name": "Outerwear",
         "image": "athletic-nb-outerwear",
-        "products": []
+        "products": [
+          {
+            "id": "training-jacket",
+            "name": "Training Jacket",
+            "image": "athletic-nb-outerwear-training-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "puffer-jacket",
+            "name": "Puffer Jacket",
+            "image": "athletic-nb-outerwear-puffer-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Warmth", "type": "select", "value": "", "options": ["Light", "Mid", "Heavy"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "windbreaker",
+            "name": "Windbreaker",
+            "image": "athletic-nb-outerwear-windbreaker",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "parka",
+            "name": "Parka",
+            "image": "athletic-nb-outerwear-parka",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Warmth", "type": "select", "value": "", "options": ["Mid", "Heavy"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "rain-jacket",
+            "name": "Rain Jacket",
+            "image": "athletic-nb-outerwear-rain-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Waterproof Level", "type": "select", "value": "", "options": ["Light", "Medium", "Heavy"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "hiking-jacket",
+            "name": "Hiking Jacket",
+            "image": "athletic-nb-outerwear-hiking-jacket",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "accessories",
         "name": "Accessories",
         "image": "athletic-nb-accessories",
-        "products": []
+        "products": [
+          {
+            "id": "fitness-watch",
+            "name": "Fitness Watch",
+            "image": "athletic-nb-accessories-fitness-watch",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "hat",
+            "name": "Hat",
+            "image": "athletic-nb-accessories-hat",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Style", "type": "select", "value": "", "options": ["Cap", "Visor", "Beanie"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "sport-sunglasses",
+            "name": "Sport Sunglasses",
+            "image": "athletic-nb-accessories-sport-sunglasses",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "gym-bag",
+            "name": "Gym Bag",
+            "image": "athletic-nb-accessories-gym-bag",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Style", "type": "select", "value": "", "options": ["Duffel", "Tote", "Backpack"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "water-bottle",
+            "name": "Water Bottle",
+            "image": "athletic-nb-accessories-water-bottle",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Size", "type": "select", "value": "", "options": ["16 oz", "24 oz", "32 oz", "40 oz"] },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "headband",
+            "name": "Headband",
+            "image": "athletic-nb-accessories-headband",
+            "fields": [
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       },
       {
         "id": "underwear",
         "name": "Underwear",
         "image": "athletic-nb-underwear",
-        "products": []
+        "products": [
+          {
+            "id": "sports-bra",
+            "name": "Sports Bra",
+            "image": "athletic-nb-underwear-sports-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Low", "Medium", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "compression-shorts",
+            "name": "Compression Shorts",
+            "image": "athletic-nb-underwear-compression-shorts",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Inseam", "type": "select", "value": "", "options": ["3 in", "5 in", "7 in"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "performance-underwear",
+            "name": "Performance Underwear",
+            "image": "athletic-nb-underwear-performance-underwear",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Cut", "type": "select", "value": "", "options": ["Brief", "Bikini", "Hipster", "Thong", "Boxer"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "longline-sports-bra",
+            "name": "Longline Sports Bra",
+            "image": "athletic-nb-underwear-longline-sports-bra",
+            "fields": [
+              { "label": "Band Size", "type": "text", "value": "" },
+              { "label": "Cup Size", "type": "text", "value": "" },
+              { "label": "Support", "type": "select", "value": "", "options": ["Low", "Medium", "High"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "bike-shorts",
+            "name": "Bike Shorts",
+            "image": "athletic-nb-underwear-bike-shorts",
+            "fields": [
+              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
+              { "label": "Inseam", "type": "select", "value": "", "options": ["5 in", "7 in", "9 in"] },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          },
+          {
+            "id": "socks",
+            "name": "Socks",
+            "image": "athletic-nb-underwear-socks",
+            "fields": [
+              { "label": "Sock Size", "type": "text", "value": "" },
+              { "label": "Preferred Brands", "type": "text", "value": "" },
+              { "label": "Notes", "type": "text", "value": "" }
+            ]
+          }
+        ]
       }
     ],
     "image": "athletic-nb"
