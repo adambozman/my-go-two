@@ -170,13 +170,13 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 ]
               },
               {
-                "label": "Texture",
+                "label": "Fit",
                 "type": "select",
                 "value": "",
                 "options": [
-                  "Waffle-Knit",
-                  "Popcorn",
-                  "Other"
+                  "Regular",
+                  "Relaxed",
+                  "Oversized"
                 ]
               },
               {
@@ -1308,7 +1308,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "products": [
           {
             "id": "button-up",
-            "name": "Button-Up Shirt",
+            "name": "Oxford Shirt",
             "image": "dress-male-tops-button-up",
             "fields": [
               { "label": "Size", "type": "select", "value": "", "options": ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
@@ -1502,7 +1502,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           },
           {
             "id": "linen-wool-trousers",
-            "name": "Occasion Trousers",
+            "name": "Trousers",
             "image": "dress-male-bottoms-linen-wool-trousers",
             "fields": [
               {
@@ -1534,7 +1534,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           },
           {
             "id": "velvet-trousers",
-            "name": "Evening Pants",
+            "name": "Tuxedo Pants",
             "image": "dress-male-bottoms-velvet-trousers",
             "fields": [
               {
@@ -1854,7 +1854,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           },
           {
             "id": "mac-coat",
-            "name": "Dress Coat",
+            "name": "Car Coat",
             "image": "dress-male-outerwear-mac-coat",
             "fields": [
               {
@@ -1926,7 +1926,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           },
           {
             "id": "chesterfield",
-            "name": "Formal Coat",
+            "name": "Chesterfield Coat",
             "image": "dress-male-outerwear-chesterfield",
             "fields": [
               {
@@ -2331,7 +2331,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           },
           {
             "id": "air-mesh-brief",
-            "name": "Lightweight Briefs",
+            "name": "Performance Briefs",
             "image": "dress-male-underwear-air-mesh-brief",
             "fields": [
               {
@@ -2826,7 +2826,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           },
           {
             "id": "hybrid-shorts",
-            "name": "Hybrid Shorts",
+            "name": "Cross-Training Shorts",
             "image": "athletic-male-bottoms-hybrid-shorts",
             "fields": [
               {
@@ -2869,7 +2869,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "products": [
           {
             "id": "trail-runner",
-            "name": "Trail Running Shoes",
+            "name": "Trail Shoes",
             "image": "athletic-male-footwear-trail-runner",
             "fields": [
               {
@@ -2933,7 +2933,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           },
           {
             "id": "tech-runner",
-            "name": "Athletic Sneakers",
+            "name": "Gym Shoes",
             "image": "athletic-male-footwear-tech-runner",
             "fields": [
               {
@@ -3166,7 +3166,7 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
           },
           {
             "id": "insulated-parka",
-            "name": "Insulated Parka",
+            "name": "Parka",
             "image": "athletic-male-outerwear-insulated-parka",
             "fields": [
               {
