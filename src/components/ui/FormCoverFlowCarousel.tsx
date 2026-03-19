@@ -52,6 +52,7 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
   ({ items, activeIndex, previousImage, onActiveIndexChange, renderActiveCard }, ref) => {
     const touchStartX = useRef<number | null>(null);
     const layout = useLayout();
+    const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
     const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
     const pills = (layout as any).pills as { w: number; h: number; r: number }[] | undefined;
     const n = items.length;
@@ -85,7 +86,13 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
           touchStartX.current = null;
         }}
       >
-        <div className="relative w-full" style={{ height: stageHeight, marginTop: 16 }}>
+        <div
+          className="relative w-full"
+          style={{
+            height: stageHeight,
+            marginTop: isDesktop ? 44 : 24,
+          }}
+        >
           <div className="absolute inset-0 flex items-center justify-center">
             {slots.map((offset) => {
               const itemIndex = (activeIndex + offset + n) % n;
