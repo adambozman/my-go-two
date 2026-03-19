@@ -9275,5 +9275,159 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         ]
       }
     ]
+  },
+  {
+    "key": "home-aesthetic-male",
+    "label": "Home Aesthetic",
+    "section": "home-living",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 10,
+    "is_active": true,
+    "fields": [],
+    "image": "home-aesthetic-male",
+    "subcategories": [
+      {
+        "id": "overall-style",
+        "name": "Overall Style",
+        "image": "home-aesthetic-male-overall-style",
+        "fields": [
+          { "label": "Home Aesthetic", "type": "select", "value": "", "options": ["Modern Minimal", "Cozy & Warm", "Mid-Century", "Bohemian", "Industrial", "Traditional / Classic"] },
+          { "label": "Living Room Vibe", "type": "select", "value": "", "options": ["Clean & Airy", "Layered & Textured", "Dark & Moody", "Bright & Colorful", "Earthy & Natural", "Eclectic Mix"] },
+          { "label": "Color Palette", "type": "select", "value": "", "options": ["Neutrals / Beige / White", "Earth Tones / Terracotta", "Cool Grays / Blues", "Bold & Saturated", "Black & White", "Soft Pastels"] },
+          { "label": "Most Used Room", "type": "select", "value": "", "options": ["Living Room", "Bedroom", "Kitchen", "Home Office", "Patio / Balcony", "Bathroom"] },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "decor-and-atmosphere",
+        "name": "Decor & Atmosphere",
+        "image": "home-aesthetic-male-decor-atmosphere",
+        "fields": [
+          { "label": "Candles", "type": "select", "value": "", "options": ["Obsessed", "Enjoy Them", "Occasionally", "Not Really", "Sensitive to Scents"] },
+          { "label": "Preferred Room Scent", "type": "select", "value": "", "options": ["Vanilla / Sweet", "Woodsy / Cedar", "Fresh Linen", "Floral", "Citrus", "Unscented"] },
+          { "label": "Plants at Home", "type": "select", "value": "", "options": ["The More the Better", "A Few Easy Ones", "I Kill Every Plant", "Fake Plants Are Fine", "Not My Thing"] },
+          { "label": "Wall Art Style", "type": "select", "value": "", "options": ["Abstract", "Photography", "Prints / Posters", "Classical Paintings", "Minimal / Blank Walls", "Gallery Wall Mix"] },
+          { "label": "Favorite Decor Store or Brand", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "bed-and-bath",
+        "name": "Bed & Bath",
+        "image": "home-aesthetic-male-bed-bath",
+        "fields": [
+          { "label": "Ideal Bed Setup", "type": "select", "value": "", "options": ["Cloud-Soft, Tons of Pillows", "Firm & Minimal", "Linen / Natural Fabrics", "Luxury Hotel Style", "Weighted Blanket Always"] },
+          { "label": "Bathroom Luxury", "type": "select", "value": "", "options": ["Rain Shower Head", "Heated Floors", "Deep Soaking Tub", "Premium Towels", "High-End Skincare", "Keep It Basic"] },
+          { "label": "Favorite Bedding Brand", "type": "text", "value": "" },
+          { "label": "Towel Preference", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "daily-living-male",
+    "label": "Daily Living",
+    "section": "home-living",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 20,
+    "is_active": true,
+    "fields": [],
+    "image": "daily-living-male",
+    "subcategories": [
+      {
+        "id": "kitchen-and-coffee",
+        "name": "Kitchen & Coffee",
+        "image": "daily-living-male-kitchen-coffee",
+        "fields": [
+          { "label": "Can't-Live-Without Appliance", "type": "select", "value": "", "options": ["Coffee Machine", "Air Fryer", "Blender", "Instant Pot", "Stand Mixer", "Just a Stove & Pan"] },
+          { "label": "Coffee Setup", "type": "text", "value": "" },
+          { "label": "Favorite Mug or Glassware", "type": "text", "value": "" },
+          { "label": "Kitchen Upgrade Wish", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "routine-and-comfort",
+        "name": "Routine & Comfort",
+        "image": "daily-living-male-routine-comfort",
+        "fields": [
+          { "label": "Morning Routine Length", "type": "select", "value": "", "options": ["Under 15 Min", "15-30 Min", "30-60 Min", "Over an Hour", "What Routine?"] },
+          { "label": "Wake-Up Style", "type": "select", "value": "", "options": ["Naturally - No Alarm", "One Alarm, Right Up", "Snooze 3+ Times", "Sunrise Light", "Someone Wakes Me"] },
+          { "label": "Ideal Home Temperature", "type": "select", "value": "", "options": ["Cool - Windows Open", "Warm & Cozy", "AC Always Running", "Varies by Season", "No Preference"] },
+          { "label": "Reading Spot", "type": "select", "value": "", "options": ["The Couch", "In Bed", "At a Desk", "Outdoors", "I Don't Read Much", "Audiobooks Anywhere"] },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "home-management",
+        "name": "Home Management",
+        "image": "daily-living-male-home-management",
+        "fields": [
+          { "label": "Tidy Level", "type": "select", "value": "", "options": ["Spotless - Always", "Pretty Tidy", "Organized Chaos", "Messy but I Know Where Things Are", "Actively Trying to Improve"] },
+          { "label": "Laundry Frequency", "type": "select", "value": "", "options": ["Daily", "Every Few Days", "Weekly", "When the Basket Overflows", "Laundry Service"] },
+          { "label": "Smart Home Tech", "type": "select", "value": "", "options": ["Fully Automated Home", "Some Devices", "Curious but Haven't Started", "Prefer Manual / Analog", "Privacy Concerns"] },
+          { "label": "Home Essential I Restock", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "hosting-spaces-male",
+    "label": "Hosting & Spaces",
+    "section": "home-living",
+    "page": "mygotwo",
+    "genders": [
+      "male"
+    ],
+    "sort_order": 30,
+    "is_active": true,
+    "fields": [],
+    "image": "hosting-spaces-male",
+    "subcategories": [
+      {
+        "id": "hosting-style",
+        "name": "Hosting Style",
+        "image": "hosting-spaces-male-hosting-style",
+        "fields": [
+          { "label": "Hosting at Home", "type": "select", "value": "", "options": ["I Host All the Time", "Occasionally", "Small Gatherings Only", "Rarely", "My Space Is Private"] },
+          { "label": "Ideal Gathering", "type": "text", "value": "" },
+          { "label": "Go-To Hosting Drink or Snack", "type": "text", "value": "" },
+          { "label": "Tabletop or Serving Preference", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "outdoor-space",
+        "name": "Outdoor Space",
+        "image": "hosting-spaces-male-outdoor-space",
+        "fields": [
+          { "label": "Dream Outdoor Space", "type": "select", "value": "", "options": ["Lush Garden", "Rooftop Terrace", "Pool / Hot Tub", "Fire Pit Area", "Simple Balcony", "Indoor Person"] },
+          { "label": "Outdoor Setup Priority", "type": "text", "value": "" },
+          { "label": "Favorite Outdoor Season", "type": "text", "value": "" },
+          { "label": "Outdoor Entertaining Style", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "workspace-and-zones",
+        "name": "Workspace & Zones",
+        "image": "hosting-spaces-male-workspace-zones",
+        "fields": [
+          { "label": "Favorite Home Zone", "type": "select", "value": "", "options": ["Living Room", "Bedroom", "Kitchen", "Home Office", "Patio / Balcony", "Bathroom"] },
+          { "label": "Desk or Workspace Setup", "type": "text", "value": "" },
+          { "label": "Lighting Preference", "type": "text", "value": "" },
+          { "label": "Must-Have Home Zone Item", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
   }
 ];
