@@ -53,6 +53,7 @@ interface CardEntry {
 }
 
 const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
+const NEW_ENTRY_ID = "__new_entry__";
 const ENTRY_PAGE_SIZE = 5;
 
 const normalizeImageValue = (value?: string | null) => {
@@ -518,10 +519,14 @@ const MyGoTwo = () => {
       nextImages[entry.id] = entry.image_url || "";
     });
 
+    nextDrafts[NEW_ENTRY_ID] = defaultFieldValues;
+    nextNames[NEW_ENTRY_ID] = "";
+    nextImages[NEW_ENTRY_ID] = "";
+
     setEntryDrafts(nextDrafts);
     setEntryNames(nextNames);
     setEntryImages(nextImages);
-    setActiveEntryIndex((prev) => Math.min(prev, Math.max(entries.length - 1, 0)));
+    setActiveEntryIndex((prev) => Math.min(prev, entries.length));
 
     if (!activeGroup) {
       setActiveGroup(leafSubtype.name);
@@ -691,6 +696,11 @@ const MyGoTwo = () => {
       label: entryNames[entry.id] || entry.entry_name,
       image: normalizeImageValue(entryImages[entry.id] || entry.image_url) || leafImage || BRANDED_CARD_SVG,
     })),
+    {
+      id: NEW_ENTRY_ID,
+      label: entryNames[NEW_ENTRY_ID]?.trim() || "New Card",
+      image: normalizeImageValue(entryImages[NEW_ENTRY_ID]) || leafImage || BRANDED_CARD_SVG,
+    },
   ];
 
   const entryTotalPages = Math.max(1, Math.ceil(entryCoverFlowItems.length / ENTRY_PAGE_SIZE));
@@ -743,17 +753,54 @@ const MyGoTwo = () => {
 
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("card_entries")
-        .update({ entry_name: entryName, field_values: fieldValues, image_url: imageUrl })
-        .eq("id", itemId);
+      if (itemId === NEW_ENTRY_ID) {
+        const { data, error } = await supabase
+          .from("card_entries")
+          .insert({
+            user_id: user.id,
+            card_key: cardKey,
+            group_name: activeGroup || leafSubtype.name,
+            entry_name: entryName,
+            field_values: fieldValues,
+            image_url: imageUrl,
+          })
+          .select("*")
+          .single();
 
-      if (error) throw error;
+        if (error) throw error;
 
-      setEntries((prev) => prev.map((entry) => (
-        entry.id === itemId ? { ...entry, entry_name: entryName, field_values: fieldValues, image_url: imageUrl } : entry
-      )));
-      toast({ title: "Updated!", description: `${entryName} saved.` });
+        const inserted = data as CardEntry;
+        setEntries((prev) => [...prev, inserted]);
+        setEntryDrafts((prev) => ({
+          ...prev,
+          [inserted.id]: fieldValues,
+          [NEW_ENTRY_ID]: defaultFieldValues,
+        }));
+        setEntryNames((prev) => ({
+          ...prev,
+          [inserted.id]: entryName,
+          [NEW_ENTRY_ID]: "",
+        }));
+        setEntryImages((prev) => ({
+          ...prev,
+          [inserted.id]: imageUrl || "",
+          [NEW_ENTRY_ID]: "",
+        }));
+        setActiveEntryIndex(entries.length);
+        toast({ title: "Saved!", description: `${entryName} created.` });
+      } else {
+        const { error } = await supabase
+          .from("card_entries")
+          .update({ entry_name: entryName, field_values: fieldValues, image_url: imageUrl })
+          .eq("id", itemId);
+
+        if (error) throw error;
+
+        setEntries((prev) => prev.map((entry) => (
+          entry.id === itemId ? { ...entry, entry_name: entryName, field_values: fieldValues, image_url: imageUrl } : entry
+        )));
+        toast({ title: "Updated!", description: `${entryName} saved.` });
+      }
     } catch (e: any) {
       toast({ title: "Error saving", description: e.message, variant: "destructive" });
     } finally {
@@ -762,7 +809,7 @@ const MyGoTwo = () => {
   };
 
   const handleDeleteEntry = async (itemId: string) => {
-    if (!itemId) return;
+    if (!itemId || itemId === NEW_ENTRY_ID) return;
 
     setSaving(true);
     try {
@@ -823,7 +870,7 @@ const MyGoTwo = () => {
                   values={entryDrafts[item.id] || defaultFieldValues}
                   imageUrl={normalizeImageValue(entryImages[item.id])}
                   saving={saving}
-                  isEditing={true}
+                  isEditing={item.id !== NEW_ENTRY_ID}
                   onEntryNameChange={(name) => handleNameChange(item.id, name)}
                   onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
                   onImageChange={(imageUrl) => handleImageChange(item.id, imageUrl)}
