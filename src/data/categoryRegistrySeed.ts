@@ -8967,5 +8967,159 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         ]
       }
     ]
+  },
+  {
+    "key": "gift-preferences-female",
+    "label": "Gift Preferences",
+    "section": "gifts-wishlist",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 10,
+    "is_active": true,
+    "fields": [],
+    "image": "gift-preferences-female",
+    "subcategories": [
+      {
+        "id": "gift-types",
+        "name": "Gift Types",
+        "image": "gift-preferences-female-gift-types",
+        "fields": [
+          { "label": "Favorite Gift Types", "type": "multi-select", "value": [], "options": ["Experiences", "Practical Items", "Small Luxuries", "Handmade / Personal", "Beauty & Wellness", "Gift Cards"] },
+          { "label": "Love Language", "type": "select", "value": "", "options": ["Words of Affirmation", "Acts of Service", "Receiving Gifts", "Quality Time", "Physical Touch"] },
+          { "label": "Preferred Gift Category", "type": "select", "value": "", "options": ["Wear", "Eat / Drink", "Do / Experience", "Keep / Display"] },
+          { "label": "Best Gift You Remember", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "surprise-style",
+        "name": "Surprise Style",
+        "image": "gift-preferences-female-surprise-style",
+        "fields": [
+          { "label": "Surprise Gifts", "type": "select", "value": "", "options": ["Love Them", "Depends on the Person", "I'd Rather Choose", "A Little Anxious", "Just Give Me Cash"] },
+          { "label": "Gift Cards", "type": "select", "value": "", "options": ["Love Them", "Totally Fine", "Last Resort", "Feels Impersonal"] },
+          { "label": "Bad Gift Fit", "type": "multi-select", "value": [], "options": ["Generic / Impersonal", "Wrong Style", "Clutter", "Obviously Re-Gifted", "Nothing Really"] },
+          { "label": "When I Don't Like a Gift", "type": "select", "value": "", "options": ["Gracious", "Gently Honest", "Return It Quietly", "Keep It, Never Use It"] },
+          { "label": "Personal Gift Marker", "type": "select", "value": "", "options": ["Inside Joke", "Shows They Listened", "Handwritten Note", "Time & Effort", "Matches My Taste"] },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "price-and-scale",
+        "name": "Price & Scale",
+        "image": "gift-preferences-female-price-scale",
+        "fields": [
+          { "label": "Nice Gift Budget", "type": "select", "value": "", "options": ["Under $50", "$50 - $100", "$100 - $250", "$250 - $500", "Over $500", "Thought Matters Most"] },
+          { "label": "One Big or Several Small", "type": "select", "value": "", "options": ["One Big, Meaningful Gift", "Several Small Things", "A Mix of Both", "No Preference"] },
+          { "label": "Gift Wrapping Matters", "type": "select", "value": "", "options": ["Love Beautiful Wrapping", "Nice Touch", "Don't Care", "Prefer Eco-Friendly"] },
+          { "label": "Birthday Planning Window", "type": "select", "value": "", "options": ["Months in Advance", "A Few Weeks", "Last Minute Is Fine", "I Don't Celebrate"] },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "wishlist-female",
+    "label": "Wishlist",
+    "section": "gifts-wishlist",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 20,
+    "is_active": true,
+    "fields": [],
+    "image": "wishlist-female",
+    "subcategories": [
+      {
+        "id": "current-wishlist",
+        "name": "Current Wishlist",
+        "image": "wishlist-female-current",
+        "fields": [
+          { "label": "Keep a Wishlist", "type": "select", "value": "", "options": ["Always Updated", "Mental List Only", "Sometimes Around Holidays", "Never - Surprise Me"] },
+          { "label": "Most Wanted Right Now", "type": "text", "value": "" },
+          { "label": "Favorite Store or Site", "type": "text", "value": "" },
+          { "label": "Wishlist Link", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "beauty-and-style",
+        "name": "Beauty & Style",
+        "image": "wishlist-female-beauty-style",
+        "fields": [
+          { "label": "Most Wanted Beauty or Style Gift", "type": "text", "value": "" },
+          { "label": "Favorite Beauty or Fashion Brand", "type": "text", "value": "" },
+          { "label": "Jewelry or Accessory Wish", "type": "text", "value": "" },
+          { "label": "Upgrade I Keep Mentioning", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "books-and-subscriptions",
+        "name": "Books & Subscriptions",
+        "image": "wishlist-female-books-subscriptions",
+        "fields": [
+          { "label": "Book Genre I'd Want", "type": "select", "value": "", "options": ["Fiction / Novels", "Self-Help", "Biography", "Cookbooks", "Art / Design", "Not a Book Person"] },
+          { "label": "Subscription I'd Love", "type": "select", "value": "", "options": ["Streaming Service", "Book Box", "Food / Snack Box", "Beauty Box", "Wine / Spirits", "Fitness / Wellness"] },
+          { "label": "Favorite Author, Creator, or Series", "type": "text", "value": "" },
+          { "label": "Magazine or Membership", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "special-occasions-female",
+    "label": "Special Occasions",
+    "section": "gifts-wishlist",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 30,
+    "is_active": true,
+    "fields": [],
+    "image": "special-occasions-female",
+    "subcategories": [
+      {
+        "id": "birthday-and-holidays",
+        "name": "Birthday & Holidays",
+        "image": "special-occasions-female-birthday-holidays",
+        "fields": [
+          { "label": "Birthday Matters To Me", "type": "select", "value": "", "options": ["A Lot", "Somewhat", "Keep It Low-Key", "I'd Skip It"] },
+          { "label": "Holiday Gift Style", "type": "select", "value": "", "options": ["Tradition Matters", "Practical Wins", "Something Surprising", "Keep It Simple"] },
+          { "label": "Best Holiday Gift Category", "type": "select", "value": "", "options": ["Beauty / Wellness", "Jewelry / Accessory", "Experience / Trip", "Clothing Item", "Sentimental / Homemade", "Cash / Gift Card"] },
+          { "label": "Stocking Stuffer or Small Gift Ideas", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "experience-gifts",
+        "name": "Experience Gifts",
+        "image": "special-occasions-female-experience-gifts",
+        "fields": [
+          { "label": "Experience Gift I'd Love", "type": "select", "value": "", "options": ["Spa / Wellness Day", "Concert / Show", "Cooking Class", "Adventure Activity", "Surprise Trip", "Fancy Dinner"] },
+          { "label": "Favorite Kind of Night Out", "type": "text", "value": "" },
+          { "label": "Trip or Event Destination", "type": "text", "value": "" },
+          { "label": "Hard No Experience", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "meaningful-gestures",
+        "name": "Meaningful Gestures",
+        "image": "special-occasions-female-meaningful-gestures",
+        "fields": [
+          { "label": "Flowers or Plants", "type": "select", "value": "", "options": ["Love Flowers", "Occasionally Nice", "Prefer a Plant", "Not My Thing", "Allergic"] },
+          { "label": "Charity Cause", "type": "select", "value": "", "options": ["Animal Welfare", "Environment", "Education", "Health / Medical", "Social Justice", "Prefer Physical Gifts"] },
+          { "label": "Favorite Sentimental Gesture", "type": "text", "value": "" },
+          { "label": "Keepsake I Would Actually Keep", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
   }
 ];
