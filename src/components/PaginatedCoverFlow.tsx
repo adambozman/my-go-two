@@ -14,7 +14,7 @@ interface PaginatedCoverFlowProps {
 
 const RIGHT_SIDE_DOT_STYLE = {
   right: 18,
-  top: "calc(var(--header-height) + (100vh - var(--header-height) - var(--footer-height)) / 2 + 23px)",
+  top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)",
   transform: "translateY(-50%)",
   zIndex: 50,
 } as const;

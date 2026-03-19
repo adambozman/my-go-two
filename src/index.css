@@ -30,7 +30,6 @@ html::-webkit-scrollbar {
   :root {
     /* ── Layout: single source of truth for header/footer heights ── */
     --header-height: 175px;
-    --footer-height: 72px;
     /* Header internal zones — these never change */
     --header-top-padding: 14px;
     --header-icons-row-height: 60px;
