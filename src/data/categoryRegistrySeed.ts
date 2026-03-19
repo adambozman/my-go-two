@@ -8628,6 +8628,194 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
     ]
   },
   {
+    "key": "hygiene-female",
+    "label": "Hygiene",
+    "section": "personal",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 10,
+    "is_active": true,
+    "fields": [],
+    "image": "hygiene-female",
+    "subcategories": [
+      {
+        "id": "oral-care",
+        "name": "Oral Care",
+        "image": "hygiene-female-oral-care",
+        "fields": [
+          { "label": "Toothbrush", "type": "select", "value": "", "options": ["Manual", "Electric", "Sonic"] },
+          { "label": "Toothpaste", "type": "text", "value": "" },
+          { "label": "Floss", "type": "select", "value": "", "options": ["String", "Picks", "Water Flosser", "None"] },
+          { "label": "Mouthwash", "type": "text", "value": "" },
+          { "label": "Whitening", "type": "select", "value": "", "options": ["Yes", "No", "Sometimes"] },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "bath-shower",
+        "name": "Bath & Shower",
+        "image": "hygiene-female-bath-shower",
+        "fields": [
+          { "label": "Preference", "type": "select", "value": "", "options": ["Shower", "Bath", "Both"] },
+          { "label": "Temperature", "type": "select", "value": "", "options": ["Cold", "Warm", "Hot"] },
+          { "label": "Body Wash", "type": "text", "value": "" },
+          { "label": "Shampoo", "type": "text", "value": "" },
+          { "label": "Frequency", "type": "select", "value": "", "options": ["Once a Day", "Twice a Day", "Every Other Day"] },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "grooming",
+        "name": "Grooming",
+        "image": "hygiene-female-grooming",
+        "fields": [
+          { "label": "Hair Removal Style", "type": "select", "value": "", "options": ["Minimal", "Regular", "Occasional", "Professional", "Mixed"] },
+          { "label": "Tool Preference", "type": "select", "value": "", "options": ["Razor", "Electric", "Wax", "Laser", "Mixed"] },
+          { "label": "Nail Care", "type": "select", "value": "", "options": ["At Home", "Professional", "Both", "Rarely"] },
+          { "label": "Preferred Salon or Spa", "type": "text", "value": "" },
+          { "label": "Hair Appointment Frequency", "type": "select", "value": "", "options": ["Weekly", "Every 2 Weeks", "Monthly", "Every Few Months", "As Needed"] },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "repair-restore",
+        "name": "Daily Care",
+        "image": "hygiene-female-repair-restore",
+        "fields": [
+          { "label": "Anti-Chafe", "type": "text", "value": "" },
+          { "label": "Muscle Relief", "type": "text", "value": "" },
+          { "label": "Foot Care", "type": "text", "value": "" },
+          { "label": "After Sport Routine", "type": "text", "value": "" },
+          { "label": "Recovery Products", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "skincare-female",
+    "label": "Skincare",
+    "section": "personal",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 20,
+    "is_active": true,
+    "fields": [],
+    "image": "skincare-female",
+    "subcategories": [
+      {
+        "id": "face-wash-cleanse",
+        "name": "Face Wash & Cleanse",
+        "image": "skincare-female-face-wash-cleanse",
+        "fields": [
+          { "label": "Cleanser", "type": "text", "value": "" },
+          { "label": "Skin Type", "type": "select", "value": "", "options": ["Oily", "Dry", "Combination", "Normal", "Sensitive"] },
+          { "label": "Frequency", "type": "select", "value": "", "options": ["Morning Only", "Night Only", "Morning & Night"] },
+          { "label": "Exfoliate", "type": "select", "value": "", "options": ["Yes", "No", "Sometimes"] },
+          { "label": "Preferred Brand", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "moisturize-protect",
+        "name": "Moisturize & Protect",
+        "image": "skincare-female-moisturize-protect",
+        "fields": [
+          { "label": "Moisturizer", "type": "text", "value": "" },
+          { "label": "SPF", "type": "select", "value": "", "options": ["Yes Daily", "Sometimes", "No"] },
+          { "label": "SPF Product", "type": "text", "value": "" },
+          { "label": "Texture Preference", "type": "select", "value": "", "options": ["Gel", "Cream", "Lotion", "Oil"] },
+          { "label": "Preferred Brand", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "makeup-detail-care",
+        "name": "Makeup & Detail Care",
+        "image": "skincare-female-makeup-detail-care",
+        "fields": [
+          { "label": "Favorite Makeup Basics", "type": "text", "value": "" },
+          { "label": "Brow Care", "type": "text", "value": "" },
+          { "label": "Lip Care", "type": "text", "value": "" },
+          { "label": "Makeup Remover", "type": "text", "value": "" },
+          { "label": "Preferred Brand", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "bodycare-female",
+    "label": "Bodycare",
+    "section": "personal",
+    "page": "mygotwo",
+    "genders": [
+      "female"
+    ],
+    "sort_order": 30,
+    "is_active": true,
+    "fields": [],
+    "image": "bodycare-female",
+    "subcategories": [
+      {
+        "id": "perfume-fragrance",
+        "name": "Perfume & Fragrance",
+        "image": "bodycare-female-perfume-fragrance",
+        "fields": [
+          { "label": "Daily Fragrance", "type": "text", "value": "" },
+          { "label": "Occasion Fragrance", "type": "text", "value": "" },
+          { "label": "Preferred Notes", "type": "select", "value": "", "options": ["Floral", "Fresh", "Citrus", "Woody", "Gourmand", "Clean"] },
+          { "label": "Intensity", "type": "select", "value": "", "options": ["Light", "Medium", "Strong"] },
+          { "label": "Preferred Brand", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "muscle-sport",
+        "name": "Recovery",
+        "image": "bodycare-female-muscle-sport",
+        "fields": [
+          { "label": "Muscle Rub", "type": "text", "value": "" },
+          { "label": "Recovery Method", "type": "select", "value": "", "options": ["Ice Bath", "Epsom Salt", "Foam Roll", "Massage", "Nothing"] },
+          { "label": "Cooling Gel", "type": "text", "value": "" },
+          { "label": "Heating Patch", "type": "text", "value": "" },
+          { "label": "Preferred Brand", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "powders",
+        "name": "Body Essentials",
+        "image": "bodycare-female-powders",
+        "fields": [
+          { "label": "Body Lotion", "type": "text", "value": "" },
+          { "label": "Deodorant", "type": "text", "value": "" },
+          { "label": "Body Powder", "type": "text", "value": "" },
+          { "label": "Preferred Brand", "type": "text", "value": "" },
+          { "label": "Scented or Unscented", "type": "select", "value": "", "options": ["Scented", "Unscented"] },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      },
+      {
+        "id": "supplements",
+        "name": "Wellness",
+        "image": "bodycare-female-supplements",
+        "fields": [
+          { "label": "Daily Supplements", "type": "text", "value": "" },
+          { "label": "Protein", "type": "text", "value": "" },
+          { "label": "Pre-Workout", "type": "text", "value": "" },
+          { "label": "Vitamins", "type": "text", "value": "" },
+          { "label": "Preferred Brand", "type": "text", "value": "" },
+          { "label": "Notes", "type": "text", "value": "" }
+        ]
+      }
+    ]
+  },
+  {
     "key": "hygiene-nb",
     "label": "Hygiene",
     "section": "personal",
