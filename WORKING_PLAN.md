@@ -116,6 +116,16 @@ Tasks:
   - `shared_derived_features` for shareable derived outputs like `Your Vibe` and recommendation access
 - Rebuild connection feed/search to read from explicit shared rows rather than inferred section access
 - Add one-click bulk share/unshare on top of the explicit row model, not instead of it
+- Build connection-aware recommendation logic behind `For You`:
+  - recommendations stay "for me"
+  - connections act as the context source behind the scenes
+  - inputs should combine:
+    - connection type (`mom`, `significant other`, `coworker`, etc.)
+    - upcoming occasions
+    - explicitly shared product cards
+    - explicitly shared profile fields
+    - explicitly shared derived outputs like `Your Vibe`
+  - leave room for paywall/partial gating at the backend model layer
 
 Definition of done:
 - A connected person can only access data explicitly shared with them
@@ -180,6 +190,7 @@ Tasks:
   - favorites
   - brand preferences
   - practical recurring needs
+- Add connection-aware gifting logic so `For You` can generate recommendations for me about a connection, based on what they shared and what occasion is coming up
 - Separate fallback catalog logic from personalized signal logic
 - Make recommendation explanations traceable and honest
 - Keep weekly caching, but make inputs richer and more deterministic
