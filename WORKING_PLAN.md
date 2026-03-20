@@ -107,6 +107,8 @@ Tasks:
 - Define exactly which categories map to which stored content
 - Enforce permission-aware access at the data layer
 - Make connection search respect sharing permissions
+- Finish the profile/connection photo flow using private storage with explicit sharing rules
+- Migrate legacy public Supabase image URLs to private-safe storage refs
 - Re-test connection feed and partner page against actual privacy rules
 
 Definition of done:
