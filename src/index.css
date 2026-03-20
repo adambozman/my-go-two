@@ -341,9 +341,9 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   max-width: min(100%, 520px);
-  padding: 11px 30px 12px;
+  padding: 7px 18px 8px;
   border-radius: 999px;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.74) 0%, rgba(245,233,220,0.48) 100%);
@@ -355,14 +355,14 @@ body {
 }
 
 .coverflow-title-pill--with-back {
-  padding-left: 14px;
-  padding-right: 26px;
+  padding-left: 10px;
+  padding-right: 18px;
 }
 
 .coverflow-title-pill__back {
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -386,7 +386,7 @@ body {
 .coverflow-stage-title {
   margin: 0;
   font-family: 'Cormorant Garamond', serif;
-  font-size: 29px;
+  font-size: 20px;
   font-weight: 700;
   letter-spacing: normal;
   line-height: 0.9;
