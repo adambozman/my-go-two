@@ -86,7 +86,7 @@ const TemplateCoverFlow = ({
     return (
       <div className="coverflow-stage-shell">
         <div className="coverflow-stage-title-wrap">
-          <h2 className="section-header coverflow-stage-title text-center">{templateName}</h2>
+          <h2 className="coverflow-stage-title text-center">{templateName}</h2>
         </div>
         <PaginatedCoverFlow
           items={items}
@@ -113,7 +113,7 @@ const TemplateCoverFlow = ({
   return (
     <div className="coverflow-stage-shell">
       <div className="coverflow-stage-title-wrap">
-        <h2 className="section-header coverflow-stage-title text-center">{activeSubcategory?.name || templateName}</h2>
+        <h2 className="coverflow-stage-title text-center">{activeSubcategory?.name || templateName}</h2>
       </div>
       <PaginatedCoverFlow
         items={productItems}

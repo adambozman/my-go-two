@@ -1094,7 +1094,7 @@ const MyGoTwo = () => {
             className="coverflow-stage-shell snap-start snap-always"
           >
             <div className="coverflow-stage-title-wrap">
-              <h2 className="section-header coverflow-stage-title text-center">{section.label}</h2>
+              <h2 className="coverflow-stage-title text-center">{section.label}</h2>
             </div>
             <GoTwoCoverFlow
               items={section.items}
