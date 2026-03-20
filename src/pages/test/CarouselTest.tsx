@@ -17,7 +17,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-// AppSidebar removed — no longer exists
+import { AppSidebar } from "@/components/AppSidebar";
 import { DashboardTopBar } from "@/components/DashboardTopBar";
 
 // ─── Test data ───────────────────────────────────────────────────────────────
@@ -303,7 +303,7 @@ const CarouselTest = () => {
           : <MobileCarousel items={TEST_ITEMS} />
         }
       </main>
-      {/* AppSidebar removed */}
+      <AppSidebar />
     </div>
   );
 };

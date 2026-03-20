@@ -7,10 +7,10 @@ const sampleSubtype: SubtypeItem = {
   name: "Boots",
   image: "",
   fields: [
-    { label: "US Size", type: "text" as const, value: "" },
-    { label: "Boot Height", type: "select" as const, options: ["Ankle", "Mid", "Knee"], value: "" },
-    { label: "Preferred Brands", type: "text" as const, value: "" },
-    { label: "Notes", type: "text" as const, value: "" },
+    { label: "US Size", type: "tags", value: "" },
+    { label: "Boot Height", type: "select", options: ["Ankle", "Mid", "Knee"], value: "" },
+    { label: "Preferred Brands", type: "tags", value: "" },
+    { label: "Notes", type: "text", value: "" },
   ],
 };
 
