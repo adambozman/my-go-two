@@ -342,7 +342,7 @@ body {
   font-family: 'Cormorant Garamond', serif;
   font-size: 29px;
   font-weight: 600;
-  letter-spacing: 0.035em;
+  letter-spacing: 0.085em;
   line-height: 0.95;
   color: var(--logo-two-color);
   text-transform: uppercase;
