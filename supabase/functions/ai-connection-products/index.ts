@@ -42,12 +42,116 @@ const sanitizeIntents = (rawIntents: unknown): RecommendationIntent[] => {
     .filter((intent) => intent.brand && intent.name && intent.hook && intent.why);
 };
 
+const CATEGORY_KEYWORDS: Record<RecommendationIntent["category"], string[]> = {
+  clothes: [
+    "style",
+    "fit",
+    "shirt",
+    "t-shirt",
+    "tee",
+    "dress",
+    "pants",
+    "jeans",
+    "shoe",
+    "boot",
+    "outerwear",
+    "tops",
+    "bottoms",
+    "footwear",
+    "accessories",
+    "underwear",
+    "jacket",
+    "coat",
+  ],
+  food: [
+    "food",
+    "drink",
+    "dining",
+    "grocery",
+    "pantry",
+    "beverage",
+    "coffee",
+    "tea",
+    "snack",
+    "restaurant",
+    "cocktail",
+    "wine",
+    "meal",
+  ],
+  tech: [
+    "tech",
+    "electronics",
+    "gadget",
+    "device",
+    "phone",
+    "laptop",
+    "headphones",
+    "camera",
+    "gaming",
+    "smart",
+  ],
+  home: [
+    "home",
+    "living",
+    "decor",
+    "kitchen",
+    "bath",
+    "bed",
+    "bedding",
+    "furniture",
+    "organization",
+    "cleaning",
+    "garden",
+  ],
+};
+
+const inferCategoryFromSharedCard = (card: Record<string, unknown>): RecommendationIntent["category"] | null => {
+  const haystack = [
+    cleanText(card.card_key),
+    cleanText(card.group_name),
+    cleanText(card.entry_name),
+  ].join(" ").toLowerCase();
+
+  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS) as Array<[RecommendationIntent["category"], string[]]>) {
+    if (keywords.some((keyword) => haystack.includes(keyword))) {
+      return category;
+    }
+  }
+
+  return null;
+};
+
+const getAllowedCategories = (context: Record<string, unknown>): Set<RecommendationIntent["category"]> => {
+  const allowed = new Set<RecommendationIntent["category"]>();
+  const sharedCards = toArray<Record<string, unknown>>(context.shared_card_entries);
+
+  for (const card of sharedCards) {
+    const category = inferCategoryFromSharedCard(card);
+    if (category) allowed.add(category);
+  }
+
+  const derived = toObject(context.derived);
+  const sharedRecommendationGroups = toArray<Record<string, unknown>>(derived.shared_recommendations);
+  for (const group of sharedRecommendationGroups) {
+    const products = toArray<Record<string, unknown>>(group.products);
+    for (const product of products) {
+      const category = cleanText(product.category).toLowerCase();
+      if (ALLOWED_CATEGORIES.has(category)) {
+        allowed.add(category as RecommendationIntent["category"]);
+      }
+    }
+  }
+
+  return allowed;
+};
+
 const toObject = (value: unknown): Record<string, unknown> =>
   value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
 
 const toArray = <T = unknown>(value: unknown): T[] => (Array.isArray(value) ? value as T[] : []);
 
 const fallbackFromSharedRecommendations = (context: Record<string, unknown>, selectedOccasionLabel: string | null) => {
+  const allowedCategories = getAllowedCategories(context);
   const derived = toObject(context.derived);
   const sharedRecommendationGroups = toArray<Record<string, unknown>>(derived.shared_recommendations);
   const firstGroup = sharedRecommendationGroups[0] ? toObject(sharedRecommendationGroups[0]) : {};
@@ -59,6 +163,7 @@ const fallbackFromSharedRecommendations = (context: Record<string, unknown>, sel
       const price = cleanText(product.price) || "$$";
       const category = cleanText(product.category).toLowerCase();
       const safeCategory = (ALLOWED_CATEGORIES.has(category) ? category : "clothes") as RecommendationIntent["category"];
+      if (allowedCategories.size > 0 && !allowedCategories.has(safeCategory)) return null;
       const baseWhy = cleanText(product.why) || "Shared recommendation carried forward into connection gifting context.";
       return {
         name,
@@ -82,7 +187,7 @@ const fallbackFromSharedRecommendations = (context: Record<string, unknown>, sel
         source_version: cleanText(product.source_version) || getCatalogVersion(),
       };
     })
-    .filter((product) => product.name && product.brand);
+    .filter((product): product is NonNullable<typeof product> => Boolean(product?.name && product?.brand));
 
   return products;
 };
@@ -128,6 +233,11 @@ serve(async (req) => {
     const featureGates = toObject(context.feature_gates);
     if (!giftingEnabled || featureGates.connection_context === false) {
       throw new Error("Connection gifting is disabled for this connection");
+    }
+
+    const allowedCategories = getAllowedCategories(context);
+    if (allowedCategories.size === 0) {
+      throw new Error("No shareable recommendation categories are available for this connection");
     }
 
     const occasionOptions = toArray<Record<string, unknown>>(context.upcoming_occasions);
@@ -245,7 +355,7 @@ ${cardSnapshot || "- None shared yet"}
 
 RULES:
 1. Generate exactly 8 recommendation intents.
-2. Categories must be exactly: clothes, food, tech, home.
+2. Categories must be chosen only from this allowed set: ${Array.from(allowedCategories).join(", ")}.
 3. Recommendations should be suitable for the viewer to buy, plan, or act on for this connection.
 4. Prioritize the occasion when one exists.
 5. Use only signals that were explicitly shared.
@@ -316,7 +426,7 @@ Use the provided tool.`;
         if (intents.length > 0) {
           const resolvedProducts = [];
 
-          for (const intent of intents) {
+          for (const intent of intents.filter((candidate) => allowedCategories.has(candidate.category))) {
             const fingerprint = buildRecommendationFingerprint(
               intent.category,
               intent.brand,
