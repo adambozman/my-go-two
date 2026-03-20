@@ -303,7 +303,7 @@ const CarouselTest = () => {
           : <MobileCarousel items={TEST_ITEMS} />
         }
       </main>
-      <AppSidebar />
+      {/* AppSidebar removed */}
     </div>
   );
 };
