@@ -32,7 +32,6 @@ import CategorySync from "./pages/admin/CategorySync";
 import SponsoredAdmin from "./pages/admin/SponsoredAdmin";
 
 import CarouselTest from "./pages/CarouselTest";
-import ProductEntryCardPreview from "./pages/test/ProductEntryCardPreview";
 import { initBlocklist, isBlocklistReady } from "@/data/imageBlocklist";
 
 const queryClient = new QueryClient();
@@ -82,7 +81,6 @@ const App = () => {
               </Route>
               <Route path="*" element={<NotFound />} />
               <Route path="/carousel-test" element={<CarouselTest />} />
-              <Route path="/product-entry-card-preview" element={<ProductEntryCardPreview />} />
               
             </Routes>
           </BrowserRouter>

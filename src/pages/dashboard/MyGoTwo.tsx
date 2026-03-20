@@ -13,6 +13,7 @@ import TemplateCoverFlow, { type SubtypeItem, type SubcategoryGroup } from "@/co
 import FormCoverFlowCarousel from "@/components/ui/FormCoverFlowCarousel";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
+import ProductEntryCard from "@/components/ui/ProductEntryCard";
 
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
@@ -1003,7 +1004,7 @@ const MyGoTwo = () => {
                       }));
                     }}
                     renderActiveCard={(item) => (
-                      <EntryFormCard
+                      <ProductEntryCard
                         subtype={leafSubtype}
                         subcategoryName={leafSubcategoryName}
                         categoryName={leafCategoryName}
