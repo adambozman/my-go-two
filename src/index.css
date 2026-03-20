@@ -387,11 +387,10 @@ body {
   margin: 0;
   font-family: 'Cormorant Garamond', serif;
   font-size: 29px;
-  font-weight: 600;
-  letter-spacing: 0.085em;
-  line-height: 0.95;
+  font-weight: 700;
+  letter-spacing: normal;
+  line-height: 0.9;
   color: var(--logo-two-color);
-  text-transform: uppercase;
   text-wrap: balance;
   text-shadow: 0 1px 0 rgba(255,255,255,0.34);
 }
