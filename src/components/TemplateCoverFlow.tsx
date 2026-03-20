@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import PaginatedCoverFlow from "@/components/PaginatedCoverFlow";
+import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 
 export type { SubtypeItem, SubcategoryGroup };
@@ -85,9 +86,7 @@ const TemplateCoverFlow = ({
     }));
     return (
       <div className="coverflow-stage-shell">
-        <div className="coverflow-stage-title-wrap">
-          <h2 className="coverflow-stage-title text-center">{templateName}</h2>
-        </div>
+        <CoverflowTitlePill title={templateName} />
         <PaginatedCoverFlow
           items={items}
           focusedItemId={focusedItemId}
@@ -112,9 +111,7 @@ const TemplateCoverFlow = ({
 
   return (
     <div className="coverflow-stage-shell">
-      <div className="coverflow-stage-title-wrap">
-        <h2 className="coverflow-stage-title text-center">{activeSubcategory?.name || templateName}</h2>
-      </div>
+      <CoverflowTitlePill title={activeSubcategory?.name || templateName} />
       <PaginatedCoverFlow
         items={productItems}
         focusedItemId={focusedItemId}

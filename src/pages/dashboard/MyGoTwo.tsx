@@ -12,6 +12,7 @@ import GoTwoCoverFlow from "@/components/GoTwoCoverFlow";
 import TemplateCoverFlow, { type SubtypeItem, type SubcategoryGroup } from "@/components/TemplateCoverFlow";
 import FormCoverFlowCarousel from "@/components/ui/FormCoverFlowCarousel";
 import { PaginationControls } from "@/components/ui/pagination-controls";
+import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
@@ -1093,9 +1094,7 @@ const MyGoTwo = () => {
             }}
             className="coverflow-stage-shell snap-start snap-always"
           >
-            <div className="coverflow-stage-title-wrap">
-              <h2 className="coverflow-stage-title text-center">{section.label}</h2>
-            </div>
+            <CoverflowTitlePill title={section.label} />
             <GoTwoCoverFlow
               items={section.items}
               onSelect={(categoryId) => handleSelect(section.key, categoryId)}
