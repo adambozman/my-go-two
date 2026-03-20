@@ -64,6 +64,22 @@ interface ActivityFeedItem {
   accent: string;
 }
 
+interface SharedProfileRecord {
+  display_name: string | null;
+  avatar_url: string | null;
+  birthday: string | null;
+  anniversary: string | null;
+}
+
+interface SharedEntryRecord {
+  id: string;
+  user_id: string;
+  entry_name: string;
+  group_name: string;
+  card_key: string;
+  updated_at: string;
+}
+
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
   const navigate = useNavigate();
@@ -160,19 +176,27 @@ const DashboardHome = () => {
       return;
     }
 
-    const partnerIds = couples.map((c: any) => (c.inviter_id === user.id ? c.invitee_id : c.inviter_id)).filter(Boolean);
-    const [{ data: ownProfile }, { data: profiles }] = await Promise.all([
+    const [{ data: ownProfile }, partnerProfiles] = await Promise.all([
       supabase
         .from("profiles")
         .select("user_id, display_name, birthday, anniversary")
         .eq("user_id", user.id)
         .maybeSingle(),
-      partnerIds.length
-        ? supabase
-            .from("profiles")
-            .select("user_id, display_name, birthday, anniversary")
-            .in("user_id", partnerIds)
-        : Promise.resolve({ data: [] as Array<{ user_id: string; display_name: string | null; birthday: string | null; anniversary: string | null }> }),
+      Promise.all(
+        (couples || []).map(async (couple: any) => {
+          const partnerId = couple.inviter_id === user.id ? couple.invitee_id : couple.inviter_id;
+          if (!partnerId) return null;
+
+          const { data } = await supabase.rpc("get_connection_shared_profile", {
+            p_couple_id: couple.id,
+            p_owner_user_id: partnerId,
+            p_connection_user_id: user.id,
+          });
+
+          const profile = Array.isArray(data) ? (data[0] as SharedProfileRecord | undefined) ?? null : null;
+          return profile ? { user_id: partnerId, ...profile, couple } : { user_id: partnerId, display_name: null, birthday: null, anniversary: null, couple };
+        })
+      ),
     ]);
 
     const now = new Date();
@@ -213,13 +237,8 @@ const DashboardHome = () => {
       addMilestone("self-anniversary", "Anniversary", ownProfile.display_name || "You", ownProfile.anniversary, "anniversary", "self", ownProfile.user_id);
     }
 
-    for (const p of profiles ?? []) {
-      const couple = couples.find(
-        (c: any) =>
-          (c.inviter_id === p.user_id || c.invitee_id === p.user_id) &&
-          (c.inviter_id === user.id || c.invitee_id === user.id)
-      );
-      const name = couple?.display_label || p.display_name || "Connection";
+    for (const p of partnerProfiles.filter(Boolean) as Array<{ user_id: string; display_name: string | null; birthday: string | null; anniversary: string | null; couple: any }>) {
+      const name = p.couple?.display_label || p.display_name || "Connection";
 
       if (p.birthday) {
         addMilestone(`bd-${p.user_id}`, "Birthday", name, p.birthday, "birthday", "connection", p.user_id);
@@ -320,21 +339,6 @@ const DashboardHome = () => {
     const loadRecentActivity = async () => {
       if (!user) return;
 
-      const partnerIds = liveConnections.map((connection) => connection.partnerId!).filter(Boolean);
-      const visibleUserIds = [user.id, ...partnerIds];
-
-      if (!visibleUserIds.length) {
-        if (!cancelled) setRecentActivityItems([]);
-        return;
-      }
-
-      const { data } = await supabase
-        .from("card_entries")
-        .select("id, user_id, entry_name, group_name, updated_at")
-        .in("user_id", visibleUserIds)
-        .order("updated_at", { ascending: false })
-        .limit(12);
-
       if (cancelled) return;
 
       const ownerNames = new Map<string, string>();
@@ -343,7 +347,37 @@ const DashboardHome = () => {
         if (connection.partnerId) ownerNames.set(connection.partnerId, connection.name);
       });
 
-      const nextItems = (data || []).map((entry: any) => ({
+      const [{ data: myEntries }, partnerEntrySets] = await Promise.all([
+        supabase
+          .from("card_entries")
+          .select("id, user_id, entry_name, group_name, updated_at")
+          .eq("user_id", user.id)
+          .order("updated_at", { ascending: false })
+          .limit(12),
+        Promise.all(
+          liveConnections
+            .filter((connection) => connection.partnerId)
+            .map(async (connection) => {
+              const { data } = await supabase.rpc("get_connection_visible_card_entries", {
+                p_couple_id: connection.id,
+                p_owner_user_id: connection.partnerId,
+                p_connection_user_id: user.id,
+              });
+              return (Array.isArray(data) ? data : []) as SharedEntryRecord[];
+            })
+        ),
+      ]);
+
+      if (cancelled) return;
+
+      const allEntries = [
+        ...((myEntries || []) as SharedEntryRecord[]),
+        ...partnerEntrySets.flat(),
+      ]
+        .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+        .slice(0, 12);
+
+      const nextItems = allEntries.map((entry) => ({
         id: entry.id,
         title: ownerNames.get(entry.user_id) || "Connection",
         detail: `Updated ${entry.entry_name} in ${entry.group_name}.`,
@@ -378,7 +412,6 @@ const DashboardHome = () => {
     setIsSearchOpen(true);
     setSearchLoading(true);
 
-    const partnerIds = liveConnections.map((connection) => connection.partnerId!).filter(Boolean);
     const ownerNames = new Map<string, string>();
 
     ownerNames.set(user.id, "You");
@@ -389,10 +422,10 @@ const DashboardHome = () => {
     const includeSelf = searchScope === "everyone" || searchScope === "self";
     const scopedPartnerIds =
       searchScope === "everyone"
-        ? partnerIds
+        ? liveConnections.filter((connection) => connection.partnerId)
         : searchScope === "self"
           ? []
-          : [searchScope];
+          : liveConnections.filter((connection) => connection.partnerId === searchScope);
 
     const [myEntriesRes, circleEntriesRes] = await Promise.all([
       includeSelf
@@ -404,20 +437,29 @@ const DashboardHome = () => {
             .limit(20)
         : Promise.resolve({ data: [] as any[] }),
       scopedPartnerIds.length
-        ? supabase
-            .from("card_entries")
-            .select("id, user_id, entry_name, group_name, card_key")
-            .in("user_id", scopedPartnerIds)
-            .or(`group_name.ilike.%${query}%,entry_name.ilike.%${query}%`)
-            .limit(30)
-        : Promise.resolve({ data: [] as any[] }),
+        ? Promise.all(
+            scopedPartnerIds.map(async (connection) => {
+              const { data } = await supabase.rpc("get_connection_visible_card_entries", {
+                p_couple_id: connection.id,
+                p_owner_user_id: connection.partnerId,
+                p_connection_user_id: user.id,
+              });
+
+              return ((Array.isArray(data) ? data : []) as SharedEntryRecord[]).filter(
+                (row) =>
+                  row.group_name?.toLowerCase().includes(query.toLowerCase()) ||
+                  row.entry_name?.toLowerCase().includes(query.toLowerCase())
+              );
+            })
+          )
+        : Promise.resolve([] as SharedEntryRecord[][]),
     ]);
 
     const nextMine: HomeSearchResult[] = [
       ...((myEntriesRes.data || []).map((row: any) => buildEntryResult(row, "You"))),
     ];
 
-    const nextCircle: HomeSearchResult[] = ((circleEntriesRes as any).data || []).map((row: any) =>
+    const nextCircle: HomeSearchResult[] = (Array.isArray(circleEntriesRes) ? circleEntriesRes.flat() : []).map((row: any) =>
       buildEntryResult(row, ownerNames.get(row.user_id) || "Connection")
     );
 

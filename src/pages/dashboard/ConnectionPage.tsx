@@ -31,6 +31,7 @@ interface ConnectionRecord {
 
 interface EntryRecord {
   id: string;
+  user_id?: string;
   entry_name: string;
   group_name: string;
   card_key: string;
@@ -49,6 +50,13 @@ interface FeedItem {
   imageUrl: string | null;
   tags: string[];
   section: FeedSectionKey;
+}
+
+interface SharedProfileRecord {
+  display_name: string | null;
+  avatar_url: string | null;
+  birthday: string | null;
+  anniversary: string | null;
 }
 
 const shellCardStyle = {
@@ -280,13 +288,13 @@ export default function ConnectionPage() {
     const partnerId = isInviter ? couple.invitee_id : couple.inviter_id;
     const fallbackName = couple.display_label || (couple.invitee_email ? couple.invitee_email.split("@")[0] : "Connection");
 
-    const [{ data: profileData }, { data: incoming }, { data: outgoing }, { data: entryData }] = await Promise.all([
+    const [{ data: profileRows }, { data: incoming }, { data: outgoing }, { data: entryRows }] = await Promise.all([
       partnerId
-        ? supabase
-            .from("profiles")
-            .select("display_name, avatar_url, birthday, anniversary")
-            .eq("user_id", partnerId)
-            .maybeSingle()
+        ? supabase.rpc("get_connection_shared_profile", {
+            p_couple_id: couple.id,
+            p_owner_user_id: partnerId,
+            p_connection_user_id: user.id,
+          })
         : Promise.resolve({ data: null }),
       partnerId
         ? supabase
@@ -307,14 +315,16 @@ export default function ConnectionPage() {
             .maybeSingle()
         : Promise.resolve({ data: null }),
       partnerId
-        ? supabase
-            .from("card_entries")
-            .select("id, entry_name, group_name, card_key, field_values, image_url, updated_at")
-            .eq("user_id", partnerId)
-            .order("updated_at", { ascending: false })
-            .limit(80)
+        ? supabase.rpc("get_connection_visible_card_entries", {
+            p_couple_id: couple.id,
+            p_owner_user_id: partnerId,
+            p_connection_user_id: user.id,
+          })
         : Promise.resolve({ data: [] }),
     ]);
+
+    const profileData = Array.isArray(profileRows) ? (profileRows[0] as SharedProfileRecord | undefined) ?? null : null;
+    const entryData = Array.isArray(entryRows) ? (entryRows as EntryRecord[]) : [];
 
     const resolvedName = couple.display_label || profileData?.display_name || fallbackName;
 
@@ -349,7 +359,7 @@ export default function ConnectionPage() {
       memories: outgoing?.memories ?? false,
       saved_items: outgoing?.saved_items ?? false,
     });
-    setEntries((entryData as EntryRecord[] | null) || []);
+    setEntries(entryData);
     setLoading(false);
   }, [connectionId, user]);
 
