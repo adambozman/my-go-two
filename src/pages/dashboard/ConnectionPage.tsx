@@ -62,6 +62,16 @@ interface SharedCardEntryRow {
   card_entry_id: string;
 }
 
+type DerivedFeatureKey = "your_vibe" | "for_you_recommendations" | "ai_conversation_access";
+
+type DerivedFeatureState = Record<DerivedFeatureKey, boolean>;
+
+interface SharedDerivedFeatureRow {
+  id: string;
+  feature_key: DerivedFeatureKey;
+  is_shared: boolean;
+}
+
 const shellCardStyle = {
   boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
 } as const;
@@ -78,6 +88,18 @@ const editableProfileFields: Array<{ key: ProfileFieldKey; label: string; descri
   { key: "avatar_url", label: "Profile photo", description: "Allow this connection to see your private profile image." },
   { key: "birthday", label: "Birthday", description: "Share your birthday for reminders and calendar support." },
   { key: "anniversary", label: "Anniversary", description: "Share your anniversary for reminders and calendar support." },
+];
+
+const emptyDerivedFeatureState: DerivedFeatureState = {
+  your_vibe: false,
+  for_you_recommendations: false,
+  ai_conversation_access: false,
+};
+
+const editableDerivedFeatures: Array<{ key: DerivedFeatureKey; label: string; description: string }> = [
+  { key: "your_vibe", label: "Your Vibe", description: "Share your derived vibe summary without exposing raw Know Me answers." },
+  { key: "for_you_recommendations", label: "For You recommendations", description: "Share recommendation results generated from your approved signals." },
+  { key: "ai_conversation_access", label: "AI conversation access", description: "Allow AI conversations grounded in your shared vibe and recommendations." },
 ];
 
 const feedSectionConfig: Record<FeedSectionKey, { label: string; eyebrow: string; description: string }> = {
@@ -253,6 +275,8 @@ export default function ConnectionPage() {
   const [myEntries, setMyEntries] = useState<EntryRecord[]>([]);
   const [outgoingProfileFields, setOutgoingProfileFields] = useState<ProfileFieldState>(emptyProfileFieldState);
   const [incomingProfileFields, setIncomingProfileFields] = useState<ProfileFieldState>(emptyProfileFieldState);
+  const [outgoingDerivedFeatures, setOutgoingDerivedFeatures] = useState<DerivedFeatureState>(emptyDerivedFeatureState);
+  const [incomingDerivedFeatures, setIncomingDerivedFeatures] = useState<DerivedFeatureState>(emptyDerivedFeatureState);
   const [sharedCardEntryIds, setSharedCardEntryIds] = useState<string[]>([]);
   const [resolvedConnectionImage, setResolvedConnectionImage] = useState("");
   const [resolvedFeedImages, setResolvedFeedImages] = useState<Record<string, string>>({});
@@ -283,6 +307,8 @@ export default function ConnectionPage() {
       { data: profileRows },
       { data: incomingProfileRows },
       { data: outgoingProfileRows },
+      { data: incomingDerivedRows },
+      { data: outgoingDerivedRows },
       { data: incomingSharedCardRows },
       { data: ownEntryRows },
       { data: entryRows },
@@ -306,6 +332,22 @@ export default function ConnectionPage() {
         ? supabase
             .from("shared_profile_fields")
             .select("id, field_key, is_shared")
+            .eq("couple_id", couple.id)
+            .eq("owner_user_id", user.id)
+            .eq("connection_user_id", partnerId)
+        : Promise.resolve({ data: [] }),
+      partnerId
+        ? supabase
+            .from("shared_derived_features")
+            .select("id, feature_key, is_shared")
+            .eq("couple_id", couple.id)
+            .eq("owner_user_id", partnerId)
+            .eq("connection_user_id", user.id)
+        : Promise.resolve({ data: [] }),
+      partnerId
+        ? supabase
+            .from("shared_derived_features")
+            .select("id, feature_key, is_shared")
             .eq("couple_id", couple.id)
             .eq("owner_user_id", user.id)
             .eq("connection_user_id", partnerId)
@@ -337,6 +379,8 @@ export default function ConnectionPage() {
     const entryData = Array.isArray(entryRows) ? (entryRows as EntryRecord[]) : [];
     const incomingFieldRows = (incomingProfileRows || []) as SharedProfileFieldRow[];
     const outgoingFieldRows = (outgoingProfileRows || []) as SharedProfileFieldRow[];
+    const incomingFeatureRows = (incomingDerivedRows || []) as SharedDerivedFeatureRow[];
+    const outgoingFeatureRows = (outgoingDerivedRows || []) as SharedDerivedFeatureRow[];
     const cardRows = (incomingSharedCardRows || []) as SharedCardEntryRow[];
     const ownEntries = Array.isArray(ownEntryRows) ? (ownEntryRows as EntryRecord[]) : [];
 
@@ -364,6 +408,16 @@ export default function ConnectionPage() {
       avatar_url: !!outgoingFieldRows.find((row) => row.field_key === "avatar_url" && row.is_shared),
       birthday: !!outgoingFieldRows.find((row) => row.field_key === "birthday" && row.is_shared),
       anniversary: !!outgoingFieldRows.find((row) => row.field_key === "anniversary" && row.is_shared),
+    });
+    setIncomingDerivedFeatures({
+      your_vibe: !!incomingFeatureRows.find((row) => row.feature_key === "your_vibe" && row.is_shared),
+      for_you_recommendations: !!incomingFeatureRows.find((row) => row.feature_key === "for_you_recommendations" && row.is_shared),
+      ai_conversation_access: !!incomingFeatureRows.find((row) => row.feature_key === "ai_conversation_access" && row.is_shared),
+    });
+    setOutgoingDerivedFeatures({
+      your_vibe: !!outgoingFeatureRows.find((row) => row.feature_key === "your_vibe" && row.is_shared),
+      for_you_recommendations: !!outgoingFeatureRows.find((row) => row.feature_key === "for_you_recommendations" && row.is_shared),
+      ai_conversation_access: !!outgoingFeatureRows.find((row) => row.feature_key === "ai_conversation_access" && row.is_shared),
     });
     setSharedCardEntryIds(cardRows.map((row) => row.card_entry_id));
     setMyEntries(ownEntries);
@@ -446,6 +500,8 @@ export default function ConnectionPage() {
 
   const incomingEnabled = useMemo(() => editableProfileFields.filter((field) => incomingProfileFields[field.key]), [incomingProfileFields]);
   const outgoingEnabled = useMemo(() => editableProfileFields.filter((field) => outgoingProfileFields[field.key]), [outgoingProfileFields]);
+  const incomingDerivedEnabled = useMemo(() => editableDerivedFeatures.filter((feature) => incomingDerivedFeatures[feature.key]), [incomingDerivedFeatures]);
+  const outgoingDerivedEnabled = useMemo(() => editableDerivedFeatures.filter((feature) => outgoingDerivedFeatures[feature.key]), [outgoingDerivedFeatures]);
 
   const filteredMyEntries = useMemo(() => {
     const needle = cardSearch.trim().toLowerCase();
@@ -560,6 +616,52 @@ export default function ConnectionPage() {
     }
 
     toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection.name}.` });
+  }, [connection, toast, user]);
+
+  const handleToggleDerivedFeature = useCallback(async (key: DerivedFeatureKey, nextValue: boolean) => {
+    if (!user || !connection || !connection.partnerId) return;
+
+    setOutgoingDerivedFeatures((current) => ({ ...current, [key]: nextValue }));
+
+    const { data: existingRow, error: loadError } = await supabase
+      .from("shared_derived_features")
+      .select("id")
+      .eq("couple_id", connection.id)
+      .eq("owner_user_id", user.id)
+      .eq("connection_user_id", connection.partnerId)
+      .eq("feature_key", key)
+      .maybeSingle();
+
+    if (loadError) {
+      setOutgoingDerivedFeatures((current) => ({ ...current, [key]: !nextValue }));
+      toast({ title: "Could not update derived sharing", description: loadError.message, variant: "destructive" });
+      return;
+    }
+
+    const payload = {
+      couple_id: connection.id,
+      owner_user_id: user.id,
+      connection_user_id: connection.partnerId,
+      feature_key: key,
+      is_shared: nextValue,
+    };
+
+    const query = existingRow
+      ? supabase.from("shared_derived_features").update({ is_shared: nextValue }).eq("id", existingRow.id)
+      : supabase.from("shared_derived_features").insert(payload);
+
+    const { error } = await query;
+
+    if (error) {
+      setOutgoingDerivedFeatures((current) => ({ ...current, [key]: !nextValue }));
+      toast({ title: "Could not update derived sharing", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    toast({
+      title: nextValue ? "Derived feature shared" : "Derived feature hidden",
+      description: `${connection.name} will ${nextValue ? "now" : "no longer"} see ${editableDerivedFeatures.find((feature) => feature.key === key)?.label.toLowerCase()}.`,
+    });
   }, [connection, toast, user]);
 
   const handleBulkShare = useCallback(async (mode: "share" | "unshare") => {
@@ -682,6 +784,9 @@ export default function ConnectionPage() {
             </div>
             <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
               {incomingEnabled.length} shared profile fields
+            </div>
+            <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
+              {incomingDerivedEnabled.length} shared derived features
             </div>
             <button
               onClick={loadConnection}
@@ -859,27 +964,38 @@ export default function ConnectionPage() {
                 Suggestions shaped to this person.
               </h2>
               <div className="mt-4 space-y-3">
-                {aiSuggestions.map((suggestion, index) => (
+                {incomingDerivedFeatures.for_you_recommendations ? (
+                  aiSuggestions.map((suggestion, index) => (
+                    <div
+                      key={`${suggestion.title}-${index}`}
+                      className="rounded-[22px] px-4 py-4"
+                      style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
+                          <Sparkles className="h-4 w-4" />
+                        </span>
+                        <div>
+                          <p className="text-[19px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                            {suggestion.title}
+                          </p>
+                          <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                            {suggestion.body}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
                   <div
-                    key={`${suggestion.title}-${index}`}
                     className="rounded-[22px] px-4 py-4"
                     style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
                   >
-                    <div className="flex items-start gap-3">
-                      <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
-                        <Sparkles className="h-4 w-4" />
-                      </span>
-                      <div>
-                        <p className="text-[19px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                          {suggestion.title}
-                        </p>
-                        <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                          {suggestion.body}
-                        </p>
-                      </div>
-                    </div>
+                    <p className="text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                      {connection.name} has not shared derived recommendations with you yet.
+                    </p>
                   </div>
-                ))}
+                )}
               </div>
             </section>
 
@@ -919,6 +1035,32 @@ export default function ConnectionPage() {
                     />
                   </div>
                 ))}
+              </div>
+
+              <div className="mt-5 rounded-[22px] px-4 py-4" style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.8)" }}>
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  Derived features
+                </p>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  Share AI outputs like Your Vibe and recommendation results without sharing raw answers.
+                </p>
+
+                <div className="mt-4 space-y-4">
+                  {editableDerivedFeatures.map((feature) => (
+                    <div key={feature.key} className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{feature.label}</p>
+                        <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                          {feature.description}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={outgoingDerivedFeatures[feature.key]}
+                        onCheckedChange={(checked) => handleToggleDerivedFeature(feature.key, checked)}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="mt-5 rounded-[22px] px-4 py-4" style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.8)" }}>
@@ -999,10 +1141,10 @@ export default function ConnectionPage() {
                 </p>
                 <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                   {outgoingEnabled.length
-                    ? `${connection.name} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")} and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
-                    : sharedCardEntryIds.length
-                      ? `${connection.name} can currently see ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
-                      : `You have not shared any fields or product cards with ${connection.name} yet.`}
+                    ? `${connection.name} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")}, ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"}, and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+                    : sharedCardEntryIds.length || outgoingDerivedEnabled.length
+                      ? `${connection.name} can currently see ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"} and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+                      : `You have not shared any fields, derived features, or product cards with ${connection.name} yet.`}
                 </p>
               </div>
             </section>
@@ -1022,15 +1164,28 @@ export default function ConnectionPage() {
               </h2>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                {incomingEnabled.length ? incomingEnabled.map((field) => (
-                  <span
-                    key={field.key}
-                    className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]"
-                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.82)" }}
-                  >
-                    {field.label}
-                  </span>
-                )) : (
+                {incomingEnabled.length || incomingDerivedEnabled.length ? (
+                  <>
+                    {incomingEnabled.map((field) => (
+                      <span
+                        key={field.key}
+                        className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]"
+                        style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.82)" }}
+                      >
+                        {field.label}
+                      </span>
+                    ))}
+                    {incomingDerivedEnabled.map((feature) => (
+                      <span
+                        key={feature.key}
+                        className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]"
+                        style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.82)" }}
+                      >
+                        {feature.label}
+                      </span>
+                    ))}
+                  </>
+                ) : (
                   <p className="text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                     They have not granted any specific access yet.
                   </p>

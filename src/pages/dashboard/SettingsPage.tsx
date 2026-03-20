@@ -50,10 +50,9 @@ const SettingsPage = () => {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // User settings state
-  type SettingsKeys = 'gift_reminders' | 'partner_activity' | 'recommendations' | 'email_digests' | 'share_prefs' | 'share_wishlist' | 'visible_profile';
+  type SettingsKeys = 'gift_reminders' | 'partner_activity' | 'recommendations' | 'email_digests';
   const [settings, setSettings] = useState<Record<SettingsKeys, boolean>>({
     gift_reminders: true, partner_activity: true, recommendations: true, email_digests: true,
-    share_prefs: true, share_wishlist: true, visible_profile: true,
   });
   const [settingsLoaded, setSettingsLoaded] = useState(false);
 
@@ -64,8 +63,6 @@ const SettingsPage = () => {
       setSettings({
         gift_reminders: data.gift_reminders, partner_activity: data.partner_activity,
         recommendations: data.recommendations, email_digests: data.email_digests,
-        share_prefs: data.share_prefs, share_wishlist: data.share_wishlist,
-        visible_profile: data.visible_profile,
       });
     }
     setSettingsLoaded(true);
@@ -524,7 +521,7 @@ const SettingsPage = () => {
               <div className="card-design-neumorph p-5">
                 <p className="text-xs uppercase tracking-[0.16em]" style={{ color: 'var(--swatch-cedar-grove)' }}>Connection-specific sharing</p>
                 <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--swatch-text-light)' }}>
-                  Sharing is now managed connection by connection. Open any connection to choose exactly which profile fields and product cards they can see.
+                  Sharing is now managed connection by connection. Open any connection to choose exactly which profile fields, derived features, and product cards they can see.
                 </p>
                 <div className="mt-4 space-y-2">
                   {couples.filter((c) => c.status === "accepted").length === 0 ? (
@@ -552,23 +549,6 @@ const SettingsPage = () => {
                   )}
                 </div>
               </div>
-              {([
-                { label: "Share preferences with partner", desc: "Let your connected partner see your style and size preferences", key: "share_prefs" as SettingsKeys },
-                { label: "Share wish list", desc: "Allow your partner to view your saved items", key: "share_wishlist" as SettingsKeys },
-                { label: "Visible profile", desc: "Let others find you by email when sending invites", key: "visible_profile" as SettingsKeys },
-              ]).map((item) => (
-                <div key={item.key} className="flex items-center justify-between py-2">
-                  <div>
-                    <p className="text-sm font-medium" style={{ color: 'var(--swatch-teal)' }}>{item.label}</p>
-                    <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>{item.desc}</p>
-                  </div>
-                  <Switch
-                    checked={settings[item.key]}
-                    onCheckedChange={() => toggleSetting(item.key)}
-                    disabled={!settingsLoaded}
-                  />
-                </div>
-              ))}
             </div>
           </div>
         </div>
