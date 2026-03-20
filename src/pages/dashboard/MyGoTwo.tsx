@@ -990,7 +990,7 @@ const MyGoTwo = () => {
                 }}
                 className="coverflow-stage-shell snap-start snap-always"
               >
-                <CoverflowTitlePill title={leafSubtype.name} />
+                <CoverflowTitlePill title={leafSubtype.name} showBackArrow onBack={goBackFromEntries} />
                 <div className="flex flex-col items-center justify-center">
                   <FormCoverFlowCarousel
                     items={paginatedItems}
