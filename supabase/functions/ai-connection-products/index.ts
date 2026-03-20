@@ -130,18 +130,6 @@ const getAllowedCategories = (context: Record<string, unknown>): Set<Recommendat
     if (category) allowed.add(category);
   }
 
-  const derived = toObject(context.derived);
-  const sharedRecommendationGroups = toArray<Record<string, unknown>>(derived.shared_recommendations);
-  for (const group of sharedRecommendationGroups) {
-    const products = toArray<Record<string, unknown>>(group.products);
-    for (const product of products) {
-      const category = cleanText(product.category).toLowerCase();
-      if (ALLOWED_CATEGORIES.has(category)) {
-        allowed.add(category as RecommendationIntent["category"]);
-      }
-    }
-  }
-
   return allowed;
 };
 
@@ -150,8 +138,29 @@ const toObject = (value: unknown): Record<string, unknown> =>
 
 const toArray = <T = unknown>(value: unknown): T[] => (Array.isArray(value) ? value as T[] : []);
 
+const buildGeneratorContext = (context: Record<string, unknown>) => {
+  const allowedCategories = getAllowedCategories(context);
+  const sharedCards = toArray<Record<string, unknown>>(context.shared_card_entries).filter((card) => {
+    const category = inferCategoryFromSharedCard(card);
+    return category ? allowedCategories.has(category) : false;
+  });
+  const derived = toObject(context.derived);
+
+  return {
+    allowedCategories,
+    context: {
+      ...context,
+      shared_card_entries: sharedCards,
+      derived: {
+        your_vibe: cleanText(derived.your_vibe) || null,
+      },
+    } as Record<string, unknown>,
+  };
+};
+
 const fallbackFromSharedRecommendations = (context: Record<string, unknown>, selectedOccasionLabel: string | null) => {
   const allowedCategories = getAllowedCategories(context);
+  if (allowedCategories.size === 0) return [];
   const derived = toObject(context.derived);
   const sharedRecommendationGroups = toArray<Record<string, unknown>>(derived.shared_recommendations);
   const firstGroup = sharedRecommendationGroups[0] ? toObject(sharedRecommendationGroups[0]) : {};
@@ -229,18 +238,17 @@ serve(async (req) => {
     const context = toObject(contextData);
     if (!Object.keys(context).length) throw new Error("Connection context unavailable");
 
-    const giftingEnabled = Boolean(context.gifting_enabled);
-    const featureGates = toObject(context.feature_gates);
+    const { context: generatorContext, allowedCategories } = buildGeneratorContext(context);
+    const giftingEnabled = Boolean(generatorContext.gifting_enabled);
+    const featureGates = toObject(generatorContext.feature_gates);
     if (!giftingEnabled || featureGates.connection_context === false) {
       throw new Error("Connection gifting is disabled for this connection");
     }
-
-    const allowedCategories = getAllowedCategories(context);
     if (allowedCategories.size === 0) {
       throw new Error("No shareable recommendation categories are available for this connection");
     }
 
-    const occasionOptions = toArray<Record<string, unknown>>(context.upcoming_occasions);
+    const occasionOptions = toArray<Record<string, unknown>>(generatorContext.upcoming_occasions);
     const selectedOccasion =
       occasionOptions.find((occasion) => {
         const occasionType = cleanText(occasion.occasion_type);
@@ -284,7 +292,7 @@ serve(async (req) => {
           id: cachedRecommendation?.id ?? null,
           products: cachedProducts,
           cached: true,
-          context,
+          context: generatorContext,
           occasion: selectedOccasion,
         }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -302,15 +310,15 @@ serve(async (req) => {
 
     if (draftError) throw draftError;
 
-    let blendedProducts = fallbackFromSharedRecommendations(context, occasionLabel);
+    let blendedProducts = fallbackFromSharedRecommendations(generatorContext, occasionLabel);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (LOVABLE_API_KEY) {
-      const profile = toObject(context.profile);
-      const sharedCards = toArray<Record<string, unknown>>(context.shared_card_entries);
-      const derived = toObject(context.derived);
-      const connectionKind = cleanText(context.connection_kind || "custom");
-      const connectionLabel = cleanText(context.connection_label || "Connection");
+      const profile = toObject(generatorContext.profile);
+      const sharedCards = toArray<Record<string, unknown>>(generatorContext.shared_card_entries);
+      const derived = toObject(generatorContext.derived);
+      const connectionKind = cleanText(generatorContext.connection_kind || "custom");
+      const connectionLabel = cleanText(generatorContext.connection_label || "Connection");
 
       const profileSnapshot = [
         `display_name: ${cleanText(profile.display_name) || "Not shared"}`,
@@ -352,6 +360,11 @@ ${profileSnapshot}
 
 SHARED PRODUCT CARDS:
 ${cardSnapshot || "- None shared yet"}
+
+IMPORTANT:
+- Only use the shared product cards and explicitly shared profile signals above.
+- Do not infer categories or interests outside those shared inputs.
+- Do not use broad site-wide taste or recommendation history beyond what is explicitly represented here.
 
 RULES:
 1. Generate exactly 8 recommendation intents.
@@ -485,7 +498,7 @@ Use the provided tool.`;
     await supabase
       .from("connection_recommendations")
       .update({
-        source_snapshot: context,
+        source_snapshot: generatorContext,
         recommendations: blendedProducts,
         status: "ready",
         updated_at: new Date().toISOString(),
@@ -497,7 +510,7 @@ Use the provided tool.`;
       id: draftId,
       products: blendedProducts,
       cached: false,
-      context,
+      context: generatorContext,
       occasion: selectedOccasion,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
