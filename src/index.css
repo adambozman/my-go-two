@@ -341,6 +341,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   max-width: min(100%, 520px);
   padding: 11px 30px 12px;
   border-radius: 999px;
@@ -351,6 +352,35 @@ body {
     inset 0 1px 0 rgba(255,255,255,0.66),
     0 12px 28px rgba(var(--swatch-viridian-odyssey-rgb), 0.08),
     0 6px 18px rgba(var(--swatch-cedar-grove-rgb), 0.04);
+}
+
+.coverflow-title-pill--with-back {
+  padding-left: 14px;
+  padding-right: 26px;
+}
+
+.coverflow-title-pill__back {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(45, 104, 112, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.52);
+  color: var(--logo-two-color);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.48);
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.coverflow-title-pill__back:hover {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(45, 104, 112, 0.24);
+}
+
+.coverflow-title-pill__back:active {
+  transform: translateX(-1px);
 }
 
 .coverflow-stage-title {

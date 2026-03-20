@@ -1058,7 +1058,7 @@ const MyGoTwo = () => {
               subcategories={coverFlowState.subcategories}
               activeSubcategory={activeSubcategory}
               onSubcategorySelect={handleSubcategorySelect}
-              onBack={clearCoverFlow}
+              onBack={activeSubcategory ? () => { setFocusedDrilldownItemId(activeSubcategory.id); setActiveSubcategory(null); } : clearCoverFlow}
               onSelect={handleSubtypeSelect}
               focusedItemId={focusedDrilldownItemId}
               creating={false}

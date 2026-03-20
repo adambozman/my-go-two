@@ -60,6 +60,7 @@ const TemplateCoverFlow = ({
   subcategories,
   activeSubcategory,
   onSubcategorySelect,
+  onBack,
   onSelect,
   focusedItemId,
 }: TemplateCoverFlowProps) => {
@@ -86,7 +87,7 @@ const TemplateCoverFlow = ({
     }));
     return (
       <div className="coverflow-stage-shell">
-        <CoverflowTitlePill title={templateName} />
+        <CoverflowTitlePill title={templateName} showBackArrow={Boolean(onBack)} onBack={onBack} />
         <PaginatedCoverFlow
           items={items}
           focusedItemId={focusedItemId}
@@ -111,7 +112,7 @@ const TemplateCoverFlow = ({
 
   return (
     <div className="coverflow-stage-shell">
-      <CoverflowTitlePill title={activeSubcategory?.name || templateName} />
+      <CoverflowTitlePill title={activeSubcategory?.name || templateName} showBackArrow={Boolean(onBack)} onBack={onBack} />
       <PaginatedCoverFlow
         items={productItems}
         focusedItemId={focusedItemId}
