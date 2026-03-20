@@ -72,6 +72,22 @@ interface SharedDerivedFeatureRow {
   is_shared: boolean;
 }
 
+interface SharedVibeRecord {
+  persona_summary: string | null;
+}
+
+interface SharedRecommendationsRecord {
+  id: string;
+  week_start: string;
+  generated_at: string;
+  products: Array<{
+    name?: string;
+    brand?: string;
+    hook?: string;
+    why?: string;
+  }> | null;
+}
+
 const shellCardStyle = {
   boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
 } as const;
@@ -278,6 +294,8 @@ export default function ConnectionPage() {
   const [outgoingDerivedFeatures, setOutgoingDerivedFeatures] = useState<DerivedFeatureState>(emptyDerivedFeatureState);
   const [incomingDerivedFeatures, setIncomingDerivedFeatures] = useState<DerivedFeatureState>(emptyDerivedFeatureState);
   const [sharedCardEntryIds, setSharedCardEntryIds] = useState<string[]>([]);
+  const [sharedVibe, setSharedVibe] = useState<string | null>(null);
+  const [sharedRecommendations, setSharedRecommendations] = useState<SharedRecommendationsRecord | null>(null);
   const [resolvedConnectionImage, setResolvedConnectionImage] = useState("");
   const [resolvedFeedImages, setResolvedFeedImages] = useState<Record<string, string>>({});
 
@@ -309,6 +327,8 @@ export default function ConnectionPage() {
       { data: outgoingProfileRows },
       { data: incomingDerivedRows },
       { data: outgoingDerivedRows },
+      { data: sharedVibeRows },
+      { data: sharedRecommendationRows },
       { data: incomingSharedCardRows },
       { data: ownEntryRows },
       { data: entryRows },
@@ -353,6 +373,20 @@ export default function ConnectionPage() {
             .eq("connection_user_id", partnerId)
         : Promise.resolve({ data: [] }),
       partnerId
+        ? supabase.rpc("get_connection_shared_vibe", {
+            p_couple_id: couple.id,
+            p_owner_user_id: partnerId,
+            p_connection_user_id: user.id,
+          })
+        : Promise.resolve({ data: [] }),
+      partnerId
+        ? supabase.rpc("get_connection_shared_recommendations", {
+            p_couple_id: couple.id,
+            p_owner_user_id: partnerId,
+            p_connection_user_id: user.id,
+          })
+        : Promise.resolve({ data: [] }),
+      partnerId
         ? supabase
             .from("shared_card_entries")
             .select("id, card_entry_id")
@@ -381,6 +415,8 @@ export default function ConnectionPage() {
     const outgoingFieldRows = (outgoingProfileRows || []) as SharedProfileFieldRow[];
     const incomingFeatureRows = (incomingDerivedRows || []) as SharedDerivedFeatureRow[];
     const outgoingFeatureRows = (outgoingDerivedRows || []) as SharedDerivedFeatureRow[];
+    const vibeData = Array.isArray(sharedVibeRows) ? (sharedVibeRows[0] as SharedVibeRecord | undefined) ?? null : null;
+    const recommendationData = Array.isArray(sharedRecommendationRows) ? (sharedRecommendationRows[0] as SharedRecommendationsRecord | undefined) ?? null : null;
     const cardRows = (incomingSharedCardRows || []) as SharedCardEntryRow[];
     const ownEntries = Array.isArray(ownEntryRows) ? (ownEntryRows as EntryRecord[]) : [];
 
@@ -419,6 +455,8 @@ export default function ConnectionPage() {
       for_you_recommendations: !!outgoingFeatureRows.find((row) => row.feature_key === "for_you_recommendations" && row.is_shared),
       ai_conversation_access: !!outgoingFeatureRows.find((row) => row.feature_key === "ai_conversation_access" && row.is_shared),
     });
+    setSharedVibe(vibeData?.persona_summary || null);
+    setSharedRecommendations(recommendationData || null);
     setSharedCardEntryIds(cardRows.map((row) => row.card_entry_id));
     setMyEntries(ownEntries);
     setEntries(entryData);
@@ -965,27 +1003,54 @@ export default function ConnectionPage() {
               </h2>
               <div className="mt-4 space-y-3">
                 {incomingDerivedFeatures.for_you_recommendations ? (
-                  aiSuggestions.map((suggestion, index) => (
-                    <div
-                      key={`${suggestion.title}-${index}`}
-                      className="rounded-[22px] px-4 py-4"
-                      style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
-                          <Sparkles className="h-4 w-4" />
-                        </span>
-                        <div>
-                          <p className="text-[19px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                            {suggestion.title}
-                          </p>
-                          <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                            {suggestion.body}
-                          </p>
+                  sharedRecommendations?.products?.length ? (
+                    sharedRecommendations.products.slice(0, 3).map((product, index) => (
+                      <div
+                        key={`${product.brand || "brand"}-${product.name || index}`}
+                        className="rounded-[22px] px-4 py-4"
+                        style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
+                            <Sparkles className="h-4 w-4" />
+                          </span>
+                          <div>
+                            <p className="text-[19px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                              {product.name || "Recommendation"}
+                            </p>
+                            <p className="mt-2 text-xs uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                              {product.brand || "For You"}
+                            </p>
+                            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                              {product.hook || product.why || "Shared from their latest For You recommendations."}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    ))
+                  ) : (
+                    aiSuggestions.map((suggestion, index) => (
+                      <div
+                        key={`${suggestion.title}-${index}`}
+                        className="rounded-[22px] px-4 py-4"
+                        style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
+                            <Sparkles className="h-4 w-4" />
+                          </span>
+                          <div>
+                            <p className="text-[19px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                              {suggestion.title}
+                            </p>
+                            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                              {suggestion.body}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )
                 ) : (
                   <div
                     className="rounded-[22px] px-4 py-4"
@@ -1133,6 +1198,17 @@ export default function ConnectionPage() {
                     </p>
                   )}
                 </div>
+              </div>
+
+              <div className="mt-5 rounded-[22px] px-4 py-4" style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.8)" }}>
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  Shared vibe
+                </p>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  {incomingDerivedFeatures.your_vibe && sharedVibe
+                    ? sharedVibe
+                    : `${connection.name} has not shared their vibe summary with you yet.`}
+                </p>
               </div>
 
               <div className="mt-5 rounded-[22px] px-4 py-4" style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.8)" }}>
