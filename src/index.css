@@ -345,13 +345,6 @@ body {
   max-width: min(100%, 520px);
   padding: 9px 24px 10px;
   border-radius: 999px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.74) 0%, rgba(245,233,220,0.48) 100%);
-  border: 1px solid rgba(255,255,255,0.78);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.66),
-    0 12px 28px rgba(var(--swatch-viridian-odyssey-rgb), 0.08),
-    0 6px 18px rgba(var(--swatch-cedar-grove-rgb), 0.04);
 }
 
 .coverflow-title-pill--with-back {
@@ -395,13 +388,47 @@ body {
   text-shadow: 0 1px 0 rgba(255,255,255,0.34);
 }
 
-.surface-pill {
-  background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(250,244,236,0.84) 100%);
+.pill-asset-title {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.74) 0%, rgba(245,233,220,0.48) 100%);
+  border: 1px solid rgba(255,255,255,0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.66),
+    0 12px 28px rgba(var(--swatch-viridian-odyssey-rgb), 0.08),
+    0 6px 18px rgba(var(--swatch-cedar-grove-rgb), 0.04);
+}
+
+.pill-asset-coral {
+  background: var(--logo-go-color);
+  color: #fff;
+  border: 1px solid rgba(var(--swatch-cedar-grove-rgb), 0.18);
+  box-shadow:
+    0 10px 24px rgba(var(--swatch-cedar-grove-rgb), 0.26),
+    0 2px 8px rgba(var(--swatch-cedar-grove-rgb), 0.16),
+    inset 0 1px 0 rgba(255,255,255,0.22);
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.pill-asset-ivory {
+  background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.84) 100%);
+  color: var(--logo-two-color);
   border: 1px solid rgba(255,255,255,0.86);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.92),
     0 8px 18px rgba(var(--swatch-cedar-grove-rgb), 0.08),
     0 4px 12px rgba(var(--swatch-viridian-odyssey-rgb), 0.06);
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.surface-pill {
   backdrop-filter: blur(8px);
 }
 

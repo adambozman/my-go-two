@@ -1,4 +1,5 @@
 import { ChevronLeft } from "lucide-react";
+import { Pill } from "@/components/ui/pill";
 
 interface CoverflowTitlePillProps {
   title: string;
@@ -15,7 +16,10 @@ const CoverflowTitlePill = ({
 }: CoverflowTitlePillProps) => {
   return (
     <div className="coverflow-stage-title-wrap">
-      <div className={`coverflow-title-pill ${showBackArrow ? "coverflow-title-pill--with-back" : ""} ${className}`.trim()}>
+      <Pill
+        variant="title"
+        className={`coverflow-title-pill ${showBackArrow ? "coverflow-title-pill--with-back" : ""} ${className}`.trim()}
+      >
         {showBackArrow ? (
           <button
             type="button"
@@ -27,7 +31,7 @@ const CoverflowTitlePill = ({
           </button>
         ) : null}
         <h2 className="coverflow-stage-title text-center">{title}</h2>
-      </div>
+      </Pill>
     </div>
   );
 };

@@ -4,14 +4,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const pillVariants = cva(
-  "surface-pill inline-flex items-center justify-center whitespace-nowrap rounded-full border text-[11px] uppercase tracking-[0.12em] transition-all duration-200 ease-out",
+  "surface-pill inline-flex items-center justify-center whitespace-nowrap rounded-full border transition-all duration-200 ease-out",
   {
     variants: {
       variant: {
-        default: "text-[var(--swatch-antique-coin)] border-white/80",
+        default: "pill-asset-ivory",
+        title: "pill-asset-title",
+        ivory: "pill-asset-ivory",
+        coral: "pill-asset-coral",
         active: "bg-[var(--swatch-teal)] text-white border-[var(--swatch-teal)] shadow-[0_10px_22px_rgba(var(--swatch-viridian-odyssey-rgb),0.18)]",
         teal: "text-[var(--swatch-teal)] border-[rgba(var(--swatch-teal-rgb),0.16)]",
-        coral: "text-[var(--swatch-cedar-grove)] border-[rgba(var(--swatch-cedar-grove-rgb),0.16)]",
         subtle: "bg-white/55 text-[var(--swatch-antique-coin)] border-white/70 shadow-none",
       },
       size: {
