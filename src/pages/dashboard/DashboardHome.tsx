@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { resolveStorageUrl } from "@/lib/storageRefs";
 interface ConnectionCard {
   id: string;
   name: string;
@@ -67,6 +68,7 @@ const DashboardHome = () => {
   const { user, subscribed } = useAuth();
   const navigate = useNavigate();
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
+  const [resolvedConnectionImages, setResolvedConnectionImages] = useState<Record<string, string>>({});
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [homeSearch, setHomeSearch] = useState("");
@@ -237,10 +239,36 @@ const DashboardHome = () => {
     loadMilestones();
   }, [loadConnections, loadMilestones]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadConnectionImages = async () => {
+      const imageValues = Array.from(new Set(connections.map((connection) => connection.image).filter(Boolean)));
+      if (imageValues.length === 0) {
+        if (!cancelled) setResolvedConnectionImages({});
+        return;
+      }
+
+      const nextEntries = await Promise.all(
+        imageValues.map(async (value) => [value, await resolveStorageUrl(value)] as const),
+      );
+
+      if (!cancelled) {
+        setResolvedConnectionImages(Object.fromEntries(nextEntries));
+      }
+    };
+
+    loadConnectionImages();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [connections]);
+
   const directoryEntries: DirectoryEntry[] = connections.map((c) => ({
     id: c.id,
     name: c.name,
-    image: c.image,
+    image: resolvedConnectionImages[c.image] || c.image,
     status: c.status,
     lastSync: c.updatedAt,
     isPlaceholder: false,

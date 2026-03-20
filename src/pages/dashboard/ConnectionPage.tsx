@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { resolveStorageUrl } from "@/lib/storageRefs";
 
 type PermissionKey =
   | "sizes"
@@ -254,6 +255,8 @@ export default function ConnectionPage() {
   const [outgoingPermissions, setOutgoingPermissions] = useState<PermissionState>(emptyPermissions);
   const [entries, setEntries] = useState<EntryRecord[]>([]);
   const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null; birthday: string | null; anniversary: string | null } | null>(null);
+  const [resolvedConnectionImage, setResolvedConnectionImage] = useState("");
+  const [resolvedFeedImages, setResolvedFeedImages] = useState<Record<string, string>>({});
 
   const loadConnection = useCallback(async () => {
     if (!user || !connectionId) return;
@@ -370,6 +373,49 @@ export default function ConnectionPage() {
       })
       .filter((item) => entryIsVisible(item.section, incomingPermissions));
   }, [entries, incomingPermissions]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadConnectionImage = async () => {
+      const resolved = await resolveStorageUrl(connection?.image);
+      if (!cancelled) {
+        setResolvedConnectionImage(resolved || "");
+      }
+    };
+
+    loadConnectionImage();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [connection?.image]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadFeedImages = async () => {
+      const imageValues = Array.from(new Set(visibleFeedItems.map((item) => item.imageUrl).filter(Boolean)));
+      if (imageValues.length === 0) {
+        if (!cancelled) setResolvedFeedImages({});
+        return;
+      }
+
+      const nextEntries = await Promise.all(
+        imageValues.map(async (value) => [value as string, await resolveStorageUrl(value)] as const),
+      );
+
+      if (!cancelled) {
+        setResolvedFeedImages(Object.fromEntries(nextEntries));
+      }
+    };
+
+    loadFeedImages();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [visibleFeedItems]);
 
   const feedSections = useMemo(() => {
     return (Object.keys(feedSectionConfig) as FeedSectionKey[])
@@ -520,8 +566,8 @@ export default function ConnectionPage() {
                 className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border"
                 style={{ borderColor: "rgba(45,104,112,0.2)", background: "linear-gradient(135deg, rgba(45,104,112,0.88), rgba(30,74,82,0.88))" }}
               >
-                {connection.image ? (
-                  <img src={connection.image} alt={connection.name} className="h-full w-full object-cover" />
+                {resolvedConnectionImage ? (
+                  <img src={resolvedConnectionImage} alt={connection.name} className="h-full w-full object-cover" />
                 ) : (
                   <span className="text-2xl font-semibold text-white">{connection.name[0]?.toUpperCase() || "?"}</span>
                 )}
@@ -660,9 +706,9 @@ export default function ConnectionPage() {
                         className="overflow-hidden rounded-[24px] border"
                         style={{ background: "rgba(255,255,255,0.64)", borderColor: "rgba(255,255,255,0.82)" }}
                       >
-                        {item.imageUrl ? (
+                        {(resolvedFeedImages[item.imageUrl || ""] || item.imageUrl) ? (
                           <div className="h-44 overflow-hidden">
-                            <img src={item.imageUrl} alt={item.title} className="h-full w-full object-cover" />
+                            <img src={resolvedFeedImages[item.imageUrl || ""] || item.imageUrl || ""} alt={item.title} className="h-full w-full object-cover" />
                           </div>
                         ) : (
                           <div

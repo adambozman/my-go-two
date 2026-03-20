@@ -3,6 +3,7 @@ import { Loader2, Camera, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { SubtypeItem } from "@/components/TemplateCoverFlow";
+import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
 
 const EntryTagInput = ({
   value,
@@ -236,7 +237,25 @@ const ProductEntryCard = ({
 }: ProductEntryCardProps) => {
   const { toast } = useToast();
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [resolvedImageUrl, setResolvedImageUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadImage = async () => {
+      const resolved = await resolveStorageUrl(imageUrl);
+      if (!cancelled) {
+        setResolvedImageUrl(resolved || "");
+      }
+    };
+
+    loadImage();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [imageUrl]);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -265,11 +284,7 @@ const ProductEntryCard = ({
 
       if (uploadError) throw uploadError;
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("card-images").getPublicUrl(filePath);
-
-      onImageChange(publicUrl);
+      onImageChange(makeStorageRef("card-images", filePath));
     } catch (error: any) {
       toast({ title: "Upload failed", description: error.message || "Could not upload image.", variant: "destructive" });
     } finally {
@@ -318,7 +333,7 @@ const ProductEntryCard = ({
             border: "none",
             padding: 0,
             overflow: "hidden",
-            background: imageUrl ? `center / cover no-repeat url(${imageUrl})` : "#c8bfb4",
+            background: resolvedImageUrl ? `center / cover no-repeat url(${resolvedImageUrl})` : "#c8bfb4",
             cursor: uploadingImage ? "wait" : "pointer",
           }}
           aria-label="Upload image"
@@ -331,13 +346,13 @@ const ProductEntryCard = ({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: imageUrl ? "rgba(26,26,26,0.12)" : "transparent",
+              background: resolvedImageUrl ? "rgba(26,26,26,0.12)" : "transparent",
             }}
           >
             {uploadingImage ? (
               <Loader2 style={{ width: 24, height: 24, color: "rgba(255,255,255,0.92)", animation: "spin 1s linear infinite" }} />
             ) : (
-              <Camera style={{ width: 24, height: 24, color: imageUrl ? "rgba(255,255,255,0.92)" : "rgba(26,26,26,0.42)" }} />
+              <Camera style={{ width: 24, height: 24, color: resolvedImageUrl ? "rgba(255,255,255,0.92)" : "rgba(26,26,26,0.42)" }} />
             )}
           </div>
         </button>

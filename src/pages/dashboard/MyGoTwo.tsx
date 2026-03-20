@@ -14,6 +14,7 @@ import FormCoverFlowCarousel from "@/components/ui/FormCoverFlowCarousel";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 import ProductEntryCard from "@/components/ui/ProductEntryCard";
+import { resolveStorageUrl } from "@/lib/storageRefs";
 
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
@@ -96,6 +97,7 @@ const MyGoTwo = () => {
   const [entryDrafts, setEntryDrafts] = useState<Record<string, Record<string, string>>>({});
   const [entryNames, setEntryNames] = useState<Record<string, string>>({});
   const [entryImages, setEntryImages] = useState<Record<string, string>>({});
+  const [resolvedEntryImages, setResolvedEntryImages] = useState<Record<string, string>>({});
   const [activeGroup, setActiveGroup] = useState("");
   const [leafSubtype, setLeafSubtype] = useState<SubtypeItem | null>(null);
   const [leafImage, setLeafImage] = useState<string>("");
@@ -185,6 +187,40 @@ const MyGoTwo = () => {
     setEntryNames(nextNames);
     setEntryImages(nextImages);
   }, [entries, leafSubtype, defaultFieldValues, cardKey, groupsForCardKey, activeGroup]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadResolvedImages = async () => {
+      const imageValues = Array.from(
+        new Set(
+          [
+            ...entries.map((entry) => entry.image_url || ""),
+            ...Object.values(entryImages),
+          ].filter(Boolean),
+        ),
+      );
+
+      if (imageValues.length === 0) {
+        if (!cancelled) setResolvedEntryImages({});
+        return;
+      }
+
+      const nextEntries = await Promise.all(
+        imageValues.map(async (value) => [value, await resolveStorageUrl(value)] as const),
+      );
+
+      if (!cancelled) {
+        setResolvedEntryImages(Object.fromEntries(nextEntries));
+      }
+    };
+
+    loadResolvedImages();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [entries, entryImages]);
 
   useEffect(() => {
     if (!leafSubtype || !cardKey) return;
@@ -586,12 +622,19 @@ const MyGoTwo = () => {
               ...groupEntries.map((entry) => ({
                 id: entry.id,
                 label: entryNames[entry.id] || entry.entry_name,
-                image: normalizeImageValue(entryImages[entry.id] || entry.image_url) || leafImage || BRANDED_CARD_SVG,
+                image: normalizeImageValue(
+                  resolvedEntryImages[entryImages[entry.id] || entry.image_url || ""]
+                  || entryImages[entry.id]
+                  || entry.image_url,
+                ) || leafImage || BRANDED_CARD_SVG,
               })),
               {
                 id: newEntryId,
                 label: entryNames[newEntryId]?.trim() || "",
-                image: normalizeImageValue(entryImages[newEntryId]) || leafImage || BRANDED_CARD_SVG,
+                image: normalizeImageValue(
+                  resolvedEntryImages[entryImages[newEntryId] || ""]
+                  || entryImages[newEntryId],
+                ) || leafImage || BRANDED_CARD_SVG,
               },
             ];
             const currentPage = activeEntryPageByGroup[groupName] ?? 1;

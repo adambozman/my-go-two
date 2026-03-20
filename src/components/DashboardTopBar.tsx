@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
+import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
 
 import { useTopBar } from "@/contexts/TopBarContext";
 import { useRotatingQuote } from "@/hooks/useRotatingQuote";
@@ -32,6 +33,7 @@ export function DashboardTopBar() {
   const { backState } = useTopBar();
   const rotatingQuote = useRotatingQuote();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [avatarValue, setAvatarValue] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("My Account");
   const [initials, setInitials] = useState("?");
@@ -47,7 +49,7 @@ export function DashboardTopBar() {
         .eq("user_id", user.id)
         .single();
       if (data) {
-        setAvatarUrl(data.avatar_url);
+        setAvatarValue(data.avatar_url);
         const resolvedName = data.display_name || user.user_metadata?.display_name || user.email || "My Account";
         setDisplayName(resolvedName);
         const parts = resolvedName.trim().split(/\s+/).filter(Boolean);
@@ -83,6 +85,23 @@ export function DashboardTopBar() {
     return () => { supabase.removeChannel(channel); };
   }, [user]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadAvatar = async () => {
+      const resolved = await resolveStorageUrl(avatarValue);
+      if (!cancelled) {
+        setAvatarUrl(resolved || null);
+      }
+    };
+
+    loadAvatar();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [avatarValue]);
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
@@ -99,16 +118,15 @@ export function DashboardTopBar() {
       return;
     }
 
-    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
-    const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+    const storageRef = makeStorageRef("avatars", path);
 
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({ avatar_url: publicUrl })
+      .update({ avatar_url: storageRef })
       .eq("user_id", user.id);
 
     if (!updateError) {
-      setAvatarUrl(publicUrl);
+      setAvatarValue(storageRef);
       toast({ title: "Photo updated!" });
     }
 
@@ -124,6 +142,7 @@ export function DashboardTopBar() {
     }
 
     await supabase.from("profiles").update({ avatar_url: null }).eq("user_id", user.id);
+    setAvatarValue(null);
     setAvatarUrl(null);
     toast({ title: "Photo removed" });
   };

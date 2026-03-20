@@ -3,6 +3,7 @@ import { Pencil, Check, Camera, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { STOCK_PHOTOS, getPhotosForLabel } from "@/data/stockPhotos";
+import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
 
 interface CardEditButtonProps {
   title: string;
@@ -23,6 +24,7 @@ const CardEditButton = ({
   const [value, setValue] = useState(title);
   const [email, setEmail] = useState(currentEmail || "");
   const [selectedPhoto, setSelectedPhoto] = useState(currentImage || "");
+  const [resolvedSelectedPhoto, setResolvedSelectedPhoto] = useState(currentImage || "");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -53,6 +55,23 @@ const CardEditButton = ({
     }
   }, [editing, title, currentImage, currentEmail]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadSelectedPhoto = async () => {
+      const resolved = await resolveStorageUrl(selectedPhoto);
+      if (!cancelled) {
+        setResolvedSelectedPhoto(resolved || "");
+      }
+    };
+
+    loadSelectedPhoto();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedPhoto]);
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -82,11 +101,7 @@ const CardEditButton = ({
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("connection-photos")
-        .getPublicUrl(filePath);
-
-      setSelectedPhoto(publicUrl);
+      setSelectedPhoto(makeStorageRef("connection-photos", filePath));
       toast.success("Photo uploaded!");
     } catch (err) {
       console.error("Upload failed:", err);
@@ -185,7 +200,7 @@ const CardEditButton = ({
               className="relative rounded-lg overflow-hidden aspect-square"
               onClick={() => {}}
             >
-              <img src={selectedPhoto} alt="Your photo" className="w-full h-full object-cover" />
+              <img src={resolvedSelectedPhoto} alt="Your photo" className="w-full h-full object-cover" />
               <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(45,104,112,0.45)" }}>
                 <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "#2D6870" }}>
                   <Check className="w-3.5 h-3.5 text-white" />
