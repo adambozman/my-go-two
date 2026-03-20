@@ -17,7 +17,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AppSidebar } from "@/components/AppSidebar";
+// AppSidebar removed — component no longer exists
 import { DashboardTopBar } from "@/components/DashboardTopBar";
 
 // ─── Test data ───────────────────────────────────────────────────────────────
