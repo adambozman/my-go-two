@@ -990,7 +990,7 @@ const MyGoTwo = () => {
                 }}
                 className="coverflow-stage-shell snap-start snap-always"
               >
-                <div className="coverflow-stage-title-wrap" aria-hidden="true" />
+                <CoverflowTitlePill title={leafSubtype.name} />
                 <div className="flex flex-col items-center justify-center">
                   <FormCoverFlowCarousel
                     items={paginatedItems}
