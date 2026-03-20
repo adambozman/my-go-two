@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, forwardRef, useReducer } from "react";
 import { motion } from "framer-motion";
 import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import GoTwoCard from "@/components/ui/GoTwoCard";
+import { Pill } from "@/components/ui/pill";
 import InlinePhotoSearch from "@/components/InlinePhotoSearch";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 
@@ -155,25 +156,9 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                     {isActive && (
                       <>
                         <div className="absolute bottom-6 left-6">
-                          <span
-                            style={{
-                              fontFamily: "'Cormorant Garamond', serif",
-                              fontSize: 20,
-                              letterSpacing: "0.03em",
-                              fontWeight: 700,
-                              color: "#fff",
-                              background: "rgba(0,0,0,0.45)",
-                              borderRadius: 999,
-                              backdropFilter: "blur(16px)",
-                              WebkitBackdropFilter: "blur(16px)",
-                              border: "1px solid rgba(255,255,255,0.2)",
-                              padding: "8px 22px",
-                              display: "inline-block",
-                              textShadow: "0 1px 4px rgba(0,0,0,0.5)",
-                            }}
-                          >
+                          <Pill variant="title" size="default">
                             {item.label}
-                          </span>
+                          </Pill>
                         </div>
                         <InlinePhotoSearch imageKey={(item as any).imageKey || item.id} label={item.label} onImageChanged={forceUpdate} />
                       </>
