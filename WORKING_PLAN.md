@@ -110,6 +110,12 @@ Tasks:
 - Finish the profile/connection photo flow using private storage with explicit sharing rules
 - Migrate legacy public Supabase image URLs to private-safe storage refs
 - Re-test connection feed and partner page against actual privacy rules
+- Replace broad section sharing with connection-specific sharing:
+  - `shared_card_entries` for per-product-card sharing
+  - `shared_profile_fields` for per-field profile/calendar sharing
+  - `shared_derived_features` for shareable derived outputs like `Your Vibe` and recommendation access
+- Rebuild connection feed/search to read from explicit shared rows rather than inferred section access
+- Add one-click bulk share/unshare on top of the explicit row model, not instead of it
 
 Definition of done:
 - A connected person can only access data explicitly shared with them
