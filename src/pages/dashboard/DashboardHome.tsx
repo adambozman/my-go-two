@@ -47,7 +47,7 @@ function formatRelativeDateLabel(value?: string | Date | null) {
 
 interface HomeSearchResult {
   id: string;
-  kind: "entry" | "list";
+  kind: "entry";
   ownerId: string;
   ownerLabel: string;
   title: string;
@@ -343,16 +343,6 @@ const DashboardHome = () => {
     meta: row.card_key?.split("__").pop() || "Entry",
   }), []);
 
-  const buildListResult = useCallback((row: any, ownerLabel: string): HomeSearchResult => ({
-    id: row.id,
-    kind: "list",
-    ownerId: row.user_id,
-    ownerLabel,
-    title: row.title,
-    subtitle: row.description || "Saved list",
-    meta: "List",
-  }), []);
-
   const runHomeSearch = useCallback(async () => {
     const query = homeSearch.trim();
     if (!query || !user) return;
@@ -376,7 +366,7 @@ const DashboardHome = () => {
           ? []
           : [searchScope];
 
-    const [myEntriesRes, myListsRes, circleEntriesRes] = await Promise.all([
+    const [myEntriesRes, circleEntriesRes] = await Promise.all([
       includeSelf
         ? supabase
             .from("card_entries")
@@ -384,14 +374,6 @@ const DashboardHome = () => {
             .eq("user_id", user.id)
             .or(`group_name.ilike.%${query}%,entry_name.ilike.%${query}%`)
             .limit(20)
-        : Promise.resolve({ data: [] as any[] }),
-      includeSelf
-        ? supabase
-            .from("lists")
-            .select("id, user_id, title, description")
-            .eq("user_id", user.id)
-            .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
-            .limit(10)
         : Promise.resolve({ data: [] as any[] }),
       scopedPartnerIds.length
         ? supabase
@@ -405,7 +387,6 @@ const DashboardHome = () => {
 
     const nextMine: HomeSearchResult[] = [
       ...((myEntriesRes.data || []).map((row: any) => buildEntryResult(row, "You"))),
-      ...((myListsRes.data || []).map((row: any) => buildListResult(row, "You"))),
     ];
 
     const nextCircle: HomeSearchResult[] = ((circleEntriesRes as any).data || []).map((row: any) =>
@@ -415,7 +396,7 @@ const DashboardHome = () => {
     setMySearchResults(nextMine);
     setCircleSearchResults(nextCircle);
     setSearchLoading(false);
-  }, [buildEntryResult, buildListResult, homeSearch, liveConnections, searchScope, user]);
+  }, [buildEntryResult, homeSearch, liveConnections, searchScope, user]);
 
   return (
     <div className="relative h-full overflow-y-auto">
@@ -698,10 +679,6 @@ const DashboardHome = () => {
                         key={`mine-${result.id}`}
                         onClick={() => {
                           setIsSearchOpen(false);
-                          if (result.kind === "list") {
-                            navigate("/dashboard/my-go-two");
-                            return;
-                          }
                           navigate("/dashboard/my-go-two");
                         }}
                         className="card-inset-white block w-full rounded-[22px] px-4 py-3 text-left"

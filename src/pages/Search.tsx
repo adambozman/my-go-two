@@ -11,14 +11,12 @@ const Search = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [templateResults, setTemplateResults] = useState<any[]>([]);
-  const [listResults, setListResults] = useState<any[]>([]);
   const [entryResults, setEntryResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!query.trim()) {
       setTemplateResults([]);
-      setListResults([]);
       setEntryResults([]);
       return;
     }
@@ -26,20 +24,12 @@ const Search = () => {
     const timeout = setTimeout(async () => {
       setLoading(true);
 
-      const [templatesRes, listsRes, entriesRes] = await Promise.all([
+      const [templatesRes, entriesRes] = await Promise.all([
         supabase
           .from("card_templates")
           .select("*")
           .ilike("name", `%${query}%`)
           .limit(10),
-        user
-          ? supabase
-              .from("lists")
-              .select("*")
-              .eq("user_id", user.id)
-              .ilike("title", `%${query}%`)
-              .limit(10)
-          : Promise.resolve({ data: [] }),
         user
           ? supabase
               .from("card_entries")
@@ -51,7 +41,6 @@ const Search = () => {
       ]);
 
       setTemplateResults(templatesRes.data || []);
-      setListResults((listsRes as any).data || []);
       setEntryResults((entriesRes as any).data || []);
       setLoading(false);
     }, 300);
@@ -74,7 +63,7 @@ const Search = () => {
       <div className="relative mb-8">
         <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search templates, lists, and entries..."
+          placeholder="Search templates and entries..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="pl-10"
@@ -156,41 +145,7 @@ const Search = () => {
             </section>
           )}
 
-          {listResults.length > 0 && (
-            <section>
-              <h2
-                className="text-lg font-semibold mb-3"
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  color: "var(--swatch-teal)",
-                }}
-              >
-                My Lists
-              </h2>
-              <div className="space-y-2">
-                {listResults.map((l: any) => (
-                  <motion.button
-                    key={l.id}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => navigate(`/dashboard/lists/${l.id}`)}
-                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-accent/50 transition-colors"
-                  >
-                    <p
-                      className="font-medium"
-                      style={{ color: "var(--swatch-teal)" }}
-                    >
-                      {l.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {l.description || "No description"}
-                    </p>
-                  </motion.button>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {templateResults.length === 0 && listResults.length === 0 && entryResults.length === 0 && (
+          {templateResults.length === 0 && entryResults.length === 0 && (
             <p className="text-muted-foreground text-center py-8">
               No results found for &quot;{query}&quot;
             </p>
