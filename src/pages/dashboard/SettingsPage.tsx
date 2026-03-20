@@ -521,6 +521,37 @@ const SettingsPage = () => {
           <div className="card-design-neumorph" style={{ padding: 40 }}>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Sharing & Privacy</h2>
             <div className="space-y-5">
+              <div className="card-design-neumorph p-5">
+                <p className="text-xs uppercase tracking-[0.16em]" style={{ color: 'var(--swatch-cedar-grove)' }}>Connection-specific sharing</p>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--swatch-text-light)' }}>
+                  Sharing is now managed connection by connection. Open any connection to choose exactly which profile fields and product cards they can see.
+                </p>
+                <div className="mt-4 space-y-2">
+                  {couples.filter((c) => c.status === "accepted").length === 0 ? (
+                    <p className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>No accepted connections yet.</p>
+                  ) : (
+                    couples
+                      .filter((c) => c.status === "accepted")
+                      .map((c) => {
+                        const displayName = c.display_label || c.invitee_email || "Connection";
+                        return (
+                          <button
+                            key={`privacy-${c.id}`}
+                            onClick={() => navigate(`/dashboard/connections/${c.id}`)}
+                            className="flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition-colors hover:bg-secondary/30"
+                            style={{ border: '1px solid rgba(var(--swatch-teal-rgb), 0.08)' }}
+                          >
+                            <div>
+                              <p className="text-sm font-medium" style={{ color: 'var(--swatch-teal)' }}>{displayName}</p>
+                              <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>Manage fields, cards, and shared access</p>
+                            </div>
+                            <ChevronRight className="h-4 w-4" style={{ color: 'var(--swatch-text-light)' }} />
+                          </button>
+                        );
+                      })
+                  )}
+                </div>
+              </div>
               {([
                 { label: "Share preferences with partner", desc: "Let your connected partner see your style and size preferences", key: "share_prefs" as SettingsKeys },
                 { label: "Share wish list", desc: "Allow your partner to view your saved items", key: "share_wishlist" as SettingsKeys },

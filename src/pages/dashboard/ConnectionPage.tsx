@@ -7,18 +7,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { resolveStorageUrl } from "@/lib/storageRefs";
 
-type PermissionKey =
-  | "sizes"
-  | "brands"
-  | "food_preferences"
-  | "gift_ideas"
-  | "wish_list"
-  | "occasions"
-  | "memories"
-  | "saved_items";
-
-type PermissionState = Record<PermissionKey, boolean>;
-
 interface ConnectionRecord {
   id: string;
   name: string;
@@ -59,30 +47,37 @@ interface SharedProfileRecord {
   anniversary: string | null;
 }
 
+type ProfileFieldKey = "display_name" | "avatar_url" | "birthday" | "anniversary";
+
+type ProfileFieldState = Record<ProfileFieldKey, boolean>;
+
+interface SharedProfileFieldRow {
+  id: string;
+  field_key: ProfileFieldKey;
+  is_shared: boolean;
+}
+
+interface SharedCardEntryRow {
+  id: string;
+  card_entry_id: string;
+}
+
 const shellCardStyle = {
   boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
 } as const;
 
-const emptyPermissions: PermissionState = {
-  sizes: false,
-  brands: false,
-  food_preferences: false,
-  gift_ideas: false,
-  wish_list: false,
-  occasions: false,
-  memories: false,
-  saved_items: false,
+const emptyProfileFieldState: ProfileFieldState = {
+  display_name: false,
+  avatar_url: false,
+  birthday: false,
+  anniversary: false,
 };
 
-const editablePermissionFields: Array<{ key: PermissionKey; label: string; description: string }> = [
-  { key: "sizes", label: "Sizes & fit", description: "Clothing, fit, and sizing details." },
-  { key: "brands", label: "Brands & go-to picks", description: "Preferred brands, staples, and personal care choices." },
-  { key: "food_preferences", label: "Food & drink", description: "Meals, snacks, coffee orders, and grocery specifics." },
-  { key: "gift_ideas", label: "Gift ideas", description: "Ideas worth keeping in reach for birthdays or surprises." },
-  { key: "wish_list", label: "Wish list", description: "Specific wants they can browse when they need a clue." },
-  { key: "occasions", label: "Dates & occasions", description: "Birthdays, anniversaries, and meaningful calendar moments." },
-  { key: "memories", label: "Memories", description: "Notes, moments, and emotional context worth remembering." },
-  { key: "saved_items", label: "Saved items", description: "Everyday products and repeat buys you want handy." },
+const editableProfileFields: Array<{ key: ProfileFieldKey; label: string; description: string }> = [
+  { key: "display_name", label: "Display name", description: "Let this connection see the name you want attached to your shared data." },
+  { key: "avatar_url", label: "Profile photo", description: "Allow this connection to see your private profile image." },
+  { key: "birthday", label: "Birthday", description: "Share your birthday for reminders and calendar support." },
+  { key: "anniversary", label: "Anniversary", description: "Share your anniversary for reminders and calendar support." },
 ];
 
 const feedSectionConfig: Record<FeedSectionKey, { label: string; eyebrow: string; description: string }> = {
@@ -186,7 +181,6 @@ function deriveTags(fieldValues: Record<string, string> | null, fallback: string
 function buildAiSuggestions(
   connectionName: string,
   visibleItems: FeedItem[],
-  permissionsSharedWithYou: PermissionState,
   profile: { birthday: string | null; anniversary: string | null } | null,
 ) {
   const styleItems = visibleItems.filter((item) => item.section === "style");
@@ -239,13 +233,6 @@ function buildAiSuggestions(
     });
   }
 
-  if (!permissionsSharedWithYou.food_preferences) {
-    suggestions.push({
-      title: "Food is the highest-value next share",
-      body: `If ${connectionName} ever adds food preferences, you unlock one of the fastest real-world uses of GoTwo: getting the exact order or grocery item right.`,
-    });
-  }
-
   return suggestions.slice(0, 4);
 }
 
@@ -257,12 +244,16 @@ export default function ConnectionPage() {
 
   const [loading, setLoading] = useState(true);
   const [savingLabel, setSavingLabel] = useState(false);
+  const [sharingBusy, setSharingBusy] = useState(false);
+  const [cardSearch, setCardSearch] = useState("");
   const [connection, setConnection] = useState<ConnectionRecord | null>(null);
   const [labelDraft, setLabelDraft] = useState("");
-  const [incomingPermissions, setIncomingPermissions] = useState<PermissionState>(emptyPermissions);
-  const [outgoingPermissions, setOutgoingPermissions] = useState<PermissionState>(emptyPermissions);
   const [entries, setEntries] = useState<EntryRecord[]>([]);
   const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null; birthday: string | null; anniversary: string | null } | null>(null);
+  const [myEntries, setMyEntries] = useState<EntryRecord[]>([]);
+  const [outgoingProfileFields, setOutgoingProfileFields] = useState<ProfileFieldState>(emptyProfileFieldState);
+  const [incomingProfileFields, setIncomingProfileFields] = useState<ProfileFieldState>(emptyProfileFieldState);
+  const [sharedCardEntryIds, setSharedCardEntryIds] = useState<string[]>([]);
   const [resolvedConnectionImage, setResolvedConnectionImage] = useState("");
   const [resolvedFeedImages, setResolvedFeedImages] = useState<Record<string, string>>({});
 
@@ -288,7 +279,14 @@ export default function ConnectionPage() {
     const partnerId = isInviter ? couple.invitee_id : couple.inviter_id;
     const fallbackName = couple.display_label || (couple.invitee_email ? couple.invitee_email.split("@")[0] : "Connection");
 
-    const [{ data: profileRows }, { data: incoming }, { data: outgoing }, { data: entryRows }] = await Promise.all([
+    const [
+      { data: profileRows },
+      { data: incomingProfileRows },
+      { data: outgoingProfileRows },
+      { data: incomingSharedCardRows },
+      { data: ownEntryRows },
+      { data: entryRows },
+    ] = await Promise.all([
       partnerId
         ? supabase.rpc("get_connection_shared_profile", {
             p_couple_id: couple.id,
@@ -298,22 +296,34 @@ export default function ConnectionPage() {
         : Promise.resolve({ data: null }),
       partnerId
         ? supabase
-            .from("sharing_permissions")
-            .select("*")
+            .from("shared_profile_fields")
+            .select("id, field_key, is_shared")
             .eq("couple_id", couple.id)
-            .eq("user_id", partnerId)
-            .eq("partner_id", user.id)
-            .maybeSingle()
-        : Promise.resolve({ data: null }),
+            .eq("owner_user_id", partnerId)
+            .eq("connection_user_id", user.id)
+        : Promise.resolve({ data: [] }),
       partnerId
         ? supabase
-            .from("sharing_permissions")
-            .select("*")
+            .from("shared_profile_fields")
+            .select("id, field_key, is_shared")
             .eq("couple_id", couple.id)
-            .eq("user_id", user.id)
-            .eq("partner_id", partnerId)
-            .maybeSingle()
-        : Promise.resolve({ data: null }),
+            .eq("owner_user_id", user.id)
+            .eq("connection_user_id", partnerId)
+        : Promise.resolve({ data: [] }),
+      partnerId
+        ? supabase
+            .from("shared_card_entries")
+            .select("id, card_entry_id")
+            .eq("couple_id", couple.id)
+            .eq("owner_user_id", user.id)
+            .eq("connection_user_id", partnerId)
+        : Promise.resolve({ data: [] }),
+      supabase
+        .from("card_entries")
+        .select("id, user_id, entry_name, group_name, card_key, field_values, image_url, updated_at")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false })
+        .limit(200),
       partnerId
         ? supabase.rpc("get_connection_visible_card_entries", {
             p_couple_id: couple.id,
@@ -325,6 +335,10 @@ export default function ConnectionPage() {
 
     const profileData = Array.isArray(profileRows) ? (profileRows[0] as SharedProfileRecord | undefined) ?? null : null;
     const entryData = Array.isArray(entryRows) ? (entryRows as EntryRecord[]) : [];
+    const incomingFieldRows = (incomingProfileRows || []) as SharedProfileFieldRow[];
+    const outgoingFieldRows = (outgoingProfileRows || []) as SharedProfileFieldRow[];
+    const cardRows = (incomingSharedCardRows || []) as SharedCardEntryRow[];
+    const ownEntries = Array.isArray(ownEntryRows) ? (ownEntryRows as EntryRecord[]) : [];
 
     const resolvedName = couple.display_label || profileData?.display_name || fallbackName;
 
@@ -339,26 +353,20 @@ export default function ConnectionPage() {
     });
     setLabelDraft(resolvedName);
     setProfile(profileData || null);
-    setIncomingPermissions({
-      sizes: incoming?.sizes ?? false,
-      brands: incoming?.brands ?? false,
-      food_preferences: incoming?.food_preferences ?? false,
-      gift_ideas: incoming?.gift_ideas ?? false,
-      wish_list: incoming?.wish_list ?? false,
-      occasions: incoming?.occasions ?? false,
-      memories: incoming?.memories ?? false,
-      saved_items: incoming?.saved_items ?? false,
+    setIncomingProfileFields({
+      display_name: !!incomingFieldRows.find((row) => row.field_key === "display_name" && row.is_shared),
+      avatar_url: !!incomingFieldRows.find((row) => row.field_key === "avatar_url" && row.is_shared),
+      birthday: !!incomingFieldRows.find((row) => row.field_key === "birthday" && row.is_shared),
+      anniversary: !!incomingFieldRows.find((row) => row.field_key === "anniversary" && row.is_shared),
     });
-    setOutgoingPermissions({
-      sizes: outgoing?.sizes ?? false,
-      brands: outgoing?.brands ?? false,
-      food_preferences: outgoing?.food_preferences ?? false,
-      gift_ideas: outgoing?.gift_ideas ?? false,
-      wish_list: outgoing?.wish_list ?? false,
-      occasions: outgoing?.occasions ?? false,
-      memories: outgoing?.memories ?? false,
-      saved_items: outgoing?.saved_items ?? false,
+    setOutgoingProfileFields({
+      display_name: !!outgoingFieldRows.find((row) => row.field_key === "display_name" && row.is_shared),
+      avatar_url: !!outgoingFieldRows.find((row) => row.field_key === "avatar_url" && row.is_shared),
+      birthday: !!outgoingFieldRows.find((row) => row.field_key === "birthday" && row.is_shared),
+      anniversary: !!outgoingFieldRows.find((row) => row.field_key === "anniversary" && row.is_shared),
     });
+    setSharedCardEntryIds(cardRows.map((row) => row.card_entry_id));
+    setMyEntries(ownEntries);
     setEntries(entryData);
     setLoading(false);
   }, [connectionId, user]);
@@ -380,9 +388,8 @@ export default function ConnectionPage() {
           tags: deriveTags(entry.field_values, entry.group_name),
           section,
         } satisfies FeedItem;
-      })
-      .filter((item) => entryIsVisible(item.section, incomingPermissions));
-  }, [entries, incomingPermissions]);
+      });
+  }, [entries]);
 
   useEffect(() => {
     let cancelled = false;
@@ -437,19 +444,21 @@ export default function ConnectionPage() {
       .filter((section) => section.items.length > 0);
   }, [visibleFeedItems]);
 
-  const incomingEnabled = useMemo(
-    () => editablePermissionFields.filter((field) => incomingPermissions[field.key]),
-    [incomingPermissions],
-  );
+  const incomingEnabled = useMemo(() => editableProfileFields.filter((field) => incomingProfileFields[field.key]), [incomingProfileFields]);
+  const outgoingEnabled = useMemo(() => editableProfileFields.filter((field) => outgoingProfileFields[field.key]), [outgoingProfileFields]);
 
-  const outgoingEnabled = useMemo(
-    () => editablePermissionFields.filter((field) => outgoingPermissions[field.key]),
-    [outgoingPermissions],
-  );
+  const filteredMyEntries = useMemo(() => {
+    const needle = cardSearch.trim().toLowerCase();
+    if (!needle) return myEntries;
+    return myEntries.filter((entry) => {
+      const haystack = `${entry.entry_name} ${entry.group_name} ${entry.card_key}`.toLowerCase();
+      return haystack.includes(needle);
+    });
+  }, [cardSearch, myEntries]);
 
   const aiSuggestions = useMemo(
-    () => buildAiSuggestions(connection?.name || "They", visibleFeedItems, incomingPermissions, profile),
-    [connection?.name, incomingPermissions, profile, visibleFeedItems],
+    () => buildAiSuggestions(connection?.name || "They", visibleFeedItems, profile),
+    [connection?.name, profile, visibleFeedItems],
   );
 
   const handleSaveLabel = useCallback(async () => {
@@ -473,44 +482,114 @@ export default function ConnectionPage() {
     setSavingLabel(false);
   }, [connection, labelDraft, toast]);
 
-  const handleToggleOutgoingPermission = useCallback(async (key: PermissionKey, nextValue: boolean) => {
+  const handleToggleOutgoingProfileField = useCallback(async (key: ProfileFieldKey, nextValue: boolean) => {
     if (!user || !connection || !connection.partnerId) return;
 
-    const nextPermissions = { ...outgoingPermissions, [key]: nextValue };
-    setOutgoingPermissions(nextPermissions);
+    setOutgoingProfileFields((current) => ({ ...current, [key]: nextValue }));
 
-    const { data: existingRow } = await supabase
-      .from("sharing_permissions")
+    const { data: existingRow, error: loadError } = await supabase
+      .from("shared_profile_fields")
       .select("id")
       .eq("couple_id", connection.id)
-      .eq("user_id", user.id)
-      .eq("partner_id", connection.partnerId)
+      .eq("owner_user_id", user.id)
+      .eq("connection_user_id", connection.partnerId)
+      .eq("field_key", key)
       .maybeSingle();
 
+    if (loadError) {
+      setOutgoingProfileFields((current) => ({ ...current, [key]: !nextValue }));
+      toast({ title: "Could not update field sharing", description: loadError.message, variant: "destructive" });
+      return;
+    }
+
     const payload = {
-      ...nextPermissions,
       couple_id: connection.id,
-      user_id: user.id,
-      user_email: user.email || "",
-      partner_id: connection.partnerId,
-      partner_email: connection.email || "",
-      updated_at: new Date().toISOString(),
+      owner_user_id: user.id,
+      connection_user_id: connection.partnerId,
+      field_key: key,
+      is_shared: nextValue,
     };
 
     const query = existingRow
-      ? supabase.from("sharing_permissions").update(payload).eq("id", existingRow.id)
-      : supabase.from("sharing_permissions").insert(payload);
+      ? supabase.from("shared_profile_fields").update({ is_shared: nextValue }).eq("id", existingRow.id)
+      : supabase.from("shared_profile_fields").insert(payload);
 
     const { error } = await query;
 
     if (error) {
-      setOutgoingPermissions((current) => ({ ...current, [key]: !nextValue }));
-      toast({ title: "Could not update access", description: error.message, variant: "destructive" });
+      setOutgoingProfileFields((current) => ({ ...current, [key]: !nextValue }));
+      toast({ title: "Could not update field sharing", description: error.message, variant: "destructive" });
       return;
     }
 
-    toast({ title: nextValue ? "Access added" : "Access revoked", description: `${connection.name} will ${nextValue ? "now" : "no longer"} see ${editablePermissionFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
-  }, [connection, outgoingPermissions, toast, user]);
+    toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection.name} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
+  }, [connection, toast, user]);
+
+  const handleToggleCardShare = useCallback(async (entry: EntryRecord, nextValue: boolean) => {
+    if (!user || !connection || !connection.partnerId) return;
+
+    setSharedCardEntryIds((current) => nextValue ? Array.from(new Set([...current, entry.id])) : current.filter((id) => id !== entry.id));
+
+    if (nextValue) {
+      const { error } = await supabase.from("shared_card_entries").insert({
+        couple_id: connection.id,
+        owner_user_id: user.id,
+        connection_user_id: connection.partnerId,
+        card_entry_id: entry.id,
+      });
+
+      if (error) {
+        setSharedCardEntryIds((current) => current.filter((id) => id !== entry.id));
+        toast({ title: "Could not share card", description: error.message, variant: "destructive" });
+        return;
+      }
+    } else {
+      const { error } = await supabase
+        .from("shared_card_entries")
+        .delete()
+        .eq("couple_id", connection.id)
+        .eq("owner_user_id", user.id)
+        .eq("connection_user_id", connection.partnerId)
+        .eq("card_entry_id", entry.id);
+
+      if (error) {
+        setSharedCardEntryIds((current) => Array.from(new Set([...current, entry.id])));
+        toast({ title: "Could not unshare card", description: error.message, variant: "destructive" });
+        return;
+      }
+    }
+
+    toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection.name}.` });
+  }, [connection, toast, user]);
+
+  const handleBulkShare = useCallback(async (mode: "share" | "unshare") => {
+    if (!user || !connection || !connection.partnerId) return;
+
+    setSharingBusy(true);
+    const rpcName = mode === "share" ? "share_all_card_entries_with_connection" : "unshare_all_card_entries_with_connection";
+    const { data, error } = await supabase.rpc(rpcName, {
+      p_couple_id: connection.id,
+      p_owner_user_id: user.id,
+      p_connection_user_id: connection.partnerId,
+    });
+    setSharingBusy(false);
+
+    if (error) {
+      toast({ title: `Could not ${mode} cards`, description: error.message, variant: "destructive" });
+      return;
+    }
+
+    if (mode === "share") {
+      setSharedCardEntryIds(myEntries.map((entry) => entry.id));
+    } else {
+      setSharedCardEntryIds([]);
+    }
+
+    toast({
+      title: mode === "share" ? "All cards shared" : "All cards hidden",
+      description: `${connection.name} ${mode === "share" ? "can now see" : "can no longer see"} your product cards. ${typeof data === "number" ? `(${data} changed)` : ""}`.trim(),
+    });
+  }, [connection, myEntries, toast, user]);
 
   if (loading) {
     return (
@@ -602,7 +681,7 @@ export default function ConnectionPage() {
               {visibleFeedItems.length} shared cards
             </div>
             <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
-              {incomingEnabled.length} open access windows
+              {incomingEnabled.length} shared profile fields
             </div>
             <button
               onClick={loadConnection}
@@ -679,7 +758,7 @@ export default function ConnectionPage() {
                   Nothing is landing here yet.
                 </h2>
                 <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                  This page is ready for the moment {connection.name} shares style, food, favorites, or personal-care specifics with you.
+                  This page is ready for the moment {connection.name} shares product cards, profile fields, or derived features with you.
                 </p>
               </section>
             ) : (
@@ -817,16 +896,16 @@ export default function ConnectionPage() {
                 </span>
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Your access controls
+                    What you share with this connection
                   </p>
                   <h2 className="mt-1 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                    Add or revoke instantly.
+                    Control fields and cards directly.
                   </h2>
                 </div>
               </div>
 
               <div className="mt-4 space-y-4">
-                {editablePermissionFields.map((field) => (
+                {editableProfileFields.map((field) => (
                   <div key={field.key} className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{field.label}</p>
@@ -835,11 +914,83 @@ export default function ConnectionPage() {
                       </p>
                     </div>
                     <Switch
-                      checked={outgoingPermissions[field.key]}
-                      onCheckedChange={(checked) => handleToggleOutgoingPermission(field.key, checked)}
+                      checked={outgoingProfileFields[field.key]}
+                      onCheckedChange={(checked) => handleToggleOutgoingProfileField(field.key, checked)}
                     />
                   </div>
                 ))}
+              </div>
+
+              <div className="mt-5 rounded-[22px] px-4 py-4" style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.8)" }}>
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                      Product cards
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                      Share one card, a few cards, or everything with one click.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleBulkShare("share")}
+                      disabled={sharingBusy || myEntries.length === 0}
+                      className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
+                      style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "var(--swatch-teal)" }}
+                    >
+                      Share all
+                    </button>
+                    <button
+                      onClick={() => handleBulkShare("unshare")}
+                      disabled={sharingBusy || sharedCardEntryIds.length === 0}
+                      className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
+                      style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.84)" }}
+                    >
+                      Hide all
+                    </button>
+                  </div>
+                </div>
+
+                <label className="mt-4 block">
+                  <span className="sr-only">Search your product cards</span>
+                  <input
+                    value={cardSearch}
+                    onChange={(event) => setCardSearch(event.target.value)}
+                    placeholder="Search your product cards..."
+                    className="w-full rounded-[18px] border px-4 py-3 text-sm outline-none"
+                    style={{
+                      background: "rgba(255,255,255,0.72)",
+                      borderColor: "rgba(45,104,112,0.14)",
+                      color: "var(--swatch-teal)",
+                      fontFamily: "'Jost', sans-serif",
+                    }}
+                  />
+                </label>
+
+                <div className="mt-4 max-h-[340px] space-y-3 overflow-y-auto pr-1">
+                  {filteredMyEntries.map((entry) => {
+                    const isShared = sharedCardEntryIds.includes(entry.id);
+                    return (
+                      <div key={entry.id} className="flex items-start justify-between gap-4 rounded-[18px] px-4 py-3" style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.78)" }}>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{entry.entry_name}</p>
+                          <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                            {entry.group_name} · {entry.card_key?.split("__").pop() || "Product card"}
+                          </p>
+                        </div>
+                        <Switch
+                          checked={isShared}
+                          onCheckedChange={(checked) => handleToggleCardShare(entry, checked)}
+                        />
+                      </div>
+                    );
+                  })}
+                  {filteredMyEntries.length === 0 && (
+                    <p className="text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                      No product cards match this search yet.
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="mt-5 rounded-[22px] px-4 py-4" style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.8)" }}>
@@ -848,8 +999,10 @@ export default function ConnectionPage() {
                 </p>
                 <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                   {outgoingEnabled.length
-                    ? `${connection.name} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")} from your side.`
-                    : `You have not opened any permission windows for ${connection.name} yet.`}
+                    ? `${connection.name} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")} and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+                    : sharedCardEntryIds.length
+                      ? `${connection.name} can currently see ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+                      : `You have not shared any fields or product cards with ${connection.name} yet.`}
                 </p>
               </div>
             </section>
