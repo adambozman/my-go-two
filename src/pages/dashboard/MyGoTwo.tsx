@@ -452,7 +452,8 @@ const MyGoTwo = () => {
   }, [sections]);
 
   const [coverFlowState, setCoverFlowState] = useState<CoverFlowState | null>(null);
-  const [focusedDrilldownItemId, setFocusedDrilldownItemId] = useState<string | null>(null);
+  const [focusedSubcategoryId, setFocusedSubcategoryId] = useState<string | null>(null);
+  const [focusedLeafItemId, setFocusedLeafItemId] = useState<string | null>(null);
   const [focusedMainCategoryBySection, setFocusedMainCategoryBySection] = useState<Record<string, string>>({});
   const [lastMainSectionKey, setLastMainSectionKey] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
@@ -644,7 +645,8 @@ const MyGoTwo = () => {
 
   const clearCoverFlow = () => {
     setCoverFlowState(null);
-    setFocusedDrilldownItemId(null);
+    setFocusedSubcategoryId(null);
+    setFocusedLeafItemId(null);
     setActiveSubcategory(null);
     setCardKey(null);
     setLeafSubtype(null);
@@ -677,16 +679,26 @@ const MyGoTwo = () => {
 
     if (isLeafSubcategory) {
       setActiveSubcategory(null);
+      setFocusedSubcategoryId(selectedSubcategory?.id ?? null);
+      setFocusedLeafItemId(null);
+      return;
     }
 
-    setFocusedDrilldownItemId(focusId);
+    setFocusedLeafItemId(focusId);
   };
 
   useEffect(() => {
     if (cardKey) {
       setBackState({ label: "", onBack: goBackFromEntries });
     } else if (activeSubcategory && coverFlowState) {
-      setBackState({ label: "", onBack: () => { setFocusedDrilldownItemId(activeSubcategory.id); setActiveSubcategory(null); } });
+      setBackState({
+        label: "",
+        onBack: () => {
+          setFocusedSubcategoryId(activeSubcategory.id);
+          setFocusedLeafItemId(null);
+          setActiveSubcategory(null);
+        },
+      });
     } else if (coverFlowState) {
       setBackState({ label: "", onBack: clearCoverFlow });
     } else {
@@ -704,7 +716,8 @@ const MyGoTwo = () => {
       setLastMainSectionKey(item.section);
       setFocusedMainCategoryBySection((prev) => ({ ...prev, [item.section]: item.key }));
       setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
-      setFocusedDrilldownItemId(null);
+      setFocusedSubcategoryId(null);
+      setFocusedLeafItemId(null);
     }
   };
 
@@ -728,13 +741,15 @@ const MyGoTwo = () => {
 
   const handleSubcategorySelect = (sc: SubcategoryGroup) => {
     if (sc.products && sc.products.length > 0) {
-      setFocusedDrilldownItemId(sc.id);
+      setFocusedSubcategoryId(sc.id);
+      setFocusedLeafItemId(null);
       setActiveSubcategory(sc);
       return;
     }
 
     const key = `${coverFlowState?.name}__${coverFlowState?.name || ""}__${sc.name}`;
-    setFocusedDrilldownItemId(sc.id);
+    setFocusedSubcategoryId(sc.id);
+    setFocusedLeafItemId(null);
     setActiveSubcategory(sc);
     setCardKey(key);
     setLeafSubtype(sc as unknown as SubtypeItem);
@@ -749,7 +764,7 @@ const MyGoTwo = () => {
 
   const handleSubtypeSelect = (subtype: SubtypeItem, subcategoryName?: string) => {
     const key = `${coverFlowState?.name}__${subcategoryName || ""}__${subtype.name}`;
-    setFocusedDrilldownItemId(subtype.id);
+    setFocusedLeafItemId(subtype.id);
     setCardKey(key);
     setLeafSubtype(subtype);
     setLeafSubcategoryName(subcategoryName);
@@ -1058,9 +1073,14 @@ const MyGoTwo = () => {
               subcategories={coverFlowState.subcategories}
               activeSubcategory={activeSubcategory}
               onSubcategorySelect={handleSubcategorySelect}
-              onBack={activeSubcategory ? () => { setFocusedDrilldownItemId(activeSubcategory.id); setActiveSubcategory(null); } : clearCoverFlow}
+              onBack={activeSubcategory ? () => {
+                setFocusedSubcategoryId(activeSubcategory.id);
+                setFocusedLeafItemId(null);
+                setActiveSubcategory(null);
+              } : clearCoverFlow}
               onSelect={handleSubtypeSelect}
-              focusedItemId={focusedDrilldownItemId}
+              focusedSubcategoryId={focusedSubcategoryId}
+              focusedLeafItemId={focusedLeafItemId}
               creating={false}
               gender={gender}
               section={coverFlowState.section}

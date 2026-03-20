@@ -19,7 +19,8 @@ interface TemplateCoverFlowProps {
   gender: string;
   section?: string;
   categoryId?: string;
-  focusedItemId?: string | null;
+  focusedSubcategoryId?: string | null;
+  focusedLeafItemId?: string | null;
 }
 
 /** Hook to batch-fetch images from category_images for a list of keys */
@@ -62,7 +63,8 @@ const TemplateCoverFlow = ({
   onSubcategorySelect,
   onBack,
   onSelect,
-  focusedItemId,
+  focusedSubcategoryId,
+  focusedLeafItemId,
 }: TemplateCoverFlowProps) => {
   const hasSubcategories = subcategories && subcategories.length > 0;
 
@@ -90,7 +92,7 @@ const TemplateCoverFlow = ({
         <CoverflowTitlePill title={templateName} showBackArrow={Boolean(onBack)} onBack={onBack} />
         <PaginatedCoverFlow
           items={items}
-          focusedItemId={focusedItemId}
+          focusedItemId={focusedSubcategoryId}
           onSelect={(id) => {
             const sc = subcategories!.find(s => s.id === id);
             const selectedItem = items.find((item) => item.id === id);
@@ -115,7 +117,7 @@ const TemplateCoverFlow = ({
       <CoverflowTitlePill title={activeSubcategory?.name || templateName} showBackArrow={Boolean(onBack)} onBack={onBack} />
       <PaginatedCoverFlow
         items={productItems}
-        focusedItemId={focusedItemId}
+        focusedItemId={focusedLeafItemId}
         onSelect={(id) => {
           const p = products.find(x => x.id === id);
           const selectedItem = productItems.find((item) => item.id === id);
