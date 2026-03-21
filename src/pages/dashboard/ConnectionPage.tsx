@@ -30,17 +30,6 @@ interface EntryRecord {
 
 type FeedSectionKey = "style" | "food" | "favorites" | "personal" | "everyday";
 
-interface ConnectionPermissionState {
-  sizes: boolean;
-  brands: boolean;
-  food_preferences: boolean;
-  gift_ideas: boolean;
-  wish_list: boolean;
-  occasions: boolean;
-  memories: boolean;
-  saved_items: boolean;
-}
-
 interface FeedItem {
   id: string;
   title: string;
