@@ -742,6 +742,14 @@ export default function ConnectionPage() {
 
   const handleConnectionKindChange = useCallback(async (nextKind: ConnectionKind) => {
     if (!user || !connection || !connection.partnerId || nextKind === connectionKind) return;
+    if (connection.status !== "accepted") {
+      toast({
+        title: "Connection not accepted yet",
+        description: "You can set connection type after both people accept the connection request.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const previousKind = connectionKind;
     setConnectionKind(nextKind);
@@ -949,7 +957,11 @@ export default function ConnectionPage() {
                 </div>
 
                 <div className="min-w-[240px]">
-                  <Select value={connectionKind} onValueChange={(value) => handleConnectionKindChange(value as ConnectionKind)}>
+                  <Select
+                    value={connectionKind}
+                    onValueChange={(value) => handleConnectionKindChange(value as ConnectionKind)}
+                    disabled={savingConnectionKind}
+                  >
                     <SelectTrigger
                       className="rounded-[18px] border px-4 py-3 text-sm"
                       style={{
@@ -972,7 +984,21 @@ export default function ConnectionPage() {
                   <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
                     {editableConnectionKinds.find((item) => item.key === connectionKind)?.description}
                     {savingConnectionKind ? " Saving..." : ""}
+                    {connection.status !== "accepted" ? " Available after connection is accepted." : ""}
                   </p>
+                  {connection.status !== "accepted" && (
+                    <div
+                      className="mt-3 rounded-[14px] px-3 py-2 text-xs leading-relaxed"
+                      style={{
+                        background: "rgba(217, 101, 79, 0.12)",
+                        border: "1px solid rgba(217, 101, 79, 0.28)",
+                        color: "var(--swatch-cedar-grove)",
+                        fontFamily: "'Jost', sans-serif",
+                      }}
+                    >
+                      Waiting on acceptance: this connection must accept your invite before you can set connection type.
+                    </div>
+                  )}
                 </div>
               </div>
             </section>

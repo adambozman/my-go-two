@@ -275,6 +275,137 @@ async function ensureDemoProfiles(supabase: any) {
   }
 }
 
+async function searchDiscoverableUsersFallback(
+  adminClient: any,
+  requesterId: string,
+  rawQuery: string,
+  limit = 25,
+) {
+  const normalizedQuery = rawQuery.trim();
+  const normalizedUsername = normalizeUsername(rawQuery).toLowerCase();
+  const normalizedPhone = normalizePhone(rawQuery);
+
+  const candidateByUserId = new Map<string, SearchResult>();
+
+  const upsertCandidate = (
+    userId: string,
+    displayName: string | null | undefined,
+    avatarUrl: string | null | undefined,
+    shareAvatar: boolean | null | undefined,
+    matchType: SearchResult["match_type"],
+  ) => {
+    if (!userId || userId === requesterId) return;
+    if (candidateByUserId.has(userId)) return;
+    candidateByUserId.set(userId, {
+      user_id: userId,
+      display_name: displayName?.trim() || "User",
+      discovery_avatar_url: shareAvatar ? avatarUrl ?? null : null,
+      match_type: matchType,
+    });
+  };
+
+  const profileQueries: Promise<{ data: any[] | null; error: any }>[] = [
+    adminClient
+      .from("profiles")
+      .select("user_id, display_name, avatar_url")
+      .ilike("display_name", `%${normalizedQuery}%`)
+      .limit(limit),
+  ];
+  if (normalizedUsername && normalizedUsername !== normalizedQuery.toLowerCase()) {
+    profileQueries.push(
+      adminClient
+        .from("profiles")
+        .select("user_id, display_name, avatar_url")
+        .ilike("display_name", `%${normalizedUsername}%`)
+        .limit(limit),
+    );
+  }
+
+  const profileResults = await Promise.all(profileQueries);
+  for (const result of profileResults) {
+    if (result.error) throw new Error(result.error.message);
+  }
+
+  const nameCandidatesById = new Map<string, any>();
+  for (const result of profileResults) {
+    for (const row of result.data ?? []) {
+      if (row?.user_id && row.user_id !== requesterId) {
+        nameCandidatesById.set(row.user_id, row);
+      }
+    }
+  }
+
+  let phoneMatchedIds: string[] = [];
+  if (normalizedPhone) {
+    const { data: phoneRows, error: phoneError } = await adminClient
+      .from("user_discovery_contacts")
+      .select("user_id")
+      .eq("phone_search_normalized", normalizedPhone)
+      .limit(limit);
+    if (phoneError) throw new Error(phoneError.message);
+    phoneMatchedIds = (phoneRows ?? [])
+      .map((row: any) => row.user_id)
+      .filter((id: string | null | undefined) => Boolean(id) && id !== requesterId);
+  }
+
+  const allCandidateIds = Array.from(new Set<string>([
+    ...Array.from(nameCandidatesById.keys()),
+    ...phoneMatchedIds,
+  ]));
+  if (allCandidateIds.length === 0) {
+    return [];
+  }
+
+  const [{ data: settingsRows, error: settingsError }, { data: profileRowsByIds, error: profileRowsByIdsError }] = await Promise.all([
+    adminClient
+      .from("user_discovery_settings")
+      .select("user_id, allow_name_discovery, allow_phone_discovery, share_avatar_in_discovery")
+      .in("user_id", allCandidateIds),
+    adminClient
+      .from("profiles")
+      .select("user_id, display_name, avatar_url")
+      .in("user_id", allCandidateIds),
+  ]);
+  if (settingsError) throw new Error(settingsError.message);
+  if (profileRowsByIdsError) throw new Error(profileRowsByIdsError.message);
+
+  const settingsById = new Map((settingsRows ?? []).map((row: any) => [row.user_id, row]));
+  const profilesById = new Map((profileRowsByIds ?? []).map((row: any) => [row.user_id, row]));
+
+  for (const userId of phoneMatchedIds) {
+    const profile = profilesById.get(userId) ?? nameCandidatesById.get(userId);
+    const settings = settingsById.get(userId);
+    const allowPhone = settings?.allow_phone_discovery ?? false;
+    const shareAvatar = settings?.share_avatar_in_discovery ?? false;
+    if (!allowPhone) continue;
+    upsertCandidate(userId, profile?.display_name, profile?.avatar_url, shareAvatar, "phone");
+  }
+
+  for (const [userId, profile] of nameCandidatesById) {
+    const settings = settingsById.get(userId);
+    const allowName = settings?.allow_name_discovery ?? true;
+    const shareAvatar = settings?.share_avatar_in_discovery ?? false;
+    if (!allowName) continue;
+    upsertCandidate(userId, profile?.display_name, profile?.avatar_url, shareAvatar, "name");
+  }
+
+  const exactName = normalizedQuery.toLowerCase();
+  return Array.from(candidateByUserId.values())
+    .sort((a, b) => {
+      const aName = (a.display_name ?? "").toLowerCase();
+      const bName = (b.display_name ?? "").toLowerCase();
+      const aScore = a.match_type === "phone"
+        ? 0
+        : (aName === exactName ? 1 : (aName.startsWith(exactName) ? 2 : 3));
+      const bScore = b.match_type === "phone"
+        ? 0
+        : (bName === exactName ? 1 : (bName.startsWith(exactName) ? 2 : 3));
+      if (aScore !== bScore) return aScore - bScore;
+      return aName.localeCompare(bName);
+    })
+    .slice(0, Math.max(limit, 1));
+}
+
 async function searchUsers(
   viewerClient: any,
   adminClient: any,
@@ -292,15 +423,24 @@ async function searchUsers(
     if (emailMatch?.id) emailIds.add(emailMatch.id);
   }
 
-  const { data: discoverableRows, error: discoverableError } = await viewerClient.rpc("search_discoverable_users", {
+  let discoverableRows: unknown[] = [];
+  const { data: discoverableData, error: discoverableError } = await viewerClient.rpc("search_discoverable_users", {
     p_query: rawQuery,
     p_limit: 25,
   });
   if (discoverableError) {
-    throw new Error(discoverableError.message);
+    const rpcErrorMessage = String(discoverableError.message ?? "");
+    const isMissingSearchRpc = /search_discoverable_users/i.test(rpcErrorMessage) && /schema cache/i.test(rpcErrorMessage);
+    if (!isMissingSearchRpc) {
+      throw new Error(rpcErrorMessage);
+    }
+    console.error("search_discoverable_users RPC missing. Falling back to direct table search path.", rpcErrorMessage);
+    discoverableRows = await searchDiscoverableUsersFallback(adminClient, requesterId, rawQuery, 25);
+  } else if (Array.isArray(discoverableData)) {
+    discoverableRows = discoverableData;
   }
 
-  const rpcResults = (Array.isArray(discoverableRows) ? discoverableRows : [])
+  const rpcResults = discoverableRows
     .filter((row): row is SearchResult => Boolean(row?.user_id))
     .map((row) => ({
       user_id: String(row.user_id),

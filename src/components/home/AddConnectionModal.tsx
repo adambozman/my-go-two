@@ -216,9 +216,11 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     } catch (error: any) {
       const message = error?.message || "Search failed";
       toast.error(
-        /edge function/i.test(message) || /failed to send a request/i.test(message)
-          ? "Add Connection search is calling an edge function that is not deployed or not responding."
-          : message,
+        /search_discoverable_users/i.test(message) || /schema cache/i.test(message)
+          ? "Search backend is missing the latest DB function. Run the newest Supabase migration and reload schema cache."
+          : /edge function/i.test(message) || /failed to send a request/i.test(message)
+            ? "Add Connection search is calling an edge function that is not deployed or not responding."
+            : message,
       );
       setSearchResults([]);
     } finally {
