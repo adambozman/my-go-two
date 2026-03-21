@@ -616,13 +616,22 @@ const DashboardHome = () => {
             className="card-design-sand overflow-hidden rounded-[30px] p-4"
           >
             <div className="pb-4">
-              <div>
+              <div className="flex items-center justify-between gap-3">
+                <div>
                 <p className="surface-eyebrow-coral">
                   Connection Feed
                 </p>
                 <h3 className="surface-heading-lg mt-2">
                   From your people.
                 </h3>
+                </div>
+                <button
+                  onClick={() => navigate("/dashboard/connection-feed")}
+                  className="surface-action-text surface-button-soft-glow inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
+                >
+                  Go to feed
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </button>
               </div>
             </div>
 

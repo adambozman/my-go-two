@@ -23,6 +23,7 @@ import Notifications from "./pages/dashboard/Notifications";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import PublicFeed from "./pages/dashboard/PublicFeed";
 import ConnectionPage from "./pages/dashboard/ConnectionPage";
+import ConnectionFeed from "./pages/dashboard/ConnectionFeed";
 
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
@@ -75,6 +76,7 @@ const App = () => {
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="search" element={<Search />} />
                 <Route path="public-feed" element={<PublicFeed />} />
+                <Route path="connection-feed" element={<ConnectionFeed />} />
                 <Route path="connections/:connectionId" element={<ConnectionPage />} />
                 <Route path="data-sync" element={<CategorySync />} />
                 <Route path="sponsored" element={<SponsoredAdmin />} />
