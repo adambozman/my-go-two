@@ -11,48 +11,22 @@ const CategorySync = () => {
 
   const handlePush = async () => {
     setStatus("running");
-    setMessage("Fetching latest registry from GitHub...");
+    setMessage("Preparing seed data...");
     try {
-      // Fetch latest seed directly from GitHub to bypass stale Lovable builds
-      const res = await fetch(
-        "https://raw.githubusercontent.com/adambozman/my-go-two/main/src/data/categoryRegistrySeed.ts",
-        { cache: "no-store" }
-      );
-      const text = await res.text();
-      // Extract JSON array from TypeScript file
-      const startIdx = text.indexOf("CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] = ");
-      let seed;
-      if (startIdx !== -1) {
-        const arrayStart = text.indexOf("[", startIdx);
-        const arrayText = text.slice(arrayStart);
-        // Find the closing ]; by walking the string
-        let depth = 0, endIdx = 0;
-        for (let i = 0; i < arrayText.length; i++) {
-          if (arrayText[i] === "[") depth++;
-          else if (arrayText[i] === "]") { depth--; if (depth === 0) { endIdx = i + 1; break; } }
-        }
-        seed = JSON.parse(arrayText.slice(0, endIdx));
-        setMessage(`Fetched ${seed.length} rows from GitHub. Syncing to Supabase...`);
-      } else {
-        seed = CATEGORY_REGISTRY_SEED;
-        setMessage(`Using bundled seed (${seed.length} rows). Syncing...`);
-      }
-
-      const { error: delError } = await supabase
-        .from("category_registry")
-        .delete()
-        .neq("key", "");
-      if (delError) throw delError;
-
-      // Strip image field — column may not exist in schema yet
+      const seed = CATEGORY_REGISTRY_SEED;
+      // Strip image field — column may not exist in schema
       const seedToInsert = (seed as any[]).map(({ image, ...rest }: any) => rest);
-      const { error: insError } = await supabase
-        .from("category_registry")
-        .insert(seedToInsert as any);
-      if (insError) throw insError;
+      setMessage(`Pushing ${seedToInsert.length} rows via backend function...`);
+
+      const { data, error } = await supabase.functions.invoke("sync-category-registry", {
+        body: { rows: seedToInsert },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       setStatus("done");
-      setMessage(`✓ ${seed.length} rows pushed from GitHub.`);
+      setMessage(`✓ ${data?.count ?? seedToInsert.length} rows synced successfully.`);
     } catch (err: any) {
       setStatus("error");
       setMessage(err.message ?? "Something went wrong.");
