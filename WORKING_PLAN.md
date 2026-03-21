@@ -70,6 +70,11 @@ These should guide all future work:
 1. Trust first
 - Users must be able to control what is shared and with whom.
 - The database should enforce sharing boundaries, not just the UI.
+- Connection-facing logic must be source-gated:
+  - raw owner data stays in the owner vault
+  - explicit share gates open access
+  - connection views, search, feeds, and recommendation logic may only read from those opened gates
+  - do not pull broad owner data and block it later at the connection side
 
 2. No accidental design drift
 - Global design system defines font, color, card treatment, button treatment, and shared UI language.

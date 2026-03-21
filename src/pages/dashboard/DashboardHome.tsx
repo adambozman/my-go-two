@@ -176,7 +176,7 @@ const DashboardHome = () => {
       return;
     }
 
-    const [{ data: ownProfile }, partnerProfiles] = await Promise.all([
+    const [{ data: ownProfile }, partnerOccasionSets] = await Promise.all([
       supabase
         .from("profiles")
         .select("user_id, display_name, birthday, anniversary")
@@ -187,14 +187,16 @@ const DashboardHome = () => {
           const partnerId = couple.inviter_id === user.id ? couple.invitee_id : couple.inviter_id;
           if (!partnerId) return null;
 
-          const { data } = await supabase.rpc("get_connection_shared_profile", {
-            p_couple_id: couple.id,
-            p_owner_user_id: partnerId,
-            p_connection_user_id: user.id,
+          const { data } = await supabase.rpc("get_connection_relevant_occasions", {
+            p_connection_user_id: partnerId,
+            p_days_ahead: 365,
           });
 
-          const profile = Array.isArray(data) ? (data[0] as SharedProfileRecord | undefined) ?? null : null;
-          return profile ? { user_id: partnerId, ...profile, couple } : { user_id: partnerId, display_name: null, birthday: null, anniversary: null, couple };
+          return {
+            user_id: partnerId,
+            couple,
+            occasions: Array.isArray(data) ? data : [],
+          };
         })
       ),
     ]);
@@ -237,15 +239,17 @@ const DashboardHome = () => {
       addMilestone("self-anniversary", "Anniversary", ownProfile.display_name || "You", ownProfile.anniversary, "anniversary", "self", ownProfile.user_id);
     }
 
-    for (const p of partnerProfiles.filter(Boolean) as Array<{ user_id: string; display_name: string | null; birthday: string | null; anniversary: string | null; couple: any }>) {
-      const name = p.couple?.display_label || p.display_name || "Connection";
+    for (const p of partnerOccasionSets.filter(Boolean) as Array<{ user_id: string; couple: any; occasions: Array<{ occasion_type: string; occasion_label: string; occasion_date: string }> }>) {
+      const name = p.couple?.display_label || "Connection";
 
-      if (p.birthday) {
-        addMilestone(`bd-${p.user_id}`, "Birthday", name, p.birthday, "birthday", "connection", p.user_id);
-      }
+      for (const occasion of p.occasions) {
+        if (occasion.occasion_type === "birthday") {
+          addMilestone(`bd-${p.user_id}`, "Birthday", name, occasion.occasion_date, "birthday", "connection", p.user_id);
+        }
 
-      if (p.anniversary) {
-        addMilestone(`an-${p.user_id}`, "Anniversary", name, p.anniversary, "anniversary", "connection", p.user_id);
+        if (occasion.occasion_type === "anniversary") {
+          addMilestone(`an-${p.user_id}`, "Anniversary", name, occasion.occasion_date, "anniversary", "connection", p.user_id);
+        }
       }
     }
 
