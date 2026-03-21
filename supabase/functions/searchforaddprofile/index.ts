@@ -374,7 +374,7 @@ async function searchUsers(
 }
 
 async function createConnectionRequest(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   requesterId: string,
   targetUserId: string,
 ) {
