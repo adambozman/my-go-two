@@ -5413,29 +5413,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "dress-nb-bottoms",
         "products": [
           {
-            "id": "dress-pants",
-            "name": "Dress Pants",
-            "image": "dress-nb-bottoms-dress-pants",
-            "fields": [
-              { "label": "Waist", "type": "text", "value": "" },
-              { "label": "Inseam", "type": "text", "value": "" },
-              { "label": "Preferred Brands", "type": "text", "value": "" },
-              { "label": "Notes", "type": "text", "value": "" }
-            ]
-          },
-          {
-            "id": "formal-trousers",
-            "name": "Formal Trousers",
-            "image": "dress-nb-bottoms-formal-trousers",
-            "fields": [
-              { "label": "Waist", "type": "text", "value": "" },
-              { "label": "Inseam", "type": "text", "value": "" },
-              { "label": "Rise", "type": "select", "value": "", "options": ["Mid", "High"] },
-              { "label": "Preferred Brands", "type": "text", "value": "" },
-              { "label": "Notes", "type": "text", "value": "" }
-            ]
-          },
-          {
             "id": "skirt",
             "name": "Skirt",
             "image": "dress-nb-bottoms-skirt",
