@@ -28,4 +28,6 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.connection-data-search]
+
+[functions.sync-category-registry]
 verify_jwt = false
