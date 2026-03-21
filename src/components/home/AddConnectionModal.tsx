@@ -151,15 +151,46 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
 
     setSearching(true);
     try {
-      const { data, error } = await supabase.functions.invoke("collaborations", {
-        body: { action: "search-users", query: searchQuery.trim() },
-      });
+      const rawQuery = searchQuery.trim();
+      const queries = new Set<string>([rawQuery]);
 
-      if (error) {
-        throw error;
+      if (rawQuery.includes("@")) {
+        const localPart = rawQuery.split("@")[0]?.trim() || "";
+        if (localPart) {
+          queries.add(localPart);
+          localPart
+            .split(/[._-]+/)
+            .map((chunk) => chunk.trim())
+            .filter((chunk) => chunk.length >= 2)
+            .forEach((chunk) => queries.add(chunk));
+        }
       }
 
-      setSearchResults(Array.isArray(data?.users) ? data.users : []);
+      const aggregateResults = new Map<string, SearchResult>();
+      for (const queryPart of queries) {
+        const { data, error } = await (supabase.rpc as any)("search_discoverable_users", {
+          p_query: queryPart,
+          p_limit: 10,
+        });
+        if (error) {
+          throw error;
+        }
+
+        const rows = Array.isArray(data) ? data : [];
+        for (const row of rows) {
+          if (!row?.user_id) continue;
+          if (!aggregateResults.has(row.user_id)) {
+            aggregateResults.set(row.user_id, {
+              user_id: row.user_id,
+              display_name: row.display_name ?? "User",
+              discovery_avatar_url: row.discovery_avatar_url ?? null,
+              match_type: (row.match_type as SearchResult["match_type"]) || "name",
+            });
+          }
+        }
+      }
+
+      setSearchResults(Array.from(aggregateResults.values()).slice(0, 10));
     } catch (error: any) {
       toast.error(error?.message || "Search failed");
       setSearchResults([]);
@@ -171,17 +202,20 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const handleCreateConnection = async (targetUserId: string) => {
     setConnectingUserId(targetUserId);
     try {
-      const { data, error } = await supabase.functions.invoke("collaborations", {
-        body: { action: "create-connection-request", target_user_id: targetUserId },
+      const { data, error } = await (supabase.rpc as any)("create_connection_request", {
+        p_target_user_id: targetUserId,
       });
 
       if (error) {
         throw error;
       }
 
-      if (data?.status === "already_connected") {
+      const resultRow = Array.isArray(data) ? data[0] : null;
+      const status = resultRow?.request_status;
+
+      if (status === "already_connected") {
         toast.success("You are already connected.");
-      } else if (data?.status === "pending_exists") {
+      } else if (status === "pending_exists") {
         toast.success("A connection invite is already pending.");
       } else {
         toast.success("Connection invite sent.");
