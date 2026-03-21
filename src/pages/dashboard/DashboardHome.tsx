@@ -362,12 +362,12 @@ const DashboardHome = () => {
           liveConnections
             .filter((connection) => connection.partnerId)
             .map(async (connection) => {
-              const { data } = await supabase.rpc("get_connection_visible_card_entries", {
+              const { data } = await (supabase.rpc as any)("get_connection_visible_card_entries", {
                 p_couple_id: connection.id,
                 p_owner_user_id: connection.partnerId,
                 p_connection_user_id: user.id,
               });
-              return (Array.isArray(data) ? data : []) as SharedEntryRecord[];
+              return (Array.isArray(data) ? data : []) as unknown as SharedEntryRecord[];
             })
         ),
       ]);
