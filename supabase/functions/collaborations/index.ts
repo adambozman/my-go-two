@@ -169,7 +169,8 @@ async function findAuthUserByEmail(
   let page = 1;
   const perPage = 200;
 
-  while (page <= 10) {
+  // Keep paging until exhausted so older test/demo accounts are still discoverable.
+  while (page <= 100) {
     const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
     if (error) {
       throw error;
@@ -182,7 +183,7 @@ async function findAuthUserByEmail(
     });
 
     if (found) return found;
-    if (data.users.length < perPage) break;
+    if (data.users.length < perPage || data.users.length === 0) break;
     page += 1;
   }
 
@@ -279,7 +280,7 @@ Deno.serve(async (req) => {
 
         userIds.push(demoUser.id);
 
-        await supabase.from("profiles").upsert({
+        const { error: profileError } = await supabase.from("profiles").upsert({
           user_id: demoUser.id,
           display_name: demo.display_name,
           gender: demo.gender,
@@ -287,20 +288,29 @@ Deno.serve(async (req) => {
           birthday: demo.birthday,
           anniversary: demo.anniversary,
         }, { onConflict: "user_id" });
+        if (profileError) {
+          throw new Error(`Failed to upsert profile for ${demo.email}: ${profileError.message}`);
+        }
 
-        await supabase.from("user_discovery_settings").upsert({
+        const { error: discoverySettingsError } = await supabase.from("user_discovery_settings").upsert({
           user_id: demoUser.id,
           allow_name_discovery: true,
           allow_phone_discovery: true,
           share_avatar_in_discovery: false,
         }, { onConflict: "user_id" });
+        if (discoverySettingsError) {
+          throw new Error(`Failed to upsert discovery settings for ${demo.email}: ${discoverySettingsError.message}`);
+        }
 
-        await supabase.from("user_discovery_contacts").upsert({
+        const { error: discoveryContactsError } = await supabase.from("user_discovery_contacts").upsert({
           user_id: demoUser.id,
           phone_raw: demo.phone_raw,
         }, { onConflict: "user_id" });
+        if (discoveryContactsError) {
+          throw new Error(`Failed to upsert discovery contact for ${demo.email}: ${discoveryContactsError.message}`);
+        }
 
-        await supabase.from("user_preferences").upsert({
+        const { error: preferencesError } = await supabase.from("user_preferences").upsert({
           user_id: demoUser.id,
           onboarding_complete: true,
           favorites: { style: true, food: true, gifts: true },
@@ -311,14 +321,20 @@ Deno.serve(async (req) => {
           profile_answers: demo.profile_answers,
           ai_personalization: demo.ai_personalization,
         }, { onConflict: "user_id" });
+        if (preferencesError) {
+          throw new Error(`Failed to upsert preferences for ${demo.email}: ${preferencesError.message}`);
+        }
 
-        await supabase
+        const { error: deleteSeededCardsError } = await supabase
           .from("card_entries")
           .delete()
           .eq("user_id", demoUser.id)
           .contains("field_values", { _seed_profile: DEMO_SEED_VERSION });
+        if (deleteSeededCardsError) {
+          throw new Error(`Failed to clear seeded cards for ${demo.email}: ${deleteSeededCardsError.message}`);
+        }
 
-        await supabase.from("card_entries").insert(
+        const { error: insertCardsError } = await supabase.from("card_entries").insert(
           demo.cards.map((card) => ({
             user_id: demoUser!.id,
             card_key: card.card_key,
@@ -331,6 +347,9 @@ Deno.serve(async (req) => {
             },
           })),
         );
+        if (insertCardsError) {
+          throw new Error(`Failed to seed cards for ${demo.email}: ${insertCardsError.message}`);
+        }
       }
 
       await createNotification(
