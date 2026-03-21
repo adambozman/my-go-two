@@ -4104,17 +4104,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "tuxedo-pants",
-            "name": "Tuxedo Pants",
-            "image": "dress-female-bottoms-tuxedo-pants",
-            "fields": [
-              { "label": "Waist", "type": "text", "value": "" },
-              { "label": "Inseam", "type": "text", "value": "" },
-              { "label": "Preferred Brands", "type": "text", "value": "" },
-              { "label": "Notes", "type": "text", "value": "" }
-            ]
-          },
-          {
             "id": "wide-leg-pants",
             "name": "Wide-Leg Pants",
             "image": "dress-female-bottoms-wide-leg-pants",
