@@ -150,12 +150,10 @@ export function EventCalendar({ milestones, connections }: EventCalendarProps) {
 
     setLoadingEvents(true);
 
-    const relatedUserIds = Array.from(new Set([user.id, ...connections.map((connection) => connection.id)]));
-
     supabase
       .from("calendar_events")
       .select("id, title, description, date, event_type, source_type, connection_user_id, created_at, user_id")
-      .in("user_id", relatedUserIds)
+      .eq("user_id", user.id)
       .order("date", { ascending: true })
       .then(({ data, error }) => {
         if (cancelled) return;
