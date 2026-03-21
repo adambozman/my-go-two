@@ -228,13 +228,16 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     }
   };
 
-  const handleCreateConnection = async (targetUserId: string) => {
+  const handleCreateConnection = async (result: SearchResult) => {
+    const targetUserId = result.user_id;
     setConnectingUserId(targetUserId);
     try {
       const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
         body: {
           action: "create-connection-request",
           target_user_id: targetUserId,
+          connection_display_name: result.display_name,
+          connection_avatar_url: result.discovery_avatar_url,
         },
       });
 
@@ -445,7 +448,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                             </p>
                           </div>
                           <button
-                            onClick={() => handleCreateConnection(result.user_id)}
+                            onClick={() => handleCreateConnection(result)}
                             disabled={connectingUserId === result.user_id}
                             className="surface-button-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] disabled:opacity-50"
                             style={{

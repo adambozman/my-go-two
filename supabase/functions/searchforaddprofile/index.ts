@@ -220,6 +220,44 @@ async function findAuthUsersByIds(
   return usersById;
 }
 
+async function resolveConnectionIdentity(
+  adminClient: any,
+  targetUserId: string,
+  coupleId?: string | null,
+) {
+  if (!targetUserId) {
+    return { display_name: "Connection", avatar_url: null as string | null };
+  }
+
+  const { data: profile } = await adminClient
+    .from("profiles")
+    .select("display_name, avatar_url")
+    .eq("user_id", targetUserId)
+    .maybeSingle();
+
+  const authUsers = await findAuthUsersByIds(adminClient, [targetUserId]);
+  const authUser = authUsers.get(targetUserId);
+  const displayName = profile?.display_name?.trim() || getDisplayNameFromAuthUser(authUser);
+  const avatarUrl = profile?.avatar_url ?? null;
+
+  if (coupleId && (displayName || avatarUrl)) {
+    const updatePayload: Record<string, string> = {};
+    if (displayName) updatePayload.display_label = displayName;
+    if (avatarUrl) updatePayload.photo_url = avatarUrl;
+    if (Object.keys(updatePayload).length > 0) {
+      await adminClient
+        .from("couples")
+        .update(updatePayload)
+        .eq("id", coupleId);
+    }
+  }
+
+  return {
+    display_name: displayName || "Connection",
+    avatar_url: avatarUrl,
+  };
+}
+
 function getDisplayNameFromAuthUser(user: AuthUserSummary | undefined) {
   if (!user) return "User";
 
@@ -490,7 +528,11 @@ async function searchUsers(
 
 async function createConnectionRequest(
   viewerClient: any,
+  adminClient: any,
+  requesterId: string,
   targetUserId: string,
+  connectionDisplayName?: string | null,
+  connectionAvatarUrl?: string | null,
 ) {
   const { data, error } = await viewerClient.rpc("create_connection_request", {
     p_target_user_id: targetUserId,
@@ -499,10 +541,31 @@ async function createConnectionRequest(
     return { success: false, error: error.message, statusCode: 400 };
   }
   const first = Array.isArray(data) ? data[0] : null;
+
+  const coupleId = first?.couple_id ?? null;
+  if (coupleId) {
+    const safeDisplayLabel = (connectionDisplayName ?? "").trim();
+    const safePhotoUrl = (connectionAvatarUrl ?? "").trim();
+
+    // Keep couples.display_label/photo_url populated so pending connections still render
+    // the selected person's identity without relying on private profile reads.
+    if (safeDisplayLabel || safePhotoUrl) {
+      const updatePayload: Record<string, string> = {};
+      if (safeDisplayLabel) updatePayload.display_label = safeDisplayLabel;
+      if (safePhotoUrl) updatePayload.photo_url = safePhotoUrl;
+
+      await adminClient
+        .from("couples")
+        .update(updatePayload)
+        .eq("id", coupleId)
+        .eq("inviter_id", requesterId);
+    }
+  }
+
   return {
     success: true,
     status: first?.request_status ?? "invite_sent",
-    couple_id: first?.couple_id ?? null,
+    couple_id: coupleId,
     statusCode: 200,
   };
 }
@@ -772,7 +835,14 @@ Deno.serve(async (req) => {
 
     if (actionName === "create-connection-request") {
       const targetUserId = String(payload?.target_user_id ?? "").trim();
-      const result = await createConnectionRequest(viewerClient, targetUserId);
+      const result = await createConnectionRequest(
+        viewerClient,
+        adminClient,
+        authData.user.id,
+        targetUserId,
+        typeof payload?.connection_display_name === "string" ? payload.connection_display_name : null,
+        typeof payload?.connection_avatar_url === "string" ? payload.connection_avatar_url : null,
+      );
       if (!result.success) {
         return new Response(JSON.stringify({ error: result.error }), { status: result.statusCode, headers: corsHeaders });
       }
@@ -789,6 +859,13 @@ Deno.serve(async (req) => {
         Number(payload?.days_valid ?? 30),
       );
       return new Response(JSON.stringify({ success: true, share_token: shareToken }), { headers: corsHeaders });
+    }
+
+    if (actionName === "resolve-connection-identity") {
+      const targetUserId = String(payload?.target_user_id ?? "").trim();
+      const coupleId = String(payload?.couple_id ?? "").trim();
+      const identity = await resolveConnectionIdentity(adminClient, targetUserId, coupleId || null);
+      return new Response(JSON.stringify({ success: true, identity }), { headers: corsHeaders });
     }
 
     if (actionName === "send-invite-email") {

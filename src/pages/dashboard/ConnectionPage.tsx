@@ -440,7 +440,7 @@ export default function ConnectionPage() {
     const partnerProfile = (partnerProfileRow as SharedProfileRecord | null) || null;
     const resolvedName = partnerProfile?.display_name || profileData?.display_name || couple.display_label || fallbackName;
 
-    setConnection({
+    const initialConnection: ConnectionRecord = {
       id: couple.id,
       name: resolvedName,
       image: partnerProfile?.avatar_url || profileData?.avatar_url || couple.photo_url || "",
@@ -448,7 +448,8 @@ export default function ConnectionPage() {
       status: couple.status,
       partnerId,
       updatedAt: couple.updated_at,
-    });
+    };
+    setConnection(initialConnection);
     setProfile(profileData || null);
     setIncomingProfileFields({
       display_name: !!incomingFieldRows.find((row) => row.field_key === "display_name" && row.is_shared),
@@ -478,6 +479,39 @@ export default function ConnectionPage() {
     setMyEntries(ownEntries);
     setConnectionFeedRows(feedRows);
     setConnectionKind(((connectionPreferenceRow as { connection_kind?: ConnectionKind } | null)?.connection_kind || "custom") as ConnectionKind);
+
+    const needsIdentityBackfill =
+      !!partnerId &&
+      (!initialConnection.name || initialConnection.name.trim().toLowerCase() === "connection" || !initialConnection.image);
+    if (needsIdentityBackfill) {
+      try {
+        const { data: identityData, error: identityError } = await supabase.functions.invoke("searchforaddprofile", {
+          body: {
+            action: "resolve-connection-identity",
+            target_user_id: partnerId,
+            couple_id: couple.id,
+          },
+        });
+        if (!identityError && identityData?.identity) {
+          const resolvedIdentityName = String(identityData.identity.display_name ?? "").trim();
+          const resolvedIdentityImage = typeof identityData.identity.avatar_url === "string"
+            ? identityData.identity.avatar_url
+            : null;
+          if (resolvedIdentityName || resolvedIdentityImage) {
+            setConnection((previous) => {
+              if (!previous) return previous;
+              return {
+                ...previous,
+                name: resolvedIdentityName || previous.name,
+                image: resolvedIdentityImage || previous.image,
+              };
+            });
+          }
+        }
+      } catch {
+        // Ignore fallback identity failures; initial connection state already loaded.
+      }
+    }
     setLoading(false);
   }, [connectionId, user]);
 
@@ -762,8 +796,26 @@ export default function ConnectionPage() {
     setSavingConnectionKind(false);
 
     if (error) {
+      const isSchemaMissing =
+        /connection_context_preferences/i.test(error.message || "") ||
+        /schema cache/i.test(error.message || "");
+      if (isSchemaMissing) {
+        if (connection.status !== "accepted" && !acceptanceRequiredKinds.has(nextKind)) {
+          toast({
+            title: "Connection type updated",
+            description: "Saved for this session. The backend table for persistent connection types is not deployed yet.",
+          });
+          return;
+        }
+      }
       setConnectionKind(previousKind);
-      toast({ title: "Could not update connection type", description: error.message, variant: "destructive" });
+      toast({
+        title: "Could not update connection type",
+        description: isSchemaMissing
+          ? "Connection type backend is not deployed in this environment yet."
+          : error.message,
+        variant: "destructive",
+      });
       return;
     }
 
