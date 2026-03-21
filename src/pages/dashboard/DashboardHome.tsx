@@ -58,6 +58,7 @@ interface HomeSearchResult {
 
 interface ActivityFeedItem {
   id: string;
+  coupleId: string;
   title: string;
   detail: string;
   meta: string;
@@ -66,6 +67,7 @@ interface ActivityFeedItem {
 
 interface ConnectionFeedRow {
   feed_item_id: string;
+  couple_id: string;
   connection_label: string | null;
   item_kind: string | null;
   title: string | null;
@@ -348,6 +350,7 @@ const DashboardHome = () => {
 
       const nextItems = feedRows.map((row) => ({
         id: row.feed_item_id,
+        coupleId: row.couple_id,
         title: row.connection_label || row.subtitle || "Connection",
         detail: row.body || row.title || "Shared an update.",
         meta: formatRelativeDateLabel(row.event_at),
@@ -653,9 +656,11 @@ const DashboardHome = () => {
                 </div>
               ) : (
                 recentActivityItems.map((item) => (
-                  <div
+                  <button
                     key={item.id}
+                    onClick={() => navigate(`/dashboard/connection-feed?coupleId=${item.coupleId}`)}
                     className="card-inset-white rounded-[22px] px-4 py-4"
+                    style={{ width: "100%", textAlign: "left" }}
                   >
                     <div className="flex items-start gap-3">
                       <span
@@ -675,7 +680,7 @@ const DashboardHome = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))
               )}
             </div>

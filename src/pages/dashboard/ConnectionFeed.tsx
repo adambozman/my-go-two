@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Clock3, RefreshCw, UserRound } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { resolveStorageUrl } from "@/lib/storageRefs";
 
@@ -45,10 +45,17 @@ const sectionLabelMap: Record<string, string> = {
 
 export default function ConnectionFeed() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialCoupleId = searchParams.get("coupleId");
   const [rows, setRows] = useState<ConnectionFeedRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCoupleId, setSelectedCoupleId] = useState<string>("all");
+  const [selectedCoupleId, setSelectedCoupleId] = useState<string>(initialCoupleId || "all");
   const [resolvedImages, setResolvedImages] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const coupleIdFromQuery = searchParams.get("coupleId");
+    setSelectedCoupleId(coupleIdFromQuery || "all");
+  }, [searchParams]);
 
   const loadFeed = useCallback(async () => {
     setLoading(true);
@@ -122,11 +129,22 @@ export default function ConnectionFeed() {
           <div className="flex items-center gap-2">
             <select
               value={selectedCoupleId}
-              onChange={(event) => setSelectedCoupleId(event.target.value)}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+                setSelectedCoupleId(nextValue);
+                if (nextValue === "all") {
+                  setSearchParams({});
+                } else {
+                  setSearchParams({ coupleId: nextValue });
+                }
+              }}
               className="rounded-full border px-4 py-2 text-xs uppercase tracking-[0.12em] outline-none"
               style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.74)", borderColor: "rgba(255,255,255,0.88)" }}
             >
               <option value="all">All Connections</option>
+              {selectedCoupleId !== "all" && !connectionFilters.find((filter) => filter.id === selectedCoupleId) ? (
+                <option value={selectedCoupleId}>Selected Connection</option>
+              ) : null}
               {connectionFilters.map((filter) => (
                 <option key={filter.id} value={filter.id}>
                   {filter.label}
