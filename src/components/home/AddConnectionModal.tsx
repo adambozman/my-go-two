@@ -42,6 +42,77 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     [shareToken],
   );
 
+  const runSearchQuery = async (rawQuery: string) => {
+    const queries = new Set<string>([rawQuery]);
+
+    if (rawQuery.includes("@")) {
+      const localPart = rawQuery.split("@")[0]?.trim() || "";
+      if (localPart) {
+        queries.add(localPart);
+        localPart
+          .split(/[._-]+/)
+          .map((chunk) => chunk.trim())
+          .filter((chunk) => chunk.length >= 2)
+          .forEach((chunk) => queries.add(chunk));
+      }
+    }
+
+    const aggregateResults = new Map<string, SearchResult>();
+    for (const queryPart of queries) {
+      let rows: any[] = [];
+
+      const { data: edgeData, error: edgeError } = await supabase.functions.invoke("collaborations", {
+        body: { action: "search-user", query: queryPart },
+      });
+
+      if (!edgeError) {
+        rows = Array.isArray(edgeData?.users) ? edgeData.users : [];
+      } else {
+        const { data: rpcData, error: rpcError } = await (supabase.rpc as any)("search_discoverable_users", {
+          p_query: queryPart,
+          p_limit: 10,
+        });
+
+        if (rpcError) {
+          throw edgeError;
+        }
+
+        rows = Array.isArray(rpcData) ? rpcData : [];
+      }
+
+      for (const row of rows) {
+        if (!row?.user_id) continue;
+        if (!aggregateResults.has(row.user_id)) {
+          aggregateResults.set(row.user_id, {
+            user_id: row.user_id,
+            display_name: row.display_name ?? "User",
+            discovery_avatar_url: row.discovery_avatar_url ?? null,
+            match_type: (row.match_type as SearchResult["match_type"]) || "name",
+          });
+        }
+      }
+    }
+
+    return Array.from(aggregateResults.values()).slice(0, 10);
+  };
+
+  const seedDemoProfiles = async (showToast = true) => {
+    const { data, error } = await supabase.functions.invoke("collaborations", {
+      body: { action: "seed-demo-profiles" },
+    });
+
+    if (error) {
+      throw error;
+    }
+    if (data?.error) {
+      throw new Error(data.error);
+    }
+
+    if (showToast) {
+      toast.success("Demo profiles created: Abby and Jules");
+    }
+  };
+
   useEffect(() => {
     if (!open) return;
 
@@ -153,57 +224,18 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     setSearching(true);
     try {
       const rawQuery = searchQuery.trim();
-      const queries = new Set<string>([rawQuery]);
+      let results = await runSearchQuery(rawQuery);
 
-      if (rawQuery.includes("@")) {
-        const localPart = rawQuery.split("@")[0]?.trim() || "";
-        if (localPart) {
-          queries.add(localPart);
-          localPart
-            .split(/[._-]+/)
-            .map((chunk) => chunk.trim())
-            .filter((chunk) => chunk.length >= 2)
-            .forEach((chunk) => queries.add(chunk));
-        }
+      // Auto-heal demo account setup in environments where seed data wasn't created yet.
+      if (
+        results.length === 0 &&
+        /(abby|jules|gotwo\.local)/i.test(rawQuery)
+      ) {
+        await seedDemoProfiles(false);
+        results = await runSearchQuery(rawQuery);
       }
 
-      const aggregateResults = new Map<string, SearchResult>();
-      for (const queryPart of queries) {
-        let rows: any[] = [];
-
-        const { data: edgeData, error: edgeError } = await supabase.functions.invoke("collaborations", {
-          body: { action: "search-user", query: queryPart },
-        });
-
-        if (!edgeError) {
-          rows = Array.isArray(edgeData?.users) ? edgeData.users : [];
-        } else {
-          const { data: rpcData, error: rpcError } = await (supabase.rpc as any)("search_discoverable_users", {
-            p_query: queryPart,
-            p_limit: 10,
-          });
-
-          if (rpcError) {
-            throw edgeError;
-          }
-
-          rows = Array.isArray(rpcData) ? rpcData : [];
-        }
-
-        for (const row of rows) {
-          if (!row?.user_id) continue;
-          if (!aggregateResults.has(row.user_id)) {
-            aggregateResults.set(row.user_id, {
-              user_id: row.user_id,
-              display_name: row.display_name ?? "User",
-              discovery_avatar_url: row.discovery_avatar_url ?? null,
-              match_type: (row.match_type as SearchResult["match_type"]) || "name",
-            });
-          }
-        }
-      }
-
-      setSearchResults(Array.from(aggregateResults.values()).slice(0, 10));
+      setSearchResults(results);
     } catch (error: any) {
       toast.error(error?.message || "Search failed");
       setSearchResults([]);
@@ -247,18 +279,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     if (!user || seedingDemoProfiles) return;
     setSeedingDemoProfiles(true);
     try {
-      const { data, error } = await supabase.functions.invoke("collaborations", {
-        body: { action: "seed-demo-profiles" },
-      });
-
-      if (error) {
-        throw error;
-      }
-      if (data?.error) {
-        throw new Error(data.error);
-      }
-
-      toast.success("Demo profiles created: Abby and Jules");
+      await seedDemoProfiles(true);
       if (searchQuery.trim()) {
         await handleSearch();
       }
