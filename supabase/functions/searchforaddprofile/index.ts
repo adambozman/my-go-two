@@ -442,7 +442,7 @@ async function createConnectionRequest(
 }
 
 async function createConnectionShareToken(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   ownerUserId: string,
   channel: string,
   daysValid: number,
