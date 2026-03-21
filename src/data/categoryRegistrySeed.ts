@@ -1658,42 +1658,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "mac-coat",
-            "name": "Car Coat",
-            "image": "dress-male-outerwear-mac-coat",
-            "fields": [
-              {
-                "label": "Size",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "XS",
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
-                  "XXL",
-                  "XXXL"
-                ]
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
-            ]
-          },
-          {
             "id": "peacoat",
             "name": "Peacoat",
             "image": "dress-male-outerwear-peacoat",
@@ -4105,16 +4069,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "car-coat",
-            "name": "Car Coat",
-            "image": "dress-female-outerwear-car-coat",
-            "fields": [
-              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
-              { "label": "Preferred Brands", "type": "text", "value": "" },
-              { "label": "Notes", "type": "text", "value": "" }
-            ]
-          },
-          {
             "id": "peacoat",
             "name": "Peacoat",
             "image": "dress-female-outerwear-peacoat",
@@ -5377,16 +5331,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             "fields": [
               { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
               { "label": "Length", "type": "select", "value": "", "options": ["Mid", "Long"] },
-              { "label": "Preferred Brands", "type": "text", "value": "" },
-              { "label": "Notes", "type": "text", "value": "" }
-            ]
-          },
-          {
-            "id": "car-coat",
-            "name": "Car Coat",
-            "image": "dress-nb-outerwear-car-coat",
-            "fields": [
-              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
               { "label": "Preferred Brands", "type": "text", "value": "" },
               { "label": "Notes", "type": "text", "value": "" }
             ]
