@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Clock3, Lock, PencilLine, RefreshCw, Sparkles, Tag } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -63,6 +64,7 @@ interface SharedCardEntryRow {
 }
 
 type DerivedFeatureKey = "your_vibe" | "for_you_recommendations" | "ai_conversation_access";
+type ConnectionKind = "significant_other" | "parent" | "family" | "friend" | "coworker" | "custom";
 
 type DerivedFeatureState = Record<DerivedFeatureKey, boolean>;
 
@@ -87,6 +89,15 @@ interface SharedRecommendationsRecord {
     why?: string;
   }> | null;
 }
+
+const editableConnectionKinds: Array<{ key: ConnectionKind; label: string; description: string }> = [
+  { key: "significant_other", label: "Significant Other", description: "Enables anniversary and romantic occasion logic." },
+  { key: "parent", label: "Parent", description: "Keeps gifting focused on family and parent-relevant occasions." },
+  { key: "family", label: "Family", description: "Use for siblings and broader family gift context." },
+  { key: "friend", label: "Friend", description: "Use for personal but non-family gift context." },
+  { key: "coworker", label: "Coworker", description: "Keeps gifting suggestions more neutral and occasion-safe." },
+  { key: "custom", label: "Custom", description: "Fallback type when this connection does not fit a standard relationship." },
+];
 
 const shellCardStyle = {
   boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
@@ -281,6 +292,8 @@ export default function ConnectionPage() {
   const [sharedRecommendations, setSharedRecommendations] = useState<SharedRecommendationsRecord | null>(null);
   const [resolvedConnectionImage, setResolvedConnectionImage] = useState("");
   const [resolvedFeedImages, setResolvedFeedImages] = useState<Record<string, string>>({});
+  const [connectionKind, setConnectionKind] = useState<ConnectionKind>("custom");
+  const [savingConnectionKind, setSavingConnectionKind] = useState(false);
 
   const loadConnection = useCallback(async () => {
     if (!user || !connectionId) return;
@@ -315,6 +328,7 @@ export default function ConnectionPage() {
       { data: incomingSharedCardRows },
       { data: ownEntryRows },
       { data: entryRows },
+      { data: connectionPreferenceRow },
     ] = await Promise.all([
       partnerId
         ? (supabase.rpc as any)("get_connection_shared_profile", {
@@ -390,6 +404,15 @@ export default function ConnectionPage() {
             p_connection_user_id: user.id,
           })
         : Promise.resolve({ data: [] }),
+      partnerId
+        ? (supabase as any)
+            .from("connection_context_preferences")
+            .select("connection_kind")
+            .eq("couple_id", couple.id)
+            .eq("owner_user_id", user.id)
+            .eq("connection_user_id", partnerId)
+            .maybeSingle()
+        : Promise.resolve({ data: null }),
     ]);
 
     const profileData = Array.isArray(profileRows) ? (profileRows[0] as SharedProfileRecord | undefined) ?? null : null;
@@ -443,6 +466,7 @@ export default function ConnectionPage() {
     setSharedCardEntryIds(cardRows.map((row) => row.card_entry_id));
     setMyEntries(ownEntries);
     setEntries(entryData);
+    setConnectionKind(((connectionPreferenceRow as { connection_kind?: ConnectionKind } | null)?.connection_kind || "custom") as ConnectionKind);
     setLoading(false);
   }, [connectionId, user]);
 
@@ -714,6 +738,39 @@ export default function ConnectionPage() {
     });
   }, [connection, myEntries, toast, user]);
 
+  const handleConnectionKindChange = useCallback(async (nextKind: ConnectionKind) => {
+    if (!user || !connection || !connection.partnerId || nextKind === connectionKind) return;
+
+    const previousKind = connectionKind;
+    setConnectionKind(nextKind);
+    setSavingConnectionKind(true);
+
+    const { error } = await (supabase as any)
+      .from("connection_context_preferences")
+      .upsert(
+        {
+          couple_id: connection.id,
+          owner_user_id: user.id,
+          connection_user_id: connection.partnerId,
+          connection_kind: nextKind,
+        },
+        { onConflict: "couple_id,owner_user_id,connection_user_id" },
+      );
+
+    setSavingConnectionKind(false);
+
+    if (error) {
+      setConnectionKind(previousKind);
+      toast({ title: "Could not update connection type", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    toast({
+      title: "Connection type updated",
+      description: `${connection.name} is now set as ${editableConnectionKinds.find((item) => item.key === nextKind)?.label.toLowerCase()}.`,
+    });
+  }, [connection, connectionKind, toast, user]);
+
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -865,6 +922,55 @@ export default function ConnectionPage() {
                 <div className="space-y-2 text-sm" style={{ color: "var(--swatch-antique-coin)" }}>
                   <p>Status: <span style={{ color: "var(--swatch-teal)" }}>{connection.status}</span></p>
                   <p>Updated: <span style={{ color: "var(--swatch-teal)" }}>{formatRelativeDateLabel(connection.updatedAt)}</span></p>
+                </div>
+              </div>
+            </section>
+
+            <section
+              className="rounded-[28px] p-4 md:p-5"
+              style={{
+                background: "linear-gradient(180deg, rgba(255,255,255,0.68) 0%, rgba(247,239,229,0.72) 100%)",
+                border: "1px solid rgba(255,255,255,0.84)",
+              }}
+            >
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                    Connection type
+                  </p>
+                  <h2 className="mt-2 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    Tell the system who this connection is.
+                  </h2>
+                  <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                    This controls occasion relevance behind the scenes so gifting logic treats a significant other differently than a parent, friend, or coworker.
+                  </p>
+                </div>
+
+                <div className="min-w-[240px]">
+                  <Select value={connectionKind} onValueChange={(value) => handleConnectionKindChange(value as ConnectionKind)}>
+                    <SelectTrigger
+                      className="rounded-[18px] border px-4 py-3 text-sm"
+                      style={{
+                        background: "rgba(255,255,255,0.72)",
+                        borderColor: "rgba(45,104,112,0.14)",
+                        color: "var(--swatch-teal)",
+                        fontFamily: "'Jost', sans-serif",
+                      }}
+                    >
+                      <SelectValue placeholder="Select connection type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {editableConnectionKinds.map((item) => (
+                        <SelectItem key={item.key} value={item.key}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                    {editableConnectionKinds.find((item) => item.key === connectionKind)?.description}
+                    {savingConnectionKind ? " Saving..." : ""}
+                  </p>
                 </div>
               </div>
             </section>
