@@ -678,7 +678,7 @@ export default function ConnectionPage() {
       return;
     }
 
-    toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection.name} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
+    toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
   }, [connection, toast, user]);
 
   const handleToggleCardShare = useCallback(async (entry: EntryRecord, nextValue: boolean) => {
