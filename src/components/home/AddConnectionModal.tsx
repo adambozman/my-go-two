@@ -35,6 +35,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const [shareToken, setShareToken] = useState("");
   const [loadingShareToken, setLoadingShareToken] = useState(false);
   const [shareTokenError, setShareTokenError] = useState("");
+  const [seedingDemoProfiles, setSeedingDemoProfiles] = useState(false);
 
   const inviteLink = useMemo(
     () => (shareToken ? `${window.location.origin}/connect?token=${shareToken}` : ""),
@@ -242,6 +243,32 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     }
   };
 
+  const handleSeedDemoProfiles = async () => {
+    if (!user || seedingDemoProfiles) return;
+    setSeedingDemoProfiles(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("collaborations", {
+        body: { action: "seed-demo-profiles" },
+      });
+
+      if (error) {
+        throw error;
+      }
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      toast.success("Demo profiles created: Abby and Jules");
+      if (searchQuery.trim()) {
+        await handleSearch();
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "Could not create demo profiles");
+    } finally {
+      setSeedingDemoProfiles(false);
+    }
+  };
+
   const handleCopyLink = async () => {
     if (!inviteLink) return;
     try {
@@ -339,6 +366,17 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                   <p className="text-[12px]" style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}>
                     Search by email, phone, or username first. If they are already on Go Two, send them a direct connection invite.
                   </p>
+
+                  <button
+                    type="button"
+                    onClick={handleSeedDemoProfiles}
+                    disabled={seedingDemoProfiles}
+                    className="surface-pill inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] disabled:opacity-50"
+                    style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
+                  >
+                    {seedingDemoProfiles ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5" />}
+                    {seedingDemoProfiles ? "Creating Demo Profiles..." : "Create Demo Profiles"}
+                  </button>
 
                   <div>
                     <label
