@@ -191,7 +191,7 @@ const SettingsPage = () => {
   const handleSeedDemoProfiles = async () => {
     setSeedingDemoProfiles(true);
     try {
-      const { data: result, error } = await supabase.functions.invoke("connection-search", {
+      const { data: result, error } = await supabase.functions.invoke("searchforaddprofile", {
         body: { action: "seed-demo-profiles" },
       });
       if (error) {

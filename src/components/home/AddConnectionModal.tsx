@@ -45,7 +45,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const runSearchQuery = async (rawQuery: string) => {
     let rows: any[] = [];
 
-    const { data: newSearchData, error: newSearchError } = await supabase.functions.invoke("connection-search", {
+    const { data: newSearchData, error: newSearchError } = await supabase.functions.invoke("searchforaddprofile", {
       body: { action: "search", query: rawQuery },
     });
 
@@ -81,7 +81,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   };
 
   const seedDemoProfiles = async (showToast = true) => {
-    const { data, error } = await supabase.functions.invoke("connection-search", {
+    const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
       body: { action: "seed-demo-profiles" },
     });
 
@@ -231,16 +231,18 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const handleCreateConnection = async (targetUserId: string) => {
     setConnectingUserId(targetUserId);
     try {
-      const { data, error } = await (supabase.rpc as any)("create_connection_request", {
-        p_target_user_id: targetUserId,
+      const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
+        body: {
+          action: "create-connection-request",
+          target_user_id: targetUserId,
+        },
       });
 
       if (error) {
         throw error;
       }
 
-      const resultRow = Array.isArray(data) ? data[0] : null;
-      const status = resultRow?.request_status;
+      const status = data?.status;
 
       if (status === "already_connected") {
         toast.success("You are already connected.");
