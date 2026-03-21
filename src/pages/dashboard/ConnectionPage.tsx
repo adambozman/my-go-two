@@ -625,11 +625,12 @@ export default function ConnectionPage() {
   const canConfigureOutgoing = Boolean(connection?.partnerId);
   const visibleNowSummary = incomingEnabled.length + incomingDerivedEnabled.length + visibleFeedItems.length;
   const outgoingNowSummary = outgoingEnabled.length + outgoingDerivedEnabled.length + sharedCardEntryIds.length;
+  const connName = connection?.name || "They";
   const liveNowDescription = outgoingEnabled.length
-    ? `${connection.name} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")}, ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"}, and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+    ? `${connName} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")}, ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"}, and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
     : sharedCardEntryIds.length || outgoingDerivedEnabled.length
-      ? `${connection.name} can currently see ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"} and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
-      : `You have not shared any fields, derived features, or product cards with ${connection.name} yet.`;
+      ? `${connName} can currently see ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"} and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+      : `You have not shared any fields, derived features, or product cards with ${connName} yet.`;
   const statusEyebrow = connectionAccepted ? "Connection live" : "Pending acceptance";
   const statusBody = connectionAccepted
     ? "Sharing is live both ways based on what each of you has explicitly allowed."
@@ -677,7 +678,7 @@ export default function ConnectionPage() {
       return;
     }
 
-    toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection.name} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
+    toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
   }, [connection, toast, user]);
 
   const handleToggleCardShare = useCallback(async (entry: EntryRecord, nextValue: boolean) => {
@@ -714,7 +715,7 @@ export default function ConnectionPage() {
       }
     }
 
-    toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection.name}.` });
+    toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection?.name || "them"}.` });
   }, [connection, toast, user]);
 
   const handleToggleDerivedFeature = useCallback(async (key: DerivedFeatureKey, nextValue: boolean) => {
@@ -759,7 +760,7 @@ export default function ConnectionPage() {
 
     toast({
       title: nextValue ? "Derived feature shared" : "Derived feature hidden",
-      description: `${connection.name} will ${nextValue ? "now" : "no longer"} see ${editableDerivedFeatures.find((feature) => feature.key === key)?.label.toLowerCase()}.`,
+      description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableDerivedFeatures.find((feature) => feature.key === key)?.label.toLowerCase()}.`,
     });
   }, [connection, toast, user]);
 
