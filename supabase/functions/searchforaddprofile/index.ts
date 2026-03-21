@@ -572,7 +572,7 @@ async function acceptInvite(
 }
 
 async function acceptInvitesByEmail(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   email: string | null,
 ) {
