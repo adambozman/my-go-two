@@ -43,53 +43,37 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   );
 
   const runSearchQuery = async (rawQuery: string) => {
-    const queries = new Set<string>([rawQuery]);
+    let rows: any[] = [];
 
-    if (rawQuery.includes("@")) {
-      const localPart = rawQuery.split("@")[0]?.trim() || "";
-      if (localPart) {
-        queries.add(localPart);
-        localPart
-          .split(/[._-]+/)
-          .map((chunk) => chunk.trim())
-          .filter((chunk) => chunk.length >= 2)
-          .forEach((chunk) => queries.add(chunk));
+    const { data: edgeData, error: edgeError } = await supabase.functions.invoke("collaborations", {
+      body: { action: "search-user", query: rawQuery },
+    });
+
+    if (!edgeError) {
+      rows = Array.isArray(edgeData?.users) ? edgeData.users : [];
+    } else {
+      const { data: rpcData, error: rpcError } = await (supabase.rpc as any)("search_discoverable_users", {
+        p_query: rawQuery,
+        p_limit: 10,
+      });
+
+      if (rpcError) {
+        throw edgeError;
       }
+
+      rows = Array.isArray(rpcData) ? rpcData : [];
     }
 
     const aggregateResults = new Map<string, SearchResult>();
-    for (const queryPart of queries) {
-      let rows: any[] = [];
-
-      const { data: edgeData, error: edgeError } = await supabase.functions.invoke("collaborations", {
-        body: { action: "search-user", query: queryPart },
-      });
-
-      if (!edgeError) {
-        rows = Array.isArray(edgeData?.users) ? edgeData.users : [];
-      } else {
-        const { data: rpcData, error: rpcError } = await (supabase.rpc as any)("search_discoverable_users", {
-          p_query: queryPart,
-          p_limit: 10,
+    for (const row of rows) {
+      if (!row?.user_id) continue;
+      if (!aggregateResults.has(row.user_id)) {
+        aggregateResults.set(row.user_id, {
+          user_id: row.user_id,
+          display_name: row.display_name ?? "User",
+          discovery_avatar_url: row.discovery_avatar_url ?? null,
+          match_type: (row.match_type as SearchResult["match_type"]) || "name",
         });
-
-        if (rpcError) {
-          throw edgeError;
-        }
-
-        rows = Array.isArray(rpcData) ? rpcData : [];
-      }
-
-      for (const row of rows) {
-        if (!row?.user_id) continue;
-        if (!aggregateResults.has(row.user_id)) {
-          aggregateResults.set(row.user_id, {
-            user_id: row.user_id,
-            display_name: row.display_name ?? "User",
-            discovery_avatar_url: row.discovery_avatar_url ?? null,
-            match_type: (row.match_type as SearchResult["match_type"]) || "name",
-          });
-        }
       }
     }
 

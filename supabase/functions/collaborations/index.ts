@@ -429,6 +429,7 @@ Deno.serve(async (req) => {
       if (!rawQuery) {
         return new Response(JSON.stringify({ users: [] }), { headers: corsHeaders });
       }
+      const collapsedQuery = rawQuery.replace(/\s+/g, " ");
 
       const normalizedPhone = normalizePhone(rawQuery);
       const normalizedEmail = rawQuery.toLowerCase();
@@ -440,7 +441,7 @@ Deno.serve(async (req) => {
       const { data: nameMatches } = await supabase
         .from("profiles")
         .select("user_id, display_name, avatar_url")
-        .ilike("display_name", `%${rawQuery}%`)
+        .ilike("display_name", `%${collapsedQuery}%`)
         .limit(15);
 
       for (const match of nameMatches ?? []) {
@@ -514,7 +515,7 @@ Deno.serve(async (req) => {
           const matchedByPhone = phoneIds.has(profile.user_id);
           const matchedByName = nameIds.has(profile.user_id);
           const matchedByEmail = emailIds.has(profile.user_id);
-          const canUsePhone = matchedByPhone && Boolean(prefs?.allow_phone_discovery);
+          const canUsePhone = matchedByPhone && (prefs?.allow_phone_discovery ?? true);
           const canUseName = matchedByName && (prefs?.allow_name_discovery ?? true);
           const canUseEmail = matchedByEmail;
 
