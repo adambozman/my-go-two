@@ -1188,7 +1188,7 @@ export default function ConnectionPage() {
                 </div>
               </div>
 
-              <Accordion type="single" collapsible defaultValue="sharing-controls" className="mt-5">
+              <Accordion type="single" collapsible className="mt-5">
                 <AccordionItem value="sharing-controls" className="overflow-hidden rounded-[26px] border-0" style={frostedInsetStyle}>
                   <AccordionTrigger className="px-4 py-4 text-left hover:no-underline">
                     <div>
