@@ -192,7 +192,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
             role="dialog"
             aria-modal="true"
             aria-labelledby="add-connection-title"
-            className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100vh-2rem)] w-auto max-w-[460px] -translate-y-1/2 overflow-y-auto rounded-[28px] md:inset-x-0"
+            className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100vh-2rem)] w-auto max-w-[500px] -translate-y-1/2 overflow-y-auto rounded-[28px] md:inset-x-0"
             style={{
               background: "linear-gradient(165deg, rgba(255,255,255,0.74) 0%, rgba(245,233,220,0.5) 100%)",
               border: "1px solid rgba(255,255,255,0.88)",
@@ -221,7 +221,13 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               </button>
             </div>
 
-            <div className="flex gap-1 px-5 pb-3">
+            <div
+              className="mx-5 mb-3 grid grid-cols-3 gap-2 rounded-[22px] p-1.5"
+              style={{
+                background: "linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(245,233,220,0.34) 100%)",
+                border: "1px solid rgba(255,255,255,0.72)",
+              }}
+            >
               {([
                 { key: "search" as Tab, icon: Search, label: "Search User" },
                 { key: "invite" as Tab, icon: Mail, label: "Email Invite" },
@@ -230,7 +236,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                 <button
                   key={key}
                   onClick={() => setTab(key)}
-                  className="surface-pill flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full text-[12px] font-semibold transition-all"
+                  className="surface-pill min-w-0 flex h-11 items-center justify-center gap-2 rounded-full px-3 text-[11px] font-semibold transition-all"
                   style={{
                     background: tab === key ? "var(--swatch-teal)" : undefined,
                     color: tab === key ? "hsl(var(--primary-foreground))" : "var(--swatch-antique-coin)",
@@ -238,8 +244,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                     boxShadow: tab === key ? "0 8px 20px rgba(30,74,82,0.22), inset 0 1px 0 rgba(255,255,255,0.18)" : undefined,
                   }}
                 >
-                  <Icon className="w-3.5 h-3.5" />
-                  {tabLabel}
+                  <Icon className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate whitespace-nowrap">{tabLabel}</span>
                 </button>
               ))}
             </div>
