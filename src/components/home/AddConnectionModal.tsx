@@ -32,6 +32,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const [copied, setCopied] = useState(false);
   const [shareToken, setShareToken] = useState("");
   const [loadingShareToken, setLoadingShareToken] = useState(false);
+  const [shareTokenError, setShareTokenError] = useState("");
 
   const inviteLink = useMemo(
     () => (shareToken ? `${window.location.origin}/connect?token=${shareToken}` : ""),
@@ -46,13 +47,16 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     setSearchResults([]);
     setEmail("");
     setCopied(false);
+    setShareToken("");
+    setShareTokenError("");
   }, [open]);
 
   useEffect(() => {
-    if (!open || !user || shareToken || loadingShareToken) return;
+    if (!open || !user || tab !== "qr" || shareToken || loadingShareToken) return;
 
     const loadShareToken = async () => {
       setLoadingShareToken(true);
+      setShareTokenError("");
       try {
         const { data, error } = await supabase.functions.invoke("collaborations", {
           body: { action: "create-connection-share-token", channel: "qr", days_valid: 30 },
@@ -67,14 +71,14 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
           setShareToken(tokenValue);
         }
       } catch (error: any) {
-        toast.error(error?.message || "Could not create a QR invite link.");
+        setShareTokenError(error?.message || "Could not create a QR invite link right now.");
       } finally {
         setLoadingShareToken(false);
       }
     };
 
     loadShareToken();
-  }, [loadingShareToken, open, shareToken, user]);
+  }, [loadingShareToken, open, shareToken, tab, user]);
 
   const handleSendInvite = async () => {
     if (!user || !email.trim()) return;
@@ -397,6 +401,13 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                     {loadingShareToken ? (
                       <div className="flex h-[160px] w-[160px] items-center justify-center">
                         <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--swatch-teal)" }} />
+                      </div>
+                    ) : shareTokenError ? (
+                      <div
+                        className="flex h-[160px] w-[160px] items-center justify-center text-center text-[12px]"
+                        style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}
+                      >
+                        {shareTokenError}
                       </div>
                     ) : inviteLink ? (
                       <img
