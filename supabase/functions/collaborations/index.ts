@@ -9,6 +9,10 @@ function normalizePhone(value: string | null | undefined) {
   return (value ?? "").replace(/\D/g, "");
 }
 
+function normalizeUsername(value: string | null | undefined) {
+  return (value ?? "").trim().replace(/^@+/, "");
+}
+
 async function sendInviteEmail(inviterName: string, inviteeEmail: string, inviteLink: string) {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
   if (!LOVABLE_API_KEY) {
@@ -115,6 +119,9 @@ Deno.serve(async (req) => {
       invite_id,
       inviter_id,
       invitee_email,
+      invitee_phone,
+      invitee_username,
+      invite_link,
       query,
       target_user_id,
       token,
@@ -133,20 +140,24 @@ Deno.serve(async (req) => {
     };
 
     if (action === "send-invite-email") {
-      if (!invitee_email) {
-        return new Response(JSON.stringify({ error: "Missing invitee_email" }), { status: 400, headers: corsHeaders });
+      if (!invitee_email && !invitee_phone && !invitee_username) {
+        return new Response(JSON.stringify({ error: "Missing invite target" }), { status: 400, headers: corsHeaders });
       }
 
       const inviterName = await getDisplayName(user.id);
       const origin = req.headers.get("origin") || req.headers.get("referer")?.replace(/\/+$/, "") || "https://mygotwo.com";
-      const inviteLink = `${origin}/connect?invite=${user.id}`;
+      const resolvedInviteLink = invite_link || `${origin}/connect?invite=${user.id}`;
 
-      // Send email
-      await sendInviteEmail(inviterName, invitee_email, inviteLink);
+      if (invitee_email) {
+        await sendInviteEmail(inviterName, invitee_email, resolvedInviteLink);
+      }
 
       // If invitee already has an account, create an in-app notification for them
       const { data: inviteeUsers } = await supabase.auth.admin.listUsers();
-      const inviteeUser = inviteeUsers?.users?.find(u => u.email === invitee_email);
+      const normalizedInviteEmail = invitee_email ? String(invitee_email).trim().toLowerCase() : null;
+      const inviteeUser = normalizedInviteEmail
+        ? inviteeUsers?.users?.find((u) => u.email?.toLowerCase() === normalizedInviteEmail)
+        : undefined;
       if (inviteeUser) {
         await createNotification(
           supabase,
@@ -162,11 +173,13 @@ Deno.serve(async (req) => {
         supabase,
         user.id,
         "Invitation Sent",
-        `Your invitation to ${invitee_email} has been sent.`,
+        normalizedInviteEmail
+          ? `Your invitation to ${normalizedInviteEmail} has been sent.`
+          : "Your invite link is ready to send.",
         "general"
       );
 
-      return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+      return new Response(JSON.stringify({ success: true, invite_link: resolvedInviteLink }), { headers: corsHeaders });
     }
 
     if (action === "search-users") {
@@ -176,8 +189,11 @@ Deno.serve(async (req) => {
       }
 
       const normalizedPhone = normalizePhone(rawQuery);
+      const normalizedEmail = rawQuery.toLowerCase();
+      const normalizedUsername = normalizeUsername(rawQuery);
       const nameIds = new Set<string>();
       const phoneIds = new Set<string>();
+      const emailIds = new Set<string>();
 
       const { data: nameMatches } = await supabase
         .from("profiles")
@@ -205,7 +221,32 @@ Deno.serve(async (req) => {
         }
       }
 
-      const candidateIds = [...new Set([...nameIds, ...phoneIds])];
+      if (normalizedEmail.includes("@")) {
+        const { data: inviteeUsers } = await supabase.auth.admin.listUsers();
+        const emailMatch = inviteeUsers?.users?.find(
+          (candidate) => candidate.email?.toLowerCase() === normalizedEmail && candidate.id !== user.id
+        );
+
+        if (emailMatch?.id) {
+          emailIds.add(emailMatch.id);
+        }
+      }
+
+      if (normalizedUsername) {
+        const { data: usernameMatches } = await supabase
+          .from("profiles")
+          .select("user_id")
+          .ilike("display_name", normalizedUsername)
+          .limit(10);
+
+        for (const match of usernameMatches ?? []) {
+          if (match.user_id && match.user_id !== user.id) {
+            nameIds.add(match.user_id);
+          }
+        }
+      }
+
+      const candidateIds = [...new Set([...nameIds, ...phoneIds, ...emailIds])];
       if (candidateIds.length === 0) {
         return new Response(JSON.stringify({ users: [] }), { headers: corsHeaders });
       }
@@ -230,10 +271,12 @@ Deno.serve(async (req) => {
           const prefs = settingsByUserId.get(profile.user_id);
           const matchedByPhone = phoneIds.has(profile.user_id);
           const matchedByName = nameIds.has(profile.user_id);
+          const matchedByEmail = emailIds.has(profile.user_id);
           const canUsePhone = matchedByPhone && Boolean(prefs?.allow_phone_discovery);
           const canUseName = matchedByName && (prefs?.allow_name_discovery ?? true);
+          const canUseEmail = matchedByEmail;
 
-          if (!canUsePhone && !canUseName) {
+          if (!canUsePhone && !canUseName && !canUseEmail) {
             return null;
           }
 
@@ -241,7 +284,7 @@ Deno.serve(async (req) => {
             user_id: profile.user_id,
             display_name: profile.display_name ?? "User",
             discovery_avatar_url: prefs?.share_avatar_in_discovery ? profile.avatar_url : null,
-            match_type: canUsePhone ? "phone" : "name",
+            match_type: canUseEmail ? "email" : canUsePhone ? "phone" : "name",
           };
         })
         .filter((value): value is NonNullable<typeof value> => Boolean(value))

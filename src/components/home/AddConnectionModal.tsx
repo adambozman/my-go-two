@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, QrCode, Send, Copy, Check, UserPlus, Search, Loader2 } from "lucide-react";
+import { X, Mail, QrCode, Send, Copy, Check, UserPlus, Search, Loader2, AtSign, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ interface SearchResult {
   user_id: string;
   display_name: string;
   discovery_avatar_url: string | null;
-  match_type: "name" | "phone";
+  match_type: "name" | "phone" | "email";
 }
 
 export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddConnectionModalProps) {
@@ -28,6 +28,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [connectingUserId, setConnectingUserId] = useState<string | null>(null);
   const [email, setEmail] = useState("");
+  const [invitePhone, setInvitePhone] = useState("");
+  const [inviteUsername, setInviteUsername] = useState("");
   const [sending, setSending] = useState(false);
   const [copied, setCopied] = useState(false);
   const [shareToken, setShareToken] = useState("");
@@ -46,6 +48,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     setSearchQuery("");
     setSearchResults([]);
     setEmail("");
+    setInvitePhone("");
+    setInviteUsername("");
     setCopied(false);
     setShareToken("");
     setShareTokenError("");
@@ -81,13 +85,38 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   }, [loadingShareToken, open, shareToken, tab, user]);
 
   const handleSendInvite = async () => {
-    if (!user || !email.trim()) return;
+    if (!user || (!email.trim() && !invitePhone.trim() && !inviteUsername.trim())) return;
 
     setSending(true);
     try {
+      let generatedInviteLink = inviteLink;
+      if (!generatedInviteLink) {
+        const { data: tokenData, error: tokenError } = await supabase.functions.invoke("collaborations", {
+          body: { action: "create-connection-share-token", channel: "link", days_valid: 30 },
+        });
+
+        if (tokenError) {
+          throw tokenError;
+        }
+
+        const tokenValue = tokenData?.share_token?.token;
+        if (!tokenValue) {
+          throw new Error("Could not create an invite link.");
+        }
+
+        generatedInviteLink = `${window.location.origin}/connect?token=${tokenValue}`;
+        setShareToken(tokenValue);
+      }
+
       const normalizedEmail = email.trim().toLowerCase();
       const { data, error } = await supabase.functions.invoke("collaborations", {
-        body: { action: "send-invite-email", invitee_email: normalizedEmail },
+        body: {
+          action: "send-invite-email",
+          invitee_email: normalizedEmail || null,
+          invite_link: generatedInviteLink,
+          invitee_phone: invitePhone.trim() || null,
+          invitee_username: inviteUsername.trim() || null,
+        },
       });
 
       if (error) {
@@ -98,10 +127,18 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
         throw new Error(data.error);
       }
 
-      toast.success(`Invitation sent to ${normalizedEmail}`);
+      if (normalizedEmail) {
+        toast.success(`Invite link sent to ${normalizedEmail}`);
+      } else {
+        await navigator.clipboard.writeText(generatedInviteLink);
+        setCopied(true);
+        toast.success("Invite link copied. Send it to them directly.");
+      }
       onConnectionCreated?.();
       onClose();
       setEmail("");
+      setInvitePhone("");
+      setInviteUsername("");
     } catch (err: any) {
       toast.error(err?.message || "Failed to send invite");
     } finally {
@@ -192,7 +229,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
             role="dialog"
             aria-modal="true"
             aria-labelledby="add-connection-title"
-            className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100vh-2rem)] w-auto max-w-[500px] -translate-y-1/2 overflow-y-auto rounded-[28px] md:inset-x-0"
+            className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100vh-2rem)] w-auto max-w-[620px] -translate-y-1/2 overflow-y-auto rounded-[28px] md:inset-x-0"
             style={{
               background: "linear-gradient(165deg, rgba(255,255,255,0.74) 0%, rgba(245,233,220,0.5) 100%)",
               border: "1px solid rgba(255,255,255,0.88)",
@@ -229,9 +266,9 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               }}
             >
               {([
-                { key: "search" as Tab, icon: Search, label: "Search User" },
-                { key: "invite" as Tab, icon: Mail, label: "Email Invite" },
-                { key: "qr" as Tab, icon: QrCode, label: "Share Link" },
+                { key: "search" as Tab, icon: Search, label: "Search" },
+                { key: "invite" as Tab, icon: Mail, label: "Add User" },
+                { key: "qr" as Tab, icon: QrCode, label: "Share QR" },
               ]).map(({ key, icon: Icon, label: tabLabel }) => (
                 <button
                   key={key}
@@ -254,7 +291,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               {tab === "search" ? (
                 <div className="space-y-3">
                   <p className="text-[12px]" style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}>
-                    Search by name or phone number first. If they are already on Go Two, send them a direct connection invite.
+                    Search by email, phone, or username first. If they are already on Go Two, send them a direct connection invite.
                   </p>
 
                   <div>
@@ -262,7 +299,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                       className="text-[10px] font-semibold uppercase tracking-wider mb-1 block"
                       style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
                     >
-                      Name or Phone
+                      Email, Phone, or Username
                     </label>
                     <div className="flex gap-2">
                       <input
@@ -274,7 +311,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                             handleSearch();
                           }
                         }}
-                        placeholder="Search by name or phone"
+                        placeholder="Search by email, phone, or username"
                         className="surface-field w-full px-3.5 py-2.5 rounded-2xl text-[14px] outline-none transition-all"
                         style={{
                           color: "var(--swatch-teal)",
@@ -300,7 +337,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                       </div>
                     ) : searchQuery.trim() && searchResults.length === 0 ? (
                       <div className="surface-pill rounded-2xl px-3.5 py-3 text-[12px]" style={{ color: "var(--swatch-antique-coin)" }}>
-                        No user found. Use Email Invite if they are not on Go Two yet.
+                        No user found. Use Add User if they are not on Go Two yet.
                       </div>
                     ) : (
                       searchResults.map((result) => (
@@ -337,32 +374,80 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               ) : tab === "invite" ? (
                 <div className="space-y-3">
                   <p className="text-[12px]" style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}>
-                    Enter their email to send a connection invite.
+                    Add their email, phone, or username. If they are not on Go Two yet, we will generate an invite link for you to send.
                   </p>
 
-                  <div>
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <div>
                     <label
                       className="text-[10px] font-semibold uppercase tracking-wider mb-1 block"
                       style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
                     >
                       Email Address
                     </label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="partner@email.com"
-                      className="surface-field w-full px-3.5 py-2.5 rounded-2xl text-[14px] outline-none transition-all"
-                      style={{
-                        color: "var(--swatch-teal)",
-                        fontFamily: "'Jost', sans-serif",
-                      }}
-                    />
+                      <div className="relative">
+                        <AtSign className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--swatch-text-light)" }} />
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="name@email.com"
+                          className="surface-field w-full rounded-2xl py-2.5 pr-3.5 pl-9 text-[14px] outline-none transition-all"
+                          style={{
+                            color: "var(--swatch-teal)",
+                            fontFamily: "'Jost', sans-serif",
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label
+                        className="text-[10px] font-semibold uppercase tracking-wider mb-1 block"
+                        style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
+                      >
+                        Phone
+                      </label>
+                      <div className="relative">
+                        <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--swatch-text-light)" }} />
+                        <input
+                          type="tel"
+                          value={invitePhone}
+                          onChange={(e) => setInvitePhone(e.target.value)}
+                          placeholder="(555) 555-5555"
+                          className="surface-field w-full rounded-2xl py-2.5 pr-3.5 pl-9 text-[14px] outline-none transition-all"
+                          style={{
+                            color: "var(--swatch-teal)",
+                            fontFamily: "'Jost', sans-serif",
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label
+                        className="text-[10px] font-semibold uppercase tracking-wider mb-1 block"
+                        style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
+                      >
+                        Username
+                      </label>
+                      <div className="relative">
+                        <UserPlus className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--swatch-text-light)" }} />
+                        <input
+                          value={inviteUsername}
+                          onChange={(e) => setInviteUsername(e.target.value)}
+                          placeholder="@abby"
+                          className="surface-field w-full rounded-2xl py-2.5 pr-3.5 pl-9 text-[14px] outline-none transition-all"
+                          style={{
+                            color: "var(--swatch-teal)",
+                            fontFamily: "'Jost', sans-serif",
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
 
                   <button
                     onClick={handleSendInvite}
-                    disabled={!email.trim() || sending}
+                    disabled={(!email.trim() && !invitePhone.trim() && !inviteUsername.trim()) || sending}
                     className="surface-button-primary w-full flex items-center justify-center gap-2 py-3 rounded-full text-[13px] font-semibold transition-all active:scale-[0.98] disabled:opacity-50"
                     style={{
                       background: "var(--swatch-cedar-grove)",
@@ -371,7 +456,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                     }}
                   >
                     <Send className="w-4 h-4" />
-                    {sending ? "Sending..." : "Send Invite"}
+                    {sending ? "Sending..." : "Send Invite Link"}
                   </button>
                 </div>
               ) : (

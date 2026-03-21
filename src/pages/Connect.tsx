@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 const Connect = () => {
   const [searchParams] = useSearchParams();
   const inviteId = searchParams.get("invite");
+  const token = searchParams.get("token");
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -18,6 +19,31 @@ const Connect = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!authLoading && user && token) {
+      setLinking(true);
+      supabase.functions
+        .invoke("collaborations", {
+          body: { action: "link-by-token", token },
+        })
+        .then(({ data, error }) => {
+          setLinking(false);
+          if (error || data?.error) {
+            const msg = data?.error || error?.message || "Failed to connect";
+            if (msg === "Already connected" || data?.status === "already_connected") {
+              toast({ title: "Already Connected", description: "You're already linked with this person." });
+            } else {
+              setError(msg);
+            }
+          } else if (data?.status === "pending_exists") {
+            toast({ title: "Invite Pending", description: "A connection invite is already pending." });
+          } else {
+            toast({ title: "Invite Sent", description: "Your connection invite has been sent." });
+          }
+          navigate("/dashboard/settings");
+        });
+      return;
+    }
+
     if (!authLoading && user && inviteId && inviteId !== user.id) {
       setLinking(true);
       supabase.functions
@@ -39,11 +65,14 @@ const Connect = () => {
           navigate("/dashboard/settings");
         });
     }
-  }, [user, inviteId, authLoading, navigate, toast]);
+  }, [user, inviteId, token, authLoading, navigate, toast]);
 
   const storeInviteAndGo = (path: string) => {
     if (inviteId) {
       localStorage.setItem("gotwo_invite", inviteId);
+    }
+    if (token) {
+      localStorage.setItem("gotwo_invite_token", token);
     }
     navigate(path);
   };
@@ -60,7 +89,7 @@ const Connect = () => {
   }
 
   // Show the full invite page design even without an invite param (for design preview)
-  const displayInviteId = inviteId || "preview";
+  const hasInvite = Boolean(inviteId || token);
 
   return (
     <div className="landing-page min-h-screen overflow-hidden relative">
@@ -103,7 +132,7 @@ const Connect = () => {
                 You've Been Invited
               </h1>
               <p className="text-lg md:text-xl" style={{ color: "var(--swatch-antique-coin)" }}>
-                Someone wants to connect with you on{" "}
+                {hasInvite ? "Someone wants to connect with you on " : "Previewing the connection invite page for "}
                 <span className="logo-text text-2xl md:text-3xl">
                   <span className="go">Go</span>
                   <span className="two">Two</span>
