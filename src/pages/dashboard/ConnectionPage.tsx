@@ -360,7 +360,7 @@ export default function ConnectionPage() {
             .eq("connection_user_id", user.id)
         : Promise.resolve({ data: [] }),
       partnerId
-        ? supabase
+        ? (supabase as any)
             .from("shared_profile_fields")
             .select("id, field_key, is_shared")
             .eq("couple_id", couple.id)
