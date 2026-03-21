@@ -417,7 +417,7 @@ const DashboardHome = () => {
                 p_connection_user_id: user.id,
               });
 
-              return ((Array.isArray(data) ? data : []) as unknown as SharedEntryRecord[]).filter(
+              return ((Array.isArray(data) ? data : []) as any[]).filter(
                 (row) =>
                   row.group_name?.toLowerCase().includes(query.toLowerCase()) ||
                   row.entry_name?.toLowerCase().includes(query.toLowerCase())
