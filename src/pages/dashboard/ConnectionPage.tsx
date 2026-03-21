@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Clock3, Lock, PencilLine, RefreshCw, Sparkles, Tag } from "lucide-react";
+import { ArrowLeft, Clock3, Lock, RefreshCw, Sparkles, Tag } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -275,11 +275,9 @@ export default function ConnectionPage() {
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(true);
-  const [savingLabel, setSavingLabel] = useState(false);
   const [sharingBusy, setSharingBusy] = useState(false);
   const [cardSearch, setCardSearch] = useState("");
   const [connection, setConnection] = useState<ConnectionRecord | null>(null);
-  const [labelDraft, setLabelDraft] = useState("");
   const [connectionFeedRows, setConnectionFeedRows] = useState<ConnectionFeedRow[]>([]);
   const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null; birthday: string | null; anniversary: string | null } | null>(null);
   const [myEntries, setMyEntries] = useState<EntryRecord[]>([]);
@@ -315,7 +313,7 @@ export default function ConnectionPage() {
 
     const isInviter = couple.inviter_id === user.id;
     const partnerId = isInviter ? couple.invitee_id : couple.inviter_id;
-    const fallbackName = couple.display_label || (couple.invitee_email ? couple.invitee_email.split("@")[0] : "Connection");
+    const fallbackName = couple.invitee_email ? couple.invitee_email.split("@")[0] : "Connection";
 
     const [
       { data: profileRows },
@@ -425,18 +423,17 @@ export default function ConnectionPage() {
     const cardRows = (incomingSharedCardRows || []) as SharedCardEntryRow[];
     const ownEntries = Array.isArray(ownEntryRows) ? (ownEntryRows as EntryRecord[]) : [];
 
-    const resolvedName = couple.display_label || profileData?.display_name || fallbackName;
+    const resolvedName = profileData?.display_name || couple.display_label || fallbackName;
 
     setConnection({
       id: couple.id,
       name: resolvedName,
-      image: couple.photo_url || profileData?.avatar_url || "",
+      image: profileData?.avatar_url || couple.photo_url || "",
       email: couple.invitee_email || "",
       status: couple.status,
       partnerId,
       updatedAt: couple.updated_at,
     });
-    setLabelDraft(resolvedName);
     setProfile(profileData || null);
     setIncomingProfileFields({
       display_name: !!incomingFieldRows.find((row) => row.field_key === "display_name" && row.is_shared),
@@ -498,7 +495,7 @@ export default function ConnectionPage() {
     const loadConnectionImage = async () => {
       const resolved = await resolveStorageUrl(connection?.image);
       if (!cancelled) {
-        setResolvedConnectionImage(resolved || "");
+        setResolvedConnectionImage(resolved || connection?.image || "");
       }
     };
 
@@ -563,27 +560,6 @@ export default function ConnectionPage() {
     () => buildAiSuggestions(connection?.name || "They", visibleFeedItems, profile),
     [connection?.name, profile, visibleFeedItems],
   );
-
-  const handleSaveLabel = useCallback(async () => {
-    if (!connection || !labelDraft.trim() || labelDraft.trim() === connection.name) return;
-
-    setSavingLabel(true);
-    const nextLabel = labelDraft.trim();
-    const { error } = await supabase
-      .from("couples")
-      .update({ display_label: nextLabel })
-      .eq("id", connection.id);
-
-    if (error) {
-      toast({ title: "Could not save label", description: error.message, variant: "destructive" });
-      setSavingLabel(false);
-      return;
-    }
-
-    setConnection((current) => current ? { ...current, name: nextLabel } : current);
-    toast({ title: "Connection label updated" });
-    setSavingLabel(false);
-  }, [connection, labelDraft, toast]);
 
   const handleToggleOutgoingProfileField = useCallback(async (key: ProfileFieldKey, nextValue: boolean) => {
     if (!user || !connection || !connection.partnerId) return;
@@ -859,6 +835,19 @@ export default function ConnectionPage() {
                 <h1 className="mt-2 text-[38px] leading-none md:text-[46px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                   {connection.name}
                 </h1>
+                <div className="mt-3">
+                  <span
+                    className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.14em]"
+                    style={{
+                      fontFamily: "'Jost', sans-serif",
+                      background: connection.status === "accepted" ? "rgba(45,104,112,0.16)" : "rgba(217,101,79,0.18)",
+                      border: connection.status === "accepted" ? "1px solid rgba(45,104,112,0.3)" : "1px solid rgba(217,101,79,0.36)",
+                      color: connection.status === "accepted" ? "var(--swatch-teal)" : "var(--swatch-cedar-grove)",
+                    }}
+                  >
+                    {connection.status}
+                  </span>
+                </div>
                 <p className="mt-3 max-w-3xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                   Their favorites, styles, food signals, and everyday specifics live here, filtered to what they have chosen to share with you.
                 </p>
@@ -889,52 +878,25 @@ export default function ConnectionPage() {
 
         <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.28fr)_minmax(320px,0.72fr)]">
           <div className="space-y-5">
-            <section
-              className="rounded-[28px] p-4 md:p-5"
-              style={{
-                background: "linear-gradient(180deg, rgba(255,255,255,0.68) 0%, rgba(247,239,229,0.72) 100%)",
-                border: "1px solid rgba(255,255,255,0.84)",
-              }}
-            >
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                    Relationship label
-                  </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-3">
-                    <label className="min-w-[240px] flex-1">
-                      <span className="sr-only">Connection label</span>
-                      <input
-                        value={labelDraft}
-                        onChange={(event) => setLabelDraft(event.target.value)}
-                        onBlur={handleSaveLabel}
-                        className="w-full rounded-[18px] border px-4 py-3 text-sm outline-none"
-                        style={{
-                          background: "rgba(255,255,255,0.72)",
-                          borderColor: "rgba(45,104,112,0.14)",
-                          color: "var(--swatch-teal)",
-                          fontFamily: "'Jost', sans-serif",
-                        }}
-                      />
-                    </label>
-                    <button
-                      onClick={handleSaveLabel}
-                      disabled={savingLabel || !labelDraft.trim() || labelDraft.trim() === connection.name}
-                      className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
-                      style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "var(--swatch-teal)" }}
-                    >
-                      <PencilLine className="h-3.5 w-3.5" />
-                      {savingLabel ? "Saving" : "Save label"}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-2 text-sm" style={{ color: "var(--swatch-antique-coin)" }}>
-                  <p>Status: <span style={{ color: "var(--swatch-teal)" }}>{connection.status}</span></p>
-                  <p>Updated: <span style={{ color: "var(--swatch-teal)" }}>{formatRelativeDateLabel(connection.updatedAt)}</span></p>
-                </div>
-              </div>
-            </section>
+            {connection.status !== "accepted" && (
+              <section
+                className="rounded-[24px] p-4 md:p-5"
+                style={{
+                  background: "linear-gradient(160deg, rgba(217,101,79,0.22) 0%, rgba(255,255,255,0.84) 100%)",
+                  border: "1px solid rgba(217,101,79,0.44)",
+                }}
+              >
+                <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  Status
+                </p>
+                <p className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-cedar-grove)" }}>
+                  Pending Acceptance
+                </p>
+                <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-cedar-grove)" }}>
+                  This connection must accept your invite before connection type and sharing controls can be finalized.
+                </p>
+              </section>
+            )}
 
             <section
               className="rounded-[28px] p-4 md:p-5"
@@ -948,11 +910,11 @@ export default function ConnectionPage() {
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                     Connection type
                   </p>
-                  <h2 className="mt-2 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                    Tell the system who this connection is.
+                  <h2 className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    Connection Type
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                    This controls occasion relevance behind the scenes so gifting logic treats a significant other differently than a parent, friend, or coworker.
+                    Choose how Go Two should treat this relationship in gift and occasion logic.
                   </p>
                 </div>
 
@@ -984,7 +946,7 @@ export default function ConnectionPage() {
                   <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
                     {editableConnectionKinds.find((item) => item.key === connectionKind)?.description}
                     {savingConnectionKind ? " Saving..." : ""}
-                    {connection.status !== "accepted" ? " Available after connection is accepted." : ""}
+                    {connection.status !== "accepted" ? " Available after acceptance." : ""}
                   </p>
                   {connection.status !== "accepted" && (
                     <div
