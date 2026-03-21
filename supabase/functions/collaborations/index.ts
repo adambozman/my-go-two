@@ -236,6 +236,9 @@ Deno.serve(async (req) => {
       "send-invite": "send-invite-email",
       "send-invite-link": "send-invite-email",
       "search-user": "search-users",
+      "search": "search-users",
+      "discover-users": "search-users",
+      "search-discoverable-users": "search-users",
       "create-connection": "create-connection-request",
       "create-share-token": "create-connection-share-token",
       "create-share-link-token": "create-connection-share-token",
@@ -244,7 +247,7 @@ Deno.serve(async (req) => {
       "get-pending-invites": "get-pending",
       "link-by-invite": "link-by-inviter",
     };
-    const actionName = actionAliases[rawAction] ?? rawAction;
+    const actionName = actionAliases[rawAction] ?? (rawAction || (query ? "search-users" : rawAction));
 
     // Helper to get display name
     const getDisplayName = async (userId: string) => {

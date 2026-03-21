@@ -168,15 +168,27 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
 
       const aggregateResults = new Map<string, SearchResult>();
       for (const queryPart of queries) {
-        const { data, error } = await (supabase.rpc as any)("search_discoverable_users", {
-          p_query: queryPart,
-          p_limit: 10,
+        let rows: any[] = [];
+
+        const { data: edgeData, error: edgeError } = await supabase.functions.invoke("collaborations", {
+          body: { action: "search-user", query: queryPart },
         });
-        if (error) {
-          throw error;
+
+        if (!edgeError) {
+          rows = Array.isArray(edgeData?.users) ? edgeData.users : [];
+        } else {
+          const { data: rpcData, error: rpcError } = await (supabase.rpc as any)("search_discoverable_users", {
+            p_query: queryPart,
+            p_limit: 10,
+          });
+
+          if (rpcError) {
+            throw edgeError;
+          }
+
+          rows = Array.isArray(rpcData) ? rpcData : [];
         }
 
-        const rows = Array.isArray(data) ? data : [];
         for (const row of rows) {
           if (!row?.user_id) continue;
           if (!aggregateResults.has(row.user_id)) {
