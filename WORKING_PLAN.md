@@ -115,6 +115,7 @@ Tasks:
 - Finish the profile/connection photo flow using private storage with explicit sharing rules
 - Migrate legacy public Supabase image URLs to private-safe storage refs
 - Re-test connection feed and partner page against actual privacy rules
+- Run live Lovable QA on food-only, all-shared, and mixed-shared connection scenarios
 - Replace broad section sharing with connection-specific sharing:
   - `shared_card_entries` for per-product-card sharing
   - `shared_profile_fields` for per-field profile/calendar sharing
