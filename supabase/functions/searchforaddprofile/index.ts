@@ -327,8 +327,8 @@ async function searchUsers(
     ]);
 
     const authUsersById = await findAuthUsersByIds(adminClient, candidateIds);
-    const profilesByUserId = new Map((profiles ?? []).map((row) => [row.user_id, row]));
-    const settingsByUserId = new Map((settings ?? []).map((row) => [row.user_id, row]));
+    const profilesByUserId = new Map((profiles ?? []).map((row: any) => [row.user_id, row]));
+    const settingsByUserId = new Map((settings ?? []).map((row: any) => [row.user_id, row]));
 
     for (const userId of candidateIds) {
       if (combinedById.has(userId) || userId === requesterId) continue;
