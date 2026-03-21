@@ -9,6 +9,9 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
+    "autopush:setup": "powershell -ExecutionPolicy Bypass -File scripts/setup-autopush.ps1",
+    "autopush:setup:all": "powershell -ExecutionPolicy Bypass -File scripts/setup-autopush.ps1 -AllBranches",
+    "autopush:disable": "git config --unset core.hooksPath",
     "generate:seed": "python3 scripts/generate-seed.py",
     "test": "vitest run",
     "test:watch": "vitest"

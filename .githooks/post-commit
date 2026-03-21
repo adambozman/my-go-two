@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Auto-push commits after commit creation.
+# Default behavior: only pushes main.
+
+branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) || exit 0
+[ -z "$branch" ] && exit 0
+
+remote=$(git config hooks.autopush.remote 2>/dev/null)
+[ -z "$remote" ] && remote="origin"
+
+if ! git remote get-url "$remote" >/dev/null 2>&1; then
+  exit 0
+fi
+
+all_branches=$(git config --bool hooks.autopush.allBranches 2>/dev/null)
+if [ "$branch" != "main" ] && [ "$all_branches" != "true" ]; then
+  exit 0
+fi
+
+# If an upstream exists and we are not ahead, skip push.
+if git rev-parse --verify --quiet "@{u}" >/dev/null 2>&1; then
+  ahead=$(git rev-list --count "@{u}..HEAD" 2>/dev/null)
+  [ "${ahead:-0}" -eq 0 ] && exit 0
+fi
+
+echo "[auto-push] Pushing ${branch} to ${remote}..."
+git push "$remote" "$branch"
