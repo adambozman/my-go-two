@@ -40,6 +40,12 @@ const getGenderAccent = (_gender?: string) => ({
   bgStrong: "rgba(45, 104, 112, 0.34)",
 });
 
+const normalizeOptionalDate = (value: string | string[] | undefined) => {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const trimmed = typeof raw === "string" ? raw.trim() : "";
+  return /^\d{4}-\d{2}-\d{2}$/.test(trimmed) ? trimmed : null;
+};
+
 const Onboarding = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -158,8 +164,14 @@ const Onboarding = () => {
         const identityAnswer = profileAnswerData.identity;
         const rawGender = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
         const gender = normalizeGender(rawGender);
+        const birthday = normalizeOptionalDate(profileAnswerData.birthday);
+        const anniversary = normalizeOptionalDate(profileAnswerData.anniversary);
 
-        await supabase.from("profiles").update({ gender }).eq("user_id", user.id);
+        await supabase.from("profiles").update({
+          gender,
+          birthday,
+          anniversary,
+        }).eq("user_id", user.id);
         await persistProfileAnswers(profileAnswerData);
       }
 
@@ -672,10 +684,11 @@ const Onboarding = () => {
                 </div>
               )}
 
-              {currentQuestion.type === "free-input" && (
+              {(currentQuestion.type === "free-input" || currentQuestion.type === "date-input") && (
                 <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-start pt-4">
                   <div className="card-design-neumorph p-6" style={{ borderRadius: "1.2rem" }}>
                     <Input
+                      type={currentQuestion.type === "date-input" ? "date" : "text"}
                       value={currentFreeText}
                       onChange={(event) => setFreeText(currentQuestion.id, event.target.value)}
                       placeholder={currentQuestion.placeholder}
@@ -683,7 +696,9 @@ const Onboarding = () => {
                       maxLength={500}
                     />
                     <p className="mt-3 text-center text-xs text-muted-foreground">
-                      Separate multiple items with commas
+                      {currentQuestion.type === "date-input"
+                        ? "Optional. Leave blank if you do not want to save a date."
+                        : "Separate multiple items with commas"}
                     </p>
                   </div>
                 </div>
@@ -709,7 +724,7 @@ const Onboarding = () => {
               )}
             </Button>
           </div>
-          {selectedForQuestion.length > 0 && currentQuestion.type !== "free-input" && (
+          {selectedForQuestion.length > 0 && currentQuestion.type !== "free-input" && currentQuestion.type !== "date-input" && (
             <p className="mt-2 text-center text-xs text-muted-foreground">
               {selectedForQuestion.length} selected
             </p>

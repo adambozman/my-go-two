@@ -7,7 +7,7 @@ export interface QuestionOption {
   gender?: ("male" | "female" | "non-binary")[]; // if set, only show for these genders
 }
 
-export type QuestionType = "image-grid" | "pill-select" | "single-select" | "free-input";
+export type QuestionType = "image-grid" | "pill-select" | "single-select" | "free-input" | "date-input";
 
 export interface OnboardingQuestion {
   id: string;

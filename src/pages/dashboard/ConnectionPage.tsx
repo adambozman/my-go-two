@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Clock3, Lock, RefreshCw, Sparkles, Tag } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
@@ -119,6 +120,17 @@ const acceptanceRequiredKinds = new Set<ConnectionKind>(["significant_other", "w
 
 const shellCardStyle = {
   boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
+} as const;
+
+const frostedPanelStyle = {
+  ...shellCardStyle,
+  background: "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(247,239,229,0.72) 100%)",
+  border: "1px solid rgba(255,255,255,0.84)",
+} as const;
+
+const frostedInsetStyle = {
+  background: "rgba(255,255,255,0.56)",
+  border: "1px solid rgba(255,255,255,0.8)",
 } as const;
 
 const emptyProfileFieldState: ProfileFieldState = {
@@ -609,6 +621,8 @@ export default function ConnectionPage() {
     () => buildAiSuggestions(connection?.name || "They", visibleFeedItems, profile),
     [connection?.name, profile, visibleFeedItems],
   );
+  const connectionAccepted = connection?.status === "accepted";
+  const canConfigureOutgoing = Boolean(connection?.partnerId);
 
   const handleToggleOutgoingProfileField = useCallback(async (key: ProfileFieldKey, nextValue: boolean) => {
     if (!user || !connection || !connection.partnerId) return;
@@ -865,60 +879,26 @@ export default function ConnectionPage() {
 
   return (
     <div className="mx-auto max-w-[1480px] px-4 pb-8 pt-3 md:px-6">
-      <section
-        className="overflow-hidden rounded-[30px] p-5 md:p-6"
-        style={{
-          ...shellCardStyle,
-          background: "linear-gradient(165deg, rgba(255,255,255,0.78) 0%, rgba(245,233,220,0.58) 100%)",
-          border: "1px solid rgba(255,255,255,0.86)",
-        }}
-      >
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0">
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
-              style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Back home
-            </button>
-
-            <div className="mt-4 flex flex-wrap items-center gap-4">
-              <div
-                className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border"
-                style={{ borderColor: "rgba(45,104,112,0.2)", background: "linear-gradient(135deg, rgba(45,104,112,0.88), rgba(30,74,82,0.88))" }}
-              >
-                {resolvedConnectionImage ? (
-                  <img src={resolvedConnectionImage} alt={connection.name} className="h-full w-full object-cover" />
-                ) : (
-                  <span className="text-2xl font-semibold text-white">{connection.name[0]?.toUpperCase() || "?"}</span>
-                )}
-              </div>
-
-              <div className="min-w-0">
-                <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Connection Feed
-                </p>
-                <h1 className="mt-2 text-[38px] leading-none md:text-[46px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                  {connection.name}
-                </h1>
-                <p className="mt-3 max-w-3xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                  Their favorites, styles, food signals, and everyday specifics live here, filtered to what they have chosen to share with you.
-                </p>
-              </div>
-            </div>
-          </div>
+      <div className="space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
+            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back home
+          </button>
 
           <div className="flex flex-wrap gap-2">
             <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
               {visibleFeedItems.length} shared cards
             </div>
             <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
-              {incomingEnabled.length} shared profile fields
+              {incomingEnabled.length} profile fields
             </div>
             <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
-              {incomingDerivedEnabled.length} shared derived features
+              {incomingDerivedEnabled.length} derived signals
             </div>
             <button
               onClick={loadConnection}
@@ -931,431 +911,96 @@ export default function ConnectionPage() {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.28fr)_minmax(320px,0.72fr)]">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.22fr)_minmax(320px,0.78fr)]">
+          <section className="rounded-[34px] p-6 md:p-7" style={frostedPanelStyle}>
+            <div className="flex flex-wrap items-start justify-between gap-5">
+              <div className="flex min-w-0 items-center gap-4">
+                <div
+                  className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border"
+                  style={{ borderColor: "rgba(45,104,112,0.2)", background: "linear-gradient(135deg, rgba(45,104,112,0.88), rgba(30,74,82,0.88))" }}
+                >
+                  {resolvedConnectionImage ? (
+                    <img src={resolvedConnectionImage} alt={connection.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-semibold text-white">{connection.name[0]?.toUpperCase() || "?"}</span>
+                  )}
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Go Two / Connection feed
+                  </p>
+                  <h1 className="mt-2 text-[40px] leading-none md:text-[54px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    {connection.name}
+                  </h1>
+                  <p className="mt-3 max-w-2xl text-sm leading-relaxed md:text-[15px]" style={{ color: "var(--swatch-antique-coin)" }}>
+                    Their favorites, style signals, food details, and everyday specifics live here, filtered to exactly what they chose to let through.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid min-w-[210px] gap-3 sm:grid-cols-2 xl:grid-cols-1">
+                <div className="rounded-[26px] px-5 py-4" style={frostedInsetStyle}>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Shared with you
+                  </p>
+                  <p className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    {visibleFeedItems.length}
+                  </p>
+                  <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                    Feed cards currently visible in this connection.
+                  </p>
+                </div>
+
+                <div className="rounded-[26px] px-5 py-4" style={frostedInsetStyle}>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    You are sharing
+                  </p>
+                  <p className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    {sharedCardEntryIds.length + outgoingEnabled.length + outgoingDerivedEnabled.length}
+                  </p>
+                  <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                    Signals, fields, and cards set for this person.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
           <div className="space-y-5">
             {connection.status !== "accepted" && (
               <section
-                className="rounded-[24px] p-4 md:p-5"
+                className="rounded-[28px] px-5 py-4"
                 style={{
-                  background: "linear-gradient(160deg, rgba(217,101,79,0.22) 0%, rgba(255,255,255,0.84) 100%)",
-                  border: "1px solid rgba(217,101,79,0.44)",
+                  ...shellCardStyle,
+                  background: "linear-gradient(160deg, rgba(217,101,79,0.18) 0%, rgba(255,255,255,0.82) 100%)",
+                  border: "1px solid rgba(217,101,79,0.34)",
                 }}
               >
-                <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Status
-                </p>
-                <p className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-cedar-grove)" }}>
-                  Pending Acceptance
-                </p>
-                <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-cedar-grove)" }}>
-                  Romantic types require acceptance first. You can still use Friend, Coworker, Parent, Family, or Custom right now.
-                </p>
-              </section>
-            )}
-
-            <section
-              className="rounded-[28px] p-4 md:p-5"
-              style={{
-                background: "linear-gradient(180deg, rgba(255,255,255,0.68) 0%, rgba(247,239,229,0.72) 100%)",
-                border: "1px solid rgba(255,255,255,0.84)",
-              }}
-            >
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                    Connection type
-                  </p>
-                  <h2 className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                    Connection Type
-                  </h2>
-                  <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                    Choose how Go Two should treat this relationship in gift and occasion logic.
-                  </p>
-                </div>
-
-                <div className="min-w-[240px]">
-                  <Select
-                    value={connectionKind}
-                    onValueChange={(value) => handleConnectionKindChange(value as ConnectionKind)}
-                    disabled={savingConnectionKind}
-                  >
-                    <SelectTrigger
-                      className="rounded-[18px] border px-4 py-3 text-sm"
-                      style={{
-                        background: "rgba(255,255,255,0.72)",
-                        borderColor: "rgba(45,104,112,0.14)",
-                        color: "var(--swatch-teal)",
-                        fontFamily: "'Jost', sans-serif",
-                      }}
-                    >
-                      <SelectValue placeholder="Select connection type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {editableConnectionKinds.map((item) => (
-                        <SelectItem key={item.key} value={item.key}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
-                    {editableConnectionKinds.find((item) => item.key === connectionKind)?.description}
-                    {savingConnectionKind ? " Saving..." : ""}
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {feedSections.length === 0 ? (
-              <section
-                className="rounded-[28px] p-5"
-                style={{
-                  background: "linear-gradient(180deg, rgba(255,255,255,0.66) 0%, rgba(248,240,230,0.72) 100%)",
-                  border: "1px solid rgba(255,255,255,0.84)",
-                }}
-              >
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Shared feed
-                </p>
-                <h2 className="mt-2 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                  Nothing is landing here yet.
-                </h2>
-                <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                  This page is ready for the moment {connection.name} shares product cards, profile fields, or derived features with you.
-                </p>
-              </section>
-            ) : (
-              feedSections.map((section) => (
-                <section
-                  key={section.key}
-                  className="rounded-[28px] p-4 md:p-5"
-                  style={{
-                    background: "linear-gradient(180deg, rgba(255,255,255,0.66) 0%, rgba(248,240,230,0.72) 100%)",
-                    border: "1px solid rgba(255,255,255,0.84)",
-                  }}
-                >
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    {section.config.eyebrow}
-                  </p>
-                  <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
-                    <div>
-                      <h2 className="text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                        {section.config.label}
-                      </h2>
-                      <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                        {section.config.description}
-                      </p>
-                    </div>
-                    <div className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.82)" }}>
-                      {section.items.length} items
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid gap-3 md:grid-cols-2">
-                    {section.items.map((item) => (
-                      <article
-                        key={item.id}
-                        className="overflow-hidden rounded-[24px] border"
-                        style={{ background: "rgba(255,255,255,0.64)", borderColor: "rgba(255,255,255,0.82)" }}
-                      >
-                        {(resolvedFeedImages[item.imageUrl || ""] || item.imageUrl) ? (
-                          <div className="h-44 overflow-hidden">
-                            <img src={resolvedFeedImages[item.imageUrl || ""] || item.imageUrl || ""} alt={item.title} className="h-full w-full object-cover" />
-                          </div>
-                        ) : (
-                          <div
-                            className="flex h-44 items-end p-4"
-                            style={{ background: "linear-gradient(145deg, rgba(45,104,112,0.2), rgba(245,233,220,0.5))" }}
-                          >
-                            <span className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "rgba(30,74,82,0.76)" }}>
-                              {section.config.eyebrow}
-                            </span>
-                          </div>
-                        )}
-
-                        <div className="p-4">
-                          <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                            {item.subtitle}
-                          </p>
-                          <h3 className="mt-2 text-[24px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                            {item.title}
-                          </h3>
-
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {item.tags.map((tag) => (
-                              <span
-                                key={`${item.id}-${tag}`}
-                                className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.12em]"
-                                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.82)" }}
-                              >
-                                <Tag className="h-3 w-3" />
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-
-                          <div className="mt-4 flex items-center gap-2 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
-                            <Clock3 className="h-3.5 w-3.5" />
-                            <span>{formatRelativeDateLabel(item.updatedAt)}</span>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </section>
-              ))
-            )}
-          </div>
-
-          <aside className="space-y-5">
-            <section
-              className="rounded-[28px] p-5"
-              style={{
-                background: "linear-gradient(180deg, rgba(255,255,255,0.68) 0%, rgba(247,239,229,0.72) 100%)",
-                border: "1px solid rgba(255,255,255,0.84)",
-              }}
-            >
-              <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                AI for {connection.name}
-              </p>
-              <h2 className="mt-2 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                Suggestions shaped to this person.
-              </h2>
-              <div className="mt-4 space-y-3">
-                {incomingDerivedFeatures.for_you_recommendations ? (
-                  sharedRecommendations?.products?.length ? (
-                    sharedRecommendations.products.slice(0, 3).map((product, index) => (
-                      <div
-                        key={`${product.brand || "brand"}-${product.name || index}`}
-                        className="rounded-[22px] px-4 py-4"
-                        style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
-                      >
-                        <div className="flex items-start gap-3">
-                          <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
-                            <Sparkles className="h-4 w-4" />
-                          </span>
-                          <div>
-                            <p className="text-[19px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                              {product.name || "Recommendation"}
-                            </p>
-                            <p className="mt-2 text-xs uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                              {product.brand || "For You"}
-                            </p>
-                            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                              {product.hook || product.why || "Shared from their latest For You recommendations."}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    aiSuggestions.map((suggestion, index) => (
-                      <div
-                        key={`${suggestion.title}-${index}`}
-                        className="rounded-[22px] px-4 py-4"
-                        style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
-                      >
-                        <div className="flex items-start gap-3">
-                          <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
-                            <Sparkles className="h-4 w-4" />
-                          </span>
-                          <div>
-                            <p className="text-[19px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                              {suggestion.title}
-                            </p>
-                            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                              {suggestion.body}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )
-                ) : (
-                  <div
-                    className="rounded-[22px] px-4 py-4"
-                    style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
-                  >
-                    <p className="text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                      {connection.name} has not shared derived recommendations with you yet.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </section>
-
-            <section
-              className="rounded-[28px] p-5"
-              style={{
-                background: "linear-gradient(180deg, rgba(255,255,255,0.68) 0%, rgba(247,239,229,0.72) 100%)",
-                border: "1px solid rgba(255,255,255,0.84)",
-              }}
-            >
-              <div className="flex items-center gap-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
-                  <Lock className="h-4 w-4" />
-                </span>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    What you share with this connection
-                  </p>
-                  <h2 className="mt-1 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                    Control fields and cards directly.
-                  </h2>
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-4">
-                {editableProfileFields.map((field) => (
-                  <div key={field.key} className="flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{field.label}</p>
-                      <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
-                        {field.description}
-                      </p>
-                    </div>
-                    <Switch
-                      checked={outgoingProfileFields[field.key]}
-                      onCheckedChange={(checked) => handleToggleOutgoingProfileField(field.key, checked)}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-5 rounded-[22px] px-4 py-4" style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.8)" }}>
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                  Derived features
-                </p>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                  Share AI outputs like Your Vibe and recommendation results without sharing raw answers.
-                </p>
-
-                <div className="mt-4 space-y-4">
-                  {editableDerivedFeatures.map((feature) => (
-                    <div key={feature.key} className="flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{feature.label}</p>
-                        <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
-                          {feature.description}
-                        </p>
-                      </div>
-                      <Switch
-                        checked={outgoingDerivedFeatures[feature.key]}
-                        onCheckedChange={(checked) => handleToggleDerivedFeature(feature.key, checked)}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-5 rounded-[22px] px-4 py-4" style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.8)" }}>
-                <div className="flex flex-wrap items-end justify-between gap-3">
+                <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                      Product cards
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      Status
                     </p>
-                    <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                      Share one card, a few cards, or everything with one click.
+                    <p className="mt-2 text-[24px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-cedar-grove)" }}>
+                      Pending acceptance
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleBulkShare("share")}
-                      disabled={sharingBusy || myEntries.length === 0}
-                      className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
-                      style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "var(--swatch-teal)" }}
-                    >
-                      Share all
-                    </button>
-                    <button
-                      onClick={() => handleBulkShare("unshare")}
-                      disabled={sharingBusy || sharedCardEntryIds.length === 0}
-                      className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
-                      style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.84)" }}
-                    >
-                      Hide all
-                    </button>
-                  </div>
+                  <span className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.62)", border: "1px solid rgba(217,101,79,0.22)" }}>
+                    Draft sharing is on
+                  </span>
                 </div>
-
-                <label className="mt-4 block">
-                  <span className="sr-only">Search your product cards</span>
-                  <input
-                    value={cardSearch}
-                    onChange={(event) => setCardSearch(event.target.value)}
-                    placeholder="Search your product cards..."
-                    className="w-full rounded-[18px] border px-4 py-3 text-sm outline-none"
-                    style={{
-                      background: "rgba(255,255,255,0.72)",
-                      borderColor: "rgba(45,104,112,0.14)",
-                      color: "var(--swatch-teal)",
-                      fontFamily: "'Jost', sans-serif",
-                    }}
-                  />
-                </label>
-
-                <div className="mt-4 max-h-[340px] space-y-3 overflow-y-auto pr-1">
-                  {filteredMyEntries.map((entry) => {
-                    const isShared = sharedCardEntryIds.includes(entry.id);
-                    return (
-                      <div key={entry.id} className="flex items-start justify-between gap-4 rounded-[18px] px-4 py-3" style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.78)" }}>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{entry.entry_name}</p>
-                          <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
-                            {entry.group_name} · {entry.card_key?.split("__").pop() || "Product card"}
-                          </p>
-                        </div>
-                        <Switch
-                          checked={isShared}
-                          onCheckedChange={(checked) => handleToggleCardShare(entry, checked)}
-                        />
-                      </div>
-                    );
-                  })}
-                  {filteredMyEntries.length === 0 && (
-                    <p className="text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                      No product cards match this search yet.
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="mt-5 rounded-[22px] px-4 py-4" style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.8)" }}>
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                  Shared vibe
+                <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-cedar-grove)" }}>
+                  You can set what you plan to share now. It becomes visible to them after the connection is accepted.
                 </p>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                  {incomingDerivedFeatures.your_vibe && sharedVibe
-                    ? sharedVibe
-                    : `${connection.name} has not shared their vibe summary with you yet.`}
-                </p>
-              </div>
+              </section>
+            )}
 
-              <div className="mt-5 rounded-[22px] px-4 py-4" style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.8)" }}>
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                  Live now
-                </p>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                  {outgoingEnabled.length
-                    ? `${connection.name} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")}, ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"}, and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
-                    : sharedCardEntryIds.length || outgoingDerivedEnabled.length
-                      ? `${connection.name} can currently see ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"} and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
-                      : `You have not shared any fields, derived features, or product cards with ${connection.name} yet.`}
-                </p>
-              </div>
-            </section>
-
-            <section
-              className="rounded-[28px] p-5"
-              style={{
-                background: "linear-gradient(180deg, rgba(255,255,255,0.68) 0%, rgba(247,239,229,0.72) 100%)",
-                border: "1px solid rgba(255,255,255,0.84)",
-              }}
-            >
+            <section className="rounded-[30px] p-5 md:p-6" style={frostedPanelStyle}>
               <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 What they share with you
               </p>
-              <h2 className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+              <h2 className="mt-2 text-[32px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                 Open windows into their profile.
               </h2>
 
@@ -1388,8 +1033,19 @@ export default function ConnectionPage() {
                 )}
               </div>
 
+              <div className="mt-5 rounded-[24px] px-4 py-4" style={frostedInsetStyle}>
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  Shared vibe
+                </p>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  {incomingDerivedFeatures.your_vibe && sharedVibe
+                    ? sharedVibe
+                    : `${connection.name} has not shared their vibe summary with you yet.`}
+                </p>
+              </div>
+
               {(profile?.birthday || profile?.anniversary) && (
-                <div className="mt-5 rounded-[22px] px-4 py-4" style={{ background: "rgba(255,255,255,0.58)", border: "1px solid rgba(255,255,255,0.8)" }}>
+                <div className="mt-4 rounded-[24px] px-4 py-4" style={frostedInsetStyle}>
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                     Connection dates
                   </p>
@@ -1400,9 +1056,437 @@ export default function ConnectionPage() {
                 </div>
               )}
             </section>
+          </div>
+        </div>
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(340px,0.92fr)]">
+          <div className="space-y-5">
+            <section className="rounded-[34px] p-6 md:p-7" style={frostedPanelStyle}>
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    AI for {connection.name}
+                  </p>
+                  <h2 className="mt-2 max-w-2xl text-[38px] leading-none md:text-[46px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    Suggestions shaped to this person.
+                  </h2>
+                  <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                    Go Two pulls from shared recommendations, dates, and feed clues to keep your next move grounded in what actually fits them.
+                  </p>
+                </div>
+
+                <div className="rounded-[26px] px-5 py-4" style={frostedInsetStyle}>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    AI signals
+                  </p>
+                  <p className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    {incomingDerivedEnabled.length}
+                  </p>
+                  <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                    Shared derived features available to shape ideas.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 grid gap-3 md:grid-cols-2">
+                {incomingDerivedFeatures.for_you_recommendations ? (
+                  sharedRecommendations?.products?.length ? (
+                    sharedRecommendations.products.slice(0, 4).map((product, index) => (
+                      <div
+                        key={`${product.brand || "brand"}-${product.name || index}`}
+                        className="rounded-[24px] px-4 py-4"
+                        style={frostedInsetStyle}
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
+                            <Sparkles className="h-4 w-4" />
+                          </span>
+                          <div>
+                            <p className="text-[22px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                              {product.name || "Recommendation"}
+                            </p>
+                            <p className="mt-2 text-xs uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                              {product.brand || "For You"}
+                            </p>
+                            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                              {product.hook || product.why || "Shared from their latest For You recommendations."}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    aiSuggestions.map((suggestion, index) => (
+                      <div
+                        key={`${suggestion.title}-${index}`}
+                        className="rounded-[24px] px-4 py-4"
+                        style={frostedInsetStyle}
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
+                            <Sparkles className="h-4 w-4" />
+                          </span>
+                          <div>
+                            <p className="text-[22px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                              {suggestion.title}
+                            </p>
+                            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                              {suggestion.body}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )
+                ) : (
+                  <div className="rounded-[24px] px-5 py-5 md:col-span-2" style={frostedInsetStyle}>
+                    <p className="text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                      {connection.name} has not shared derived recommendations with you yet.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <section className="rounded-[34px] p-6 md:p-7" style={frostedPanelStyle}>
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Shared feed
+                  </p>
+                  <h2 className="mt-2 text-[38px] leading-none md:text-[44px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    What is landing here.
+                  </h2>
+                  <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                    Browse what they have let through for you, grouped by the kinds of details that actually help you shop, remember, and act.
+                  </p>
+                </div>
+
+                <div className="rounded-[24px] px-5 py-4" style={frostedInsetStyle}>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Sections open
+                  </p>
+                  <p className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    {feedSections.length}
+                  </p>
+                </div>
+              </div>
+
+              {feedSections.length === 0 ? (
+                <div className="mt-6 rounded-[26px] px-5 py-5" style={frostedInsetStyle}>
+                  <h3 className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    Nothing is landing here yet.
+                  </h3>
+                  <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                    This page is ready for the moment {connection.name} shares product cards, profile fields, or derived features with you.
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-6 space-y-5">
+                  {feedSections.map((section) => (
+                    <section
+                      key={section.key}
+                      className="rounded-[28px] p-4 md:p-5"
+                      style={frostedInsetStyle}
+                    >
+                      <div className="flex flex-wrap items-end justify-between gap-3">
+                        <div>
+                          <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                            {section.config.eyebrow}
+                          </p>
+                          <h3 className="mt-2 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                            {section.config.label}
+                          </h3>
+                          <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                            {section.config.description}
+                          </p>
+                        </div>
+                        <div className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.82)" }}>
+                          {section.items.length} items
+                        </div>
+                      </div>
+
+                      <div className="mt-4 grid gap-3 md:grid-cols-2">
+                        {section.items.map((item) => (
+                          <article
+                            key={item.id}
+                            className="overflow-hidden rounded-[24px] border"
+                            style={{ background: "rgba(255,255,255,0.66)", borderColor: "rgba(255,255,255,0.82)" }}
+                          >
+                            {(resolvedFeedImages[item.imageUrl || ""] || item.imageUrl) ? (
+                              <div className="h-44 overflow-hidden">
+                                <img src={resolvedFeedImages[item.imageUrl || ""] || item.imageUrl || ""} alt={item.title} className="h-full w-full object-cover" />
+                              </div>
+                            ) : (
+                              <div
+                                className="flex h-44 items-end p-4"
+                                style={{ background: "linear-gradient(145deg, rgba(45,104,112,0.2), rgba(245,233,220,0.5))" }}
+                              >
+                                <span className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "rgba(30,74,82,0.76)" }}>
+                                  {section.config.eyebrow}
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="p-4">
+                              <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                                {item.subtitle}
+                              </p>
+                              <h4 className="mt-2 text-[24px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                                {item.title}
+                              </h4>
+
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                {item.tags.map((tag) => (
+                                  <span
+                                    key={`${item.id}-${tag}`}
+                                    className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.12em]"
+                                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.82)" }}
+                                  >
+                                    <Tag className="h-3 w-3" />
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+
+                              <div className="mt-4 flex items-center gap-2 text-[11px]" style={{ color: "var(--swatch-text-light)" }}>
+                                <Clock3 className="h-3.5 w-3.5" />
+                                <span>{formatRelativeDateLabel(item.updatedAt)}</span>
+                              </div>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
+          <aside className="space-y-5">
+            <section className="rounded-[34px] p-5 md:p-6" style={frostedPanelStyle}>
+              <div className="flex items-start gap-3">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
+                  <Lock className="h-4 w-4" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    What you share with this connection
+                  </p>
+                  <h2 className="mt-2 text-[32px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    One place to control it.
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                    Keep all outgoing settings inside one collapsible control box instead of spreading them across the page.
+                  </p>
+                </div>
+              </div>
+
+              <Accordion type="single" collapsible defaultValue="sharing-controls" className="mt-5">
+                <AccordionItem value="sharing-controls" className="overflow-hidden rounded-[26px] border-0" style={frostedInsetStyle}>
+                  <AccordionTrigger className="px-4 py-4 text-left hover:no-underline">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                        Sharing controls
+                      </p>
+                      <p className="mt-2 text-[24px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                        Fields, cards, AI outputs, and connection type.
+                      </p>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4 pt-0">
+                    {!connectionAccepted && canConfigureOutgoing && (
+                      <p className="rounded-[18px] px-4 py-3 text-xs leading-relaxed" style={{ ...frostedInsetStyle, color: "var(--swatch-text-light)" }}>
+                        These are your outgoing share settings. They are saved now and become visible after the connection is accepted.
+                      </p>
+                    )}
+                    {!canConfigureOutgoing && (
+                      <p className="rounded-[18px] px-4 py-3 text-xs leading-relaxed" style={{ ...frostedInsetStyle, color: "var(--swatch-text-light)" }}>
+                        We can save per-person sharing once this invite is linked to a specific user account.
+                      </p>
+                    )}
+
+                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                      <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                        Connection type
+                      </p>
+                      <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                        Choose how Go Two should treat this relationship in gift and occasion logic.
+                      </p>
+                      <div className="mt-4">
+                        <Select
+                          value={connectionKind}
+                          onValueChange={(value) => handleConnectionKindChange(value as ConnectionKind)}
+                          disabled={!canConfigureOutgoing || savingConnectionKind}
+                        >
+                          <SelectTrigger
+                            className="rounded-[18px] border px-4 py-3 text-sm"
+                            style={{
+                              background: "rgba(255,255,255,0.72)",
+                              borderColor: "rgba(45,104,112,0.14)",
+                              color: "var(--swatch-teal)",
+                              fontFamily: "'Jost', sans-serif",
+                            }}
+                          >
+                            <SelectValue placeholder="Select connection type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {editableConnectionKinds.map((item) => (
+                              <SelectItem key={item.key} value={item.key}>
+                                {item.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                          {editableConnectionKinds.find((item) => item.key === connectionKind)?.description}
+                          {savingConnectionKind ? " Saving..." : ""}
+                          {!canConfigureOutgoing ? " This connection needs a linked account before you can save per-person settings." : ""}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                      <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                        Profile fields
+                      </p>
+                      <div className="mt-4 space-y-4">
+                        {editableProfileFields.map((field) => (
+                          <div key={field.key} className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{field.label}</p>
+                              <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                                {field.description}
+                              </p>
+                            </div>
+                            <Switch
+                              checked={outgoingProfileFields[field.key]}
+                              onCheckedChange={(checked) => handleToggleOutgoingProfileField(field.key, checked)}
+                              disabled={!canConfigureOutgoing}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                      <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                        Derived features
+                      </p>
+                      <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                        Share AI outputs like Your Vibe and recommendation results without exposing raw answers.
+                      </p>
+
+                      <div className="mt-4 space-y-4">
+                        {editableDerivedFeatures.map((feature) => (
+                          <div key={feature.key} className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{feature.label}</p>
+                              <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                                {feature.description}
+                              </p>
+                            </div>
+                            <Switch
+                              checked={outgoingDerivedFeatures[feature.key]}
+                              onCheckedChange={(checked) => handleToggleDerivedFeature(feature.key, checked)}
+                              disabled={!canConfigureOutgoing}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                      <div className="flex flex-wrap items-end justify-between gap-3">
+                        <div>
+                          <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                            Product cards
+                          </p>
+                          <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                            Share one card, a few cards, or everything with one click.
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleBulkShare("share")}
+                            disabled={!canConfigureOutgoing || sharingBusy || myEntries.length === 0}
+                            className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
+                            style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "var(--swatch-teal)" }}
+                          >
+                            Share all
+                          </button>
+                          <button
+                            onClick={() => handleBulkShare("unshare")}
+                            disabled={!canConfigureOutgoing || sharingBusy || sharedCardEntryIds.length === 0}
+                            className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
+                            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.84)" }}
+                          >
+                            Hide all
+                          </button>
+                        </div>
+                      </div>
+
+                      <label className="mt-4 block">
+                        <span className="sr-only">Search your product cards</span>
+                        <input
+                          value={cardSearch}
+                          onChange={(event) => setCardSearch(event.target.value)}
+                          placeholder="Search your product cards..."
+                          className="w-full rounded-[18px] border px-4 py-3 text-sm outline-none"
+                          style={{
+                            background: "rgba(255,255,255,0.72)",
+                            borderColor: "rgba(45,104,112,0.14)",
+                            color: "var(--swatch-teal)",
+                            fontFamily: "'Jost', sans-serif",
+                          }}
+                        />
+                      </label>
+
+                      <div className="mt-4 max-h-[340px] space-y-3 overflow-y-auto pr-1">
+                        {filteredMyEntries.map((entry) => {
+                          const isShared = sharedCardEntryIds.includes(entry.id);
+                          return (
+                            <div key={entry.id} className="flex items-start justify-between gap-4 rounded-[18px] px-4 py-3" style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.78)" }}>
+                              <div className="min-w-0">
+                                <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{entry.entry_name}</p>
+                                <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                                  {entry.group_name} | {entry.card_key?.split("__").pop() || "Product card"}
+                                </p>
+                              </div>
+                              <Switch
+                                checked={isShared}
+                                onCheckedChange={(checked) => handleToggleCardShare(entry, checked)}
+                                disabled={!canConfigureOutgoing}
+                              />
+                            </div>
+                          );
+                        })}
+                        {filteredMyEntries.length === 0 && (
+                          <p className="text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                            No product cards match this search yet.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+              <div className="mt-5 rounded-[24px] px-4 py-4" style={frostedInsetStyle}>
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  Live now
+                </p>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  {outgoingEnabled.length
+                    ? `${connection.name} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")}, ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"}, and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+                    : sharedCardEntryIds.length || outgoingDerivedEnabled.length
+                      ? `${connection.name} can currently see ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"} and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+                      : `You have not shared any fields, derived features, or product cards with ${connection.name} yet.`}
+                </p>
+              </div>
+            </section>
           </aside>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

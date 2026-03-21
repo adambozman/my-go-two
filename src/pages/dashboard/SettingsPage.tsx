@@ -32,6 +32,8 @@ const SettingsPage = () => {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState<string>("");
+  const [birthday, setBirthday] = useState("");
+  const [anniversary, setAnniversary] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
@@ -95,9 +97,15 @@ const SettingsPage = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
         setEmail(user.email ?? "");
-        const { data } = await supabase.from("profiles").select("display_name, gender").eq("user_id", user.id).single();
+        const { data } = await supabase
+          .from("profiles")
+          .select("display_name, gender, birthday, anniversary")
+          .eq("user_id", user.id)
+          .single();
         setDisplayName(data?.display_name ?? "");
         setGender(data?.gender ? normalizeGender(data.gender) : "");
+        setBirthday(data?.birthday ?? "");
+        setAnniversary(data?.anniversary ?? "");
       } catch {}
     };
     fetchProfile();
@@ -255,6 +263,8 @@ const SettingsPage = () => {
       await supabase.from("profiles").update({ 
         display_name: displayName,
         gender: gender ? normalizeGender(gender) : null,
+        birthday: birthday || null,
+        anniversary: anniversary || null,
       } as any).eq("user_id", user.id);
       toast({ title: "Profile updated" });
     } catch {} finally {
@@ -337,6 +347,16 @@ const SettingsPage = () => {
                     <SelectItem value="non-binary">Non-Binary</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Birthday</Label>
+                <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>Stored on your profile so reminders and connection sharing have real data to work with.</p>
+                <Input type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} className="rounded-xl" />
+              </div>
+              <div className="space-y-2">
+                <Label>Anniversary</Label>
+                <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>Optional. Leave blank if it does not apply to you.</p>
+                <Input type="date" value={anniversary} onChange={(e) => setAnniversary(e.target.value)} className="rounded-xl" />
               </div>
               <div className="flex justify-center">
                 <Button className="rounded-full" onClick={handleSave} disabled={loading}>
