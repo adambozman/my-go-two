@@ -45,12 +45,12 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const runSearchQuery = async (rawQuery: string) => {
     let rows: any[] = [];
 
-    const { data: edgeData, error: edgeError } = await supabase.functions.invoke("collaborations", {
-      body: { action: "search-user", query: rawQuery },
+    const { data: newSearchData, error: newSearchError } = await supabase.functions.invoke("connection-search", {
+      body: { action: "search", query: rawQuery },
     });
 
-    if (!edgeError) {
-      rows = Array.isArray(edgeData?.users) ? edgeData.users : [];
+    if (!newSearchError) {
+      rows = Array.isArray(newSearchData?.users) ? newSearchData.users : [];
     } else {
       const { data: rpcData, error: rpcError } = await (supabase.rpc as any)("search_discoverable_users", {
         p_query: rawQuery,
@@ -58,7 +58,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       });
 
       if (rpcError) {
-        throw edgeError;
+        throw newSearchError;
       }
 
       rows = Array.isArray(rpcData) ? rpcData : [];
@@ -81,7 +81,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   };
 
   const seedDemoProfiles = async (showToast = true) => {
-    const { data, error } = await supabase.functions.invoke("collaborations", {
+    const { data, error } = await supabase.functions.invoke("connection-search", {
       body: { action: "seed-demo-profiles" },
     });
 
