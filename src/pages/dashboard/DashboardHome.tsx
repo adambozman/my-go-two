@@ -84,6 +84,11 @@ interface SearchableEntryRow {
   card_key: string;
 }
 
+interface HomeSearchEdgePayload {
+  my_entries?: SearchableEntryRow[];
+  circle_entries?: Array<SearchableEntryRow & { owner_label?: string }>;
+}
+
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
   const navigate = useNavigate();
@@ -391,62 +396,35 @@ const DashboardHome = () => {
 
     setIsSearchOpen(true);
     setSearchLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("connection-data-search", {
+        body: {
+          action: "home-search",
+          query,
+          scope: searchScope,
+          limit: 20,
+        },
+      });
 
-    const ownerNames = new Map<string, string>();
+      if (error) {
+        throw error;
+      }
 
-    ownerNames.set(user.id, "You");
-    liveConnections.forEach((connection) => {
-      if (connection.partnerId) ownerNames.set(connection.partnerId, connection.name);
-    });
+      const payload = (data || {}) as HomeSearchEdgePayload;
+      const nextMine: HomeSearchResult[] = (payload.my_entries || []).map((row) => buildEntryResult(row, "You"));
+      const nextCircle: HomeSearchResult[] = (payload.circle_entries || []).map((row) =>
+        buildEntryResult(row, row.owner_label || "Connection")
+      );
 
-    const includeSelf = searchScope === "everyone" || searchScope === "self";
-    const scopedPartnerIds =
-      searchScope === "everyone"
-        ? liveConnections.filter((connection) => connection.partnerId)
-        : searchScope === "self"
-          ? []
-          : liveConnections.filter((connection) => connection.partnerId === searchScope);
-
-    const [myEntriesRes, circleEntriesRes] = await Promise.all([
-      includeSelf
-        ? supabase
-            .from("card_entries")
-            .select("id, user_id, entry_name, group_name, card_key")
-            .eq("user_id", user.id)
-            .or(`group_name.ilike.%${query}%,entry_name.ilike.%${query}%`)
-            .limit(20)
-        : Promise.resolve({ data: [] as SearchableEntryRow[] }),
-      scopedPartnerIds.length
-        ? Promise.all(
-            scopedPartnerIds.map(async (connection) => {
-              const { data } = await (supabase.rpc as any)("get_connection_visible_card_entries", {
-                p_couple_id: connection.id,
-                p_owner_user_id: connection.partnerId,
-                p_connection_user_id: user.id,
-              });
-
-              return ((Array.isArray(data) ? data : []) as SearchableEntryRow[]).filter(
-                (row) =>
-                  row.group_name?.toLowerCase().includes(query.toLowerCase()) ||
-                  row.entry_name?.toLowerCase().includes(query.toLowerCase())
-              );
-            })
-          )
-        : Promise.resolve([] as SearchableEntryRow[][]),
-    ]);
-
-    const nextMine: HomeSearchResult[] = [
-      ...((myEntriesRes.data || []).map((row: SearchableEntryRow) => buildEntryResult(row, "You"))),
-    ];
-
-    const nextCircle: HomeSearchResult[] = (Array.isArray(circleEntriesRes) ? circleEntriesRes.flat() : []).map((row: SearchableEntryRow) =>
-      buildEntryResult(row, ownerNames.get(row.user_id) || "Connection")
-    );
-
-    setMySearchResults(nextMine);
-    setCircleSearchResults(nextCircle);
-    setSearchLoading(false);
-  }, [buildEntryResult, homeSearch, liveConnections, searchScope, user]);
+      setMySearchResults(nextMine);
+      setCircleSearchResults(nextCircle);
+    } catch {
+      setMySearchResults([]);
+      setCircleSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  }, [buildEntryResult, homeSearch, searchScope, user]);
 
   return (
     <div className="relative h-full overflow-y-auto">
