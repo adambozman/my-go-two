@@ -201,7 +201,7 @@ function inferFeedSection(entry: Pick<EntryRecord, "entry_name" | "group_name" |
   return "everyday";
 }
 
-function entryIsVisible(section: FeedSectionKey, permissions: PermissionState) {
+function entryIsVisible(section: FeedSectionKey, permissions: ConnectionPermissionState) {
   switch (section) {
     case "style":
       return permissions.sizes || permissions.brands;
