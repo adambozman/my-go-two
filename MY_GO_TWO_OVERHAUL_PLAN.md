@@ -417,3 +417,4 @@ If work resumes after a crash:
 - read `WORKING_PLAN.md`
 - then read this file
 - continue with My Go Two Phase A before making more ad hoc category edits
+- after QA/testing, remove any `auto-create` test-profile behavior so production connection flows are invite/search only

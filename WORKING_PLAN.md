@@ -316,6 +316,7 @@ Specifically:
   - build passes
   - lint fails with repo-wide cleanup issues
 - when resumed, prioritize My Go Two and shared coverflow files first
+- remove `auto-create` test behavior after connection/search testing is complete (do not ship auto-create in production)
 
 ## Notes For Future Sessions
 
