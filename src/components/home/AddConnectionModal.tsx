@@ -45,8 +45,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const runSearchQuery = async (rawQuery: string) => {
     let rows: any[] = [];
 
-    const { data: newSearchData, error: newSearchError } = await supabase.functions.invoke("collaborations", {
-      body: { action: "search-users", query: rawQuery },
+    const { data: newSearchData, error: newSearchError } = await supabase.functions.invoke("connection-search", {
+      body: { action: "search", query: rawQuery },
     });
 
     if (!newSearchError) {

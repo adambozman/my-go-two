@@ -236,10 +236,6 @@ Deno.serve(async (req) => {
     const actionAliases: Record<string, string> = {
       "send-invite": "send-invite-email",
       "send-invite-link": "send-invite-email",
-      "search-user": "search-users",
-      "search": "search-users",
-      "discover-users": "search-users",
-      "search-discoverable-users": "search-users",
       "create-connection": "create-connection-request",
       "create-share-token": "create-connection-share-token",
       "create-share-link-token": "create-connection-share-token",
@@ -248,7 +244,7 @@ Deno.serve(async (req) => {
       "get-pending-invites": "get-pending",
       "link-by-invite": "link-by-inviter",
     };
-    const actionName = actionAliases[rawAction] ?? (rawAction || (query ? "search-users" : rawAction));
+    const actionName = actionAliases[rawAction] ?? rawAction;
 
     // Helper to get display name
     const getDisplayName = async (userId: string) => {
@@ -422,118 +418,6 @@ Deno.serve(async (req) => {
       );
 
       return new Response(JSON.stringify({ success: true, invite_link: resolvedInviteLink }), { headers: corsHeaders });
-    }
-
-    if (actionName === "search-users") {
-      const rawQuery = String(query ?? "").trim();
-      if (!rawQuery) {
-        return new Response(JSON.stringify({ users: [] }), { headers: corsHeaders });
-      }
-      const collapsedQuery = rawQuery.replace(/\s+/g, " ");
-
-      const normalizedPhone = normalizePhone(rawQuery);
-      const normalizedEmail = rawQuery.toLowerCase();
-      const normalizedUsername = normalizeUsername(rawQuery);
-      const nameIds = new Set<string>();
-      const phoneIds = new Set<string>();
-      const emailIds = new Set<string>();
-
-      const { data: nameMatches } = await supabase
-        .from("profiles")
-        .select("user_id, display_name, avatar_url")
-        .ilike("display_name", `%${collapsedQuery}%`)
-        .limit(15);
-
-      for (const match of nameMatches ?? []) {
-        if (match.user_id && match.user_id !== user.id) {
-          nameIds.add(match.user_id);
-        }
-      }
-
-      if (normalizedPhone) {
-        const { data: phoneMatches } = await supabase
-          .from("user_discovery_contacts")
-          .select("user_id")
-          .eq("phone_search_normalized", normalizedPhone)
-          .limit(10);
-
-        for (const match of phoneMatches ?? []) {
-          if (match.user_id && match.user_id !== user.id) {
-            phoneIds.add(match.user_id);
-          }
-        }
-      }
-
-      if (normalizedEmail.includes("@")) {
-        try {
-          const emailMatch = await findAuthUserByEmail(supabase, normalizedEmail, user.id);
-          if (emailMatch?.id) {
-            emailIds.add(emailMatch.id);
-          }
-        } catch (lookupError) {
-          console.error("Search email lookup failed:", lookupError);
-        }
-      }
-
-      if (normalizedUsername) {
-        const { data: usernameMatches } = await supabase
-          .from("profiles")
-          .select("user_id")
-          .ilike("display_name", normalizedUsername)
-          .limit(10);
-
-        for (const match of usernameMatches ?? []) {
-          if (match.user_id && match.user_id !== user.id) {
-            nameIds.add(match.user_id);
-          }
-        }
-      }
-
-      const candidateIds = [...new Set([...nameIds, ...phoneIds, ...emailIds])];
-      if (candidateIds.length === 0) {
-        return new Response(JSON.stringify({ users: [] }), { headers: corsHeaders });
-      }
-
-      const [{ data: profiles }, { data: settings }] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("user_id, display_name, avatar_url")
-          .in("user_id", candidateIds),
-        supabase
-          .from("user_discovery_settings")
-          .select("user_id, allow_name_discovery, allow_phone_discovery, share_avatar_in_discovery")
-          .in("user_id", candidateIds),
-      ]);
-
-      const settingsByUserId = new Map(
-        (settings ?? []).map((row) => [row.user_id, row]),
-      );
-
-      const users = (profiles ?? [])
-        .map((profile) => {
-          const prefs = settingsByUserId.get(profile.user_id);
-          const matchedByPhone = phoneIds.has(profile.user_id);
-          const matchedByName = nameIds.has(profile.user_id);
-          const matchedByEmail = emailIds.has(profile.user_id);
-          const canUsePhone = matchedByPhone && (prefs?.allow_phone_discovery ?? true);
-          const canUseName = matchedByName && (prefs?.allow_name_discovery ?? true);
-          const canUseEmail = matchedByEmail;
-
-          if (!canUsePhone && !canUseName && !canUseEmail) {
-            return null;
-          }
-
-          return {
-            user_id: profile.user_id,
-            display_name: profile.display_name ?? "User",
-            discovery_avatar_url: prefs?.share_avatar_in_discovery ? profile.avatar_url : null,
-            match_type: canUseEmail ? "email" : canUsePhone ? "phone" : "name",
-          };
-        })
-        .filter((value): value is NonNullable<typeof value> => Boolean(value))
-        .slice(0, 10);
-
-      return new Response(JSON.stringify({ users }), { headers: corsHeaders });
     }
 
     if (actionName === "create-connection-request") {
