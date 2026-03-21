@@ -275,7 +275,7 @@ async function ensureDemoProfiles(supabase: any) {
 }
 
 async function searchUsers(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   requesterId: string,
   query: string,
 ) {
