@@ -616,8 +616,8 @@ export default function ConnectionPage() {
     };
 
     const query = existingRow
-      ? supabase.from("shared_profile_fields").update({ is_shared: nextValue }).eq("id", existingRow.id)
-      : supabase.from("shared_profile_fields").insert(payload);
+      ? (supabase as any).from("shared_profile_fields").update({ is_shared: nextValue }).eq("id", existingRow.id)
+      : (supabase as any).from("shared_profile_fields").insert(payload);
 
     const { error } = await query;
 
