@@ -130,7 +130,7 @@ async function sendInviteEmail(inviterName: string, inviteeEmail: string, invite
 }
 
 async function createNotification(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   title: string,
   body: string,
