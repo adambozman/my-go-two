@@ -625,11 +625,12 @@ export default function ConnectionPage() {
   const canConfigureOutgoing = Boolean(connection?.partnerId);
   const visibleNowSummary = incomingEnabled.length + incomingDerivedEnabled.length + visibleFeedItems.length;
   const outgoingNowSummary = outgoingEnabled.length + outgoingDerivedEnabled.length + sharedCardEntryIds.length;
+  const connName = connection?.name || "They";
   const liveNowDescription = outgoingEnabled.length
-    ? `${connection.name} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")}, ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"}, and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+    ? `${connName} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")}, ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"}, and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
     : sharedCardEntryIds.length || outgoingDerivedEnabled.length
-      ? `${connection.name} can currently see ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"} and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
-      : `You have not shared any fields, derived features, or product cards with ${connection.name} yet.`;
+      ? `${connName} can currently see ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"} and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+      : `You have not shared any fields, derived features, or product cards with ${connName} yet.`;
   const statusEyebrow = connectionAccepted ? "Connection live" : "Pending acceptance";
   const statusBody = connectionAccepted
     ? "Sharing is live both ways based on what each of you has explicitly allowed."
