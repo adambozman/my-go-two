@@ -760,7 +760,7 @@ export default function ConnectionPage() {
 
     toast({
       title: nextValue ? "Derived feature shared" : "Derived feature hidden",
-      description: `${connection.name} will ${nextValue ? "now" : "no longer"} see ${editableDerivedFeatures.find((feature) => feature.key === key)?.label.toLowerCase()}.`,
+      description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableDerivedFeatures.find((feature) => feature.key === key)?.label.toLowerCase()}.`,
     });
   }, [connection, toast, user]);
 
