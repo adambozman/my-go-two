@@ -332,14 +332,14 @@ async function searchUsers(
 
     for (const userId of candidateIds) {
       if (combinedById.has(userId) || userId === requesterId) continue;
-      const profile = profilesByUserId.get(userId);
-      const prefs = settingsByUserId.get(userId);
+      const profile: any = profilesByUserId.get(userId);
+      const prefs: any = settingsByUserId.get(userId);
       const authUser = authUsersById.get(userId);
       combinedById.set(userId, {
         user_id: userId,
         display_name: profile?.display_name ?? getDisplayNameFromAuthUser(authUser),
         discovery_avatar_url: prefs?.share_avatar_in_discovery ? profile?.avatar_url ?? null : null,
-        match_type: "email",
+        match_type: "email" as const,
       });
     }
   }
