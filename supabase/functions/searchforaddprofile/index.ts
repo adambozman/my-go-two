@@ -613,7 +613,7 @@ async function acceptInvitesByEmail(
 }
 
 async function linkByInviter(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   email: string | null,
   inviterId: string,
