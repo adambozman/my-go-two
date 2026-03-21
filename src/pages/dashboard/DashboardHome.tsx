@@ -76,6 +76,14 @@ interface ConnectionFeedRow {
   event_at: string | null;
 }
 
+interface SearchableEntryRow {
+  id: string;
+  user_id: string;
+  entry_name: string;
+  group_name: string;
+  card_key: string;
+}
+
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
   const navigate = useNavigate();
@@ -367,7 +375,7 @@ const DashboardHome = () => {
     };
   }, [user]);
 
-  const buildEntryResult = useCallback((row: any, ownerLabel: string): HomeSearchResult => ({
+  const buildEntryResult = useCallback((row: SearchableEntryRow, ownerLabel: string): HomeSearchResult => ({
     id: row.id,
     kind: "entry",
     ownerId: row.user_id,
@@ -407,7 +415,7 @@ const DashboardHome = () => {
             .eq("user_id", user.id)
             .or(`group_name.ilike.%${query}%,entry_name.ilike.%${query}%`)
             .limit(20)
-        : Promise.resolve({ data: [] as any[] }),
+        : Promise.resolve({ data: [] as SearchableEntryRow[] }),
       scopedPartnerIds.length
         ? Promise.all(
             scopedPartnerIds.map(async (connection) => {
@@ -417,21 +425,21 @@ const DashboardHome = () => {
                 p_connection_user_id: user.id,
               });
 
-              return ((Array.isArray(data) ? data : []) as any[]).filter(
+              return ((Array.isArray(data) ? data : []) as SearchableEntryRow[]).filter(
                 (row) =>
                   row.group_name?.toLowerCase().includes(query.toLowerCase()) ||
                   row.entry_name?.toLowerCase().includes(query.toLowerCase())
               );
             })
           )
-        : Promise.resolve([] as any[][]),
+        : Promise.resolve([] as SearchableEntryRow[][]),
     ]);
 
     const nextMine: HomeSearchResult[] = [
-      ...((myEntriesRes.data || []).map((row: any) => buildEntryResult(row, "You"))),
+      ...((myEntriesRes.data || []).map((row: SearchableEntryRow) => buildEntryResult(row, "You"))),
     ];
 
-    const nextCircle: HomeSearchResult[] = (Array.isArray(circleEntriesRes) ? circleEntriesRes.flat() : []).map((row: any) =>
+    const nextCircle: HomeSearchResult[] = (Array.isArray(circleEntriesRes) ? circleEntriesRes.flat() : []).map((row: SearchableEntryRow) =>
       buildEntryResult(row, ownerNames.get(row.user_id) || "Connection")
     );
 
