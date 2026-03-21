@@ -592,7 +592,7 @@ export default function ConnectionPage() {
 
     setOutgoingProfileFields((current) => ({ ...current, [key]: nextValue }));
 
-    const { data: existingRow, error: loadError } = await supabase
+    const { data: existingRow, error: loadError } = await (supabase as any)
       .from("shared_profile_fields")
       .select("id")
       .eq("couple_id", connection.id)
