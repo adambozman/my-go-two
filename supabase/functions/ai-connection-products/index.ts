@@ -158,6 +158,31 @@ const buildGeneratorContext = (context: Record<string, unknown>) => {
   };
 };
 
+const buildStoredSourceSnapshot = (
+  generatorContext: Record<string, unknown>,
+  allowedCategories: Set<RecommendationIntent["category"]>,
+  selectedOccasion: Record<string, unknown> | null,
+) => {
+  const sharedCards = toArray<Record<string, unknown>>(generatorContext.shared_card_entries);
+  const derived = toObject(generatorContext.derived);
+
+  return {
+    connection_kind: cleanText(generatorContext.connection_kind || "custom") || "custom",
+    connection_label: cleanText(generatorContext.connection_label || "Connection") || "Connection",
+    allowed_categories: Array.from(allowedCategories),
+    shared_card_count: sharedCards.length,
+    has_shared_vibe: Boolean(cleanText(derived.your_vibe)),
+    occasion: selectedOccasion
+      ? {
+          occasion_type: cleanText(selectedOccasion.occasion_type) || null,
+          occasion_label: cleanText(selectedOccasion.occasion_label) || null,
+          occasion_date: cleanText(selectedOccasion.occasion_date) || null,
+          source_type: cleanText(selectedOccasion.source_type) || null,
+        }
+      : null,
+  };
+};
+
 const fallbackFromSharedRecommendations = (context: Record<string, unknown>, selectedOccasionLabel: string | null) => {
   const allowedCategories = getAllowedCategories(context);
   if (allowedCategories.size === 0) return [];
@@ -292,7 +317,7 @@ serve(async (req) => {
           id: cachedRecommendation?.id ?? null,
           products: cachedProducts,
           cached: true,
-          context: generatorContext,
+          context: buildStoredSourceSnapshot(generatorContext, allowedCategories, selectedOccasion),
           occasion: selectedOccasion,
         }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -495,10 +520,12 @@ Use the provided tool.`;
       }
     }
 
+    const storedSourceSnapshot = buildStoredSourceSnapshot(generatorContext, allowedCategories, selectedOccasion);
+
     await supabase
       .from("connection_recommendations")
       .update({
-        source_snapshot: generatorContext,
+        source_snapshot: storedSourceSnapshot,
         recommendations: blendedProducts,
         status: "ready",
         updated_at: new Date().toISOString(),
@@ -510,7 +537,7 @@ Use the provided tool.`;
       id: draftId,
       products: blendedProducts,
       cached: false,
-      context: generatorContext,
+      context: storedSourceSnapshot,
       occasion: selectedOccasion,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
