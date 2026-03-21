@@ -1373,38 +1373,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
         "image": "dress-male-bottoms",
         "products": [
           {
-            "id": "wool-trousers",
-            "name": "Dress Pants",
-            "image": "dress-male-bottoms-wool-trousers",
-            "fields": [
-              {
-                "label": "Waist",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Inseam",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
-            ]
-          },
-          {
             "id": "smart-chinos",
             "name": "Formal Chinos",
             "image": "dress-male-bottoms-smart-chinos",
