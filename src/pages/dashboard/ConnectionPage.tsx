@@ -672,7 +672,7 @@ export default function ConnectionPage() {
 
     setOutgoingDerivedFeatures((current) => ({ ...current, [key]: nextValue }));
 
-    const { data: existingRow, error: loadError } = await supabase
+    const { data: existingRow, error: loadError } = await (supabase as any)
       .from("shared_derived_features")
       .select("id")
       .eq("couple_id", connection.id)
