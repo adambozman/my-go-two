@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { User, Bell, Shield, Users, ChevronRight, Save, KeyRound, Mail, QrCode, Copy, Check, Clock, UserCheck, UserX, CreditCard, HelpCircle, Info, Trash2, Database } from "lucide-react";
+import { User, Bell, Shield, Users, ChevronRight, Save, KeyRound, Mail, QrCode, Copy, Check, Clock, UserCheck, UserX, CreditCard, HelpCircle, Info, Trash2, Database, Loader2 } from "lucide-react";
 import SubscriptionSection from "@/components/SubscriptionSection";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -47,6 +47,7 @@ const SettingsPage = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
+  const [seedingDemoProfiles, setSeedingDemoProfiles] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // User settings state
@@ -184,6 +185,21 @@ const SettingsPage = () => {
       fetchConnections();
     } catch {
       toast({ title: "Failed to accept", variant: "destructive" });
+    }
+  };
+
+  const handleSeedDemoProfiles = async () => {
+    setSeedingDemoProfiles(true);
+    try {
+      const result = await callEdgeFunction("seed-demo-profiles");
+      const summary = Array.isArray(result?.users)
+        ? result.users.map((entry: any) => `${entry.display_name} (${entry.email})`).join(", ")
+        : "Demo profiles created";
+      toast({ title: "Demo profiles ready", description: summary });
+    } catch (error: any) {
+      toast({ title: "Failed to create demo profiles", description: error?.message || "Try again.", variant: "destructive" });
+    } finally {
+      setSeedingDemoProfiles(false);
     }
   };
 
@@ -385,6 +401,20 @@ const SettingsPage = () => {
                   <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>Send an invitation</p>
                 </div>
               </button>
+            </div>
+            <div className="mb-8">
+              <Button
+                variant="outline"
+                className="rounded-full w-full"
+                onClick={handleSeedDemoProfiles}
+                disabled={seedingDemoProfiles}
+              >
+                {seedingDemoProfiles ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                {seedingDemoProfiles ? "Creating demo profiles..." : "Create 2 Demo Profiles"}
+              </Button>
+              <p className="mt-2 text-xs text-center" style={{ color: "var(--swatch-text-light)" }}>
+                Creates Abby and Jules with full seeded cards for visual testing.
+              </p>
             </div>
 
             {/* Pending Invites */}

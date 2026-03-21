@@ -13,6 +13,71 @@ function normalizeUsername(value: string | null | undefined) {
   return (value ?? "").trim().replace(/^@+/, "");
 }
 
+const DEMO_SEED_VERSION = "visual-demo-v1";
+
+const demoProfiles = [
+  {
+    slug: "abby",
+    email: "abby.demo@gotwo.local",
+    password: "GoTwoDemo!2026",
+    display_name: "abby",
+    gender: "female",
+    age: 29,
+    birthday: "1997-04-18",
+    anniversary: "2022-09-12",
+    phone_raw: "(312) 555-0188",
+    profile_answers: {
+      daily_vibe: "Classic with a modern edge",
+      style_focus: "Everyday comfort with polished details",
+      preferred_fit: "Relaxed but structured",
+    },
+    ai_personalization: {
+      persona_summary: "Effortless, polished, and detail-oriented.",
+      recommended_brands: ["Madewell", "Everlane", "Nike"],
+    },
+    cards: [
+      { card_key: "style-fit__everyday__tops", group_name: "Style & Fit", entry_name: "Everyday Tops", field_values: { size: "M", fabrics: "Cotton, linen", colors: "Cream, navy" } },
+      { card_key: "style-fit__everyday__footwear", group_name: "Style & Fit", entry_name: "Daily Footwear", field_values: { size: "8.5", style: "Low-profile sneakers", avoid: "Chunky soles" } },
+      { card_key: "food-drink__coffee__order", group_name: "Food & Drink", entry_name: "Coffee Order", field_values: { drink: "Iced oat milk latte", size: "Medium", sweetness: "Light" } },
+      { card_key: "food-drink__restaurants__favorites", group_name: "Food & Drink", entry_name: "Favorite Restaurants", field_values: { cuisine: "Italian, sushi", dislikes: "Very spicy" } },
+      { card_key: "personal__skincare__routine", group_name: "Personal", entry_name: "Skincare Routine", field_values: { cleanser: "Gentle cream", moisturizer: "Fragrance-free", sunscreen: "SPF 50" } },
+      { card_key: "gifts-wishlist__wishlist__products", group_name: "Gifts & Wishlist", entry_name: "Wish List", field_values: { top_pick: "Leather weekender", backup_pick: "Gold hoop earrings" } },
+      { card_key: "home-living__decor__style", group_name: "Home & Living", entry_name: "Home Decor", field_values: { style: "Soft minimal", colors: "Warm neutrals" } },
+      { card_key: "entertainment-interests__music__playlist", group_name: "Entertainment & Interests", entry_name: "Music Playlist", field_values: { genres: "Indie pop, neo soul", artist: "Maggie Rogers" } },
+    ],
+  },
+  {
+    slug: "jules",
+    email: "jules.demo@gotwo.local",
+    password: "GoTwoDemo!2026",
+    display_name: "jules",
+    gender: "non-binary",
+    age: 33,
+    birthday: "1993-11-07",
+    anniversary: "2020-06-21",
+    phone_raw: "(312) 555-0199",
+    profile_answers: {
+      daily_vibe: "Sporty and creative",
+      style_focus: "Athletic comfort + statement pieces",
+      preferred_fit: "Relaxed and layered",
+    },
+    ai_personalization: {
+      persona_summary: "Athleisure-forward, creative, and practical.",
+      recommended_brands: ["Lululemon", "Uniqlo", "On"],
+    },
+    cards: [
+      { card_key: "style-fit__athletic__tops", group_name: "Style & Fit", entry_name: "Athletic Tops", field_values: { size: "L", fit: "Relaxed", preferred: "Breathable blends" } },
+      { card_key: "style-fit__athletic__footwear", group_name: "Style & Fit", entry_name: "Training Shoes", field_values: { size: "10.5", support: "Neutral", avoid: "Narrow toe boxes" } },
+      { card_key: "food-drink__meal__favorites", group_name: "Food & Drink", entry_name: "Meal Preferences", field_values: { favorites: "Rice bowls, ramen", avoid: "Mushrooms" } },
+      { card_key: "food-drink__snacks__favorites", group_name: "Food & Drink", entry_name: "Snack Picks", field_values: { favorites: "Sea salt popcorn, dark chocolate" } },
+      { card_key: "personal__grooming__routine", group_name: "Personal", entry_name: "Grooming Routine", field_values: { hair: "Curl cream + diffuser", body: "Unscented body wash" } },
+      { card_key: "gifts-wishlist__gifts__ideas", group_name: "Gifts & Wishlist", entry_name: "Gift Ideas", field_values: { best: "Concert tickets", backup: "Wireless headphones" } },
+      { card_key: "home-living__kitchen__must-haves", group_name: "Home & Living", entry_name: "Kitchen Must-Haves", field_values: { coffee: "Pour-over setup", cookware: "Cast iron skillet" } },
+      { card_key: "entertainment-interests__events__favorites", group_name: "Entertainment & Interests", entry_name: "Events", field_values: { favorites: "Live music, art walks, comedy nights" } },
+    ],
+  },
+];
+
 async function sendInviteEmail(inviterName: string, inviteeEmail: string, inviteLink: string) {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
   if (!LOVABLE_API_KEY) {
@@ -138,6 +203,118 @@ Deno.serve(async (req) => {
         .single();
       return data?.display_name || "Someone";
     };
+
+    if (action === "seed-demo-profiles") {
+      const findUserByEmail = async (email: string) => {
+        const normalized = email.toLowerCase();
+        let page = 1;
+        const perPage = 200;
+        while (page < 6) {
+          const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
+          if (error) throw error;
+          const found = data.users.find((candidate) => candidate.email?.toLowerCase() === normalized);
+          if (found) return found;
+          if (data.users.length < perPage) break;
+          page += 1;
+        }
+        return null;
+      };
+
+      const userIds: string[] = [];
+
+      for (const demo of demoProfiles) {
+        let demoUser = await findUserByEmail(demo.email);
+        if (!demoUser) {
+          const { data: created, error: createError } = await supabase.auth.admin.createUser({
+            email: demo.email,
+            password: demo.password,
+            email_confirm: true,
+            user_metadata: { display_name: demo.display_name },
+          });
+          if (createError || !created.user) {
+            throw new Error(createError?.message || `Failed to create demo user ${demo.email}`);
+          }
+          demoUser = created.user;
+        }
+
+        userIds.push(demoUser.id);
+
+        await supabase.from("profiles").upsert({
+          user_id: demoUser.id,
+          display_name: demo.display_name,
+          gender: demo.gender,
+          age: demo.age,
+          birthday: demo.birthday,
+          anniversary: demo.anniversary,
+        }, { onConflict: "user_id" });
+
+        await supabase.from("user_discovery_settings").upsert({
+          user_id: demoUser.id,
+          allow_name_discovery: true,
+          allow_phone_discovery: true,
+          share_avatar_in_discovery: false,
+        }, { onConflict: "user_id" });
+
+        await supabase.from("user_discovery_contacts").upsert({
+          user_id: demoUser.id,
+          phone_raw: demo.phone_raw,
+        }, { onConflict: "user_id" });
+
+        await supabase.from("user_preferences").upsert({
+          user_id: demoUser.id,
+          onboarding_complete: true,
+          favorites: { style: true, food: true, gifts: true },
+          dislikes: { loud_logos: true, low_quality_fabric: true },
+          brands: demo.ai_personalization.recommended_brands,
+          places: ["Local favorites", "Saved list"],
+          style_preferences: { mood: demo.profile_answers.daily_vibe },
+          profile_answers: demo.profile_answers,
+          ai_personalization: demo.ai_personalization,
+        }, { onConflict: "user_id" });
+
+        await supabase
+          .from("card_entries")
+          .delete()
+          .eq("user_id", demoUser.id)
+          .contains("field_values", { _seed_profile: DEMO_SEED_VERSION });
+
+        await supabase.from("card_entries").insert(
+          demo.cards.map((card) => ({
+            user_id: demoUser!.id,
+            card_key: card.card_key,
+            group_name: card.group_name,
+            entry_name: card.entry_name,
+            field_values: {
+              ...card.field_values,
+              _seed_profile: DEMO_SEED_VERSION,
+              _seed_slug: demo.slug,
+            },
+          })),
+        );
+      }
+
+      await createNotification(
+        supabase,
+        user.id,
+        "Demo profiles ready",
+        "Two demo profiles are now available in Add Connection search.",
+        "general",
+      );
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          seed_version: DEMO_SEED_VERSION,
+          users: demoProfiles.map((demo, index) => ({
+            user_id: userIds[index],
+            display_name: demo.display_name,
+            email: demo.email,
+            phone: demo.phone_raw,
+          })),
+        }),
+        { headers: corsHeaders },
+      );
+    }
 
     if (action === "send-invite-email") {
       if (!invitee_email && !invitee_phone && !invitee_username) {
