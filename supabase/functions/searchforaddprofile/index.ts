@@ -159,7 +159,7 @@ async function getDisplayName(
 }
 
 async function findAuthUserByEmail(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   email: string,
   excludeUserId?: string,
 ) {
