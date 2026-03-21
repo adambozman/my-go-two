@@ -809,6 +809,63 @@ export type Database = {
         }
         Relationships: []
       }
+      user_discovery_contacts: {
+        Row: {
+          created_at: string
+          id: string
+          phone_raw: string | null
+          phone_search_normalized: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          phone_raw?: string | null
+          phone_search_normalized?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          phone_raw?: string | null
+          phone_search_normalized?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_discovery_settings: {
+        Row: {
+          allow_name_discovery: boolean
+          allow_phone_discovery: boolean
+          created_at: string
+          id: string
+          share_avatar_in_discovery: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allow_name_discovery?: boolean
+          allow_phone_discovery?: boolean
+          created_at?: string
+          id?: string
+          share_avatar_in_discovery?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allow_name_discovery?: boolean
+          allow_phone_discovery?: boolean
+          created_at?: string
+          id?: string
+          share_avatar_in_discovery?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           ai_personalization: Json | null
