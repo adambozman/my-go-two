@@ -236,7 +236,6 @@ Deno.serve(async (req) => {
     const actionAliases: Record<string, string> = {
       "send-invite": "send-invite-email",
       "send-invite-link": "send-invite-email",
-      "create-connection": "create-connection-request",
       "create-share-token": "create-connection-share-token",
       "create-share-link-token": "create-connection-share-token",
       "accept-invitation": "accept-invite",
@@ -257,117 +256,12 @@ Deno.serve(async (req) => {
     };
 
     if (actionName === "seed-demo-profiles") {
-      const userIds: string[] = [];
-
-      for (const demo of demoProfiles) {
-        let demoUser = await findAuthUserByEmail(supabase, demo.email);
-        if (!demoUser) {
-          const { data: created, error: createError } = await supabase.auth.admin.createUser({
-            email: demo.email,
-            password: demo.password,
-            email_confirm: true,
-            user_metadata: { display_name: demo.display_name },
-          });
-          if (createError || !created.user) {
-            throw new Error(createError?.message || `Failed to create demo user ${demo.email}`);
-          }
-          demoUser = created.user;
-        }
-
-        userIds.push(demoUser.id);
-
-        const { error: profileError } = await supabase.from("profiles").upsert({
-          user_id: demoUser.id,
-          display_name: demo.display_name,
-          gender: demo.gender,
-          age: demo.age,
-          birthday: demo.birthday,
-          anniversary: demo.anniversary,
-        }, { onConflict: "user_id" });
-        if (profileError) {
-          throw new Error(`Failed to upsert profile for ${demo.email}: ${profileError.message}`);
-        }
-
-        const { error: discoverySettingsError } = await supabase.from("user_discovery_settings").upsert({
-          user_id: demoUser.id,
-          allow_name_discovery: true,
-          allow_phone_discovery: true,
-          share_avatar_in_discovery: false,
-        }, { onConflict: "user_id" });
-        if (discoverySettingsError) {
-          throw new Error(`Failed to upsert discovery settings for ${demo.email}: ${discoverySettingsError.message}`);
-        }
-
-        const { error: discoveryContactsError } = await supabase.from("user_discovery_contacts").upsert({
-          user_id: demoUser.id,
-          phone_raw: demo.phone_raw,
-        }, { onConflict: "user_id" });
-        if (discoveryContactsError) {
-          throw new Error(`Failed to upsert discovery contact for ${demo.email}: ${discoveryContactsError.message}`);
-        }
-
-        const { error: preferencesError } = await supabase.from("user_preferences").upsert({
-          user_id: demoUser.id,
-          onboarding_complete: true,
-          favorites: { style: true, food: true, gifts: true },
-          dislikes: { loud_logos: true, low_quality_fabric: true },
-          brands: demo.ai_personalization.recommended_brands,
-          places: ["Local favorites", "Saved list"],
-          style_preferences: { mood: demo.profile_answers.daily_vibe },
-          profile_answers: demo.profile_answers,
-          ai_personalization: demo.ai_personalization,
-        }, { onConflict: "user_id" });
-        if (preferencesError) {
-          throw new Error(`Failed to upsert preferences for ${demo.email}: ${preferencesError.message}`);
-        }
-
-        const { error: deleteSeededCardsError } = await supabase
-          .from("card_entries")
-          .delete()
-          .eq("user_id", demoUser.id)
-          .contains("field_values", { _seed_profile: DEMO_SEED_VERSION });
-        if (deleteSeededCardsError) {
-          throw new Error(`Failed to clear seeded cards for ${demo.email}: ${deleteSeededCardsError.message}`);
-        }
-
-        const { error: insertCardsError } = await supabase.from("card_entries").insert(
-          demo.cards.map((card) => ({
-            user_id: demoUser!.id,
-            card_key: card.card_key,
-            group_name: card.group_name,
-            entry_name: card.entry_name,
-            field_values: {
-              ...card.field_values,
-              _seed_profile: DEMO_SEED_VERSION,
-              _seed_slug: demo.slug,
-            },
-          })),
-        );
-        if (insertCardsError) {
-          throw new Error(`Failed to seed cards for ${demo.email}: ${insertCardsError.message}`);
-        }
-      }
-
-      await createNotification(
-        supabase,
-        user.id,
-        "Demo profiles ready",
-        "Two demo profiles are now available in Add Connection search.",
-        "general",
-      );
-
       return new Response(
         JSON.stringify({
-          success: true,
-          seed_version: DEMO_SEED_VERSION,
-          users: demoProfiles.map((demo, index) => ({
-            user_id: userIds[index],
-            display_name: demo.display_name,
-            email: demo.email,
-            phone: demo.phone_raw,
-          })),
+          error: "seed-demo-profiles moved to searchforaddprofile",
+          replacement: "searchforaddprofile",
         }),
-        { headers: corsHeaders },
+        { status: 410, headers: corsHeaders },
       );
     }
 
@@ -421,68 +315,12 @@ Deno.serve(async (req) => {
     }
 
     if (actionName === "create-connection-request") {
-      if (!target_user_id) {
-        return new Response(JSON.stringify({ error: "Missing target_user_id" }), { status: 400, headers: corsHeaders });
-      }
-
-      if (target_user_id === user.id) {
-        return new Response(JSON.stringify({ error: "Cannot connect to yourself" }), { status: 400, headers: corsHeaders });
-      }
-
-      const { data: existing } = await supabase
-        .from("couples")
-        .select("id, status, inviter_id, invitee_id")
-        .or(`and(inviter_id.eq.${user.id},invitee_id.eq.${target_user_id}),and(inviter_id.eq.${target_user_id},invitee_id.eq.${user.id})`)
-        .limit(1);
-
-      if (existing && existing.length > 0) {
-        const current = existing[0];
-        return new Response(
-          JSON.stringify({
-            success: true,
-            status: current.status === "accepted" ? "already_connected" : "pending_exists",
-            couple_id: current.id,
-          }),
-          { headers: corsHeaders },
-        );
-      }
-
-      const { data: inserted, error } = await supabase
-        .from("couples")
-        .insert({
-          inviter_id: user.id,
-          invitee_id: target_user_id,
-          invitee_email: null,
-          status: "pending",
-        })
-        .select("id")
-        .single();
-
-      if (error) {
-        return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: corsHeaders });
-      }
-
-      const inviterName = await getDisplayName(user.id);
-
-      await createNotification(
-        supabase,
-        target_user_id,
-        "New Connection Invite",
-        `${inviterName} sent you a connection invite on GoTwo.`,
-        "partner",
-      );
-
-      await createNotification(
-        supabase,
-        user.id,
-        "Invitation Sent",
-        "Your connection request has been sent.",
-        "general",
-      );
-
       return new Response(
-        JSON.stringify({ success: true, status: "invite_sent", couple_id: inserted?.id ?? null }),
-        { headers: corsHeaders },
+        JSON.stringify({
+          error: "create-connection-request moved to searchforaddprofile",
+          replacement: "searchforaddprofile",
+        }),
+        { status: 410, headers: corsHeaders },
       );
     }
 
