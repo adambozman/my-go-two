@@ -310,7 +310,7 @@ async function searchUsers(
 
   const combinedById = new Map<string, SearchResult>();
   for (const row of rpcResults) {
-    if (row.user_id !== requesterId) combinedById.set(row.user_id, row);
+    if (row.user_id !== requesterId) combinedById.set(row.user_id, row as SearchResult);
   }
 
   if (emailIds.size > 0) {
