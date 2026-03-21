@@ -19,7 +19,8 @@ const EntryTagInput = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const isBrand = fieldLabel.toLowerCase().includes("brand");
 
-  const tags = (value || "").split(",").filter((t) => t.trim());
+  const raw = typeof value === "string" ? value : Array.isArray(value) ? (value as string[]).join(", ") : String(value ?? "");
+  const tags = raw.split(",").filter((t) => t.trim());
 
   const addTag = () => {
     if (!draft.trim()) return;

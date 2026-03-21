@@ -30,6 +30,17 @@ interface EntryRecord {
 
 type FeedSectionKey = "style" | "food" | "favorites" | "personal" | "everyday";
 
+interface ConnectionPermissionState {
+  sizes: boolean;
+  brands: boolean;
+  food_preferences: boolean;
+  gift_ideas: boolean;
+  wish_list: boolean;
+  occasions: boolean;
+  memories: boolean;
+  saved_items: boolean;
+}
+
 interface FeedItem {
   id: string;
   title: string;
@@ -190,7 +201,7 @@ function inferFeedSection(entry: Pick<EntryRecord, "entry_name" | "group_name" |
   return "everyday";
 }
 
-function entryIsVisible(section: FeedSectionKey, permissions: PermissionState) {
+function entryIsVisible(section: FeedSectionKey, permissions: ConnectionPermissionState) {
   switch (section) {
     case "style":
       return permissions.sizes || permissions.brands;
@@ -334,14 +345,14 @@ export default function ConnectionPage() {
       { data: entryRows },
     ] = await Promise.all([
       partnerId
-        ? supabase.rpc("get_connection_shared_profile", {
+        ? (supabase.rpc as any)("get_connection_shared_profile", {
             p_couple_id: couple.id,
             p_owner_user_id: partnerId,
             p_connection_user_id: user.id,
           })
         : Promise.resolve({ data: null }),
       partnerId
-        ? supabase
+        ? (supabase as any)
             .from("shared_profile_fields")
             .select("id, field_key, is_shared")
             .eq("couple_id", couple.id)
@@ -349,7 +360,7 @@ export default function ConnectionPage() {
             .eq("connection_user_id", user.id)
         : Promise.resolve({ data: [] }),
       partnerId
-        ? supabase
+        ? (supabase as any)
             .from("shared_profile_fields")
             .select("id, field_key, is_shared")
             .eq("couple_id", couple.id)
@@ -357,7 +368,7 @@ export default function ConnectionPage() {
             .eq("connection_user_id", partnerId)
         : Promise.resolve({ data: [] }),
       partnerId
-        ? supabase
+        ? (supabase as any)
             .from("shared_derived_features")
             .select("id, feature_key, is_shared")
             .eq("couple_id", couple.id)
@@ -365,7 +376,7 @@ export default function ConnectionPage() {
             .eq("connection_user_id", user.id)
         : Promise.resolve({ data: [] }),
       partnerId
-        ? supabase
+        ? (supabase as any)
             .from("shared_derived_features")
             .select("id, feature_key, is_shared")
             .eq("couple_id", couple.id)
@@ -373,21 +384,21 @@ export default function ConnectionPage() {
             .eq("connection_user_id", partnerId)
         : Promise.resolve({ data: [] }),
       partnerId
-        ? supabase.rpc("get_connection_shared_vibe", {
+        ? (supabase.rpc as any)("get_connection_shared_vibe", {
             p_couple_id: couple.id,
             p_owner_user_id: partnerId,
             p_connection_user_id: user.id,
           })
         : Promise.resolve({ data: [] }),
       partnerId
-        ? supabase.rpc("get_connection_shared_recommendations", {
+        ? (supabase.rpc as any)("get_connection_shared_recommendations", {
             p_couple_id: couple.id,
             p_owner_user_id: partnerId,
             p_connection_user_id: user.id,
           })
         : Promise.resolve({ data: [] }),
       partnerId
-        ? supabase
+        ? (supabase as any)
             .from("shared_card_entries")
             .select("id, card_entry_id")
             .eq("couple_id", couple.id)
@@ -401,7 +412,7 @@ export default function ConnectionPage() {
         .order("updated_at", { ascending: false })
         .limit(200),
       partnerId
-        ? supabase.rpc("get_connection_visible_card_entries", {
+        ? (supabase.rpc as any)("get_connection_visible_card_entries", {
             p_couple_id: couple.id,
             p_owner_user_id: partnerId,
             p_connection_user_id: user.id,
@@ -581,7 +592,7 @@ export default function ConnectionPage() {
 
     setOutgoingProfileFields((current) => ({ ...current, [key]: nextValue }));
 
-    const { data: existingRow, error: loadError } = await supabase
+    const { data: existingRow, error: loadError } = await (supabase as any)
       .from("shared_profile_fields")
       .select("id")
       .eq("couple_id", connection.id)
@@ -605,8 +616,8 @@ export default function ConnectionPage() {
     };
 
     const query = existingRow
-      ? supabase.from("shared_profile_fields").update({ is_shared: nextValue }).eq("id", existingRow.id)
-      : supabase.from("shared_profile_fields").insert(payload);
+      ? (supabase as any).from("shared_profile_fields").update({ is_shared: nextValue }).eq("id", existingRow.id)
+      : (supabase as any).from("shared_profile_fields").insert(payload);
 
     const { error } = await query;
 
@@ -625,7 +636,7 @@ export default function ConnectionPage() {
     setSharedCardEntryIds((current) => nextValue ? Array.from(new Set([...current, entry.id])) : current.filter((id) => id !== entry.id));
 
     if (nextValue) {
-      const { error } = await supabase.from("shared_card_entries").insert({
+      const { error } = await (supabase as any).from("shared_card_entries").insert({
         couple_id: connection.id,
         owner_user_id: user.id,
         connection_user_id: connection.partnerId,
@@ -638,7 +649,7 @@ export default function ConnectionPage() {
         return;
       }
     } else {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("shared_card_entries")
         .delete()
         .eq("couple_id", connection.id)
@@ -661,7 +672,7 @@ export default function ConnectionPage() {
 
     setOutgoingDerivedFeatures((current) => ({ ...current, [key]: nextValue }));
 
-    const { data: existingRow, error: loadError } = await supabase
+    const { data: existingRow, error: loadError } = await (supabase as any)
       .from("shared_derived_features")
       .select("id")
       .eq("couple_id", connection.id)
@@ -685,8 +696,8 @@ export default function ConnectionPage() {
     };
 
     const query = existingRow
-      ? supabase.from("shared_derived_features").update({ is_shared: nextValue }).eq("id", existingRow.id)
-      : supabase.from("shared_derived_features").insert(payload);
+      ? (supabase as any).from("shared_derived_features").update({ is_shared: nextValue }).eq("id", existingRow.id)
+      : (supabase as any).from("shared_derived_features").insert(payload);
 
     const { error } = await query;
 
@@ -707,7 +718,7 @@ export default function ConnectionPage() {
 
     setSharingBusy(true);
     const rpcName = mode === "share" ? "share_all_card_entries_with_connection" : "unshare_all_card_entries_with_connection";
-    const { data, error } = await supabase.rpc(rpcName, {
+    const { data, error } = await (supabase.rpc as any)(rpcName, {
       p_couple_id: connection.id,
       p_owner_user_id: user.id,
       p_connection_user_id: connection.partnerId,

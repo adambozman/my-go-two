@@ -663,6 +663,71 @@ export type Database = {
         }
         Relationships: []
       }
+      sharing_permissions: {
+        Row: {
+          brands: boolean
+          couple_id: string
+          created_at: string
+          food_preferences: boolean
+          gift_ideas: boolean
+          id: string
+          memories: boolean
+          occasions: boolean
+          partner_email: string
+          partner_id: string
+          saved_items: boolean
+          sizes: boolean
+          updated_at: string
+          user_email: string
+          user_id: string
+          wish_list: boolean
+        }
+        Insert: {
+          brands?: boolean
+          couple_id: string
+          created_at?: string
+          food_preferences?: boolean
+          gift_ideas?: boolean
+          id?: string
+          memories?: boolean
+          occasions?: boolean
+          partner_email: string
+          partner_id: string
+          saved_items?: boolean
+          sizes?: boolean
+          updated_at?: string
+          user_email: string
+          user_id: string
+          wish_list?: boolean
+        }
+        Update: {
+          brands?: boolean
+          couple_id?: string
+          created_at?: string
+          food_preferences?: boolean
+          gift_ideas?: boolean
+          id?: string
+          memories?: boolean
+          occasions?: boolean
+          partner_email?: string
+          partner_id?: string
+          saved_items?: boolean
+          sizes?: boolean
+          updated_at?: string
+          user_email?: string
+          user_id?: string
+          wish_list?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sharing_permissions_couple_id_fkey"
+            columns: ["couple_id"]
+            isOneToOne: false
+            referencedRelation: "couples"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sponsored_products: {
         Row: {
           affiliate_url: string | null
@@ -863,7 +928,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_shared_categories: {
+        Args: { p_couple_id: string; p_viewer_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
