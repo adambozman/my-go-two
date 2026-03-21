@@ -81,7 +81,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   };
 
   const seedDemoProfiles = async (showToast = true) => {
-    const { data, error } = await supabase.functions.invoke("collaborations", {
+    const { data, error } = await supabase.functions.invoke("connection-search", {
       body: { action: "seed-demo-profiles" },
     });
 

@@ -191,7 +191,12 @@ const SettingsPage = () => {
   const handleSeedDemoProfiles = async () => {
     setSeedingDemoProfiles(true);
     try {
-      const result = await callEdgeFunction("seed-demo-profiles");
+      const { data: result, error } = await supabase.functions.invoke("connection-search", {
+        body: { action: "seed-demo-profiles" },
+      });
+      if (error) {
+        throw error;
+      }
       const summary = Array.isArray(result?.users)
         ? result.users.map((entry: any) => `${entry.display_name} (${entry.email})`).join(", ")
         : "Demo profiles created";
