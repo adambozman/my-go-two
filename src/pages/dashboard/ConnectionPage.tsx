@@ -352,7 +352,7 @@ export default function ConnectionPage() {
           })
         : Promise.resolve({ data: null }),
       partnerId
-        ? supabase
+        ? (supabase as any)
             .from("shared_profile_fields")
             .select("id, field_key, is_shared")
             .eq("couple_id", couple.id)
