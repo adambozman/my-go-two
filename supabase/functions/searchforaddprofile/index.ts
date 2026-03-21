@@ -468,7 +468,7 @@ async function createConnectionShareToken(
 }
 
 async function sendConnectionInvite(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   requesterId: string,
   payload: Record<string, unknown>,
   req: Request,
