@@ -146,7 +146,7 @@ async function createNotification(
 }
 
 async function getDisplayName(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
 ) {
   const { data } = await supabase
