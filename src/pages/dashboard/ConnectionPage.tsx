@@ -398,7 +398,7 @@ export default function ConnectionPage() {
           })
         : Promise.resolve({ data: [] }),
       partnerId
-        ? supabase
+        ? (supabase as any)
             .from("shared_card_entries")
             .select("id, card_entry_id")
             .eq("couple_id", couple.id)
