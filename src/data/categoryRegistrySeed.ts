@@ -1658,42 +1658,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "mac-coat",
-            "name": "Car Coat",
-            "image": "dress-male-outerwear-mac-coat",
-            "fields": [
-              {
-                "label": "Size",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "XS",
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
-                  "XXL",
-                  "XXXL"
-                ]
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
-            ]
-          },
-          {
             "id": "peacoat",
             "name": "Peacoat",
             "image": "dress-male-outerwear-peacoat",
