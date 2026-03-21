@@ -28,6 +28,16 @@ type AuthUserSummary = {
   user_metadata?: Record<string, unknown> | null;
 };
 
+type ShareTokenRow = {
+  id: string;
+  token: string;
+  channel: string;
+  expires_at: string;
+  owner_user_id?: string;
+  is_active?: boolean;
+  used_count?: number;
+};
+
 const demoProfiles: DemoProfile[] = [
   {
     email: "abby.demo@gotwo.local",
@@ -59,6 +69,93 @@ function normalizeUsername(value: string | null | undefined) {
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
+}
+
+async function sendInviteEmail(inviterName: string, inviteeEmail: string, inviteLink: string) {
+  const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+  if (!lovableApiKey) {
+    console.error("LOVABLE_API_KEY not configured, skipping email");
+    return;
+  }
+
+  const html = `
+    <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 24px; background: #ffffff;">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <span style="font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+          <span style="color: #2F5F6D;">Go</span><span style="color: #D9654F;">Two</span>
+        </span>
+      </div>
+      <h1 style="color: #2F5F6D; font-size: 22px; font-weight: 600; text-align: center; margin-bottom: 16px;">
+        You've Been Invited to Connect
+      </h1>
+      <p style="color: #6b7280; font-size: 15px; line-height: 1.6; text-align: center; margin-bottom: 32px;">
+        <strong>${inviterName}</strong> wants to connect with you on GoTwo.
+      </p>
+      <div style="text-align: center; margin-bottom: 32px;">
+        <a href="${inviteLink}" style="display: inline-block; background: #2F5F6D; color: #f6e2d4; padding: 14px 36px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 15px;">
+          Accept Invitation
+        </a>
+      </div>
+      <p style="color: #9ca3af; font-size: 13px; text-align: center; line-height: 1.5;">
+        Don't have an account yet? The link above will guide you through creating one.
+      </p>
+    </div>
+  `;
+
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const projectRef = supabaseUrl.replace("https://", "").replace(".supabase.co", "");
+
+    const response = await fetch(`https://api.lovable.dev/api/v1/email/${projectRef}/send`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${lovableApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        to: inviteeEmail,
+        subject: `${inviterName} invited you to connect on GoTwo`,
+        html,
+        purpose: "transactional",
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Email send failed:", response.status, errText);
+    }
+  } catch (error: unknown) {
+    console.error("Email send error:", error);
+  }
+}
+
+async function createNotification(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  title: string,
+  body: string,
+  type = "partner",
+) {
+  await supabase.from("notifications").insert({
+    user_id: userId,
+    title,
+    body,
+    type,
+    is_read: false,
+  });
+}
+
+async function getDisplayName(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+) {
+  const { data } = await supabase
+    .from("profiles")
+    .select("display_name")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  return data?.display_name?.trim() || "Someone";
 }
 
 async function findAuthUserByEmail(
@@ -344,6 +441,307 @@ async function createConnectionRequest(
   };
 }
 
+async function createConnectionShareToken(
+  supabase: ReturnType<typeof createClient>,
+  ownerUserId: string,
+  channel: string,
+  daysValid: number,
+) {
+  const validChannel = channel === "link" ? "link" : "qr";
+  const validDays = Math.max(daysValid, 1);
+
+  const { data, error } = await supabase
+    .from("connection_share_tokens")
+    .insert({
+      owner_user_id: ownerUserId,
+      channel: validChannel,
+      expires_at: new Date(Date.now() + validDays * 24 * 60 * 60 * 1000).toISOString(),
+    })
+    .select("id, token, channel, expires_at")
+    .single();
+
+  if (error || !data) {
+    throw new Error(error?.message || "Could not create a connection share token");
+  }
+
+  return data as ShareTokenRow;
+}
+
+async function sendConnectionInvite(
+  supabase: ReturnType<typeof createClient>,
+  requesterId: string,
+  payload: Record<string, unknown>,
+  req: Request,
+) {
+  const inviteeEmail = typeof payload.invitee_email === "string" ? payload.invitee_email.trim().toLowerCase() : "";
+  const inviteePhone = typeof payload.invitee_phone === "string" ? payload.invitee_phone.trim() : "";
+  const inviteeUsername = typeof payload.invitee_username === "string" ? payload.invitee_username.trim() : "";
+  let inviteLink = typeof payload.invite_link === "string" ? payload.invite_link.trim() : "";
+
+  if (!inviteeEmail && !inviteePhone && !inviteeUsername) {
+    throw new Error("Missing invite target");
+  }
+
+  if (!inviteLink) {
+    const shareToken = await createConnectionShareToken(
+      supabase,
+      requesterId,
+      "link",
+      Number(payload.days_valid ?? 30),
+    );
+    const origin = req.headers.get("origin")
+      || req.headers.get("referer")?.replace(/\/+$/, "")
+      || "https://mygotwo.com";
+    inviteLink = `${origin}/connect?token=${shareToken.token}`;
+  }
+
+  const inviterName = await getDisplayName(supabase, requesterId);
+
+  if (inviteeEmail) {
+    await sendInviteEmail(inviterName, inviteeEmail, inviteLink);
+    const inviteeUser = await findAuthUserByEmail(supabase, inviteeEmail);
+    if (inviteeUser?.id) {
+      await createNotification(
+        supabase,
+        inviteeUser.id,
+        "New Connection Invite",
+        `${inviterName} wants to connect with you on GoTwo!`,
+        "partner",
+      );
+    }
+  }
+
+  await createNotification(
+    supabase,
+    requesterId,
+    "Invitation Sent",
+    inviteeEmail ? `Your invitation to ${inviteeEmail} has been sent.` : "Your invite link is ready to send.",
+    "general",
+  );
+
+  return { success: true, invite_link: inviteLink };
+}
+
+async function getPendingInvites(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  email: string | null,
+) {
+  const { data, error } = await supabase
+    .from("couples")
+    .select("*")
+    .eq("status", "pending")
+    .or(`invitee_id.eq.${userId},and(invitee_email.eq.${email},invitee_id.is.null)`);
+
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
+async function acceptInvite(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  inviteId: string,
+) {
+  const { data: couple } = await supabase
+    .from("couples")
+    .select("*")
+    .eq("id", inviteId)
+    .eq("status", "pending")
+    .maybeSingle();
+
+  const { error } = await supabase
+    .from("couples")
+    .update({ invitee_id: userId, status: "accepted" })
+    .eq("id", inviteId)
+    .eq("status", "pending");
+
+  if (error) throw new Error(error.message);
+
+  if (couple?.inviter_id) {
+    const accepterName = await getDisplayName(supabase, userId);
+    await createNotification(
+      supabase,
+      couple.inviter_id,
+      "Connection Accepted!",
+      `${accepterName} accepted your invitation and is now connected with you.`,
+      "partner",
+    );
+  }
+
+  return { success: true };
+}
+
+async function acceptInvitesByEmail(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  email: string | null,
+) {
+  if (!email) throw new Error("Missing email");
+
+  const { data: pending, error: pendingError } = await supabase
+    .from("couples")
+    .select("*")
+    .eq("invitee_email", email)
+    .eq("status", "pending")
+    .is("invitee_id", null);
+
+  if (pendingError) throw new Error(pendingError.message);
+  if (!pending || pending.length === 0) {
+    throw new Error("No pending invites found");
+  }
+
+  const { error } = await supabase
+    .from("couples")
+    .update({ invitee_id: userId, status: "accepted" })
+    .eq("invitee_email", email)
+    .eq("status", "pending");
+
+  if (error) throw new Error(error.message);
+
+  const accepterName = await getDisplayName(supabase, userId);
+  for (const couple of pending) {
+    await createNotification(
+      supabase,
+      couple.inviter_id,
+      "Connection Accepted!",
+      `${accepterName} accepted your invitation and is now connected with you.`,
+      "partner",
+    );
+  }
+
+  return { success: true, accepted: pending.length };
+}
+
+async function linkByInviter(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  email: string | null,
+  inviterId: string,
+) {
+  if (!inviterId) throw new Error("Missing inviter_id");
+  if (inviterId === userId) throw new Error("Cannot link to yourself");
+
+  const { data: existing } = await supabase
+    .from("couples")
+    .select("id")
+    .or(`and(inviter_id.eq.${inviterId},invitee_id.eq.${userId}),and(inviter_id.eq.${userId},invitee_id.eq.${inviterId})`)
+    .eq("status", "accepted");
+
+  if (existing && existing.length > 0) {
+    return { success: true, status: "already_connected" };
+  }
+
+  const { error } = await supabase.from("couples").insert({
+    inviter_id: inviterId,
+    invitee_id: userId,
+    invitee_email: email,
+    status: "accepted",
+  });
+
+  if (error) throw new Error(error.message);
+
+  const connectorName = await getDisplayName(supabase, userId);
+  const inviterName = await getDisplayName(supabase, inviterId);
+
+  await createNotification(
+    supabase,
+    inviterId,
+    "New Connection!",
+    `${connectorName} connected with you via your invite link.`,
+    "partner",
+  );
+
+  await createNotification(
+    supabase,
+    userId,
+    "Connected!",
+    `You're now connected with ${inviterName}.`,
+    "partner",
+  );
+
+  return { success: true, status: "connected" };
+}
+
+async function linkByToken(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  email: string | null,
+  rawToken: string,
+) {
+  if (!rawToken) throw new Error("Missing token");
+
+  const { data: tokenRow, error: tokenError } = await supabase
+    .from("connection_share_tokens")
+    .select("id, token, owner_user_id, expires_at, is_active, used_count")
+    .eq("token", rawToken)
+    .eq("is_active", true)
+    .gte("expires_at", new Date().toISOString())
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (tokenError || !tokenRow) {
+    throw new Error("Invalid or expired token");
+  }
+
+  if (tokenRow.owner_user_id === userId) {
+    throw new Error("Cannot use your own QR token");
+  }
+
+  const { data: existing } = await supabase
+    .from("couples")
+    .select("id, status")
+    .or(`and(inviter_id.eq.${tokenRow.owner_user_id},invitee_id.eq.${userId}),and(inviter_id.eq.${userId},invitee_id.eq.${tokenRow.owner_user_id})`)
+    .limit(1);
+
+  await supabase
+    .from("connection_share_tokens")
+    .update({ used_count: Number(tokenRow.used_count ?? 0) + 1 })
+    .eq("id", tokenRow.id);
+
+  if (existing && existing.length > 0) {
+    return {
+      success: true,
+      status: existing[0].status === "accepted" ? "already_connected" : "pending_exists",
+      couple_id: existing[0].id,
+    };
+  }
+
+  const { data: inserted, error } = await supabase
+    .from("couples")
+    .insert({
+      inviter_id: tokenRow.owner_user_id,
+      invitee_id: userId,
+      invitee_email: email,
+      status: "pending",
+    })
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  const scannerName = await getDisplayName(supabase, userId);
+  const ownerName = await getDisplayName(supabase, tokenRow.owner_user_id);
+
+  await createNotification(
+    supabase,
+    tokenRow.owner_user_id,
+    "New Connection Invite",
+    `${scannerName} scanned your QR code and sent a connection invite.`,
+    "partner",
+  );
+
+  await createNotification(
+    supabase,
+    userId,
+    "Invite Sent",
+    `Your connection invite to ${ownerName} has been sent.`,
+    "general",
+  );
+
+  return { success: true, status: "invite_sent", couple_id: inserted?.id ?? null };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -382,6 +780,53 @@ Deno.serve(async (req) => {
         JSON.stringify({ success: true, status: result.status, couple_id: result.couple_id }),
         { headers: corsHeaders },
       );
+    }
+
+    if (actionName === "create-connection-share-token") {
+      const shareToken = await createConnectionShareToken(
+        supabase,
+        authData.user.id,
+        String(payload?.channel ?? "qr"),
+        Number(payload?.days_valid ?? 30),
+      );
+      return new Response(JSON.stringify({ success: true, share_token: shareToken }), { headers: corsHeaders });
+    }
+
+    if (actionName === "send-invite-email") {
+      const result = await sendConnectionInvite(supabase, authData.user.id, payload, req);
+      return new Response(JSON.stringify(result), { headers: corsHeaders });
+    }
+
+    if (actionName === "get-pending") {
+      const pending = await getPendingInvites(supabase, authData.user.id, authData.user.email ?? null);
+      return new Response(JSON.stringify({ pending }), { headers: corsHeaders });
+    }
+
+    if (actionName === "accept-invite") {
+      const inviteId = String(payload?.invite_id ?? "").trim();
+      const result = await acceptInvite(supabase, authData.user.id, inviteId);
+      return new Response(JSON.stringify(result), { headers: corsHeaders });
+    }
+
+    if (actionName === "accept-by-email") {
+      const result = await acceptInvitesByEmail(supabase, authData.user.id, authData.user.email ?? null);
+      return new Response(JSON.stringify(result), { headers: corsHeaders });
+    }
+
+    if (actionName === "link-by-inviter") {
+      const inviterId = String(payload?.inviter_id ?? "").trim();
+      const result = await linkByInviter(supabase, authData.user.id, authData.user.email ?? null, inviterId);
+      return new Response(JSON.stringify(result), { headers: corsHeaders });
+    }
+
+    if (actionName === "link-by-token") {
+      const result = await linkByToken(
+        supabase,
+        authData.user.id,
+        authData.user.email ?? null,
+        String(payload?.token ?? "").trim(),
+      );
+      return new Response(JSON.stringify(result), { headers: corsHeaders });
     }
 
     const searchQuery = String(payload?.query ?? "").trim();

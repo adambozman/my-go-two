@@ -111,7 +111,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       setLoadingShareToken(true);
       setShareTokenError("");
       try {
-        const { data, error } = await supabase.functions.invoke("collaborations", {
+        const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
           body: { action: "create-connection-share-token", channel: "qr", days_valid: 30 },
         });
 
@@ -140,7 +140,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     try {
       let generatedInviteLink = inviteLink;
       if (!generatedInviteLink) {
-        const { data: tokenData, error: tokenError } = await supabase.functions.invoke("collaborations", {
+        const { data: tokenData, error: tokenError } = await supabase.functions.invoke("searchforaddprofile", {
           body: { action: "create-connection-share-token", channel: "link", days_valid: 30 },
         });
 
@@ -158,7 +158,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       }
 
       const normalizedEmail = email.trim().toLowerCase();
-      const { data, error } = await supabase.functions.invoke("collaborations", {
+      const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
         body: {
           action: "send-invite-email",
           invitee_email: normalizedEmail || null,

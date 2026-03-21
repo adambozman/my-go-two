@@ -49,6 +49,7 @@ const SettingsPage = () => {
   const [sending, setSending] = useState(false);
   const [seedingDemoProfiles, setSeedingDemoProfiles] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [shareToken, setShareToken] = useState("");
 
   // User settings state
   type SettingsKeys = 'gift_reminders' | 'partner_activity' | 'recommendations' | 'email_digests';
@@ -86,9 +87,7 @@ const SettingsPage = () => {
     }
   };
 
-  const inviteLink = user
-    ? `${window.location.origin}/connect?invite=${user.id}`
-    : "";
+  const inviteLink = shareToken ? `${window.location.origin}/connect?token=${shareToken}` : "";
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -106,12 +105,26 @@ const SettingsPage = () => {
 
   // Connections logic
   const callEdgeFunction = async (action: string, extra: Record<string, string> = {}) => {
-    const { data, error } = await supabase.functions.invoke("collaborations", {
+    const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
       body: { action, ...extra },
     });
     if (error) throw error;
     return data;
   };
+
+  const ensureShareToken = useCallback(async () => {
+    if (shareToken) return shareToken;
+    const result = await callEdgeFunction("create-connection-share-token", { channel: "link", days_valid: "30" });
+    const nextToken = result?.share_token?.token;
+    if (!nextToken) throw new Error("Could not create invite link");
+    setShareToken(nextToken);
+    return nextToken as string;
+  }, [shareToken]);
+
+  useEffect(() => {
+    if (!user || !qrDialogOpen || shareToken) return;
+    ensureShareToken().catch(() => undefined);
+  }, [ensureShareToken, qrDialogOpen, shareToken, user]);
 
   const fetchConnections = async () => {
     if (!user) { setConnectionsLoading(false); return; }
@@ -146,22 +159,32 @@ const SettingsPage = () => {
   const handleEmailInvite = async () => {
     if (!user || !inviteEmail.trim()) return;
     setSending(true);
-    const { error } = await supabase.from("couples").insert({
-      inviter_id: user.id,
-      invitee_email: inviteEmail.trim(),
-    });
-    setSending(false);
-    if (error) {
-      toast({ title: "Could not send invite", description: error.message, variant: "destructive" });
-    } else {
+    try {
+      const token = await ensureShareToken();
+      await callEdgeFunction("send-invite-email", {
+        invitee_email: inviteEmail.trim().toLowerCase(),
+        invite_link: `${window.location.origin}/connect?token=${token}`,
+      });
       toast({ title: "Invitation sent!", description: `Invited ${inviteEmail.trim()}` });
       setInviteEmail("");
       setEmailDialogOpen(false);
       fetchConnections();
+    } catch (error: any) {
+      toast({ title: "Could not send invite", description: error?.message || "Failed to send invite", variant: "destructive" });
+    } finally {
+      setSending(false);
     }
   };
 
   const handleCopyLink = async () => {
+    if (!inviteLink) {
+      const token = await ensureShareToken();
+      await navigator.clipboard.writeText(`${window.location.origin}/connect?token=${token}`);
+      setCopied(true);
+      toast({ title: "Link copied!" });
+      setTimeout(() => setCopied(false), 2000);
+      return;
+    }
     await navigator.clipboard.writeText(inviteLink);
     setCopied(true);
     toast({ title: "Link copied!" });
@@ -677,7 +700,7 @@ const SettingsPage = () => {
           <div className="flex flex-col items-center gap-6 py-4">
             <div className="card-design-neumorph p-6 rounded-2xl">
               <QRCodeSVG
-                value={inviteLink}
+                value={inviteLink || `${window.location.origin}/connect`}
                 size={200}
                 bgColor="transparent"
                 fgColor="#2F5F6D"

@@ -17,7 +17,7 @@ const DashboardLayout = () => {
       localStorage.removeItem("gotwo_invite");
       return;
     }
-    supabase.functions.invoke("collaborations", {
+    supabase.functions.invoke("searchforaddprofile", {
       body: { action: "link-by-inviter", inviter_id: inviteId },
     }).then(({ error }) => {
       localStorage.removeItem("gotwo_invite");

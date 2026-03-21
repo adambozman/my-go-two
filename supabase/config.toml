@@ -29,6 +29,3 @@ verify_jwt = false
 
 [functions.connection-data-search]
 verify_jwt = false
-
-[functions.collaborations]
-verify_jwt = false

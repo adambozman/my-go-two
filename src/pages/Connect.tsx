@@ -22,7 +22,7 @@ const Connect = () => {
     if (!authLoading && user && token) {
       setLinking(true);
       supabase.functions
-        .invoke("collaborations", {
+        .invoke("searchforaddprofile", {
           body: { action: "link-by-token", token },
         })
         .then(({ data, error }) => {
@@ -47,7 +47,7 @@ const Connect = () => {
     if (!authLoading && user && inviteId && inviteId !== user.id) {
       setLinking(true);
       supabase.functions
-        .invoke("collaborations", {
+        .invoke("searchforaddprofile", {
           body: { action: "link-by-inviter", inviter_id: inviteId },
         })
         .then(({ data, error }) => {
