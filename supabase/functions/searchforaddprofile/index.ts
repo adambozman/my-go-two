@@ -233,7 +233,7 @@ function getDisplayNameFromAuthUser(user: AuthUserSummary | undefined) {
   return emailName || "User";
 }
 
-async function ensureDemoProfiles(supabase: ReturnType<typeof createClient>) {
+async function ensureDemoProfiles(supabase: any) {
   for (const demo of demoProfiles) {
     let demoUser = await findAuthUserByEmail(supabase, demo.email);
     if (!demoUser) {
