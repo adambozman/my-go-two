@@ -523,7 +523,7 @@ async function sendConnectionInvite(
 }
 
 async function getPendingInvites(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   email: string | null,
 ) {
