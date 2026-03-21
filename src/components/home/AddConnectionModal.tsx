@@ -43,26 +43,19 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   );
 
   const runSearchQuery = async (rawQuery: string) => {
-    let rows: any[] = [];
-
     const { data: newSearchData, error: newSearchError } = await supabase.functions.invoke("searchforaddprofile", {
       body: { action: "search", query: rawQuery },
     });
 
-    if (!newSearchError) {
-      rows = Array.isArray(newSearchData?.users) ? newSearchData.users : [];
-    } else {
-      const { data: rpcData, error: rpcError } = await (supabase.rpc as any)("search_discoverable_users", {
-        p_query: rawQuery,
-        p_limit: 10,
-      });
-
-      if (rpcError) {
-        throw newSearchError;
-      }
-
-      rows = Array.isArray(rpcData) ? rpcData : [];
+    if (newSearchError) {
+      throw newSearchError;
     }
+
+    if (newSearchData?.error) {
+      throw new Error(newSearchData.error);
+    }
+
+    const rows = Array.isArray(newSearchData?.users) ? newSearchData.users : [];
 
     const aggregateResults = new Map<string, SearchResult>();
     for (const row of rows) {
@@ -221,7 +214,12 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
 
       setSearchResults(results);
     } catch (error: any) {
-      toast.error(error?.message || "Search failed");
+      const message = error?.message || "Search failed";
+      toast.error(
+        /edge function/i.test(message) || /failed to send a request/i.test(message)
+          ? "Add Connection search is calling an edge function that is not deployed or not responding."
+          : message,
+      );
       setSearchResults([]);
     } finally {
       setSearching(false);
