@@ -201,23 +201,6 @@ function inferFeedSection(entry: Pick<EntryRecord, "entry_name" | "group_name" |
   return "everyday";
 }
 
-function entryIsVisible(section: FeedSectionKey, permissions: ConnectionPermissionState) {
-  switch (section) {
-    case "style":
-      return permissions.sizes || permissions.brands;
-    case "food":
-      return permissions.food_preferences;
-    case "favorites":
-      return permissions.gift_ideas || permissions.wish_list || permissions.occasions || permissions.memories || permissions.saved_items;
-    case "personal":
-      return permissions.brands || permissions.saved_items || permissions.sizes;
-    case "everyday":
-      return Object.values(permissions).some(Boolean);
-    default:
-      return false;
-  }
-}
-
 function deriveTags(fieldValues: Record<string, string> | null, fallback: string) {
   const values = fieldValues && typeof fieldValues === "object"
     ? Object.values(fieldValues).filter((value): value is string => typeof value === "string" && value.trim().length > 0)
