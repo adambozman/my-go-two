@@ -538,7 +538,7 @@ async function getPendingInvites(
 }
 
 async function acceptInvite(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   inviteId: string,
 ) {
