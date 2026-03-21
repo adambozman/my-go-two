@@ -4105,16 +4105,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "trench-coat",
-            "name": "Trench Coat",
-            "image": "dress-female-outerwear-trench-coat",
-            "fields": [
-              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL"] },
-              { "label": "Preferred Brands", "type": "text", "value": "" },
-              { "label": "Notes", "type": "text", "value": "" }
-            ]
-          },
-          {
             "id": "car-coat",
             "name": "Car Coat",
             "image": "dress-female-outerwear-car-coat",
