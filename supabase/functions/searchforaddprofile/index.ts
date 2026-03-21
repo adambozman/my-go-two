@@ -188,7 +188,7 @@ async function findAuthUserByEmail(
 }
 
 async function findAuthUsersByIds(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userIds: string[],
 ) {
   const wantedIds = new Set(userIds.filter(Boolean));
