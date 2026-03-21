@@ -76,7 +76,7 @@ interface SharedCardEntryRow {
 }
 
 type DerivedFeatureKey = "your_vibe" | "for_you_recommendations" | "ai_conversation_access";
-type ConnectionKind = "significant_other" | "parent" | "family" | "friend" | "coworker" | "custom";
+type ConnectionKind = "significant_other" | "wife" | "husband" | "girlfriend" | "boyfriend" | "parent" | "family" | "friend" | "coworker" | "custom";
 
 type DerivedFeatureState = Record<DerivedFeatureKey, boolean>;
 
@@ -104,12 +104,18 @@ interface SharedRecommendationsRecord {
 
 const editableConnectionKinds: Array<{ key: ConnectionKind; label: string; description: string }> = [
   { key: "significant_other", label: "Significant Other", description: "Enables anniversary and romantic occasion logic." },
+  { key: "wife", label: "Wife", description: "Treat this relationship with spouse-level romantic logic." },
+  { key: "husband", label: "Husband", description: "Treat this relationship with spouse-level romantic logic." },
+  { key: "girlfriend", label: "Girlfriend", description: "Treat this relationship with romantic occasion logic." },
+  { key: "boyfriend", label: "Boyfriend", description: "Treat this relationship with romantic occasion logic." },
   { key: "parent", label: "Parent", description: "Keeps gifting focused on family and parent-relevant occasions." },
   { key: "family", label: "Family", description: "Use for siblings and broader family gift context." },
   { key: "friend", label: "Friend", description: "Use for personal but non-family gift context." },
   { key: "coworker", label: "Coworker", description: "Keeps gifting suggestions more neutral and occasion-safe." },
   { key: "custom", label: "Custom", description: "Fallback type when this connection does not fit a standard relationship." },
 ];
+
+const acceptanceRequiredKinds = new Set<ConnectionKind>(["significant_other", "wife", "husband", "girlfriend", "boyfriend"]);
 
 const shellCardStyle = {
   boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
@@ -327,6 +333,7 @@ export default function ConnectionPage() {
       { data: ownEntryRows },
       { data: connectionFeedRowsData },
       { data: connectionPreferenceRow },
+      { data: partnerProfileRow },
     ] = await Promise.all([
       partnerId
         ? (supabase.rpc as any)("get_connection_shared_profile", {
@@ -410,6 +417,13 @@ export default function ConnectionPage() {
             .eq("connection_user_id", partnerId)
             .maybeSingle()
         : Promise.resolve({ data: null }),
+      partnerId
+        ? (supabase as any)
+            .from("profiles")
+            .select("display_name, avatar_url")
+            .eq("user_id", partnerId)
+            .maybeSingle()
+        : Promise.resolve({ data: null }),
     ]);
 
     const profileData = Array.isArray(profileRows) ? (profileRows[0] as SharedProfileRecord | undefined) ?? null : null;
@@ -423,12 +437,13 @@ export default function ConnectionPage() {
     const cardRows = (incomingSharedCardRows || []) as SharedCardEntryRow[];
     const ownEntries = Array.isArray(ownEntryRows) ? (ownEntryRows as EntryRecord[]) : [];
 
-    const resolvedName = profileData?.display_name || couple.display_label || fallbackName;
+    const partnerProfile = (partnerProfileRow as SharedProfileRecord | null) || null;
+    const resolvedName = partnerProfile?.display_name || profileData?.display_name || couple.display_label || fallbackName;
 
     setConnection({
       id: couple.id,
       name: resolvedName,
-      image: profileData?.avatar_url || couple.photo_url || "",
+      image: partnerProfile?.avatar_url || profileData?.avatar_url || couple.photo_url || "",
       email: couple.invitee_email || "",
       status: couple.status,
       partnerId,
@@ -718,10 +733,11 @@ export default function ConnectionPage() {
 
   const handleConnectionKindChange = useCallback(async (nextKind: ConnectionKind) => {
     if (!user || !connection || !connection.partnerId || nextKind === connectionKind) return;
-    if (connection.status !== "accepted") {
+    const requiresAcceptance = acceptanceRequiredKinds.has(nextKind);
+    if (connection.status !== "accepted" && requiresAcceptance) {
       toast({
         title: "Connection not accepted yet",
-        description: "You can set connection type after both people accept the connection request.",
+        description: "Only romantic types require acceptance first (Significant Other, Wife, Husband, Girlfriend, Boyfriend).",
         variant: "destructive",
       });
       return;
@@ -835,19 +851,6 @@ export default function ConnectionPage() {
                 <h1 className="mt-2 text-[38px] leading-none md:text-[46px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                   {connection.name}
                 </h1>
-                <div className="mt-3">
-                  <span
-                    className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.14em]"
-                    style={{
-                      fontFamily: "'Jost', sans-serif",
-                      background: connection.status === "accepted" ? "rgba(45,104,112,0.16)" : "rgba(217,101,79,0.18)",
-                      border: connection.status === "accepted" ? "1px solid rgba(45,104,112,0.3)" : "1px solid rgba(217,101,79,0.36)",
-                      color: connection.status === "accepted" ? "var(--swatch-teal)" : "var(--swatch-cedar-grove)",
-                    }}
-                  >
-                    {connection.status}
-                  </span>
-                </div>
                 <p className="mt-3 max-w-3xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                   Their favorites, styles, food signals, and everyday specifics live here, filtered to what they have chosen to share with you.
                 </p>
@@ -893,7 +896,7 @@ export default function ConnectionPage() {
                   Pending Acceptance
                 </p>
                 <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-cedar-grove)" }}>
-                  This connection must accept your invite before connection type and sharing controls can be finalized.
+                  Romantic types require acceptance first. You can still use Friend, Coworker, Parent, Family, or Custom right now.
                 </p>
               </section>
             )}
@@ -946,21 +949,7 @@ export default function ConnectionPage() {
                   <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
                     {editableConnectionKinds.find((item) => item.key === connectionKind)?.description}
                     {savingConnectionKind ? " Saving..." : ""}
-                    {connection.status !== "accepted" ? " Available after acceptance." : ""}
                   </p>
-                  {connection.status !== "accepted" && (
-                    <div
-                      className="mt-3 rounded-[14px] px-3 py-2 text-xs leading-relaxed"
-                      style={{
-                        background: "rgba(217, 101, 79, 0.12)",
-                        border: "1px solid rgba(217, 101, 79, 0.28)",
-                        color: "var(--swatch-cedar-grove)",
-                        fontFamily: "'Jost', sans-serif",
-                      }}
-                    >
-                      Waiting on acceptance: this connection must accept your invite before you can set connection type.
-                    </div>
-                  )}
                 </div>
               </div>
             </section>
