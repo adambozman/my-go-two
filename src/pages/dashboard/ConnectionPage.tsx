@@ -715,7 +715,7 @@ export default function ConnectionPage() {
       }
     }
 
-    toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection.name}.` });
+    toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection?.name || "them"}.` });
   }, [connection, toast, user]);
 
   const handleToggleDerivedFeature = useCallback(async (key: DerivedFeatureKey, nextValue: boolean) => {
