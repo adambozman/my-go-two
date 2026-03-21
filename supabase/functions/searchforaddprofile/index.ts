@@ -275,199 +275,116 @@ async function ensureDemoProfiles(supabase: any) {
 }
 
 async function searchUsers(
-  supabase: any,
+  viewerClient: any,
+  adminClient: any,
   requesterId: string,
   query: string,
 ) {
   const rawQuery = String(query ?? "").trim();
   if (!rawQuery) return [] as SearchResult[];
 
-  const collapsedQuery = rawQuery.replace(/\s+/g, " ");
-  const normalizedPhone = normalizePhone(rawQuery);
   const normalizedEmail = rawQuery.toLowerCase();
-  const normalizedUsername = normalizeUsername(rawQuery);
-
-  const nameIds = new Set<string>();
-  const phoneIds = new Set<string>();
   const emailIds = new Set<string>();
 
-  const { data: nameMatches } = await supabase
-    .from("profiles")
-    .select("user_id, display_name, avatar_url")
-    .ilike("display_name", `%${collapsedQuery}%`)
-    .limit(25);
-
-  for (const match of nameMatches ?? []) {
-    if (match.user_id && match.user_id !== requesterId) nameIds.add(match.user_id);
-  }
-
-  if (normalizedPhone) {
-    const { data: phoneMatches } = await supabase
-      .from("user_discovery_contacts")
-      .select("user_id")
-      .eq("phone_search_normalized", normalizedPhone)
-      .limit(25);
-    for (const match of phoneMatches ?? []) {
-      if (match.user_id && match.user_id !== requesterId) phoneIds.add(match.user_id);
-    }
-  }
-
   if (normalizedEmail.includes("@")) {
-    const emailMatch = await findAuthUserByEmail(supabase, normalizedEmail, requesterId);
+    const emailMatch = await findAuthUserByEmail(adminClient, normalizedEmail, requesterId);
     if (emailMatch?.id) emailIds.add(emailMatch.id);
   }
 
-  if (normalizedUsername) {
-    const { data: usernameMatches } = await supabase
-      .from("profiles")
-      .select("user_id")
-      .ilike("display_name", normalizedUsername)
-      .limit(25);
-    for (const match of usernameMatches ?? []) {
-      if (match.user_id && match.user_id !== requesterId) nameIds.add(match.user_id);
-    }
+  const { data: discoverableRows, error: discoverableError } = await viewerClient.rpc("search_discoverable_users", {
+    p_query: rawQuery,
+    p_limit: 25,
+  });
+  if (discoverableError) {
+    throw new Error(discoverableError.message);
   }
 
-  const candidateIds = [...new Set([...nameIds, ...phoneIds, ...emailIds])];
-  if (candidateIds.length === 0) return [] as SearchResult[];
+  const rpcResults = (Array.isArray(discoverableRows) ? discoverableRows : [])
+    .filter((row): row is SearchResult => Boolean(row?.user_id))
+    .map((row) => ({
+      user_id: String(row.user_id),
+      display_name: row.display_name ?? "User",
+      discovery_avatar_url: row.discovery_avatar_url ?? null,
+      match_type: row.match_type === "phone" ? "phone" : "name",
+    }));
 
-  const [{ data: profiles }, { data: settings }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("user_id, display_name, avatar_url")
-      .in("user_id", candidateIds),
-    supabase
-      .from("user_discovery_settings")
-      .select("user_id, allow_name_discovery, allow_phone_discovery, share_avatar_in_discovery")
-      .in("user_id", candidateIds),
-  ]);
+  const combinedById = new Map<string, SearchResult>();
+  for (const row of rpcResults) {
+    if (row.user_id !== requesterId) combinedById.set(row.user_id, row);
+  }
 
-  const authUsersById = await findAuthUsersByIds(supabase, candidateIds);
-  const profilesByUserId = new Map((profiles ?? []).map((row) => [row.user_id, row]));
+  if (emailIds.size > 0) {
+    const candidateIds = [...emailIds];
+    const [{ data: profiles }, { data: settings }] = await Promise.all([
+      adminClient
+        .from("profiles")
+        .select("user_id, display_name, avatar_url")
+        .in("user_id", candidateIds),
+      adminClient
+        .from("user_discovery_settings")
+        .select("user_id, share_avatar_in_discovery")
+        .in("user_id", candidateIds),
+    ]);
 
-  const settingsByUserId = new Map((settings ?? []).map((row) => [row.user_id, row]));
+    const authUsersById = await findAuthUsersByIds(adminClient, candidateIds);
+    const profilesByUserId = new Map((profiles ?? []).map((row) => [row.user_id, row]));
+    const settingsByUserId = new Map((settings ?? []).map((row) => [row.user_id, row]));
 
-  return candidateIds
-    .map((userId) => {
+    for (const userId of candidateIds) {
+      if (combinedById.has(userId) || userId === requesterId) continue;
       const profile = profilesByUserId.get(userId);
       const prefs = settingsByUserId.get(userId);
       const authUser = authUsersById.get(userId);
-      const matchedByPhone = phoneIds.has(userId);
-      const matchedByName = nameIds.has(userId);
-      const matchedByEmail = emailIds.has(userId);
-
-      const canUsePhone = matchedByPhone && (prefs?.allow_phone_discovery ?? true);
-      const canUseName = matchedByName && (prefs?.allow_name_discovery ?? true);
-      const canUseEmail = matchedByEmail;
-
-      if (!canUsePhone && !canUseName && !canUseEmail) return null;
-
-      return {
+      combinedById.set(userId, {
         user_id: userId,
         display_name: profile?.display_name ?? getDisplayNameFromAuthUser(authUser),
         discovery_avatar_url: prefs?.share_avatar_in_discovery ? profile?.avatar_url ?? null : null,
-        match_type: canUseEmail ? "email" : canUsePhone ? "phone" : "name",
-      } as SearchResult;
-    })
-    .filter((value): value is SearchResult => Boolean(value))
-    .slice(0, 25);
+        match_type: "email",
+      });
+    }
+  }
+
+  return Array.from(combinedById.values()).slice(0, 25);
 }
 
 async function createConnectionRequest(
-  supabase: any,
-  requesterId: string,
+  viewerClient: any,
   targetUserId: string,
 ) {
-  if (!targetUserId) {
-    return { success: false, error: "Missing target_user_id", statusCode: 400 };
-  }
-
-  if (targetUserId === requesterId) {
-    return { success: false, error: "Cannot connect to yourself", statusCode: 400 };
-  }
-
-  const { data: existing } = await supabase
-    .from("couples")
-    .select("id, status, inviter_id, invitee_id")
-    .or(`and(inviter_id.eq.${requesterId},invitee_id.eq.${targetUserId}),and(inviter_id.eq.${targetUserId},invitee_id.eq.${requesterId})`)
-    .limit(1);
-
-  if (existing && existing.length > 0) {
-    const current = existing[0];
-    return {
-      success: true,
-      status: current.status === "accepted" ? "already_connected" : "pending_exists",
-      couple_id: current.id,
-      statusCode: 200,
-    };
-  }
-
-  const { data: inserted, error } = await supabase
-    .from("couples")
-    .insert({
-      inviter_id: requesterId,
-      invitee_id: targetUserId,
-      invitee_email: null,
-      status: "pending",
-    })
-    .select("id")
-    .single();
-
+  const { data, error } = await viewerClient.rpc("create_connection_request", {
+    p_target_user_id: targetUserId,
+  });
   if (error) {
     return { success: false, error: error.message, statusCode: 400 };
   }
-
-  await supabase.from("notifications").insert({
-    user_id: targetUserId,
-    title: "New Connection Invite",
-    body: "You received a connection invite on GoTwo.",
-    type: "partner",
-    is_read: false,
-  });
-
-  await supabase.from("notifications").insert({
-    user_id: requesterId,
-    title: "Invitation Sent",
-    body: "Your connection request has been sent.",
-    type: "general",
-    is_read: false,
-  });
-
+  const first = Array.isArray(data) ? data[0] : null;
   return {
     success: true,
-    status: "invite_sent",
-    couple_id: inserted?.id ?? null,
+    status: first?.request_status ?? "invite_sent",
+    couple_id: first?.couple_id ?? null,
     statusCode: 200,
   };
 }
 
 async function createConnectionShareToken(
-  supabase: any,
-  ownerUserId: string,
+  viewerClient: any,
   channel: string,
   daysValid: number,
 ) {
-  const validChannel = channel === "link" ? "link" : "qr";
-  const validDays = Math.max(daysValid, 1);
-
-  const { data, error } = await supabase
-    .from("connection_share_tokens")
-    .insert({
-      owner_user_id: ownerUserId,
-      channel: validChannel,
-      expires_at: new Date(Date.now() + validDays * 24 * 60 * 60 * 1000).toISOString(),
-    })
-    .select("id, token, channel, expires_at")
-    .single();
-
-  if (error || !data) {
+  const { data, error } = await viewerClient.rpc("issue_connection_share_token", {
+    p_channel: channel,
+    p_days_valid: Math.max(daysValid, 1),
+  });
+  const first = Array.isArray(data) ? data[0] : null;
+  if (error || !first) {
     throw new Error(error?.message || "Could not create a connection share token");
   }
 
-  return data as ShareTokenRow;
+  return first as ShareTokenRow;
 }
 
 async function sendConnectionInvite(
+  viewerClient: any,
   supabase: any,
   requesterId: string,
   payload: Record<string, unknown>,
@@ -484,8 +401,7 @@ async function sendConnectionInvite(
 
   if (!inviteLink) {
     const shareToken = await createConnectionShareToken(
-      supabase,
-      requesterId,
+      viewerClient,
       "link",
       Number(payload.days_valid ?? 30),
     );
@@ -663,101 +579,44 @@ async function linkByInviter(
 }
 
 async function linkByToken(
-  supabase: any,
-  userId: string,
-  email: string | null,
+  viewerClient: any,
   rawToken: string,
 ) {
   if (!rawToken) throw new Error("Missing token");
 
-  const { data: tokenRow, error: tokenError } = await supabase
-    .from("connection_share_tokens")
-    .select("id, token, owner_user_id, expires_at, is_active, used_count")
-    .eq("token", rawToken)
-    .eq("is_active", true)
-    .gte("expires_at", new Date().toISOString())
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (tokenError || !tokenRow) {
-    throw new Error("Invalid or expired token");
-  }
-
-  if (tokenRow.owner_user_id === userId) {
-    throw new Error("Cannot use your own QR token");
-  }
-
-  const { data: existing } = await supabase
-    .from("couples")
-    .select("id, status")
-    .or(`and(inviter_id.eq.${tokenRow.owner_user_id},invitee_id.eq.${userId}),and(inviter_id.eq.${userId},invitee_id.eq.${tokenRow.owner_user_id})`)
-    .limit(1);
-
-  await supabase
-    .from("connection_share_tokens")
-    .update({ used_count: Number(tokenRow.used_count ?? 0) + 1 })
-    .eq("id", tokenRow.id);
-
-  if (existing && existing.length > 0) {
-    return {
-      success: true,
-      status: existing[0].status === "accepted" ? "already_connected" : "pending_exists",
-      couple_id: existing[0].id,
-    };
-  }
-
-  const { data: inserted, error } = await supabase
-    .from("couples")
-    .insert({
-      inviter_id: tokenRow.owner_user_id,
-      invitee_id: userId,
-      invitee_email: email,
-      status: "pending",
-    })
-    .select("id")
-    .single();
-
+  const { data, error } = await viewerClient.rpc("create_connection_invite_from_token", {
+    p_token: rawToken,
+  });
   if (error) throw new Error(error.message);
-
-  const scannerName = await getDisplayName(supabase, userId);
-  const ownerName = await getDisplayName(supabase, tokenRow.owner_user_id);
-
-  await createNotification(
-    supabase,
-    tokenRow.owner_user_id,
-    "New Connection Invite",
-    `${scannerName} scanned your QR code and sent a connection invite.`,
-    "partner",
-  );
-
-  await createNotification(
-    supabase,
-    userId,
-    "Invite Sent",
-    `Your connection invite to ${ownerName} has been sent.`,
-    "general",
-  );
-
-  return { success: true, status: "invite_sent", couple_id: inserted?.id ?? null };
+  const first = Array.isArray(data) ? data[0] : null;
+  return {
+    success: true,
+    status: first?.result ?? "invite_sent",
+    couple_id: first?.couple_id ?? null,
+  };
 }
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
-
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "No auth" }), { status: 401, headers: corsHeaders });
     }
 
+    const adminClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const viewerClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } },
+    );
+
     const token = authHeader.replace("Bearer ", "");
-    const { data: authData, error: authError } = await supabase.auth.getUser(token);
+    const { data: authData, error: authError } = await adminClient.auth.getUser(token);
     if (authError || !authData.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
     }
@@ -766,13 +625,13 @@ Deno.serve(async (req) => {
     const actionName = String(payload?.action ?? "search").trim().toLowerCase();
 
     if (actionName === "seed-demo-profiles") {
-      await ensureDemoProfiles(supabase);
+      await ensureDemoProfiles(adminClient);
       return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
     }
 
     if (actionName === "create-connection-request") {
       const targetUserId = String(payload?.target_user_id ?? "").trim();
-      const result = await createConnectionRequest(supabase, authData.user.id, targetUserId);
+      const result = await createConnectionRequest(viewerClient, targetUserId);
       if (!result.success) {
         return new Response(JSON.stringify({ error: result.error }), { status: result.statusCode, headers: corsHeaders });
       }
@@ -784,8 +643,7 @@ Deno.serve(async (req) => {
 
     if (actionName === "create-connection-share-token") {
       const shareToken = await createConnectionShareToken(
-        supabase,
-        authData.user.id,
+        viewerClient,
         String(payload?.channel ?? "qr"),
         Number(payload?.days_valid ?? 30),
       );
@@ -793,48 +651,43 @@ Deno.serve(async (req) => {
     }
 
     if (actionName === "send-invite-email") {
-      const result = await sendConnectionInvite(supabase, authData.user.id, payload, req);
+      const result = await sendConnectionInvite(viewerClient, adminClient, authData.user.id, payload, req);
       return new Response(JSON.stringify(result), { headers: corsHeaders });
     }
 
     if (actionName === "get-pending") {
-      const pending = await getPendingInvites(supabase, authData.user.id, authData.user.email ?? null);
+      const pending = await getPendingInvites(adminClient, authData.user.id, authData.user.email ?? null);
       return new Response(JSON.stringify({ pending }), { headers: corsHeaders });
     }
 
     if (actionName === "accept-invite") {
       const inviteId = String(payload?.invite_id ?? "").trim();
-      const result = await acceptInvite(supabase, authData.user.id, inviteId);
+      const result = await acceptInvite(adminClient, authData.user.id, inviteId);
       return new Response(JSON.stringify(result), { headers: corsHeaders });
     }
 
     if (actionName === "accept-by-email") {
-      const result = await acceptInvitesByEmail(supabase, authData.user.id, authData.user.email ?? null);
+      const result = await acceptInvitesByEmail(adminClient, authData.user.id, authData.user.email ?? null);
       return new Response(JSON.stringify(result), { headers: corsHeaders });
     }
 
     if (actionName === "link-by-inviter") {
       const inviterId = String(payload?.inviter_id ?? "").trim();
-      const result = await linkByInviter(supabase, authData.user.id, authData.user.email ?? null, inviterId);
+      const result = await linkByInviter(adminClient, authData.user.id, authData.user.email ?? null, inviterId);
       return new Response(JSON.stringify(result), { headers: corsHeaders });
     }
 
     if (actionName === "link-by-token") {
-      const result = await linkByToken(
-        supabase,
-        authData.user.id,
-        authData.user.email ?? null,
-        String(payload?.token ?? "").trim(),
-      );
+      const result = await linkByToken(viewerClient, String(payload?.token ?? "").trim());
       return new Response(JSON.stringify(result), { headers: corsHeaders });
     }
 
     const searchQuery = String(payload?.query ?? "").trim();
-    let users = await searchUsers(supabase, authData.user.id, searchQuery);
+    let users = await searchUsers(viewerClient, adminClient, authData.user.id, searchQuery);
 
     if (users.length === 0 && /(abby|jules|gotwo\.local)/i.test(searchQuery)) {
-      await ensureDemoProfiles(supabase);
-      users = await searchUsers(supabase, authData.user.id, searchQuery);
+      await ensureDemoProfiles(adminClient);
+      users = await searchUsers(viewerClient, adminClient, authData.user.id, searchQuery);
     }
 
     return new Response(JSON.stringify({ users }), { headers: corsHeaders });
