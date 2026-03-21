@@ -649,7 +649,7 @@ export default function ConnectionPage() {
         return;
       }
     } else {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("shared_card_entries")
         .delete()
         .eq("couple_id", connection.id)
