@@ -478,7 +478,7 @@ async function searchUsers(
     discoverableRows = discoverableData;
   }
 
-  const rpcResults = discoverableRows
+  const rpcResults = (discoverableRows as any[])
     .filter((row): row is SearchResult => Boolean(row?.user_id))
     .map((row) => ({
       user_id: String(row.user_id),
