@@ -384,7 +384,7 @@ export default function ConnectionPage() {
             .eq("connection_user_id", partnerId)
         : Promise.resolve({ data: [] }),
       partnerId
-        ? supabase.rpc("get_connection_shared_vibe", {
+        ? (supabase.rpc as any)("get_connection_shared_vibe", {
             p_couple_id: couple.id,
             p_owner_user_id: partnerId,
             p_connection_user_id: user.id,
