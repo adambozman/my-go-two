@@ -636,7 +636,7 @@ export default function ConnectionPage() {
     setSharedCardEntryIds((current) => nextValue ? Array.from(new Set([...current, entry.id])) : current.filter((id) => id !== entry.id));
 
     if (nextValue) {
-      const { error } = await supabase.from("shared_card_entries").insert({
+      const { error } = await (supabase as any).from("shared_card_entries").insert({
         couple_id: connection.id,
         owner_user_id: user.id,
         connection_user_id: connection.partnerId,
