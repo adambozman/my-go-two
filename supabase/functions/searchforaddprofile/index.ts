@@ -130,7 +130,7 @@ async function sendInviteEmail(inviterName: string, inviteeEmail: string, invite
 }
 
 async function createNotification(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   title: string,
   body: string,
@@ -146,7 +146,7 @@ async function createNotification(
 }
 
 async function getDisplayName(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
 ) {
   const { data } = await supabase
@@ -159,7 +159,7 @@ async function getDisplayName(
 }
 
 async function findAuthUserByEmail(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   email: string,
   excludeUserId?: string,
 ) {
@@ -188,7 +188,7 @@ async function findAuthUserByEmail(
 }
 
 async function findAuthUsersByIds(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userIds: string[],
 ) {
   const wantedIds = new Set(userIds.filter(Boolean));
@@ -233,7 +233,7 @@ function getDisplayNameFromAuthUser(user: AuthUserSummary | undefined) {
   return emailName || "User";
 }
 
-async function ensureDemoProfiles(supabase: ReturnType<typeof createClient>) {
+async function ensureDemoProfiles(supabase: any) {
   for (const demo of demoProfiles) {
     let demoUser = await findAuthUserByEmail(supabase, demo.email);
     if (!demoUser) {
@@ -275,7 +275,7 @@ async function ensureDemoProfiles(supabase: ReturnType<typeof createClient>) {
 }
 
 async function searchUsers(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   requesterId: string,
   query: string,
 ) {
@@ -374,7 +374,7 @@ async function searchUsers(
 }
 
 async function createConnectionRequest(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   requesterId: string,
   targetUserId: string,
 ) {
@@ -442,7 +442,7 @@ async function createConnectionRequest(
 }
 
 async function createConnectionShareToken(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   ownerUserId: string,
   channel: string,
   daysValid: number,
@@ -468,7 +468,7 @@ async function createConnectionShareToken(
 }
 
 async function sendConnectionInvite(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   requesterId: string,
   payload: Record<string, unknown>,
   req: Request,
@@ -523,7 +523,7 @@ async function sendConnectionInvite(
 }
 
 async function getPendingInvites(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   email: string | null,
 ) {
@@ -538,7 +538,7 @@ async function getPendingInvites(
 }
 
 async function acceptInvite(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   inviteId: string,
 ) {
@@ -572,7 +572,7 @@ async function acceptInvite(
 }
 
 async function acceptInvitesByEmail(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   email: string | null,
 ) {
@@ -613,7 +613,7 @@ async function acceptInvitesByEmail(
 }
 
 async function linkByInviter(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   email: string | null,
   inviterId: string,
@@ -663,7 +663,7 @@ async function linkByInviter(
 }
 
 async function linkByToken(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   email: string | null,
   rawToken: string,

@@ -96,7 +96,7 @@ serve(async (req) => {
         return new Response(JSON.stringify({
           products: cachedProducts,
           cached: true,
-          generated_at: cachedRecommendations.generated_at,
+          generated_at: cachedRecommendations!.generated_at,
           week_start: weekStartKey,
         }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
