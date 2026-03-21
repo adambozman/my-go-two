@@ -1469,38 +1469,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "linen-wool-trousers",
-            "name": "Trousers",
-            "image": "dress-male-bottoms-linen-wool-trousers",
-            "fields": [
-              {
-                "label": "Waist",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Inseam",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
-            ]
-          },
-          {
             "id": "velvet-trousers",
             "name": "Tuxedo Pants",
             "image": "dress-male-bottoms-velvet-trousers",
