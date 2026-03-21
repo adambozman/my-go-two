@@ -5336,16 +5336,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "car-coat",
-            "name": "Car Coat",
-            "image": "dress-nb-outerwear-car-coat",
-            "fields": [
-              { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
-              { "label": "Preferred Brands", "type": "text", "value": "" },
-              { "label": "Notes", "type": "text", "value": "" }
-            ]
-          },
-          {
             "id": "peacoat",
             "name": "Peacoat",
             "image": "dress-nb-outerwear-peacoat",
