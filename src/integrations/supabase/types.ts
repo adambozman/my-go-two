@@ -388,6 +388,42 @@ export type Database = {
         }
         Relationships: []
       }
+      connection_share_tokens: {
+        Row: {
+          channel: string
+          created_at: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          owner_user_id: string
+          token: string
+          updated_at: string
+          used_count: number
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          owner_user_id: string
+          token?: string
+          updated_at?: string
+          used_count?: number
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          owner_user_id?: string
+          token?: string
+          updated_at?: string
+          used_count?: number
+        }
+        Relationships: []
+      }
       couples: {
         Row: {
           created_at: string
@@ -985,9 +1021,42 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_connection_invite_from_token: {
+        Args: { p_token: string }
+        Returns: {
+          couple_id: string
+          invitee_id: string
+          inviter_id: string
+          result: string
+        }[]
+      }
+      create_connection_request: {
+        Args: { p_target_user_id: string }
+        Returns: {
+          couple_id: string
+          request_status: string
+        }[]
+      }
       get_shared_categories: {
         Args: { p_couple_id: string; p_viewer_id: string }
         Returns: Json
+      }
+      issue_connection_share_token: {
+        Args: { p_channel?: string; p_days_valid?: number }
+        Returns: {
+          channel: string
+          expires_at: string
+          token: string
+        }[]
+      }
+      search_discoverable_users: {
+        Args: { p_limit?: number; p_query: string }
+        Returns: {
+          discovery_avatar_url: string
+          display_name: string
+          match_type: string
+          user_id: string
+        }[]
       }
     }
     Enums: {
