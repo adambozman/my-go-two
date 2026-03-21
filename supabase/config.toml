@@ -23,3 +23,12 @@ verify_jwt = false
 
 [functions.customer-portal]
 verify_jwt = false
+
+[functions.searchforaddprofile]
+verify_jwt = false
+
+[functions.connection-data-search]
+verify_jwt = false
+
+[functions.collaborations]
+verify_jwt = false

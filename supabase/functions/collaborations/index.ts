@@ -133,7 +133,7 @@ async function sendInviteEmail(inviterName: string, inviteeEmail: string, invite
     } else {
       console.log("Invite email sent to", inviteeEmail);
     }
-  } catch (e) {
+  } catch (e: unknown) {
     console.error("Email send error:", e);
   }
 }
@@ -153,9 +153,13 @@ async function createNotification(
       type,
       is_read: false,
     });
-  } catch (e) {
+  } catch (e: unknown) {
     console.error("Failed to create notification:", e);
   }
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
 }
 
 async function findAuthUserByEmail(
@@ -568,7 +572,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ error: "Unknown action", received_action: rawAction || null }),
       { status: 400, headers: corsHeaders },
     );
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+  } catch (e: unknown) {
+    return new Response(JSON.stringify({ error: getErrorMessage(e) }), { status: 500, headers: corsHeaders });
   }
 });

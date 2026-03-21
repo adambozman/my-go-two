@@ -45,6 +45,14 @@ const sanitizeIntents = (rawIntents: unknown): RecommendationIntent[] => {
     .filter((intent) => intent.brand && intent.name && intent.hook && intent.why);
 };
 
+const toObject = (value: unknown): Record<string, unknown> =>
+  value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+
+const getUsageCount = (value: unknown): number => {
+  const candidate = toObject(value).usage_count;
+  return typeof candidate === "number" && Number.isFinite(candidate) ? candidate : 0;
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -101,8 +109,8 @@ serve(async (req) => {
       .select("profile_answers, ai_personalization")
       .eq("user_id", user.id)
       .single();
-    const profileAnswers = prefsData?.profile_answers as Record<string, any> || {};
-    const personalization = prefsData?.ai_personalization as any || {};
+    const profileAnswers = toObject(prefsData?.profile_answers);
+    const personalization = toObject(prefsData?.ai_personalization);
     const bankPersonalization = getBankPersonalization(profileAnswers, personalization);
     const fallbackRecommendations = getCatalogRecommendations(profileAnswers, personalization);
 
@@ -225,7 +233,7 @@ Use the provided tool.`;
             } else {
               await supabase
                 .from("resolved_recommendation_catalog")
-                .update({ usage_count: ((existing as any).usage_count || 0) + 1 })
+                .update({ usage_count: getUsageCount(existing) + 1 })
                 .eq("fingerprint", fingerprint);
             }
 

@@ -22,6 +22,12 @@ type SearchResult = {
   match_type: "name" | "phone" | "email";
 };
 
+type AuthUserSummary = {
+  id: string;
+  email: string | null;
+  user_metadata?: Record<string, unknown> | null;
+};
+
 const demoProfiles: DemoProfile[] = [
   {
     email: "abby.demo@gotwo.local",
@@ -82,6 +88,52 @@ async function findAuthUserByEmail(
   }
 
   return null;
+}
+
+async function findAuthUsersByIds(
+  supabase: ReturnType<typeof createClient>,
+  userIds: string[],
+) {
+  const wantedIds = new Set(userIds.filter(Boolean));
+  const usersById = new Map<string, AuthUserSummary>();
+  if (wantedIds.size === 0) return usersById;
+
+  let page = 1;
+  const perPage = 200;
+
+  while (page <= 100 && usersById.size < wantedIds.size) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
+    if (error) throw error;
+
+    for (const candidate of data.users) {
+      if (wantedIds.has(candidate.id)) {
+        usersById.set(candidate.id, {
+          id: candidate.id,
+          email: candidate.email ?? null,
+          user_metadata: (candidate.user_metadata ?? null) as Record<string, unknown> | null,
+        });
+      }
+    }
+
+    if (data.users.length < perPage || data.users.length === 0) break;
+    page += 1;
+  }
+
+  return usersById;
+}
+
+function getDisplayNameFromAuthUser(user: AuthUserSummary | undefined) {
+  if (!user) return "User";
+
+  const metadataName = typeof user.user_metadata?.display_name === "string"
+    ? user.user_metadata.display_name.trim()
+    : "";
+  if (metadataName) return metadataName;
+
+  const emailName = typeof user.email === "string" && user.email.includes("@")
+    ? user.email.split("@")[0].trim()
+    : "";
+  return emailName || "User";
 }
 
 async function ensureDemoProfiles(supabase: ReturnType<typeof createClient>) {
@@ -193,14 +245,19 @@ async function searchUsers(
       .in("user_id", candidateIds),
   ]);
 
+  const authUsersById = await findAuthUsersByIds(supabase, candidateIds);
+  const profilesByUserId = new Map((profiles ?? []).map((row) => [row.user_id, row]));
+
   const settingsByUserId = new Map((settings ?? []).map((row) => [row.user_id, row]));
 
-  return (profiles ?? [])
-    .map((profile) => {
-      const prefs = settingsByUserId.get(profile.user_id);
-      const matchedByPhone = phoneIds.has(profile.user_id);
-      const matchedByName = nameIds.has(profile.user_id);
-      const matchedByEmail = emailIds.has(profile.user_id);
+  return candidateIds
+    .map((userId) => {
+      const profile = profilesByUserId.get(userId);
+      const prefs = settingsByUserId.get(userId);
+      const authUser = authUsersById.get(userId);
+      const matchedByPhone = phoneIds.has(userId);
+      const matchedByName = nameIds.has(userId);
+      const matchedByEmail = emailIds.has(userId);
 
       const canUsePhone = matchedByPhone && (prefs?.allow_phone_discovery ?? true);
       const canUseName = matchedByName && (prefs?.allow_name_discovery ?? true);
@@ -209,9 +266,9 @@ async function searchUsers(
       if (!canUsePhone && !canUseName && !canUseEmail) return null;
 
       return {
-        user_id: profile.user_id,
-        display_name: profile.display_name ?? "User",
-        discovery_avatar_url: prefs?.share_avatar_in_discovery ? profile.avatar_url : null,
+        user_id: userId,
+        display_name: profile?.display_name ?? getDisplayNameFromAuthUser(authUser),
+        discovery_avatar_url: prefs?.share_avatar_in_discovery ? profile?.avatar_url ?? null : null,
         match_type: canUseEmail ? "email" : canUsePhone ? "phone" : "name",
       } as SearchResult;
     })
@@ -340,4 +397,3 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: getErrorMessage(error) }), { status: 500, headers: corsHeaders });
   }
 });
-

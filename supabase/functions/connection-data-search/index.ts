@@ -5,6 +5,17 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+type RpcClient = {
+  rpc: (
+    fn: string,
+    args: Record<string, unknown>,
+  ) => Promise<{ data: unknown; error: { message: string } | null }>;
+};
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
 type SearchEntryRow = {
   id: string;
   user_id: string;
@@ -111,7 +122,7 @@ Deno.serve(async (req) => {
 
     const circleEntries: Array<SearchEntryRow & { owner_label: string }> = [];
     for (const connection of scopedConnections) {
-      const { data: sharedData, error: sharedError } = await (supabase.rpc as any)("get_connection_visible_card_entries", {
+      const { data: sharedData, error: sharedError } = await (supabase as unknown as RpcClient).rpc("get_connection_visible_card_entries", {
         p_couple_id: connection.couple_id,
         p_owner_user_id: connection.partner_id,
         p_connection_user_id: userId,
@@ -136,7 +147,7 @@ Deno.serve(async (req) => {
       }),
       { headers: corsHeaders },
     );
-  } catch (e) {
-    return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500, headers: corsHeaders });
+  } catch (e: unknown) {
+    return new Response(JSON.stringify({ error: getErrorMessage(e) }), { status: 500, headers: corsHeaders });
   }
 });
