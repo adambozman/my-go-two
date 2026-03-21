@@ -41,6 +41,18 @@ interface FeedItem {
   section: FeedSectionKey;
 }
 
+interface ConnectionFeedRow {
+  feed_item_id: string;
+  item_kind: string | null;
+  title: string | null;
+  subtitle: string | null;
+  body: string | null;
+  image_url: string | null;
+  section: string | null;
+  event_at: string | null;
+  meta: Record<string, unknown> | null;
+}
+
 interface SharedProfileRecord {
   display_name: string | null;
   avatar_url: string | null;
@@ -172,41 +184,29 @@ function formatRelativeDateLabel(value?: string | null) {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-function normalizeText(...parts: Array<string | null | undefined>) {
-  return parts
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
+function mapFeedSection(value: string | null | undefined): FeedSectionKey {
+  switch (value) {
+    case "style":
+      return "style";
+    case "food":
+      return "food";
+    case "favorites":
+      return "favorites";
+    case "personal":
+      return "personal";
+    default:
+      return "everyday";
+  }
 }
 
-function inferFeedSection(entry: Pick<EntryRecord, "entry_name" | "group_name" | "card_key">): FeedSectionKey {
-  const text = normalizeText(entry.entry_name, entry.group_name, entry.card_key);
+function deriveFeedTagsFromMeta(meta: Record<string, unknown> | null, section: FeedSectionKey) {
+  if (!meta || typeof meta !== "object") return [feedSectionConfig[section].label];
 
-  if (/(food|drink|coffee|tea|taco|restaurant|snack|grocery|meal|milk|pizza|kitchen)/.test(text)) {
-    return "food";
-  }
+  const values = Object.values(meta)
+    .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+    .slice(0, 3);
 
-  if (/(wish|gift|favorite|favourite|save|saved|memory|anniversary|birthday|occasion)/.test(text)) {
-    return "favorites";
-  }
-
-  if (/(skin|makeup|hygiene|personal|tooth|shampoo|conditioner|pads|razor|soap|care)/.test(text)) {
-    return "personal";
-  }
-
-  if (/(style|fit|top|bottom|shoe|footwear|outfit|shirt|jacket|jean|dress|closet|size|brand|accessor)/.test(text)) {
-    return "style";
-  }
-
-  return "everyday";
-}
-
-function deriveTags(fieldValues: Record<string, string> | null, fallback: string) {
-  const values = fieldValues && typeof fieldValues === "object"
-    ? Object.values(fieldValues).filter((value): value is string => typeof value === "string" && value.trim().length > 0)
-    : [];
-
-  const unique = Array.from(new Set([fallback, ...values])).filter(Boolean);
+  const unique = Array.from(new Set([feedSectionConfig[section].label, ...values]));
   return unique.slice(0, 4);
 }
 
@@ -280,7 +280,7 @@ export default function ConnectionPage() {
   const [cardSearch, setCardSearch] = useState("");
   const [connection, setConnection] = useState<ConnectionRecord | null>(null);
   const [labelDraft, setLabelDraft] = useState("");
-  const [entries, setEntries] = useState<EntryRecord[]>([]);
+  const [connectionFeedRows, setConnectionFeedRows] = useState<ConnectionFeedRow[]>([]);
   const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null; birthday: string | null; anniversary: string | null } | null>(null);
   const [myEntries, setMyEntries] = useState<EntryRecord[]>([]);
   const [outgoingProfileFields, setOutgoingProfileFields] = useState<ProfileFieldState>(emptyProfileFieldState);
@@ -327,7 +327,7 @@ export default function ConnectionPage() {
       { data: sharedRecommendationRows },
       { data: incomingSharedCardRows },
       { data: ownEntryRows },
-      { data: entryRows },
+      { data: connectionFeedRowsData },
       { data: connectionPreferenceRow },
     ] = await Promise.all([
       partnerId
@@ -398,10 +398,9 @@ export default function ConnectionPage() {
         .order("updated_at", { ascending: false })
         .limit(200),
       partnerId
-        ? (supabase.rpc as any)("get_connection_visible_card_entries", {
+        ? (supabase.rpc as any)("get_connection_feed", {
+            p_limit: 80,
             p_couple_id: couple.id,
-            p_owner_user_id: partnerId,
-            p_connection_user_id: user.id,
           })
         : Promise.resolve({ data: [] }),
       partnerId
@@ -416,7 +415,7 @@ export default function ConnectionPage() {
     ]);
 
     const profileData = Array.isArray(profileRows) ? (profileRows[0] as SharedProfileRecord | undefined) ?? null : null;
-    const entryData = Array.isArray(entryRows) ? (entryRows as EntryRecord[]) : [];
+    const feedRows = Array.isArray(connectionFeedRowsData) ? (connectionFeedRowsData as ConnectionFeedRow[]) : [];
     const incomingFieldRows = (incomingProfileRows || []) as SharedProfileFieldRow[];
     const outgoingFieldRows = (outgoingProfileRows || []) as SharedProfileFieldRow[];
     const incomingFeatureRows = (incomingDerivedRows || []) as SharedDerivedFeatureRow[];
@@ -465,7 +464,7 @@ export default function ConnectionPage() {
     setSharedRecommendations(recommendationData || null);
     setSharedCardEntryIds(cardRows.map((row) => row.card_entry_id));
     setMyEntries(ownEntries);
-    setEntries(entryData);
+    setConnectionFeedRows(feedRows);
     setConnectionKind(((connectionPreferenceRow as { connection_kind?: ConnectionKind } | null)?.connection_kind || "custom") as ConnectionKind);
     setLoading(false);
   }, [connectionId, user]);
@@ -475,20 +474,23 @@ export default function ConnectionPage() {
   }, [loadConnection]);
 
   const visibleFeedItems = useMemo(() => {
-    return entries
-      .map((entry) => {
-        const section = inferFeedSection(entry);
+    return connectionFeedRows
+      .map((row) => {
+        const section = mapFeedSection(row.section);
+        const title = row.title || row.body || "Shared update";
+        const subtitle = row.subtitle || feedSectionConfig[section].label;
+        const updatedAt = row.event_at || new Date().toISOString();
         return {
-          id: entry.id,
-          title: entry.entry_name,
-          subtitle: entry.group_name,
-          updatedAt: entry.updated_at,
-          imageUrl: entry.image_url,
-          tags: deriveTags(entry.field_values, entry.group_name),
+          id: row.feed_item_id,
+          title,
+          subtitle,
+          updatedAt,
+          imageUrl: row.image_url,
+          tags: deriveFeedTagsFromMeta(row.meta, section),
           section,
         } satisfies FeedItem;
       });
-  }, [entries]);
+  }, [connectionFeedRows]);
 
   useEffect(() => {
     let cancelled = false;

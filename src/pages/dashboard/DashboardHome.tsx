@@ -64,20 +64,14 @@ interface ActivityFeedItem {
   accent: string;
 }
 
-interface SharedProfileRecord {
-  display_name: string | null;
-  avatar_url: string | null;
-  birthday: string | null;
-  anniversary: string | null;
-}
-
-interface SharedEntryRecord {
-  id: string;
-  user_id: string;
-  entry_name: string;
-  group_name: string;
-  card_key: string;
-  updated_at: string;
+interface ConnectionFeedRow {
+  feed_item_id: string;
+  connection_label: string | null;
+  item_kind: string | null;
+  title: string | null;
+  subtitle: string | null;
+  body: string | null;
+  event_at: string | null;
 }
 
 const DashboardHome = () => {
@@ -344,49 +338,20 @@ const DashboardHome = () => {
       if (!user) return;
 
       if (cancelled) return;
-
-      const ownerNames = new Map<string, string>();
-      ownerNames.set(user.id, "You");
-      liveConnections.forEach((connection) => {
-        if (connection.partnerId) ownerNames.set(connection.partnerId, connection.name);
+      const { data } = await (supabase.rpc as any)("get_connection_feed_preview", {
+        p_limit: 12,
       });
-
-      const [{ data: myEntries }, partnerEntrySets] = await Promise.all([
-        supabase
-          .from("card_entries")
-          .select("id, user_id, entry_name, group_name, updated_at")
-          .eq("user_id", user.id)
-          .order("updated_at", { ascending: false })
-          .limit(12),
-        Promise.all(
-          liveConnections
-            .filter((connection) => connection.partnerId)
-            .map(async (connection) => {
-              const { data } = await (supabase.rpc as any)("get_connection_visible_card_entries", {
-                p_couple_id: connection.id,
-                p_owner_user_id: connection.partnerId,
-                p_connection_user_id: user.id,
-              });
-              return (Array.isArray(data) ? data : []) as unknown as SharedEntryRecord[];
-            })
-        ),
-      ]);
 
       if (cancelled) return;
 
-      const allEntries = [
-        ...((myEntries || []) as SharedEntryRecord[]),
-        ...partnerEntrySets.flat(),
-      ]
-        .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
-        .slice(0, 12);
+      const feedRows = (Array.isArray(data) ? data : []) as ConnectionFeedRow[];
 
-      const nextItems = allEntries.map((entry) => ({
-        id: entry.id,
-        title: ownerNames.get(entry.user_id) || "Connection",
-        detail: `Updated ${entry.entry_name} in ${entry.group_name}.`,
-        meta: formatRelativeDateLabel(entry.updated_at),
-        accent: entry.user_id === user.id ? "var(--swatch-teal)" : "var(--swatch-cedar-grove)",
+      const nextItems = feedRows.map((row) => ({
+        id: row.feed_item_id,
+        title: row.connection_label || row.subtitle || "Connection",
+        detail: row.body || row.title || "Shared an update.",
+        meta: formatRelativeDateLabel(row.event_at),
+        accent: row.item_kind === "occasion" ? "var(--swatch-coral)" : "var(--swatch-cedar-grove)",
       }));
 
       setRecentActivityItems(nextItems);
@@ -397,7 +362,7 @@ const DashboardHome = () => {
     return () => {
       cancelled = true;
     };
-  }, [liveConnections, user]);
+  }, [user]);
 
   const buildEntryResult = useCallback((row: any, ownerLabel: string): HomeSearchResult => ({
     id: row.id,
