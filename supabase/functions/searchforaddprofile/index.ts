@@ -663,7 +663,7 @@ async function linkByInviter(
 }
 
 async function linkByToken(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   email: string | null,
   rawToken: string,
