@@ -5,6 +5,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+function normalizePhone(value: string | null | undefined) {
+  return (value ?? "").replace(/\D/g, "");
+}
+
 async function sendInviteEmail(inviterName: string, inviteeEmail: string, inviteLink: string) {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
   if (!LOVABLE_API_KEY) {
@@ -106,7 +110,17 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
     }
 
-    const { action, invite_id, inviter_id, invitee_email } = await req.json();
+    const {
+      action,
+      invite_id,
+      inviter_id,
+      invitee_email,
+      query,
+      target_user_id,
+      token,
+      channel,
+      days_valid,
+    } = await req.json();
 
     // Helper to get display name
     const getDisplayName = async (userId: string) => {
@@ -153,6 +167,174 @@ Deno.serve(async (req) => {
       );
 
       return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+    }
+
+    if (action === "search-users") {
+      const rawQuery = String(query ?? "").trim();
+      if (!rawQuery) {
+        return new Response(JSON.stringify({ users: [] }), { headers: corsHeaders });
+      }
+
+      const normalizedPhone = normalizePhone(rawQuery);
+      const nameIds = new Set<string>();
+      const phoneIds = new Set<string>();
+
+      const { data: nameMatches } = await supabase
+        .from("profiles")
+        .select("user_id, display_name, avatar_url")
+        .ilike("display_name", `%${rawQuery}%`)
+        .limit(15);
+
+      for (const match of nameMatches ?? []) {
+        if (match.user_id && match.user_id !== user.id) {
+          nameIds.add(match.user_id);
+        }
+      }
+
+      if (normalizedPhone) {
+        const { data: phoneMatches } = await supabase
+          .from("user_discovery_contacts")
+          .select("user_id")
+          .eq("phone_search_normalized", normalizedPhone)
+          .limit(10);
+
+        for (const match of phoneMatches ?? []) {
+          if (match.user_id && match.user_id !== user.id) {
+            phoneIds.add(match.user_id);
+          }
+        }
+      }
+
+      const candidateIds = [...new Set([...nameIds, ...phoneIds])];
+      if (candidateIds.length === 0) {
+        return new Response(JSON.stringify({ users: [] }), { headers: corsHeaders });
+      }
+
+      const [{ data: profiles }, { data: settings }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("user_id, display_name, avatar_url")
+          .in("user_id", candidateIds),
+        supabase
+          .from("user_discovery_settings")
+          .select("user_id, allow_name_discovery, allow_phone_discovery, share_avatar_in_discovery")
+          .in("user_id", candidateIds),
+      ]);
+
+      const settingsByUserId = new Map(
+        (settings ?? []).map((row) => [row.user_id, row]),
+      );
+
+      const users = (profiles ?? [])
+        .map((profile) => {
+          const prefs = settingsByUserId.get(profile.user_id);
+          const matchedByPhone = phoneIds.has(profile.user_id);
+          const matchedByName = nameIds.has(profile.user_id);
+          const canUsePhone = matchedByPhone && Boolean(prefs?.allow_phone_discovery);
+          const canUseName = matchedByName && (prefs?.allow_name_discovery ?? true);
+
+          if (!canUsePhone && !canUseName) {
+            return null;
+          }
+
+          return {
+            user_id: profile.user_id,
+            display_name: profile.display_name ?? "User",
+            discovery_avatar_url: prefs?.share_avatar_in_discovery ? profile.avatar_url : null,
+            match_type: canUsePhone ? "phone" : "name",
+          };
+        })
+        .filter((value): value is NonNullable<typeof value> => Boolean(value))
+        .slice(0, 10);
+
+      return new Response(JSON.stringify({ users }), { headers: corsHeaders });
+    }
+
+    if (action === "create-connection-request") {
+      if (!target_user_id) {
+        return new Response(JSON.stringify({ error: "Missing target_user_id" }), { status: 400, headers: corsHeaders });
+      }
+
+      if (target_user_id === user.id) {
+        return new Response(JSON.stringify({ error: "Cannot connect to yourself" }), { status: 400, headers: corsHeaders });
+      }
+
+      const { data: existing } = await supabase
+        .from("couples")
+        .select("id, status, inviter_id, invitee_id")
+        .or(`and(inviter_id.eq.${user.id},invitee_id.eq.${target_user_id}),and(inviter_id.eq.${target_user_id},invitee_id.eq.${user.id})`)
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        const current = existing[0];
+        return new Response(
+          JSON.stringify({
+            success: true,
+            status: current.status === "accepted" ? "already_connected" : "pending_exists",
+            couple_id: current.id,
+          }),
+          { headers: corsHeaders },
+        );
+      }
+
+      const { data: inserted, error } = await supabase
+        .from("couples")
+        .insert({
+          inviter_id: user.id,
+          invitee_id: target_user_id,
+          invitee_email: null,
+          status: "pending",
+        })
+        .select("id")
+        .single();
+
+      if (error) {
+        return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: corsHeaders });
+      }
+
+      const inviterName = await getDisplayName(user.id);
+
+      await createNotification(
+        supabase,
+        target_user_id,
+        "New Connection Invite",
+        `${inviterName} sent you a connection invite on GoTwo.`,
+        "partner",
+      );
+
+      await createNotification(
+        supabase,
+        user.id,
+        "Invitation Sent",
+        "Your connection request has been sent.",
+        "general",
+      );
+
+      return new Response(
+        JSON.stringify({ success: true, status: "invite_sent", couple_id: inserted?.id ?? null }),
+        { headers: corsHeaders },
+      );
+    }
+
+    if (action === "create-connection-share-token") {
+      const validChannel = channel === "link" ? "link" : "qr";
+      const validDays = Math.max(Number(days_valid ?? 30), 1);
+
+      const { data: inserted, error } = await supabase
+        .from("connection_share_tokens")
+        .insert({
+          owner_user_id: user.id,
+          channel: validChannel,
+          expires_at: new Date(Date.now() + validDays * 24 * 60 * 60 * 1000).toISOString(),
+        })
+        .select("token, channel, expires_at")
+        .single();
+
+      if (error) {
+        return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: corsHeaders });
+      }
+
+      return new Response(JSON.stringify({ success: true, share_token: inserted }), { headers: corsHeaders });
     }
 
     if (action === "accept-by-email") {
@@ -274,13 +456,102 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
     }
 
+    if (action === "link-by-token") {
+      if (!token) {
+        return new Response(JSON.stringify({ error: "Missing token" }), { status: 400, headers: corsHeaders });
+      }
+
+      const { data: tokenRow, error: tokenError } = await supabase
+        .from("connection_share_tokens")
+        .select("id, owner_user_id, expires_at, is_active, used_count")
+        .eq("token", token)
+        .eq("is_active", true)
+        .gte("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (tokenError || !tokenRow) {
+        return new Response(JSON.stringify({ error: "Invalid or expired token" }), { status: 404, headers: corsHeaders });
+      }
+
+      if (tokenRow.owner_user_id === user.id) {
+        return new Response(JSON.stringify({ error: "Cannot use your own QR token" }), { status: 400, headers: corsHeaders });
+      }
+
+      const { data: existing } = await supabase
+        .from("couples")
+        .select("id, status, inviter_id, invitee_id")
+        .or(`and(inviter_id.eq.${tokenRow.owner_user_id},invitee_id.eq.${user.id}),and(inviter_id.eq.${user.id},invitee_id.eq.${tokenRow.owner_user_id})`)
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        await supabase
+          .from("connection_share_tokens")
+          .update({ used_count: tokenRow.used_count + 1 })
+          .eq("id", tokenRow.id);
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            status: existing[0].status === "accepted" ? "already_connected" : "pending_exists",
+            couple_id: existing[0].id,
+          }),
+          { headers: corsHeaders },
+        );
+      }
+
+      const { data: inserted, error } = await supabase
+        .from("couples")
+        .insert({
+          inviter_id: tokenRow.owner_user_id,
+          invitee_id: user.id,
+          invitee_email: user.email ?? null,
+          status: "pending",
+        })
+        .select("id")
+        .single();
+
+      if (error) {
+        return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: corsHeaders });
+      }
+
+      await supabase
+        .from("connection_share_tokens")
+        .update({ used_count: tokenRow.used_count + 1 })
+        .eq("id", tokenRow.id);
+
+      const scannerName = await getDisplayName(user.id);
+      const ownerName = await getDisplayName(tokenRow.owner_user_id);
+
+      await createNotification(
+        supabase,
+        tokenRow.owner_user_id,
+        "New Connection Invite",
+        `${scannerName} scanned your QR code and sent a connection invite.`,
+        "partner",
+      );
+
+      await createNotification(
+        supabase,
+        user.id,
+        "Invite Sent",
+        `Your connection invite to ${ownerName} has been sent.`,
+        "general",
+      );
+
+      return new Response(
+        JSON.stringify({ success: true, status: "invite_sent", couple_id: inserted?.id ?? null }),
+        { headers: corsHeaders },
+      );
+    }
+
     if (action === "get-pending") {
       const { data } = await supabase
         .from("couples")
         .select("*")
-        .eq("invitee_email", user.email)
         .eq("status", "pending")
-        .is("invitee_id", null);
+        .or(`invitee_id.eq.${user.id},and(invitee_email.eq.${user.email},invitee_id.is.null)`);
 
       return new Response(JSON.stringify({ pending: data ?? [] }), { headers: corsHeaders });
     }
