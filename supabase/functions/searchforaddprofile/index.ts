@@ -173,7 +173,7 @@ async function findAuthUserByEmail(
     const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
     if (error) throw error;
 
-    const found = data.users.find((candidate) => {
+    const found = data.users.find((candidate: any) => {
       if (!candidate.email) return false;
       if (excludeUserId && candidate.id === excludeUserId) return false;
       return candidate.email.toLowerCase() === normalized;
@@ -310,7 +310,7 @@ async function searchUsers(
 
   const combinedById = new Map<string, SearchResult>();
   for (const row of rpcResults) {
-    if (row.user_id !== requesterId) combinedById.set(row.user_id, row);
+    if (row.user_id !== requesterId) combinedById.set(row.user_id, row as SearchResult);
   }
 
   if (emailIds.size > 0) {
@@ -327,19 +327,19 @@ async function searchUsers(
     ]);
 
     const authUsersById = await findAuthUsersByIds(adminClient, candidateIds);
-    const profilesByUserId = new Map((profiles ?? []).map((row) => [row.user_id, row]));
-    const settingsByUserId = new Map((settings ?? []).map((row) => [row.user_id, row]));
+    const profilesByUserId = new Map((profiles ?? []).map((row: any) => [row.user_id, row]));
+    const settingsByUserId = new Map((settings ?? []).map((row: any) => [row.user_id, row]));
 
     for (const userId of candidateIds) {
       if (combinedById.has(userId) || userId === requesterId) continue;
-      const profile = profilesByUserId.get(userId);
-      const prefs = settingsByUserId.get(userId);
+      const profile: any = profilesByUserId.get(userId);
+      const prefs: any = settingsByUserId.get(userId);
       const authUser = authUsersById.get(userId);
       combinedById.set(userId, {
         user_id: userId,
         display_name: profile?.display_name ?? getDisplayNameFromAuthUser(authUser),
         discovery_avatar_url: prefs?.share_avatar_in_discovery ? profile?.avatar_url ?? null : null,
-        match_type: "email",
+        match_type: "email" as const,
       });
     }
   }
