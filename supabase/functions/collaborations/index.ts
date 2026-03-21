@@ -158,6 +158,37 @@ async function createNotification(
   }
 }
 
+async function findAuthUserByEmail(
+  supabase: ReturnType<typeof createClient>,
+  email: string,
+  excludeUserId?: string,
+) {
+  const normalized = email.trim().toLowerCase();
+  if (!normalized) return null;
+
+  let page = 1;
+  const perPage = 200;
+
+  while (page <= 10) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
+    if (error) {
+      throw error;
+    }
+
+    const found = data.users.find((candidate) => {
+      if (!candidate.email) return false;
+      if (excludeUserId && candidate.id === excludeUserId) return false;
+      return candidate.email.toLowerCase() === normalized;
+    });
+
+    if (found) return found;
+    if (data.users.length < perPage) break;
+    page += 1;
+  }
+
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -205,25 +236,10 @@ Deno.serve(async (req) => {
     };
 
     if (action === "seed-demo-profiles") {
-      const findUserByEmail = async (email: string) => {
-        const normalized = email.toLowerCase();
-        let page = 1;
-        const perPage = 200;
-        while (page < 6) {
-          const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
-          if (error) throw error;
-          const found = data.users.find((candidate) => candidate.email?.toLowerCase() === normalized);
-          if (found) return found;
-          if (data.users.length < perPage) break;
-          page += 1;
-        }
-        return null;
-      };
-
       const userIds: string[] = [];
 
       for (const demo of demoProfiles) {
-        let demoUser = await findUserByEmail(demo.email);
+        let demoUser = await findAuthUserByEmail(supabase, demo.email);
         if (!demoUser) {
           const { data: created, error: createError } = await supabase.auth.admin.createUser({
             email: demo.email,
@@ -330,11 +346,17 @@ Deno.serve(async (req) => {
       }
 
       // If invitee already has an account, create an in-app notification for them
-      const { data: inviteeUsers } = await supabase.auth.admin.listUsers();
       const normalizedInviteEmail = invitee_email ? String(invitee_email).trim().toLowerCase() : null;
-      const inviteeUser = normalizedInviteEmail
-        ? inviteeUsers?.users?.find((u) => u.email?.toLowerCase() === normalizedInviteEmail)
-        : undefined;
+      let inviteeUser:
+        | { id: string; email?: string | null }
+        | null = null;
+      if (normalizedInviteEmail) {
+        try {
+          inviteeUser = await findAuthUserByEmail(supabase, normalizedInviteEmail);
+        } catch (lookupError) {
+          console.error("Invite email lookup failed:", lookupError);
+        }
+      }
       if (inviteeUser) {
         await createNotification(
           supabase,
@@ -399,13 +421,13 @@ Deno.serve(async (req) => {
       }
 
       if (normalizedEmail.includes("@")) {
-        const { data: inviteeUsers } = await supabase.auth.admin.listUsers();
-        const emailMatch = inviteeUsers?.users?.find(
-          (candidate) => candidate.email?.toLowerCase() === normalizedEmail && candidate.id !== user.id
-        );
-
-        if (emailMatch?.id) {
-          emailIds.add(emailMatch.id);
+        try {
+          const emailMatch = await findAuthUserByEmail(supabase, normalizedEmail, user.id);
+          if (emailMatch?.id) {
+            emailIds.add(emailMatch.id);
+          }
+        } catch (lookupError) {
+          console.error("Search email lookup failed:", lookupError);
         }
       }
 
