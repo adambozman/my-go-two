@@ -187,7 +187,7 @@ const DashboardHome = () => {
           const partnerId = couple.inviter_id === user.id ? couple.invitee_id : couple.inviter_id;
           if (!partnerId) return null;
 
-          const { data } = await supabase.rpc("get_connection_relevant_occasions", {
+          const { data } = await (supabase.rpc as any)("get_connection_relevant_occasions", {
             p_connection_user_id: partnerId,
             p_days_ahead: 365,
           });
