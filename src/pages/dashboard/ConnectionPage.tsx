@@ -376,7 +376,7 @@ export default function ConnectionPage() {
             .eq("connection_user_id", user.id)
         : Promise.resolve({ data: [] }),
       partnerId
-        ? supabase
+        ? (supabase as any)
             .from("shared_derived_features")
             .select("id, feature_key, is_shared")
             .eq("couple_id", couple.id)
