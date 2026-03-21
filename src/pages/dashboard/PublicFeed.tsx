@@ -1,26 +1,161 @@
-import { useMemo, useState } from "react";
-import { ArrowLeft, Heart, MapPin, Sparkles, Star, ThumbsUp, UserPlus } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Heart, Loader2, MapPin, Sparkles, ThumbsUp, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-  getPublicFeedViewItems,
-  togglePublicFeedFollow,
-  togglePublicFeedReaction,
-  type PublicFeedCategory,
-} from "@/data/publicFeed";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const shellCardStyle = {
   boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
 } as const;
 
+type PublicFeedCategory = "Outfit" | "Product";
+
+interface PublicFeedRow {
+  published_entity_id: string;
+  entity_kind: "outfit" | "product";
+  title: string;
+  summary: string | null;
+  lead_image_url: string | null;
+  owner_user_id: string;
+  creator_name: string | null;
+  creator_tag: string | null;
+  creator_avatar_url: string | null;
+  published_at: string | null;
+  card_count: number;
+  like_count: number;
+  love_count: number;
+  viewer_liked: boolean;
+  viewer_loved: boolean;
+  viewer_follows: boolean;
+}
+
+interface PublicFeedItem {
+  id: string;
+  creatorId: string;
+  creatorName: string;
+  creatorTag: string;
+  title: string;
+  summary: string;
+  category: PublicFeedCategory;
+  location: string;
+  coverImage: string;
+  parts: string[];
+  likes: number;
+  loves: number;
+  isLiked: boolean;
+  isLoved: boolean;
+  isFollowing: boolean;
+}
+
+function toViewItem(row: PublicFeedRow): PublicFeedItem {
+  const category: PublicFeedCategory = row.entity_kind === "outfit" ? "Outfit" : "Product";
+  const partCount = Math.max(Number(row.card_count || 0), 1);
+  const parts = Array.from({ length: partCount }).map((_, index) => `Part ${index + 1}`);
+  return {
+    id: row.published_entity_id,
+    creatorId: row.owner_user_id,
+    creatorName: row.creator_name || "Creator",
+    creatorTag: row.creator_tag || "@creator",
+    title: row.title,
+    summary: row.summary || "Published from Go Two.",
+    category,
+    location: "Public",
+    coverImage: row.lead_image_url || "",
+    parts,
+    likes: Number(row.like_count || 0),
+    loves: Number(row.love_count || 0),
+    isLiked: Boolean(row.viewer_liked),
+    isLoved: Boolean(row.viewer_loved),
+    isFollowing: Boolean(row.viewer_follows),
+  };
+}
+
 export default function PublicFeed() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { user } = useAuth();
   const [filter, setFilter] = useState<"All" | PublicFeedCategory>("All");
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [actionBusyKey, setActionBusyKey] = useState<string | null>(null);
+  const [items, setItems] = useState<PublicFeedItem[]>([]);
 
-  const items = useMemo(() => getPublicFeedViewItems(), [refreshKey]);
   const visibleItems = filter === "All" ? items : items.filter((item) => item.category === filter);
 
-  const refresh = () => setRefreshKey((value) => value + 1);
+  const loadFeed = useCallback(async () => {
+    setLoading(true);
+    try {
+      const entityKindFilter = filter === "All" ? null : filter.toLowerCase();
+      const { data, error } = await (supabase.rpc as any)("get_public_feed_items", {
+        p_limit: 40,
+        p_entity_kind: entityKindFilter,
+        p_creator_user_id: null,
+      });
+
+      if (error) throw error;
+      const rows = Array.isArray(data) ? (data as PublicFeedRow[]) : [];
+      setItems(rows.map(toViewItem));
+    } catch (error: any) {
+      toast({
+        title: "Public feed unavailable",
+        description: error?.message || "Could not load public feed.",
+        variant: "destructive",
+      });
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [filter, toast]);
+
+  useEffect(() => {
+    loadFeed();
+  }, [loadFeed]);
+
+  const toggleFollow = async (creatorId: string, isFollowing: boolean) => {
+    if (!user) return;
+    setActionBusyKey(`follow:${creatorId}`);
+    try {
+      if (isFollowing) {
+        await (supabase.rpc as any)("unfollow_public_creator", {
+          p_creator_user_id: creatorId,
+        });
+      } else {
+        await (supabase.rpc as any)("follow_public_creator", {
+          p_creator_user_id: creatorId,
+        });
+      }
+      await loadFeed();
+    } catch (error: any) {
+      toast({
+        title: "Follow update failed",
+        description: error?.message || "Could not update follow status.",
+        variant: "destructive",
+      });
+    } finally {
+      setActionBusyKey(null);
+    }
+  };
+
+  const toggleReaction = async (itemId: string, reaction: "like" | "love") => {
+    if (!user) return;
+    setActionBusyKey(`reaction:${itemId}:${reaction}`);
+    try {
+      const { error } = await (supabase.rpc as any)("toggle_public_entity_reaction", {
+        p_published_entity_id: itemId,
+        p_reaction_type: reaction,
+      });
+      if (error) throw error;
+      await loadFeed();
+    } catch (error: any) {
+      toast({
+        title: "Reaction failed",
+        description: error?.message || "Could not update reaction.",
+        variant: "destructive",
+      });
+    } finally {
+      setActionBusyKey(null);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-[1480px] px-4 pb-8 pt-3 md:px-6">
@@ -54,7 +189,7 @@ export default function PublicFeed() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {(["All", "Outfit", "Bundle", "Popular Near You"] as const).map((option) => (
+            {(["All", "Outfit", "Product"] as const).map((option) => (
               <button
                 key={option}
                 onClick={() => setFilter(option)}
@@ -72,6 +207,11 @@ export default function PublicFeed() {
           </div>
         </div>
 
+        {loading ? (
+          <div className="mt-8 flex items-center justify-center py-12">
+            <Loader2 className="h-7 w-7 animate-spin" style={{ color: "var(--swatch-teal)" }} />
+          </div>
+        ) : (
         <div className="mt-6 grid gap-4 xl:grid-cols-2">
           {visibleItems.map((item) => (
             <article
@@ -84,7 +224,13 @@ export default function PublicFeed() {
             >
               <div className="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
                 <div className="overflow-hidden rounded-[22px]">
-                  <img src={item.coverImage} alt={item.title} className="h-full min-h-[220px] w-full object-cover" />
+                  {item.coverImage ? (
+                    <img src={item.coverImage} alt={item.title} className="h-full min-h-[220px] w-full object-cover" />
+                  ) : (
+                    <div className="flex min-h-[220px] items-center justify-center bg-white/50 text-xs uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-text-light)" }}>
+                      No image
+                    </div>
+                  )}
                 </div>
 
                 <div className="min-w-0">
@@ -99,10 +245,8 @@ export default function PublicFeed() {
                     </div>
 
                     <button
-                      onClick={() => {
-                        togglePublicFeedFollow(item.creatorId);
-                        refresh();
-                      }}
+                      onClick={() => toggleFollow(item.creatorId, item.isFollowing)}
+                      disabled={actionBusyKey === `follow:${item.creatorId}`}
                       className="inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]"
                       style={{
                         fontFamily: "'Jost', sans-serif",
@@ -143,10 +287,8 @@ export default function PublicFeed() {
 
                   <div className="mt-5 flex flex-wrap items-center gap-2">
                     <button
-                      onClick={() => {
-                        togglePublicFeedReaction(item.id, "like");
-                        refresh();
-                      }}
+                      onClick={() => toggleReaction(item.id, "like")}
+                      disabled={actionBusyKey === `reaction:${item.id}:like`}
                       className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]"
                       style={{
                         fontFamily: "'Jost', sans-serif",
@@ -160,10 +302,8 @@ export default function PublicFeed() {
                     </button>
 
                     <button
-                      onClick={() => {
-                        togglePublicFeedReaction(item.id, "love");
-                        refresh();
-                      }}
+                      onClick={() => toggleReaction(item.id, "love")}
+                      disabled={actionBusyKey === `reaction:${item.id}:love`}
                       className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]"
                       style={{
                         fontFamily: "'Jost', sans-serif",
@@ -186,8 +326,9 @@ export default function PublicFeed() {
             </article>
           ))}
         </div>
+        )}
 
-        {!visibleItems.length && (
+        {!loading && !visibleItems.length && (
           <div className="mt-6 rounded-[24px] border px-5 py-6" style={{ background: "rgba(255,255,255,0.58)", borderColor: "rgba(255,255,255,0.82)" }}>
             <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
               Public Feed
