@@ -173,7 +173,7 @@ async function findAuthUserByEmail(
     const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
     if (error) throw error;
 
-    const found = data.users.find((candidate) => {
+    const found = data.users.find((candidate: any) => {
       if (!candidate.email) return false;
       if (excludeUserId && candidate.id === excludeUserId) return false;
       return candidate.email.toLowerCase() === normalized;
