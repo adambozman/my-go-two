@@ -420,7 +420,7 @@ async function searchDiscoverableUsersFallback(
   }
 
   for (const [userId, profile] of nameCandidatesById) {
-    const settings = settingsById.get(userId);
+    const settings: any = settingsById.get(userId);
     const allowName = settings?.allow_name_discovery ?? true;
     const shareAvatar = settings?.share_avatar_in_discovery ?? false;
     if (!allowName) continue;
