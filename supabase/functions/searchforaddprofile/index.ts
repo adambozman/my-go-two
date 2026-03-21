@@ -412,7 +412,7 @@ async function searchDiscoverableUsersFallback(
 
   for (const userId of phoneMatchedIds) {
     const profile = profilesById.get(userId) ?? nameCandidatesById.get(userId);
-    const settings = settingsById.get(userId);
+    const settings: any = settingsById.get(userId);
     const allowPhone = settings?.allow_phone_discovery ?? false;
     const shareAvatar = settings?.share_avatar_in_discovery ?? false;
     if (!allowPhone) continue;
@@ -420,7 +420,7 @@ async function searchDiscoverableUsersFallback(
   }
 
   for (const [userId, profile] of nameCandidatesById) {
-    const settings = settingsById.get(userId);
+    const settings: any = settingsById.get(userId);
     const allowName = settings?.allow_name_discovery ?? true;
     const shareAvatar = settings?.share_avatar_in_discovery ?? false;
     if (!allowName) continue;
@@ -478,7 +478,7 @@ async function searchUsers(
     discoverableRows = discoverableData;
   }
 
-  const rpcResults = discoverableRows
+  const rpcResults = (discoverableRows as any[])
     .filter((row): row is SearchResult => Boolean(row?.user_id))
     .map((row) => ({
       user_id: String(row.user_id),
