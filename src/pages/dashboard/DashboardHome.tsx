@@ -424,7 +424,7 @@ const DashboardHome = () => {
               );
             })
           )
-        : Promise.resolve([] as SharedEntryRecord[][]),
+        : Promise.resolve([] as any[][]),
     ]);
 
     const nextMine: HomeSearchResult[] = [
