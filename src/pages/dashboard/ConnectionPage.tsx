@@ -718,7 +718,7 @@ export default function ConnectionPage() {
 
     setSharingBusy(true);
     const rpcName = mode === "share" ? "share_all_card_entries_with_connection" : "unshare_all_card_entries_with_connection";
-    const { data, error } = await supabase.rpc(rpcName, {
+    const { data, error } = await (supabase.rpc as any)(rpcName, {
       p_couple_id: connection.id,
       p_owner_user_id: user.id,
       p_connection_user_id: connection.partnerId,
