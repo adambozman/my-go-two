@@ -1467,38 +1467,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
                 "value": ""
               }
             ]
-          },
-          {
-            "id": "velvet-trousers",
-            "name": "Tuxedo Pants",
-            "image": "dress-male-bottoms-velvet-trousers",
-            "fields": [
-              {
-                "label": "Waist",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Inseam",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
-            ]
           }
         ]
       },
@@ -4136,17 +4104,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "tuxedo-pants",
-            "name": "Tuxedo Pants",
-            "image": "dress-female-bottoms-tuxedo-pants",
-            "fields": [
-              { "label": "Waist", "type": "text", "value": "" },
-              { "label": "Inseam", "type": "text", "value": "" },
-              { "label": "Preferred Brands", "type": "text", "value": "" },
-              { "label": "Notes", "type": "text", "value": "" }
-            ]
-          },
-          {
             "id": "wide-leg-pants",
             "name": "Wide-Leg Pants",
             "image": "dress-female-bottoms-wide-leg-pants",
@@ -5430,17 +5387,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             "fields": [
               { "label": "Size", "type": "select", "value": "", "options": ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
               { "label": "Length", "type": "select", "value": "", "options": ["Above Knee", "Knee", "Midi"] },
-              { "label": "Preferred Brands", "type": "text", "value": "" },
-              { "label": "Notes", "type": "text", "value": "" }
-            ]
-          },
-          {
-            "id": "tuxedo-pants",
-            "name": "Tuxedo Pants",
-            "image": "dress-nb-bottoms-tuxedo-pants",
-            "fields": [
-              { "label": "Waist", "type": "text", "value": "" },
-              { "label": "Inseam", "type": "text", "value": "" },
               { "label": "Preferred Brands", "type": "text", "value": "" },
               { "label": "Notes", "type": "text", "value": "" }
             ]
