@@ -623,6 +623,19 @@ export default function ConnectionPage() {
   );
   const connectionAccepted = connection?.status === "accepted";
   const canConfigureOutgoing = Boolean(connection?.partnerId);
+  const visibleNowSummary = incomingEnabled.length + incomingDerivedEnabled.length + visibleFeedItems.length;
+  const outgoingNowSummary = outgoingEnabled.length + outgoingDerivedEnabled.length + sharedCardEntryIds.length;
+  const liveNowDescription = outgoingEnabled.length
+    ? `${connection.name} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")}, ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"}, and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+    : sharedCardEntryIds.length || outgoingDerivedEnabled.length
+      ? `${connection.name} can currently see ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"} and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
+      : `You have not shared any fields, derived features, or product cards with ${connection.name} yet.`;
+  const statusEyebrow = connectionAccepted ? "Connection live" : "Pending acceptance";
+  const statusBody = connectionAccepted
+    ? "Sharing is live both ways based on what each of you has explicitly allowed."
+    : canConfigureOutgoing
+      ? "Your draft sharing is saved now and becomes visible once the connection is accepted."
+      : "This invite still needs to resolve to a real account before per-person sharing can be saved.";
 
   const handleToggleOutgoingProfileField = useCallback(async (key: ProfileFieldKey, nextValue: boolean) => {
     if (!user || !connection || !connection.partnerId) return;
@@ -878,46 +891,19 @@ export default function ConnectionPage() {
   }
 
   return (
-    <div className="mx-auto h-full max-w-[1480px] overflow-y-auto px-4 pb-8 pt-3 md:px-6">
+    <div className="mx-auto h-full max-w-[1320px] overflow-y-auto px-4 pb-10 pt-4 md:px-6">
       <div className="space-y-5">
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.22fr)_minmax(340px,0.78fr)]">
-          <section className="rounded-[30px] p-5 md:p-6" style={frostedPanelStyle}>
-            <div className="flex flex-wrap items-start justify-between gap-5">
-              <div className="min-w-0 flex-1">
-                <button
-                  onClick={() => navigate("/dashboard")}
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
-                  style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
-                >
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  Back home
-                </button>
-
-                <div className="mt-4 flex min-w-0 items-center gap-4">
-                <div
-                  className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border"
-                  style={{ borderColor: "rgba(45,104,112,0.2)", background: "linear-gradient(135deg, rgba(45,104,112,0.88), rgba(30,74,82,0.88))" }}
-                >
-                  {resolvedConnectionImage ? (
-                    <img src={resolvedConnectionImage} alt={connection.name} className="h-full w-full object-cover" />
-                  ) : (
-                    <span className="text-xl font-semibold text-white">{connection.name[0]?.toUpperCase() || "?"}</span>
-                  )}
-                </div>
-
-                <div className="min-w-0">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Go Two / Connection feed
-                  </p>
-                  <h1 className="mt-1 text-[34px] leading-none md:text-[42px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                    {connection.name}
-                  </h1>
-                  <p className="mt-2 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                    Their favorites, style signals, food details, and everyday specifics live here, filtered to exactly what they chose to let through.
-                  </p>
-                </div>
-              </div>
-              </div>
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.7fr)]">
+          <section className="rounded-[34px] p-6 md:p-8" style={frostedPanelStyle}>
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
+                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Back home
+              </button>
 
               <button
                 onClick={loadConnection}
@@ -929,92 +915,165 @@ export default function ConnectionPage() {
               </button>
             </div>
 
-            <div className="mt-5 flex flex-wrap gap-2">
-              <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
-                {visibleFeedItems.length} shared cards
-              </div>
-              <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
-                {incomingEnabled.length} profile fields
-              </div>
-              <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
-                {incomingDerivedEnabled.length} derived signals
-              </div>
-            </div>
+            <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_220px]">
+              <div className="min-w-0">
+                <div className="flex items-center gap-4">
+                  <div
+                    className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border"
+                    style={{ borderColor: "rgba(45,104,112,0.2)", background: "linear-gradient(135deg, rgba(45,104,112,0.88), rgba(30,74,82,0.88))" }}
+                  >
+                    {resolvedConnectionImage ? (
+                      <img src={resolvedConnectionImage} alt={connection.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-2xl font-semibold text-white">{connection.name[0]?.toUpperCase() || "?"}</span>
+                    )}
+                  </div>
 
-            {connection.status !== "accepted" && (
-              <div
-                className="mt-4 rounded-[24px] px-4 py-4"
-                style={{
-                  background: "linear-gradient(160deg, rgba(217,101,79,0.18) 0%, rgba(255,255,255,0.82) 100%)",
-                  border: "1px solid rgba(217,101,79,0.34)",
-                }}
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Pending acceptance
-                  </p>
-                  <span className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.62)", border: "1px solid rgba(217,101,79,0.22)" }}>
-                    Draft sharing is on
-                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      Go Two / Connection feed
+                    </p>
+                    <h1 className="mt-2 text-[40px] leading-none md:text-[56px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                      {connection.name}
+                    </h1>
+                  </div>
                 </div>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-cedar-grove)" }}>
-                  You can set what you plan to share now. It becomes visible to them after the connection is accepted.
+
+                <p className="mt-5 max-w-2xl text-[17px] leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  Their favorites, style signals, food details, and everyday specifics live here, filtered to what they chose to let through.
+                </p>
+
+                <p className="mt-6 max-w-2xl text-[30px] leading-[1.14] md:text-[34px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                  One page for what they share with you, what AI can infer from it, and what you plan to share back.
                 </p>
               </div>
-            )}
+
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                <div className="rounded-[28px] px-5 py-5" style={frostedInsetStyle}>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Visible now
+                  </p>
+                  <p className="mt-2 text-[40px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    {visibleNowSummary}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                    {visibleFeedItems.length} feed items, {incomingEnabled.length} profile fields, {incomingDerivedEnabled.length} AI signals.
+                  </p>
+                </div>
+
+                <div className="rounded-[28px] px-5 py-5" style={frostedInsetStyle}>
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    You are sharing
+                  </p>
+                  <p className="mt-2 text-[40px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    {outgoingNowSummary}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                    Draft fields, cards, and AI outputs set for this person.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section
+            className="rounded-[34px] p-6"
+            style={{
+              ...frostedPanelStyle,
+              background: connectionAccepted
+                ? "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(238,245,242,0.78) 100%)"
+                : "linear-gradient(180deg, rgba(255,246,243,0.9) 0%, rgba(255,255,255,0.76) 100%)",
+              border: connectionAccepted ? "1px solid rgba(255,255,255,0.84)" : "1px solid rgba(217,101,79,0.26)",
+            }}
+          >
+            <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+              {statusEyebrow}
+            </p>
+            <h2 className="mt-3 text-[34px] leading-none md:text-[40px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: connectionAccepted ? "var(--swatch-teal)" : "var(--swatch-cedar-grove)" }}>
+              {connectionAccepted ? "Open and active." : "Draft sharing is ready."}
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed" style={{ color: connectionAccepted ? "var(--swatch-antique-coin)" : "var(--swatch-cedar-grove)" }}>
+              {statusBody}
+            </p>
+
+            <div className="mt-6 rounded-[24px] px-4 py-4" style={frostedInsetStyle}>
+              <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                Last updated
+              </p>
+              <p className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                {formatRelativeDateLabel(connection.updatedAt)}
+              </p>
+              <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                Refresh this page any time to re-read their shared feed and AI layer.
+              </p>
+            </div>
           </section>
         </div>
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(340px,0.92fr)]">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
           <div className="space-y-5">
             <section className="rounded-[34px] p-6 md:p-7" style={frostedPanelStyle}>
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="min-w-0 flex-1">
+              <div className="grid gap-5 lg:grid-cols-[minmax(0,1.14fr)_240px]">
+                <div className="min-w-0">
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     AI Connection
                   </p>
-                  <h2 className="mt-2 max-w-2xl text-[38px] leading-none md:text-[46px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                  <h2 className="mt-2 max-w-2xl text-[42px] leading-[0.95] md:text-[58px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                     Suggestions shaped to this person.
                   </h2>
-                  <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  <p className="mt-4 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                     Go Two pulls from shared recommendations, dates, and feed clues to keep your next move grounded in what actually fits them.
                   </p>
                 </div>
 
-                <div className="rounded-[26px] px-5 py-4" style={frostedInsetStyle}>
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    AI signals
-                  </p>
-                  <p className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                    {incomingDerivedEnabled.length}
-                  </p>
-                  <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
-                    Shared derived features available to shape ideas.
-                  </p>
+                <div className="grid gap-4">
+                  <div className="rounded-[28px] px-5 py-5" style={frostedInsetStyle}>
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      AI signals
+                    </p>
+                    <p className="mt-2 text-[40px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                      {incomingDerivedEnabled.length}
+                    </p>
+                    <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                      Shared derived features available to shape ideas.
+                    </p>
+                  </div>
+
+                  <div className="rounded-[28px] px-5 py-5" style={frostedInsetStyle}>
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                      Shared vibe
+                    </p>
+                    <p className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                      {incomingDerivedFeatures.your_vibe && sharedVibe ? "Readable now" : "Locked"}
+                    </p>
+                    <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                      {incomingDerivedFeatures.your_vibe && sharedVibe ? sharedVibe : `${connection.name} has not shared their vibe summary with you yet.`}
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-3 md:grid-cols-2">
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
                 {incomingDerivedFeatures.for_you_recommendations ? (
                   sharedRecommendations?.products?.length ? (
                     sharedRecommendations.products.slice(0, 4).map((product, index) => (
                       <div
                         key={`${product.brand || "brand"}-${product.name || index}`}
-                        className="rounded-[24px] px-4 py-4"
+                        className={`rounded-[28px] px-5 py-5 ${index === 0 ? "md:col-span-2" : ""}`}
                         style={frostedInsetStyle}
                       >
                         <div className="flex items-start gap-3">
-                          <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
+                          <span className="mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
                             <Sparkles className="h-4 w-4" />
                           </span>
-                          <div>
-                            <p className="text-[22px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                          <div className="min-w-0">
+                            <p className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                               {product.name || "Recommendation"}
                             </p>
                             <p className="mt-2 text-xs uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                               {product.brand || "For You"}
                             </p>
-                            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                            <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                               {product.hook || product.why || "Shared from their latest For You recommendations."}
                             </p>
                           </div>
@@ -1025,18 +1084,18 @@ export default function ConnectionPage() {
                     aiSuggestions.map((suggestion, index) => (
                       <div
                         key={`${suggestion.title}-${index}`}
-                        className="rounded-[24px] px-4 py-4"
+                        className={`rounded-[28px] px-5 py-5 ${index === 0 ? "md:col-span-2" : ""}`}
                         style={frostedInsetStyle}
                       >
                         <div className="flex items-start gap-3">
-                          <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
+                          <span className="mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
                             <Sparkles className="h-4 w-4" />
                           </span>
-                          <div>
-                            <p className="text-[22px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                          <div className="min-w-0">
+                            <p className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                               {suggestion.title}
                             </p>
-                            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                            <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                               {suggestion.body}
                             </p>
                           </div>
@@ -1045,8 +1104,11 @@ export default function ConnectionPage() {
                     ))
                   )
                 ) : (
-                  <div className="rounded-[24px] px-5 py-5 md:col-span-2" style={frostedInsetStyle}>
-                    <p className="text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  <div className="rounded-[28px] px-5 py-5 md:col-span-2" style={frostedInsetStyle}>
+                    <p className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                      AI needs more to work with.
+                    </p>
+                    <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                       {connection.name} has not shared derived recommendations with you yet.
                     </p>
                   </div>
@@ -1060,27 +1122,30 @@ export default function ConnectionPage() {
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     Shared feed
                   </p>
-                  <h2 className="mt-2 text-[38px] leading-none md:text-[44px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                  <h2 className="mt-2 text-[42px] leading-[0.95] md:text-[58px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                     What is landing here.
                   </h2>
-                  <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                    Browse what they have let through for you, grouped by the kinds of details that actually help you shop, remember, and act.
+                  <p className="mt-4 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                    Browse what they have let through for you, grouped by the details that actually help you shop, remember, and act.
                   </p>
                 </div>
 
-                <div className="rounded-[24px] px-5 py-4" style={frostedInsetStyle}>
+                <div className="rounded-[28px] px-5 py-5" style={frostedInsetStyle}>
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     Sections open
                   </p>
-                  <p className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                  <p className="mt-2 text-[40px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                     {feedSections.length}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                    Distinct feed lanes with real shared context inside each one.
                   </p>
                 </div>
               </div>
 
               {feedSections.length === 0 ? (
-                <div className="mt-6 rounded-[26px] px-5 py-5" style={frostedInsetStyle}>
-                  <h3 className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                <div className="mt-6 rounded-[28px] px-5 py-5" style={frostedInsetStyle}>
+                  <h3 className="text-[32px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                     Nothing is landing here yet.
                   </h3>
                   <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
@@ -1088,11 +1153,11 @@ export default function ConnectionPage() {
                   </p>
                 </div>
               ) : (
-                <div className="mt-6 space-y-5">
-                  {feedSections.map((section) => (
+                <div className="mt-6 grid gap-4 lg:grid-cols-2">
+                  {feedSections.map((section, sectionIndex) => (
                     <section
                       key={section.key}
-                      className="rounded-[28px] p-4 md:p-5"
+                      className={`rounded-[30px] p-5 ${sectionIndex === 0 ? "lg:col-span-2" : ""}`}
                       style={frostedInsetStyle}
                     >
                       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -1100,32 +1165,32 @@ export default function ConnectionPage() {
                           <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                             {section.config.eyebrow}
                           </p>
-                          <h3 className="mt-2 text-[30px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                          <h3 className="mt-2 text-[32px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                             {section.config.label}
                           </h3>
-                          <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                          <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                             {section.config.description}
                           </p>
                         </div>
-                        <div className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.82)" }}>
-                          {section.items.length} items
+                        <div className="text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-text-light)" }}>
+                          {section.items.length} item{section.items.length === 1 ? "" : "s"}
                         </div>
                       </div>
 
-                      <div className="mt-4 grid gap-3 md:grid-cols-2">
-                        {section.items.map((item) => (
+                      <div className={`mt-5 grid gap-4 ${sectionIndex === 0 ? "xl:grid-cols-3" : "md:grid-cols-2"}`}>
+                        {section.items.map((item, itemIndex) => (
                           <article
                             key={item.id}
-                            className="overflow-hidden rounded-[24px] border"
+                            className={`overflow-hidden rounded-[26px] border ${sectionIndex === 0 && itemIndex === 0 ? "xl:col-span-2" : ""}`}
                             style={{ background: "rgba(255,255,255,0.66)", borderColor: "rgba(255,255,255,0.82)" }}
                           >
                             {(resolvedFeedImages[item.imageUrl || ""] || item.imageUrl) ? (
-                              <div className="h-44 overflow-hidden">
+                              <div className={`${sectionIndex === 0 && itemIndex === 0 ? "h-56 md:h-64" : "h-44"} overflow-hidden`}>
                                 <img src={resolvedFeedImages[item.imageUrl || ""] || item.imageUrl || ""} alt={item.title} className="h-full w-full object-cover" />
                               </div>
                             ) : (
                               <div
-                                className="flex h-44 items-end p-4"
+                                className={`flex items-end p-4 ${sectionIndex === 0 && itemIndex === 0 ? "h-56 md:h-64" : "h-44"}`}
                                 style={{ background: "linear-gradient(145deg, rgba(45,104,112,0.2), rgba(245,233,220,0.5))" }}
                               >
                                 <span className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "rgba(30,74,82,0.76)" }}>
@@ -1138,7 +1203,7 @@ export default function ConnectionPage() {
                               <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                                 {item.subtitle}
                               </p>
-                              <h4 className="mt-2 text-[24px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                              <h4 className="mt-2 text-[26px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                                 {item.title}
                               </h4>
 
@@ -1167,6 +1232,15 @@ export default function ConnectionPage() {
                   ))}
                 </div>
               )}
+
+              <div className="mt-5 rounded-[28px] px-5 py-5" style={frostedInsetStyle}>
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                  Live now
+                </p>
+                <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  {liveNowDescription}
+                </p>
+              </div>
             </section>
           </div>
           <aside className="space-y-5">
@@ -1179,28 +1253,28 @@ export default function ConnectionPage() {
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     What you share with this connection
                   </p>
-                  <h2 className="mt-2 text-[32px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                    One place to control it.
+                  <h2 className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    Shape your side quietly.
                   </h2>
                   <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                    Keep all outgoing settings inside one collapsible control box instead of spreading them across the page.
+                    Keep your outgoing settings in one place. Open the control box only when you want to tune fields, cards, AI outputs, or relationship logic.
                   </p>
                 </div>
               </div>
 
               <Accordion type="single" collapsible className="mt-5">
-                <AccordionItem value="sharing-controls" className="overflow-hidden rounded-[26px] border-0" style={frostedInsetStyle}>
-                  <AccordionTrigger className="px-4 py-4 text-left hover:no-underline">
+                <AccordionItem value="sharing-controls" className="overflow-hidden rounded-[28px] border-0" style={frostedInsetStyle}>
+                  <AccordionTrigger className="px-5 py-5 text-left hover:no-underline">
                     <div>
                       <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                         Sharing controls
                       </p>
-                      <p className="mt-2 text-[24px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                      <p className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                         Fields, cards, AI outputs, and connection type.
                       </p>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4 pt-0">
+                  <AccordionContent className="px-5 pb-5 pt-0">
                     {!connectionAccepted && canConfigureOutgoing && (
                       <p className="rounded-[18px] px-4 py-3 text-xs leading-relaxed" style={{ ...frostedInsetStyle, color: "var(--swatch-text-light)" }}>
                         These are your outgoing share settings. They are saved now and become visible after the connection is accepted.
@@ -1378,18 +1452,6 @@ export default function ConnectionPage() {
                 </AccordionItem>
               </Accordion>
 
-              <div className="mt-5 rounded-[24px] px-4 py-4" style={frostedInsetStyle}>
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                  Live now
-                </p>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                  {outgoingEnabled.length
-                    ? `${connection.name} can currently see ${outgoingEnabled.map((field) => field.label.toLowerCase()).join(", ")}, ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"}, and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
-                    : sharedCardEntryIds.length || outgoingDerivedEnabled.length
-                      ? `${connection.name} can currently see ${outgoingDerivedEnabled.length} derived feature${outgoingDerivedEnabled.length === 1 ? "" : "s"} and ${sharedCardEntryIds.length} shared product card${sharedCardEntryIds.length === 1 ? "" : "s"}.`
-                      : `You have not shared any fields, derived features, or product cards with ${connection.name} yet.`}
-                </p>
-              </div>
             </section>
           </aside>
         </div>
