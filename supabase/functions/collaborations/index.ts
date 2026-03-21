@@ -225,6 +225,27 @@ Deno.serve(async (req) => {
       days_valid,
     } = await req.json();
 
+    const normalizeActionName = (value: unknown) =>
+      String(value ?? "")
+        .trim()
+        .toLowerCase()
+        .replace(/_/g, "-");
+
+    const rawAction = normalizeActionName(action);
+    const actionAliases: Record<string, string> = {
+      "send-invite": "send-invite-email",
+      "send-invite-link": "send-invite-email",
+      "search-user": "search-users",
+      "create-connection": "create-connection-request",
+      "create-share-token": "create-connection-share-token",
+      "create-share-link-token": "create-connection-share-token",
+      "accept-invitation": "accept-invite",
+      "accept-all-email-invites": "accept-by-email",
+      "get-pending-invites": "get-pending",
+      "link-by-invite": "link-by-inviter",
+    };
+    const actionName = actionAliases[rawAction] ?? rawAction;
+
     // Helper to get display name
     const getDisplayName = async (userId: string) => {
       const { data } = await supabase
@@ -235,7 +256,7 @@ Deno.serve(async (req) => {
       return data?.display_name || "Someone";
     };
 
-    if (action === "seed-demo-profiles") {
+    if (actionName === "seed-demo-profiles") {
       const userIds: string[] = [];
 
       for (const demo of demoProfiles) {
@@ -332,7 +353,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (action === "send-invite-email") {
+    if (actionName === "send-invite-email") {
       if (!invitee_email && !invitee_phone && !invitee_username) {
         return new Response(JSON.stringify({ error: "Missing invite target" }), { status: 400, headers: corsHeaders });
       }
@@ -381,7 +402,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ success: true, invite_link: resolvedInviteLink }), { headers: corsHeaders });
     }
 
-    if (action === "search-users") {
+    if (actionName === "search-users") {
       const rawQuery = String(query ?? "").trim();
       if (!rawQuery) {
         return new Response(JSON.stringify({ users: [] }), { headers: corsHeaders });
@@ -492,7 +513,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ users }), { headers: corsHeaders });
     }
 
-    if (action === "create-connection-request") {
+    if (actionName === "create-connection-request") {
       if (!target_user_id) {
         return new Response(JSON.stringify({ error: "Missing target_user_id" }), { status: 400, headers: corsHeaders });
       }
@@ -558,7 +579,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (action === "create-connection-share-token") {
+    if (actionName === "create-connection-share-token") {
       const validChannel = channel === "link" ? "link" : "qr";
       const validDays = Math.max(Number(days_valid ?? 30), 1);
 
@@ -579,7 +600,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ success: true, share_token: inserted }), { headers: corsHeaders });
     }
 
-    if (action === "accept-by-email") {
+    if (actionName === "accept-by-email") {
       const { data: pending } = await supabase
         .from("couples")
         .select("*")
@@ -616,7 +637,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ success: true, accepted: pending.length }), { headers: corsHeaders });
     }
 
-    if (action === "accept-invite") {
+    if (actionName === "accept-invite") {
       const { data: couple } = await supabase
         .from("couples")
         .select("*")
@@ -649,7 +670,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
     }
 
-    if (action === "link-by-inviter") {
+    if (actionName === "link-by-inviter") {
       if (inviter_id === user.id) {
         return new Response(JSON.stringify({ error: "Cannot link to yourself" }), { status: 400, headers: corsHeaders });
       }
@@ -698,7 +719,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
     }
 
-    if (action === "link-by-token") {
+    if (actionName === "link-by-token") {
       if (!token) {
         return new Response(JSON.stringify({ error: "Missing token" }), { status: 400, headers: corsHeaders });
       }
@@ -788,7 +809,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (action === "get-pending") {
+    if (actionName === "get-pending") {
       const { data } = await supabase
         .from("couples")
         .select("*")
@@ -798,7 +819,10 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ pending: data ?? [] }), { headers: corsHeaders });
     }
 
-    return new Response(JSON.stringify({ error: "Unknown action" }), { status: 400, headers: corsHeaders });
+    return new Response(
+      JSON.stringify({ error: "Unknown action", received_action: rawAction || null }),
+      { status: 400, headers: corsHeaders },
+    );
   } catch (e) {
     return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
   }
