@@ -1549,69 +1549,6 @@ export const CATEGORY_REGISTRY_SEED: CategoryRegistryRow[] =
             ]
           },
           {
-            "id": "plain-toe-derby",
-            "name": "Derbies",
-            "image": "dress-male-footwear-plain-toe-derby",
-            "fields": [
-              {
-                "label": "US Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
-            ]
-          },
-          {
-            "id": "monk-strap",
-            "name": "Monk Strap Shoes",
-            "image": "dress-male-footwear-monk-strap",
-            "fields": [
-              {
-                "label": "US Size",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Style",
-                "type": "select",
-                "value": "",
-                "options": [
-                  "Single Monk",
-                  "Double Monk"
-                ]
-              },
-              {
-                "label": "Preferred Brands",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Keywords",
-                "type": "text",
-                "value": ""
-              },
-              {
-                "label": "Notes",
-                "type": "text",
-                "value": ""
-              }
-            ]
-          },
-          {
             "id": "hybrid-dress-sneaker",
             "name": "Dress Sneakers",
             "image": "dress-male-footwear-hybrid-dress-sneaker",
