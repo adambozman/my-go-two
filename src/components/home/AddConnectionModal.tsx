@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, QrCode, Send, Copy, Check, UserPlus } from "lucide-react";
+import { X, Mail, QrCode, Send, Copy, Check, UserPlus, Search, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -11,57 +11,152 @@ interface AddConnectionModalProps {
   onConnectionCreated?: () => void;
 }
 
-type Tab = "invite" | "qr";
+type Tab = "search" | "invite" | "qr";
+
+interface SearchResult {
+  user_id: string;
+  display_name: string;
+  discovery_avatar_url: string | null;
+  match_type: "name" | "phone";
+}
 
 export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddConnectionModalProps) {
   const { user } = useAuth();
-  const [tab, setTab] = useState<Tab>("invite");
+  const [tab, setTab] = useState<Tab>("search");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [connectingUserId, setConnectingUserId] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [shareToken, setShareToken] = useState("");
+  const [loadingShareToken, setLoadingShareToken] = useState(false);
 
-  const inviteLink = user
-    ? `${window.location.origin}/connect?invite=${user.id}`
-    : "";
+  const inviteLink = useMemo(
+    () => (shareToken ? `${window.location.origin}/connect?token=${shareToken}` : ""),
+    [shareToken],
+  );
+
+  useEffect(() => {
+    if (!open) return;
+
+    setTab("search");
+    setSearchQuery("");
+    setSearchResults([]);
+    setEmail("");
+    setCopied(false);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || !user || shareToken || loadingShareToken) return;
+
+    const loadShareToken = async () => {
+      setLoadingShareToken(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("collaborations", {
+          body: { action: "create-connection-share-token", channel: "qr", days_valid: 30 },
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        const tokenValue = data?.share_token?.token;
+        if (tokenValue) {
+          setShareToken(tokenValue);
+        }
+      } catch (error: any) {
+        toast.error(error?.message || "Could not create a QR invite link.");
+      } finally {
+        setLoadingShareToken(false);
+      }
+    };
+
+    loadShareToken();
+  }, [loadingShareToken, open, shareToken, user]);
 
   const handleSendInvite = async () => {
     if (!user || !email.trim()) return;
 
     setSending(true);
     try {
-      const { error: insertError } = await supabase.from("couples").insert({
-        inviter_id: user.id,
-        invitee_email: email.trim().toLowerCase(),
-        display_label: email.trim().split("@")[0],
-        status: "pending",
+      const normalizedEmail = email.trim().toLowerCase();
+      const { data, error } = await supabase.functions.invoke("collaborations", {
+        body: { action: "send-invite-email", invitee_email: normalizedEmail },
       });
 
-      if (insertError) {
-        if (insertError.message.includes("duplicate") || insertError.code === "23505") {
-          toast.error("An invite for this email already exists.");
-        } else {
-          toast.error(insertError.message);
-        }
-        setSending(false);
-        return;
+      if (error) {
+        throw error;
       }
 
-      await supabase.functions.invoke("collaborations", {
-        body: { action: "send-invite-email", invitee_email: email.trim().toLowerCase() },
-      });
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
-      toast.success(`Invitation sent to ${email.trim()}`);
+      toast.success(`Invitation sent to ${normalizedEmail}`);
       onConnectionCreated?.();
       onClose();
       setEmail("");
     } catch (err: any) {
-      toast.error("Failed to send invite");
+      toast.error(err?.message || "Failed to send invite");
     } finally {
       setSending(false);
     }
   };
 
+  const handleSearch = async () => {
+    if (!user || !searchQuery.trim()) return;
+
+    setSearching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("collaborations", {
+        body: { action: "search-users", query: searchQuery.trim() },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setSearchResults(Array.isArray(data?.users) ? data.users : []);
+    } catch (error: any) {
+      toast.error(error?.message || "Search failed");
+      setSearchResults([]);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const handleCreateConnection = async (targetUserId: string) => {
+    setConnectingUserId(targetUserId);
+    try {
+      const { data, error } = await supabase.functions.invoke("collaborations", {
+        body: { action: "create-connection-request", target_user_id: targetUserId },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.status === "already_connected") {
+        toast.success("You are already connected.");
+      } else if (data?.status === "pending_exists") {
+        toast.success("A connection invite is already pending.");
+      } else {
+        toast.success("Connection invite sent.");
+      }
+
+      onConnectionCreated?.();
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.message || "Could not send connection invite");
+    } finally {
+      setConnectingUserId(null);
+    }
+  };
+
   const handleCopyLink = async () => {
+    if (!inviteLink) return;
     try {
       await navigator.clipboard.writeText(inviteLink);
       setCopied(true);
@@ -124,6 +219,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
 
             <div className="flex gap-1 px-5 pb-3">
               {([
+                { key: "search" as Tab, icon: Search, label: "Search User" },
                 { key: "invite" as Tab, icon: Mail, label: "Email Invite" },
                 { key: "qr" as Tab, icon: QrCode, label: "Share Link" },
               ]).map(({ key, icon: Icon, label: tabLabel }) => (
@@ -145,7 +241,90 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
             </div>
 
             <div className="px-5 pb-5">
-              {tab === "invite" ? (
+              {tab === "search" ? (
+                <div className="space-y-3">
+                  <p className="text-[12px]" style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}>
+                    Search by name or phone number first. If they are already on Go Two, send them a direct connection invite.
+                  </p>
+
+                  <div>
+                    <label
+                      className="text-[10px] font-semibold uppercase tracking-wider mb-1 block"
+                      style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}
+                    >
+                      Name or Phone
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            handleSearch();
+                          }
+                        }}
+                        placeholder="Search by name or phone"
+                        className="surface-field w-full px-3.5 py-2.5 rounded-2xl text-[14px] outline-none transition-all"
+                        style={{
+                          color: "var(--swatch-teal)",
+                          fontFamily: "'Jost', sans-serif",
+                        }}
+                      />
+                      <button
+                        onClick={handleSearch}
+                        disabled={!searchQuery.trim() || searching}
+                        className="surface-pill inline-flex items-center justify-center rounded-2xl px-4 active:scale-[0.98] disabled:opacity-50"
+                        style={{ color: "var(--swatch-teal)" }}
+                      >
+                        {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    {searching ? (
+                      <div className="surface-pill flex items-center gap-2 rounded-2xl px-3.5 py-3 text-[12px]" style={{ color: "var(--swatch-antique-coin)" }}>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Searching...
+                      </div>
+                    ) : searchQuery.trim() && searchResults.length === 0 ? (
+                      <div className="surface-pill rounded-2xl px-3.5 py-3 text-[12px]" style={{ color: "var(--swatch-antique-coin)" }}>
+                        No user found. Use Email Invite if they are not on Go Two yet.
+                      </div>
+                    ) : (
+                      searchResults.map((result) => (
+                        <div
+                          key={result.user_id}
+                          className="surface-pill flex items-center justify-between gap-3 rounded-2xl px-3.5 py-3"
+                        >
+                          <div className="min-w-0">
+                            <p className="truncate text-[14px] font-semibold" style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}>
+                              {result.display_name}
+                            </p>
+                            <p className="mt-1 text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}>
+                              Found by {result.match_type}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => handleCreateConnection(result.user_id)}
+                            disabled={connectingUserId === result.user_id}
+                            className="surface-button-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] disabled:opacity-50"
+                            style={{
+                              background: "var(--swatch-teal)",
+                              color: "white",
+                              fontFamily: "'Jost', sans-serif",
+                            }}
+                          >
+                            {connectingUserId === result.user_id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5" />}
+                            Connect
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              ) : tab === "invite" ? (
                 <div className="space-y-3">
                   <p className="text-[12px]" style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}>
                     Enter their email to send a connection invite.
@@ -188,7 +367,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               ) : (
                 <div className="space-y-3">
                   <p className="text-[12px]" style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}>
-                    Share this link with anyone you want to connect with. They'll create an account and link automatically.
+                    Share this link or QR code with someone to send them a connection invite safely.
                   </p>
 
                   <div
@@ -215,15 +394,25 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                   </div>
 
                   <div className="surface-pill flex items-center justify-center py-6 rounded-2xl" style={{}}>
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(inviteLink)}&color=1e4a52`}
-                      alt="QR Code"
-                      className="w-[160px] h-[160px]"
-                    />
+                    {loadingShareToken ? (
+                      <div className="flex h-[160px] w-[160px] items-center justify-center">
+                        <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--swatch-teal)" }} />
+                      </div>
+                    ) : inviteLink ? (
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(inviteLink)}&color=1e4a52`}
+                        alt="QR Code"
+                        className="w-[160px] h-[160px]"
+                      />
+                    ) : (
+                      <div className="flex h-[160px] w-[160px] items-center justify-center text-center text-[12px]" style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}>
+                        QR link unavailable
+                      </div>
+                    )}
                   </div>
 
                   <p className="text-[10px] text-center" style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}>
-                    Scan this QR code to connect instantly
+                    Scan this QR code to send a connection invite
                   </p>
                 </div>
               )}
