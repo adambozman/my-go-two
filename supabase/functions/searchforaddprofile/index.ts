@@ -412,7 +412,7 @@ async function searchDiscoverableUsersFallback(
 
   for (const userId of phoneMatchedIds) {
     const profile = profilesById.get(userId) ?? nameCandidatesById.get(userId);
-    const settings = settingsById.get(userId);
+    const settings: any = settingsById.get(userId);
     const allowPhone = settings?.allow_phone_discovery ?? false;
     const shareAvatar = settings?.share_avatar_in_discovery ?? false;
     if (!allowPhone) continue;
