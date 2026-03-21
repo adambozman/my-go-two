@@ -878,51 +878,30 @@ export default function ConnectionPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[1480px] px-4 pb-8 pt-3 md:px-6">
+    <div className="mx-auto h-full max-w-[1480px] overflow-y-auto px-4 pb-8 pt-3 md:px-6">
       <div className="space-y-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
-            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Back home
-          </button>
-
-          <div className="flex flex-wrap gap-2">
-            <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
-              {visibleFeedItems.length} shared cards
-            </div>
-            <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
-              {incomingEnabled.length} profile fields
-            </div>
-            <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
-              {incomingDerivedEnabled.length} derived signals
-            </div>
-            <button
-              onClick={loadConnection}
-              className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]"
-              style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              Refresh
-            </button>
-          </div>
-        </div>
-
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.22fr)_minmax(320px,0.78fr)]">
-          <section className="rounded-[34px] p-6 md:p-7" style={frostedPanelStyle}>
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.22fr)_minmax(340px,0.78fr)]">
+          <section className="rounded-[30px] p-5 md:p-6" style={frostedPanelStyle}>
             <div className="flex flex-wrap items-start justify-between gap-5">
-              <div className="flex min-w-0 items-center gap-4">
+              <div className="min-w-0 flex-1">
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
+                  style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  Back home
+                </button>
+
+                <div className="mt-4 flex min-w-0 items-center gap-4">
                 <div
-                  className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border"
+                  className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border"
                   style={{ borderColor: "rgba(45,104,112,0.2)", background: "linear-gradient(135deg, rgba(45,104,112,0.88), rgba(30,74,82,0.88))" }}
                 >
                   {resolvedConnectionImage ? (
                     <img src={resolvedConnectionImage} alt={connection.name} className="h-full w-full object-cover" />
                   ) : (
-                    <span className="text-2xl font-semibold text-white">{connection.name[0]?.toUpperCase() || "?"}</span>
+                    <span className="text-xl font-semibold text-white">{connection.name[0]?.toUpperCase() || "?"}</span>
                   )}
                 </div>
 
@@ -930,141 +909,69 @@ export default function ConnectionPage() {
                   <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     Go Two / Connection feed
                   </p>
-                  <h1 className="mt-2 text-[40px] leading-none md:text-[54px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                  <h1 className="mt-1 text-[34px] leading-none md:text-[42px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                     {connection.name}
                   </h1>
-                  <p className="mt-3 max-w-2xl text-sm leading-relaxed md:text-[15px]" style={{ color: "var(--swatch-antique-coin)" }}>
+                  <p className="mt-2 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
                     Their favorites, style signals, food details, and everyday specifics live here, filtered to exactly what they chose to let through.
                   </p>
                 </div>
               </div>
+              </div>
 
-              <div className="grid min-w-[210px] gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                <div className="rounded-[26px] px-5 py-4" style={frostedInsetStyle}>
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    Shared with you
-                  </p>
-                  <p className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                    {visibleFeedItems.length}
-                  </p>
-                  <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
-                    Feed cards currently visible in this connection.
-                  </p>
-                </div>
+              <button
+                onClick={loadConnection}
+                className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]"
+                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Refresh
+              </button>
+            </div>
 
-                <div className="rounded-[26px] px-5 py-4" style={frostedInsetStyle}>
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    You are sharing
-                  </p>
-                  <p className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                    {sharedCardEntryIds.length + outgoingEnabled.length + outgoingDerivedEnabled.length}
-                  </p>
-                  <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
-                    Signals, fields, and cards set for this person.
-                  </p>
-                </div>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
+                {visibleFeedItems.length} shared cards
+              </div>
+              <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
+                {incomingEnabled.length} profile fields
+              </div>
+              <div className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}>
+                {incomingDerivedEnabled.length} derived signals
               </div>
             </div>
-          </section>
 
-          <div className="space-y-5">
             {connection.status !== "accepted" && (
-              <section
-                className="rounded-[28px] px-5 py-4"
+              <div
+                className="mt-4 rounded-[24px] px-4 py-4"
                 style={{
-                  ...shellCardStyle,
                   background: "linear-gradient(160deg, rgba(217,101,79,0.18) 0%, rgba(255,255,255,0.82) 100%)",
                   border: "1px solid rgba(217,101,79,0.34)",
                 }}
               >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                      Status
-                    </p>
-                    <p className="mt-2 text-[24px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-cedar-grove)" }}>
-                      Pending acceptance
-                    </p>
-                  </div>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Pending acceptance
+                  </p>
                   <span className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(255,255,255,0.62)", border: "1px solid rgba(217,101,79,0.22)" }}>
                     Draft sharing is on
                   </span>
                 </div>
-                <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-cedar-grove)" }}>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-cedar-grove)" }}>
                   You can set what you plan to share now. It becomes visible to them after the connection is accepted.
                 </p>
-              </section>
+              </div>
             )}
-
-            <section className="rounded-[30px] p-5 md:p-6" style={frostedPanelStyle}>
-              <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                What they share with you
-              </p>
-              <h2 className="mt-2 text-[32px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                Open windows into their profile.
-              </h2>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {incomingEnabled.length || incomingDerivedEnabled.length ? (
-                  <>
-                    {incomingEnabled.map((field) => (
-                      <span
-                        key={field.key}
-                        className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]"
-                        style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.82)" }}
-                      >
-                        {field.label}
-                      </span>
-                    ))}
-                    {incomingDerivedEnabled.map((feature) => (
-                      <span
-                        key={feature.key}
-                        className="rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]"
-                        style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.82)" }}
-                      >
-                        {feature.label}
-                      </span>
-                    ))}
-                  </>
-                ) : (
-                  <p className="text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                    They have not granted any specific access yet.
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-5 rounded-[24px] px-4 py-4" style={frostedInsetStyle}>
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                  Shared vibe
-                </p>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                  {incomingDerivedFeatures.your_vibe && sharedVibe
-                    ? sharedVibe
-                    : `${connection.name} has not shared their vibe summary with you yet.`}
-                </p>
-              </div>
-
-              {(profile?.birthday || profile?.anniversary) && (
-                <div className="mt-4 rounded-[24px] px-4 py-4" style={frostedInsetStyle}>
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                    Connection dates
-                  </p>
-                  <div className="mt-3 space-y-2 text-sm" style={{ color: "var(--swatch-antique-coin)" }}>
-                    {profile?.birthday && <p>Birthday: <span style={{ color: "var(--swatch-teal)" }}>{new Date(profile.birthday).toLocaleDateString(undefined, { month: "long", day: "numeric" })}</span></p>}
-                    {profile?.anniversary && <p>Anniversary: <span style={{ color: "var(--swatch-teal)" }}>{new Date(profile.anniversary).toLocaleDateString(undefined, { month: "long", day: "numeric" })}</span></p>}
-                  </div>
-                </div>
-              )}
-            </section>
-          </div>
+          </section>
         </div>
+
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(340px,0.92fr)]">
           <div className="space-y-5">
             <section className="rounded-[34px] p-6 md:p-7" style={frostedPanelStyle}>
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    AI for {connection.name}
+                    AI Connection
                   </p>
                   <h2 className="mt-2 max-w-2xl text-[38px] leading-none md:text-[46px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                     Suggestions shaped to this person.
