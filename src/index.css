@@ -366,14 +366,13 @@ body {
   align-items: center;
   justify-content: flex-start;
   flex-shrink: 0;
-  padding-top: clamp(10px, 3vw, 18px);
-  overflow: hidden;
+  padding-top: 18px;
 }
 
 .coverflow-stage-title-wrap {
   width: 100%;
-  height: clamp(44px, 10vw, 62px);
-  flex: 0 0 auto;
+  height: 62px;
+  flex: 0 0 62px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -383,21 +382,21 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(6px, 1.5vw, 9px);
+  gap: 9px;
   max-width: min(100%, 520px);
-  padding: clamp(6px, 1.5vw, 9px) clamp(16px, 4vw, 24px) clamp(7px, 1.5vw, 10px);
+  padding: 9px 24px 10px;
   border-radius: 999px;
 }
 
 .coverflow-title-pill--with-back {
   padding-left: 12px;
-  padding-right: clamp(14px, 3.5vw, 22px);
+  padding-right: 22px;
 }
 
 .coverflow-title-pill__back {
-  width: clamp(24px, 5vw, 30px);
-  height: clamp(24px, 5vw, 30px);
-  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -421,7 +420,7 @@ body {
 .coverflow-stage-title {
   margin: 0;
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(18px, 4.5vw, 24px);
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: normal;
   line-height: 0.9;

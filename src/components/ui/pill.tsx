@@ -17,9 +17,9 @@ const pillVariants = cva(
         subtle: "bg-white/55 text-[var(--swatch-antique-coin)] border-white/70 shadow-none font-['Jost'] font-medium leading-none",
       },
       size: {
-        sm: "px-3 py-1.5 text-[clamp(13px,3.5vw,16px)]",
-        default: "px-4 py-2 text-[clamp(16px,4vw,20px)]",
-        lg: "px-6 py-2.5 text-[clamp(18px,4.5vw,24px)]",
+        sm: "px-3 py-1.5 text-[16px]",
+        default: "px-4 py-2 text-[20px]",
+        lg: "px-6 py-2.5 text-[24px]",
       },
     },
     defaultVariants: {

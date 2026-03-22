@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, forwardRef, useReducer } from "react";
 import { motion } from "framer-motion";
-import { CAROUSEL_LAYOUT_DESKTOP, getFluidMobileLayout } from "@/lib/carouselConfig";
+import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import GoTwoCard from "@/components/ui/GoTwoCard";
 import { Pill } from "@/components/ui/pill";
 import InlinePhotoSearch from "@/components/InlinePhotoSearch";
@@ -25,7 +25,7 @@ function useLayout() {
     if (window.innerWidth >= 1024) {
       return CAROUSEL_LAYOUT_DESKTOP;
     }
-    return getFluidMobileLayout();
+    return CAROUSEL_LAYOUT;
   };
   const [layout, setLayout] = useState(get);
   useEffect(() => {
