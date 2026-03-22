@@ -1,3 +1,40 @@
+/** Fluid helper: scales a base px value between 320px and 1024px viewports */
+function fluidPx(min: number, max: number): number {
+  if (typeof window === "undefined") return max;
+  const vw = window.innerWidth;
+  if (vw >= 1024) return max;
+  if (vw <= 320) return min;
+  return Math.round(min + (max - min) * ((vw - 320) / (1024 - 320)));
+}
+
+/** Returns fluid mobile layout values — call at render time */
+export function getFluidMobileLayout() {
+  const cardW = fluidPx(200, 260);
+  const cardH = cardW; // keep square
+  const xGap = fluidPx(120, 160);
+  const stageH = fluidPx(260, 320);
+  const flankW = fluidPx(100, 140);
+  const flankH = fluidPx(170, 220);
+  const pillCenter = { w: cardW, h: cardH, r: 16 };
+  const pill1 = { w: fluidPx(50, 66), h: fluidPx(160, 210), r: 999 };
+  const pill2 = { w: fluidPx(30, 40), h: fluidPx(130, 170), r: 999 };
+  const pill3 = { w: fluidPx(12, 15), h: fluidPx(95, 124), r: 999 };
+  return {
+    cardWidth: cardW,
+    cardHeight: cardH,
+    flankWidth: flankW,
+    flankHeight: flankH,
+    xGap,
+    stageHeight: stageH,
+    maxVisibleOffset: 2,
+    flankBlur: 0.2,
+    flankOpacity: 1,
+    borderRadius: 16,
+    spring: { type: "spring" as const, stiffness: 300, damping: 30 },
+    pills: [pillCenter, pill1, pill2, pill3],
+  };
+}
+
 export const CAROUSEL_LAYOUT = {
   cardWidth: 260,
   cardHeight: 260,
