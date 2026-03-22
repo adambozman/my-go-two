@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useTopBar } from "@/contexts/TopBarContext";
+import { useRotatingQuote } from "@/hooks/useRotatingQuote";
 import { useCategoryRegistry, type CategoryItem } from "@/hooks/useCategoryRegistry";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -64,6 +65,8 @@ const MyGoTwo = () => {
   const { gender, loading: genderLoading } = usePersonalization();
   const { categories, loading: registryLoading } = useCategoryRegistry(gender, "mygotwo");
   const { setBackState } = useTopBar();
+  const rotatingQuote = useRotatingQuote();
+  const [viewportWidth, setViewportWidth] = useState(() => (typeof window !== "undefined" ? window.innerWidth : 1024));
 
   const sections = useMemo(() => {
     return categories.reduce<Record<string, CategoryItem[]>>((acc, item) => {
@@ -105,6 +108,27 @@ const MyGoTwo = () => {
   const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
   const productGroupScrollRef = useRef<HTMLDivElement>(null);
   const productGroupSectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const stackTouchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const stackWheelLockRef = useRef(0);
+
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isDesktopViewport = viewportWidth >= 1024;
+  const isTabletViewport = viewportWidth >= 768 && viewportWidth < 1024;
+  const stackOffset = isDesktopViewport ? 156 : isTabletViewport ? 124 : 92;
+  const stackScale = isDesktopViewport ? 0.92 : isTabletViewport ? 0.84 : 0.76;
+  const stackPeekOpacity = isDesktopViewport ? 0.36 : isTabletViewport ? 0.26 : 0.14;
+  const stackStageStyle = {
+    height: isDesktopViewport
+      ? "clamp(760px, 84vh, 980px)"
+      : isTabletViewport
+        ? "clamp(680px, 80vh, 860px)"
+        : "clamp(620px, 78vh, 820px)",
+  } as const;
 
   const defaultFieldValues = useMemo(() => {
     if (!leafSubtype?.fields) return {} as Record<string, string>;
@@ -280,9 +304,82 @@ const MyGoTwo = () => {
     [visibleSectionKeys],
   );
 
+  const orderedSections = useMemo(
+    () => visibleSectionKeys.map((key) => ({
+      key,
+      label: sectionLabels[key] ?? key,
+      items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
+    })),
+    [visibleSectionKeys, sections],
+  );
+
+  const activeStackSection = orderedSections[Math.min(activeSectionIndex, Math.max(orderedSections.length - 1, 0))] ?? null;
+  const getSectionPreviewImage = useCallback((section: { key: string; items: { id: string; image: string }[] }) => {
+    const focusedItemId = focusedMainCategoryBySection[section.key];
+    const focusedItem = focusedItemId ? section.items.find((item) => item.id === focusedItemId) : null;
+    return focusedItem?.image || section.items[0]?.image || BRANDED_CARD_SVG;
+  }, [focusedMainCategoryBySection]);
+
+  const moveStackSection = useCallback((direction: 1 | -1) => {
+    if (orderedSections.length === 0) return;
+    setActiveSectionIndex((prev) => {
+      const next = prev + direction;
+      if (next < 0) return orderedSections.length - 1;
+      if (next >= orderedSections.length) return 0;
+      return next;
+    });
+  }, [orderedSections.length]);
+
+  const handleStackWheel = useCallback((event: any) => {
+    if (coverFlowState || cardKey || orderedSections.length <= 1) return;
+
+    const vertical = Math.abs(event.deltaY) > Math.abs(event.deltaX) * 1.1;
+    if (!vertical || Math.abs(event.deltaY) < 12) return;
+
+    const now = Date.now();
+    if (now - stackWheelLockRef.current < 240) return;
+
+    stackWheelLockRef.current = now;
+    event.preventDefault();
+    moveStackSection(event.deltaY > 0 ? 1 : -1);
+  }, [cardKey, coverFlowState, moveStackSection, orderedSections.length]);
+
+  const handleStackTouchStart = useCallback((event: any) => {
+    if (coverFlowState || cardKey) return;
+    stackTouchStartRef.current = {
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY,
+    };
+  }, [cardKey, coverFlowState]);
+
+  const handleStackTouchEnd = useCallback((event: any) => {
+    if (coverFlowState || cardKey) return;
+    const start = stackTouchStartRef.current;
+    if (!start) return;
+
+    const dx = start.x - event.changedTouches[0].clientX;
+    const dy = start.y - event.changedTouches[0].clientY;
+    stackTouchStartRef.current = null;
+
+    if (Math.abs(dy) > 56 && Math.abs(dy) > Math.abs(dx) * 1.15) {
+      moveStackSection(dy > 0 ? 1 : -1);
+    }
+  }, [cardKey, coverFlowState, moveStackSection]);
+
+  const quotePanel = (
+    <section className="my-go-two-quote-panel shrink-0">
+      <div className="my-go-two-quote-frame">
+        <p className="my-go-two-quote-text">"{rotatingQuote.text}"</p>
+        {rotatingQuote.author !== "Unknown" && (
+          <p className="my-go-two-quote-author">— {rotatingQuote.author}</p>
+        )}
+      </div>
+    </section>
+  );
+
   useEffect(() => {
-    setActiveSectionIndex((prev) => Math.min(prev, Math.max(visibleSectionKeys.length - 1, 0)));
-  }, [visibleSectionKeys.length]);
+    setActiveSectionIndex((prev) => Math.min(prev, Math.max(orderedSections.length - 1, 0)));
+  }, [orderedSections.length]);
 
   useEffect(() => {
     if (coverFlowState || cardKey) return;
@@ -571,12 +668,6 @@ const MyGoTwo = () => {
     return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
 
-  const orderedSections = visibleSectionKeys.map((key) => ({
-    key,
-    label: sectionLabels[key] ?? key,
-    items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
-  }));
-
   const renderContent = () => {
     if (cardKey && leafSubtype) {
       const getNearestGroupIndex = (scrollTop: number) => {
@@ -615,6 +706,7 @@ const MyGoTwo = () => {
             }
           }}
         >
+          {quotePanel}
           {productGroups.map((groupName) => {
             const groupEntries = entries.filter((entry) => entry.group_name === groupName);
             const newEntryId = getNewEntryId(groupName);
@@ -660,34 +752,36 @@ const MyGoTwo = () => {
               >
                 <CoverflowTitlePill title={leafSubtype.name} showBackArrow onBack={goBackFromEntries} />
                 <div className="flex flex-col items-center justify-center">
-                  <FormCoverFlowCarousel
-                    items={paginatedItems}
-                    activeIndex={activeIndexOnPage}
-                    previousImage={previousImage}
-                    onActiveIndexChange={(index) => {
-                      setActiveEntryIndexByGroup((prev) => ({
-                        ...prev,
-                        [groupName]: pageStart + index,
-                      }));
-                    }}
-                    renderActiveCard={(item) => (
-                      <ProductEntryCard
-                        subtype={leafSubtype}
-                        subcategoryName={leafSubcategoryName}
-                        categoryName={leafCategoryName}
-                        entryName={entryNames[item.id] || ""}
-                        values={entryDrafts[item.id] || defaultFieldValues}
-                        imageUrl={normalizeImageValue(entryImages[item.id])}
-                        saving={saving}
-                        isEditing={!item.id.startsWith(`${NEW_ENTRY_ID}::`)}
-                        onEntryNameChange={(name) => handleNameChange(item.id, name)}
-                        onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
-                        onImageChange={(imageUrl) => handleImageChange(item.id, imageUrl)}
-                        onSave={() => handleSaveEntry(item.id)}
-                        onDelete={() => handleDeleteEntry(item.id)}
-                      />
-                    )}
-                  />
+                  <div className="my-go-two-form-scale" data-local-coverflow-scale="form">
+                    <FormCoverFlowCarousel
+                      items={paginatedItems}
+                      activeIndex={activeIndexOnPage}
+                      previousImage={previousImage}
+                      onActiveIndexChange={(index) => {
+                        setActiveEntryIndexByGroup((prev) => ({
+                          ...prev,
+                          [groupName]: pageStart + index,
+                        }));
+                      }}
+                      renderActiveCard={(item) => (
+                        <ProductEntryCard
+                          subtype={leafSubtype}
+                          subcategoryName={leafSubcategoryName}
+                          categoryName={leafCategoryName}
+                          entryName={entryNames[item.id] || ""}
+                          values={entryDrafts[item.id] || defaultFieldValues}
+                          imageUrl={normalizeImageValue(entryImages[item.id])}
+                          saving={saving}
+                          isEditing={!item.id.startsWith(`${NEW_ENTRY_ID}::`)}
+                          onEntryNameChange={(name) => handleNameChange(item.id, name)}
+                          onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
+                          onImageChange={(imageUrl) => handleImageChange(item.id, imageUrl)}
+                          onSave={() => handleSaveEntry(item.id)}
+                          onDelete={() => handleDeleteEntry(item.id)}
+                        />
+                      )}
+                    />
+                  </div>
                   {isActiveGroup ? (
                     <div className="hidden lg:block">
                       <PaginationControls
@@ -736,26 +830,29 @@ const MyGoTwo = () => {
           className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
           style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
         >
+          {quotePanel}
           <div className="snap-start snap-always">
-            <TemplateCoverFlow
-              templateName={coverFlowState.name}
-              subtypes={coverFlowState.subtypes}
-              subcategories={coverFlowState.subcategories}
-              activeSubcategory={activeSubcategory}
-              onSubcategorySelect={handleSubcategorySelect}
-              onBack={activeSubcategory ? () => {
-                setFocusedSubcategoryId(activeSubcategory.id);
-                setFocusedLeafItemId(null);
-                setActiveSubcategory(null);
-              } : clearCoverFlow}
-              onSelect={handleSubtypeSelect}
-              focusedSubcategoryId={focusedSubcategoryId}
-              focusedLeafItemId={focusedLeafItemId}
-              creating={false}
-              gender={gender}
-              section={coverFlowState.section}
-              categoryId={coverFlowState.categoryId}
-            />
+            <div className="my-go-two-coverflow-scale" data-local-coverflow-scale="main">
+              <TemplateCoverFlow
+                templateName={coverFlowState.name}
+                subtypes={coverFlowState.subtypes}
+                subcategories={coverFlowState.subcategories}
+                activeSubcategory={activeSubcategory}
+                onSubcategorySelect={handleSubcategorySelect}
+                onBack={activeSubcategory ? () => {
+                  setFocusedSubcategoryId(activeSubcategory.id);
+                  setFocusedLeafItemId(null);
+                  setActiveSubcategory(null);
+                } : clearCoverFlow}
+                onSelect={handleSubtypeSelect}
+                focusedSubcategoryId={focusedSubcategoryId}
+                focusedLeafItemId={focusedLeafItemId}
+                creating={false}
+                gender={gender}
+                section={coverFlowState.section}
+                categoryId={coverFlowState.categoryId}
+              />
+            </div>
           </div>
         </motion.div>
       );
@@ -764,56 +861,347 @@ const MyGoTwo = () => {
     return (
       <motion.div
         key="main"
-        ref={scrollRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
-        style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          setActiveSectionIndex(getNearestSectionIndex(el.scrollTop));
-        }}
+        className="h-full overflow-y-auto overflow-x-hidden relative"
+        style={{ scrollbarWidth: "none", overscrollBehavior: "none" }}
       >
-        {orderedSections.map((section, index) => (
-          <div
-            key={section.key}
-            data-section-key={section.key}
-            ref={(node) => {
-              sectionRefs.current[section.key] = node;
-            }}
-            className="coverflow-stage-shell snap-start snap-always"
-          >
-            <CoverflowTitlePill title={section.label} />
-            <GoTwoCoverFlow
-              items={section.items}
-              onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-              focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-              showPagination={index === activeSectionIndex}
-            />
-          </div>
-        ))}
-        {orderedSections.length === 0 && (
-          <p className="text-muted-foreground text-center mt-12">No categories found.</p>
-        )}
+        {quotePanel}
         <div
-          className="fixed hidden flex-col items-center gap-2 lg:flex"
-              style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
+          className="my-go-two-stack-shell"
+          onWheel={handleStackWheel}
+          onTouchStart={handleStackTouchStart}
+          onTouchEnd={handleStackTouchEnd}
+          onKeyDown={(event) => {
+            if (coverFlowState || cardKey || orderedSections.length <= 1) return;
+            if (event.key === "ArrowUp") {
+              event.preventDefault();
+              moveStackSection(-1);
+            } else if (event.key === "ArrowDown") {
+              event.preventDefault();
+              moveStackSection(1);
+            }
+          }}
+          tabIndex={0}
+          role="region"
+          aria-label="My Go Two categories"
+          style={{ ...stackStageStyle, touchAction: "none" }}
         >
-          {orderedSections.map((_, i) => (
-            <div key={i} style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }} />
-          ))}
+          {orderedSections.length === 0 ? (
+            <div className="flex h-full items-center justify-center text-center text-muted-foreground">
+              No categories found.
+            </div>
+          ) : (
+            orderedSections.map((section, index) => {
+              const offset = index - activeSectionIndex;
+              const absOffset = Math.abs(offset);
+              const isActive = index === activeSectionIndex;
+              const previewImage = getSectionPreviewImage(section);
+              const y = offset * stackOffset;
+              const scale = isActive ? 1 : Math.max(0.72, stackScale - absOffset * 0.04);
+              const opacity = isActive ? 1 : Math.max(0, stackPeekOpacity - absOffset * 0.08);
+              const cardHeight = isActive
+                ? "100%"
+                : isDesktopViewport
+                  ? "clamp(162px, 22vh, 238px)"
+                  : isTabletViewport
+                    ? "clamp(146px, 20vh, 214px)"
+                    : "clamp(128px, 18vh, 176px)";
+
+              return (
+                <motion.div
+                  key={section.key}
+                  initial={false}
+                  animate={{ x: "-50%", y, scale, opacity, zIndex: orderedSections.length - absOffset }}
+                  transition={{ type: "spring", stiffness: 280, damping: 28 }}
+                  className="absolute left-1/2 top-1/2 w-full flex items-center justify-center"
+                  style={{
+                    transformOrigin: "center center",
+                    height: cardHeight,
+                    pointerEvents: "auto",
+                  }}
+                >
+                  <div
+                    className={`my-go-two-stack-card ${isActive ? "my-go-two-stack-card--active" : "my-go-two-stack-card--peek"}`}
+                    onClick={() => {
+                      if (!isActive) setActiveSectionIndex(index);
+                    }}
+                  >
+                    <div className={`my-go-two-stack-card-surface ${isActive ? "my-go-two-stack-card-surface--active" : "my-go-two-stack-card-surface--peek"}`}>
+                      {isActive ? (
+                        <>
+                          <div className="my-go-two-stack-card-heading">
+                            <CoverflowTitlePill title={section.label} />
+                          </div>
+                          <div className="my-go-two-coverflow-scale" data-local-coverflow-scale="main">
+                            <GoTwoCoverFlow
+                              items={section.items}
+                              onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                              focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                              showPagination={isDesktopViewport}
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <div className="my-go-two-stack-preview">
+                          <div
+                            className="my-go-two-stack-preview-image"
+                            style={{
+                              backgroundImage: previewImage ? `url(${previewImage})` : "linear-gradient(160deg, #c8bfb4 0%, #a89d92 100%)",
+                            }}
+                          />
+                          <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+                            <span className="surface-pill pill-asset-title rounded-full px-4 py-1.5 text-[13px] sm:text-[15px]">
+                              {section.label}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })
+          )}
         </div>
       </motion.div>
     );
   };
 
   return (
-    <>
+    <div className="my-go-two-page h-full overflow-x-hidden">
+      <style>{`
+        .my-go-two-stack-shell {
+          position: relative;
+          width: min(100%, 1240px);
+          margin: 0 auto;
+          outline: none;
+        }
+
+        .my-go-two-stack-card {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .my-go-two-stack-card--active {
+          z-index: 3;
+        }
+
+        .my-go-two-stack-card--peek {
+          z-index: 1;
+        }
+
+        .my-go-two-stack-card-surface {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          border: 1px solid rgba(255, 255, 255, 0.74);
+          border-radius: clamp(28px, 4vw, 40px);
+          background: linear-gradient(180deg, rgba(255, 252, 248, 0.96) 0%, rgba(246, 237, 227, 0.88) 100%);
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.9),
+            0 24px 48px rgba(74, 96, 104, 0.08),
+            0 8px 24px rgba(74, 96, 104, 0.04);
+          overflow: hidden;
+        }
+
+        .my-go-two-stack-card-surface--active {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+          padding: clamp(14px, 2vw, 22px) clamp(14px, 2.2vw, 28px) clamp(14px, 2vw, 22px);
+        }
+
+        .my-go-two-stack-card-surface--peek {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: clamp(10px, 1.8vw, 18px);
+        }
+
+        .my-go-two-stack-card-heading {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          margin-bottom: clamp(10px, 2vw, 18px);
+        }
+
+        .my-go-two-stack-preview {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          min-height: clamp(128px, 18vh, 214px);
+          border-radius: inherit;
+          overflow: hidden;
+        }
+
+        .my-go-two-stack-preview-image {
+          position: absolute;
+          inset: 0;
+          background-position: center;
+          background-size: cover;
+          background-repeat: no-repeat;
+          border-radius: inherit;
+          filter: saturate(0.98) contrast(1.01);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.36);
+        }
+
+        @media (max-width: 767px) {
+          .my-go-two-page {
+            overflow-x: hidden;
+          }
+
+          .my-go-two-page .my-go-two-quote-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 12px 8px;
+            min-height: clamp(104px, 15vh, 128px);
+          }
+
+          .my-go-two-page .my-go-two-quote-frame {
+            width: min(100%, 720px);
+            min-height: clamp(84px, 12vh, 108px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 12px 14px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.64);
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.58) 0%, rgba(245, 233, 220, 0.28) 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 10px 26px rgba(74,96,104,0.06);
+            overflow: hidden;
+          }
+
+          .my-go-two-page .my-go-two-quote-text {
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: clamp(14px, 2.8vw, 20px);
+            line-height: 1.08;
+            text-align: center;
+            color: var(--logo-two-color);
+            text-wrap: balance;
+          }
+
+          .my-go-two-page .my-go-two-quote-author {
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(9px, 1.4vw, 12px);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(74, 96, 104, 0.84);
+          }
+
+          .my-go-two-page .coverflow-stage-shell {
+            height: auto;
+            min-height: calc(100dvh - var(--header-height) - 140px);
+            padding-top: 6px;
+            padding-bottom: 12px;
+          }
+
+          .my-go-two-page .coverflow-stage-title-wrap {
+            height: 42px;
+            flex-basis: 42px;
+          }
+
+          .my-go-two-page .coverflow-title-pill {
+            max-width: min(100%, 208px);
+            padding: 7px 16px 8px;
+          }
+
+          .my-go-two-page .coverflow-stage-title {
+            font-size: 18px;
+          }
+
+          .my-go-two-page .my-go-two-coverflow-scale {
+            width: 100%;
+            transform: scale(1.18);
+            transform-origin: top center;
+            margin: 0 auto -64px;
+          }
+
+          .my-go-two-page .my-go-two-form-scale {
+            width: 100%;
+            transform: scale(1.08);
+            transform-origin: top center;
+            margin: 0 auto -104px;
+          }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .my-go-two-page .my-go-two-quote-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 16px 6px;
+            min-height: clamp(100px, 12vh, 128px);
+          }
+
+          .my-go-two-page .my-go-two-quote-frame {
+            width: min(100%, 800px);
+            min-height: clamp(78px, 9vh, 104px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 10px 14px 8px;
+            overflow: hidden;
+          }
+
+          .my-go-two-page .my-go-two-quote-text {
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: clamp(16px, 2.2vw, 24px);
+            line-height: 1.1;
+            text-align: center;
+            color: var(--logo-two-color);
+            text-wrap: balance;
+          }
+
+          .my-go-two-page .my-go-two-quote-author {
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(10px, 1.1vw, 13px);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(74, 96, 104, 0.84);
+          }
+
+          .my-go-two-page .coverflow-stage-shell {
+            height: auto;
+            min-height: calc(100dvh - var(--header-height) - 152px);
+          }
+
+          .my-go-two-page .my-go-two-coverflow-scale {
+            width: 100%;
+            transform: scale(1.04);
+            transform-origin: top center;
+            margin: 0 auto -24px;
+          }
+
+          .my-go-two-page .my-go-two-form-scale {
+            width: 100%;
+            transform: scale(0.95);
+            transform-origin: top center;
+            margin: 0 auto -60px;
+          }
+        }
+      `}</style>
       <AnimatePresence mode="wait">
         {renderContent()}
       </AnimatePresence>
-    </>
+    </div>
   );
 };
 
