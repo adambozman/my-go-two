@@ -815,42 +815,46 @@ const MyGoTwo = () => {
   };
 
   return (
-    <div className="my-go-two-page h-full">
+    <div className="my-go-two-page h-full overflow-x-hidden">
       <style>{`
         @media (max-width: 767px) {
+          .my-go-two-page {
+            overflow-x: hidden;
+          }
+
           .my-go-two-page .coverflow-stage-shell {
             height: auto;
-            min-height: calc(100dvh - var(--header-height) - 20px);
-            padding-top: 10px;
-            padding-bottom: 20px;
+            min-height: calc(100dvh - var(--header-height) - 10px);
+            padding-top: 6px;
+            padding-bottom: 12px;
           }
 
           .my-go-two-page .coverflow-stage-title-wrap {
-            height: 48px;
-            flex-basis: 48px;
+            height: 42px;
+            flex-basis: 42px;
           }
 
           .my-go-two-page .coverflow-title-pill {
-            max-width: min(100%, 240px);
-            padding: 8px 18px 9px;
+            max-width: min(100%, 208px);
+            padding: 7px 16px 8px;
           }
 
           .my-go-two-page .coverflow-stage-title {
-            font-size: 19px;
+            font-size: 18px;
           }
 
           .my-go-two-page .my-go-two-coverflow-scale {
-            width: 126%;
-            transform: scale(0.79);
+            width: 100%;
+            transform: scale(1.18);
             transform-origin: top center;
-            margin: 0 auto -88px;
+            margin: 0 auto -64px;
           }
 
           .my-go-two-page .my-go-two-form-scale {
-            width: 132%;
-            transform: scale(0.74);
+            width: 100%;
+            transform: scale(1.08);
             transform-origin: top center;
-            margin: 0 auto -138px;
+            margin: 0 auto -104px;
           }
         }
 
@@ -861,17 +865,17 @@ const MyGoTwo = () => {
           }
 
           .my-go-two-page .my-go-two-coverflow-scale {
-            width: 112%;
-            transform: scale(0.9);
+            width: 100%;
+            transform: scale(1.04);
             transform-origin: top center;
-            margin: 0 auto -40px;
+            margin: 0 auto -24px;
           }
 
           .my-go-two-page .my-go-two-form-scale {
-            width: 118%;
-            transform: scale(0.86);
+            width: 100%;
+            transform: scale(0.95);
             transform-origin: top center;
-            margin: 0 auto -82px;
+            margin: 0 auto -60px;
           }
         }
       `}</style>
