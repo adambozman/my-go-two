@@ -75,7 +75,7 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
     return (
       <div
         ref={ref}
-        className="relative w-full flex flex-col items-center"
+        className="relative w-full flex flex-col items-center overflow-x-hidden"
         onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
         onTouchEnd={(e) => {
           if (touchStartX.current === null) return;
