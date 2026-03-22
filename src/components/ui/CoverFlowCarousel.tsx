@@ -25,7 +25,7 @@ function useLayout() {
     if (window.innerWidth >= 1024) {
       return CAROUSEL_LAYOUT_DESKTOP;
     }
-    return CAROUSEL_LAYOUT;
+    return getFluidMobileLayout();
   };
   const [layout, setLayout] = useState(get);
   useEffect(() => {
