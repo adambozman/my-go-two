@@ -169,7 +169,7 @@ export function DashboardTopBar() {
         paddingTop: "var(--header-top-padding)",
       }}
     >
-      <div className="relative flex items-center justify-between gap-1.5 sm:gap-2 md:gap-4" style={{ height: "var(--header-icons-row-height)" }}>
+      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-1.5 sm:gap-2 md:gap-4" style={{ height: "var(--header-icons-row-height)" }}>
         <input
           ref={fileInputRef}
           type="file"
@@ -178,24 +178,24 @@ export function DashboardTopBar() {
           onChange={handleUpload}
         />
 
-        <div className="flex min-w-0 flex-1 items-center justify-start">
+        <div className="flex min-w-0 items-center justify-start">
           <GoTwoText className="max-w-[110px] shrink sm:max-w-[132px] md:max-w-none md:shrink-0" />
         </div>
 
-        <nav className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-start gap-1.5 sm:gap-2 lg:gap-3">
+        <nav className="flex min-w-0 items-start justify-center gap-1 sm:gap-1.5 lg:gap-3">
           {navItems.map((item) => {
             return (
               <NavLink
                 key={item.url}
                 to={item.url}
                 aria-label={item.label}
-                className="flex w-[42px] flex-col items-center gap-1 text-center text-muted-foreground transition-all hover:text-foreground sm:w-[48px] md:w-[56px] lg:w-[66px]"
+                className="flex w-[32px] flex-col items-center gap-1 text-center text-muted-foreground transition-all hover:text-foreground sm:w-[40px] md:w-[56px] lg:w-[66px]"
               >
                 <span
                   className="relative rounded-full card-design-neumorph flex items-center justify-center"
                   style={{
-                    width: "clamp(30px, 6vw, var(--header-icon-btn-size))",
-                    height: "clamp(30px, 6vw, var(--header-icon-btn-size))",
+                    width: "clamp(26px, 5vw, var(--header-icon-btn-size))",
+                    height: "clamp(26px, 5vw, var(--header-icon-btn-size))",
                   }}
                 >
                   <item.icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
