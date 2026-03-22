@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Lock, RefreshCw, Sparkles } from "lucide-react";
+import { ArrowLeft, Lock, Sparkles } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Switch } from "@/components/ui/switch";
@@ -611,15 +611,7 @@ export default function ConnectionPage() {
     () => buildAiSuggestions(connection?.name || "They", visibleFeedItems, profile),
     [connection?.name, profile, visibleFeedItems],
   );
-  const connectionAccepted = connection?.status === "accepted";
   const canConfigureOutgoing = Boolean(connection?.partnerId);
-  const visibleNowSummary = incomingEnabled.length + incomingDerivedEnabled.length + visibleFeedItems.length;
-  const statusEyebrow = connectionAccepted ? "Connection live" : "Pending acceptance";
-  const statusBody = connectionAccepted
-    ? "Sharing is live both ways based on what each of you has explicitly allowed."
-    : canConfigureOutgoing
-      ? "Your draft sharing is saved now and becomes visible once the connection is accepted."
-      : "This invite still needs to resolve to a real account before per-person sharing can be saved.";
 
   const handleToggleOutgoingProfileField = useCallback(async (key: ProfileFieldKey, nextValue: boolean) => {
     if (!user || !connection || !connection.partnerId) return;
@@ -879,7 +871,7 @@ export default function ConnectionPage() {
       <div className="space-y-5">
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.7fr)]">
           <section className="rounded-[34px] p-5 md:p-6" style={frostedPanelStyle}>
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex justify-start">
               <button
                 onClick={() => navigate("/dashboard")}
                 className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
@@ -888,109 +880,33 @@ export default function ConnectionPage() {
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Back home
               </button>
-
-              <button
-                onClick={loadConnection}
-                className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em]"
-                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.68)", border: "1px solid rgba(255,255,255,0.84)" }}
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-                Refresh
-              </button>
             </div>
 
-            <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_220px]">
-              <div className="min-w-0">
-                <div className="flex items-center gap-4">
-                  <div
-                    className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border"
-                    style={{ borderColor: "rgba(45,104,112,0.2)", background: "linear-gradient(135deg, rgba(45,104,112,0.88), rgba(30,74,82,0.88))" }}
-                  >
-                    {resolvedConnectionImage ? (
-                      <img src={resolvedConnectionImage} alt={connection.name} className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="text-2xl font-semibold text-white">{connection.name[0]?.toUpperCase() || "?"}</span>
-                    )}
-                  </div>
-
-                  <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                      Go Two / Connection feed
-                    </p>
-                    <h1 className="mt-2 text-[40px] leading-none md:text-[56px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                      {connection.name}
-                    </h1>
-                    <p className="mt-4 max-w-xl text-[16px] leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                      What this connection shares, what the AI can infer from it, and the gift ideas it is already shaping around them.
-                    </p>
-                  </div>
+            <div className="mt-6">
+              <div className="flex items-center gap-4">
+                <div
+                  className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border"
+                  style={{ borderColor: "rgba(45,104,112,0.2)", background: "linear-gradient(135deg, rgba(45,104,112,0.88), rgba(30,74,82,0.88))" }}
+                >
+                  {resolvedConnectionImage ? (
+                    <img src={resolvedConnectionImage} alt={connection.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-semibold text-white">{connection.name[0]?.toUpperCase() || "?"}</span>
+                  )}
                 </div>
 
+                <div className="min-w-0">
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    Go Two / Connection feed
+                  </p>
+                  <h1 className="mt-2 text-[40px] leading-none md:text-[56px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    {connection.name}
+                  </h1>
+                  <p className="mt-4 max-w-xl text-[16px] leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                    What this connection shares, what the AI can infer from it, and the gift ideas it is already shaping around them.
+                  </p>
+                </div>
               </div>
-
-              <div className="mt-6 flex flex-wrap gap-2">
-                <span
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.14em]"
-                  style={{
-                    fontFamily: "'Jost', sans-serif",
-                    color: "var(--swatch-teal)",
-                    background: "rgba(255,255,255,0.66)",
-                    border: "1px solid rgba(255,255,255,0.8)",
-                  }}
-                >
-                  Visible now
-                  <span className="normal-case tracking-normal">{visibleNowSummary}</span>
-                </span>
-                <span
-                  className="inline-flex items-center rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.14em]"
-                  style={{
-                    fontFamily: "'Jost', sans-serif",
-                    color: connectionAccepted ? "var(--swatch-teal)" : "var(--swatch-cedar-grove)",
-                    background: connectionAccepted ? "rgba(var(--swatch-teal-rgb), 0.08)" : "rgba(var(--swatch-cedar-grove-rgb), 0.08)",
-                    border: connectionAccepted ? "1px solid rgba(var(--swatch-teal-rgb), 0.16)" : "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.16)",
-                  }}
-                >
-                  {statusEyebrow}
-                </span>
-              </div>
-            </div>
-          </section>
-
-          <section
-            className="rounded-[34px] p-5 md:p-6"
-            style={{
-              ...frostedPanelStyle,
-              background: connectionAccepted
-                ? "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(238,245,242,0.78) 100%)"
-                : "linear-gradient(180deg, rgba(255,246,243,0.9) 0%, rgba(255,255,255,0.76) 100%)",
-              border: connectionAccepted ? "1px solid rgba(255,255,255,0.84)" : "1px solid rgba(217,101,79,0.26)",
-            }}
-          >
-            <span
-              className="inline-flex items-center rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.14em]"
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                color: connectionAccepted ? "var(--swatch-teal)" : "var(--swatch-cedar-grove)",
-                background: connectionAccepted ? "rgba(var(--swatch-teal-rgb), 0.08)" : "rgba(var(--swatch-cedar-grove-rgb), 0.08)",
-                border: connectionAccepted ? "1px solid rgba(var(--swatch-teal-rgb), 0.16)" : "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.16)",
-              }}
-            >
-              {statusEyebrow}
-            </span>
-            <h2 className="mt-4 text-[30px] leading-none md:text-[34px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: connectionAccepted ? "var(--swatch-teal)" : "var(--swatch-cedar-grove)" }}>
-              {connectionAccepted ? "Open and active." : "Draft sharing is ready."}
-            </h2>
-            <p className="mt-3 max-w-[26ch] text-sm leading-relaxed" style={{ color: connectionAccepted ? "var(--swatch-antique-coin)" : "var(--swatch-cedar-grove)" }}>
-              {statusBody}
-            </p>
-
-            <div className="mt-5 rounded-[24px] px-4 py-4" style={frostedInsetStyle}>
-              <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                Last updated
-              </p>
-              <p className="mt-2 text-[24px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                {formatRelativeDateLabel(connection.updatedAt)}
-              </p>
             </div>
           </section>
         </div>
@@ -1012,18 +928,6 @@ export default function ConnectionPage() {
                 </div>
 
                 <div className="grid gap-4">
-                  <div className="rounded-[28px] px-5 py-5" style={frostedInsetStyle}>
-                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                      AI signals
-                    </p>
-                    <p className="mt-2 text-[40px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                      {incomingDerivedEnabled.length}
-                    </p>
-                    <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
-                      Derived signals available for {connection.name}.
-                    </p>
-                  </div>
-
                   <div className="rounded-[28px] px-5 py-5" style={frostedInsetStyle}>
                     <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                       Their vibe
@@ -1121,30 +1025,14 @@ export default function ConnectionPage() {
               <Accordion type="single" collapsible className="mt-5">
                 <AccordionItem value="sharing-controls" className="overflow-hidden rounded-[28px] border-0" style={frostedInsetStyle}>
                   <AccordionTrigger className="px-5 py-5 text-left hover:no-underline">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                        Open settings
-                      </p>
-                    </div>
+                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
+                      Open settings
+                    </p>
                   </AccordionTrigger>
                   <AccordionContent className="px-5 pb-5 pt-0">
-                    {!connectionAccepted && canConfigureOutgoing && (
-                      <p className="rounded-[18px] px-4 py-3 text-xs leading-relaxed" style={{ ...frostedInsetStyle, color: "var(--swatch-text-light)" }}>
-                        These are your outgoing share settings. They are saved now and become visible after the connection is accepted.
-                      </p>
-                    )}
-                    {!canConfigureOutgoing && (
-                      <p className="rounded-[18px] px-4 py-3 text-xs leading-relaxed" style={{ ...frostedInsetStyle, color: "var(--swatch-text-light)" }}>
-                        We can save per-person sharing once this invite is linked to a specific user account.
-                      </p>
-                    )}
-
                     <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
                       <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                         Connection type
-                      </p>
-                      <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                        Choose how Go Two should treat this relationship in gift and occasion logic.
                       </p>
                       <div className="mt-4">
                         <Select
@@ -1171,11 +1059,6 @@ export default function ConnectionPage() {
                             ))}
                           </SelectContent>
                         </Select>
-                        <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
-                          {editableConnectionKinds.find((item) => item.key === connectionKind)?.description}
-                          {savingConnectionKind ? " Saving..." : ""}
-                          {!canConfigureOutgoing ? " This connection needs a linked account before you can save per-person settings." : ""}
-                        </p>
                       </div>
                     </div>
 
@@ -1205,9 +1088,6 @@ export default function ConnectionPage() {
                     <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
                       <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                         Derived features
-                      </p>
-                      <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
-                        Share AI outputs like Your Vibe and recommendation results without exposing raw answers.
                       </p>
 
                       <div className="mt-4 space-y-4">
