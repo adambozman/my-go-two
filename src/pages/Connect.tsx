@@ -92,12 +92,12 @@ const Connect = () => {
   const hasInvite = Boolean(inviteId || token);
 
   return (
-    <div className="landing-page min-h-screen overflow-hidden relative">
+    <div className="landing-page relative min-h-screen overflow-x-hidden">
       
 
-      <div className="relative z-10 min-h-screen flex flex-col">
+      <div className="relative z-10 flex min-h-screen flex-col">
         {/* Nav */}
-        <nav className="flex items-center justify-center px-8 md:px-16 py-5">
+        <nav className="flex items-center justify-center px-4 py-5 sm:px-6 md:px-10 lg:px-16">
           <Link to="/">
             <span className="logo-text" style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)", lineHeight: 1 }}>
               <span className="go">Go</span>
@@ -107,7 +107,7 @@ const Connect = () => {
         </nav>
 
         {/* Content */}
-        <div className="flex-1 flex items-center justify-center px-4 pb-12">
+        <div className="flex flex-1 items-center justify-center px-4 pb-10 sm:pb-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -145,7 +145,7 @@ const Connect = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="rounded-3xl p-8 md:p-10"
+              className="rounded-3xl p-6 sm:p-8 md:p-10"
               style={{
                 background: "linear-gradient(165deg, rgba(255,255,255,0.65) 0%, rgba(246,226,212,0.35) 100%)",
                 border: "1px solid rgba(232,198,174,0.3)",

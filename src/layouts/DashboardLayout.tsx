@@ -36,9 +36,9 @@ const DashboardLayout = () => {
   }
 
   return (
-    <div className="app-page h-screen flex flex-col overflow-hidden">
+    <div className="app-page flex min-h-screen flex-col overflow-x-hidden lg:h-screen lg:overflow-hidden">
       <DashboardTopBar />
-      <main className="flex-1 min-h-0 px-8">
+      <main className="flex-1 min-h-0 overflow-x-hidden px-3 pb-4 sm:px-4 md:px-6 lg:px-8 lg:pb-0">
         <Outlet />
       </main>
     </div>

@@ -689,27 +689,29 @@ const MyGoTwo = () => {
                     )}
                   />
                   {isActiveGroup ? (
-                    <PaginationControls
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={(page) => {
-                        setActiveEntryPageByGroup((prev) => ({ ...prev, [groupName]: page }));
-                        setActiveEntryIndexByGroup((prev) => ({
-                          ...prev,
-                          [groupName]: Math.min((page - 1) * ENTRY_PAGE_SIZE, Math.max(items.length - 1, 0)),
-                        }));
-                      }}
-                      orientation="vertical"
-                      className="fixed"
-                    style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
-                    />
+                    <div className="hidden lg:block">
+                      <PaginationControls
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={(page) => {
+                          setActiveEntryPageByGroup((prev) => ({ ...prev, [groupName]: page }));
+                          setActiveEntryIndexByGroup((prev) => ({
+                            ...prev,
+                            [groupName]: Math.min((page - 1) * ENTRY_PAGE_SIZE, Math.max(items.length - 1, 0)),
+                          }));
+                        }}
+                        orientation="vertical"
+                        className="fixed"
+                        style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
+                      />
+                    </div>
                   ) : null}
                 </div>
               </div>
             );
           })}
 
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-4 z-10">
+          <div className="mt-6 flex justify-center lg:absolute lg:bottom-4 lg:left-1/2 lg:z-10 lg:-translate-x-1/2">
             <Button
               variant="outline"
               className="rounded-full px-6 h-10 border-border text-foreground"
@@ -795,7 +797,7 @@ const MyGoTwo = () => {
           <p className="text-muted-foreground text-center mt-12">No categories found.</p>
         )}
         <div
-          className="fixed flex flex-col items-center gap-2"
+          className="fixed hidden flex-col items-center gap-2 lg:flex"
               style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
         >
           {orderedSections.map((_, i) => (

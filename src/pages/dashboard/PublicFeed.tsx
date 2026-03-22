@@ -158,7 +158,7 @@ export default function PublicFeed() {
   };
 
   return (
-    <div className="mx-auto max-w-[1480px] px-4 pb-8 pt-3 md:px-6">
+    <div className="mx-auto max-w-[1480px] px-3 pb-8 pt-3 sm:px-4 md:px-6">
       <section
         className="overflow-hidden rounded-[30px] p-5 md:p-6"
         style={{
@@ -180,7 +180,7 @@ export default function PublicFeed() {
             <p className="mt-4 text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
               Public Feed
             </p>
-            <h1 className="mt-2 text-[36px] leading-none md:text-[44px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+            <h1 className="mt-2 text-[32px] leading-none sm:text-[36px] md:text-[44px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
               Public looks and popular picks.
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>

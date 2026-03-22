@@ -257,17 +257,17 @@ const Onboarding = () => {
 
   if (phase === "intro") {
     return (
-      <div className="landing-page min-h-screen overflow-hidden">
+      <div className="landing-page min-h-screen overflow-x-hidden">
         <div className="relative z-10 flex min-h-screen flex-col">
-          <div className="flex items-center justify-between px-8 pb-2 pt-6">
+          <div className="flex items-center justify-between px-4 pb-2 pt-6 sm:px-6 md:px-8">
             <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
             <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">
               Skip
             </Button>
           </div>
 
-          <div className="flex flex-1 flex-col items-center justify-center px-6 pb-10">
-            <div className="relative mb-8 flex h-[460px] w-full max-w-4xl items-center justify-center">
+          <div className="flex flex-1 flex-col items-center justify-center px-4 pb-10 sm:px-6">
+            <div className="relative mb-8 flex h-[360px] w-full max-w-4xl items-center justify-center sm:h-[420px] md:h-[460px]">
               {INTRO_IMAGES.map((image, index) => {
                 const offset = index - introCenter;
                 const wrapped =
@@ -295,7 +295,7 @@ const Onboarding = () => {
                     style={{ perspective: "1200px" }}
                   >
                     <div
-                      className={`relative overflow-hidden ${isCenter ? "h-[410px] w-[305px] shadow-2xl" : "h-[340px] w-[245px]"}`}
+                      className={`relative overflow-hidden ${isCenter ? "h-[300px] w-[220px] shadow-2xl sm:h-[360px] sm:w-[270px] md:h-[410px] md:w-[305px]" : "h-[240px] w-[176px] sm:h-[300px] sm:w-[216px] md:h-[340px] md:w-[245px]"}`}
                       style={{ borderRadius: "1.4rem" }}
                     >
                       <img
@@ -321,7 +321,7 @@ const Onboarding = () => {
             >
               <p className="surface-eyebrow-coral text-center">Go Two / Onboarding</p>
               <h1
-                className="mt-4 text-[38px] leading-[0.96] md:text-[56px]"
+                className="mt-4 text-[34px] leading-[0.96] sm:text-[38px] md:text-[56px]"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontWeight: 700,
@@ -333,7 +333,7 @@ const Onboarding = () => {
                 not a template.
               </h1>
               <p
-                className="mx-auto mt-5 max-w-[720px] text-[23px] leading-[1.24] md:text-[28px]"
+                className="mx-auto mt-5 max-w-[720px] text-[19px] leading-[1.24] sm:text-[23px] md:text-[28px]"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontStyle: "italic",
@@ -373,7 +373,7 @@ const Onboarding = () => {
 
   if (phase === "personalizing") {
     return (
-      <div className="landing-page flex min-h-screen flex-col items-center justify-center overflow-hidden px-6">
+      <div className="landing-page flex min-h-screen flex-col items-center justify-center overflow-x-hidden px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -419,7 +419,7 @@ const Onboarding = () => {
 
   if (phase === "complete") {
     return (
-      <div className="landing-page min-h-screen overflow-hidden px-6 py-8">
+      <div className="landing-page min-h-screen overflow-x-hidden px-4 py-8 sm:px-6">
         <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-[1120px] flex-col justify-center">
           <div className="surface-card-warm-glow grid gap-5 rounded-[36px] p-6 md:p-8 xl:grid-cols-[minmax(0,1.35fr)_320px]">
             <div>

@@ -163,7 +163,7 @@ export function DashboardTopBar() {
 
   return (
     <header
-      className="px-4 md:px-8 shrink-0 flex flex-col"
+      className="shrink-0 flex flex-col px-3 sm:px-4 md:px-6 lg:px-8"
       style={{
         height: showQuote ? "var(--header-height)" : collapsedHeaderHeight,
         paddingTop: "var(--header-top-padding)",
@@ -182,14 +182,14 @@ export function DashboardTopBar() {
           <GoTwoText className="shrink-0" />
         </div>
 
-        <nav className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-start gap-2 md:gap-3">
+        <nav className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-start gap-2 md:flex lg:gap-3">
           {navItems.map((item) => {
             return (
               <NavLink
                 key={item.url}
                 to={item.url}
                 aria-label={item.label}
-                className="flex w-[66px] flex-col items-center gap-1 text-center text-muted-foreground transition-all hover:text-foreground"
+                className="flex w-[56px] flex-col items-center gap-1 text-center text-muted-foreground transition-all hover:text-foreground lg:w-[66px]"
               >
                 <span
                   className="relative rounded-full card-design-neumorph flex items-center justify-center"
@@ -208,7 +208,7 @@ export function DashboardTopBar() {
                     </span>
                   )}
                 </span>
-                <span className="whitespace-nowrap text-[10px] font-medium leading-none" style={{ fontFamily: "'Jost', sans-serif" }}>
+                <span className="hidden whitespace-nowrap text-[10px] font-medium leading-none lg:block" style={{ fontFamily: "'Jost', sans-serif" }}>
                   {item.label}
                 </span>
               </NavLink>
@@ -301,6 +301,30 @@ export function DashboardTopBar() {
       </div>
 
       <div className="border-b border-border/30" style={{ marginTop: "var(--header-divider-margin-top)" }} />
+
+      <nav className="mt-3 flex gap-2 overflow-x-auto pb-1 md:hidden" style={{ scrollbarWidth: "none" }}>
+        {navItems.map((item) => (
+          <NavLink
+            key={`${item.url}-mobile`}
+            to={item.url}
+            aria-label={item.label}
+            className="card-design-neumorph inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] text-muted-foreground transition-all hover:text-foreground"
+          >
+            <span className="relative inline-flex h-7 w-7 items-center justify-center rounded-full">
+              <item.icon className="h-3.5 w-3.5" />
+              {item.url === "/dashboard/notifications" && unreadCount > 0 && (
+                <span
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-[18px] items-center justify-center rounded-full px-1 text-[9px] font-bold"
+                  style={{ background: "var(--swatch-teal)", color: "var(--swatch-cream-light)" }}
+                >
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </span>
+            <span style={{ fontFamily: "'Jost', sans-serif" }}>{item.label}</span>
+          </NavLink>
+        ))}
+      </nav>
 
       {showQuote && (
         <div

@@ -51,7 +51,7 @@ const timelineSteps = [
 
 const Landing = () => {
   return (
-    <div className="landing-page min-h-screen overflow-hidden">
+    <div className="landing-page min-h-screen overflow-x-hidden">
       <div className="relative z-10">
 
         {/* ═══ HERO ═══ */}

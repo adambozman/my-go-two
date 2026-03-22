@@ -104,7 +104,7 @@ export default function Notifications() {
 
   if (!subscribed) {
     return (
-      <div className="max-w-4xl mx-auto" style={{ paddingTop: 40 }}>
+      <div className="mx-auto max-w-4xl px-3 sm:px-4 md:px-0" style={{ paddingTop: 24 }}>
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-1.5 mb-3 bg-transparent border-none cursor-pointer"
@@ -128,7 +128,7 @@ export default function Notifications() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto" style={{ paddingTop: 40 }}>
+    <div className="mx-auto max-w-4xl px-3 sm:px-4 md:px-0" style={{ paddingTop: 24 }}>
       <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-1.5 mb-3 bg-transparent border-none cursor-pointer"
@@ -139,7 +139,7 @@ export default function Notifications() {
 
       <div
         className="card-design-sand mx-auto"
-        style={{ maxWidth: 520, padding: "40px 40px 32px" }}
+        style={{ maxWidth: 520, padding: "24px 20px 24px" }}
       >
         <div className="flex items-center justify-between mb-8">
           <h2

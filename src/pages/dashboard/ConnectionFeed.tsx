@@ -107,7 +107,7 @@ export default function ConnectionFeed() {
   }, [rows]);
 
   return (
-    <div className="min-h-screen p-6 md:p-8">
+    <div className="min-h-full px-3 py-4 sm:px-4 md:p-8">
       <section
         className="mx-auto w-full max-w-[1360px] rounded-[34px] p-6 md:p-8"
         style={{
@@ -185,10 +185,10 @@ export default function ConnectionFeed() {
             rows.map((row) => (
               <article
                 key={row.feed_item_id}
-                className="rounded-[24px] p-4 md:p-5"
-                style={{ background: "rgba(255,255,255,0.66)", border: "1px solid rgba(255,255,255,0.86)" }}
-              >
-                <div className="flex flex-wrap items-start justify-between gap-4">
+              className="rounded-[24px] p-4 md:p-5"
+              style={{ background: "rgba(255,255,255,0.66)", border: "1px solid rgba(255,255,255,0.86)" }}
+            >
+                <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "rgba(30,74,82,0.76)" }}>

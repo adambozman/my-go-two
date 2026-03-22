@@ -427,7 +427,7 @@ const DashboardHome = () => {
   }, [buildEntryResult, homeSearch, searchScope, user]);
 
   return (
-    <div className="relative h-full overflow-y-auto">
+    <div className="relative h-full min-h-0 overflow-x-hidden overflow-y-auto">
       <div className="mx-auto max-w-[1480px] px-4 pb-8 md:px-6">
         <div className="pb-5">
           <GreetingHeader displayName={displayName} />
@@ -436,7 +436,7 @@ const DashboardHome = () => {
         <div className="grid gap-5 xl:grid-cols-[minmax(0,300px)_minmax(0,1.18fr)_minmax(0,300px)]">
           <div>
             <section
-              className="card-design-sand relative flex h-full min-h-[740px] flex-col overflow-hidden rounded-[30px] p-5"
+              className="card-design-sand relative flex h-full min-h-0 flex-col overflow-hidden rounded-[30px] p-5 xl:min-h-[740px]"
             >
               <div className="mb-4 flex items-center justify-between">
                 <div>

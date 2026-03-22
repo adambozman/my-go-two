@@ -34,7 +34,7 @@ const CategorySync = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center" style={{ minHeight: "60vh", gap: 20 }}>
+    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center" style={{ gap: 20 }}>
       <Button
         onClick={handlePush}
         disabled={status === "running"}

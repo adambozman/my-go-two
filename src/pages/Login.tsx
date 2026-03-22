@@ -54,12 +54,12 @@ const Login = () => {
   };
 
   return (
-    <div className="landing-page min-h-screen overflow-hidden relative">
+    <div className="landing-page relative min-h-screen overflow-x-hidden">
       
 
-      <div className="relative z-10 min-h-screen flex flex-col">
+      <div className="relative z-10 flex min-h-screen flex-col">
         {/* Nav */}
-        <nav className="flex items-center justify-between px-8 md:px-16 py-5">
+        <nav className="flex items-center justify-between px-4 py-5 sm:px-6 md:px-10 lg:px-16">
           <Link to="/">
             <span
               className="logo-text"
@@ -83,7 +83,7 @@ const Login = () => {
         </nav>
 
         {/* Content */}
-        <div className="flex-1 flex items-center justify-center px-4 pb-12">
+        <div className="flex flex-1 items-center justify-center px-4 pb-10 sm:pb-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -114,7 +114,7 @@ const Login = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="card-design-neumorph rounded-[28px] p-8 md:p-10"
+              className="card-design-neumorph rounded-[28px] p-6 sm:p-8 md:p-10"
               style={{}}
             >
               <form onSubmit={handleSubmit} className="space-y-5">

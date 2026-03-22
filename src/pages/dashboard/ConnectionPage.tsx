@@ -906,7 +906,7 @@ export default function ConnectionPage() {
   }
 
   return (
-    <div className="mx-auto h-full max-w-[1320px] overflow-y-auto px-4 pb-10 pt-4 md:px-6">
+    <div className="mx-auto h-full max-w-[1320px] overflow-x-hidden overflow-y-auto px-3 pb-10 pt-4 sm:px-4 md:px-6">
       <div className="space-y-5">
         <div className="flex justify-start">
           <button
@@ -973,8 +973,8 @@ export default function ConnectionPage() {
                     <AccordionTrigger className="px-5 py-5 text-left hover:no-underline">
                       <p className="surface-eyebrow-teal">Open settings</p>
                     </AccordionTrigger>
-                    <AccordionContent className="absolute left-0 right-0 top-full z-30 pt-3">
-                      <div className="surface-inset-panel max-h-[420px] overflow-y-auto rounded-[28px] px-5 py-5 shadow-[0_24px_44px_rgba(30,74,82,0.12)]">
+                  <AccordionContent className="pt-3 xl:absolute xl:left-0 xl:right-0 xl:top-full xl:z-30">
+                      <div className="surface-inset-panel rounded-[28px] px-4 py-4 shadow-[0_24px_44px_rgba(30,74,82,0.12)] sm:px-5 sm:py-5 xl:max-h-[420px] xl:overflow-y-auto">
                         <div className="surface-inset-panel rounded-[22px] px-4 py-4">
                           <p className="surface-eyebrow-teal">Connection type</p>
                           <div className="mt-4">
@@ -1112,14 +1112,14 @@ export default function ConnectionPage() {
 
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)] xl:items-stretch">
           <div className="space-y-5">
-            <section className="card-design-neumorph flex min-h-[calc(100vh-320px)] flex-col p-6 md:p-7">
+            <section className="card-design-neumorph flex flex-col p-5 md:p-6 xl:min-h-[calc(100vh-320px)] xl:p-7">
               <div>
                 <p className="surface-eyebrow-coral">
                   AI Connection
                 </p>
               </div>
 
-              <div className="mt-5 grid flex-1 gap-4 lg:grid-cols-[minmax(0,1.18fr)_250px] lg:grid-rows-[minmax(0,1fr)_minmax(180px,auto)]">
+              <div className="mt-5 grid flex-1 gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,1.18fr)_250px] lg:grid-rows-[minmax(0,1fr)_minmax(180px,auto)]">
                 {incomingDerivedFeatures.for_you_recommendations && sharedRecommendations?.products?.length ? (
                   <>
                     <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5">

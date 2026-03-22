@@ -49,7 +49,7 @@ const Search = () => {
   }, [query, user]);
 
   return (
-    <div className="min-h-full p-6 max-w-2xl mx-auto">
+    <div className="mx-auto min-h-full max-w-2xl px-3 py-6 sm:px-4 md:px-6">
       <h1
         className="text-2xl font-bold mb-6"
         style={{

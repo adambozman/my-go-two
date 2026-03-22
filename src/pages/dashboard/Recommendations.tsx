@@ -176,8 +176,8 @@ const Recommendations = () => {
   const displayProducts = subscribed ? paginatedProducts : filtered.slice(0, PAGE_SIZE);
 
   return (
-    <div className="h-full overflow-y-auto px-1 pb-6">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6 space-y-4">
+    <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
+      <div className="mx-auto max-w-[1280px] space-y-4 px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
         {/* ── Category pills ── */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -257,7 +257,7 @@ const Recommendations = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.25 }}
-                className="grid md:grid-cols-2 gap-4"
+                className="grid gap-4 lg:grid-cols-2"
               >
                 {displayProducts.map((product, i) => {
                   const itemId = `${product.brand}-${product.name}`;
@@ -343,7 +343,7 @@ function ProductCard({
       className="relative"
     >
       <Card variant="sand" className="relative flex h-full flex-col overflow-hidden">
-        <div className="relative h-[220px] overflow-hidden">
+        <div className="relative h-[200px] overflow-hidden sm:h-[220px]">
           <img src={getProductImage(product)} alt={product.name} className="h-full w-full object-cover" />
         </div>
 

@@ -284,12 +284,12 @@ const SettingsPage = () => {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto" style={{ paddingTop: 40 }}>
+    <div className="mx-auto max-w-4xl px-3 sm:px-4 md:px-0" style={{ paddingTop: 24 }}>
 
       {/* Settings Menu */}
       {!activeSection && (
-        <div className="mx-auto" style={{ maxWidth: 520 }}>
-          <div className="card-design-neumorph" style={{ padding: '40px 40px 32px' }}>
+        <div className="mx-auto w-full max-w-[520px]">
+          <div className="card-design-neumorph px-5 py-6 sm:px-6 md:px-10 md:py-8">
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-8 text-center">Your Account</h2>
             <div className="flex flex-col" style={{ gap: 6 }}>
               {settingsItems.map((item) => (
@@ -315,7 +315,7 @@ const SettingsPage = () => {
 
       {/* Profile Section */}
       {activeSection === "profile" && (
-        <div className="mx-auto" style={{ maxWidth: 520 }}>
+        <div className="mx-auto w-full max-w-[520px]">
           <button
             onClick={() => setActiveSection(null)}
             className="hover:underline block text-left"
@@ -323,7 +323,7 @@ const SettingsPage = () => {
           >
             ← Back to Settings
           </button>
-          <div className="card-design-neumorph" style={{ padding: 40 }}>
+          <div className="card-design-neumorph px-5 py-6 sm:px-6 md:px-10">
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Profile</h2>
             <div className="space-y-5">
               <div className="space-y-2">
@@ -412,7 +412,7 @@ const SettingsPage = () => {
 
       {/* Connections Section */}
       {activeSection === "connections" && (
-        <div className="mx-auto" style={{ maxWidth: 520 }}>
+        <div className="mx-auto w-full max-w-[520px]">
           <button
             onClick={() => setActiveSection(null)}
             className="hover:underline block text-left"
@@ -420,7 +420,7 @@ const SettingsPage = () => {
           >
             ← Back to Settings
           </button>
-          <div className="card-design-neumorph" style={{ padding: 40 }}>
+          <div className="card-design-neumorph px-5 py-6 sm:px-6 md:px-10">
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Connections</h2>
 
             {/* Invite Methods */}
@@ -476,7 +476,7 @@ const SettingsPage = () => {
                 </div>
                 <div className="space-y-3">
                   {pendingForMe.map((c) => (
-                    <div key={c.id} className="card-design-neumorph p-4 flex items-center justify-between">
+                    <div key={c.id} className="card-design-neumorph flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex items-center gap-3">
                         <Clock className="w-5 h-5" style={{ color: 'var(--swatch-sonoma-chardonnay)' }} />
                         <span className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>Someone invited you to connect</span>
@@ -503,7 +503,7 @@ const SettingsPage = () => {
                   {couples.map((c) => {
                     const displayName = c.display_label || c.invitee_email || "Connection";
                     return (
-                      <div key={c.id} className="card-design-neumorph p-4 flex items-center justify-between">
+                      <div key={c.id} className="card-design-neumorph flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-center gap-3">
                           {getStatusIcon(c.status)}
                           <div>
@@ -546,7 +546,7 @@ const SettingsPage = () => {
 
       {/* Notifications Section */}
       {activeSection === "notifications" && (
-        <div className="mx-auto" style={{ maxWidth: 520 }}>
+        <div className="mx-auto w-full max-w-[520px]">
           <button
             onClick={() => setActiveSection(null)}
             className="hover:underline block text-left"
@@ -554,7 +554,7 @@ const SettingsPage = () => {
           >
             ← Back to Settings
           </button>
-          <div className="card-design-neumorph" style={{ padding: 40 }}>
+          <div className="card-design-neumorph px-5 py-6 sm:px-6 md:px-10">
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Notifications</h2>
             <div className="space-y-5">
               {([
@@ -585,7 +585,7 @@ const SettingsPage = () => {
 
       {/* Sharing & Privacy Section */}
       {activeSection === "privacy" && (
-        <div className="mx-auto" style={{ maxWidth: 520 }}>
+        <div className="mx-auto w-full max-w-[520px]">
           <button
             onClick={() => setActiveSection(null)}
             className="hover:underline block text-left"
@@ -593,7 +593,7 @@ const SettingsPage = () => {
           >
             ← Back to Settings
           </button>
-          <div className="card-design-neumorph" style={{ padding: 40 }}>
+          <div className="card-design-neumorph px-5 py-6 sm:px-6 md:px-10">
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Sharing & Privacy</h2>
             <div className="space-y-5">
               <div className="card-design-neumorph p-5">
@@ -639,7 +639,7 @@ const SettingsPage = () => {
 
       {/* Help & Support Section */}
       {activeSection === "help" && (
-        <div className="mx-auto" style={{ maxWidth: 520 }}>
+        <div className="mx-auto w-full max-w-[520px]">
           <button
             onClick={() => setActiveSection(null)}
             className="hover:underline block text-left"
@@ -647,7 +647,7 @@ const SettingsPage = () => {
           >
             ← Back to Settings
           </button>
-          <div className="card-design-neumorph" style={{ padding: 40 }}>
+          <div className="card-design-neumorph px-5 py-6 sm:px-6 md:px-10">
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Help & Support</h2>
             <div className="space-y-3">
               {[
@@ -675,7 +675,7 @@ const SettingsPage = () => {
 
       {/* About GoTwo Section */}
       {activeSection === "about" && (
-        <div className="mx-auto" style={{ maxWidth: 520 }}>
+        <div className="mx-auto w-full max-w-[520px]">
           <button
             onClick={() => setActiveSection(null)}
             className="hover:underline block text-left"
@@ -683,7 +683,7 @@ const SettingsPage = () => {
           >
             ← Back to Settings
           </button>
-          <div className="card-design-neumorph" style={{ padding: 40 }}>
+          <div className="card-design-neumorph px-5 py-6 sm:px-6 md:px-10">
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">About GoTwo</h2>
             <div className="space-y-5">
               <div className="flex items-center justify-between py-1">

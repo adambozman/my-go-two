@@ -578,23 +578,23 @@ const Questionnaires = () => {
 
   if (view === "thisorthat_dashboard") {
     return (
-      <div className="h-full overflow-y-auto px-1 pb-6">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
+      <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
+        <div className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4" style={{ gridAutoRows: "calc((100vh - var(--header-height) - 80px) / 3)" }}>
+        <div className="grid auto-rows-[minmax(220px,auto)] grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-12 lg:auto-rows-[calc((100vh-var(--header-height)-80px)/3)]">
             {[
-              { type: "category" as const, category: thisOrThatCategories[0],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[1],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[2],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[3],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[4],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[5],  layoutClass: "md:col-span-3" },
-              { type: "feature" as const,                                         layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[6],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[7],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[8],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[9],  layoutClass: "md:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[10], layoutClass: "md:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[0],  layoutClass: "lg:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[1],  layoutClass: "lg:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[2],  layoutClass: "lg:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[3],  layoutClass: "lg:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[4],  layoutClass: "lg:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[5],  layoutClass: "lg:col-span-3" },
+              { type: "feature" as const,                                         layoutClass: "lg:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[6],  layoutClass: "lg:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[7],  layoutClass: "lg:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[8],  layoutClass: "lg:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[9],  layoutClass: "lg:col-span-3" },
+              { type: "category" as const, category: thisOrThatCategories[10], layoutClass: "lg:col-span-3" },
             ].map((item, index) => {
               if (item.type === "feature") {
                 return (
@@ -683,14 +683,14 @@ const Questionnaires = () => {
     const selectedSide = savedValue === activeTotQuestion.categoryA ? "A" : savedValue === activeTotQuestion.categoryB ? "B" : null;
 
     return (
-      <div className="h-full flex flex-col items-center justify-start px-3 py-3 overflow-y-auto">
+      <div className="flex h-full flex-col items-center justify-start overflow-x-hidden overflow-y-auto px-3 py-3">
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: "spring", stiffness: 280, damping: 24 }}
           className="card-design-sand w-full max-w-[480px] rounded-[28px] overflow-hidden relative flex flex-col"
           style={{
-            maxHeight: "calc(100vh - 160px)",
+            maxHeight: "min(calc(100dvh - 128px), 760px)",
           }}
         >
           {/* Decorative teal orb */}

@@ -204,8 +204,8 @@ export default function SponsoredAdmin() {
   const getStatsForProduct = (id: string) => stats.find((s) => s.product_id === id);
 
   return (
-    <div className="h-full overflow-y-auto pb-24">
-      <div className="max-w-[520px] mx-auto space-y-4 py-4">
+    <div className="h-full overflow-x-hidden overflow-y-auto pb-24">
+      <div className="mx-auto max-w-[520px] space-y-4 px-3 py-4 sm:px-4 md:px-0">
         {/* Header */}
         <div className="flex items-center justify-between">
           {view !== "list" ? (
@@ -335,7 +335,7 @@ export default function SponsoredAdmin() {
                 <h2 className="text-[13px] font-bold uppercase tracking-wider" style={{ color: "var(--swatch-teal)" }}>
                   Product Info
                 </h2>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <input
                     placeholder="Product name *"
                     value={editing.name || ""}
@@ -422,7 +422,7 @@ export default function SponsoredAdmin() {
                   className="w-full px-3 py-2 rounded-xl text-[13px] bg-white/60 border border-white/80 outline-none"
                   style={{ color: "var(--swatch-teal)" }}
                 />
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                   <input
                     placeholder="utm_source"
                     value={editing.utm_source || ""}
