@@ -1263,6 +1263,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      connection_can_view_card_entry: {
+        Args: { p_card_entry_id: string; p_viewer_id: string }
+        Returns: boolean
+      }
+      connection_can_view_derived_feature: {
+        Args: {
+          p_feature_key: string
+          p_owner_user_id: string
+          p_viewer_id: string
+        }
+        Returns: boolean
+      }
+      connection_can_view_profile_field: {
+        Args: {
+          p_field_key: string
+          p_owner_user_id: string
+          p_viewer_id: string
+        }
+        Returns: boolean
+      }
+      connection_kind_allows_occasion: {
+        Args: { p_connection_kind: string; p_occasion_type: string }
+        Returns: boolean
+      }
       create_connection_invite_from_token: {
         Args: { p_token: string }
         Returns: {
@@ -1279,9 +1303,70 @@ export type Database = {
           request_status: string
         }[]
       }
+      get_connection_outgoing_sharing_state: {
+        Args: { p_connection_user_id: string; p_couple_id: string }
+        Returns: Json
+      }
+      get_connection_shared_profile: {
+        Args: {
+          p_connection_user_id: string
+          p_couple_id: string
+          p_owner_user_id: string
+        }
+        Returns: {
+          anniversary: string
+          avatar_url: string
+          birthday: string
+          display_name: string
+        }[]
+      }
+      get_connection_shared_recommendations: {
+        Args: {
+          p_connection_user_id: string
+          p_couple_id: string
+          p_owner_user_id: string
+        }
+        Returns: {
+          generated_at: string
+          id: string
+          products: Json
+          week_start: string
+        }[]
+      }
+      get_connection_shared_vibe: {
+        Args: {
+          p_connection_user_id: string
+          p_couple_id: string
+          p_owner_user_id: string
+        }
+        Returns: {
+          persona_summary: string
+        }[]
+      }
+      get_connection_visible_card_entries: {
+        Args: {
+          p_connection_user_id: string
+          p_couple_id: string
+          p_owner_user_id: string
+        }
+        Returns: {
+          card_key: string
+          entry_name: string
+          field_values: Json
+          group_name: string
+          id: string
+          image_url: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
       get_shared_categories: {
         Args: { p_couple_id: string; p_viewer_id: string }
         Returns: Json
+      }
+      infer_card_entry_section: {
+        Args: { p_card_key: string; p_entry_name: string; p_group_name: string }
+        Returns: string
       }
       issue_connection_share_token: {
         Args: { p_channel?: string; p_days_valid?: number }
@@ -1291,6 +1376,18 @@ export type Database = {
           token: string
         }[]
       }
+      next_annual_occurrence: {
+        Args: { p_original_date: string }
+        Returns: string
+      }
+      next_holiday_occurrence: {
+        Args: { p_day: number; p_month: number }
+        Returns: string
+      }
+      normalize_connection_kind: {
+        Args: { p_connection_kind: string }
+        Returns: string
+      }
       search_discoverable_users: {
         Args: { p_limit?: number; p_query: string }
         Returns: {
@@ -1299,6 +1396,57 @@ export type Database = {
           match_type: string
           user_id: string
         }[]
+      }
+      set_connection_card_share: {
+        Args: {
+          p_card_entry_id: string
+          p_connection_user_id: string
+          p_couple_id: string
+          p_is_shared: boolean
+        }
+        Returns: undefined
+      }
+      set_connection_derived_feature_share: {
+        Args: {
+          p_connection_user_id: string
+          p_couple_id: string
+          p_feature_key: string
+          p_is_shared: boolean
+        }
+        Returns: undefined
+      }
+      set_connection_kind_preference: {
+        Args: {
+          p_connection_kind: string
+          p_connection_user_id: string
+          p_couple_id: string
+        }
+        Returns: undefined
+      }
+      set_connection_profile_field_share: {
+        Args: {
+          p_connection_user_id: string
+          p_couple_id: string
+          p_field_key: string
+          p_is_shared: boolean
+        }
+        Returns: undefined
+      }
+      share_all_card_entries_with_connection: {
+        Args: {
+          p_connection_user_id: string
+          p_couple_id: string
+          p_owner_user_id: string
+        }
+        Returns: number
+      }
+      unshare_all_card_entries_with_connection: {
+        Args: {
+          p_connection_user_id: string
+          p_couple_id: string
+          p_owner_user_id: string
+        }
+        Returns: number
       }
     }
     Enums: {
