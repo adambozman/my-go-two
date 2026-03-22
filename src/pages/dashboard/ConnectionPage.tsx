@@ -869,13 +869,11 @@ export default function ConnectionPage() {
       return;
     }
 
-    await loadConnection();
-
     toast({
       title: "Connection type updated",
       description: `${connection.name} is now set as ${editableConnectionKinds.find((item) => item.key === nextKind)?.label.toLowerCase()}.`,
     });
-  }, [connection, connectionKind, loadConnection, toast, user]);
+  }, [connection, connectionKind, toast, user]);
 
   if (loading) {
     return (
