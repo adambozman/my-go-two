@@ -830,28 +830,48 @@ const MyGoTwo = () => {
   return (
     <div className="my-go-two-page flex h-full min-h-0 flex-col overflow-x-hidden">
       <style>{`
+        .my-go-two-page {
+          overflow: hidden;
+        }
+
+        .my-go-two-canvas {
+          width: min(100%, 1360px);
+          height: 100%;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
+
+        .my-go-two-page .my-go-two-stage-stack {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+        }
+
         @media (max-width: 767px) {
-          .my-go-two-page {
-            overflow-x: hidden;
+          .my-go-two-canvas {
+            width: min(calc(100% - 24px), 390px);
           }
 
           .my-go-two-page .my-go-two-quote-panel {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 12px 8px;
-            min-height: clamp(104px, 15vh, 128px);
+            padding: 8px 12px 6px;
+            min-height: clamp(68px, 9vh, 84px);
           }
 
           .my-go-two-page .my-go-two-quote-frame {
             width: min(100%, 720px);
-            min-height: clamp(84px, 12vh, 108px);
+            min-height: clamp(62px, 8vh, 76px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 4px;
-            padding: 12px 14px 10px;
+            padding: 8px 10px 7px;
             border: 1px solid rgba(255, 255, 255, 0.64);
             border-radius: 22px;
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.58) 0%, rgba(245, 233, 220, 0.28) 100%);
@@ -881,9 +901,12 @@ const MyGoTwo = () => {
 
           .my-go-two-page .coverflow-stage-shell {
             height: auto;
-            min-height: calc(100dvh - var(--header-height) - 140px);
-            padding-top: 6px;
-            padding-bottom: 12px;
+            min-height: calc(100dvh - var(--header-height) - 92px);
+            padding-top: 0;
+            padding-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
           }
 
           .my-go-two-page .coverflow-stage-title-wrap {
@@ -902,9 +925,14 @@ const MyGoTwo = () => {
 
           .my-go-two-page .my-go-two-coverflow-scale {
             width: 100%;
-            transform: scale(1.18);
+            transform: scale(1.34);
             transform-origin: top center;
-            margin: 0 auto -64px;
+            margin: 0 auto 0;
+          }
+
+          .my-go-two-page .my-go-two-coverflow-scale .surface-pill.pill-asset-title {
+            padding: 6px 9px;
+            font-size: clamp(10px, 2.5vw, 13px);
           }
 
           .my-go-two-page .my-go-two-form-scale {
@@ -916,6 +944,10 @@ const MyGoTwo = () => {
         }
 
         @media (min-width: 768px) and (max-width: 1023px) {
+          .my-go-two-canvas {
+            width: min(calc(100% - 32px), 920px);
+          }
+
           .my-go-two-page .my-go-two-quote-panel {
             display: flex;
             align-items: center;
@@ -963,9 +995,9 @@ const MyGoTwo = () => {
 
           .my-go-two-page .my-go-two-coverflow-scale {
             width: 100%;
-            transform: scale(1.04);
+            transform: scale(1.08);
             transform-origin: top center;
-            margin: 0 auto -24px;
+            margin: 0 auto -8px;
           }
 
           .my-go-two-page .my-go-two-form-scale {
@@ -976,10 +1008,12 @@ const MyGoTwo = () => {
           }
         }
       `}</style>
-      {quotePanel}
-      <AnimatePresence mode="wait">
-        {renderContent()}
-      </AnimatePresence>
+      <div className="my-go-two-canvas">
+        {quotePanel}
+        <div className="my-go-two-stage-stack">
+          <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 };
