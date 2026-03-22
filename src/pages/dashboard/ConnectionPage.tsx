@@ -862,7 +862,7 @@ export default function ConnectionPage() {
           </button>
         </div>
 
-        <section className="card-design-neumorph relative w-full max-w-[1120px] overflow-visible p-5 pt-12 md:p-6 md:pt-12 xl:h-[280px]">
+        <section className="card-design-neumorph relative w-full max-w-[1120px] overflow-visible p-5 pt-12 md:p-6 md:pt-12 xl:h-[236px]">
             <p className="surface-eyebrow-coral absolute left-5 top-5 md:left-6 md:top-6">
               Go Two / Connection feed
             </p>
@@ -1056,44 +1056,22 @@ export default function ConnectionPage() {
 
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
           <div className="space-y-5">
-            <section className="card-design-neumorph p-6 md:p-7">
-              <div className="grid gap-5 lg:grid-cols-[minmax(0,1.14fr)_240px]">
-                <div className="min-w-0">
-                  <p className="surface-eyebrow-coral">
-                    AI Connection
-                  </p>
-                  <h2 className="surface-display-lg mt-2 max-w-2xl">
-                    {connection.name}'s AI connection.
-                  </h2>
-                  <p className="surface-body mt-4 max-w-2xl">
-                    Go Two pulls from shared recommendations, dates, and profile clues to surface gift ideas, product picks, and next moves that actually fit {connection.name}.
-                  </p>
-                </div>
-
-                <div className="grid gap-4">
-                  <div className="card-design-neumorph px-5 py-5">
-                    <p className="surface-eyebrow-coral">
-                      Their vibe
-                    </p>
-                    <p className="surface-heading-lg mt-2">
-                      {incomingDerivedFeatures.your_vibe && sharedVibe ? "Readable now" : "Locked"}
-                    </p>
-                    <p className="surface-meta mt-3">
-                      {incomingDerivedFeatures.your_vibe && sharedVibe ? sharedVibe : `${connection.name} has not shared their vibe summary yet.`}
-                    </p>
-                  </div>
-                </div>
+            <section className="card-design-neumorph flex min-h-[calc(100vh-370px)] flex-col p-6 md:p-7">
+              <div>
+                <p className="surface-eyebrow-coral">
+                  AI Connection
+                </p>
               </div>
 
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="mt-5 grid flex-1 gap-4 md:grid-cols-2 auto-rows-fr">
                 {incomingDerivedFeatures.for_you_recommendations ? (
                   sharedRecommendations?.products?.length ? (
                     sharedRecommendations.products.slice(0, 4).map((product, index) => (
                       <div
                         key={`${product.brand || "brand"}-${product.name || index}`}
-                        className={`card-design-neumorph px-5 py-5 ${index === 0 ? "md:col-span-2" : ""}`}
+                        className={`card-design-neumorph flex h-full flex-col px-5 py-5 ${index === 0 ? "md:col-span-2" : ""}`}
                       >
-                      <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-3">
                           <span className="surface-icon-spot mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full">
                             <Sparkles className="h-4 w-4" />
                           </span>
@@ -1102,7 +1080,7 @@ export default function ConnectionPage() {
                               {product.name || "Recommendation"}
                             </p>
                             <p className="surface-eyebrow-coral mt-2">
-                              {product.brand || "Gift idea"}
+                              {product.brand || "Gift recommendation"}
                             </p>
                             <p className="surface-body mt-3">
                               {product.hook || product.why || `Pulled from ${connection.name}'s latest recommendations.`}
@@ -1112,34 +1090,22 @@ export default function ConnectionPage() {
                       </div>
                     ))
                   ) : (
-                    aiSuggestions.map((suggestion, index) => (
-                      <div
-                        key={`${suggestion.title}-${index}`}
-                        className={`card-design-neumorph px-5 py-5 ${index === 0 ? "md:col-span-2" : ""}`}
-                      >
-                      <div className="flex items-start gap-3">
-                          <span className="surface-icon-spot mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full">
-                            <Sparkles className="h-4 w-4" />
-                          </span>
-                          <div className="min-w-0">
-                            <p className="surface-heading-lg">
-                              {suggestion.title}
-                            </p>
-                            <p className="surface-body mt-3">
-                              {suggestion.body}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))
+                    <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5 md:col-span-2">
+                      <p className="surface-heading-lg">
+                        Gifts are not ready yet.
+                      </p>
+                      <p className="surface-body mt-3">
+                        There are not enough shared recommendation signals yet. Tell {connection.name} to share more so Go Two can fill this space with gifts that actually fit.
+                      </p>
+                    </div>
                   )
                 ) : (
-                  <div className="card-design-neumorph px-5 py-5 md:col-span-2">
+                  <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5 md:col-span-2">
                     <p className="surface-heading-lg">
-                      AI needs more to work with.
+                      Gifts are not ready yet.
                     </p>
                     <p className="surface-body mt-3">
-                      {connection.name} has not shared derived recommendations with you yet.
+                      There are not enough shared recommendation signals yet. Tell {connection.name} to share more so Go Two can fill this space with gifts that actually fit.
                     </p>
                   </div>
                 )}
