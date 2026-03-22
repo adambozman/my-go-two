@@ -609,34 +609,18 @@ export default function ConnectionPage() {
 
     setOutgoingProfileFields((current) => ({ ...current, [key]: nextValue }));
 
-    const { data: existingRow, error: loadError } = await (supabase as any)
+    const { error } = await (supabase as any)
       .from("shared_profile_fields")
-      .select("id")
-      .eq("couple_id", connection.id)
-      .eq("owner_user_id", user.id)
-      .eq("connection_user_id", connection.partnerId)
-      .eq("field_key", key)
-      .maybeSingle();
-
-    if (loadError) {
-      setOutgoingProfileFields((current) => ({ ...current, [key]: !nextValue }));
-      toast({ title: "Could not update field sharing", description: loadError.message, variant: "destructive" });
-      return;
-    }
-
-    const payload = {
-      couple_id: connection.id,
-      owner_user_id: user.id,
-      connection_user_id: connection.partnerId,
-      field_key: key,
-      is_shared: nextValue,
-    };
-
-    const query = existingRow
-      ? (supabase as any).from("shared_profile_fields").update({ is_shared: nextValue }).eq("id", existingRow.id)
-      : (supabase as any).from("shared_profile_fields").insert(payload);
-
-    const { error } = await query;
+      .upsert(
+        {
+          couple_id: connection.id,
+          owner_user_id: user.id,
+          connection_user_id: connection.partnerId,
+          field_key: key,
+          is_shared: nextValue,
+        },
+        { onConflict: "couple_id,owner_user_id,connection_user_id,field_key" },
+      );
 
     if (error) {
       setOutgoingProfileFields((current) => ({ ...current, [key]: !nextValue }));
@@ -644,8 +628,10 @@ export default function ConnectionPage() {
       return;
     }
 
+    await loadConnection();
+
     toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
-  }, [connection, toast, user]);
+  }, [connection, loadConnection, toast, user]);
 
   const handleToggleCardShare = useCallback(async (entry: EntryRecord, nextValue: boolean) => {
     if (!user || !connection || !connection.partnerId) return;
@@ -653,12 +639,17 @@ export default function ConnectionPage() {
     setSharedCardEntryIds((current) => nextValue ? Array.from(new Set([...current, entry.id])) : current.filter((id) => id !== entry.id));
 
     if (nextValue) {
-      const { error } = await (supabase as any).from("shared_card_entries").insert({
-        couple_id: connection.id,
-        owner_user_id: user.id,
-        connection_user_id: connection.partnerId,
-        card_entry_id: entry.id,
-      });
+      const { error } = await (supabase as any)
+        .from("shared_card_entries")
+        .upsert(
+          {
+            couple_id: connection.id,
+            owner_user_id: user.id,
+            connection_user_id: connection.partnerId,
+            card_entry_id: entry.id,
+          },
+          { onConflict: "couple_id,owner_user_id,connection_user_id,card_entry_id" },
+        );
 
       if (error) {
         setSharedCardEntryIds((current) => current.filter((id) => id !== entry.id));
@@ -681,42 +672,28 @@ export default function ConnectionPage() {
       }
     }
 
+    await loadConnection();
+
     toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection?.name || "them"}.` });
-  }, [connection, toast, user]);
+  }, [connection, loadConnection, toast, user]);
 
   const handleToggleDerivedFeature = useCallback(async (key: DerivedFeatureKey, nextValue: boolean) => {
     if (!user || !connection || !connection.partnerId) return;
 
     setOutgoingDerivedFeatures((current) => ({ ...current, [key]: nextValue }));
 
-    const { data: existingRow, error: loadError } = await (supabase as any)
+    const { error } = await (supabase as any)
       .from("shared_derived_features")
-      .select("id")
-      .eq("couple_id", connection.id)
-      .eq("owner_user_id", user.id)
-      .eq("connection_user_id", connection.partnerId)
-      .eq("feature_key", key)
-      .maybeSingle();
-
-    if (loadError) {
-      setOutgoingDerivedFeatures((current) => ({ ...current, [key]: !nextValue }));
-      toast({ title: "Could not update derived sharing", description: loadError.message, variant: "destructive" });
-      return;
-    }
-
-    const payload = {
-      couple_id: connection.id,
-      owner_user_id: user.id,
-      connection_user_id: connection.partnerId,
-      feature_key: key,
-      is_shared: nextValue,
-    };
-
-    const query = existingRow
-      ? (supabase as any).from("shared_derived_features").update({ is_shared: nextValue }).eq("id", existingRow.id)
-      : (supabase as any).from("shared_derived_features").insert(payload);
-
-    const { error } = await query;
+      .upsert(
+        {
+          couple_id: connection.id,
+          owner_user_id: user.id,
+          connection_user_id: connection.partnerId,
+          feature_key: key,
+          is_shared: nextValue,
+        },
+        { onConflict: "couple_id,owner_user_id,connection_user_id,feature_key" },
+      );
 
     if (error) {
       setOutgoingDerivedFeatures((current) => ({ ...current, [key]: !nextValue }));
@@ -724,11 +701,13 @@ export default function ConnectionPage() {
       return;
     }
 
+    await loadConnection();
+
     toast({
       title: nextValue ? "Derived feature shared" : "Derived feature hidden",
       description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableDerivedFeatures.find((feature) => feature.key === key)?.label.toLowerCase()}.`,
     });
-  }, [connection, toast, user]);
+  }, [connection, loadConnection, toast, user]);
 
   const handleBulkShare = useCallback(async (mode: "share" | "unshare") => {
     if (!user || !connection || !connection.partnerId) return;
@@ -753,11 +732,13 @@ export default function ConnectionPage() {
       setSharedCardEntryIds([]);
     }
 
+    await loadConnection();
+
     toast({
       title: mode === "share" ? "All cards shared" : "All cards hidden",
       description: `${connection.name} ${mode === "share" ? "can now see" : "can no longer see"} your product cards. ${typeof data === "number" ? `(${data} changed)` : ""}`.trim(),
     });
-  }, [connection, myEntries, toast, user]);
+  }, [connection, loadConnection, myEntries, toast, user]);
 
   const handleConnectionKindChange = useCallback(async (nextKind: ConnectionKind) => {
     if (!user || !connection || !connection.partnerId || nextKind === connectionKind) return;
@@ -813,11 +794,13 @@ export default function ConnectionPage() {
       return;
     }
 
+    await loadConnection();
+
     toast({
       title: "Connection type updated",
       description: `${connection.name} is now set as ${editableConnectionKinds.find((item) => item.key === nextKind)?.label.toLowerCase()}.`,
     });
-  }, [connection, connectionKind, toast, user]);
+  }, [connection, connectionKind, loadConnection, toast, user]);
 
   if (loading) {
     return (
@@ -1054,60 +1037,122 @@ export default function ConnectionPage() {
             </div>
         </section>
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)] xl:items-stretch">
           <div className="space-y-5">
-            <section className="card-design-neumorph flex min-h-[calc(100vh-370px)] flex-col p-6 md:p-7">
+            <section className="card-design-neumorph flex min-h-[calc(100vh-320px)] flex-col p-6 md:p-7">
               <div>
                 <p className="surface-eyebrow-coral">
                   AI Connection
                 </p>
               </div>
 
-              <div className="mt-5 grid flex-1 gap-4 md:grid-cols-2 auto-rows-fr">
-                {incomingDerivedFeatures.for_you_recommendations ? (
-                  sharedRecommendations?.products?.length ? (
-                    sharedRecommendations.products.slice(0, 4).map((product, index) => (
-                      <div
-                        key={`${product.brand || "brand"}-${product.name || index}`}
-                        className={`card-design-neumorph flex h-full flex-col px-5 py-5 ${index === 0 ? "md:col-span-2" : ""}`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <span className="surface-icon-spot mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full">
-                            <Sparkles className="h-4 w-4" />
-                          </span>
-                          <div className="min-w-0">
-                            <p className="surface-heading-lg">
-                              {product.name || "Recommendation"}
-                            </p>
-                            <p className="surface-eyebrow-coral mt-2">
-                              {product.brand || "Gift recommendation"}
-                            </p>
-                            <p className="surface-body mt-3">
-                              {product.hook || product.why || `Pulled from ${connection.name}'s latest recommendations.`}
-                            </p>
-                          </div>
+              <div className="mt-5 grid flex-1 gap-4 lg:grid-cols-[minmax(0,1.18fr)_250px] lg:grid-rows-[minmax(0,1fr)_minmax(180px,auto)]">
+                {incomingDerivedFeatures.for_you_recommendations && sharedRecommendations?.products?.length ? (
+                  <>
+                    <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5">
+                      <div className="flex items-start gap-3">
+                        <span className="surface-icon-spot mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full">
+                          <Sparkles className="h-4 w-4" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="surface-heading-lg">
+                            {sharedRecommendations.products[0]?.name || "Gift recommendation"}
+                          </p>
+                          <p className="surface-eyebrow-coral mt-2">
+                            {sharedRecommendations.products[0]?.brand || "For this connection"}
+                          </p>
+                          <p className="surface-body mt-3">
+                            {sharedRecommendations.products[0]?.hook || sharedRecommendations.products[0]?.why || `Pulled from ${connection.name}'s shared recommendations.`}
+                          </p>
                         </div>
                       </div>
-                    ))
-                  ) : (
-                    <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5 md:col-span-2">
-                      <p className="surface-heading-lg">
-                        Gifts are not ready yet.
-                      </p>
-                      <p className="surface-body mt-3">
-                        There are not enough shared recommendation signals yet. Tell {connection.name} to share more so Go Two can fill this space with gifts that actually fit.
+                      {sharedRecommendations.products[0]?.why && sharedRecommendations.products[0]?.hook !== sharedRecommendations.products[0]?.why ? (
+                        <p className="surface-meta mt-4">
+                          {sharedRecommendations.products[0]?.why}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5">
+                      <div>
+                        <p className="surface-eyebrow-coral">
+                          Next gift
+                        </p>
+                        <p className="surface-heading-lg mt-3">
+                          {sharedRecommendations.products[1]?.name || "More to unlock"}
+                        </p>
+                        <p className="surface-meta mt-3">
+                          {sharedRecommendations.products[1]?.brand || `${sharedRecommendations.products.length} shared gift signals`}
+                        </p>
+                      </div>
+                      <p className="surface-body mt-4">
+                        {sharedRecommendations.products[1]?.hook || sharedRecommendations.products[1]?.why || `Go Two already has enough signals from ${connection.name} to start shaping better gifts here.`}
                       </p>
                     </div>
-                  )
+
+                    <div className="card-design-neumorph grid gap-4 px-5 py-5 lg:col-span-2 md:grid-cols-2">
+                      {(sharedRecommendations.products.slice(2, 4).length > 0 ? sharedRecommendations.products.slice(2, 4) : sharedRecommendations.products.slice(0, 2)).map((product, index) => (
+                        <div
+                          key={`${product.brand || "gift"}-${product.name || index}-secondary`}
+                          className="surface-inset-panel flex h-full flex-col rounded-[24px] px-4 py-4"
+                        >
+                          <p className="surface-heading-sm">
+                            {product.name || "Gift recommendation"}
+                          </p>
+                          <p className="surface-eyebrow-coral mt-2">
+                            {product.brand || "Shared signal"}
+                          </p>
+                          <p className="surface-body mt-3">
+                            {product.hook || product.why || `Another signal Go Two can use for ${connection.name}.`}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 ) : (
-                  <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5 md:col-span-2">
-                    <p className="surface-heading-lg">
-                      Gifts are not ready yet.
-                    </p>
-                    <p className="surface-body mt-3">
-                      There are not enough shared recommendation signals yet. Tell {connection.name} to share more so Go Two can fill this space with gifts that actually fit.
-                    </p>
-                  </div>
+                  <>
+                    <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5">
+                      <div>
+                        <p className="surface-heading-lg">
+                          Gifts are not ready yet.
+                        </p>
+                        <p className="surface-body mt-3">
+                          There are not enough shared recommendation signals yet.
+                        </p>
+                      </div>
+                      <p className="surface-meta mt-4">
+                        Tell {connection.name} to share more so Go Two can start filling this area with real gift picks.
+                      </p>
+                    </div>
+
+                    <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5">
+                      <div>
+                        <p className="surface-eyebrow-coral">
+                          Status
+                        </p>
+                        <p className="surface-heading-lg mt-3">
+                          Waiting on more signals
+                        </p>
+                      </div>
+                      <p className="surface-body mt-4">
+                        Product cards, preferences, and This or That answers will turn this panel into gift recommendations.
+                      </p>
+                    </div>
+
+                    <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5 lg:col-span-2">
+                      <div>
+                        <p className="surface-eyebrow-coral">
+                          What belongs here
+                        </p>
+                        <p className="surface-heading-lg mt-3">
+                          Gift ideas shaped to {connection.name}.
+                        </p>
+                      </div>
+                      <p className="surface-body mt-4">
+                        Once {connection.name} shares enough cards and recommendation signals, this lower box fills with more gifts instead of placeholder copy.
+                      </p>
+                    </div>
+                  </>
                 )}
               </div>
             </section>
