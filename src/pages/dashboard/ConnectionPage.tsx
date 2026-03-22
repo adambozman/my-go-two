@@ -16,6 +16,7 @@ interface ConnectionRecord {
   email: string;
   status: string;
   partnerId: string | null;
+  createdAt: string;
   updatedAt: string;
 }
 
@@ -295,20 +296,6 @@ export default function ConnectionPage() {
   const [resolvedFeedImages, setResolvedFeedImages] = useState<Record<string, string>>({});
   const [connectionKind, setConnectionKind] = useState<ConnectionKind>("custom");
   const [savingConnectionKind, setSavingConnectionKind] = useState(false);
-  const connectionRelationshipLabel = "Sister";
-  const connectionAgeLabel = connection ? formatRelativeDateLabel(connection.updatedAt) : "Just updated";
-  const connectionScore = Math.min(
-    99,
-    25 +
-      (connection?.status === "accepted" ? 10 : 0) +
-      Object.values(incomingProfileFields).filter(Boolean).length * 6 +
-      Object.values(incomingDerivedFeatures).filter(Boolean).length * 8 +
-      Math.min(sharedCardEntryIds.length, 10) * 2 +
-      Math.min(connectionFeedRows.length, 12) +
-      (sharedVibe ? 8 : 0) +
-      (sharedRecommendations?.products?.length ? Math.min(sharedRecommendations.products.length, 4) * 3 : 0),
-  );
-
   const loadConnection = useCallback(async () => {
     if (!user || !connectionId) return;
 
@@ -457,6 +444,7 @@ export default function ConnectionPage() {
       email: couple.invitee_email || "",
       status: couple.status,
       partnerId,
+      createdAt: couple.created_at,
       updatedAt: couple.updated_at,
     };
     setConnection(initialConnection);
@@ -547,6 +535,11 @@ export default function ConnectionPage() {
         } satisfies FeedItem;
       });
   }, [connectionFeedRows]);
+
+  const connectionRelationshipLabel = editableConnectionKinds.find((item) => item.key === connectionKind)?.label || "Connection";
+  const connectionAgeLabel = connection ? formatRelativeDateLabel(connection.createdAt) : "Today";
+  const connectionTimelineLabel = connection?.status === "accepted" ? "Connected" : "Invited";
+  const connectionSharedCountLabel = `${visibleFeedItems.length} shared item${visibleFeedItems.length === 1 ? "" : "s"}`;
 
   useEffect(() => {
     let cancelled = false;
@@ -869,7 +862,7 @@ export default function ConnectionPage() {
           </button>
         </div>
 
-        <section className="card-design-neumorph relative w-full max-w-[1120px] p-5 pt-12 md:p-6 md:pt-12 xl:h-[340px] xl:overflow-hidden">
+        <section className="card-design-neumorph relative w-full max-w-[1120px] overflow-visible p-5 pt-12 md:p-6 md:pt-12 xl:h-[280px]">
             <p className="surface-eyebrow-coral absolute left-5 top-5 md:left-6 md:top-6">
               Go Two / Connection feed
             </p>
@@ -899,15 +892,15 @@ export default function ConnectionPage() {
                     {connectionRelationshipLabel}
                   </span>
                   <span className="surface-pill pill-asset-ivory inline-flex items-center rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]">
-                    Connected {connectionAgeLabel}
+                    {connectionTimelineLabel} {connectionAgeLabel}
                   </span>
                   <span className="surface-pill pill-asset-ivory inline-flex items-center rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]">
-                    Score {connectionScore}
+                    {connectionSharedCountLabel}
                   </span>
                 </div>
               </div>
 
-              <div className="surface-inset-panel flex h-full flex-col rounded-[28px] px-5 py-5">
+              <div className="surface-inset-panel relative z-20 flex h-full flex-col rounded-[28px] px-5 py-5">
                 <div className="flex items-start gap-3">
                   <span className="surface-icon-spot inline-flex h-10 w-10 items-center justify-center rounded-full">
                     <Lock className="h-4 w-4" />
@@ -919,13 +912,13 @@ export default function ConnectionPage() {
                     </h2>
                   </div>
                 </div>
-                <Accordion type="single" collapsible className="mt-5">
-                  <AccordionItem value="sharing-controls" className="surface-inset-panel overflow-hidden rounded-[28px] border-0">
+                <Accordion type="single" collapsible className="relative mt-5">
+                  <AccordionItem value="sharing-controls" className="surface-inset-panel relative overflow-visible rounded-[28px] border-0">
                     <AccordionTrigger className="px-5 py-5 text-left hover:no-underline">
                       <p className="surface-eyebrow-teal">Open settings</p>
                     </AccordionTrigger>
-                    <AccordionContent className="px-5 pb-5 pt-0">
-                      <div className="mt-4 max-h-[250px] overflow-y-auto pr-1">
+                    <AccordionContent className="absolute left-0 right-0 top-full z-30 pt-3">
+                      <div className="surface-inset-panel max-h-[420px] overflow-y-auto rounded-[28px] px-5 py-5 shadow-[0_24px_44px_rgba(30,74,82,0.12)]">
                         <div className="surface-inset-panel rounded-[22px] px-4 py-4">
                           <p className="surface-eyebrow-teal">Connection type</p>
                           <div className="mt-4">
