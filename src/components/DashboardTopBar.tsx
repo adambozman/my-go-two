@@ -182,26 +182,26 @@ export function DashboardTopBar() {
           <GoTwoText className="shrink-0" />
         </div>
 
-        <nav className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-start gap-2 md:flex lg:gap-3">
+        <nav className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-start gap-1.5 sm:gap-2 lg:gap-3">
           {navItems.map((item) => {
             return (
               <NavLink
                 key={item.url}
                 to={item.url}
                 aria-label={item.label}
-                className="flex w-[56px] flex-col items-center gap-1 text-center text-muted-foreground transition-all hover:text-foreground lg:w-[66px]"
+                className="flex w-[42px] flex-col items-center gap-1 text-center text-muted-foreground transition-all hover:text-foreground sm:w-[48px] md:w-[56px] lg:w-[66px]"
               >
                 <span
                   className="relative rounded-full card-design-neumorph flex items-center justify-center"
                   style={{
-                    width: "var(--header-icon-btn-size)",
-                    height: "var(--header-icon-btn-size)",
+                    width: "clamp(30px, 6vw, var(--header-icon-btn-size))",
+                    height: "clamp(30px, 6vw, var(--header-icon-btn-size))",
                   }}
                 >
-                  <item.icon className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                  <item.icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
                   {item.url === "/dashboard/notifications" && unreadCount > 0 && (
                     <span
-                      className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold"
+                      className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full px-0.5 text-[8px] font-bold sm:h-5 sm:min-w-[20px] sm:text-[10px]"
                       style={{ background: "var(--swatch-teal)", color: "var(--swatch-cream-light)" }}
                     >
                       {unreadCount > 9 ? "9+" : unreadCount}
@@ -301,30 +301,6 @@ export function DashboardTopBar() {
       </div>
 
       <div className="border-b border-border/30" style={{ marginTop: "var(--header-divider-margin-top)" }} />
-
-      <nav className="mt-3 flex gap-2 overflow-x-auto pb-1 md:hidden" style={{ scrollbarWidth: "none" }}>
-        {navItems.map((item) => (
-          <NavLink
-            key={`${item.url}-mobile`}
-            to={item.url}
-            aria-label={item.label}
-            className="card-design-neumorph inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] text-muted-foreground transition-all hover:text-foreground"
-          >
-            <span className="relative inline-flex h-7 w-7 items-center justify-center rounded-full">
-              <item.icon className="h-3.5 w-3.5" />
-              {item.url === "/dashboard/notifications" && unreadCount > 0 && (
-                <span
-                  className="absolute -right-1 -top-1 flex h-4.5 min-w-[18px] items-center justify-center rounded-full px-1 text-[9px] font-bold"
-                  style={{ background: "var(--swatch-teal)", color: "var(--swatch-cream-light)" }}
-                >
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-              )}
-            </span>
-            <span style={{ fontFamily: "'Jost', sans-serif" }}>{item.label}</span>
-          </NavLink>
-        ))}
-      </nav>
 
       {showQuote && (
         <div
