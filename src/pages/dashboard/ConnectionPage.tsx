@@ -878,9 +878,6 @@ export default function ConnectionPage() {
                   <h1 className="surface-display-lg mt-2">
                     {connection.name}
                   </h1>
-                  <p className="surface-body mt-4 max-w-xl">
-                    What this connection shares, what the AI can infer from it, and the gift ideas it is already shaping around them.
-                  </p>
                 </div>
               </div>
             </div>
