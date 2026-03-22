@@ -169,7 +169,7 @@ export function DashboardTopBar() {
         paddingTop: "var(--header-top-padding)",
       }}
     >
-      <div className="relative flex items-center justify-between gap-2 md:gap-4" style={{ height: "var(--header-icons-row-height)" }}>
+      <div className="relative flex items-center justify-between gap-1.5 sm:gap-2 md:gap-4" style={{ height: "var(--header-icons-row-height)" }}>
         <input
           ref={fileInputRef}
           type="file"
@@ -179,7 +179,7 @@ export function DashboardTopBar() {
         />
 
         <div className="flex min-w-0 flex-1 items-center justify-start">
-          <GoTwoText className="shrink-0" />
+          <GoTwoText className="max-w-[110px] shrink sm:max-w-[132px] md:max-w-none md:shrink-0" />
         </div>
 
         <nav className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-start gap-1.5 sm:gap-2 lg:gap-3">
@@ -220,14 +220,14 @@ export function DashboardTopBar() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className="group flex items-center gap-3 rounded-full border border-white/70 px-2.5 py-1.5 text-left transition-all hover:border-white hover:shadow-[0_10px_28px_rgba(74,96,104,0.12)] focus:outline-none"
+                className="group flex items-center gap-1.5 rounded-full border border-white/70 px-1.5 py-1 sm:gap-2 sm:px-2 sm:py-1.5 md:gap-3 md:px-2.5 text-left transition-all hover:border-white hover:shadow-[0_10px_28px_rgba(74,96,104,0.12)] focus:outline-none"
                 style={{
                   background: "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(245,233,220,0.56) 100%)",
                   boxShadow: "inset 0 1px 0 rgba(255,255,255,0.92), 0 6px 18px rgba(74,96,104,0.08)",
                   backdropFilter: "blur(8px)",
                 }}
               >
-                <Avatar className="h-8 w-8 border border-white/70 shadow-[0_4px_10px_rgba(30,74,82,0.12)]">
+                <Avatar className="h-7 w-7 border border-white/70 shadow-[0_4px_10px_rgba(30,74,82,0.12)] sm:h-8 sm:w-8">
                   <AvatarImage src={avatarUrl ?? undefined} alt={displayName} className="object-cover" />
                   <AvatarFallback
                     className="text-[11px] font-semibold"
@@ -239,15 +239,15 @@ export function DashboardTopBar() {
                     {initials}
                   </AvatarFallback>
                 </Avatar>
-                <div className="hidden min-w-0 sm:block">
+                <div className="hidden min-w-0 md:block">
                   <p
                     className="truncate text-sm font-medium leading-none"
-                    style={{ color: "var(--swatch-teal)", maxWidth: "9rem", fontFamily: "'Jost', sans-serif" }}
+                    style={{ color: "var(--swatch-teal)", maxWidth: "7rem", fontFamily: "'Jost', sans-serif" }}
                   >
                     {displayName}
                   </p>
                 </div>
-                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-180 sm:h-4 sm:w-4" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
