@@ -676,8 +676,6 @@ export default function ConnectionPage() {
       return;
     }
 
-    await loadConnection();
-
     toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
   }, [connection, loadConnection, toast, user]);
 
@@ -738,8 +736,6 @@ export default function ConnectionPage() {
       }
     }
 
-    await loadConnection();
-
     toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection?.name || "them"}.` });
   }, [connection, loadConnection, toast, user]);
 
@@ -776,8 +772,6 @@ export default function ConnectionPage() {
       return;
     }
 
-    await loadConnection();
-
     toast({
       title: nextValue ? "Derived feature shared" : "Derived feature hidden",
       description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableDerivedFeatures.find((feature) => feature.key === key)?.label.toLowerCase()}.`,
@@ -806,8 +800,6 @@ export default function ConnectionPage() {
     } else {
       setSharedCardEntryIds([]);
     }
-
-    await loadConnection();
 
     toast({
       title: mode === "share" ? "All cards shared" : "All cards hidden",
@@ -877,13 +869,11 @@ export default function ConnectionPage() {
       return;
     }
 
-    await loadConnection();
-
     toast({
       title: "Connection type updated",
       description: `${connection.name} is now set as ${editableConnectionKinds.find((item) => item.key === nextKind)?.label.toLowerCase()}.`,
     });
-  }, [connection, connectionKind, loadConnection, toast, user]);
+  }, [connection, connectionKind, toast, user]);
 
   if (loading) {
     return (
