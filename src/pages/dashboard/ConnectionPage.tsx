@@ -871,6 +871,9 @@ export default function ConnectionPage() {
                 </div>
 
                 <div className="min-w-0">
+                  <p className="surface-eyebrow-coral">
+                    Go Two / Connection feed
+                  </p>
                   <h1 className="surface-display-lg mt-2">
                     {connection.name}
                   </h1>
