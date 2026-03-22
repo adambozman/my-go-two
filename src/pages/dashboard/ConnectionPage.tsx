@@ -850,7 +850,7 @@ export default function ConnectionPage() {
           <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
             Connection
           </p>
-          <h1 className="mt-2 text-[36px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+          <h1 className="surface-display-lg mt-2">
             This connection could not be opened.
           </h1>
           <button
@@ -884,8 +884,7 @@ export default function ConnectionPage() {
             <div className="mt-6">
               <div className="flex items-center gap-4">
                 <div
-                  className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border"
-                  style={{ borderColor: "rgba(45,104,112,0.2)", background: "linear-gradient(135deg, rgba(45,104,112,0.88), rgba(30,74,82,0.88))" }}
+                  className="surface-avatar-teal flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border"
                 >
                   {resolvedConnectionImage ? (
                     <img src={resolvedConnectionImage} alt={connection.name} className="h-full w-full object-cover" />
@@ -898,7 +897,7 @@ export default function ConnectionPage() {
                   <p className="surface-eyebrow-coral">
                     Go Two / Connection feed
                   </p>
-                  <h1 className="mt-2 text-[40px] leading-none md:text-[56px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                  <h1 className="surface-display-lg mt-2">
                     {connection.name}
                   </h1>
                   <p className="surface-body mt-4 max-w-xl">

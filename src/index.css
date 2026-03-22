@@ -239,6 +239,18 @@ body {
   font-size: 18px;
 }
 
+.surface-display-lg {
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--logo-two-color);
+  line-height: 0.95;
+  font-size: clamp(40px, 5vw, 56px);
+}
+
+.surface-avatar-teal {
+  background: linear-gradient(135deg, rgba(45,104,112,0.88), rgba(30,74,82,0.88));
+  border-color: rgba(45,104,112,0.2);
+}
+
 .surface-body {
   color: var(--swatch-antique-coin);
   font-size: 0.875rem;
