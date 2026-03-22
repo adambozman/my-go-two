@@ -96,7 +96,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
     return (
       <div
         ref={ref}
-        className="relative w-full flex flex-col items-center overflow-x-hidden"
+        className="relative w-full flex flex-col items-center"
         onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY; }}
         onTouchEnd={(e) => {
           if (touchStartX.current === null || touchStartY.current === null) return;
