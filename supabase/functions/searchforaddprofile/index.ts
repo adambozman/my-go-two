@@ -16,6 +16,26 @@ type DemoProfile = {
   phone_raw: string;
 };
 
+type DemoCardEntrySeed = {
+  card_key: string;
+  group_name: string;
+  entry_name: string;
+  field_values: Record<string, string>;
+  image_url?: string | null;
+};
+
+type DemoContentSeed = {
+  anniversary?: string | null;
+  favorites: Record<string, unknown>;
+  dislikes: Record<string, unknown>;
+  brands: Record<string, unknown>;
+  style_preferences: Record<string, unknown>;
+  profile_answers: Record<string, string | string[]>;
+  ai_personalization: Record<string, unknown>;
+  weekly_recommendations: Array<Record<string, unknown>>;
+  card_entries: DemoCardEntrySeed[];
+};
+
 type SearchResult = {
   user_id: string;
   display_name: string;
@@ -59,6 +79,311 @@ const demoProfiles: DemoProfile[] = [
     phone_raw: "(312) 555-0199",
   },
 ];
+
+const demoContentByEmail: Record<string, DemoContentSeed> = {
+  "abby.demo@gotwo.local": {
+    anniversary: "2021-09-12",
+    favorites: {
+      likes: ["gold jewelry", "clean girl beauty", "weekend travel", "matcha", "sushi", "romantic dinners"],
+      stores: ["Aritzia", "Sezane", "Reformation", "Nordstrom", "Mejuri"],
+      experiences: ["spa day", "coastal weekend", "wine tasting", "chef's tasting menu"],
+    },
+    dislikes: {
+      colors: ["neon orange", "lime green"],
+      gifts: ["novelty mugs", "cheap fleece throws"],
+      textures: ["scratchy wool", "plasticky faux leather"],
+    },
+    brands: {
+      loves: ["Aritzia", "Reformation", "Sezane", "Mejuri", "Veja"],
+      open_to: ["Lululemon", "Jenni Kayne", "Dagne Dover"],
+      avoid: ["Fashion Nova", "Shein"],
+    },
+    style_preferences: {
+      vibe: ["classic", "minimalist", "polished"],
+      palette: ["ivory", "navy", "camel", "soft black"],
+      silhouettes: ["tailored trousers", "silk tank", "cropped cardigan", "structured coat"],
+    },
+    profile_answers: {
+      "sf-01": ["classic", "minimalist", "trendy"],
+      "sf-02": "navy",
+      "sf-04": "tailored",
+      "sf-06": ["sneakers", "boots", "heels"],
+      "sf-10": ["luxury", "sustainable", "high-street"],
+      "sf-13": "put-together",
+      "sf-14": "fresh",
+      "sf-17": "balanced",
+      "fd-02": "japanese",
+      "fd-04": "iced",
+      "fd-06": "dine-out",
+      "fd-07": "cocktails",
+      "fd-09": "sometimes",
+      "tot-03": "Yes",
+      "tot-06": "Yes",
+      "tot-16": "Yes",
+      "tot-21": "Yes",
+      "tot-25": "Yes",
+      "tot-29": "Yes",
+      "tot-43": "Savory",
+      "tot-45": "Takeout",
+      "tot-48": "Sushi",
+      "tot-54": "Neutrals",
+      "tot-56": "Boots",
+      "tot-58": "Gold",
+      "tot-60": "Blazer",
+      "tot-63": "Morning Person",
+      "tot-64": "Coffee",
+      "tot-67": "Text",
+      "tot-73": "Beach",
+      "tot-76": "Luxury Hotel",
+      "tot-79": "Total Relaxation",
+      "tot-83": "Small Gathering",
+      "tot-89": "Quality Time",
+    },
+    ai_personalization: {
+      persona_summary:
+        "A polished, feminine dresser who leans classic and clean with soft luxury touches. Abby gravitates toward elevated basics, gold jewelry, fresh beauty staples, romantic dinners, and gifts that feel thoughtful rather than loud.",
+      recommended_brands: ["Aritzia", "Reformation", "Sezane", "Mejuri", "Veja", "Jenni Kayne"],
+      recommended_stores: ["Nordstrom", "Shopbop", "Anthropologie"],
+      style_keywords: ["polished", "minimal", "soft luxury", "coastal", "romantic"],
+    },
+    weekly_recommendations: [
+      {
+        name: "Small leather shoulder bag",
+        brand: "Coach",
+        price: "$295",
+        category: "clothes",
+        hook: "An everyday polish piece she would actually carry.",
+        why: "Fits Abby's love of elevated basics, soft neutrals, and quietly luxe accessories.",
+        image_url: null,
+        source_kind: "demo-seed",
+        source_version: "demo-abby-v1",
+      },
+      {
+        name: "Silk pajama short set",
+        brand: "Lunya",
+        price: "$178",
+        category: "home",
+        hook: "Comfort that still feels chic and giftable.",
+        why: "She likes refined comfort and gifts that feel thoughtful, useful, and a little indulgent.",
+        image_url: null,
+        source_kind: "demo-seed",
+        source_version: "demo-abby-v1",
+      },
+      {
+        name: "Gold huggie earrings",
+        brand: "Mejuri",
+        price: "$98",
+        category: "clothes",
+        hook: "A safe win for her everyday jewelry stack.",
+        why: "Her profile leans heavily toward gold jewelry, polished styling, and repeat-wear pieces.",
+        image_url: null,
+        source_kind: "demo-seed",
+        source_version: "demo-abby-v1",
+      },
+      {
+        name: "Weekend coastal hotel getaway",
+        brand: "Mr & Mrs Smith",
+        price: "$450+",
+        category: "home",
+        hook: "A romantic experience pick instead of another object.",
+        why: "She likes beach travel, quality time, luxury hotels, and experiences with a calm polished feel.",
+        image_url: null,
+        source_kind: "demo-seed",
+        source_version: "demo-abby-v1",
+      },
+    ],
+    card_entries: [
+      {
+        card_key: "clothing-tops",
+        group_name: "Favorite tops",
+        entry_name: "Silk tanks and fitted knits",
+        field_values: {
+          "Favorite silhouettes": "Silk shell, ribbed knit, slim cardigan",
+          Colors: "Ivory, navy, camel",
+          "Avoid details": "Oversized logos, neon trim",
+        },
+      },
+      {
+        card_key: "shoe-sneakers",
+        group_name: "Sneakers",
+        entry_name: "Clean white everyday sneakers",
+        field_values: {
+          Brand: "Veja, New Balance",
+          Material: "Smooth leather or suede accents",
+          Notes: "Minimal branding, not chunky",
+        },
+      },
+      {
+        card_key: "jewelry-necklaces",
+        group_name: "Jewelry",
+        entry_name: "Delicate gold layers",
+        field_values: {
+          Metal: "Yellow gold",
+          Style: "Fine layered chains",
+          "Avoid": "Bulky statement pieces",
+        },
+      },
+      {
+        card_key: "coffee-order",
+        group_name: "Coffee order",
+        entry_name: "Vanilla iced oat latte",
+        field_values: {
+          Size: "Medium",
+          Sweetness: "Lightly sweet",
+          Notes: "Extra shot if it is a long day",
+        },
+      },
+      {
+        card_key: "favorite-restaurants",
+        group_name: "Restaurants",
+        entry_name: "Sushi nights and cozy Italian",
+        field_values: {
+          "Favorite cuisine": "Japanese, Italian",
+          "Go-to order": "Spicy tuna crispy rice, cacio e pepe",
+          Occasion: "Date night or celebratory dinner",
+        },
+      },
+      {
+        card_key: "birthday-preferences",
+        group_name: "Birthday gifts",
+        entry_name: "Thoughtful over flashy",
+        field_values: {
+          "Best gift energy": "Thoughtful, polished, useful",
+          "Avoid": "Gag gifts, anything cluttered",
+          "Perfect plan": "Dinner reservation and one beautiful item",
+        },
+      },
+      {
+        card_key: "wish-list",
+        group_name: "Wish list",
+        entry_name: "Weekend bag and silk pajamas",
+        field_values: {
+          "Most wanted": "Structured weekend bag, silk sleep set",
+          "Price comfort": "$100-$350",
+          Why: "Would use both constantly",
+        },
+      },
+      {
+        card_key: "scent-perfume",
+        group_name: "Fragrance",
+        entry_name: "Fresh skin scent",
+        field_values: {
+          Notes: "Musk, bergamot, soft floral",
+          Intensity: "Clean and close to skin",
+          Avoid: "Heavy gourmand or syrupy vanilla",
+        },
+      },
+    ],
+  },
+  "jules.demo@gotwo.local": {
+    favorites: {
+      likes: ["design books", "matcha", "tech accessories", "vinyl", "travel gear"],
+      stores: ["Uniqlo", "Muji", "Apple", "Patagonia"],
+      experiences: ["gallery shows", "city weekends", "coffee crawls"],
+    },
+    dislikes: {
+      colors: ["hot pink"],
+      gifts: ["loud novelty decor"],
+      textures: ["itchy wool"],
+    },
+    brands: {
+      loves: ["Uniqlo", "Muji", "Patagonia", "Apple"],
+      open_to: ["COS", "Everlane"],
+      avoid: ["Fast-fashion impulse buys"],
+    },
+    style_preferences: {
+      vibe: ["minimalist", "functional", "modern"],
+      palette: ["black", "olive", "stone", "ink"],
+      silhouettes: ["overshirts", "wide trousers", "performance outerwear"],
+    },
+    profile_answers: {
+      "sf-01": ["minimalist", "sporty"],
+      "sf-02": "black",
+      "sf-04": "relaxed",
+      "fd-02": "mediterranean",
+      "fd-04": "tea",
+      "tot-12": "Yes",
+      "tot-21": "Yes",
+      "tot-26": "Yes",
+      "tot-55": "Minimalist",
+      "tot-59": "Brand New",
+      "tot-64": "Tea",
+      "tot-72": "Console",
+      "tot-74": "Flight",
+      "tot-83": "Small Gathering",
+    },
+    ai_personalization: {
+      persona_summary:
+        "A clean modern minimalist with a practical streak. Jules likes well-designed gear, subtle style, strong coffee shops, and gifts that feel useful, calm, and beautifully made.",
+      recommended_brands: ["Uniqlo", "Muji", "Patagonia", "Apple", "COS"],
+      recommended_stores: ["Apple", "REI", "Muji"],
+      style_keywords: ["modern", "functional", "clean", "design-minded"],
+    },
+    weekly_recommendations: [
+      {
+        name: "Technical daypack",
+        brand: "Bellroy",
+        price: "$159",
+        category: "tech",
+        hook: "Sleek enough for work, practical enough for daily carry.",
+        why: "Matches Jules' love of functional design and useful gear.",
+        image_url: null,
+        source_kind: "demo-seed",
+        source_version: "demo-jules-v1",
+      },
+      {
+        name: "Portable espresso maker",
+        brand: "Wacaco",
+        price: "$149",
+        category: "home",
+        hook: "A design-forward gift for coffee rituals.",
+        why: "Jules loves coffee, travel, and compact useful objects.",
+        image_url: null,
+        source_kind: "demo-seed",
+        source_version: "demo-jules-v1",
+      },
+    ],
+    card_entries: [
+      {
+        card_key: "brand-preferences-nb",
+        group_name: "Favorite brands",
+        entry_name: "Minimal modern staples",
+        field_values: {
+          Brands: "Uniqlo, Muji, COS, Patagonia",
+          Notes: "Practical, clean lines, durable fabrics",
+        },
+      },
+      {
+        card_key: "tech-phone",
+        group_name: "Tech",
+        entry_name: "Apple ecosystem all the way",
+        field_values: {
+          Devices: "iPhone, AirPods, MacBook",
+          Notes: "Loves clean design and interoperability",
+        },
+      },
+      {
+        card_key: "coffee-tea",
+        group_name: "Drink order",
+        entry_name: "Matcha and pour-over",
+        field_values: {
+          Favorites: "Ceremonial matcha, bright pour-over coffee",
+          Notes: "No super sugary drinks",
+        },
+      },
+    ],
+  },
+};
+
+function getCurrentWeekStartKey() {
+  const now = new Date();
+  const weekStart = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() - ((now.getUTCDay() + 6) % 7),
+  ));
+  return weekStart.toISOString().slice(0, 10);
+}
 
 function normalizePhone(value: string | null | undefined) {
   return (value ?? "").replace(/\D/g, "");
@@ -272,6 +597,73 @@ function getDisplayNameFromAuthUser(user: AuthUserSummary | undefined) {
   return emailName || "User";
 }
 
+async function seedDemoProfileContent(
+  supabase: any,
+  demoUserId: string,
+  demo: DemoProfile,
+) {
+  const seed = demoContentByEmail[demo.email];
+  if (!seed) return;
+
+  const { error: preferenceError } = await supabase.from("user_preferences").upsert({
+    user_id: demoUserId,
+    favorites: seed.favorites,
+    dislikes: seed.dislikes,
+    brands: seed.brands,
+    style_preferences: seed.style_preferences,
+    profile_answers: seed.profile_answers,
+    ai_personalization: seed.ai_personalization,
+    onboarding_complete: true,
+  }, { onConflict: "user_id" });
+  if (preferenceError) {
+    throw new Error(`Failed preference upsert for ${demo.email}: ${preferenceError.message}`);
+  }
+
+  if (seed.anniversary) {
+    const { error: anniversaryError } = await supabase
+      .from("profiles")
+      .update({ anniversary: seed.anniversary })
+      .eq("user_id", demoUserId);
+    if (anniversaryError) {
+      throw new Error(`Failed anniversary seed for ${demo.email}: ${anniversaryError.message}`);
+    }
+  }
+
+  const { error: deleteCardsError } = await supabase
+    .from("card_entries")
+    .delete()
+    .eq("user_id", demoUserId);
+  if (deleteCardsError) {
+    throw new Error(`Failed clearing card entries for ${demo.email}: ${deleteCardsError.message}`);
+  }
+
+  if (seed.card_entries.length > 0) {
+    const { error: cardInsertError } = await supabase.from("card_entries").insert(
+      seed.card_entries.map((entry) => ({
+        user_id: demoUserId,
+        card_key: entry.card_key,
+        group_name: entry.group_name,
+        entry_name: entry.entry_name,
+        field_values: entry.field_values,
+        image_url: entry.image_url ?? null,
+      })),
+    );
+    if (cardInsertError) {
+      throw new Error(`Failed card entry seed for ${demo.email}: ${cardInsertError.message}`);
+    }
+  }
+
+  const { error: recommendationError } = await supabase.from("weekly_recommendations").upsert({
+    user_id: demoUserId,
+    week_start: getCurrentWeekStartKey(),
+    generated_at: new Date().toISOString(),
+    products: seed.weekly_recommendations,
+  }, { onConflict: "user_id,week_start" });
+  if (recommendationError) {
+    throw new Error(`Failed weekly recommendations seed for ${demo.email}: ${recommendationError.message}`);
+  }
+}
+
 async function ensureDemoProfiles(supabase: any) {
   for (const demo of demoProfiles) {
     let demoUser = await findAuthUserByEmail(supabase, demo.email);
@@ -310,6 +702,8 @@ async function ensureDemoProfiles(supabase: any) {
       phone_raw: demo.phone_raw,
     }, { onConflict: "user_id" });
     if (contactsError) throw new Error(`Failed discovery contacts upsert for ${demo.email}: ${contactsError.message}`);
+
+    await seedDemoProfileContent(supabase, demoUser.id, demo);
   }
 }
 
@@ -804,15 +1198,23 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    const payload = await req.json().catch(() => ({}));
+    const actionName = String(payload?.action ?? "search").trim().toLowerCase();
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "No auth" }), { status: 401, headers: corsHeaders });
-    }
-
     const adminClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
+
+    if (!authHeader && actionName === "seed-demo-profiles") {
+      await ensureDemoProfiles(adminClient);
+      return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+    }
+
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "No auth" }), { status: 401, headers: corsHeaders });
+    }
+
     const viewerClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
@@ -824,9 +1226,6 @@ Deno.serve(async (req) => {
     if (authError || !authData.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
     }
-
-    const payload = await req.json().catch(() => ({}));
-    const actionName = String(payload?.action ?? "search").trim().toLowerCase();
 
     if (actionName === "seed-demo-profiles") {
       await ensureDemoProfiles(adminClient);
