@@ -165,7 +165,7 @@ export function DashboardTopBar() {
     <header
       className="shrink-0 flex flex-col px-3 sm:px-4 md:px-6 lg:px-8"
       style={{
-        height: showQuote ? "var(--header-height)" : collapsedHeaderHeight,
+        minHeight: showQuote ? "var(--header-height)" : collapsedHeaderHeight,
         paddingTop: "var(--header-top-padding)",
       }}
     >
