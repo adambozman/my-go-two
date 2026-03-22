@@ -772,8 +772,6 @@ export default function ConnectionPage() {
       return;
     }
 
-    await loadConnection();
-
     toast({
       title: nextValue ? "Derived feature shared" : "Derived feature hidden",
       description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableDerivedFeatures.find((feature) => feature.key === key)?.label.toLowerCase()}.`,
