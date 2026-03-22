@@ -676,8 +676,6 @@ export default function ConnectionPage() {
       return;
     }
 
-    await loadConnection();
-
     toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
   }, [connection, loadConnection, toast, user]);
 
