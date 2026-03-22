@@ -801,8 +801,6 @@ export default function ConnectionPage() {
       setSharedCardEntryIds([]);
     }
 
-    await loadConnection();
-
     toast({
       title: mode === "share" ? "All cards shared" : "All cards hidden",
       description: `${connection.name} ${mode === "share" ? "can now see" : "can no longer see"} your product cards. ${typeof data === "number" ? `(${data} changed)` : ""}`.trim(),
