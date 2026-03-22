@@ -660,34 +660,36 @@ const MyGoTwo = () => {
               >
                 <CoverflowTitlePill title={leafSubtype.name} showBackArrow onBack={goBackFromEntries} />
                 <div className="flex flex-col items-center justify-center">
-                  <FormCoverFlowCarousel
-                    items={paginatedItems}
-                    activeIndex={activeIndexOnPage}
-                    previousImage={previousImage}
-                    onActiveIndexChange={(index) => {
-                      setActiveEntryIndexByGroup((prev) => ({
-                        ...prev,
-                        [groupName]: pageStart + index,
-                      }));
-                    }}
-                    renderActiveCard={(item) => (
-                      <ProductEntryCard
-                        subtype={leafSubtype}
-                        subcategoryName={leafSubcategoryName}
-                        categoryName={leafCategoryName}
-                        entryName={entryNames[item.id] || ""}
-                        values={entryDrafts[item.id] || defaultFieldValues}
-                        imageUrl={normalizeImageValue(entryImages[item.id])}
-                        saving={saving}
-                        isEditing={!item.id.startsWith(`${NEW_ENTRY_ID}::`)}
-                        onEntryNameChange={(name) => handleNameChange(item.id, name)}
-                        onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
-                        onImageChange={(imageUrl) => handleImageChange(item.id, imageUrl)}
-                        onSave={() => handleSaveEntry(item.id)}
-                        onDelete={() => handleDeleteEntry(item.id)}
-                      />
-                    )}
-                  />
+                  <div className="my-go-two-form-scale" data-local-coverflow-scale="form">
+                    <FormCoverFlowCarousel
+                      items={paginatedItems}
+                      activeIndex={activeIndexOnPage}
+                      previousImage={previousImage}
+                      onActiveIndexChange={(index) => {
+                        setActiveEntryIndexByGroup((prev) => ({
+                          ...prev,
+                          [groupName]: pageStart + index,
+                        }));
+                      }}
+                      renderActiveCard={(item) => (
+                        <ProductEntryCard
+                          subtype={leafSubtype}
+                          subcategoryName={leafSubcategoryName}
+                          categoryName={leafCategoryName}
+                          entryName={entryNames[item.id] || ""}
+                          values={entryDrafts[item.id] || defaultFieldValues}
+                          imageUrl={normalizeImageValue(entryImages[item.id])}
+                          saving={saving}
+                          isEditing={!item.id.startsWith(`${NEW_ENTRY_ID}::`)}
+                          onEntryNameChange={(name) => handleNameChange(item.id, name)}
+                          onChange={(fieldLabel, value) => handleFieldChange(item.id, fieldLabel, value)}
+                          onImageChange={(imageUrl) => handleImageChange(item.id, imageUrl)}
+                          onSave={() => handleSaveEntry(item.id)}
+                          onDelete={() => handleDeleteEntry(item.id)}
+                        />
+                      )}
+                    />
+                  </div>
                   {isActiveGroup ? (
                     <div className="hidden lg:block">
                       <PaginationControls
@@ -737,25 +739,27 @@ const MyGoTwo = () => {
           style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
         >
           <div className="snap-start snap-always">
-            <TemplateCoverFlow
-              templateName={coverFlowState.name}
-              subtypes={coverFlowState.subtypes}
-              subcategories={coverFlowState.subcategories}
-              activeSubcategory={activeSubcategory}
-              onSubcategorySelect={handleSubcategorySelect}
-              onBack={activeSubcategory ? () => {
-                setFocusedSubcategoryId(activeSubcategory.id);
-                setFocusedLeafItemId(null);
-                setActiveSubcategory(null);
-              } : clearCoverFlow}
-              onSelect={handleSubtypeSelect}
-              focusedSubcategoryId={focusedSubcategoryId}
-              focusedLeafItemId={focusedLeafItemId}
-              creating={false}
-              gender={gender}
-              section={coverFlowState.section}
-              categoryId={coverFlowState.categoryId}
-            />
+            <div className="my-go-two-coverflow-scale" data-local-coverflow-scale="main">
+              <TemplateCoverFlow
+                templateName={coverFlowState.name}
+                subtypes={coverFlowState.subtypes}
+                subcategories={coverFlowState.subcategories}
+                activeSubcategory={activeSubcategory}
+                onSubcategorySelect={handleSubcategorySelect}
+                onBack={activeSubcategory ? () => {
+                  setFocusedSubcategoryId(activeSubcategory.id);
+                  setFocusedLeafItemId(null);
+                  setActiveSubcategory(null);
+                } : clearCoverFlow}
+                onSelect={handleSubtypeSelect}
+                focusedSubcategoryId={focusedSubcategoryId}
+                focusedLeafItemId={focusedLeafItemId}
+                creating={false}
+                gender={gender}
+                section={coverFlowState.section}
+                categoryId={coverFlowState.categoryId}
+              />
+            </div>
           </div>
         </motion.div>
       );
@@ -785,12 +789,14 @@ const MyGoTwo = () => {
             className="coverflow-stage-shell snap-start snap-always"
           >
             <CoverflowTitlePill title={section.label} />
-            <GoTwoCoverFlow
-              items={section.items}
-              onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-              focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-              showPagination={index === activeSectionIndex}
-            />
+            <div className="my-go-two-coverflow-scale" data-local-coverflow-scale="main">
+              <GoTwoCoverFlow
+                items={section.items}
+                onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                showPagination={index === activeSectionIndex}
+              />
+            </div>
           </div>
         ))}
         {orderedSections.length === 0 && (
@@ -809,11 +815,70 @@ const MyGoTwo = () => {
   };
 
   return (
-    <>
+    <div className="my-go-two-page h-full">
+      <style>{`
+        @media (max-width: 767px) {
+          .my-go-two-page .coverflow-stage-shell {
+            height: auto;
+            min-height: calc(100dvh - var(--header-height) - 20px);
+            padding-top: 10px;
+            padding-bottom: 20px;
+          }
+
+          .my-go-two-page .coverflow-stage-title-wrap {
+            height: 48px;
+            flex-basis: 48px;
+          }
+
+          .my-go-two-page .coverflow-title-pill {
+            max-width: min(100%, 240px);
+            padding: 8px 18px 9px;
+          }
+
+          .my-go-two-page .coverflow-stage-title {
+            font-size: 19px;
+          }
+
+          .my-go-two-page .my-go-two-coverflow-scale {
+            width: 126%;
+            transform: scale(0.79);
+            transform-origin: top center;
+            margin: 0 auto -88px;
+          }
+
+          .my-go-two-page .my-go-two-form-scale {
+            width: 132%;
+            transform: scale(0.74);
+            transform-origin: top center;
+            margin: 0 auto -138px;
+          }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .my-go-two-page .coverflow-stage-shell {
+            height: auto;
+            min-height: calc(100dvh - var(--header-height) - 24px);
+          }
+
+          .my-go-two-page .my-go-two-coverflow-scale {
+            width: 112%;
+            transform: scale(0.9);
+            transform-origin: top center;
+            margin: 0 auto -40px;
+          }
+
+          .my-go-two-page .my-go-two-form-scale {
+            width: 118%;
+            transform: scale(0.86);
+            transform-origin: top center;
+            margin: 0 auto -82px;
+          }
+        }
+      `}</style>
       <AnimatePresence mode="wait">
         {renderContent()}
       </AnimatePresence>
-    </>
+    </div>
   );
 };
 
