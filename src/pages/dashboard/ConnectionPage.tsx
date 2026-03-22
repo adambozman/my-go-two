@@ -874,8 +874,7 @@ export default function ConnectionPage() {
             <div className="flex justify-start">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
-                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.82)" }}
+                className="surface-pill pill-asset-ivory inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Back home
@@ -896,13 +895,13 @@ export default function ConnectionPage() {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  <p className="surface-eyebrow-coral">
                     Go Two / Connection feed
                   </p>
                   <h1 className="mt-2 text-[40px] leading-none md:text-[56px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                     {connection.name}
                   </h1>
-                  <p className="mt-4 max-w-xl text-[16px] leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  <p className="surface-body mt-4 max-w-xl">
                     What this connection shares, what the AI can infer from it, and the gift ideas it is already shaping around them.
                   </p>
                 </div>
@@ -916,26 +915,26 @@ export default function ConnectionPage() {
             <section className="card-design-neumorph p-6 md:p-7">
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1.14fr)_240px]">
                 <div className="min-w-0">
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  <p className="surface-eyebrow-coral">
                     AI Connection
                   </p>
                   <h2 className="mt-2 max-w-2xl text-[42px] leading-[0.95] md:text-[58px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                     {connection.name}'s AI connection.
                   </h2>
-                  <p className="mt-4 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                  <p className="surface-body mt-4 max-w-2xl">
                     Go Two pulls from shared recommendations, dates, and profile clues to surface gift ideas, product picks, and next moves that actually fit {connection.name}.
                   </p>
                 </div>
 
                 <div className="grid gap-4">
                   <div className="card-design-neumorph px-5 py-5">
-                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                    <p className="surface-eyebrow-coral">
                       Their vibe
                     </p>
                     <p className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                       {incomingDerivedFeatures.your_vibe && sharedVibe ? "Readable now" : "Locked"}
                     </p>
-                    <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                    <p className="surface-meta mt-3">
                       {incomingDerivedFeatures.your_vibe && sharedVibe ? sharedVibe : `${connection.name} has not shared their vibe summary yet.`}
                     </p>
                   </div>
@@ -958,10 +957,10 @@ export default function ConnectionPage() {
                             <p className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                               {product.name || "Recommendation"}
                             </p>
-                            <p className="mt-2 text-xs uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                            <p className="surface-eyebrow-coral mt-2">
                               {product.brand || "Gift idea"}
                             </p>
-                        <p className="surface-body mt-3">
+                            <p className="surface-body mt-3">
                               {product.hook || product.why || `Pulled from ${connection.name}'s latest recommendations.`}
                             </p>
                           </div>
@@ -1031,15 +1030,7 @@ export default function ConnectionPage() {
                           onValueChange={(value) => handleConnectionKindChange(value as ConnectionKind)}
                           disabled={!canConfigureOutgoing || savingConnectionKind}
                         >
-                          <SelectTrigger
-                            className="rounded-[18px] border px-4 py-3 text-sm"
-                            style={{
-                              background: "rgba(255,255,255,0.72)",
-                              borderColor: "rgba(45,104,112,0.14)",
-                              color: "var(--swatch-teal)",
-                              fontFamily: "'Jost', sans-serif",
-                            }}
-                          >
+                          <SelectTrigger className="surface-field rounded-[18px] px-4 py-3 text-sm" style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}>
                             <SelectValue placeholder="Select connection type" />
                           </SelectTrigger>
                           <SelectContent>
@@ -1060,7 +1051,7 @@ export default function ConnectionPage() {
                           <div key={field.key} className="flex items-start justify-between gap-4">
                             <div className="min-w-0">
                               <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{field.label}</p>
-                              <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                              <p className="surface-meta mt-1">
                                 {field.description}
                               </p>
                             </div>
@@ -1082,7 +1073,7 @@ export default function ConnectionPage() {
                           <div key={feature.key} className="flex items-start justify-between gap-4">
                             <div className="min-w-0">
                               <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{feature.label}</p>
-                              <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                              <p className="surface-meta mt-1">
                                 {feature.description}
                               </p>
                             </div>
@@ -1130,13 +1121,8 @@ export default function ConnectionPage() {
                           value={cardSearch}
                           onChange={(event) => setCardSearch(event.target.value)}
                           placeholder="Search your product cards..."
-                          className="w-full rounded-[18px] border px-4 py-3 text-sm outline-none"
-                          style={{
-                            background: "rgba(255,255,255,0.72)",
-                            borderColor: "rgba(45,104,112,0.14)",
-                            color: "var(--swatch-teal)",
-                            fontFamily: "'Jost', sans-serif",
-                          }}
+                          className="surface-field w-full rounded-[18px] border px-4 py-3 text-sm outline-none"
+                          style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
                         />
                       </label>
 
@@ -1147,7 +1133,7 @@ export default function ConnectionPage() {
                             <div key={entry.id} className="flex items-start justify-between gap-4 rounded-[18px] px-4 py-3" style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.78)" }}>
                               <div className="min-w-0">
                                 <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{entry.entry_name}</p>
-                                <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                                <p className="surface-meta mt-1">
                                   {entry.group_name} | {entry.card_key?.split("__").pop() || "Product card"}
                                 </p>
                               </div>
