@@ -77,6 +77,25 @@ export const CAROUSEL_LAYOUT_DESKTOP = {
 };
 
 /** Form card layout — taller active card for entry forms */
+/** Returns fluid mobile form layout values — call at render time */
+export function getFluidFormLayout() {
+  const cardW = fluidPx(220, 280);
+  const cardH = fluidPx(360, 460);
+  const stageH = fluidPx(400, 520);
+  return {
+    ...getFluidMobileLayout(),
+    cardWidth: cardW,
+    cardHeight: cardH,
+    stageHeight: stageH,
+    pills: [
+      { w: cardW, h: cardH, r: 16 },
+      { w: fluidPx(50, 66), h: fluidPx(230, 290), r: 999 },
+      { w: fluidPx(30, 40), h: fluidPx(180, 230), r: 999 },
+      { w: fluidPx(12, 15), h: fluidPx(130, 170), r: 999 },
+    ],
+  };
+}
+
 export const FORM_CAROUSEL_LAYOUT = {
   ...CAROUSEL_LAYOUT,
   cardWidth: 280,
