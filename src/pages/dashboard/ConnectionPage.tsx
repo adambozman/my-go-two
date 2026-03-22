@@ -857,8 +857,12 @@ export default function ConnectionPage() {
         </div>
 
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.7fr)]">
-          <section className="card-design-neumorph p-5 md:p-6">
-            <div className="mt-6">
+          <section className="card-design-neumorph relative p-5 pt-12 md:p-6 md:pt-12">
+            <p className="surface-eyebrow-coral absolute left-5 top-5 md:left-6 md:top-6">
+              Go Two / Connection feed
+            </p>
+
+            <div>
               <div className="flex items-center gap-4">
                 <div
                   className="surface-avatar-teal flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border"
@@ -871,9 +875,6 @@ export default function ConnectionPage() {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="surface-eyebrow-coral">
-                    Go Two / Connection feed
-                  </p>
                   <h1 className="surface-display-lg mt-2">
                     {connection.name}
                   </h1>
