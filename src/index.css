@@ -367,6 +367,7 @@ body {
   justify-content: flex-start;
   flex-shrink: 0;
   padding-top: clamp(10px, 3vw, 18px);
+  overflow: hidden;
 }
 
 .coverflow-stage-title-wrap {
