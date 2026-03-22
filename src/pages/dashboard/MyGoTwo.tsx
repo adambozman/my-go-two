@@ -842,19 +842,23 @@ const MyGoTwo = () => {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 12px 6px;
-            min-height: clamp(92px, 14vh, 118px);
+            padding: 10px 12px 8px;
+            min-height: clamp(104px, 15vh, 128px);
           }
 
           .my-go-two-page .my-go-two-quote-frame {
             width: min(100%, 720px);
-            min-height: clamp(72px, 11vh, 96px);
+            min-height: clamp(84px, 12vh, 108px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 4px;
-            padding: 10px 12px 8px;
+            padding: 12px 14px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.64);
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.58) 0%, rgba(245, 233, 220, 0.28) 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 10px 26px rgba(74,96,104,0.06);
             overflow: hidden;
           }
 
@@ -862,8 +866,8 @@ const MyGoTwo = () => {
             margin: 0;
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
-            font-size: clamp(15px, 3vw, 22px);
-            line-height: 1.1;
+            font-size: clamp(14px, 2.8vw, 20px);
+            line-height: 1.08;
             text-align: center;
             color: var(--logo-two-color);
             text-wrap: balance;
@@ -872,7 +876,7 @@ const MyGoTwo = () => {
           .my-go-two-page .my-go-two-quote-author {
             margin: 0;
             font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(10px, 1.8vw, 13px);
+            font-size: clamp(9px, 1.4vw, 12px);
             letter-spacing: 0.12em;
             text-transform: uppercase;
             color: rgba(74, 96, 104, 0.84);
