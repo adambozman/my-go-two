@@ -179,7 +179,7 @@ export function DashboardTopBar() {
         />
 
         <div className="flex min-w-0 items-center justify-start">
-          <GoTwoText className="max-w-[56px] shrink text-[18px] sm:max-w-[80px] sm:text-[26px] md:max-w-none md:text-[54px] md:shrink-0" />
+          <GoTwoText className="max-w-[64px] shrink text-[20px] sm:max-w-[88px] sm:text-[28px] md:max-w-none md:text-[54px] md:shrink-0" />
         </div>
 
         <nav className="flex min-w-0 items-start justify-center gap-1 sm:gap-1.5 lg:gap-3">
