@@ -661,7 +661,7 @@ export default function ConnectionPage() {
       return;
     }
 
-    toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection.name} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
+    toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
   }, [connection, toast, user]);
 
   const handleToggleCardShare = useCallback(async (entry: EntryRecord, nextValue: boolean) => {
@@ -698,7 +698,7 @@ export default function ConnectionPage() {
       }
     }
 
-    toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection.name}.` });
+    toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection?.name || "them"}.` });
   }, [connection, toast, user]);
 
   const handleToggleDerivedFeature = useCallback(async (key: DerivedFeatureKey, nextValue: boolean) => {
@@ -743,7 +743,7 @@ export default function ConnectionPage() {
 
     toast({
       title: nextValue ? "Derived feature shared" : "Derived feature hidden",
-      description: `${connection.name} will ${nextValue ? "now" : "no longer"} see ${editableDerivedFeatures.find((feature) => feature.key === key)?.label.toLowerCase()}.`,
+      description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableDerivedFeatures.find((feature) => feature.key === key)?.label.toLowerCase()}.`,
     });
   }, [connection, toast, user]);
 
