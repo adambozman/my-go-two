@@ -869,18 +869,18 @@ export default function ConnectionPage() {
   return (
     <div className="mx-auto h-full max-w-[1320px] overflow-y-auto px-4 pb-10 pt-4 md:px-6">
       <div className="space-y-5">
+        <div className="flex justify-start">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="surface-pill pill-asset-ivory inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back home
+          </button>
+        </div>
+
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.7fr)]">
           <section className="card-design-neumorph p-5 md:p-6">
-            <div className="flex justify-start">
-              <button
-                onClick={() => navigate("/dashboard")}
-                className="surface-pill pill-asset-ivory inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.12em]"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                Back home
-              </button>
-            </div>
-
             <div className="mt-6">
               <div className="flex items-center gap-4">
                 <div
