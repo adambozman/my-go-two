@@ -283,7 +283,7 @@ const MyGoTwo = () => {
   );
 
   const quotePanel = (
-    <section className="my-go-two-quote-panel shrink-0">
+    <section className="my-go-two-quote-panel shrink-0 snap-start snap-always">
       <div className="my-go-two-quote-frame">
         <p className="my-go-two-quote-text">"{rotatingQuote.text}"</p>
         {rotatingQuote.author !== "Unknown" && (
@@ -618,7 +618,7 @@ const MyGoTwo = () => {
           exit={{ opacity: 0, x: -40 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           ref={productGroupScrollRef}
-          className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
+          className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
           style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
           onScroll={(e) => {
             const nextGroupIndex = getNearestGroupIndex(e.currentTarget.scrollTop);
@@ -628,7 +628,6 @@ const MyGoTwo = () => {
             }
           }}
         >
-          {quotePanel}
           {productGroups.map((groupName) => {
             const groupEntries = entries.filter((entry) => entry.group_name === groupName);
             const newEntryId = getNewEntryId(groupName);
@@ -749,10 +748,9 @@ const MyGoTwo = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -40 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
+          className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
           style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
         >
-          {quotePanel}
           <div className="snap-start snap-always">
             <div className="my-go-two-coverflow-scale" data-local-coverflow-scale="main">
               <TemplateCoverFlow
@@ -787,14 +785,13 @@ const MyGoTwo = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
+        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
         style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
         onScroll={(e) => {
           const el = e.currentTarget;
           setActiveSectionIndex(getNearestSectionIndex(el.scrollTop));
         }}
       >
-        {quotePanel}
         {orderedSections.map((section, index) => (
           <div
             key={section.key}
@@ -831,7 +828,7 @@ const MyGoTwo = () => {
   };
 
   return (
-    <div className="my-go-two-page h-full overflow-x-hidden">
+    <div className="my-go-two-page flex h-full min-h-0 flex-col overflow-x-hidden">
       <style>{`
         @media (max-width: 767px) {
           .my-go-two-page {
@@ -979,6 +976,7 @@ const MyGoTwo = () => {
           }
         }
       `}</style>
+      {quotePanel}
       <AnimatePresence mode="wait">
         {renderContent()}
       </AnimatePresence>
