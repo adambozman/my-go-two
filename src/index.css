@@ -246,9 +246,38 @@ body {
   font-size: clamp(40px, 5vw, 56px);
 }
 
+.surface-display-md {
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--logo-two-color);
+  line-height: 0.95;
+  font-size: 34px;
+}
+
 .surface-avatar-teal {
   background: linear-gradient(135deg, rgba(45,104,112,0.88), rgba(30,74,82,0.88));
   border-color: rgba(45,104,112,0.2);
+}
+
+.surface-icon-spot {
+  background: rgba(45,104,112,0.12);
+  color: var(--swatch-teal);
+}
+
+.surface-inset-panel {
+  background: rgba(255,255,255,0.56);
+  border: 1px solid rgba(255,255,255,0.8);
+}
+
+.surface-text-teal {
+  color: var(--swatch-teal);
+}
+
+.surface-text-light {
+  color: var(--swatch-text-light);
+}
+
+.surface-text-antique {
+  color: var(--swatch-antique-coin);
 }
 
 .surface-body {

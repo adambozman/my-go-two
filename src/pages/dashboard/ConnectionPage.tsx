@@ -118,21 +118,6 @@ const editableConnectionKinds: Array<{ key: ConnectionKind; label: string; descr
 
 const acceptanceRequiredKinds = new Set<ConnectionKind>(["significant_other", "wife", "husband", "girlfriend", "boyfriend"]);
 
-const shellCardStyle = {
-  boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",
-} as const;
-
-const frostedPanelStyle = {
-  ...shellCardStyle,
-  background: "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(247,239,229,0.72) 100%)",
-  border: "1px solid rgba(255,255,255,0.84)",
-} as const;
-
-const frostedInsetStyle = {
-  background: "rgba(255,255,255,0.56)",
-  border: "1px solid rgba(255,255,255,0.8)",
-} as const;
-
 const emptyProfileFieldState: ProfileFieldState = {
   display_name: false,
   avatar_url: false,
@@ -831,7 +816,7 @@ export default function ConnectionPage() {
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>Loading connection...</p>
+        <p className="surface-meta">Loading connection...</p>
       </div>
     );
   }
@@ -839,15 +824,8 @@ export default function ConnectionPage() {
   if (!connection) {
     return (
       <div className="mx-auto flex h-full max-w-[960px] items-center justify-center px-6">
-        <div
-          className="w-full rounded-[30px] p-8 text-center"
-          style={{
-            ...shellCardStyle,
-            background: "linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(245,233,220,0.6) 100%)",
-            border: "1px solid rgba(255,255,255,0.85)",
-          }}
-        >
-          <p className="text-[10px] uppercase tracking-[0.18em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+        <div className="card-design-neumorph w-full rounded-[30px] p-8 text-center">
+          <p className="surface-eyebrow-coral">
             Connection
           </p>
           <h1 className="surface-display-lg mt-2">
@@ -855,8 +833,7 @@ export default function ConnectionPage() {
           </h1>
           <button
             onClick={() => navigate("/dashboard")}
-            className="mt-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.12em]"
-            style={{ background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.82)", color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
+            className="surface-button-secondary mt-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.12em]"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Back home
@@ -917,7 +894,7 @@ export default function ConnectionPage() {
                   <p className="surface-eyebrow-coral">
                     AI Connection
                   </p>
-                  <h2 className="mt-2 max-w-2xl text-[42px] leading-[0.95] md:text-[58px]" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                  <h2 className="surface-display-lg mt-2 max-w-2xl">
                     {connection.name}'s AI connection.
                   </h2>
                   <p className="surface-body mt-4 max-w-2xl">
@@ -930,7 +907,7 @@ export default function ConnectionPage() {
                     <p className="surface-eyebrow-coral">
                       Their vibe
                     </p>
-                    <p className="mt-2 text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    <p className="surface-heading-lg mt-2">
                       {incomingDerivedFeatures.your_vibe && sharedVibe ? "Readable now" : "Locked"}
                     </p>
                     <p className="surface-meta mt-3">
@@ -948,12 +925,12 @@ export default function ConnectionPage() {
                         key={`${product.brand || "brand"}-${product.name || index}`}
                         className={`card-design-neumorph px-5 py-5 ${index === 0 ? "md:col-span-2" : ""}`}
                       >
-                        <div className="flex items-start gap-3">
-                          <span className="mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
+                      <div className="flex items-start gap-3">
+                          <span className="surface-icon-spot mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full">
                             <Sparkles className="h-4 w-4" />
                           </span>
                           <div className="min-w-0">
-                            <p className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                            <p className="surface-heading-lg">
                               {product.name || "Recommendation"}
                             </p>
                             <p className="surface-eyebrow-coral mt-2">
@@ -972,12 +949,12 @@ export default function ConnectionPage() {
                         key={`${suggestion.title}-${index}`}
                         className={`card-design-neumorph px-5 py-5 ${index === 0 ? "md:col-span-2" : ""}`}
                       >
-                        <div className="flex items-start gap-3">
-                          <span className="mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
+                      <div className="flex items-start gap-3">
+                          <span className="surface-icon-spot mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full">
                             <Sparkles className="h-4 w-4" />
                           </span>
                           <div className="min-w-0">
-                            <p className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                            <p className="surface-heading-lg">
                               {suggestion.title}
                             </p>
                             <p className="surface-body mt-3">
@@ -990,7 +967,7 @@ export default function ConnectionPage() {
                   )
                 ) : (
                   <div className="card-design-neumorph px-5 py-5 md:col-span-2">
-                    <p className="text-[28px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                    <p className="surface-heading-lg">
                       AI needs more to work with.
                     </p>
                     <p className="surface-body mt-3">
@@ -1005,23 +982,23 @@ export default function ConnectionPage() {
           <aside className="space-y-5">
             <section className="card-design-neumorph p-5 md:p-6">
               <div className="flex items-start gap-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "rgba(45,104,112,0.12)", color: "var(--swatch-teal)" }}>
+                <span className="surface-icon-spot inline-flex h-10 w-10 items-center justify-center rounded-full">
                   <Lock className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="surface-eyebrow-coral">What they can see</p>
-                  <h2 className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                  <h2 className="surface-display-md mt-2">
                     Sharing settings
                   </h2>
                 </div>
               </div>
               <Accordion type="single" collapsible className="mt-5">
-                <AccordionItem value="sharing-controls" className="overflow-hidden rounded-[28px] border-0" style={frostedInsetStyle}>
+                <AccordionItem value="sharing-controls" className="surface-inset-panel overflow-hidden rounded-[28px] border-0">
                   <AccordionTrigger className="px-5 py-5 text-left hover:no-underline">
                     <p className="surface-eyebrow-teal">Open settings</p>
                   </AccordionTrigger>
                   <AccordionContent className="px-5 pb-5 pt-0">
-                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                    <div className="surface-inset-panel mt-4 rounded-[22px] px-4 py-4">
                       <p className="surface-eyebrow-teal">Connection type</p>
                       <div className="mt-4">
                         <Select
@@ -1029,7 +1006,7 @@ export default function ConnectionPage() {
                           onValueChange={(value) => handleConnectionKindChange(value as ConnectionKind)}
                           disabled={!canConfigureOutgoing || savingConnectionKind}
                         >
-                          <SelectTrigger className="surface-field rounded-[18px] px-4 py-3 text-sm" style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}>
+                          <SelectTrigger className="surface-field surface-action-text rounded-[18px] px-4 py-3 text-sm">
                             <SelectValue placeholder="Select connection type" />
                           </SelectTrigger>
                           <SelectContent>
@@ -1043,13 +1020,13 @@ export default function ConnectionPage() {
                       </div>
                     </div>
 
-                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                    <div className="surface-inset-panel mt-4 rounded-[22px] px-4 py-4">
                       <p className="surface-eyebrow-teal">Profile fields</p>
                       <div className="mt-4 space-y-4">
                         {editableProfileFields.map((field) => (
                           <div key={field.key} className="flex items-start justify-between gap-4">
                             <div className="min-w-0">
-                              <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{field.label}</p>
+                              <p className="surface-action-text text-sm font-medium">{field.label}</p>
                               <p className="surface-meta mt-1">
                                 {field.description}
                               </p>
@@ -1064,14 +1041,14 @@ export default function ConnectionPage() {
                       </div>
                     </div>
 
-                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                    <div className="surface-inset-panel mt-4 rounded-[22px] px-4 py-4">
                       <p className="surface-eyebrow-teal">Derived features</p>
 
                       <div className="mt-4 space-y-4">
                         {editableDerivedFeatures.map((feature) => (
                           <div key={feature.key} className="flex items-start justify-between gap-4">
                             <div className="min-w-0">
-                              <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{feature.label}</p>
+                              <p className="surface-action-text text-sm font-medium">{feature.label}</p>
                               <p className="surface-meta mt-1">
                                 {feature.description}
                               </p>
@@ -1086,7 +1063,7 @@ export default function ConnectionPage() {
                       </div>
                     </div>
 
-                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                    <div className="surface-inset-panel mt-4 rounded-[22px] px-4 py-4">
                       <div className="flex flex-wrap items-end justify-between gap-3">
                         <div>
                           <p className="surface-eyebrow-teal">Product cards</p>
@@ -1098,16 +1075,14 @@ export default function ConnectionPage() {
                           <button
                             onClick={() => handleBulkShare("share")}
                             disabled={!canConfigureOutgoing || sharingBusy || myEntries.length === 0}
-                            className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
-                            style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "var(--swatch-teal)" }}
+                            className="surface-button-primary inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
                           >
                             Share all
                           </button>
                           <button
                             onClick={() => handleBulkShare("unshare")}
                             disabled={!canConfigureOutgoing || sharingBusy || sharedCardEntryIds.length === 0}
-                            className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
-                            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.84)" }}
+                            className="surface-button-secondary inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
                           >
                             Hide all
                           </button>
@@ -1120,8 +1095,7 @@ export default function ConnectionPage() {
                           value={cardSearch}
                           onChange={(event) => setCardSearch(event.target.value)}
                           placeholder="Search your product cards..."
-                          className="surface-field w-full rounded-[18px] border px-4 py-3 text-sm outline-none"
-                          style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
+                          className="surface-field surface-action-text w-full rounded-[18px] border px-4 py-3 text-sm outline-none"
                         />
                       </label>
 
@@ -1129,9 +1103,9 @@ export default function ConnectionPage() {
                         {filteredMyEntries.map((entry) => {
                           const isShared = sharedCardEntryIds.includes(entry.id);
                           return (
-                            <div key={entry.id} className="flex items-start justify-between gap-4 rounded-[18px] px-4 py-3" style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.78)" }}>
+                            <div key={entry.id} className="surface-inset-panel flex items-start justify-between gap-4 rounded-[18px] px-4 py-3">
                               <div className="min-w-0">
-                                <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{entry.entry_name}</p>
+                                <p className="surface-action-text text-sm font-medium">{entry.entry_name}</p>
                                 <p className="surface-meta mt-1">
                                   {entry.group_name} | {entry.card_key?.split("__").pop() || "Product card"}
                                 </p>
@@ -1145,7 +1119,7 @@ export default function ConnectionPage() {
                           );
                         })}
                         {filteredMyEntries.length === 0 && (
-                          <p className="text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                          <p className="surface-body text-sm leading-relaxed">
                             No product cards match this search yet.
                           </p>
                         )}
