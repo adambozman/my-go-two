@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useTopBar } from "@/contexts/TopBarContext";
+import { useRotatingQuote } from "@/hooks/useRotatingQuote";
 import { useCategoryRegistry, type CategoryItem } from "@/hooks/useCategoryRegistry";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -64,6 +65,7 @@ const MyGoTwo = () => {
   const { gender, loading: genderLoading } = usePersonalization();
   const { categories, loading: registryLoading } = useCategoryRegistry(gender, "mygotwo");
   const { setBackState } = useTopBar();
+  const rotatingQuote = useRotatingQuote();
 
   const sections = useMemo(() => {
     return categories.reduce<Record<string, CategoryItem[]>>((acc, item) => {
@@ -278,6 +280,17 @@ const MyGoTwo = () => {
       return nearestIndex;
     },
     [visibleSectionKeys],
+  );
+
+  const quotePanel = (
+    <section className="my-go-two-quote-panel shrink-0">
+      <div className="my-go-two-quote-frame">
+        <p className="my-go-two-quote-text">"{rotatingQuote.text}"</p>
+        {rotatingQuote.author !== "Unknown" && (
+          <p className="my-go-two-quote-author">— {rotatingQuote.author}</p>
+        )}
+      </div>
+    </section>
   );
 
   useEffect(() => {
@@ -615,6 +628,7 @@ const MyGoTwo = () => {
             }
           }}
         >
+          {quotePanel}
           {productGroups.map((groupName) => {
             const groupEntries = entries.filter((entry) => entry.group_name === groupName);
             const newEntryId = getNewEntryId(groupName);
@@ -738,6 +752,7 @@ const MyGoTwo = () => {
           className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
           style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
         >
+          {quotePanel}
           <div className="snap-start snap-always">
             <div className="my-go-two-coverflow-scale" data-local-coverflow-scale="main">
               <TemplateCoverFlow
@@ -779,6 +794,7 @@ const MyGoTwo = () => {
           setActiveSectionIndex(getNearestSectionIndex(el.scrollTop));
         }}
       >
+        {quotePanel}
         {orderedSections.map((section, index) => (
           <div
             key={section.key}
@@ -822,9 +838,49 @@ const MyGoTwo = () => {
             overflow-x: hidden;
           }
 
+          .my-go-two-page .my-go-two-quote-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 14px 10px;
+            min-height: clamp(118px, 19vh, 150px);
+          }
+
+          .my-go-two-page .my-go-two-quote-frame {
+            width: min(100%, 720px);
+            min-height: clamp(92px, 15vh, 124px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px 14px 10px;
+            overflow: hidden;
+          }
+
+          .my-go-two-page .my-go-two-quote-text {
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: clamp(18px, 3.8vw, 28px);
+            line-height: 1.15;
+            text-align: center;
+            color: var(--logo-two-color);
+            text-wrap: balance;
+          }
+
+          .my-go-two-page .my-go-two-quote-author {
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(11px, 2.4vw, 15px);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(74, 96, 104, 0.84);
+          }
+
           .my-go-two-page .coverflow-stage-shell {
             height: auto;
-            min-height: calc(100dvh - var(--header-height) - 10px);
+            min-height: calc(100dvh - var(--header-height) - 140px);
             padding-top: 6px;
             padding-bottom: 12px;
           }
@@ -859,9 +915,49 @@ const MyGoTwo = () => {
         }
 
         @media (min-width: 768px) and (max-width: 1023px) {
+          .my-go-two-page .my-go-two-quote-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 16px 8px;
+            min-height: clamp(132px, 15vh, 164px);
+          }
+
+          .my-go-two-page .my-go-two-quote-frame {
+            width: min(100%, 800px);
+            min-height: clamp(102px, 12vh, 130px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 18px 10px;
+            overflow: hidden;
+          }
+
+          .my-go-two-page .my-go-two-quote-text {
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: clamp(20px, 2.8vw, 32px);
+            line-height: 1.15;
+            text-align: center;
+            color: var(--logo-two-color);
+            text-wrap: balance;
+          }
+
+          .my-go-two-page .my-go-two-quote-author {
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(12px, 1.4vw, 16px);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(74, 96, 104, 0.84);
+          }
+
           .my-go-two-page .coverflow-stage-shell {
             height: auto;
-            min-height: calc(100dvh - var(--header-height) - 24px);
+            min-height: calc(100dvh - var(--header-height) - 152px);
           }
 
           .my-go-two-page .my-go-two-coverflow-scale {

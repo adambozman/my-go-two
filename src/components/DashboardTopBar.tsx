@@ -15,7 +15,6 @@ import { useToast } from "@/hooks/use-toast";
 import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
 
 import { useTopBar } from "@/contexts/TopBarContext";
-import { useRotatingQuote } from "@/hooks/useRotatingQuote";
 
 const navItems = [
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
@@ -31,7 +30,6 @@ export function DashboardTopBar() {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const { backState } = useTopBar();
-  const rotatingQuote = useRotatingQuote();
   const [unreadCount, setUnreadCount] = useState(0);
   const [avatarValue, setAvatarValue] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -158,7 +156,7 @@ export function DashboardTopBar() {
   };
 
   const isMyGoTwo = location.pathname === "/dashboard/my-go-two";
-  const showQuote = isMyGoTwo;
+  const showQuote = false;
   const collapsedHeaderHeight = "calc(var(--header-top-padding) + var(--header-icons-row-height) + var(--header-divider-margin-top) + 1px)";
 
   return (
