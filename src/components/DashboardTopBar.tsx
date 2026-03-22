@@ -300,7 +300,31 @@ export function DashboardTopBar() {
 
       <div className="border-b border-border/30" style={{ marginTop: "var(--header-divider-margin-top)" }} />
 
-      {/* Quote section removed — lives on MyGoTwo page now */}
+      {showQuote && (
+        <div
+          className="header-tagline-wrapper dashboard-topbar__quote-wrap"
+          style={{
+            marginTop: "var(--header-tagline-margin-top)",
+            transition: "opacity 0.8s ease",
+            textAlign: "center",
+          }}
+        >
+          <p
+            className="header-tagline-quote"
+            style={{ fontSize: "clamp(18px, 3.6vw, 32px)", lineHeight: 1.25, paddingInline: "12px" }}
+          >
+            "{rotatingQuote.text}"
+          </p>
+          {rotatingQuote.author !== "Unknown" && (
+            <p
+              className="header-tagline-author"
+              style={{ fontSize: "clamp(11px, 2vw, 16px)", marginTop: "6px" }}
+            >
+              — {rotatingQuote.author}
+            </p>
+          )}
+        </div>
+      )}
     </header>
   );
 }
