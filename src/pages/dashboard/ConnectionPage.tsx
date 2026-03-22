@@ -1011,47 +1011,164 @@ export default function ConnectionPage() {
                   <Lock className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="surface-eyebrow-coral">
-                    Global assets
-                  </p>
+                  <p className="surface-eyebrow-coral">What they can see</p>
                   <h2 className="mt-2 text-[34px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                    Managed in Settings
+                    Sharing settings
                   </h2>
                 </div>
               </div>
-              <div className="mt-5 space-y-3">
-                <div className="card-design-neumorph px-4 py-4">
-                  <p className="surface-eyebrow-teal">Visible profile</p>
-                  <div className="mt-3 flex items-center gap-2">
-                    <Pill variant={globalSettings?.visible_profile ? "active" : "subtle"} size="sm">
-                      {globalSettings?.visible_profile ? "On" : "Off"}
-                    </Pill>
-                    <p className="surface-meta">Global profile visibility from Settings.</p>
-                  </div>
-                </div>
+              <Accordion type="single" collapsible className="mt-5">
+                <AccordionItem value="sharing-controls" className="overflow-hidden rounded-[28px] border-0" style={frostedInsetStyle}>
+                  <AccordionTrigger className="px-5 py-5 text-left hover:no-underline">
+                    <p className="surface-eyebrow-teal">Open settings</p>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-5 pb-5 pt-0">
+                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                      <p className="surface-eyebrow-teal">Connection type</p>
+                      <div className="mt-4">
+                        <Select
+                          value={connectionKind}
+                          onValueChange={(value) => handleConnectionKindChange(value as ConnectionKind)}
+                          disabled={!canConfigureOutgoing || savingConnectionKind}
+                        >
+                          <SelectTrigger
+                            className="rounded-[18px] border px-4 py-3 text-sm"
+                            style={{
+                              background: "rgba(255,255,255,0.72)",
+                              borderColor: "rgba(45,104,112,0.14)",
+                              color: "var(--swatch-teal)",
+                              fontFamily: "'Jost', sans-serif",
+                            }}
+                          >
+                            <SelectValue placeholder="Select connection type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {editableConnectionKinds.map((item) => (
+                              <SelectItem key={item.key} value={item.key}>
+                                {item.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
 
-                <div className="card-design-neumorph px-4 py-4">
-                  <p className="surface-eyebrow-teal">Pills and prefs</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Pill variant={globalSettings?.share_prefs ? "active" : "subtle"} size="sm">Prefs</Pill>
-                    <Pill variant={globalSettings?.share_wishlist ? "active" : "subtle"} size="sm">Wish list</Pill>
-                    <Pill variant={globalSettings?.recommendations ? "active" : "subtle"} size="sm">Recommendations</Pill>
-                  </div>
-                  <p className="surface-meta mt-3">These come from the app-wide settings sheet, not this connection.</p>
-                </div>
+                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                      <p className="surface-eyebrow-teal">Profile fields</p>
+                      <div className="mt-4 space-y-4">
+                        {editableProfileFields.map((field) => (
+                          <div key={field.key} className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{field.label}</p>
+                              <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                                {field.description}
+                              </p>
+                            </div>
+                            <Switch
+                              checked={outgoingProfileFields[field.key]}
+                              onCheckedChange={(checked) => handleToggleOutgoingProfileField(field.key, checked)}
+                              disabled={!canConfigureOutgoing}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-                <button
-                  onClick={() => navigate("/dashboard/settings")}
-                  className="surface-pill pill-asset-ivory inline-flex w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left"
-                >
-                  <span>
-                    <span className="surface-eyebrow-teal block">Global source</span>
-                    <span className="surface-body block mt-1">Open Settings to edit the shared assets.</span>
-                  </span>
-                  <ArrowLeft className="h-4 w-4 rotate-180" />
-                </button>
-              </div>
+                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                      <p className="surface-eyebrow-teal">Derived features</p>
 
+                      <div className="mt-4 space-y-4">
+                        {editableDerivedFeatures.map((feature) => (
+                          <div key={feature.key} className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{feature.label}</p>
+                              <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                                {feature.description}
+                              </p>
+                            </div>
+                            <Switch
+                              checked={outgoingDerivedFeatures[feature.key]}
+                              onCheckedChange={(checked) => handleToggleDerivedFeature(feature.key, checked)}
+                              disabled={!canConfigureOutgoing}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 rounded-[22px] px-4 py-4" style={frostedInsetStyle}>
+                      <div className="flex flex-wrap items-end justify-between gap-3">
+                        <div>
+                          <p className="surface-eyebrow-teal">Product cards</p>
+                          <p className="surface-body mt-2">
+                            Share one card, a few cards, or everything with one click.
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleBulkShare("share")}
+                            disabled={!canConfigureOutgoing || sharingBusy || myEntries.length === 0}
+                            className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
+                            style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "var(--swatch-teal)" }}
+                          >
+                            Share all
+                          </button>
+                          <button
+                            onClick={() => handleBulkShare("unshare")}
+                            disabled={!canConfigureOutgoing || sharingBusy || sharedCardEntryIds.length === 0}
+                            className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
+                            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.84)" }}
+                          >
+                            Hide all
+                          </button>
+                        </div>
+                      </div>
+
+                      <label className="mt-4 block">
+                        <span className="sr-only">Search your product cards</span>
+                        <input
+                          value={cardSearch}
+                          onChange={(event) => setCardSearch(event.target.value)}
+                          placeholder="Search your product cards..."
+                          className="w-full rounded-[18px] border px-4 py-3 text-sm outline-none"
+                          style={{
+                            background: "rgba(255,255,255,0.72)",
+                            borderColor: "rgba(45,104,112,0.14)",
+                            color: "var(--swatch-teal)",
+                            fontFamily: "'Jost', sans-serif",
+                          }}
+                        />
+                      </label>
+
+                      <div className="mt-4 max-h-[340px] space-y-3 overflow-y-auto pr-1">
+                        {filteredMyEntries.map((entry) => {
+                          const isShared = sharedCardEntryIds.includes(entry.id);
+                          return (
+                            <div key={entry.id} className="flex items-start justify-between gap-4 rounded-[18px] px-4 py-3" style={{ background: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.78)" }}>
+                              <div className="min-w-0">
+                                <p className="text-sm font-medium" style={{ color: "var(--swatch-teal)" }}>{entry.entry_name}</p>
+                                <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--swatch-text-light)" }}>
+                                  {entry.group_name} | {entry.card_key?.split("__").pop() || "Product card"}
+                                </p>
+                              </div>
+                              <Switch
+                                checked={isShared}
+                                onCheckedChange={(checked) => handleToggleCardShare(entry, checked)}
+                                disabled={!canConfigureOutgoing}
+                              />
+                            </div>
+                          );
+                        })}
+                        {filteredMyEntries.length === 0 && (
+                          <p className="text-sm leading-relaxed" style={{ color: "var(--swatch-antique-coin)" }}>
+                            No product cards match this search yet.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </section>
           </aside>
         </div>
