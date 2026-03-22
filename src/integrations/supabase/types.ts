@@ -388,6 +388,124 @@ export type Database = {
         }
         Relationships: []
       }
+      connection_context_preferences: {
+        Row: {
+          access_tier: string
+          connection_kind: string
+          connection_user_id: string
+          couple_id: string
+          created_at: string
+          feature_gates: Json
+          feed_enabled: boolean
+          for_them_enabled: boolean
+          gifting_enabled: boolean
+          id: string
+          occasion_tracking_enabled: boolean
+          owner_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          access_tier?: string
+          connection_kind?: string
+          connection_user_id: string
+          couple_id: string
+          created_at?: string
+          feature_gates?: Json
+          feed_enabled?: boolean
+          for_them_enabled?: boolean
+          gifting_enabled?: boolean
+          id?: string
+          occasion_tracking_enabled?: boolean
+          owner_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          access_tier?: string
+          connection_kind?: string
+          connection_user_id?: string
+          couple_id?: string
+          created_at?: string
+          feature_gates?: Json
+          feed_enabled?: boolean
+          for_them_enabled?: boolean
+          gifting_enabled?: boolean
+          id?: string
+          occasion_tracking_enabled?: boolean
+          owner_user_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connection_context_preferences_couple_id_fkey"
+            columns: ["couple_id"]
+            isOneToOne: false
+            referencedRelation: "couples"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      connection_recommendations: {
+        Row: {
+          access_tier: string
+          connection_user_id: string
+          couple_id: string
+          created_at: string
+          gate_key: string
+          id: string
+          occasion_date: string | null
+          occasion_type: string | null
+          recommendation_kind: string
+          recommendation_scope: string
+          recommendations: Json
+          source_snapshot: Json
+          status: string
+          updated_at: string
+          viewer_user_id: string
+        }
+        Insert: {
+          access_tier?: string
+          connection_user_id: string
+          couple_id: string
+          created_at?: string
+          gate_key?: string
+          id?: string
+          occasion_date?: string | null
+          occasion_type?: string | null
+          recommendation_kind?: string
+          recommendation_scope?: string
+          recommendations?: Json
+          source_snapshot?: Json
+          status?: string
+          updated_at?: string
+          viewer_user_id: string
+        }
+        Update: {
+          access_tier?: string
+          connection_user_id?: string
+          couple_id?: string
+          created_at?: string
+          gate_key?: string
+          id?: string
+          occasion_date?: string | null
+          occasion_type?: string | null
+          recommendation_kind?: string
+          recommendation_scope?: string
+          recommendations?: Json
+          source_snapshot?: Json
+          status?: string
+          updated_at?: string
+          viewer_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connection_recommendations_couple_id_fkey"
+            columns: ["couple_id"]
+            isOneToOne: false
+            referencedRelation: "couples"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       connection_share_tokens: {
         Row: {
           channel: string
@@ -698,6 +816,130 @@ export type Database = {
           questions?: Json
         }
         Relationships: []
+      }
+      shared_card_entries: {
+        Row: {
+          card_entry_id: string
+          connection_user_id: string
+          couple_id: string
+          created_at: string
+          id: string
+          owner_user_id: string
+        }
+        Insert: {
+          card_entry_id: string
+          connection_user_id: string
+          couple_id: string
+          created_at?: string
+          id?: string
+          owner_user_id: string
+        }
+        Update: {
+          card_entry_id?: string
+          connection_user_id?: string
+          couple_id?: string
+          created_at?: string
+          id?: string
+          owner_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_card_entries_card_entry_id_fkey"
+            columns: ["card_entry_id"]
+            isOneToOne: false
+            referencedRelation: "card_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_card_entries_couple_id_fkey"
+            columns: ["couple_id"]
+            isOneToOne: false
+            referencedRelation: "couples"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_derived_features: {
+        Row: {
+          connection_user_id: string
+          couple_id: string
+          created_at: string
+          feature_key: string
+          id: string
+          is_shared: boolean
+          owner_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          connection_user_id: string
+          couple_id: string
+          created_at?: string
+          feature_key: string
+          id?: string
+          is_shared?: boolean
+          owner_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          connection_user_id?: string
+          couple_id?: string
+          created_at?: string
+          feature_key?: string
+          id?: string
+          is_shared?: boolean
+          owner_user_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_derived_features_couple_id_fkey"
+            columns: ["couple_id"]
+            isOneToOne: false
+            referencedRelation: "couples"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_profile_fields: {
+        Row: {
+          connection_user_id: string
+          couple_id: string
+          created_at: string
+          field_key: string
+          id: string
+          is_shared: boolean
+          owner_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          connection_user_id: string
+          couple_id: string
+          created_at?: string
+          field_key: string
+          id?: string
+          is_shared?: boolean
+          owner_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          connection_user_id?: string
+          couple_id?: string
+          created_at?: string
+          field_key?: string
+          id?: string
+          is_shared?: boolean
+          owner_user_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_profile_fields_couple_id_fkey"
+            columns: ["couple_id"]
+            isOneToOne: false
+            referencedRelation: "couples"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sharing_permissions: {
         Row: {
