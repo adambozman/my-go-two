@@ -104,6 +104,13 @@ interface SharedRecommendationsRecord {
   }> | null;
 }
 
+interface OutgoingSharingStateRecord {
+  profile_fields?: Partial<Record<ProfileFieldKey, boolean>> | null;
+  derived_features?: Partial<Record<DerivedFeatureKey, boolean>> | null;
+  shared_card_entry_ids?: string[] | null;
+  connection_kind?: ConnectionKind | null;
+}
+
 const editableConnectionKinds: Array<{ key: ConnectionKind; label: string; description: string }> = [
   { key: "significant_other", label: "Significant Other", description: "Enables anniversary and romantic occasion logic." },
   { key: "wife", label: "Wife", description: "Treat this relationship with spouse-level romantic logic." },
@@ -214,6 +221,11 @@ function deriveFeedTagsFromMeta(meta: Record<string, unknown> | null, section: F
   return unique.slice(0, 4);
 }
 
+function isRpcMissingError(error: { message?: string } | null | undefined) {
+  const message = error?.message || "";
+  return /schema cache|Could not find the function|function .* does not exist|PGRST/i.test(message);
+}
+
 function buildAiSuggestions(
   connectionName: string,
   visibleItems: FeedItem[],
@@ -321,6 +333,7 @@ export default function ConnectionPage() {
     const [
       { data: profileRows },
       { data: incomingProfileRows },
+      outgoingSharingStateResult,
       { data: outgoingProfileRows },
       { data: incomingDerivedRows },
       { data: outgoingDerivedRows },
@@ -347,6 +360,12 @@ export default function ConnectionPage() {
             .eq("owner_user_id", partnerId)
             .eq("connection_user_id", user.id)
         : Promise.resolve({ data: [] }),
+      partnerId
+        ? (supabase.rpc as any)("get_connection_outgoing_sharing_state", {
+            p_couple_id: couple.id,
+            p_connection_user_id: partnerId,
+          })
+        : Promise.resolve({ data: null, error: null }),
       partnerId
         ? (supabase as any)
             .from("shared_profile_fields")
@@ -433,6 +452,12 @@ export default function ConnectionPage() {
     const recommendationData = Array.isArray(sharedRecommendationRows) ? (sharedRecommendationRows[0] as SharedRecommendationsRecord | undefined) ?? null : null;
     const cardRows = (incomingSharedCardRows || []) as SharedCardEntryRow[];
     const ownEntries = Array.isArray(ownEntryRows) ? (ownEntryRows as EntryRecord[]) : [];
+    const outgoingSharingState = (outgoingSharingStateResult?.data as OutgoingSharingStateRecord | null) || null;
+    const outgoingProfileFieldState = outgoingSharingState?.profile_fields;
+    const outgoingDerivedFeatureState = outgoingSharingState?.derived_features;
+    const outgoingSharedCardEntryIds = Array.isArray(outgoingSharingState?.shared_card_entry_ids)
+      ? outgoingSharingState?.shared_card_entry_ids
+      : null;
 
     const partnerProfile = (partnerProfileRow as SharedProfileRecord | null) || null;
     const resolvedName = partnerProfile?.display_name || profileData?.display_name || couple.display_label || fallbackName;
@@ -456,10 +481,18 @@ export default function ConnectionPage() {
       anniversary: !!incomingFieldRows.find((row) => row.field_key === "anniversary" && row.is_shared),
     });
     setOutgoingProfileFields({
-      display_name: !!outgoingFieldRows.find((row) => row.field_key === "display_name" && row.is_shared),
-      avatar_url: !!outgoingFieldRows.find((row) => row.field_key === "avatar_url" && row.is_shared),
-      birthday: !!outgoingFieldRows.find((row) => row.field_key === "birthday" && row.is_shared),
-      anniversary: !!outgoingFieldRows.find((row) => row.field_key === "anniversary" && row.is_shared),
+      display_name: typeof outgoingProfileFieldState?.display_name === "boolean"
+        ? outgoingProfileFieldState.display_name
+        : !!outgoingFieldRows.find((row) => row.field_key === "display_name" && row.is_shared),
+      avatar_url: typeof outgoingProfileFieldState?.avatar_url === "boolean"
+        ? outgoingProfileFieldState.avatar_url
+        : !!outgoingFieldRows.find((row) => row.field_key === "avatar_url" && row.is_shared),
+      birthday: typeof outgoingProfileFieldState?.birthday === "boolean"
+        ? outgoingProfileFieldState.birthday
+        : !!outgoingFieldRows.find((row) => row.field_key === "birthday" && row.is_shared),
+      anniversary: typeof outgoingProfileFieldState?.anniversary === "boolean"
+        ? outgoingProfileFieldState.anniversary
+        : !!outgoingFieldRows.find((row) => row.field_key === "anniversary" && row.is_shared),
     });
     setIncomingDerivedFeatures({
       your_vibe: !!incomingFeatureRows.find((row) => row.feature_key === "your_vibe" && row.is_shared),
@@ -467,16 +500,22 @@ export default function ConnectionPage() {
       ai_conversation_access: !!incomingFeatureRows.find((row) => row.feature_key === "ai_conversation_access" && row.is_shared),
     });
     setOutgoingDerivedFeatures({
-      your_vibe: !!outgoingFeatureRows.find((row) => row.feature_key === "your_vibe" && row.is_shared),
-      for_you_recommendations: !!outgoingFeatureRows.find((row) => row.feature_key === "for_you_recommendations" && row.is_shared),
-      ai_conversation_access: !!outgoingFeatureRows.find((row) => row.feature_key === "ai_conversation_access" && row.is_shared),
+      your_vibe: typeof outgoingDerivedFeatureState?.your_vibe === "boolean"
+        ? outgoingDerivedFeatureState.your_vibe
+        : !!outgoingFeatureRows.find((row) => row.feature_key === "your_vibe" && row.is_shared),
+      for_you_recommendations: typeof outgoingDerivedFeatureState?.for_you_recommendations === "boolean"
+        ? outgoingDerivedFeatureState.for_you_recommendations
+        : !!outgoingFeatureRows.find((row) => row.feature_key === "for_you_recommendations" && row.is_shared),
+      ai_conversation_access: typeof outgoingDerivedFeatureState?.ai_conversation_access === "boolean"
+        ? outgoingDerivedFeatureState.ai_conversation_access
+        : !!outgoingFeatureRows.find((row) => row.feature_key === "ai_conversation_access" && row.is_shared),
     });
     setSharedVibe(vibeData?.persona_summary || null);
     setSharedRecommendations(recommendationData || null);
-    setSharedCardEntryIds(cardRows.map((row) => row.card_entry_id));
+    setSharedCardEntryIds(outgoingSharedCardEntryIds || cardRows.map((row) => row.card_entry_id));
     setMyEntries(ownEntries);
     setConnectionFeedRows(feedRows);
-    setConnectionKind(((connectionPreferenceRow as { connection_kind?: ConnectionKind } | null)?.connection_kind || "custom") as ConnectionKind);
+    setConnectionKind((outgoingSharingState?.connection_kind || (connectionPreferenceRow as { connection_kind?: ConnectionKind } | null)?.connection_kind || "custom") as ConnectionKind);
 
     const needsIdentityBackfill =
       !!partnerId &&
@@ -609,18 +648,27 @@ export default function ConnectionPage() {
 
     setOutgoingProfileFields((current) => ({ ...current, [key]: nextValue }));
 
-    const { error } = await (supabase as any)
-      .from("shared_profile_fields")
-      .upsert(
-        {
-          couple_id: connection.id,
-          owner_user_id: user.id,
-          connection_user_id: connection.partnerId,
-          field_key: key,
-          is_shared: nextValue,
-        },
-        { onConflict: "couple_id,owner_user_id,connection_user_id,field_key" },
-      );
+    let { error } = await (supabase.rpc as any)("set_connection_profile_field_share", {
+      p_couple_id: connection.id,
+      p_connection_user_id: connection.partnerId,
+      p_field_key: key,
+      p_is_shared: nextValue,
+    });
+
+    if (error && isRpcMissingError(error)) {
+      ({ error } = await (supabase as any)
+        .from("shared_profile_fields")
+        .upsert(
+          {
+            couple_id: connection.id,
+            owner_user_id: user.id,
+            connection_user_id: connection.partnerId,
+            field_key: key,
+            is_shared: nextValue,
+          },
+          { onConflict: "couple_id,owner_user_id,connection_user_id,field_key" },
+        ));
+    }
 
     if (error) {
       setOutgoingProfileFields((current) => ({ ...current, [key]: !nextValue }));
@@ -639,17 +687,26 @@ export default function ConnectionPage() {
     setSharedCardEntryIds((current) => nextValue ? Array.from(new Set([...current, entry.id])) : current.filter((id) => id !== entry.id));
 
     if (nextValue) {
-      const { error } = await (supabase as any)
-        .from("shared_card_entries")
-        .upsert(
-          {
-            couple_id: connection.id,
-            owner_user_id: user.id,
-            connection_user_id: connection.partnerId,
-            card_entry_id: entry.id,
-          },
-          { onConflict: "couple_id,owner_user_id,connection_user_id,card_entry_id" },
-        );
+      let { error } = await (supabase.rpc as any)("set_connection_card_share", {
+        p_couple_id: connection.id,
+        p_connection_user_id: connection.partnerId,
+        p_card_entry_id: entry.id,
+        p_is_shared: true,
+      });
+
+      if (error && isRpcMissingError(error)) {
+        ({ error } = await (supabase as any)
+          .from("shared_card_entries")
+          .upsert(
+            {
+              couple_id: connection.id,
+              owner_user_id: user.id,
+              connection_user_id: connection.partnerId,
+              card_entry_id: entry.id,
+            },
+            { onConflict: "couple_id,owner_user_id,connection_user_id,card_entry_id" },
+          ));
+      }
 
       if (error) {
         setSharedCardEntryIds((current) => current.filter((id) => id !== entry.id));
@@ -657,13 +714,22 @@ export default function ConnectionPage() {
         return;
       }
     } else {
-      const { error } = await (supabase as any)
-        .from("shared_card_entries")
-        .delete()
-        .eq("couple_id", connection.id)
-        .eq("owner_user_id", user.id)
-        .eq("connection_user_id", connection.partnerId)
-        .eq("card_entry_id", entry.id);
+      let { error } = await (supabase.rpc as any)("set_connection_card_share", {
+        p_couple_id: connection.id,
+        p_connection_user_id: connection.partnerId,
+        p_card_entry_id: entry.id,
+        p_is_shared: false,
+      });
+
+      if (error && isRpcMissingError(error)) {
+        ({ error } = await (supabase as any)
+          .from("shared_card_entries")
+          .delete()
+          .eq("couple_id", connection.id)
+          .eq("owner_user_id", user.id)
+          .eq("connection_user_id", connection.partnerId)
+          .eq("card_entry_id", entry.id));
+      }
 
       if (error) {
         setSharedCardEntryIds((current) => Array.from(new Set([...current, entry.id])));
@@ -682,18 +748,27 @@ export default function ConnectionPage() {
 
     setOutgoingDerivedFeatures((current) => ({ ...current, [key]: nextValue }));
 
-    const { error } = await (supabase as any)
-      .from("shared_derived_features")
-      .upsert(
-        {
-          couple_id: connection.id,
-          owner_user_id: user.id,
-          connection_user_id: connection.partnerId,
-          feature_key: key,
-          is_shared: nextValue,
-        },
-        { onConflict: "couple_id,owner_user_id,connection_user_id,feature_key" },
-      );
+    let { error } = await (supabase.rpc as any)("set_connection_derived_feature_share", {
+      p_couple_id: connection.id,
+      p_connection_user_id: connection.partnerId,
+      p_feature_key: key,
+      p_is_shared: nextValue,
+    });
+
+    if (error && isRpcMissingError(error)) {
+      ({ error } = await (supabase as any)
+        .from("shared_derived_features")
+        .upsert(
+          {
+            couple_id: connection.id,
+            owner_user_id: user.id,
+            connection_user_id: connection.partnerId,
+            feature_key: key,
+            is_shared: nextValue,
+          },
+          { onConflict: "couple_id,owner_user_id,connection_user_id,feature_key" },
+        ));
+    }
 
     if (error) {
       setOutgoingDerivedFeatures((current) => ({ ...current, [key]: !nextValue }));
@@ -756,17 +831,25 @@ export default function ConnectionPage() {
     setConnectionKind(nextKind);
     setSavingConnectionKind(true);
 
-    const { error } = await (supabase as any)
-      .from("connection_context_preferences")
-      .upsert(
-        {
-          couple_id: connection.id,
-          owner_user_id: user.id,
-          connection_user_id: connection.partnerId,
-          connection_kind: nextKind,
-        },
-        { onConflict: "couple_id,owner_user_id,connection_user_id" },
-      );
+    let { error } = await (supabase.rpc as any)("set_connection_kind_preference", {
+      p_couple_id: connection.id,
+      p_connection_user_id: connection.partnerId,
+      p_connection_kind: nextKind,
+    });
+
+    if (error && isRpcMissingError(error)) {
+      ({ error } = await (supabase as any)
+        .from("connection_context_preferences")
+        .upsert(
+          {
+            couple_id: connection.id,
+            owner_user_id: user.id,
+            connection_user_id: connection.partnerId,
+            connection_kind: nextKind,
+          },
+          { onConflict: "couple_id,owner_user_id,connection_user_id" },
+        ));
+    }
 
     setSavingConnectionKind(false);
 
