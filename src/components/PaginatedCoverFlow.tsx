@@ -53,6 +53,7 @@ export default function PaginatedCoverFlow({
         items={paginatedItems}
         onSelect={onSelect}
         initialActiveIndex={initialActiveIndex}
+        sectionTitle={sectionTitle}
       />
       {showPagination ? (
         <PaginationControls

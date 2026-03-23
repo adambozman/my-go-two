@@ -10,13 +10,14 @@ interface GoTwoCoverFlowProps {
 }
 
 const GoTwoCoverFlow = forwardRef<HTMLDivElement, GoTwoCoverFlowProps>(
-  ({ items, onSelect, focusedItemId, showPagination = true }, ref) => (
+  ({ items, onSelect, focusedItemId, showPagination = true, sectionTitle }, ref) => (
     <div ref={ref} className="w-full">
       <PaginatedCoverFlow
         items={items}
         onSelect={onSelect}
         focusedItemId={focusedItemId}
         showPagination={showPagination}
+        sectionTitle={sectionTitle}
       />
     </div>
   )
