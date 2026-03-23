@@ -19,15 +19,19 @@ interface FormCoverFlowCarouselProps {
 
 const VISIBLE = 2;
 const PILL_GAP = 20;
+const FALLBACK_GRADIENT = "linear-gradient(160deg, #c3c5c8 0%, #9ea2a8 100%)";
 
 function useLayout() {
-  const get = () => window.innerWidth >= 1024 ? FORM_CAROUSEL_LAYOUT_DESKTOP : FORM_CAROUSEL_LAYOUT;
+  const get = () =>
+    window.innerWidth >= 1024 ? FORM_CAROUSEL_LAYOUT_DESKTOP : FORM_CAROUSEL_LAYOUT;
   const [layout, setLayout] = useState(get);
+
   useEffect(() => {
     const handler = () => setLayout(get());
     window.addEventListener("resize", handler);
     return () => window.removeEventListener("resize", handler);
   }, []);
+
   return layout;
 }
 
@@ -44,14 +48,10 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
   return x * dir;
 }
 
-const FALLBACK_GRADIENT = "linear-gradient(160deg, #2d6870 0%, #1e4a52 100%)";
-
-const getFlankBackground = (image?: string) =>
-  image ? `center / cover no-repeat url(${image})` : FALLBACK_GRADIENT;
-
 const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselProps>(
   ({ items, activeIndex, previousImage, onActiveIndexChange, renderActiveCard }, ref) => {
     const touchStartX = useRef<number | null>(null);
+    const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
     const layout = useLayout();
     const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
     const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
@@ -76,7 +76,9 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
       <div
         ref={ref}
         className="relative w-full flex flex-col items-center"
-        onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+        onTouchStart={(e) => {
+          touchStartX.current = e.touches[0].clientX;
+        }}
         onTouchEnd={(e) => {
           if (touchStartX.current === null) return;
           const diff = touchStartX.current - e.changedTouches[0].clientX;
@@ -100,8 +102,11 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
               const item = items[itemIndex];
               const absOffset = Math.abs(offset);
               const isActive = offset === 0;
+              const flankImage = previousImage || item.image || "";
+              const imageKey = `${item.id}::${flankImage}`;
+              const hasImage = Boolean(flankImage);
+              const imageFailed = Boolean(failedImages[imageKey]);
 
-              // Desktop pill path — identical to CoverFlowCarousel
               if (pills) {
                 const pill = pills[Math.min(absOffset, pills.length - 1)];
                 const x = getPillX(offset, pills);
@@ -125,21 +130,24 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                       if (!isActive) onActiveIndexChange((activeIndex + offset + n) % n);
                     }}
                   >
-                    <div
-                      className="w-full h-full overflow-hidden relative"
-                      style={{ borderRadius: pill.r }}
-                    >
-                      {/* Active card — render form content */}
+                    <div className="w-full h-full overflow-hidden relative" style={{ borderRadius: pill.r }}>
                       {isActive ? (
-                        <div className="absolute inset-0 overflow-hidden">
-                          {renderActiveCard(item)}
-                        </div>
+                        <div className="absolute inset-0 overflow-hidden">{renderActiveCard(item)}</div>
                       ) : (
                         <>
-                          {/* Flanking cards — use previous card image */}
-                          <div className="absolute inset-0" style={{ background: getFlankBackground(previousImage || item.image) }} />
+                          <div className="absolute inset-0" style={{ background: FALLBACK_GRADIENT }} />
+                          {hasImage && !imageFailed ? (
+                            <img
+                              src={flankImage}
+                              alt={item.label}
+                              className="absolute inset-0 h-full w-full object-cover"
+                              onError={() => {
+                                setFailedImages((prev) => ({ ...prev, [imageKey]: true }));
+                              }}
+                            />
+                          ) : null}
                           {item.label ? (
-                          <div className="absolute bottom-6 left-6">
+                            <div className="absolute bottom-6 left-6">
                               <Pill variant="title" size="sm">
                                 {item.label}
                               </Pill>
@@ -152,7 +160,6 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                 );
               }
 
-              // Mobile path — identical to CoverFlowCarousel
               return (
                 <motion.div
                   key={`slot-${offset}`}
@@ -181,12 +188,20 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
                     }}
                   >
                     {isActive ? (
-                      <div className="absolute inset-0 overflow-hidden">
-                        {renderActiveCard(item)}
-                      </div>
+                      <div className="absolute inset-0 overflow-hidden">{renderActiveCard(item)}</div>
                     ) : (
                       <>
-                        <div className="absolute inset-0" style={{ background: getFlankBackground(previousImage || item.image) }} />
+                        <div className="absolute inset-0" style={{ background: FALLBACK_GRADIENT }} />
+                        {hasImage && !imageFailed ? (
+                          <img
+                            src={flankImage}
+                            alt={item.label}
+                            className="absolute inset-0 h-full w-full object-cover"
+                            onError={() => {
+                              setFailedImages((prev) => ({ ...prev, [imageKey]: true }));
+                            }}
+                          />
+                        ) : null}
                         {item.label ? (
                           <div className="absolute bottom-4 left-4">
                             <Pill variant="title" size="sm">
@@ -204,7 +219,7 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
         </div>
       </div>
     );
-  }
+  },
 );
 
 FormCoverFlowCarousel.displayName = "FormCoverFlowCarousel";

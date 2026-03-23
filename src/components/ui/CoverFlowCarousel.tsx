@@ -56,6 +56,7 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
 const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
   ({ items, onSelect, initialActiveIndex = 0, sectionTitle }, ref) => {
     const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
+    const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const [, forceImages] = useReducer(x => x + 1, 0);
 
@@ -134,6 +135,9 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
               if (pills) {
                 const pill = pills[Math.min(absOffset, pills.length - 1)];
                 const x = getPillX(offset, pills);
+                const imageKey = `${item.id}::${item.image || ""}`;
+                const hasImage = Boolean(item.image);
+                const imageFailed = Boolean(failedImages[imageKey]);
                 return (
                   <motion.div
                     key={`slot-${offset}`}
@@ -154,13 +158,13 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                   >
                     <div className="relative w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
                       <div className="absolute inset-0" style={{ background: FALLBACK_GRAY_BG }} />
-                      {item.image ? (
+                      {hasImage && !imageFailed ? (
                         <img
                           src={item.image}
                           alt={item.label}
                           className="absolute inset-0 w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
+                          onError={() => {
+                            setFailedImages((prev) => ({ ...prev, [imageKey]: true }));
                           }}
                         />
                       ) : null}
