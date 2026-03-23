@@ -843,15 +843,13 @@ const MyGoTwo = () => {
                   }}
                 >
                   {isActive ? (
-                    <div style={{ pointerEvents: "auto" }}>
-                      <GoTwoCoverFlow
-                        items={section.items}
-                        onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                        focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                        showPagination={isActive}
-                        sectionTitle={section.label}
-                      />
-                    </div>
+                    <GoTwoCoverFlow
+                      items={section.items}
+                      onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                      focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                      showPagination={isActive}
+                      sectionTitle={section.label}
+                    />
                   ) : (
                     <div
                       className="stacked-deck-hero-card"
