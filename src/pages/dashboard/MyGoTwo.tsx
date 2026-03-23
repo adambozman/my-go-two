@@ -587,6 +587,7 @@ const MyGoTwo = () => {
 
     const handler = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) < 30) return;
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
       e.preventDefault();
       if (wheelTimerRef.current) return;
       wheelTimerRef.current = window.setTimeout(() => { wheelTimerRef.current = null; }, 400);
@@ -870,13 +871,15 @@ const MyGoTwo = () => {
                   }}
                 >
                   {isActive ? (
-                    <GoTwoCoverFlow
-                      items={section.items}
-                      onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                      focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                      showPagination={isActive}
-                      sectionTitle={section.label}
-                    />
+                    <div style={{ pointerEvents: "auto" }}>
+                      <GoTwoCoverFlow
+                        items={section.items}
+                        onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                        focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                        showPagination={isActive}
+                        sectionTitle={section.label}
+                      />
+                    </div>
                   ) : (
                     <div
                       className="stacked-deck-hero-card"
