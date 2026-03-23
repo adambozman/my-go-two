@@ -117,19 +117,17 @@ const GoTwoCard = forwardRef<HTMLDivElement, GoTwoCardProps>(
               </span>
             )}
             <span
-              className="px-4 py-1.5 font-bold truncate block"
+              className="px-3 py-1 font-semibold truncate block"
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 17,
-                letterSpacing: "0.03em",
-                color: "#fff",
-                background: "rgba(0,0,0,0.45)",
+                fontSize: 14,
+                letterSpacing: "0.04em",
+                color: "var(--swatch-teal)",
+                background: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.86) 100%)",
                 borderRadius: 999,
-                backdropFilter: "blur(16px)",
-                WebkitBackdropFilter: "blur(16px)",
-                border: "1px solid rgba(255,255,255,0.2)",
+                border: "1px solid rgba(255,255,255,0.88)",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
                 maxWidth: 240,
-                textShadow: "0 1px 4px rgba(0,0,0,0.5)",
               }}
             >
               {label}
