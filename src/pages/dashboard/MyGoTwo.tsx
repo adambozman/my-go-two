@@ -104,8 +104,18 @@ const MyGoTwo = () => {
   const [leafImage, setLeafImage] = useState<string>("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
   const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
+  const [isDesktopViewport, setIsDesktopViewport] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth >= 1024 : false
+  );
   const productGroupScrollRef = useRef<HTMLDivElement>(null);
   const productGroupSectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    const updateViewport = () => setIsDesktopViewport(window.innerWidth >= 1024);
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
 
   const defaultFieldValues = useMemo(() => {
     if (!leafSubtype?.fields) return {} as Record<string, string>;
@@ -771,7 +781,9 @@ const MyGoTwo = () => {
       );
     }
 
-    const maxPreviewDepth = Math.min(3, Math.max(0, orderedSections.length - 1));
+    const maxPreviewDepth = isDesktopViewport
+      ? Math.min(3, Math.max(0, orderedSections.length - 1))
+      : 0;
     const slotDepths = [0, ...Array.from({ length: maxPreviewDepth }, (_, i) => i + 1)];
     const previewLiftPerDepth = 46;
 
