@@ -361,7 +361,12 @@ function ProductCard({
     >
       <Card variant="sand" className="relative flex h-full flex-col overflow-hidden">
         <div className="relative h-[200px] overflow-hidden sm:h-[220px]">
-          <img src={getProductImage(product)} alt={product.name} className="h-full w-full object-cover" />
+          <img
+            src={getProductImage(product)}
+            alt={product.name}
+            className="h-full w-full object-cover"
+            onError={(e) => { (e.target as HTMLImageElement).src = getFallbackImage(product); }}
+          />
         </div>
 
         <div className="p-5 pt-4 flex flex-col gap-3">
