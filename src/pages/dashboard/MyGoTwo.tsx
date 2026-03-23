@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Check, Plus, Trash2, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,6 @@ import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 import ProductEntryCard from "@/components/ui/ProductEntryCard";
 import { resolveStorageUrl } from "@/lib/storageRefs";
 import { useIsMobile } from "@/hooks/use-mobile";
-import CoverflowWheel from "@/components/ui/CoverflowWheel";
 
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
@@ -88,9 +86,9 @@ const MyGoTwo = () => {
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const verticalTouchStartX = useRef<number | null>(null);
   const verticalTouchStartY = useRef<number | null>(null);
-  const lastVerticalWheelAt = useRef(0);
 
   const [cardKey, setCardKey] = useState<string | null>(null);
   const [entries, setEntries] = useState<CardEntry[]>([]);
@@ -552,30 +550,6 @@ const MyGoTwo = () => {
     return () => window.removeEventListener("keydown", handler);
   }, [cardKey, coverFlowState, isMobile, orderedSections.length, rotateSections]);
 
-  const wheelTimerRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el || orderedSections.length <= 1) return;
-
-    const handler = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < 30) return;
-      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-      e.preventDefault();
-      if (wheelTimerRef.current) return;
-      wheelTimerRef.current = window.setTimeout(() => { wheelTimerRef.current = null; }, 400);
-
-      if (e.deltaY > 0) {
-        setActiveSectionIndex((current) => (current + 1) % orderedSections.length);
-      } else {
-        setActiveSectionIndex((current) => (current - 1 + orderedSections.length) % orderedSections.length);
-      }
-    };
-
-    el.addEventListener("wheel", handler, { passive: false });
-    return () => el.removeEventListener("wheel", handler);
-  }, [orderedSections.length]);
-
   if (registryLoading || genderLoading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
@@ -769,10 +743,11 @@ const MyGoTwo = () => {
     return (
       <motion.div
         key="main"
+        ref={scrollRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="coverflow-stage-shell"
+        className="stacked-deck-container"
         onTouchStart={isMobile ? (e) => {
           verticalTouchStartX.current = e.touches[0].clientX;
           verticalTouchStartY.current = e.touches[0].clientY;
@@ -784,17 +759,8 @@ const MyGoTwo = () => {
           const dy = verticalTouchStartY.current - e.changedTouches[0].clientY;
 
           // Only treat the gesture as a section switch when vertical movement clearly wins.
-<<<<<<< HEAD
           if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx) * 1.2) {
             rotateSections(dy > 0 ? 1 : -1);
-=======
-          if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx) * 1.2 && orderedSections.length > 0) {
-            if (dy > 0) {
-              setActiveSectionIndex((current) => (current + 1) % orderedSections.length);
-            } else if (dy < 0) {
-              setActiveSectionIndex((current) => (current - 1 + orderedSections.length) % orderedSections.length);
-            }
->>>>>>> dd50da668b3f505d51e4348550911c5d92efd47a
           }
 
           verticalTouchStartX.current = null;
@@ -802,14 +768,6 @@ const MyGoTwo = () => {
         } : undefined}
         onWheel={!isMobile ? (e) => {
           if (orderedSections.length <= 1 || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
-
-          const now = Date.now();
-          if (now - lastVerticalWheelAt.current < 420) {
-            e.preventDefault();
-            return;
-          }
-
-          lastVerticalWheelAt.current = now;
           e.preventDefault();
           rotateSections(e.deltaY > 0 ? 1 : -1);
         } : undefined}
@@ -833,54 +791,17 @@ const MyGoTwo = () => {
           </div>
         ) : (
           <>
-            <div className="relative h-[calc(100vh-var(--header-height))] w-full overflow-hidden">
-              <CoverflowWheel
-                items={orderedSections}
-                activeIndex={activeSectionIndex}
-                orientation="vertical"
-                pills={CAROUSEL_LAYOUT_DESKTOP.pills}
-                spring={CAROUSEL_LAYOUT_DESKTOP.spring}
-                className="absolute inset-0 flex items-center justify-center"
-                onItemClick={({ offset }) => {
-                  if (offset !== 0) {
-                    setActiveSectionIndex((current) => (current + offset + orderedSections.length) % orderedSections.length);
-                  }
-                }}
-                renderItem={({ item, isActive, pill }) => {
-                  const heroItem = item.items[0];
+            {orderedSections.map((section, index) => {
+              const totalSections = orderedSections.length;
+              const rawDistance = (index - activeSectionIndex + totalSections) % totalSections;
+              const distance = rawDistance > totalSections / 2 ? rawDistance - totalSections : rawDistance;
+              const absD = Math.abs(distance);
+              const isActive = distance === 0;
+              const heroItem = section.items[0];
 
-<<<<<<< HEAD
-                  return isActive ? (
-                    <div className="relative w-full">
-                      <GoTwoCoverFlow
-                        items={item.items}
-                        onSelect={(categoryId) => handleSelect(item.key, categoryId)}
-                        focusedItemId={focusedMainCategoryBySection[item.key] ?? null}
-                        showPagination
-                        sectionTitle={item.label}
-                      />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      className="stacked-deck-hero-card h-full w-full border-0 bg-transparent p-0"
-                      style={{
-                        borderRadius: pill.r,
-                        backgroundImage: heroItem ? `url(${heroItem.image})` : undefined,
-                      }}
-                      onClick={() => {
-                        const nextIndex = orderedSections.findIndex((section) => section.key === item.key);
-                        if (nextIndex >= 0) setActiveSectionIndex(nextIndex);
-                      }}
-                      aria-label={`Bring ${item.label} forward`}
-=======
               return (
                 <motion.div
                   key={section.key}
-                  data-section-key={section.key}
-                  ref={(node) => {
-                    sectionRefs.current[section.key] = node;
-                  }}
                   className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
                   animate={{
                     y: isActive ? 0 : -(absD * 30),
@@ -899,7 +820,7 @@ const MyGoTwo = () => {
                       items={section.items}
                       onSelect={(categoryId) => handleSelect(section.key, categoryId)}
                       focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                      showPagination={isActive}
+                      showPagination
                       sectionTitle={section.label}
                     />
                   ) : (
@@ -908,15 +829,13 @@ const MyGoTwo = () => {
                       style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
                       onClick={() => {
                         if (orderedSections.length <= 1) return;
-                        const direction = distance > 0 ? 1 : -1;
-                        setActiveSectionIndex((current) => (current + direction + orderedSections.length) % orderedSections.length);
+                        rotateSections(distance > 0 ? 1 : -1);
                       }}
->>>>>>> dd50da668b3f505d51e4348550911c5d92efd47a
                     />
-                  );
-                }}
-              />
-            </div>
+                  )}
+                </motion.div>
+              );
+            })}
             {orderedSections.length === 0 && (
               <p className="text-muted-foreground text-center mt-12">No categories found.</p>
             )}
