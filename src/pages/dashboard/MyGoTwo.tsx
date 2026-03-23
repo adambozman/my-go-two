@@ -768,40 +768,64 @@ const MyGoTwo = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
-        style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          setActiveSectionIndex(getNearestSectionIndex(el.scrollTop));
-        }}
+        className="stacked-deck-container"
       >
-        {orderedSections.map((section, index) => (
-          <div
-            key={section.key}
-            data-section-key={section.key}
-            ref={(node) => {
-              sectionRefs.current[section.key] = node;
-            }}
-            className="coverflow-stage-shell snap-start snap-always"
-          >
-            <CoverflowTitlePill title={section.label} />
-            <GoTwoCoverFlow
-              items={section.items}
-              onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-              focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-              showPagination={index === activeSectionIndex}
-            />
-          </div>
-        ))}
+        {orderedSections.map((section, index) => {
+          const distance = index - activeSectionIndex;
+          const absD = Math.abs(distance);
+          const isActive = distance === 0;
+
+          return (
+            <motion.div
+              key={section.key}
+              data-section-key={section.key}
+              ref={(node) => {
+                sectionRefs.current[section.key] = node;
+              }}
+              className="stacked-deck-layer"
+              animate={{
+                y: distance * 28,
+                scale: 1 - absD * 0.04,
+                zIndex: 10 - absD,
+                opacity: absD > 3 ? 0 : 1 - absD * 0.12,
+              }}
+              transition={{ type: "spring", stiffness: 320, damping: 30 }}
+              style={{
+                pointerEvents: isActive ? "auto" : "none",
+              }}
+            >
+              {/* Click overlay for non-active sections */}
+              {!isActive && (
+                <div
+                  className="absolute inset-0 z-20 cursor-pointer"
+                  style={{ pointerEvents: "auto" }}
+                  onClick={() => setActiveSectionIndex(index)}
+                />
+              )}
+              <CoverflowTitlePill title={section.label} />
+              <GoTwoCoverFlow
+                items={section.items}
+                onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                showPagination={isActive}
+              />
+            </motion.div>
+          );
+        })}
         {orderedSections.length === 0 && (
           <p className="text-muted-foreground text-center mt-12">No categories found.</p>
         )}
         <div
           className="fixed hidden flex-col items-center gap-2 lg:flex"
-              style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
+          style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
         >
           {orderedSections.map((_, i) => (
-            <div key={i} style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }} />
+            <div
+              key={i}
+              className="cursor-pointer"
+              style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }}
+              onClick={() => setActiveSectionIndex(i)}
+            />
           ))}
         </div>
       </motion.div>
