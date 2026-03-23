@@ -17,6 +17,7 @@ interface CoverFlowCarouselProps {
   items: CoverFlowItem[];
   onSelect: (id: string) => void;
   initialActiveIndex?: number;
+  sectionTitle?: string;
 }
 
 const VISIBLE = 2;
