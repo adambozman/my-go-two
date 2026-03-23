@@ -773,6 +773,7 @@ const MyGoTwo = () => {
 
     const maxPreviewDepth = Math.min(3, Math.max(0, orderedSections.length - 1));
     const slotDepths = [0, ...Array.from({ length: maxPreviewDepth }, (_, i) => i + 1)];
+    const previewLiftPerDepth = 46;
 
     return (
       <motion.div
@@ -807,7 +808,7 @@ const MyGoTwo = () => {
               }}
               className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
               animate={{
-                y: isActive ? 0 : -(depth * 30),
+                y: isActive ? 0 : -(depth * previewLiftPerDepth),
                 scale: isActive ? 1 : 1 - depth * 0.045,
                 scaleX: isActive ? 1 : 1 - depth * 0.06,
                 zIndex: isActive ? 10 : 10 - depth,
