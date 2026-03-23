@@ -1,36 +1,24 @@
 
 
-## Fix: Vertical Coverflow — True Continuous Circular Carousel
+## Fix: Active Card Position Consistency Across Levels
 
-### Problems
+The active center card on the Level 1 stacked deck is in a different viewport position than the active card on deeper levels (Level 2+). The card must sit at the exact same coordinates on every screen.
 
-1. **Vertical swipe is clamped** — stops at first/last section instead of wrapping around like horizontal does
-2. **Desktop has no vertical navigation** — vertical swipe/scroll only works on mobile touch; desktop users can only click background cards
-3. **Build errors** — `CoverFlowCarousel.tsx` has TypeScript errors on touch handler types (lines 136-137)
+### Root cause
 
-### Changes
+- **Deeper levels** use `.coverflow-stage-shell` which has `padding-top: 18px`, then a 62px title pill, then the carousel stage — the card lands at a specific vertical offset.
+- **Level 1 stacked deck** uses `.stacked-deck-layer` with `padding-top: 18px` but the `GoTwoCoverFlow` component now renders the `sectionTitle` **inside** the card (no external title pill). This means the card sits higher because there's no 62px title pill pushing it down.
+
+### Fix
+
+**`src/index.css`** — Adjust `.stacked-deck-layer` padding-top to account for the missing external title pill. Since deeper levels have 18px shell padding + 62px title pill = 80px before the carousel stage, the stacked deck layer needs the same effective offset so the card lands in the same spot.
+
+- Set `.stacked-deck-layer` `padding-top` to match the total offset used by `.coverflow-stage-shell` + title pill (80px)
+- Set `.stacked-deck-layer--bg` `padding-top` to match so background hero cards also align to the same center-card position
+
+**`src/pages/dashboard/MyGoTwo.tsx`** — No structural changes needed, just the CSS alignment fix ensures the GoTwoCoverFlow's stage places the active card at the same viewport position as TemplateCoverFlow on deeper levels.
 
 | File | Change |
 |---|---|
-| `src/pages/dashboard/MyGoTwo.tsx` | Make vertical section navigation wrap circularly (modulo `orderedSections.length`) matching horizontal behavior. Add `wheel` event listener for desktop vertical scrolling between sections. The `distance` calculation already wraps — just fix `setActiveSectionIndex` to wrap too. |
-| `src/components/ui/CoverFlowCarousel.tsx` | Fix TS errors: cast touch handler parameter types to `React.TouchEvent<HTMLDivElement>` instead of custom object types |
-
-### Detail
-
-**Vertical wrap fix** (MyGoTwo.tsx lines 789-794):
-```tsx
-// Before (clamped):
-if (dy > 0 && activeSectionIndex < orderedSections.length - 1)
-  setActiveSectionIndex(activeSectionIndex + 1);
-
-// After (circular):
-if (dy > 0)
-  setActiveSectionIndex((activeSectionIndex + 1) % orderedSections.length);
-else if (dy < 0)
-  setActiveSectionIndex((activeSectionIndex - 1 + orderedSections.length) % orderedSections.length);
-```
-
-**Desktop wheel handler** — add `onWheel` to the stacked deck container that debounces and calls the same circular index change on vertical scroll.
-
-**TS fix** (CoverFlowCarousel.tsx lines 104, 111) — use `React.TouchEvent<HTMLDivElement>` as the parameter type.
+| `src/index.css` | Adjust stacked-deck-layer padding to match coverflow-stage-shell + title pill offset |
 
