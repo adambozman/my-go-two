@@ -389,8 +389,10 @@ body {
 }
 
 .stacked-deck-layer--bg {
-  justify-content: center;
-  padding-top: 0;
+  /* Align card to same vertical position as the active coverflow card */
+  /* 18px shell padding + 62px title pill = 80px to top of card area */
+  padding-top: calc(18px + 62px);
+  justify-content: flex-start;
 }
 
 .stacked-deck-hero-card {
