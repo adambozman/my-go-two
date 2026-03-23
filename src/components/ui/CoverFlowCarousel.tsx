@@ -20,7 +20,7 @@ interface CoverFlowCarouselProps {
   sectionTitle?: string;
 }
 
-const VISIBLE = 2;
+const VISIBLE = 1;
 function useLayout() {
   const get = () => {
     if (window.innerWidth >= 1024) {
