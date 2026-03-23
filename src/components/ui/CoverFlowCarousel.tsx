@@ -53,7 +53,7 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
 }
 
 const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
-  ({ items, onSelect, initialActiveIndex = 0 }, ref) => {
+  ({ items, onSelect, initialActiveIndex = 0, sectionTitle }, ref) => {
     const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const [, forceImages] = useReducer(x => x + 1, 0);
