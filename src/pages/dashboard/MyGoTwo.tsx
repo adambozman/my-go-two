@@ -572,16 +572,39 @@ const MyGoTwo = () => {
     toast({ title: "Group created" });
   };
 
-  if (registryLoading || genderLoading) {
-    return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
-  }
-
   const orderedSections = visibleSectionKeys.map((key) => ({
     key,
     label: sectionLabels[key] ?? key,
     items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
   }));
   const activeSection = orderedSections[activeSectionIndex];
+
+  const wheelTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || orderedSections.length <= 1) return;
+
+    const handler = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) < 30) return;
+      e.preventDefault();
+      if (wheelTimerRef.current) return;
+      wheelTimerRef.current = window.setTimeout(() => { wheelTimerRef.current = null; }, 400);
+
+      if (e.deltaY > 0) {
+        setActiveSectionIndex((current) => (current + 1) % orderedSections.length);
+      } else {
+        setActiveSectionIndex((current) => (current - 1 + orderedSections.length) % orderedSections.length);
+      }
+    };
+
+    el.addEventListener("wheel", handler, { passive: false });
+    return () => el.removeEventListener("wheel", handler);
+  }, [orderedSections.length]);
+
+  if (registryLoading || genderLoading) {
+    return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  }
 
   const renderContent = () => {
     if (cardKey && leafSubtype) {
@@ -767,6 +790,8 @@ const MyGoTwo = () => {
       );
     }
 
+
+
     return (
       <motion.div
         key="main"
@@ -775,16 +800,6 @@ const MyGoTwo = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="stacked-deck-container"
-        onWheel={(e) => {
-          if (orderedSections.length <= 1) return;
-          if (Math.abs(e.deltaY) < 30) return;
-          e.preventDefault();
-          if (e.deltaY > 0) {
-            setActiveSectionIndex((current) => (current + 1) % orderedSections.length);
-          } else {
-            setActiveSectionIndex((current) => (current - 1 + orderedSections.length) % orderedSections.length);
-          }
-        }}
         onTouchStart={isMobile ? (e) => {
           verticalTouchStartX.current = e.touches[0].clientX;
           verticalTouchStartY.current = e.touches[0].clientY;
