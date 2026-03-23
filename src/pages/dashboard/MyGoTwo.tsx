@@ -788,6 +788,7 @@ const MyGoTwo = () => {
               animate={{
                 y: isActive ? 0 : -(absD * 26),
                 scale: isActive ? 1 : 1 - absD * 0.045,
+                scaleX: isActive ? 1 : 1 - absD * 0.08,
                 zIndex: isActive ? 10 : 10 - absD,
                 opacity: absD > 3 ? 0 : 1 - absD * 0.15,
               }}
