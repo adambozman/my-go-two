@@ -5,7 +5,6 @@ import GoTwoCard from "@/components/ui/GoTwoCard";
 import { Pill } from "@/components/ui/pill";
 import InlinePhotoSearch from "@/components/InlinePhotoSearch";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
-import CoverflowWheel from "@/components/ui/CoverflowWheel";
 
 export interface WebCoverFlowItem {
   id: string;
@@ -19,6 +18,23 @@ interface WebCoverFlowProps {
   onSelect: (id: string) => void;
   initialActiveIndex?: number;
   sectionTitle?: string;
+}
+
+const VISIBLE = 2;
+
+const PILL_GAP = 20;
+
+function getPillX(offset: number, pills: { w: number; h: number; r: number }[]): number {
+  if (offset === 0) return 0;
+  const dir = offset > 0 ? 1 : -1;
+  const abs = Math.abs(offset);
+  let x = 0;
+  for (let i = 0; i < abs; i++) {
+    const a = pills[Math.min(i, pills.length - 1)];
+    const b = pills[Math.min(i + 1, pills.length - 1)];
+    x += a.w / 2 + PILL_GAP + b.w / 2;
+  }
+  return x * dir;
 }
 
 const WebCoverFlow = forwardRef<HTMLDivElement, WebCoverFlowProps>(
@@ -52,8 +68,9 @@ const WebCoverFlow = forwardRef<HTMLDivElement, WebCoverFlowProps>(
     if (items.length === 0) return null;
 
     const layout = CAROUSEL_LAYOUT_DESKTOP;
-    const { stageHeight, spring } = layout;
+    const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
     const pills = layout.pills;
+    const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
     return (
       <div ref={ref} className="relative w-full flex flex-col items-center">
@@ -64,63 +81,74 @@ const WebCoverFlow = forwardRef<HTMLDivElement, WebCoverFlowProps>(
             marginTop: 44,
           }}
         >
-          <CoverflowWheel
-            items={items}
-            activeIndex={activeIndex}
-            pills={pills}
-            spring={spring}
-            onItemClick={({ item, isActive, offset }) => {
-              if (isActive) onSelect(item.id);
-              else setActiveIndex((current) => (current + offset + items.length) % items.length);
-            }}
-            renderItem={({ item, isActive, pill }) => (
-              <button
-                type="button"
-                className="relative h-full w-full cursor-pointer bg-transparent p-0 border-0"
-                style={{
-                  borderRadius: pill.r,
-                  pointerEvents: isActive ? "none" : "auto",
-                  boxShadow: isActive
-                    ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
-                    : "0 4px 16px rgba(0,0,0,0.12)",
-                }}
-                aria-label={isActive ? `Open ${item.label}` : `Bring ${item.label} forward`}
-              >
-                <div className="w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
-                  <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
-                </div>
-                {isActive && (
-                  <>
-                    <div className="absolute bottom-6 left-6 flex flex-col items-start gap-1.5">
-                      {sectionTitle && (
-                        <Pill
-                          variant="title"
-                          size="default"
-                          className="text-[var(--swatch-teal)]"
-                          style={{
-                            background: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.86) 100%)",
-                            border: "1px solid rgba(255,255,255,0.88)",
-                            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-                            fontSize: 14,
-                          }}
-                        >
-                          {sectionTitle}
+          <div className="absolute inset-0 flex items-center justify-center">
+            {slots.map((offset) => {
+              const itemIndex = (activeIndex + offset + items.length) % items.length;
+              const item = items[itemIndex];
+              const absOffset = Math.abs(offset);
+              const isActive = offset === 0;
+              const pill = pills[Math.min(absOffset, pills.length - 1)];
+              const x = getPillX(offset, pills);
+
+              return (
+                <motion.button
+                  key={`slot-${offset}`}
+                  type="button"
+                  initial={false}
+                  animate={{ x, zIndex: VISIBLE + 1 - absOffset, opacity: 1 }}
+                  transition={spring}
+                  className="absolute cursor-pointer bg-transparent p-0 border-0"
+                  style={{
+                    width: pill.w,
+                    height: pill.h,
+                    borderRadius: pill.r,
+                    pointerEvents: isActive ? "none" : "auto",
+                    boxShadow: isActive
+                      ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
+                      : "0 4px 16px rgba(0,0,0,0.12)",
+                  }}
+                  onClick={() => {
+                    if (isActive) onSelect(item.id);
+                    else setActiveIndex((current) => (current + offset + items.length) % items.length);
+                  }}
+                  aria-label={isActive ? `Open ${item.label}` : `Bring ${item.label} forward`}
+                >
+                  <div className="w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
+                    <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
+                  </div>
+                  {isActive && (
+                    <>
+                      <div className="absolute bottom-6 left-6 flex flex-col items-start gap-1.5">
+                        {sectionTitle && (
+                          <Pill
+                            variant="title"
+                            size="default"
+                            className="text-[var(--swatch-teal)]"
+                            style={{
+                              background: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.86) 100%)",
+                              border: "1px solid rgba(255,255,255,0.88)",
+                              boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                              fontSize: 14,
+                            }}
+                          >
+                            {sectionTitle}
+                          </Pill>
+                        )}
+                        <Pill variant="title" size="default">
+                          {item.label}
                         </Pill>
-                      )}
-                      <Pill variant="title" size="default">
-                        {item.label}
-                      </Pill>
-                    </div>
-                    <InlinePhotoSearch
-                      imageKey={(item as any).imageKey || item.id}
-                      label={item.label}
-                      onImageChanged={forceUpdate}
-                    />
-                  </>
-                )}
-              </button>
-            )}
-          />
+                      </div>
+                      <InlinePhotoSearch
+                        imageKey={(item as any).imageKey || item.id}
+                        label={item.label}
+                        onImageChanged={forceUpdate}
+                      />
+                    </>
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
