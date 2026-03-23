@@ -572,6 +572,13 @@ const MyGoTwo = () => {
     toast({ title: "Group created" });
   };
 
+  const orderedSections = visibleSectionKeys.map((key) => ({
+    key,
+    label: sectionLabels[key] ?? key,
+    items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
+  }));
+  const activeSection = orderedSections[activeSectionIndex];
+
   const wheelTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -598,13 +605,6 @@ const MyGoTwo = () => {
   if (registryLoading || genderLoading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
-
-  const orderedSections = visibleSectionKeys.map((key) => ({
-    key,
-    label: sectionLabels[key] ?? key,
-    items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
-  }));
-  const activeSection = orderedSections[activeSectionIndex];
 
   const renderContent = () => {
     if (cardKey && leafSubtype) {
