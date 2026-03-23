@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef, forwardRef, useReducer } from "react";
+import { useState, useEffect, useRef, forwardRef, useReducer, useMemo } from "react";
 import { motion } from "framer-motion";
 import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import GoTwoCard from "@/components/ui/GoTwoCard";
 import { Pill } from "@/components/ui/pill";
 import InlinePhotoSearch from "@/components/InlinePhotoSearch";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
+import StackedCardPreview from "@/components/ui/StackedCardPreview";
 
 export interface CoverFlowItem {
   id: string;
@@ -128,6 +129,11 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
               const absOffset = Math.abs(offset);
               const isActive = offset === 0;
 
+              // Gather neighbor images for stacked preview
+              const stackImages = isActive
+                ? [1, 2, 3].map((off) => items[(itemIndex + off) % n]?.image).filter(Boolean)
+                : [];
+
               // Desktop pill path
               if (pills) {
                 const pill = pills[Math.min(absOffset, pills.length - 1)];
@@ -150,12 +156,13 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                       else setActiveIndex((activeIndex + offset + n) % n);
                     }}
                   >
-                    <div className="w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
+                    {isActive && <StackedCardPreview images={stackImages} cardWidth={pill.w} />}
+                    <div className="relative w-full h-full overflow-hidden" style={{ borderRadius: pill.r, zIndex: 5 }}>
                       <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
                     </div>
                     {isActive && (
                       <>
-                        <div className="absolute bottom-6 left-6">
+                        <div className="absolute bottom-6 left-6" style={{ zIndex: 6 }}>
                           <Pill variant="title" size="default">
                             {item.label}
                           </Pill>
@@ -183,6 +190,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                   style={{ position: "absolute" }}
                 >
                   <div style={{ position: "relative" }}>
+                    {isActive && <StackedCardPreview images={stackImages} cardWidth={cardWidth} />}
                     <GoTwoCard
                       image={item.image}
                       label={item.label}
