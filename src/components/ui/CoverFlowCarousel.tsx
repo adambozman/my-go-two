@@ -192,6 +192,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                     <GoTwoCard
                       image={item.image}
                       label={item.label}
+                      sectionTitle={sectionTitle}
                       isActive={isActive}
                       cardWidth={cardWidth}
                       cardHeight={cardHeight}
