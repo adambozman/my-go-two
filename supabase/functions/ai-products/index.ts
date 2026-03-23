@@ -24,13 +24,16 @@ const cleanText = (value: unknown): string => {
 const ALLOWED_CATEGORIES = new Set(["food", "clothes", "tech", "home"]);
 const ALLOWED_KINDS = new Set(["specific", "generic", "catalog"]);
 
-const sanitizeIntents = (rawIntents: unknown): RecommendationIntent[] => {
+const sanitizeIntents = (rawIntents: unknown): (RecommendationIntent & { product_image_url?: string })[] => {
   if (!Array.isArray(rawIntents)) return [];
   return rawIntents
     .map((item) => {
       const intent = item as Record<string, unknown>;
       const category = cleanText(intent.category).toLowerCase();
       const recommendationKind = cleanText(intent.recommendation_kind).toLowerCase();
+      const rawImageUrl = cleanText(intent.product_image_url);
+      // Only keep URLs that look like real image links
+      const imageUrl = rawImageUrl && /^https?:\/\/.+\.(jpg|jpeg|png|webp|avif)/i.test(rawImageUrl) ? rawImageUrl : undefined;
       return {
         brand: cleanText(intent.brand),
         name: cleanText(intent.name),
@@ -40,6 +43,7 @@ const sanitizeIntents = (rawIntents: unknown): RecommendationIntent[] => {
         why: cleanText(intent.why),
         recommendation_kind: (ALLOWED_KINDS.has(recommendationKind) ? recommendationKind : "catalog") as RecommendationIntent["recommendation_kind"],
         search_query: cleanText(intent.search_query) || null,
+        product_image_url: imageUrl,
       };
     })
     .filter((intent) => intent.brand && intent.name && intent.hook && intent.why);
