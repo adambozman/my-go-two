@@ -52,6 +52,7 @@ interface CardEntry {
 const BRANDED_CARD_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232d6870'/%3E%3Cstop offset='100%25' stop-color='%231e4a52'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' rx='24' fill='url(%23g)'/%3E%3C/svg%3E";
 const NEW_ENTRY_ID = "__new_entry__";
 const ENTRY_PAGE_SIZE = 5;
+const MAIN_COVERFLOW_Y_OFFSET = 42;
 
 const normalizeImageValue = (value?: string | null) => {
   if (!value) return "";
@@ -861,7 +862,7 @@ const MyGoTwo = () => {
               }}
               className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
               animate={{
-                y: isActive ? 0 : -(depth * previewLiftPerDepth),
+                y: (isActive ? 0 : -(depth * previewLiftPerDepth)) + MAIN_COVERFLOW_Y_OFFSET,
                 scale: isActive ? 1 : 1 - depth * 0.045,
                 scaleX: isActive ? 1 : 1 - depth * 0.06,
                 zIndex: isActive ? 10 : 10 - depth,
