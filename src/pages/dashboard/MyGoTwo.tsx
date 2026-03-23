@@ -775,6 +775,16 @@ const MyGoTwo = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="stacked-deck-container"
+        onWheel={(e) => {
+          if (orderedSections.length <= 1) return;
+          if (Math.abs(e.deltaY) < 30) return;
+          e.preventDefault();
+          if (e.deltaY > 0) {
+            setActiveSectionIndex((current) => (current + 1) % orderedSections.length);
+          } else {
+            setActiveSectionIndex((current) => (current - 1 + orderedSections.length) % orderedSections.length);
+          }
+        }}
         onTouchStart={isMobile ? (e) => {
           verticalTouchStartX.current = e.touches[0].clientX;
           verticalTouchStartY.current = e.touches[0].clientY;
