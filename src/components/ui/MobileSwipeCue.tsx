@@ -1,47 +1,87 @@
-import { motion } from "framer-motion";
-import { ChevronRight, ChevronUp, Hand } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Hand } from "lucide-react";
 
 export default function MobileSwipeCue() {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setVisible(false), 4200);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
   return (
-    <div
-      className="pointer-events-none mx-auto mb-4 flex w-fit items-center gap-3 rounded-full border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(250,244,236,0.90)_100%)] px-4 py-2 shadow-[0_4px_12px_rgba(0,0,0,0.10)]"
-      aria-hidden="true"
-    >
-      <div className="relative h-8 w-14 shrink-0">
-        <div className="absolute left-3 top-0 h-5 w-px bg-[linear-gradient(180deg,rgba(45,104,112,0.08)_0%,rgba(45,104,112,0.38)_100%)]" />
-        <div className="absolute left-3 top-5 h-px w-8 bg-[linear-gradient(90deg,rgba(45,104,112,0.38)_0%,rgba(45,104,112,0.08)_100%)]" />
+    <AnimatePresence>
+      {visible ? (
         <motion.div
-          className="absolute left-0 top-0"
+          className="pointer-events-none absolute left-1/2 top-8 z-20 -translate-x-1/2"
+          aria-hidden="true"
+          initial={{ opacity: 0, y: 0, scale: 0.98 }}
           animate={{
-            x: [0, 0, 18, 18, 0],
-            y: [12, -8, -8, 10, 12],
-            rotate: [10, 0, 0, 8, 10],
-            scale: [0.98, 1, 1, 1, 0.98],
+            opacity: [0, 1, 1, 1, 0],
+            x: [0, 0, 0, 36, 36],
+            y: [0, 20, -10, -10, 0],
+            rotate: [0, 0, -8, 6, 0],
+            scale: [0.98, 1, 1, 1, 0.96],
           }}
+          exit={{ opacity: 0, y: -6 }}
           transition={{
-            duration: 2.6,
-            repeat: Infinity,
-            repeatDelay: 0.35,
+            duration: 3.8,
+            times: [0, 0.18, 0.48, 0.78, 1],
             ease: "easeInOut",
           }}
         >
-          <Hand className="h-6 w-6 text-[var(--swatch-teal)]" strokeWidth={1.8} />
+          <div className="relative">
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              animate={{
+                opacity: [0, 0.14, 0.18, 0.12, 0],
+                scale: [0.88, 1, 1.08, 1.02, 0.96],
+              }}
+              transition={{ duration: 3.8, times: [0, 0.18, 0.48, 0.78, 1], ease: "easeInOut" }}
+              style={{
+                filter: "blur(12px)",
+                background: "radial-gradient(circle, rgba(255,255,255,0.55) 0%, rgba(45,104,112,0.14) 55%, rgba(45,104,112,0) 72%)",
+                width: 74,
+                height: 74,
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+            <motion.div
+              className="relative"
+              animate={{
+                x: [0, 0, 0, 36, 36],
+                y: [0, 20, -10, -10, 0],
+                rotate: [0, 0, -8, 6, 0],
+              }}
+              transition={{ duration: 3.8, times: [0, 0.18, 0.48, 0.78, 1], ease: "easeInOut" }}
+            >
+              <Hand
+                className="h-10 w-10 text-[var(--swatch-teal)]"
+                strokeWidth={1.6}
+                style={{
+                  opacity: 0.92,
+                  filter: "drop-shadow(0 1px 2px rgba(255,255,255,0.8)) drop-shadow(0 4px 12px rgba(45,104,112,0.24))",
+                }}
+              />
+            </motion.div>
+            <motion.div
+              className="absolute left-6 top-5 h-px w-16 origin-left"
+              animate={{
+                opacity: [0, 0.6, 0.7, 0.55, 0],
+                scaleX: [0.15, 0.4, 0.8, 1, 1.1],
+              }}
+              transition={{ duration: 3.8, times: [0, 0.18, 0.48, 0.78, 1], ease: "easeInOut" }}
+              style={{
+                background: "linear-gradient(90deg, rgba(45,104,112,0.55) 0%, rgba(45,104,112,0.06) 100%)",
+                filter: "blur(0.4px)",
+              }}
+            />
+          </div>
         </motion.div>
-        <motion.div
-          className="absolute left-[18px] top-[-2px] text-[var(--swatch-teal)]"
-          animate={{ opacity: [0, 1, 1, 0] }}
-          transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 0.35, ease: "easeInOut" }}
-        >
-          <ChevronUp className="h-3.5 w-3.5" strokeWidth={2.5} />
-        </motion.div>
-        <motion.div
-          className="absolute left-[34px] top-[14px] text-[var(--swatch-teal)]"
-          animate={{ opacity: [0, 0, 1, 0] }}
-          transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 0.35, ease: "easeInOut" }}
-        >
-          <ChevronRight className="h-3.5 w-3.5" strokeWidth={2.5} />
-        </motion.div>
-      </div>
-    </div>
+      ) : null}
+    </AnimatePresence>
   );
 }
