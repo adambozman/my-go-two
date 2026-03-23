@@ -821,7 +821,6 @@ const MyGoTwo = () => {
               const absD = Math.abs(distance);
               const isActive = distance === 0;
               const heroItem = section.items[0];
-              const layerZIndex = isActive ? 10 : distance === -1 ? 11 : 10 - absD;
 
               return (
                 <motion.div
@@ -835,7 +834,7 @@ const MyGoTwo = () => {
                     y: isActive ? 0 : -(absD * 30),
                     scale: isActive ? 1 : 1 - absD * 0.045,
                     scaleX: isActive ? 1 : 1 - absD * 0.06,
-                    zIndex: layerZIndex,
+                    zIndex: isActive ? 10 : 10 - absD,
                     opacity: absD > 3 ? 0 : 1 - absD * 0.1,
                   }}
                   transition={{ type: "spring", stiffness: 320, damping: 30 }}
@@ -844,13 +843,15 @@ const MyGoTwo = () => {
                   }}
                 >
                   {isActive ? (
-                    <GoTwoCoverFlow
-                      items={section.items}
-                      onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                      focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                      showPagination={isActive}
-                      sectionTitle={section.label}
-                    />
+                    <div style={{ pointerEvents: "auto" }}>
+                      <GoTwoCoverFlow
+                        items={section.items}
+                        onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                        focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                        showPagination={isActive}
+                        sectionTitle={section.label}
+                      />
+                    </div>
                   ) : (
                     <div
                       className="stacked-deck-hero-card"
