@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef, forwardRef, useReducer } from "react";
+import { useState, useEffect, useRef, forwardRef, useReducer, useMemo } from "react";
 import { motion } from "framer-motion";
 import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import GoTwoCard from "@/components/ui/GoTwoCard";
 import { Pill } from "@/components/ui/pill";
 import InlinePhotoSearch from "@/components/InlinePhotoSearch";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
+import StackedCardPreview from "@/components/ui/StackedCardPreview";
 
 export interface CoverFlowItem {
   id: string;
