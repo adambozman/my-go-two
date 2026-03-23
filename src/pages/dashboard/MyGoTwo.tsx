@@ -796,7 +796,7 @@ const MyGoTwo = () => {
               }}
               className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
               animate={{
-                y: isActive ? 0 : -(absD * 26),
+                y: isActive ? 0 : -(26 + (absD - 1) * 26),
                 scale: isActive ? 1 : 1 - absD * 0.045,
                 scaleX: isActive ? 1 : 1 - absD * 0.06,
                 zIndex: isActive ? 10 : 10 - absD,
