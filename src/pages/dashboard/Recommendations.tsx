@@ -50,6 +50,32 @@ import fitnessImage from "@/assets/styles/fitness.jpg";
 import qualityImage from "@/assets/styles/quality.jpg";
 import practicalGiftImage from "@/assets/styles/practical-gift.jpg";
 
+interface Product {
+  name: string;
+  brand: string;
+  price: string;
+  category: string;
+  hook: string;
+  why: string;
+  is_partner_pick: boolean;
+  affiliate_url?: string | null;
+  search_url?: string | null;
+  product_query?: string | null;
+  image_url?: string | null;
+  source_kind?: string;
+  source_version?: string;
+}
+
+const PILLARS = [
+  { key: "all", label: "For You", matches: ["food", "clothes", "tech", "home"] },
+  { key: "clothes", label: "Style & Fit", matches: ["clothes"] },
+  { key: "food", label: "Food & Drink", matches: ["food"] },
+  { key: "home", label: "Home & Living", matches: ["home"] },
+  { key: "tech", label: "Tech & Gear", matches: ["tech"] },
+] as const;
+
+const PAGE_SIZE = 4;
+
 const PRODUCT_IMAGE_BANK: Record<Product["category"], string[]> = {
   clothes: [
     clothingJacketImage, dressShirtImage, clothingSweaterImage, clothingPoloImage,
