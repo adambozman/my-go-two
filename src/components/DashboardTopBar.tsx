@@ -161,12 +161,27 @@ export function DashboardTopBar() {
   const showQuote = isMyGoTwo;
   const collapsedHeaderHeight = "calc(var(--header-top-padding) + var(--header-icons-row-height) + var(--header-divider-margin-top) + 1px)";
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isMyGoTwo) {
+      // Keep viewport math based on the compact header; quote is rendered as an overlay.
+      root.style.setProperty("--header-height", collapsedHeaderHeight);
+    } else {
+      root.style.removeProperty("--header-height");
+    }
+
+    return () => {
+      root.style.removeProperty("--header-height");
+    };
+  }, [isMyGoTwo, collapsedHeaderHeight]);
+
   return (
     <header
       className="shrink-0 flex flex-col px-3 sm:px-4 md:px-6 lg:px-8"
       style={{
-        minHeight: showQuote ? "var(--header-height)" : collapsedHeaderHeight,
+        minHeight: collapsedHeaderHeight,
         paddingTop: "var(--header-top-padding)",
+        position: "relative",
       }}
     >
       <div className="grid grid-cols-[auto_1fr_auto] items-center gap-1.5 sm:gap-2 md:gap-4" style={{ height: "var(--header-icons-row-height)" }}>
@@ -306,9 +321,13 @@ export function DashboardTopBar() {
         <div
           className="header-tagline-wrapper"
           style={{
-            marginTop: "var(--header-tagline-margin-top)",
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: "calc(var(--header-top-padding) + var(--header-icons-row-height) + var(--header-divider-margin-top) + 16px)",
             transition: "opacity 0.8s ease",
             textAlign: "center",
+            pointerEvents: "none",
           }}
         >
           <p className="header-tagline-quote">"{rotatingQuote.text}"</p>
