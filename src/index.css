@@ -390,10 +390,15 @@ body {
   left: 50%;
   transform: translateX(-50%);
   width: min(92vw, 860px);
+  pointer-events: none;
+}
+
+.vertical-coverflow-slot__active {
   pointer-events: auto;
 }
 
 .vertical-coverflow-preview {
+  pointer-events: auto;
   width: 100%;
   border: 1px solid rgba(45, 104, 112, 0.15);
   border-radius: 28px;

@@ -782,7 +782,7 @@ const MyGoTwo = () => {
 
     const handleNeighborClick = (offset: number) => {
       if (orderedSections.length === 0) return;
-      setSectionIndex(normalizeIndex(activeSectionIndex + offset, orderedSections.length));
+      selectSectionIndex(normalizeIndex(activeSectionIndex + offset, orderedSections.length));
     };
 
     return (
@@ -824,21 +824,23 @@ const MyGoTwo = () => {
                     zIndex: 12 - distance,
                   }}
                   transition={{ type: "spring", stiffness: 320, damping: 30 }}
-                  onClick={() => handleNeighborClick(offset)}
                 >
                   {isActive ? (
-                    <GoTwoCoverFlow
-                      items={section.items}
-                      onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                      focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                      showPagination
-                      sectionTitle={section.label}
-                    />
+                    <div className="vertical-coverflow-slot__active">
+                      <GoTwoCoverFlow
+                        items={section.items}
+                        onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                        focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                        showPagination
+                        sectionTitle={section.label}
+                      />
+                    </div>
                   ) : (
                     <button
                       type="button"
                       className="vertical-coverflow-preview"
                       aria-label={`Open ${section.label}`}
+                      onClick={() => handleNeighborClick(offset)}
                     >
                       <div
                         className="vertical-coverflow-preview__image"
