@@ -148,9 +148,10 @@ RULES:
    - generic: broader branded recommendation when an exact item is too narrow.
    - catalog: recommendation that can reasonably reuse a shared catalog-style item.
 5. Use real brands only.
-6. Never output a URL.
+6. Never output a URL except for product_image_url.
 7. search_query should be present for generic recommendations when useful.
 8. Keep hook and why concise and profile-specific.
+9. For product_image_url: provide a direct URL to an official product image from the brand's website, CDN, or a major retailer (e.g. the .jpg or .png URL of the product photo). This must be a real, publicly accessible image URL — not a page URL. If you cannot confidently provide one, leave it as an empty string.
 
 Use the provided tool.`;
 
