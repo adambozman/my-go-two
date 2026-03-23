@@ -781,9 +781,44 @@ const MyGoTwo = () => {
       );
     }
 
-    const maxPreviewDepth = isDesktopViewport
-      ? Math.min(3, Math.max(0, orderedSections.length - 1))
-      : 0;
+    if (!isDesktopViewport) {
+      const activeSection = orderedSections[activeSectionIndex];
+
+      return (
+        <motion.div
+          key="main-mobile"
+          ref={scrollRef}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="h-full"
+          onPanEnd={(_e, info) => {
+            const step = getStepFromSwipe(info.offset.y, info.offset.x, info.velocity.y);
+            if (step !== 0) rotateSections(step);
+          }}
+        >
+          {activeSection ? (
+            <div
+              ref={(node) => {
+                sectionRefs.current[activeSection.key] = node;
+              }}
+            >
+              <GoTwoCoverFlow
+                items={activeSection.items}
+                onSelect={(categoryId) => handleSelect(activeSection.key, categoryId)}
+                focusedItemId={focusedMainCategoryBySection[activeSection.key] ?? null}
+                showPagination
+                sectionTitle={activeSection.label}
+              />
+            </div>
+          ) : (
+            <p className="text-muted-foreground text-center mt-12">No categories found.</p>
+          )}
+        </motion.div>
+      );
+    }
+
+    const maxPreviewDepth = Math.min(3, Math.max(0, orderedSections.length - 1));
     const slotDepths = [0, ...Array.from({ length: maxPreviewDepth }, (_, i) => i + 1)];
     const previewLiftPerDepth = 46;
 
