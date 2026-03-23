@@ -16,6 +16,7 @@ import { PaginationControls } from "@/components/ui/pagination-controls";
 import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 import ProductEntryCard from "@/components/ui/ProductEntryCard";
 import { resolveStorageUrl } from "@/lib/storageRefs";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
@@ -65,6 +66,7 @@ const MyGoTwo = () => {
   const { gender, loading: genderLoading } = usePersonalization();
   const { categories, loading: registryLoading } = useCategoryRegistry(gender, "mygotwo");
   const { setBackState } = useTopBar();
+  const isMobile = useIsMobile();
 
   const sections = useMemo(() => {
     return categories.reduce<Record<string, CategoryItem[]>>((acc, item) => {
@@ -772,11 +774,11 @@ const MyGoTwo = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="stacked-deck-container"
-        onTouchStart={(e) => {
+        onTouchStart={isMobile ? (e) => {
           verticalTouchStartX.current = e.touches[0].clientX;
           verticalTouchStartY.current = e.touches[0].clientY;
-        }}
-        onTouchEnd={(e) => {
+        } : undefined}
+        onTouchEnd={isMobile ? (e) => {
           if (verticalTouchStartX.current === null || verticalTouchStartY.current === null) return;
 
           const dx = verticalTouchStartX.current - e.changedTouches[0].clientX;
@@ -793,7 +795,7 @@ const MyGoTwo = () => {
 
           verticalTouchStartX.current = null;
           verticalTouchStartY.current = null;
-        }}
+        } : undefined}
       >
         {orderedSections.map((section, index) => {
           const distance = index - activeSectionIndex;
@@ -818,7 +820,7 @@ const MyGoTwo = () => {
               }}
               transition={{ type: "spring", stiffness: 320, damping: 30 }}
               style={{
-                pointerEvents: isActive ? "auto" : "none",
+                pointerEvents: "auto",
               }}
             >
               {isActive ? (
