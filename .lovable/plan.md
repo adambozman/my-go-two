@@ -1,38 +1,56 @@
 
 
-# Apply Missing Database Migrations
+## Stacked Vertical Coverflow Behind Active Section
 
-## Problem
-The codebase contains 30+ migration files that were never applied to the live database. The last applied migration is `20260321163258`, but critical migrations like `20260320183000` (discovery functions, share tokens) and `20260321113000` (refreshed discovery functions) were never executed. This is why search and connection features are broken.
+The active section's horizontal coverflow stays exactly as-is. Behind it, the other sections' coverflows are rendered as a **vertical stack** — like a deck of cards where each "card" is an entire coverflow row. They peek out above and below the active section, offset vertically and scaled slightly down, creating depth.
 
-## What's Missing (Key Items)
-- **`connection_share_tokens` table** — does not exist
-- **`search_discoverable_users`** RPC function — does not exist
-- **`create_connection_request`** RPC function — does not exist
-- **`issue_connection_share_token`** RPC function — does not exist
-- **`create_connection_invite_from_token`** RPC function — does not exist
-- Several other migrations for calendar, sharing, feeds, etc.
+### How it works
 
-## Plan
+At Level 1 in `MyGoTwo.tsx`, instead of rendering sections as separate snap-scrolling `coverflow-stage-shell` divs, render them as a **stacked deck** — all sections occupy the same viewport space, with the active section on top and others layered behind with vertical offsets.
 
-### Step 1: Create a single consolidated migration
-Use the migration tool to create one migration that applies all missing database objects. This will use `IF NOT EXISTS` and `CREATE OR REPLACE` to be safe against partial state. Key contents:
+### Changes
 
-1. **`connection_share_tokens` table** with RLS policies
-2. **4 RPC functions**: `search_discoverable_users`, `create_connection_request`, `issue_connection_share_token`, `create_connection_invite_from_token`
-3. **Service role policies** on `user_discovery_settings` and `user_discovery_contacts` (needed for the SECURITY DEFINER functions to read discovery data)
-4. **Schema reload**: `NOTIFY pgrst, 'reload schema'`
+**1. `src/pages/dashboard/MyGoTwo.tsx` — Stacked deck rendering**
 
-I will also scan the other unapplied migrations (calendar, sharing, feeds, etc.) and include any missing schema objects in the same consolidated migration.
+Replace the `orderedSections.map(...)` block (lines 778–795) with a stacked layout:
+- All sections render inside a single `coverflow-stage-shell`
+- Each section is absolutely positioned
+- The active section: `z-index: 10`, `scale: 1`, `y: 0`
+- Sections above: offset upward (`y: -30px * distance`), `scale: 0.95`, lower z-index
+- Sections below: offset downward, same scaling pattern
+- Use Framer Motion `animate` for smooth transitions when `activeSectionIndex` changes
+- Tapping a peeking section sets `activeSectionIndex` to that section (replaces snap-scroll navigation)
 
-### Step 2: Redeploy `searchforaddprofile` edge function
-Trigger a redeploy so the edge function picks up the now-existing RPC functions.
+**2. `src/index.css` — Adjust stage shell**
 
-### Step 3: Verify
-Run a test query against `search_discoverable_users` to confirm Abby is discoverable.
+Add a stacked variant or modify the existing shell to support `position: relative` for the container with absolutely positioned children.
 
-## Technical Notes
-- The migration tool both creates the file AND executes the SQL against the database
-- Using `CREATE TABLE IF NOT EXISTS` and `CREATE OR REPLACE FUNCTION` ensures idempotency
-- The `user_discovery_settings` and `user_discovery_contacts` tables already exist (created by migration `20260321163258`), so we only need to add the missing service_role policies and the `connection_share_tokens` table
+### Visual result
+
+```text
+       ┌─── other section (peek top) ───┐   ← offset -30px, scale 0.95
+      ┌┤─── other section (peek top) ───┤┐  ← offset -16px, scale 0.97
+  ┌───┤┤═══ ACTIVE SECTION COVERFLOW ═══┤┤───┐
+  │   ││  [pill] [CARD] [pill]          ││   │  ← full size, z-index top
+  └───┤┤════════════════════════════════┤┤───┘
+      └┤─── other section (peek bot) ───┤┘  ← offset +16px, scale 0.97
+       └─── other section (peek bot) ───┘   ← offset +30px, scale 0.95
+```
+
+### Interaction
+- Tapping a peeking section brings it to the front (becomes the active section)
+- The vertical snap-scroll is replaced by this stacked deck navigation at Level 1
+- Existing horizontal swipe within each coverflow is unchanged
+
+### Technical details
+
+- Each stacked section still renders a full `GoTwoCoverFlow` but only the active one is interactive (pointer-events)
+- Background sections get `pointer-events: none` except for a click overlay to select them
+- The section dots on the right side remain and sync with `activeSectionIndex`
+- Framer Motion `layout` or `animate` handles the vertical offset transitions
+
+| File | Change |
+|---|---|
+| `src/pages/dashboard/MyGoTwo.tsx` | Replace snap-scroll sections with stacked deck layout |
+| `src/index.css` | Add stacked container styles |
 
