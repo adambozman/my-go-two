@@ -788,9 +788,9 @@ const MyGoTwo = () => {
               animate={{
                 y: isActive ? 0 : -(absD * 26),
                 scale: isActive ? 1 : 1 - absD * 0.045,
-                scaleX: isActive ? 1 : 1 - absD * 0.08,
+                scaleX: isActive ? 1 : 1 - absD * 0.06,
                 zIndex: isActive ? 10 : 10 - absD,
-                opacity: absD > 3 ? 0 : 1 - absD * 0.15,
+                opacity: absD > 3 ? 0 : 1 - absD * 0.1,
               }}
               transition={{ type: "spring", stiffness: 320, damping: 30 }}
               style={{
