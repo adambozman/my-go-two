@@ -186,6 +186,7 @@ Use the provided tool.`;
                           why: { type: "string" },
                           recommendation_kind: { type: "string", enum: ["specific", "generic", "catalog"] },
                           search_query: { type: "string" },
+                          product_image_url: { type: "string", description: "Direct URL to an official product image (.jpg/.png/.webp). Leave empty string if unsure." },
                         },
                         required: ["brand", "name", "price", "category", "hook", "why", "recommendation_kind"],
                         additionalProperties: false,
