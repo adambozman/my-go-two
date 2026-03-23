@@ -839,17 +839,19 @@ const MyGoTwo = () => {
                   }}
                   transition={{ type: "spring", stiffness: 320, damping: 30 }}
                   style={{
-                    pointerEvents: "auto",
+                    pointerEvents: isActive ? "none" : "auto",
                   }}
                 >
                   {isActive ? (
-                    <GoTwoCoverFlow
-                      items={section.items}
-                      onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                      focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                      showPagination={isActive}
-                      sectionTitle={section.label}
-                    />
+                    <div style={{ pointerEvents: "auto" }}>
+                      <GoTwoCoverFlow
+                        items={section.items}
+                        onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                        focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                        showPagination={isActive}
+                        sectionTitle={section.label}
+                      />
+                    </div>
                   ) : (
                     <div
                       className="stacked-deck-hero-card"
