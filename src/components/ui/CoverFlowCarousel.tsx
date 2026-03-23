@@ -82,15 +82,22 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
 
     if (n === 0) return null;
 
+<<<<<<< HEAD
     const handleTouchStart = isMobile
       ? (e: { touches: { clientX: number; clientY: number }[] }) => {
+=======
+    const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
+
+    const handleTouchStart: React.TouchEventHandler<HTMLDivElement> | undefined = isMobile
+      ? (e) => {
+>>>>>>> dd50da668b3f505d51e4348550911c5d92efd47a
           touchStartX.current = e.touches[0].clientX;
           touchStartY.current = e.touches[0].clientY;
         }
       : undefined;
 
-    const handleTouchEnd = isMobile
-      ? (e: { changedTouches: { clientX: number; clientY: number }[] }) => {
+    const handleTouchEnd: React.TouchEventHandler<HTMLDivElement> | undefined = isMobile
+      ? (e) => {
           if (touchStartX.current === null || touchStartY.current === null) return;
 
           const dx = touchStartX.current - e.changedTouches[0].clientX;

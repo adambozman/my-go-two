@@ -524,10 +524,6 @@ const MyGoTwo = () => {
     toast({ title: "Group created" });
   };
 
-  if (registryLoading || genderLoading) {
-    return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
-  }
-
   const orderedSections = visibleSectionKeys.map((key) => ({
     key,
     label: sectionLabels[key] ?? key,
@@ -555,6 +551,34 @@ const MyGoTwo = () => {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [cardKey, coverFlowState, isMobile, orderedSections.length, rotateSections]);
+
+  const wheelTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || orderedSections.length <= 1) return;
+
+    const handler = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) < 30) return;
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      if (wheelTimerRef.current) return;
+      wheelTimerRef.current = window.setTimeout(() => { wheelTimerRef.current = null; }, 400);
+
+      if (e.deltaY > 0) {
+        setActiveSectionIndex((current) => (current + 1) % orderedSections.length);
+      } else {
+        setActiveSectionIndex((current) => (current - 1 + orderedSections.length) % orderedSections.length);
+      }
+    };
+
+    el.addEventListener("wheel", handler, { passive: false });
+    return () => el.removeEventListener("wheel", handler);
+  }, [orderedSections.length]);
+
+  if (registryLoading || genderLoading) {
+    return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  }
 
   const renderContent = () => {
     if (cardKey && leafSubtype) {
@@ -740,6 +764,8 @@ const MyGoTwo = () => {
       );
     }
 
+
+
     return (
       <motion.div
         key="main"
@@ -758,8 +784,17 @@ const MyGoTwo = () => {
           const dy = verticalTouchStartY.current - e.changedTouches[0].clientY;
 
           // Only treat the gesture as a section switch when vertical movement clearly wins.
+<<<<<<< HEAD
           if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx) * 1.2) {
             rotateSections(dy > 0 ? 1 : -1);
+=======
+          if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx) * 1.2 && orderedSections.length > 0) {
+            if (dy > 0) {
+              setActiveSectionIndex((current) => (current + 1) % orderedSections.length);
+            } else if (dy < 0) {
+              setActiveSectionIndex((current) => (current - 1 + orderedSections.length) % orderedSections.length);
+            }
+>>>>>>> dd50da668b3f505d51e4348550911c5d92efd47a
           }
 
           verticalTouchStartX.current = null;
@@ -814,6 +849,7 @@ const MyGoTwo = () => {
                 renderItem={({ item, isActive, pill }) => {
                   const heroItem = item.items[0];
 
+<<<<<<< HEAD
                   return isActive ? (
                     <div className="relative w-full">
                       <GoTwoCoverFlow
@@ -837,6 +873,45 @@ const MyGoTwo = () => {
                         if (nextIndex >= 0) setActiveSectionIndex(nextIndex);
                       }}
                       aria-label={`Bring ${item.label} forward`}
+=======
+              return (
+                <motion.div
+                  key={section.key}
+                  data-section-key={section.key}
+                  ref={(node) => {
+                    sectionRefs.current[section.key] = node;
+                  }}
+                  className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
+                  animate={{
+                    y: isActive ? 0 : -(absD * 30),
+                    scale: isActive ? 1 : 1 - absD * 0.045,
+                    scaleX: isActive ? 1 : 1 - absD * 0.06,
+                    zIndex: isActive ? 10 : 10 - absD,
+                    opacity: absD > 3 ? 0 : 1 - absD * 0.1,
+                  }}
+                  transition={{ type: "spring", stiffness: 320, damping: 30 }}
+                  style={{
+                    pointerEvents: isActive ? "none" : absD === 1 ? "auto" : "none",
+                  }}
+                >
+                  {isActive ? (
+                    <GoTwoCoverFlow
+                      items={section.items}
+                      onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                      focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                      showPagination={isActive}
+                      sectionTitle={section.label}
+                    />
+                  ) : (
+                    <div
+                      className="stacked-deck-hero-card"
+                      style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
+                      onClick={() => {
+                        if (orderedSections.length <= 1) return;
+                        const direction = distance > 0 ? 1 : -1;
+                        setActiveSectionIndex((current) => (current + direction + orderedSections.length) % orderedSections.length);
+                      }}
+>>>>>>> dd50da668b3f505d51e4348550911c5d92efd47a
                     />
                   );
                 }}
