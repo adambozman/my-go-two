@@ -38,6 +38,7 @@ function useLayout() {
 }
 
 const PILL_GAP = 20;
+const FALLBACK_GRAY_BG = "linear-gradient(160deg, #c3c5c8 0%, #9ea2a8 100%)";
 
 function getPillX(offset: number, pills: { w: number; h: number; r: number }[]): number {
   if (offset === 0) return 0;
@@ -151,8 +152,18 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                       else setActiveIndex((activeIndex + offset + n) % n);
                     }}
                   >
-                    <div className="w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
-                      <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
+                    <div className="relative w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
+                      <div className="absolute inset-0" style={{ background: FALLBACK_GRAY_BG }} />
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.label}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                      ) : null}
                     </div>
                     {isActive && (
                       <>

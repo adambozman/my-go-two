@@ -57,14 +57,20 @@ const GoTwoCard = forwardRef<HTMLDivElement, GoTwoCardProps>(
               : "0 4px 16px rgba(0,0,0,0.12)",
           }}
         >
+          <div
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(160deg, #c3c5c8 0%, #9ea2a8 100%)" }}
+          />
           {image ? (
-            <img src={image} alt={label} className="absolute inset-0 w-full h-full object-cover" />
-          ) : (
-            <div
-              className="absolute inset-0"
-              style={{ background: "linear-gradient(160deg, #c8bfb4 0%, #a89d92 100%)" }}
+            <img
+              src={image}
+              alt={label}
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
             />
-          )}
+          ) : null}
 
           {/* Hover hint — desktop only, active card only */}
           {isActive && (
