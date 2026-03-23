@@ -1,4 +1,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+<<<<<<< HEAD
+=======
+import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
+>>>>>>> 62c2f542b1302520f5f0880e04e9d8538dcd89c4
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Check, Plus, Trash2, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -83,10 +87,16 @@ const MyGoTwo = () => {
   const [focusedSubcategoryId, setFocusedSubcategoryId] = useState<string | null>(null);
   const [focusedLeafItemId, setFocusedLeafItemId] = useState<string | null>(null);
   const [focusedMainCategoryBySection, setFocusedMainCategoryBySection] = useState<Record<string, string>>({});
+  const [lastMainSectionKey, setLastMainSectionKey] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+<<<<<<< HEAD
+=======
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const savedScrollTop = useRef(0);
+>>>>>>> 62c2f542b1302520f5f0880e04e9d8538dcd89c4
   const verticalTouchStartX = useRef<number | null>(null);
   const verticalTouchStartY = useRef<number | null>(null);
 
@@ -259,9 +269,51 @@ const MyGoTwo = () => {
     });
   }, [activeGroup, cardKey, productGroups.length]);
 
+  const getNearestSectionIndex = useCallback(
+    (scrollTop: number) => {
+      if (visibleSectionKeys.length === 0) return 0;
+
+      let nearestIndex = 0;
+      let nearestDistance = Number.POSITIVE_INFINITY;
+
+      visibleSectionKeys.forEach((key, index) => {
+        const sectionTop = sectionRefs.current[key]?.offsetTop ?? 0;
+        const distance = Math.abs(sectionTop - scrollTop);
+
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearestIndex = index;
+        }
+      });
+
+      return nearestIndex;
+    },
+    [visibleSectionKeys],
+  );
+
   useEffect(() => {
     setActiveSectionIndex((prev) => Math.min(prev, Math.max(visibleSectionKeys.length - 1, 0)));
   }, [visibleSectionKeys.length]);
+
+  useEffect(() => {
+    if (coverFlowState || cardKey) return;
+
+    requestAnimationFrame(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+
+      const targetSectionTop =
+        lastMainSectionKey && sectionRefs.current[lastMainSectionKey]
+          ? sectionRefs.current[lastMainSectionKey]!.offsetTop
+          : null;
+
+      const targetScrollTop = targetSectionTop ?? savedScrollTop.current;
+
+      el.scrollTop = targetScrollTop;
+      savedScrollTop.current = targetScrollTop;
+      setActiveSectionIndex(getNearestSectionIndex(targetScrollTop));
+    });
+  }, [coverFlowState, cardKey, lastMainSectionKey, getNearestSectionIndex]);
 
   const clearCoverFlow = () => {
     setCoverFlowState(null);
@@ -327,9 +379,13 @@ const MyGoTwo = () => {
   }, [coverFlowState, activeSubcategory, cardKey, leafSubtype]);
 
   const handleCategoryClick = (item: CategoryItem) => {
+    if (scrollRef.current) {
+      savedScrollTop.current = scrollRef.current.scrollTop;
+    }
     const subtypes = (item.fields as unknown as SubtypeItem[]) || [];
     const subcategories = item.subcategories as unknown as SubcategoryGroup[] | undefined;
     if (subtypes.length > 0 || (subcategories && subcategories.length > 0)) {
+      setLastMainSectionKey(item.section);
       setFocusedMainCategoryBySection((prev) => ({ ...prev, [item.section]: item.key }));
       setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
       setFocusedSubcategoryId(null);
@@ -528,27 +584,6 @@ const MyGoTwo = () => {
     items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
   }));
   const activeSection = orderedSections[activeSectionIndex];
-  const rotateSections = useCallback((step: number) => {
-    if (orderedSections.length === 0) return;
-    setActiveSectionIndex((current) => (current + step + orderedSections.length) % orderedSections.length);
-  }, [orderedSections.length]);
-
-  useEffect(() => {
-    if (isMobile || coverFlowState || cardKey || orderedSections.length === 0) return;
-
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        rotateSections(-1);
-      } else if (e.key === "ArrowDown") {
-        e.preventDefault();
-        rotateSections(1);
-      }
-    };
-
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [cardKey, coverFlowState, isMobile, orderedSections.length, rotateSections]);
 
   if (registryLoading || genderLoading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
@@ -759,19 +794,31 @@ const MyGoTwo = () => {
           const dy = verticalTouchStartY.current - e.changedTouches[0].clientY;
 
           // Only treat the gesture as a section switch when vertical movement clearly wins.
+<<<<<<< HEAD
           if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx) * 1.2) {
             rotateSections(dy > 0 ? 1 : -1);
+=======
+          if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx) * 1.2 && orderedSections.length > 0) {
+            if (dy > 0) {
+              setActiveSectionIndex((current) => (current + 1) % orderedSections.length);
+            } else if (dy < 0) {
+              setActiveSectionIndex((current) => (current - 1 + orderedSections.length) % orderedSections.length);
+            }
+>>>>>>> 62c2f542b1302520f5f0880e04e9d8538dcd89c4
           }
 
           verticalTouchStartX.current = null;
           verticalTouchStartY.current = null;
         } : undefined}
+<<<<<<< HEAD
         onWheel={!isMobile ? (e) => {
           if (orderedSections.length <= 1 || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
           e.preventDefault();
           rotateSections(e.deltaY > 0 ? 1 : -1);
         } : undefined}
         style={{ touchAction: "none", overflow: "hidden" }}
+=======
+>>>>>>> 62c2f542b1302520f5f0880e04e9d8538dcd89c4
       >
         {isMobile ? (
           <div className="w-full flex flex-col items-center px-3 pt-2 pb-6">
