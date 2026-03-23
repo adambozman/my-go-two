@@ -4,6 +4,7 @@ import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 interface GoTwoCardProps {
   image: string;
   label: string;
+  sectionTitle?: string;
   isActive?: boolean;
   onClick?: () => void;
   cardWidth?: number;
