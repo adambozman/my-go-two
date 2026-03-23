@@ -100,16 +100,12 @@ const GoTwoCard = forwardRef<HTMLDivElement, GoTwoCardProps>(
           <div className="absolute bottom-4 left-4 flex flex-col items-start gap-1.5">
             {sectionTitle && isActive && (
               <span
-                className="px-3 py-1 font-semibold truncate block"
+                className="pill-asset-ivory px-3 py-1 font-semibold truncate block"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontSize: 14,
                   letterSpacing: "0.04em",
-                  color: "var(--swatch-teal)",
-                  background: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.86) 100%)",
                   borderRadius: 999,
-                  border: "1px solid rgba(255,255,255,0.88)",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
                   maxWidth: 200,
                 }}
               >
@@ -117,16 +113,12 @@ const GoTwoCard = forwardRef<HTMLDivElement, GoTwoCardProps>(
               </span>
             )}
             <span
-              className="px-3 py-1 font-semibold truncate block"
+              className="pill-asset-ivory px-3 py-1 font-semibold truncate block"
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: 14,
                 letterSpacing: "0.04em",
-                color: "var(--swatch-teal)",
-                background: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.86) 100%)",
                 borderRadius: 999,
-                border: "1px solid rgba(255,255,255,0.88)",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
                 maxWidth: 240,
               }}
             >
