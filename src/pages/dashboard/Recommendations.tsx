@@ -95,14 +95,17 @@ const PRODUCT_IMAGE_BANK: Record<Product["category"], string[]> = {
   ],
 };
 
-function getProductImage(product: Product) {
-  if (product.image_url) return product.image_url;
+function getFallbackImage(product: Product) {
   const bank = PRODUCT_IMAGE_BANK[product.category] || PRODUCT_IMAGE_BANK.clothes;
-  // Stable hash from brand+name so each product always gets the same image
   const seed = `${product.brand}-${product.name}`;
   let hash = 0;
   for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
   return bank[hash % bank.length];
+}
+
+function getProductImage(product: Product) {
+  if (product.image_url) return product.image_url;
+  return getFallbackImage(product);
 }
 
 const Recommendations = () => {
@@ -358,7 +361,12 @@ function ProductCard({
     >
       <Card variant="sand" className="relative flex h-full flex-col overflow-hidden">
         <div className="relative h-[200px] overflow-hidden sm:h-[220px]">
-          <img src={getProductImage(product)} alt={product.name} className="h-full w-full object-cover" />
+          <img
+            src={getProductImage(product)}
+            alt={product.name}
+            className="h-full w-full object-cover"
+            onError={(e) => { (e.target as HTMLImageElement).src = getFallbackImage(product); }}
+          />
         </div>
 
         <div className="p-5 pt-4 flex flex-col gap-3">

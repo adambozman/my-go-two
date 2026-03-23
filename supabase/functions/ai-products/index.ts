@@ -24,13 +24,16 @@ const cleanText = (value: unknown): string => {
 const ALLOWED_CATEGORIES = new Set(["food", "clothes", "tech", "home"]);
 const ALLOWED_KINDS = new Set(["specific", "generic", "catalog"]);
 
-const sanitizeIntents = (rawIntents: unknown): RecommendationIntent[] => {
+const sanitizeIntents = (rawIntents: unknown): (RecommendationIntent & { product_image_url?: string })[] => {
   if (!Array.isArray(rawIntents)) return [];
   return rawIntents
     .map((item) => {
       const intent = item as Record<string, unknown>;
       const category = cleanText(intent.category).toLowerCase();
       const recommendationKind = cleanText(intent.recommendation_kind).toLowerCase();
+      const rawImageUrl = cleanText(intent.product_image_url);
+      // Only keep URLs that look like real image links
+      const imageUrl = rawImageUrl && /^https?:\/\/.+\.(jpg|jpeg|png|webp|avif)/i.test(rawImageUrl) ? rawImageUrl : undefined;
       return {
         brand: cleanText(intent.brand),
         name: cleanText(intent.name),
@@ -40,6 +43,7 @@ const sanitizeIntents = (rawIntents: unknown): RecommendationIntent[] => {
         why: cleanText(intent.why),
         recommendation_kind: (ALLOWED_KINDS.has(recommendationKind) ? recommendationKind : "catalog") as RecommendationIntent["recommendation_kind"],
         search_query: cleanText(intent.search_query) || null,
+        product_image_url: imageUrl,
       };
     })
     .filter((intent) => intent.brand && intent.name && intent.hook && intent.why);
@@ -148,9 +152,10 @@ RULES:
    - generic: broader branded recommendation when an exact item is too narrow.
    - catalog: recommendation that can reasonably reuse a shared catalog-style item.
 5. Use real brands only.
-6. Never output a URL.
+6. Never output a URL except for product_image_url.
 7. search_query should be present for generic recommendations when useful.
 8. Keep hook and why concise and profile-specific.
+9. For product_image_url: provide a direct URL to an official product image from the brand's website, CDN, or a major retailer (e.g. the .jpg or .png URL of the product photo). This must be a real, publicly accessible image URL — not a page URL. If you cannot confidently provide one, leave it as an empty string.
 
 Use the provided tool.`;
 
@@ -185,6 +190,7 @@ Use the provided tool.`;
                           why: { type: "string" },
                           recommendation_kind: { type: "string", enum: ["specific", "generic", "catalog"] },
                           search_query: { type: "string" },
+                          product_image_url: { type: "string", description: "Direct URL to an official product image (.jpg/.png/.webp). Leave empty string if unsure." },
                         },
                         required: ["brand", "name", "price", "category", "hook", "why", "recommendation_kind"],
                         additionalProperties: false,
@@ -250,7 +256,7 @@ Use the provided tool.`;
               search_url: resolved.link_kind === "search" ? resolved.link_url : null,
               product_query: resolved.search_query,
               sponsored_id: null,
-              image_url: resolved.image_url,
+              image_url: intent.product_image_url || resolved.image_url,
               source_kind: resolved.link_kind === "product" ? "specific-product" : "brand-search",
               source_version: resolved.source_version,
             });
