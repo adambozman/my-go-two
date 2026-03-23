@@ -3,6 +3,7 @@ import CoverFlowCarousel, { type CoverFlowItem } from "@/components/ui/CoverFlow
 import MobileCoverFlow from "@/components/ui/MobileCoverFlow";
 import { usePagination } from "@/hooks/usePagination";
 import { PaginationControls } from "@/components/ui/pagination-controls";
+import { COVERFLOW_DESKTOP_Y_OFFSET } from "@/lib/carouselConfig";
 
 interface PaginatedCoverFlowProps {
   items: CoverFlowItem[];
@@ -16,7 +17,7 @@ interface PaginatedCoverFlowProps {
 
 const RIGHT_SIDE_DOT_STYLE = {
   right: 18,
-  top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)",
+  top: `calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px + ${COVERFLOW_DESKTOP_Y_OFFSET}px)`,
   transform: "translateY(-50%)",
   zIndex: 50,
 } as const;

@@ -18,6 +18,13 @@ export const CAROUSEL_LAYOUT = {
   ],
 };
 
+/**
+ * Global desktop Y offset for coverflow placement.
+ * Keep this as the single source of truth so all coverflow variants
+ * (main, template, and form) stay vertically aligned.
+ */
+export const COVERFLOW_DESKTOP_Y_OFFSET = 72;
+
 /** Desktop card dimensions — Figma originals × 1.4 × 1.4, website view only (≥1024px) */
 export const CAROUSEL_LAYOUT_DESKTOP = {
   cardWidth: 686,

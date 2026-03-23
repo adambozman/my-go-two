@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef, forwardRef } from "react";
 import { motion } from "framer-motion";
-import { FORM_CAROUSEL_LAYOUT, FORM_CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
+import {
+  FORM_CAROUSEL_LAYOUT,
+  FORM_CAROUSEL_LAYOUT_DESKTOP,
+  COVERFLOW_DESKTOP_Y_OFFSET,
+} from "@/lib/carouselConfig";
 import { Pill } from "@/components/ui/pill";
 
 export interface FormCoverFlowItem {
@@ -93,7 +97,7 @@ const FormCoverFlowCarousel = forwardRef<HTMLDivElement, FormCoverFlowCarouselPr
           className="relative w-full"
           style={{
             height: stageHeight,
-            marginTop: isDesktop ? 44 : 24,
+            marginTop: isDesktop ? 44 + COVERFLOW_DESKTOP_Y_OFFSET : 24,
           }}
         >
           <div className="absolute inset-0 flex items-center justify-center">
