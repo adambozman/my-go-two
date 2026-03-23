@@ -17,6 +17,7 @@ interface CoverFlowCarouselProps {
   items: CoverFlowItem[];
   onSelect: (id: string) => void;
   initialActiveIndex?: number;
+  sectionTitle?: string;
 }
 
 const VISIBLE = 2;
@@ -52,7 +53,7 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
 }
 
 const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
-  ({ items, onSelect, initialActiveIndex = 0 }, ref) => {
+  ({ items, onSelect, initialActiveIndex = 0, sectionTitle }, ref) => {
     const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const [, forceImages] = useReducer(x => x + 1, 0);
@@ -155,7 +156,12 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                     </div>
                     {isActive && (
                       <>
-                        <div className="absolute bottom-6 left-6">
+                        <div className="absolute bottom-6 left-6 flex flex-col items-start gap-1.5">
+                          {sectionTitle && (
+                            <Pill variant="title" size="default" className="text-[var(--swatch-teal)]" style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.86) 100%)", border: "1px solid rgba(255,255,255,0.88)", boxShadow: "0 4px 12px rgba(0,0,0,0.12)", fontSize: 14 }}>
+                              {sectionTitle}
+                            </Pill>
+                          )}
                           <Pill variant="title" size="default">
                             {item.label}
                           </Pill>
@@ -186,6 +192,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                     <GoTwoCard
                       image={item.image}
                       label={item.label}
+                      sectionTitle={sectionTitle}
                       isActive={isActive}
                       cardWidth={cardWidth}
                       cardHeight={cardHeight}

@@ -10,6 +10,7 @@ interface PaginatedCoverFlowProps {
   className?: string;
   focusedItemId?: string | null;
   showPagination?: boolean;
+  sectionTitle?: string;
 }
 
 const RIGHT_SIDE_DOT_STYLE = {
@@ -26,6 +27,7 @@ export default function PaginatedCoverFlow({
   className,
   focusedItemId,
   showPagination = true,
+  sectionTitle,
 }: PaginatedCoverFlowProps) {
   const focusedIndex = useMemo(
     () => (focusedItemId ? items.findIndex((item) => item.id === focusedItemId) : -1),
@@ -51,6 +53,7 @@ export default function PaginatedCoverFlow({
         items={paginatedItems}
         onSelect={onSelect}
         initialActiveIndex={initialActiveIndex}
+        sectionTitle={sectionTitle}
       />
       {showPagination ? (
         <PaginationControls

@@ -770,6 +770,16 @@ const MyGoTwo = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="stacked-deck-container"
+        onPanEnd={(_e, info) => {
+          // Vertical swipe to switch sections
+          if (Math.abs(info.velocity.y) > 100 && Math.abs(info.offset.y) > 40 && Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
+            if (info.offset.y < 0 && activeSectionIndex < orderedSections.length - 1) {
+              setActiveSectionIndex(activeSectionIndex + 1);
+            } else if (info.offset.y > 0 && activeSectionIndex > 0) {
+              setActiveSectionIndex(activeSectionIndex - 1);
+            }
+          }
+        }}
       >
         {orderedSections.map((section, index) => {
           const distance = index - activeSectionIndex;
@@ -798,15 +808,13 @@ const MyGoTwo = () => {
               }}
             >
               {isActive ? (
-                <>
-                  <CoverflowTitlePill title={section.label} />
-                  <GoTwoCoverFlow
-                    items={section.items}
-                    onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                    focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                    showPagination={isActive}
-                  />
-                </>
+                <GoTwoCoverFlow
+                  items={section.items}
+                  onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                  focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                  showPagination={isActive}
+                  sectionTitle={section.label}
+                />
               ) : (
                 <div
                   className="stacked-deck-hero-card"
@@ -820,16 +828,15 @@ const MyGoTwo = () => {
         {orderedSections.length === 0 && (
           <p className="text-muted-foreground text-center mt-12">No categories found.</p>
         )}
+        {/* Visual-only section indicators */}
         <div
-          className="fixed hidden flex-col items-center gap-2 lg:flex"
+          className="fixed hidden flex-col items-center gap-2 lg:flex pointer-events-none"
           style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
         >
           {orderedSections.map((_, i) => (
             <div
               key={i}
-              className="cursor-pointer"
               style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }}
-              onClick={() => setActiveSectionIndex(i)}
             />
           ))}
         </div>
