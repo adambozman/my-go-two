@@ -10,14 +10,45 @@ import { usePagination } from "@/hooks/usePagination";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/pill";
+// ── Clothes bank (8 diverse images) ──
 import clothingJacketImage from "@/assets/templates/clothing-jacket.jpg";
 import dressShirtImage from "@/assets/templates/clothing-dress-shirt.jpg";
+import clothingSweaterImage from "@/assets/templates/clothing-sweater.jpg";
+import clothingPoloImage from "@/assets/templates/clothing-polo.jpg";
+import clothingBlazerImage from "@/assets/templates/clothing-blazer.jpg";
+import clothingTshirtImage from "@/assets/templates/clothing-tshirt.jpg";
+import clothingCoatImage from "@/assets/templates/clothing-coat.jpg";
+import clothingHoodieImage from "@/assets/templates/clothing-hoodie.jpg";
+
+// ── Food bank (8 diverse images) ──
 import espressoImage from "@/assets/templates/coffee-espresso.jpg";
+import coffeeHotImage from "@/assets/templates/coffee-hot.jpg";
+import foodItalianImage from "@/assets/templates/food-italian.jpg";
+import foodSushiImage from "@/assets/templates/food-sushi.jpg";
+import foodMexicanImage from "@/assets/templates/food-mexican.jpg";
+import groceryProduceImage from "@/assets/templates/grocery-produce.jpg";
+import favoriteMealsImage from "@/assets/templates/favorite-meals.jpg";
+import diningImage from "@/assets/styles/dining.jpg";
+
+// ── Home bank (8 diverse images) ──
 import homeDecorImage from "@/assets/templates/home-decor.jpg";
+import homeBeddingImage from "@/assets/templates/home-bedding.jpg";
+import homeLightingImage from "@/assets/templates/home-lighting.jpg";
+import homeFurnitureImage from "@/assets/templates/home-furniture.jpg";
+import homeArtImage from "@/assets/templates/home-art.jpg";
+import kitchenCookwareImage from "@/assets/templates/kitchen-cookware.jpg";
+import homeRugImage from "@/assets/templates/home-rug.jpg";
+import homeSofaImage from "@/assets/templates/home-sofa.jpg";
+
+// ── Tech bank (8 diverse images) ──
 import cameraImage from "@/assets/templates/tech-camera.jpg";
 import headphonesImage from "@/assets/templates/tech-headphones.jpg";
-import thoughtfulGiftImage from "@/assets/styles/thoughtful-gift.jpg";
-import luxuriousGiftImage from "@/assets/styles/luxurious-gift.jpg";
+import gamingConsoleImage from "@/assets/templates/gaming-console.jpg";
+import gamingPcImage from "@/assets/templates/gaming-pc.jpg";
+import booksImage from "@/assets/templates/books-reading.jpg";
+import fitnessImage from "@/assets/styles/fitness.jpg";
+import qualityImage from "@/assets/styles/quality.jpg";
+import practicalGiftImage from "@/assets/styles/practical-gift.jpg";
 
 interface Product {
   name: string;
@@ -46,49 +77,35 @@ const PILLARS = [
 const PAGE_SIZE = 4;
 
 const PRODUCT_IMAGE_BANK: Record<Product["category"], string[]> = {
-  clothes: [clothingJacketImage, dressShirtImage],
-  food: [espressoImage, thoughtfulGiftImage],
-  home: [homeDecorImage, luxuriousGiftImage],
-  tech: [cameraImage, headphonesImage],
+  clothes: [
+    clothingJacketImage, dressShirtImage, clothingSweaterImage, clothingPoloImage,
+    clothingBlazerImage, clothingTshirtImage, clothingCoatImage, clothingHoodieImage,
+  ],
+  food: [
+    espressoImage, coffeeHotImage, foodItalianImage, foodSushiImage,
+    foodMexicanImage, groceryProduceImage, favoriteMealsImage, diningImage,
+  ],
+  home: [
+    homeDecorImage, homeBeddingImage, homeLightingImage, homeFurnitureImage,
+    homeArtImage, kitchenCookwareImage, homeRugImage, homeSofaImage,
+  ],
+  tech: [
+    cameraImage, headphonesImage, gamingConsoleImage, gamingPcImage,
+    booksImage, fitnessImage, qualityImage, practicalGiftImage,
+  ],
 };
 
-const PRODUCT_IMAGE_OVERRIDES: Record<string, string> = {
-  "uniqlo:supima cotton crew neck t-shirt": dressShirtImage,
-  "buck mason:pima curved hem tee": clothingJacketImage,
-  "everlane:the organic cotton oxford": dressShirtImage,
-  "cos:relaxed cotton overshirt": clothingJacketImage,
-  "vince:cashmere crew": clothingJacketImage,
-  "patagonia:better sweater jacket": clothingJacketImage,
-  "lululemon:abc classic-fit trouser": dressShirtImage,
-  "ralph lauren:custom fit mesh polo": dressShirtImage,
-  "todd snyder:made in l.a. jersey tee": clothingJacketImage,
-  "aimé leon dore:uniform crewneck tee": clothingJacketImage,
-  "blue bottle:whole bean coffee subscription": espressoImage,
-  "omsom:starter sauce set": thoughtfulGiftImage,
-  "fishwife:smoked salmon trio": thoughtfulGiftImage,
-  "brightland:artist capsule olive oil set": thoughtfulGiftImage,
-  "nespresso:vertuo pop+": espressoImage,
-  "parachute:linen sheet set": luxuriousGiftImage,
-  "dyson:purifier cool gen1": homeDecorImage,
-  "our place:cast iron always pan": homeDecorImage,
-  "brooklinen:super-plush bath towels": luxuriousGiftImage,
-  "sony:wh-1000xm5 headphones": headphonesImage,
-  "anker:prime 20k power bank": headphonesImage,
-  "logitech:mx mechanical mini": cameraImage,
-  "gopro:hero13 black": cameraImage,
-  "apple:apple watch se": headphonesImage,
-};
-
-function getProductImage(product: Product) {
-  if (product.image_url) return product.image_url;
-  const key = `${product.brand}:${product.name}`.toLowerCase();
-  const override = PRODUCT_IMAGE_OVERRIDES[key];
-  if (override) return override;
+function getFallbackImage(product: Product) {
   const bank = PRODUCT_IMAGE_BANK[product.category] || PRODUCT_IMAGE_BANK.clothes;
   const seed = `${product.brand}-${product.name}`;
   let hash = 0;
   for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
   return bank[hash % bank.length];
+}
+
+function getProductImage(product: Product) {
+  if (product.image_url) return product.image_url;
+  return getFallbackImage(product);
 }
 
 const Recommendations = () => {
@@ -344,7 +361,12 @@ function ProductCard({
     >
       <Card variant="sand" className="relative flex h-full flex-col overflow-hidden">
         <div className="relative h-[200px] overflow-hidden sm:h-[220px]">
-          <img src={getProductImage(product)} alt={product.name} className="h-full w-full object-cover" />
+          <img
+            src={getProductImage(product)}
+            alt={product.name}
+            className="h-full w-full object-cover"
+            onError={(e) => { (e.target as HTMLImageElement).src = getFallbackImage(product); }}
+          />
         </div>
 
         <div className="p-5 pt-4 flex flex-col gap-3">
