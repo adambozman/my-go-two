@@ -790,28 +790,7 @@ const MyGoTwo = () => {
       );
     }
 
-    const wheelTimerRef = useRef<number | null>(null);
 
-    useEffect(() => {
-      const el = scrollRef.current;
-      if (!el || orderedSections.length <= 1) return;
-
-      const handler = (e: WheelEvent) => {
-        if (Math.abs(e.deltaY) < 30) return;
-        e.preventDefault();
-        if (wheelTimerRef.current) return; // debounce
-        wheelTimerRef.current = window.setTimeout(() => { wheelTimerRef.current = null; }, 400);
-
-        if (e.deltaY > 0) {
-          setActiveSectionIndex((current) => (current + 1) % orderedSections.length);
-        } else {
-          setActiveSectionIndex((current) => (current - 1 + orderedSections.length) % orderedSections.length);
-        }
-      };
-
-      el.addEventListener("wheel", handler, { passive: false });
-      return () => el.removeEventListener("wheel", handler);
-    }, [orderedSections.length]);
 
     return (
       <motion.div
