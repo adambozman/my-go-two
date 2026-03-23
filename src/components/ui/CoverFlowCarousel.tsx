@@ -5,6 +5,7 @@ import GoTwoCard from "@/components/ui/GoTwoCard";
 import { Pill } from "@/components/ui/pill";
 import InlinePhotoSearch from "@/components/InlinePhotoSearch";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export interface CoverFlowItem {
   id: string;
@@ -21,6 +22,7 @@ interface CoverFlowCarouselProps {
 }
 
 const VISIBLE = 2;
+
 function useLayout() {
   const get = () => {
     if (window.innerWidth >= 1024) {
@@ -28,12 +30,15 @@ function useLayout() {
     }
     return CAROUSEL_LAYOUT;
   };
+
   const [layout, setLayout] = useState(get);
+
   useEffect(() => {
     const handler = () => setLayout(get());
     window.addEventListener("resize", handler);
     return () => window.removeEventListener("resize", handler);
   }, []);
+
   return layout;
 }
 
@@ -55,15 +60,16 @@ function getPillX(offset: number, pills: { w: number; h: number; r: number }[]):
 const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
   ({ items, onSelect, initialActiveIndex = 0, sectionTitle }, ref) => {
     const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
-    const [, forceUpdate] = useReducer(x => x + 1, 0);
-    const [, forceImages] = useReducer(x => x + 1, 0);
+    const [, forceUpdate] = useReducer((x) => x + 1, 0);
+    const [, forceImages] = useReducer((x) => x + 1, 0);
+    const isMobile = useIsMobile();
 
-    // Re-render when any image override changes
     useEffect(() => {
       const handler = () => forceImages();
       window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
       return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
     }, []);
+
     const layout = useLayout();
     const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
     const { xGap, stageHeight, flankOpacity, spring, cardWidth, cardHeight, borderRadius } = layout;
@@ -71,8 +77,8 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
     const n = items.length;
     const touchStartX = useRef<number | null>(null);
     const touchStartY = useRef<number | null>(null);
+    const suppressNextClickRef = useRef(false);
 
-    // Keyboard navigation
     useEffect(() => {
       const handler = (e: KeyboardEvent) => {
         if (e.key === "ArrowLeft") setActiveIndex((i) => (i - 1 + n) % n);
@@ -94,32 +100,47 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
 
     const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
+    const handleTouchStart = isMobile
+      ? (e: { touches: { clientX: number; clientY: number }[] }) => {
+          touchStartX.current = e.touches[0].clientX;
+          touchStartY.current = e.touches[0].clientY;
+        }
+      : undefined;
+
+    const handleTouchEnd = isMobile
+      ? (e: { changedTouches: { clientX: number; clientY: number }[] }) => {
+          if (touchStartX.current === null || touchStartY.current === null) return;
+
+          const dx = touchStartX.current - e.changedTouches[0].clientX;
+          const dy = touchStartY.current - e.changedTouches[0].clientY;
+
+          if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+            suppressNextClickRef.current = true;
+            window.setTimeout(() => {
+              suppressNextClickRef.current = false;
+            }, 250);
+
+            if (dx > 0) setActiveIndex((i) => (i + 1) % n);
+            else setActiveIndex((i) => (i - 1 + n) % n);
+          }
+
+          touchStartX.current = null;
+          touchStartY.current = null;
+        }
+      : undefined;
+
     return (
       <div
         ref={ref}
         className="relative w-full flex flex-col items-center"
-        onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY; }}
-        onTouchEnd={(e) => {
-          if (touchStartX.current === null || touchStartY.current === null) return;
-          const dx = touchStartX.current - e.changedTouches[0].clientX;
-          const dy = touchStartY.current - e.changedTouches[0].clientY;
-          // Only handle horizontal swipes — ignore if vertical movement is greater
-          if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-            if (dx > 0) setActiveIndex((i) => (i + 1) % n);
-            else setActiveIndex((i) => (i - 1 + n) % n);
-          }
-          touchStartX.current = null;
-          touchStartY.current = null;
-        }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
-        {/* Stage */}
         <div
           className="relative w-full"
           style={{
             height: stageHeight,
-            marginTop: isDesktop
-              ? 44
-              : 24,
+            marginTop: isDesktop ? 44 : 24,
           }}
         >
           <div className="absolute inset-0 flex items-center justify-center">
@@ -129,10 +150,20 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
               const absOffset = Math.abs(offset);
               const isActive = offset === 0;
 
-              // Desktop pill path
               if (pills) {
                 const pill = pills[Math.min(absOffset, pills.length - 1)];
                 const x = getPillX(offset, pills);
+
+                const handleClick = () => {
+                  if (isMobile) {
+                    if (isActive && !suppressNextClickRef.current) onSelect(item.id);
+                    return;
+                  }
+
+                  if (isActive) onSelect(item.id);
+                  else setActiveIndex((activeIndex + offset + n) % n);
+                };
+
                 return (
                   <motion.div
                     key={`slot-${offset}`}
@@ -141,15 +172,14 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                     transition={spring}
                     className="absolute cursor-pointer"
                     style={{
-                      width: pill.w, height: pill.h, borderRadius: pill.r,
+                      width: pill.w,
+                      height: pill.h,
+                      borderRadius: pill.r,
                       boxShadow: isActive
                         ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
                         : "0 4px 16px rgba(0,0,0,0.12)",
                     }}
-                    onClick={() => {
-                      if (isActive) onSelect(item.id);
-                      else setActiveIndex((activeIndex + offset + n) % n);
-                    }}
+                    onClick={handleClick}
                   >
                     <div className="w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
                       <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
@@ -158,7 +188,17 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                       <>
                         <div className="absolute bottom-6 left-6 flex flex-col items-start gap-1.5">
                           {sectionTitle && (
-                            <Pill variant="title" size="default" className="text-[var(--swatch-teal)]" style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.86) 100%)", border: "1px solid rgba(255,255,255,0.88)", boxShadow: "0 4px 12px rgba(0,0,0,0.12)", fontSize: 14 }}>
+                            <Pill
+                              variant="title"
+                              size="default"
+                              className="text-[var(--swatch-teal)]"
+                              style={{
+                                background: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.86) 100%)",
+                                border: "1px solid rgba(255,255,255,0.88)",
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                                fontSize: 14,
+                              }}
+                            >
                               {sectionTitle}
                             </Pill>
                           )}
@@ -166,14 +206,17 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                             {item.label}
                           </Pill>
                         </div>
-                        <InlinePhotoSearch imageKey={(item as any).imageKey || item.id} label={item.label} onImageChanged={forceUpdate} />
+                        <InlinePhotoSearch
+                          imageKey={(item as any).imageKey || item.id}
+                          label={item.label}
+                          onImageChanged={forceUpdate}
+                        />
                       </>
                     )}
                   </motion.div>
                 );
               }
 
-              // Mobile/tablet path — completely untouched
               return (
                 <motion.div
                   key={`slot-${offset}`}
@@ -198,11 +241,22 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                       cardHeight={cardHeight}
                       borderRadius={borderRadius}
                       onClick={() => {
+                        if (isMobile) {
+                          if (isActive && !suppressNextClickRef.current) onSelect(item.id);
+                          return;
+                        }
+
                         if (isActive) onSelect(item.id);
                         else setActiveIndex((activeIndex + offset + n) % n);
                       }}
                     />
-                    {isActive && <InlinePhotoSearch imageKey={(item as any).imageKey || item.id} label={item.label} onImageChanged={forceUpdate} />}
+                    {isActive && (
+                      <InlinePhotoSearch
+                        imageKey={(item as any).imageKey || item.id}
+                        label={item.label}
+                        onImageChanged={forceUpdate}
+                      />
+                    )}
                   </div>
                 </motion.div>
               );

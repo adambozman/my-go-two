@@ -89,6 +89,8 @@ const MyGoTwo = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const savedScrollTop = useRef(0);
+  const verticalTouchStartX = useRef<number | null>(null);
+  const verticalTouchStartY = useRef<number | null>(null);
 
   const [cardKey, setCardKey] = useState<string | null>(null);
   const [entries, setEntries] = useState<CardEntry[]>([]);
@@ -770,15 +772,27 @@ const MyGoTwo = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="stacked-deck-container"
-        onPanEnd={(_e, info) => {
-          // Vertical swipe to switch sections
-          if (Math.abs(info.velocity.y) > 100 && Math.abs(info.offset.y) > 40 && Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
-            if (info.offset.y < 0 && activeSectionIndex < orderedSections.length - 1) {
+        onTouchStart={(e) => {
+          verticalTouchStartX.current = e.touches[0].clientX;
+          verticalTouchStartY.current = e.touches[0].clientY;
+        }}
+        onTouchEnd={(e) => {
+          if (verticalTouchStartX.current === null || verticalTouchStartY.current === null) return;
+
+          const dx = verticalTouchStartX.current - e.changedTouches[0].clientX;
+          const dy = verticalTouchStartY.current - e.changedTouches[0].clientY;
+
+          // Only treat the gesture as a section switch when vertical movement clearly wins.
+          if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx) * 1.2) {
+            if (dy > 0 && activeSectionIndex < orderedSections.length - 1) {
               setActiveSectionIndex(activeSectionIndex + 1);
-            } else if (info.offset.y > 0 && activeSectionIndex > 0) {
+            } else if (dy < 0 && activeSectionIndex > 0) {
               setActiveSectionIndex(activeSectionIndex - 1);
             }
           }
+
+          verticalTouchStartX.current = null;
+          verticalTouchStartY.current = null;
         }}
       >
         {orderedSections.map((section, index) => {
