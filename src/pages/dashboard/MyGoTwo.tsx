@@ -771,6 +771,20 @@ const MyGoTwo = () => {
       );
     }
 
+    const neighborOffsets =
+      orderedSections.length >= 5
+        ? [-2, -1, 0, 1, 2]
+        : orderedSections.length === 4
+          ? [-2, -1, 0, 1]
+          : orderedSections.length === 3
+            ? [-1, 0, 1]
+            : [0];
+
+    const handleNeighborClick = (offset: number) => {
+      if (orderedSections.length === 0) return;
+      setSectionIndex(normalizeIndex(activeSectionIndex + offset, orderedSections.length));
+    };
+
     return (
       <motion.div
         key="main"
@@ -778,69 +792,76 @@ const MyGoTwo = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="stacked-deck-container"
+        className="vertical-coverflow"
         onPanEnd={(_e, info) => {
           const step = getStepFromSwipe(info.offset.y, info.offset.x, info.velocity.y);
           if (step !== 0) rotateSections(step);
         }}
       >
-        {orderedSections.map((section, index) => {
-          const distance = normalizeIndex(index - activeSectionIndex, orderedSections.length);
-          const wrappedDepth = distance === 0 ? 0 : distance;
-          const isActive = wrappedDepth === 0;
-          const heroItem = section.items[0];
-          const isVisiblePreview = wrappedDepth > 0 && wrappedDepth <= 3;
+        <div className="vertical-coverflow-rail">
+          {orderedSections.length === 0 ? (
+            <p className="text-muted-foreground text-center mt-12">No categories found.</p>
+          ) : (
+            neighborOffsets.map((offset) => {
+              const index = normalizeIndex(activeSectionIndex + offset, orderedSections.length);
+              const section = orderedSections[index];
+              const isActive = offset === 0;
+              const distance = Math.abs(offset);
+              const heroItem = section.items[0];
 
-          return (
-            <motion.div
-              key={section.key}
-              data-section-key={section.key}
-              ref={(node) => {
-                sectionRefs.current[section.key] = node;
-              }}
-              className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
-              animate={{
-                y: isActive ? 0 : -(wrappedDepth * 30),
-                scale: isActive ? 1 : 1 - wrappedDepth * 0.045,
-                scaleX: isActive ? 1 : 1 - wrappedDepth * 0.06,
-                zIndex: isActive ? 10 : 10 - wrappedDepth,
-                opacity: wrappedDepth > 3 ? 0 : 1 - wrappedDepth * 0.1,
-              }}
-              transition={{ type: "spring", stiffness: 320, damping: 30 }}
-              style={{
-                pointerEvents: isActive || isVisiblePreview ? "auto" : "none",
-              }}
-            >
-              {isActive ? (
-                <GoTwoCoverFlow
-                  items={section.items}
-                  onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                  focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                  showPagination={isActive}
-                  sectionTitle={section.label}
-                />
-              ) : (
-                <div
-                  className="stacked-deck-hero-card"
-                  style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
-                  onClick={() => selectSectionIndex(index)}
-                />
-              )}
-            </motion.div>
-          );
-        })}
-        {orderedSections.length === 0 && (
-          <p className="text-muted-foreground text-center mt-12">No categories found.</p>
-        )}
-        {/* Visual-only section indicators */}
-        <div
-          className="fixed hidden flex-col items-center gap-2 lg:flex pointer-events-none"
-          style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
-        >
+              return (
+                <motion.div
+                  key={`${section.key}-${offset}`}
+                  data-section-key={section.key}
+                  ref={(node) => {
+                    if (isActive) sectionRefs.current[section.key] = node;
+                  }}
+                  className="vertical-coverflow-slot"
+                  animate={{
+                    y: offset * 210,
+                    scale: isActive ? 1 : 1 - Math.min(distance, 2) * 0.08,
+                    opacity: distance > 2 ? 0 : 1 - distance * 0.12,
+                    zIndex: 12 - distance,
+                  }}
+                  transition={{ type: "spring", stiffness: 320, damping: 30 }}
+                  onClick={() => handleNeighborClick(offset)}
+                >
+                  {isActive ? (
+                    <GoTwoCoverFlow
+                      items={section.items}
+                      onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                      focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                      showPagination
+                      sectionTitle={section.label}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      className="vertical-coverflow-preview"
+                      aria-label={`Open ${section.label}`}
+                    >
+                      <div
+                        className="vertical-coverflow-preview__image"
+                        style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
+                      />
+                      <div className="vertical-coverflow-preview__title">
+                        <span className="vertical-coverflow-preview__eyebrow">Next card</span>
+                        <span className="vertical-coverflow-preview__label">{section.label}</span>
+                      </div>
+                    </button>
+                  )}
+                </motion.div>
+              );
+            })
+          )}
+        </div>
+
+        <div className="vertical-coverflow-indicators">
           {orderedSections.map((_, i) => (
             <div
               key={i}
-              style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }}
+              className="vertical-coverflow-indicator-dot"
+              data-active={i === activeSectionIndex}
             />
           ))}
         </div>

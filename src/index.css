@@ -369,6 +369,118 @@ body {
   padding-top: 18px;
 }
 
+.vertical-coverflow {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - var(--header-height));
+  overflow: hidden;
+}
+
+.vertical-coverflow-rail {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vertical-coverflow-slot {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(92vw, 860px);
+  pointer-events: auto;
+}
+
+.vertical-coverflow-preview {
+  width: 100%;
+  border: 1px solid rgba(45, 104, 112, 0.15);
+  border-radius: 28px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(45, 104, 112, 0.14), rgba(45, 104, 112, 0.04));
+  box-shadow:
+    0 18px 46px rgba(var(--swatch-viridian-odyssey-rgb), 0.18),
+    0 6px 16px rgba(var(--swatch-cedar-grove-rgb), 0.12);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.vertical-coverflow-preview:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 22px 52px rgba(var(--swatch-viridian-odyssey-rgb), 0.24),
+    0 10px 22px rgba(var(--swatch-cedar-grove-rgb), 0.16);
+}
+
+.vertical-coverflow-preview__image {
+  min-height: 220px;
+  background-size: cover;
+  background-position: center;
+}
+
+.vertical-coverflow-preview__title {
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  text-align: left;
+}
+
+.vertical-coverflow-preview__eyebrow {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: rgba(45, 104, 112, 0.76);
+}
+
+.vertical-coverflow-preview__label {
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 700;
+  color: var(--logo-two-color);
+}
+
+.vertical-coverflow-indicators {
+  position: fixed;
+  right: 18px;
+  top: calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px);
+  transform: translateY(-50%);
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 50;
+}
+
+.vertical-coverflow-indicator-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(45, 104, 112, 0.28);
+  transition: all 0.25s ease;
+}
+
+.vertical-coverflow-indicator-dot[data-active="true"] {
+  height: 20px;
+  background: var(--swatch-teal);
+}
+
+@media (min-width: 1024px) {
+  .vertical-coverflow-slot {
+    width: min(82vw, 960px);
+  }
+
+  .vertical-coverflow-preview__image {
+    min-height: 320px;
+  }
+
+  .vertical-coverflow-indicators {
+    display: flex;
+  }
+}
+
 /* Stacked deck layout — all sections occupy the same space */
 .stacked-deck-container {
   position: relative;
