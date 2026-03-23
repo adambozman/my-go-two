@@ -117,6 +117,12 @@ const MyGoTwo = () => {
     return () => window.removeEventListener("resize", updateViewport);
   }, []);
 
+  useEffect(() => {
+    // Ensure coverflow layout math uses the global header variable from CSS,
+    // not any stale inline override left from a previous runtime.
+    document.documentElement.style.removeProperty("--header-height");
+  }, []);
+
   const defaultFieldValues = useMemo(() => {
     if (!leafSubtype?.fields) return {} as Record<string, string>;
     return leafSubtype.fields.reduce(
