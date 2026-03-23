@@ -572,6 +572,29 @@ const MyGoTwo = () => {
     toast({ title: "Group created" });
   };
 
+  const wheelTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || orderedSections.length <= 1) return;
+
+    const handler = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) < 30) return;
+      e.preventDefault();
+      if (wheelTimerRef.current) return;
+      wheelTimerRef.current = window.setTimeout(() => { wheelTimerRef.current = null; }, 400);
+
+      if (e.deltaY > 0) {
+        setActiveSectionIndex((current) => (current + 1) % orderedSections.length);
+      } else {
+        setActiveSectionIndex((current) => (current - 1 + orderedSections.length) % orderedSections.length);
+      }
+    };
+
+    el.addEventListener("wheel", handler, { passive: false });
+    return () => el.removeEventListener("wheel", handler);
+  }, [orderedSections.length]);
+
   if (registryLoading || genderLoading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
