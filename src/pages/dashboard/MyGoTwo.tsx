@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
+import { CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Check, Plus, Trash2, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 import ProductEntryCard from "@/components/ui/ProductEntryCard";
 import { resolveStorageUrl } from "@/lib/storageRefs";
 import { useIsMobile } from "@/hooks/use-mobile";
+import CoverflowWheel from "@/components/ui/CoverflowWheel";
 
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
@@ -84,15 +85,12 @@ const MyGoTwo = () => {
   const [focusedSubcategoryId, setFocusedSubcategoryId] = useState<string | null>(null);
   const [focusedLeafItemId, setFocusedLeafItemId] = useState<string | null>(null);
   const [focusedMainCategoryBySection, setFocusedMainCategoryBySection] = useState<Record<string, string>>({});
-  const [lastMainSectionKey, setLastMainSectionKey] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const savedScrollTop = useRef(0);
   const verticalTouchStartX = useRef<number | null>(null);
   const verticalTouchStartY = useRef<number | null>(null);
+  const lastVerticalWheelAt = useRef(0);
 
   const [cardKey, setCardKey] = useState<string | null>(null);
   const [entries, setEntries] = useState<CardEntry[]>([]);
@@ -263,51 +261,9 @@ const MyGoTwo = () => {
     });
   }, [activeGroup, cardKey, productGroups.length]);
 
-  const getNearestSectionIndex = useCallback(
-    (scrollTop: number) => {
-      if (visibleSectionKeys.length === 0) return 0;
-
-      let nearestIndex = 0;
-      let nearestDistance = Number.POSITIVE_INFINITY;
-
-      visibleSectionKeys.forEach((key, index) => {
-        const sectionTop = sectionRefs.current[key]?.offsetTop ?? 0;
-        const distance = Math.abs(sectionTop - scrollTop);
-
-        if (distance < nearestDistance) {
-          nearestDistance = distance;
-          nearestIndex = index;
-        }
-      });
-
-      return nearestIndex;
-    },
-    [visibleSectionKeys],
-  );
-
   useEffect(() => {
     setActiveSectionIndex((prev) => Math.min(prev, Math.max(visibleSectionKeys.length - 1, 0)));
   }, [visibleSectionKeys.length]);
-
-  useEffect(() => {
-    if (coverFlowState || cardKey) return;
-
-    requestAnimationFrame(() => {
-      const el = scrollRef.current;
-      if (!el) return;
-
-      const targetSectionTop =
-        lastMainSectionKey && sectionRefs.current[lastMainSectionKey]
-          ? sectionRefs.current[lastMainSectionKey]!.offsetTop
-          : null;
-
-      const targetScrollTop = targetSectionTop ?? savedScrollTop.current;
-
-      el.scrollTop = targetScrollTop;
-      savedScrollTop.current = targetScrollTop;
-      setActiveSectionIndex(getNearestSectionIndex(targetScrollTop));
-    });
-  }, [coverFlowState, cardKey, lastMainSectionKey, getNearestSectionIndex]);
 
   const clearCoverFlow = () => {
     setCoverFlowState(null);
@@ -373,13 +329,9 @@ const MyGoTwo = () => {
   }, [coverFlowState, activeSubcategory, cardKey, leafSubtype]);
 
   const handleCategoryClick = (item: CategoryItem) => {
-    if (scrollRef.current) {
-      savedScrollTop.current = scrollRef.current.scrollTop;
-    }
     const subtypes = (item.fields as unknown as SubtypeItem[]) || [];
     const subcategories = item.subcategories as unknown as SubcategoryGroup[] | undefined;
     if (subtypes.length > 0 || (subcategories && subcategories.length > 0)) {
-      setLastMainSectionKey(item.section);
       setFocusedMainCategoryBySection((prev) => ({ ...prev, [item.section]: item.key }));
       setCoverFlowState({ name: item.label, subtypes, subcategories, section: item.section, categoryId: item.key.replace(/-male$|-female$|-nb$/, "") });
       setFocusedSubcategoryId(null);
@@ -582,6 +534,27 @@ const MyGoTwo = () => {
     items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
   }));
   const activeSection = orderedSections[activeSectionIndex];
+  const rotateSections = useCallback((step: number) => {
+    if (orderedSections.length === 0) return;
+    setActiveSectionIndex((current) => (current + step + orderedSections.length) % orderedSections.length);
+  }, [orderedSections.length]);
+
+  useEffect(() => {
+    if (isMobile || coverFlowState || cardKey || orderedSections.length === 0) return;
+
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        rotateSections(-1);
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        rotateSections(1);
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [cardKey, coverFlowState, isMobile, orderedSections.length, rotateSections]);
 
   const renderContent = () => {
     if (cardKey && leafSubtype) {
@@ -770,11 +743,10 @@ const MyGoTwo = () => {
     return (
       <motion.div
         key="main"
-        ref={scrollRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="stacked-deck-container"
+        className="coverflow-stage-shell"
         onTouchStart={isMobile ? (e) => {
           verticalTouchStartX.current = e.touches[0].clientX;
           verticalTouchStartY.current = e.touches[0].clientY;
@@ -787,16 +759,26 @@ const MyGoTwo = () => {
 
           // Only treat the gesture as a section switch when vertical movement clearly wins.
           if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx) * 1.2) {
-            if (dy > 0 && activeSectionIndex < orderedSections.length - 1) {
-              setActiveSectionIndex(activeSectionIndex + 1);
-            } else if (dy < 0 && activeSectionIndex > 0) {
-              setActiveSectionIndex(activeSectionIndex - 1);
-            }
+            rotateSections(dy > 0 ? 1 : -1);
           }
 
           verticalTouchStartX.current = null;
           verticalTouchStartY.current = null;
         } : undefined}
+        onWheel={!isMobile ? (e) => {
+          if (orderedSections.length <= 1 || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+
+          const now = Date.now();
+          if (now - lastVerticalWheelAt.current < 420) {
+            e.preventDefault();
+            return;
+          }
+
+          lastVerticalWheelAt.current = now;
+          e.preventDefault();
+          rotateSections(e.deltaY > 0 ? 1 : -1);
+        } : undefined}
+        style={{ touchAction: "none", overflow: "hidden" }}
       >
         {isMobile ? (
           <div className="w-full flex flex-col items-center px-3 pt-2 pb-6">
@@ -816,52 +798,50 @@ const MyGoTwo = () => {
           </div>
         ) : (
           <>
-            {orderedSections.map((section, index) => {
-              const totalSections = orderedSections.length;
-              const rawDistance = (index - activeSectionIndex + totalSections) % totalSections;
-              const distance = rawDistance > totalSections / 2 ? rawDistance - totalSections : rawDistance;
-              const absD = Math.abs(distance);
-              const isActive = distance === 0;
-              const heroItem = section.items[0];
+            <div className="relative h-[calc(100vh-var(--header-height))] w-full overflow-hidden">
+              <CoverflowWheel
+                items={orderedSections}
+                activeIndex={activeSectionIndex}
+                orientation="vertical"
+                pills={CAROUSEL_LAYOUT_DESKTOP.pills}
+                spring={CAROUSEL_LAYOUT_DESKTOP.spring}
+                className="absolute inset-0 flex items-center justify-center"
+                onItemClick={({ offset }) => {
+                  if (offset !== 0) {
+                    setActiveSectionIndex((current) => (current + offset + orderedSections.length) % orderedSections.length);
+                  }
+                }}
+                renderItem={({ item, isActive, pill }) => {
+                  const heroItem = item.items[0];
 
-              return (
-                <motion.div
-                  key={section.key}
-                  data-section-key={section.key}
-                  ref={(node) => {
-                    sectionRefs.current[section.key] = node;
-                  }}
-                  className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
-                  animate={{
-                    y: isActive ? 0 : -(absD * 30),
-                    scale: isActive ? 1 : 1 - absD * 0.045,
-                    scaleX: isActive ? 1 : 1 - absD * 0.06,
-                    zIndex: isActive ? 10 : 10 - absD,
-                    opacity: absD > 3 ? 0 : 1 - absD * 0.1,
-                  }}
-                  transition={{ type: "spring", stiffness: 320, damping: 30 }}
-                  style={{
-                    pointerEvents: isActive ? "none" : "auto",
-                  }}
-                >
-                  {isActive ? (
-                    <GoTwoCoverFlow
-                      items={section.items}
-                      onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                      focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                      showPagination={isActive}
-                      sectionTitle={section.label}
-                    />
+                  return isActive ? (
+                    <div className="relative w-full">
+                      <GoTwoCoverFlow
+                        items={item.items}
+                        onSelect={(categoryId) => handleSelect(item.key, categoryId)}
+                        focusedItemId={focusedMainCategoryBySection[item.key] ?? null}
+                        showPagination
+                        sectionTitle={item.label}
+                      />
+                    </div>
                   ) : (
-                    <div
-                      className="stacked-deck-hero-card"
-                      style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
-                      onClick={() => setActiveSectionIndex(index)}
+                    <button
+                      type="button"
+                      className="stacked-deck-hero-card h-full w-full border-0 bg-transparent p-0"
+                      style={{
+                        borderRadius: pill.r,
+                        backgroundImage: heroItem ? `url(${heroItem.image})` : undefined,
+                      }}
+                      onClick={() => {
+                        const nextIndex = orderedSections.findIndex((section) => section.key === item.key);
+                        if (nextIndex >= 0) setActiveSectionIndex(nextIndex);
+                      }}
+                      aria-label={`Bring ${item.label} forward`}
                     />
-                  )}
-                </motion.div>
-              );
-            })}
+                  );
+                }}
+              />
+            </div>
             {orderedSections.length === 0 && (
               <p className="text-muted-foreground text-center mt-12">No categories found.</p>
             )}

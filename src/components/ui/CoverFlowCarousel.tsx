@@ -6,6 +6,7 @@ import { Pill } from "@/components/ui/pill";
 import InlinePhotoSearch from "@/components/InlinePhotoSearch";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { useIsMobile } from "@/hooks/use-mobile";
+import CoverflowWheel from "@/components/ui/CoverflowWheel";
 
 export interface CoverFlowItem {
   id: string;
@@ -20,8 +21,6 @@ interface CoverFlowCarouselProps {
   initialActiveIndex?: number;
   sectionTitle?: string;
 }
-
-const VISIBLE = 2;
 
 function useLayout() {
   const get = () => {
@@ -40,21 +39,6 @@ function useLayout() {
   }, []);
 
   return layout;
-}
-
-const PILL_GAP = 20;
-
-function getPillX(offset: number, pills: { w: number; h: number; r: number }[]): number {
-  if (offset === 0) return 0;
-  const dir = offset > 0 ? 1 : -1;
-  const abs = Math.abs(offset);
-  let x = 0;
-  for (let i = 0; i < abs; i++) {
-    const a = pills[Math.min(i, pills.length - 1)];
-    const b = pills[Math.min(i + 1, pills.length - 1)];
-    x += a.w / 2 + PILL_GAP + b.w / 2;
-  }
-  return x * dir;
 }
 
 const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
@@ -97,8 +81,6 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
     }, [initialActiveIndex, n]);
 
     if (n === 0) return null;
-
-    const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
     const handleTouchStart = isMobile
       ? (e: { touches: { clientX: number; clientY: number }[] }) => {
@@ -150,42 +132,30 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
           }}
         >
           <div className="absolute inset-0 flex items-center justify-center">
-            {slots.map((offset) => {
-              const itemIndex = (activeIndex + offset + n) % n;
-              const item = items[itemIndex];
-              const absOffset = Math.abs(offset);
-              const isActive = offset === 0;
-
-              if (pills) {
-                const pill = pills[Math.min(absOffset, pills.length - 1)];
-                const x = getPillX(offset, pills);
-
-                const handleClick = () => {
+            {pills ? (
+              <CoverflowWheel
+                items={items}
+                activeIndex={activeIndex}
+                pills={pills}
+                spring={spring}
+                onItemClick={({ item, isActive, offset }) => {
                   if (isMobile) {
                     if (isActive && !suppressNextClickRef.current) onSelect(item.id);
                     return;
                   }
 
                   if (isActive) onSelect(item.id);
-                  else setActiveIndex((activeIndex + offset + n) % n);
-                };
-
-                return (
-                  <motion.div
-                    key={`slot-${offset}`}
-                    initial={false}
-                    animate={{ x, zIndex: VISIBLE + 1 - absOffset, opacity: 1 }}
-                    transition={spring}
-                    className="absolute cursor-pointer"
+                  else setActiveIndex((current) => (current + offset + n) % n);
+                }}
+                renderItem={({ item, isActive, pill }) => (
+                  <div
+                    className="relative h-full w-full cursor-pointer"
                     style={{
-                      width: pill.w,
-                      height: pill.h,
                       borderRadius: pill.r,
                       boxShadow: isActive
                         ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
                         : "0 4px 16px rgba(0,0,0,0.12)",
                     }}
-                    onClick={handleClick}
                   >
                     <div className="w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
                       <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
@@ -219,54 +189,61 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                         />
                       </>
                     )}
+                  </div>
+                )}
+              />
+            ) : (
+              Array.from({ length: 5 }, (_, i) => i - 2).map((offset) => {
+                const itemIndex = (activeIndex + offset + n) % n;
+                const item = items[itemIndex];
+                const absOffset = Math.abs(offset);
+                const isActive = offset === 0;
+
+                return (
+                  <motion.div
+                    key={`slot-${offset}`}
+                    initial={false}
+                    animate={{
+                      x: offset * xGap,
+                      scale: isActive ? 1 : 0.6,
+                      opacity: isActive ? 1 : flankOpacity,
+                      zIndex: 3 - absOffset,
+                    }}
+                    transition={spring}
+                    className="absolute"
+                    style={{ position: "absolute" }}
+                  >
+                    <div style={{ position: "relative" }}>
+                      <GoTwoCard
+                        image={item.image}
+                        label={item.label}
+                        sectionTitle={sectionTitle}
+                        isActive={isActive}
+                        cardWidth={cardWidth}
+                        cardHeight={cardHeight}
+                        borderRadius={borderRadius}
+                        onClick={() => {
+                          if (isMobile) {
+                            if (isActive && !suppressNextClickRef.current) onSelect(item.id);
+                            return;
+                          }
+
+                          if (isActive) onSelect(item.id);
+                          else setActiveIndex((activeIndex + offset + n) % n);
+                        }}
+                      />
+                      {isActive && (
+                        <InlinePhotoSearch
+                          imageKey={(item as any).imageKey || item.id}
+                          label={item.label}
+                          onImageChanged={forceUpdate}
+                        />
+                      )}
+                    </div>
                   </motion.div>
                 );
-              }
-
-              return (
-                <motion.div
-                  key={`slot-${offset}`}
-                  initial={false}
-                  animate={{
-                    x: offset * xGap,
-                    scale: isActive ? 1 : 0.6,
-                    opacity: isActive ? 1 : flankOpacity,
-                    zIndex: VISIBLE + 1 - absOffset,
-                  }}
-                  transition={spring}
-                  className="absolute"
-                  style={{ position: "absolute" }}
-                >
-                  <div style={{ position: "relative" }}>
-                    <GoTwoCard
-                      image={item.image}
-                      label={item.label}
-                      sectionTitle={sectionTitle}
-                      isActive={isActive}
-                      cardWidth={cardWidth}
-                      cardHeight={cardHeight}
-                      borderRadius={borderRadius}
-                      onClick={() => {
-                        if (isMobile) {
-                          if (isActive && !suppressNextClickRef.current) onSelect(item.id);
-                          return;
-                        }
-
-                        if (isActive) onSelect(item.id);
-                        else setActiveIndex((activeIndex + offset + n) % n);
-                      }}
-                    />
-                    {isActive && (
-                      <InlinePhotoSearch
-                        imageKey={(item as any).imageKey || item.id}
-                        label={item.label}
-                        onImageChanged={forceUpdate}
-                      />
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
+              })
+            )}
           </div>
         </div>
       </div>
