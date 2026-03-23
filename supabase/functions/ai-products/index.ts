@@ -256,7 +256,7 @@ Use the provided tool.`;
               search_url: resolved.link_kind === "search" ? resolved.link_url : null,
               product_query: resolved.search_query,
               sponsored_id: null,
-              image_url: resolved.image_url,
+              image_url: intent.product_image_url || resolved.image_url,
               source_kind: resolved.link_kind === "product" ? "specific-product" : "brand-search",
               source_version: resolved.source_version,
             });
