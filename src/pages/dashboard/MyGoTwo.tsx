@@ -771,19 +771,8 @@ const MyGoTwo = () => {
       );
     }
 
-    const neighborOffsets =
-      orderedSections.length >= 5
-        ? [-2, -1, 0, 1, 2]
-        : orderedSections.length === 4
-          ? [-2, -1, 0, 1]
-          : orderedSections.length === 3
-            ? [-1, 0, 1]
-            : [0];
-
-    const handleNeighborClick = (offset: number) => {
-      if (orderedSections.length === 0) return;
-      selectSectionIndex(normalizeIndex(activeSectionIndex + offset, orderedSections.length));
-    };
+    const maxPreviewDepth = Math.min(3, Math.max(0, orderedSections.length - 1));
+    const slotDepths = [0, ...Array.from({ length: maxPreviewDepth }, (_, i) => i + 1)];
 
     return (
       <motion.div
@@ -792,78 +781,72 @@ const MyGoTwo = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="vertical-coverflow"
+        className="stacked-deck-container"
         onPanEnd={(_e, info) => {
           const step = getStepFromSwipe(info.offset.y, info.offset.x, info.velocity.y);
           if (step !== 0) rotateSections(step);
         }}
       >
-        <div className="vertical-coverflow-rail">
-          {orderedSections.length === 0 ? (
-            <p className="text-muted-foreground text-center mt-12">No categories found.</p>
-          ) : (
-            neighborOffsets.map((offset) => {
-              const index = normalizeIndex(activeSectionIndex + offset, orderedSections.length);
-              const section = orderedSections[index];
-              const isActive = offset === 0;
-              const distance = Math.abs(offset);
-              const heroItem = section.items[0];
+        {slotDepths
+          .slice()
+          .reverse()
+          .map((depth) => {
+            const index = normalizeIndex(activeSectionIndex + depth, orderedSections.length);
+            const section = orderedSections[index];
+            const isActive = depth === 0;
+            const heroItem = section?.items[0];
 
-              return (
-                <motion.div
-                  key={`${section.key}-${offset}`}
-                  data-section-key={section.key}
-                  ref={(node) => {
-                    if (isActive) sectionRefs.current[section.key] = node;
-                  }}
-                  className="vertical-coverflow-slot"
-                  animate={{
-                    y: offset * 210,
-                    scale: isActive ? 1 : 1 - Math.min(distance, 2) * 0.08,
-                    opacity: distance > 2 ? 0 : 1 - distance * 0.12,
-                    zIndex: 12 - distance,
-                  }}
-                  transition={{ type: "spring", stiffness: 320, damping: 30 }}
-                >
-                  {isActive ? (
-                    <div className="vertical-coverflow-slot__active">
-                      <GoTwoCoverFlow
-                        items={section.items}
-                        onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                        focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                        showPagination
-                        sectionTitle={section.label}
-                      />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      className="vertical-coverflow-preview"
-                      aria-label={`Open ${section.label}`}
-                      onClick={() => handleNeighborClick(offset)}
-                    >
-                      <div
-                        className="vertical-coverflow-preview__image"
-                        style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
-                      />
-                      <div className="vertical-coverflow-preview__title">
-                        <span className="vertical-coverflow-preview__eyebrow">Next card</span>
-                        <span className="vertical-coverflow-preview__label">{section.label}</span>
-                      </div>
-                    </button>
-                  )}
-                </motion.div>
-              );
-            })
-          )}
-        </div>
+            if (!section) return null;
 
-        <div className="vertical-coverflow-indicators">
+            return (
+            <motion.div
+              key={`${section.key}-${depth}`}
+              data-section-key={section.key}
+              ref={(node) => {
+                if (isActive) sectionRefs.current[section.key] = node;
+              }}
+              className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
+              animate={{
+                y: isActive ? 0 : -(depth * 30),
+                scale: isActive ? 1 : 1 - depth * 0.045,
+                scaleX: isActive ? 1 : 1 - depth * 0.06,
+                zIndex: isActive ? 10 : 10 - depth,
+                opacity: isActive ? 1 : 1 - depth * 0.1,
+              }}
+              transition={{ type: "spring", stiffness: 320, damping: 30 }}
+            >
+              {isActive ? (
+                <div className="stacked-deck-active-shell">
+                  <GoTwoCoverFlow
+                    items={section.items}
+                    onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                    focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                    showPagination
+                    sectionTitle={section.label}
+                  />
+                </div>
+              ) : (
+                <div
+                  className="stacked-deck-hero-card"
+                  style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
+                  onClick={() => selectSectionIndex(index)}
+                />
+              )}
+            </motion.div>
+            );
+          })}
+        {orderedSections.length === 0 && (
+          <p className="text-muted-foreground text-center mt-12">No categories found.</p>
+        )}
+        {/* Visual-only section indicators */}
+        <div
+          className="fixed hidden flex-col items-center gap-2 lg:flex pointer-events-none"
+          style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
+        >
           {orderedSections.map((_, i) => (
             <div
               key={i}
-              className="vertical-coverflow-indicator-dot"
-              data-active={i === activeSectionIndex}
+              style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }}
             />
           ))}
         </div>

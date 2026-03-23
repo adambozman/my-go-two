@@ -503,10 +503,16 @@ body {
   justify-content: flex-start;
   padding-top: 80px;
   will-change: transform, opacity;
+  pointer-events: none;
 }
 
 .stacked-deck-layer--bg {
   padding-top: 80px;
+}
+
+.stacked-deck-active-shell {
+  width: 100%;
+  pointer-events: auto;
 }
 
 .stacked-deck-hero-card {
