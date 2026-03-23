@@ -102,13 +102,14 @@ const WebCoverFlow = forwardRef<HTMLDivElement, WebCoverFlowProps>(
                     width: pill.w,
                     height: pill.h,
                     borderRadius: pill.r,
+                    pointerEvents: isActive ? "none" : "auto",
                     boxShadow: isActive
                       ? "0 0 24px 6px rgba(45,104,112,0.45), 0 8px 32px rgba(0,0,0,0.18)"
                       : "0 4px 16px rgba(0,0,0,0.12)",
                   }}
                   onClick={() => {
                     if (isActive) onSelect(item.id);
-                    else setActiveIndex((activeIndex + offset + items.length) % items.length);
+                    else setActiveIndex((current) => (current + offset + items.length) % items.length);
                   }}
                   aria-label={isActive ? `Open ${item.label}` : `Bring ${item.label} forward`}
                 >
