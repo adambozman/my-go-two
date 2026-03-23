@@ -16,6 +16,7 @@ const GoTwoCard = forwardRef<HTMLDivElement, GoTwoCardProps>(
   ({
     image,
     label,
+    sectionTitle,
     isActive = true,
     onClick,
     cardWidth = CAROUSEL_LAYOUT.cardWidth,
