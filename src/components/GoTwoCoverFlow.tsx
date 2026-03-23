@@ -6,6 +6,7 @@ interface GoTwoCoverFlowProps {
   onSelect: (id: string) => void;
   focusedItemId?: string | null;
   showPagination?: boolean;
+  sectionTitle?: string;
 }
 
 const GoTwoCoverFlow = forwardRef<HTMLDivElement, GoTwoCoverFlowProps>(
