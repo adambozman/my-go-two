@@ -129,6 +129,11 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
               const absOffset = Math.abs(offset);
               const isActive = offset === 0;
 
+              // Gather neighbor images for stacked preview
+              const stackImages = isActive
+                ? [1, 2, 3].map((off) => items[(itemIndex + off) % n]?.image).filter(Boolean)
+                : [];
+
               // Desktop pill path
               if (pills) {
                 const pill = pills[Math.min(absOffset, pills.length - 1)];
@@ -151,12 +156,13 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                       else setActiveIndex((activeIndex + offset + n) % n);
                     }}
                   >
-                    <div className="w-full h-full overflow-hidden" style={{ borderRadius: pill.r }}>
+                    {isActive && <StackedCardPreview images={stackImages} cardWidth={pill.w} />}
+                    <div className="relative w-full h-full overflow-hidden" style={{ borderRadius: pill.r, zIndex: 5 }}>
                       <img src={item.image} alt={item.label} className="w-full h-full object-cover" />
                     </div>
                     {isActive && (
                       <>
-                        <div className="absolute bottom-6 left-6">
+                        <div className="absolute bottom-6 left-6" style={{ zIndex: 6 }}>
                           <Pill variant="title" size="default">
                             {item.label}
                           </Pill>
