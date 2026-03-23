@@ -581,6 +581,7 @@ const MyGoTwo = () => {
     label: sectionLabels[key] ?? key,
     items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
   }));
+  const activeSection = orderedSections[activeSectionIndex];
 
   const renderContent = () => {
     if (cardKey && leafSubtype) {
@@ -797,65 +798,91 @@ const MyGoTwo = () => {
           verticalTouchStartY.current = null;
         } : undefined}
       >
-        {orderedSections.map((section, index) => {
-          const distance = index - activeSectionIndex;
-          const absD = Math.abs(distance);
-          const isActive = distance === 0;
-          const heroItem = section.items[0];
-
-          return (
-            <motion.div
-              key={section.key}
-              data-section-key={section.key}
-              ref={(node) => {
-                sectionRefs.current[section.key] = node;
-              }}
-              className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
-              animate={{
-                y: isActive ? 0 : -(absD * 30),
-                scale: isActive ? 1 : 1 - absD * 0.045,
-                scaleX: isActive ? 1 : 1 - absD * 0.06,
-                zIndex: isActive ? 10 : 10 - absD,
-                opacity: absD > 3 ? 0 : 1 - absD * 0.1,
-              }}
-              transition={{ type: "spring", stiffness: 320, damping: 30 }}
-              style={{
-                pointerEvents: "auto",
-              }}
-            >
-              {isActive ? (
-                <GoTwoCoverFlow
-                  items={section.items}
-                  onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                  focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                  showPagination={isActive}
-                  sectionTitle={section.label}
-                />
-              ) : (
-                <div
-                  className="stacked-deck-hero-card"
-                  style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
-                  onClick={() => setActiveSectionIndex(index)}
-                />
-              )}
-            </motion.div>
-          );
-        })}
-        {orderedSections.length === 0 && (
-          <p className="text-muted-foreground text-center mt-12">No categories found.</p>
-        )}
-        {/* Visual-only section indicators */}
-        <div
-          className="fixed hidden flex-col items-center gap-2 lg:flex pointer-events-none"
-          style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
-        >
-          {orderedSections.map((_, i) => (
+        {isMobile ? (
+          <div className="w-full flex flex-col items-center px-4 pt-4 pb-8">
             <div
-              key={i}
-              style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }}
-            />
-          ))}
-        </div>
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(250,244,236,0.88)_100%)] px-4 py-2 text-[12px] font-medium tracking-[0.08em] text-[var(--swatch-teal)] shadow-[0_4px_12px_rgba(0,0,0,0.10)]"
+            >
+              <span className="text-[10px] leading-none">v</span>
+              Swipe up or down to change sections
+            </div>
+            {activeSection ? (
+              <div className="w-full">
+                <GoTwoCoverFlow
+                  items={activeSection.items}
+                  onSelect={(categoryId) => handleSelect(activeSection.key, categoryId)}
+                  focusedItemId={focusedMainCategoryBySection[activeSection.key] ?? null}
+                  showPagination={false}
+                  sectionTitle={activeSection.label}
+                />
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-center mt-12">No categories found.</p>
+            )}
+          </div>
+        ) : (
+          <>
+            {orderedSections.map((section, index) => {
+              const distance = index - activeSectionIndex;
+              const absD = Math.abs(distance);
+              const isActive = distance === 0;
+              const heroItem = section.items[0];
+
+              return (
+                <motion.div
+                  key={section.key}
+                  data-section-key={section.key}
+                  ref={(node) => {
+                    sectionRefs.current[section.key] = node;
+                  }}
+                  className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
+                  animate={{
+                    y: isActive ? 0 : -(absD * 30),
+                    scale: isActive ? 1 : 1 - absD * 0.045,
+                    scaleX: isActive ? 1 : 1 - absD * 0.06,
+                    zIndex: isActive ? 10 : 10 - absD,
+                    opacity: absD > 3 ? 0 : 1 - absD * 0.1,
+                  }}
+                  transition={{ type: "spring", stiffness: 320, damping: 30 }}
+                  style={{
+                    pointerEvents: "auto",
+                  }}
+                >
+                  {isActive ? (
+                    <GoTwoCoverFlow
+                      items={section.items}
+                      onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                      focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                      showPagination={isActive}
+                      sectionTitle={section.label}
+                    />
+                  ) : (
+                    <div
+                      className="stacked-deck-hero-card"
+                      style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
+                      onClick={() => setActiveSectionIndex(index)}
+                    />
+                  )}
+                </motion.div>
+              );
+            })}
+            {orderedSections.length === 0 && (
+              <p className="text-muted-foreground text-center mt-12">No categories found.</p>
+            )}
+            {/* Visual-only section indicators */}
+            <div
+              className="fixed hidden flex-col items-center gap-2 lg:flex pointer-events-none"
+              style={{ right: 18, top: "calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)", transform: "translateY(-50%)", zIndex: 50 }}
+            >
+              {orderedSections.map((_, i) => (
+                <div
+                  key={i}
+                  style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </motion.div>
     );
   };

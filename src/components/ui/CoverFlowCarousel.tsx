@@ -136,6 +136,12 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
+        {isMobile ? (
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(250,244,236,0.88)_100%)] px-4 py-2 text-[12px] font-medium tracking-[0.08em] text-[var(--swatch-teal)] shadow-[0_4px_12px_rgba(0,0,0,0.10)]">
+            <span className="text-[10px] leading-none">&lt;-&gt;</span>
+            Swipe left or right to browse
+          </div>
+        ) : null}
         <div
           className="relative w-full"
           style={{
