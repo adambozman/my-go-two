@@ -259,6 +259,23 @@ const MyGoTwo = () => {
     });
   }, [activeGroup, cardKey, productGroups.length]);
 
+  const orderedSections = visibleSectionKeys.map((key) => ({
+    key,
+    label: sectionLabels[key] ?? key,
+    items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
+  }));
+
+  const {
+    activeIndex: activeSectionIndex,
+    setActiveIndex: setSectionIndex,
+    rotate: rotateSections,
+    selectIndex: selectSectionIndex,
+    getStepFromSwipe,
+  } = useVerticalCoverFlow({
+    itemCount: orderedSections.length,
+    initialActiveIndex: 0,
+  });
+
   const getNearestSectionIndex = useCallback(
     (scrollTop: number) => {
       if (visibleSectionKeys.length === 0) return 0;
@@ -568,22 +585,7 @@ const MyGoTwo = () => {
     return <div className="flex items-center justify-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
 
-  const orderedSections = visibleSectionKeys.map((key) => ({
-    key,
-    label: sectionLabels[key] ?? key,
-    items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
-  }));
 
-  const {
-    activeIndex: activeSectionIndex,
-    setActiveIndex: setSectionIndex,
-    rotate: rotateSections,
-    selectIndex: selectSectionIndex,
-    getStepFromSwipe,
-  } = useVerticalCoverFlow({
-    itemCount: orderedSections.length,
-    initialActiveIndex: 0,
-  });
 
   const renderContent = () => {
     if (cardKey && leafSubtype) {
