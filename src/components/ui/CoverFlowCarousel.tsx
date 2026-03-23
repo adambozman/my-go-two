@@ -190,6 +190,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
                   style={{ position: "absolute" }}
                 >
                   <div style={{ position: "relative" }}>
+                    {isActive && <StackedCardPreview images={stackImages} cardWidth={cardWidth} />}
                     <GoTwoCard
                       image={item.image}
                       label={item.label}
