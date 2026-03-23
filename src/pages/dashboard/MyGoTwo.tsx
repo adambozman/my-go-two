@@ -16,6 +16,7 @@ import { PaginationControls } from "@/components/ui/pagination-controls";
 import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 import ProductEntryCard from "@/components/ui/ProductEntryCard";
 import { resolveStorageUrl } from "@/lib/storageRefs";
+import { normalizeIndex, useVerticalCoverFlow } from "@/hooks/useVerticalCoverFlow";
 
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
@@ -85,7 +86,6 @@ const MyGoTwo = () => {
   const [lastMainSectionKey, setLastMainSectionKey] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<SubcategoryGroup | null>(null);
   const [saving, setSaving] = useState(false);
-  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const savedScrollTop = useRef(0);
@@ -282,10 +282,6 @@ const MyGoTwo = () => {
   );
 
   useEffect(() => {
-    setActiveSectionIndex((prev) => Math.min(prev, Math.max(visibleSectionKeys.length - 1, 0)));
-  }, [visibleSectionKeys.length]);
-
-  useEffect(() => {
     if (coverFlowState || cardKey) return;
 
     requestAnimationFrame(() => {
@@ -301,9 +297,9 @@ const MyGoTwo = () => {
 
       el.scrollTop = targetScrollTop;
       savedScrollTop.current = targetScrollTop;
-      setActiveSectionIndex(getNearestSectionIndex(targetScrollTop));
+      setSectionIndex(getNearestSectionIndex(targetScrollTop));
     });
-  }, [coverFlowState, cardKey, lastMainSectionKey, getNearestSectionIndex]);
+  }, [coverFlowState, cardKey, lastMainSectionKey, getNearestSectionIndex, setSectionIndex]);
 
   const clearCoverFlow = () => {
     setCoverFlowState(null);
@@ -578,6 +574,17 @@ const MyGoTwo = () => {
     items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
   }));
 
+  const {
+    activeIndex: activeSectionIndex,
+    setActiveIndex: setSectionIndex,
+    rotate: rotateSections,
+    selectIndex: selectSectionIndex,
+    getStepFromSwipe,
+  } = useVerticalCoverFlow({
+    itemCount: orderedSections.length,
+    initialActiveIndex: 0,
+  });
+
   const renderContent = () => {
     if (cardKey && leafSubtype) {
       const getNearestGroupIndex = (scrollTop: number) => {
@@ -771,21 +778,16 @@ const MyGoTwo = () => {
         exit={{ opacity: 0 }}
         className="stacked-deck-container"
         onPanEnd={(_e, info) => {
-          // Vertical swipe to switch sections
-          if (Math.abs(info.velocity.y) > 100 && Math.abs(info.offset.y) > 40 && Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
-            if (info.offset.y < 0 && activeSectionIndex < orderedSections.length - 1) {
-              setActiveSectionIndex(activeSectionIndex + 1);
-            } else if (info.offset.y > 0 && activeSectionIndex > 0) {
-              setActiveSectionIndex(activeSectionIndex - 1);
-            }
-          }
+          const step = getStepFromSwipe(info.offset.y, info.offset.x, info.velocity.y);
+          if (step !== 0) rotateSections(step);
         }}
       >
         {orderedSections.map((section, index) => {
-          const distance = index - activeSectionIndex;
-          const absD = Math.abs(distance);
-          const isActive = distance === 0;
+          const distance = normalizeIndex(index - activeSectionIndex, orderedSections.length);
+          const wrappedDepth = distance === 0 ? 0 : distance;
+          const isActive = wrappedDepth === 0;
           const heroItem = section.items[0];
+          const isVisiblePreview = wrappedDepth > 0 && wrappedDepth <= 3;
 
           return (
             <motion.div
@@ -796,15 +798,15 @@ const MyGoTwo = () => {
               }}
               className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
               animate={{
-                y: isActive ? 0 : -(absD * 30),
-                scale: isActive ? 1 : 1 - absD * 0.045,
-                scaleX: isActive ? 1 : 1 - absD * 0.06,
-                zIndex: isActive ? 10 : 10 - absD,
-                opacity: absD > 3 ? 0 : 1 - absD * 0.1,
+                y: isActive ? 0 : -(wrappedDepth * 30),
+                scale: isActive ? 1 : 1 - wrappedDepth * 0.045,
+                scaleX: isActive ? 1 : 1 - wrappedDepth * 0.06,
+                zIndex: isActive ? 10 : 10 - wrappedDepth,
+                opacity: wrappedDepth > 3 ? 0 : 1 - wrappedDepth * 0.1,
               }}
               transition={{ type: "spring", stiffness: 320, damping: 30 }}
               style={{
-                pointerEvents: isActive ? "auto" : "none",
+                pointerEvents: isActive || isVisiblePreview ? "auto" : "none",
               }}
             >
               {isActive ? (
@@ -819,7 +821,7 @@ const MyGoTwo = () => {
                 <div
                   className="stacked-deck-hero-card"
                   style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
-                  onClick={() => setActiveSectionIndex(index)}
+                  onClick={() => selectSectionIndex(index)}
                 />
               )}
             </motion.div>

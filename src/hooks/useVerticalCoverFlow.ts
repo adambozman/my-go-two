@@ -36,6 +36,13 @@ export function useVerticalCoverFlow({
   useEffect(() => {
     setActiveIndex((current) => {
       if (itemCount <= 0) return 0;
+      return normalizeIndex(current, itemCount);
+    });
+  }, [itemCount]);
+
+  useEffect(() => {
+    setActiveIndex((current) => {
+      if (itemCount <= 0) return 0;
       const normalizedInitial = normalizeIndex(initialActiveIndex, itemCount);
       return current === normalizedInitial ? current : normalizedInitial;
     });
