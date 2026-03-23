@@ -1,5 +1,6 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CoverFlowCarousel, { type CoverFlowItem } from "@/components/ui/CoverFlowCarousel";
+import MobileCoverFlow from "@/components/ui/MobileCoverFlow";
 import { usePagination } from "@/hooks/usePagination";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 
@@ -29,6 +30,9 @@ export default function PaginatedCoverFlow({
   showPagination = true,
   sectionTitle,
 }: PaginatedCoverFlowProps) {
+  const [isTabletOrBelow, setIsTabletOrBelow] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 1024 : false,
+  );
   const focusedIndex = useMemo(
     () => (focusedItemId ? items.findIndex((item) => item.id === focusedItemId) : -1),
     [focusedItemId, items],
@@ -46,6 +50,26 @@ export default function PaginatedCoverFlow({
     focusedIndex >= 0
       ? Math.max(0, Math.min(focusedIndex - (currentPage - 1) * pageSize, paginatedItems.length - 1))
       : 0;
+
+  useEffect(() => {
+    const updateViewport = () => setIsTabletOrBelow(window.innerWidth < 1024);
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
+
+  if (isTabletOrBelow) {
+    return (
+      <div className={className ?? "w-full flex flex-col items-center relative"}>
+        <MobileCoverFlow
+          items={paginatedItems}
+          onSelect={onSelect}
+          initialActiveIndex={initialActiveIndex}
+          sectionTitle={sectionTitle}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={className ?? "w-full flex flex-col items-center relative"}>
