@@ -100,15 +100,15 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
 
     const slots = Array.from({ length: VISIBLE * 2 + 1 }, (_, i) => i - VISIBLE);
 
-    const handleTouchStart = isMobile
-      ? (e: { touches: { clientX: number; clientY: number }[] }) => {
+    const handleTouchStart: React.TouchEventHandler<HTMLDivElement> | undefined = isMobile
+      ? (e) => {
           touchStartX.current = e.touches[0].clientX;
           touchStartY.current = e.touches[0].clientY;
         }
       : undefined;
 
-    const handleTouchEnd = isMobile
-      ? (e: { changedTouches: { clientX: number; clientY: number }[] }) => {
+    const handleTouchEnd: React.TouchEventHandler<HTMLDivElement> | undefined = isMobile
+      ? (e) => {
           if (touchStartX.current === null || touchStartY.current === null) return;
 
           const dx = touchStartX.current - e.changedTouches[0].clientX;
