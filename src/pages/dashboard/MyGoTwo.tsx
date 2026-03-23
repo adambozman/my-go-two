@@ -587,6 +587,7 @@ const MyGoTwo = () => {
 
     const handler = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) < 30) return;
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
       e.preventDefault();
       if (wheelTimerRef.current) return;
       wheelTimerRef.current = window.setTimeout(() => { wheelTimerRef.current = null; }, 400);
