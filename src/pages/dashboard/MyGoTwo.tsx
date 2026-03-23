@@ -786,11 +786,11 @@ const MyGoTwo = () => {
           const dy = verticalTouchStartY.current - e.changedTouches[0].clientY;
 
           // Only treat the gesture as a section switch when vertical movement clearly wins.
-          if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx) * 1.2) {
-            if (dy > 0 && activeSectionIndex < orderedSections.length - 1) {
-              setActiveSectionIndex(activeSectionIndex + 1);
-            } else if (dy < 0 && activeSectionIndex > 0) {
-              setActiveSectionIndex(activeSectionIndex - 1);
+          if (Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx) * 1.2 && orderedSections.length > 0) {
+            if (dy > 0) {
+              setActiveSectionIndex((current) => (current + 1) % orderedSections.length);
+            } else if (dy < 0) {
+              setActiveSectionIndex((current) => (current - 1 + orderedSections.length) % orderedSections.length);
             }
           }
 
