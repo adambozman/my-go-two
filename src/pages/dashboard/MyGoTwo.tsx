@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Check, Plus, Trash2, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -774,6 +775,7 @@ const MyGoTwo = () => {
           const distance = index - activeSectionIndex;
           const absD = Math.abs(distance);
           const isActive = distance === 0;
+          const heroItem = section.items[0];
 
           return (
             <motion.div
@@ -782,33 +784,35 @@ const MyGoTwo = () => {
               ref={(node) => {
                 sectionRefs.current[section.key] = node;
               }}
-              className="stacked-deck-layer"
+              className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
               animate={{
-                y: distance * 28,
-                scale: 1 - absD * 0.04,
-                zIndex: 10 - absD,
-                opacity: absD > 3 ? 0 : 1 - absD * 0.12,
+                y: isActive ? 0 : -(absD * 26),
+                scale: isActive ? 1 : 1 - absD * 0.045,
+                zIndex: isActive ? 10 : 10 - absD,
+                opacity: absD > 3 ? 0 : 1 - absD * 0.15,
               }}
               transition={{ type: "spring", stiffness: 320, damping: 30 }}
               style={{
                 pointerEvents: isActive ? "auto" : "none",
               }}
             >
-              {/* Click overlay for non-active sections */}
-              {!isActive && (
+              {isActive ? (
+                <>
+                  <CoverflowTitlePill title={section.label} />
+                  <GoTwoCoverFlow
+                    items={section.items}
+                    onSelect={(categoryId) => handleSelect(section.key, categoryId)}
+                    focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
+                    showPagination={isActive}
+                  />
+                </>
+              ) : (
                 <div
-                  className="absolute inset-0 z-20 cursor-pointer"
-                  style={{ pointerEvents: "auto" }}
+                  className="stacked-deck-hero-card"
+                  style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
                   onClick={() => setActiveSectionIndex(index)}
                 />
               )}
-              <CoverflowTitlePill title={section.label} />
-              <GoTwoCoverFlow
-                items={section.items}
-                onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                showPagination={isActive}
-              />
             </motion.div>
           );
         })}
