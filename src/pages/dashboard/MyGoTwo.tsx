@@ -867,7 +867,7 @@ const MyGoTwo = () => {
                   }}
                   transition={{ type: "spring", stiffness: 320, damping: 30 }}
                   style={{
-                    pointerEvents: isActive ? "none" : "auto",
+                    pointerEvents: isActive ? "none" : absD === 1 ? "auto" : "none",
                   }}
                 >
                   {isActive ? (
@@ -882,7 +882,11 @@ const MyGoTwo = () => {
                     <div
                       className="stacked-deck-hero-card"
                       style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
-                      onClick={() => setActiveSectionIndex(index)}
+                      onClick={() => {
+                        if (orderedSections.length <= 1) return;
+                        const direction = distance > 0 ? 1 : -1;
+                        setActiveSectionIndex((current) => (current + direction + orderedSections.length) % orderedSections.length);
+                      }}
                     />
                   )}
                 </motion.div>
