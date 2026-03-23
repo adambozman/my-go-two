@@ -1,10 +1,12 @@
 import { useMemo } from "react";
-import CoverFlowCarousel, { type CoverFlowItem } from "@/components/ui/CoverFlowCarousel";
+import WebCoverFlow, { type WebCoverFlowItem } from "@/components/ui/WebCoverFlow";
+import MobileCoverFlow from "@/components/ui/MobileCoverFlow";
 import { usePagination } from "@/hooks/usePagination";
 import { PaginationControls } from "@/components/ui/pagination-controls";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PaginatedCoverFlowProps {
-  items: CoverFlowItem[];
+  items: WebCoverFlowItem[];
   onSelect: (id: string) => void;
   pageSize?: number;
   className?: string;
@@ -29,6 +31,7 @@ export default function PaginatedCoverFlow({
   showPagination = true,
   sectionTitle,
 }: PaginatedCoverFlowProps) {
+  const isMobile = useIsMobile();
   const focusedIndex = useMemo(
     () => (focusedItemId ? items.findIndex((item) => item.id === focusedItemId) : -1),
     [focusedItemId, items],
@@ -47,9 +50,22 @@ export default function PaginatedCoverFlow({
       ? Math.max(0, Math.min(focusedIndex - (currentPage - 1) * pageSize, paginatedItems.length - 1))
       : 0;
 
+  if (isMobile) {
+    return (
+      <div className={className ?? "w-full flex flex-col items-center relative"}>
+        <MobileCoverFlow
+          items={paginatedItems}
+          onSelect={onSelect}
+          initialActiveIndex={initialActiveIndex}
+          sectionTitle={sectionTitle}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={className ?? "w-full flex flex-col items-center relative"}>
-      <CoverFlowCarousel
+      <WebCoverFlow
         items={paginatedItems}
         onSelect={onSelect}
         initialActiveIndex={initialActiveIndex}

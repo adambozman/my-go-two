@@ -7,8 +7,8 @@ interface GoTwoCardProps {
   sectionTitle?: string;
   isActive?: boolean;
   onClick?: () => void;
-  cardWidth?: number;
-  cardHeight?: number;
+  cardWidth?: number | string;
+  cardHeight?: number | string;
   borderRadius?: number;
 }
 

@@ -799,15 +799,9 @@ const MyGoTwo = () => {
         } : undefined}
       >
         {isMobile ? (
-          <div className="w-full flex flex-col items-center px-4 pt-4 pb-8">
-            <div
-              className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(250,244,236,0.88)_100%)] px-4 py-2 text-[12px] font-medium tracking-[0.08em] text-[var(--swatch-teal)] shadow-[0_4px_12px_rgba(0,0,0,0.10)]"
-            >
-              <span className="text-[10px] leading-none">v</span>
-              Swipe up or down to change sections
-            </div>
+          <div className="w-full flex flex-col items-center px-3 pt-2 pb-6">
             {activeSection ? (
-              <div className="w-full">
+              <div className="w-full max-w-[460px]">
                 <GoTwoCoverFlow
                   items={activeSection.items}
                   onSelect={(categoryId) => handleSelect(activeSection.key, categoryId)}
