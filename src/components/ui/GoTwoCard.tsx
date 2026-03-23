@@ -1,4 +1,4 @@
-import { useState, useRef, forwardRef } from "react";
+import { useEffect, useState, useRef, forwardRef } from "react";
 import { CAROUSEL_LAYOUT } from "@/lib/carouselConfig";
 
 interface GoTwoCardProps {
@@ -24,7 +24,12 @@ const GoTwoCard = forwardRef<HTMLDivElement, GoTwoCardProps>(
     borderRadius = CAROUSEL_LAYOUT.borderRadius,
   }, ref) => {
     const [hintVisible, setHintVisible] = useState(false);
+    const [imageFailed, setImageFailed] = useState(false);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+      setImageFailed(false);
+    }, [image]);
 
     const handleMouseEnter = () => {
       if (!isActive) return;
@@ -61,14 +66,12 @@ const GoTwoCard = forwardRef<HTMLDivElement, GoTwoCardProps>(
             className="absolute inset-0"
             style={{ background: "linear-gradient(160deg, #c3c5c8 0%, #9ea2a8 100%)" }}
           />
-          {image ? (
+          {image && !imageFailed ? (
             <img
               src={image}
               alt={label}
               className="absolute inset-0 w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
+              onError={() => setImageFailed(true)}
             />
           ) : null}
 
