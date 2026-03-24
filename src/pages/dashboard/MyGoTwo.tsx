@@ -17,6 +17,8 @@ import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 import ProductEntryCard from "@/components/ui/ProductEntryCard";
 import { resolveStorageUrl } from "@/lib/storageRefs";
 import { normalizeIndex, useVerticalCoverFlow } from "@/hooks/useVerticalCoverFlow";
+import WebPaginatedCoverflow from "@/platform-ui/web/mygotwo/WebPaginatedCoverflow";
+import WebTemplateCoverFlow from "@/platform-ui/web/mygotwo/WebTemplateCoverFlow";
 
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
@@ -314,7 +316,7 @@ const MyGoTwo = () => {
   );
 
   useEffect(() => {
-    if (coverFlowState || cardKey) return;
+    if (isDesktopViewport || coverFlowState || cardKey) return;
 
     requestAnimationFrame(() => {
       const el = scrollRef.current;
@@ -331,7 +333,7 @@ const MyGoTwo = () => {
       savedScrollTop.current = targetScrollTop;
       setSectionIndex(getNearestSectionIndex(targetScrollTop));
     });
-  }, [coverFlowState, cardKey, lastMainSectionKey, getNearestSectionIndex, setSectionIndex]);
+  }, [isDesktopViewport, coverFlowState, cardKey, lastMainSectionKey, getNearestSectionIndex, setSectionIndex]);
 
   const clearCoverFlow = () => {
     setCoverFlowState(null);
@@ -751,6 +753,38 @@ const MyGoTwo = () => {
     }
 
     if (coverFlowState) {
+      if (isDesktopViewport) {
+        return (
+          <motion.div
+            key="drilldown-web"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
+            style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
+          >
+            <div className="snap-start snap-always">
+              <WebTemplateCoverFlow
+                templateName={coverFlowState.name}
+                subtypes={coverFlowState.subtypes}
+                subcategories={coverFlowState.subcategories}
+                activeSubcategory={activeSubcategory}
+                onSubcategorySelect={handleSubcategorySelect}
+                onBack={activeSubcategory ? () => {
+                  setFocusedSubcategoryId(activeSubcategory.id);
+                  setFocusedLeafItemId(null);
+                  setActiveSubcategory(null);
+                } : clearCoverFlow}
+                onSelect={handleSubtypeSelect}
+                focusedSubcategoryId={focusedSubcategoryId}
+                focusedLeafItemId={focusedLeafItemId}
+              />
+            </div>
+          </motion.div>
+        );
+      }
+
       return (
         <motion.div
           key="drilldown"
@@ -823,87 +857,54 @@ const MyGoTwo = () => {
       );
     }
 
-    const maxPreviewDepth = Math.min(3, Math.max(0, orderedSections.length - 1));
-    const slotDepths = [0, ...Array.from({ length: maxPreviewDepth }, (_, i) => i + 1)];
-    const previewLiftPerDepth = 46;
+    const activeSection = orderedSections[activeSectionIndex];
 
     return (
       <motion.div
-        key="main"
-        ref={scrollRef}
+        key="main-web"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="stacked-deck-container"
+        className="relative h-full w-full"
+        style={{ touchAction: "pan-y" }}
+        onWheel={(event) => {
+          if (Math.abs(event.deltaY) < 14) return;
+          rotateSections(event.deltaY > 0 ? 1 : -1);
+        }}
         onPanEnd={(_e, info) => {
           const step = getStepFromSwipe(info.offset.y, info.offset.x, info.velocity.y);
           if (step !== 0) rotateSections(step);
         }}
       >
-        {slotDepths
-          .slice()
-          .reverse()
-          .map((depth) => {
-            const index = normalizeIndex(activeSectionIndex + depth, orderedSections.length);
-            const section = orderedSections[index];
-            const isActive = depth === 0;
-            const heroItem = section?.items[0];
-
-            if (!section) return null;
-
-            return (
-            <motion.div
-              key={`${section.key}-${depth}`}
-              data-section-key={section.key}
-              ref={(node) => {
-                if (isActive) sectionRefs.current[section.key] = node;
-              }}
-              className={isActive ? "stacked-deck-layer" : "stacked-deck-layer stacked-deck-layer--bg"}
-              animate={{
-                y: (isActive ? 0 : -(depth * previewLiftPerDepth)) + COVERFLOW_DESKTOP_Y_OFFSET,
-                scale: isActive ? 1 : 1 - depth * 0.045,
-                scaleX: isActive ? 1 : 1 - depth * 0.06,
-                zIndex: isActive ? 10 : 10 - depth,
-                opacity: isActive ? 1 : 1 - depth * 0.1,
-              }}
-              transition={{ type: "spring", stiffness: 320, damping: 30 }}
-            >
-              {isActive ? (
-                <div className="stacked-deck-active-shell">
-                  <GoTwoCoverFlow
-                    items={section.items}
-                    onSelect={(categoryId) => handleSelect(section.key, categoryId)}
-                    focusedItemId={focusedMainCategoryBySection[section.key] ?? null}
-                    showPagination
-                    sectionTitle={section.label}
-                  />
-                </div>
-              ) : (
-                <div
-                  className="stacked-deck-hero-card"
-                  style={{ backgroundImage: heroItem ? `url(${heroItem.image})` : undefined }}
-                  onClick={() => selectSectionIndex(index)}
-                />
-              )}
-            </motion.div>
-            );
-          })}
-        {orderedSections.length === 0 && (
+        {activeSection ? (
+          <div className="coverflow-stage-shell">
+            <WebPaginatedCoverflow
+              items={activeSection.items}
+              onSelect={(categoryId) => handleSelect(activeSection.key, categoryId)}
+              focusedItemId={focusedMainCategoryBySection[activeSection.key] ?? null}
+              showPagination
+              sectionTitle={activeSection.label}
+            />
+          </div>
+        ) : (
           <p className="text-muted-foreground text-center mt-12">No categories found.</p>
         )}
-        {/* Visual-only section indicators */}
+
         <div
-          className="fixed hidden flex-col items-center gap-2 lg:flex pointer-events-none"
+          className="fixed hidden flex-col items-center gap-2 lg:flex"
           style={{
             right: 18,
-            top: `calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px + ${COVERFLOW_DESKTOP_Y_OFFSET}px)`,
+            top: `calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)`,
             transform: "translateY(-50%)",
-            zIndex: 50,
+            zIndex: 60,
           }}
         >
           {orderedSections.map((_, i) => (
-            <div
+            <button
               key={i}
+              type="button"
+              onClick={() => selectSectionIndex(i)}
+              aria-label={`Go to section ${i + 1}`}
               style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }}
             />
           ))}
