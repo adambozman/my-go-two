@@ -11,6 +11,7 @@ export default function WebCoverflowV2({
   initialActiveIndex = 0,
   sectionTitle,
   className,
+  variant = "default",
 }: WebCoverflowProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
@@ -72,12 +73,12 @@ export default function WebCoverflowV2({
       style={{
         height: WEB_COVERFLOW_TOKENS.stageHeight,
         perspective: "1600px",
-        perspectiveOrigin: "50% 38%",
+        perspectiveOrigin: variant === "hero" ? "50% 44%" : "50% 38%",
       }}
     >
       <div className="absolute inset-0 overflow-hidden rounded-[36px]" style={{ transformStyle: "preserve-3d" }}>
         {items.map((item, index) => {
-          const pose = getWebCoverflowPose(index, activeIndex, itemCount);
+          const pose = getWebCoverflowPose(index, activeIndex, itemCount, variant);
           const imageKey = `${item.id}::${item.image || ""}`;
 
           return (

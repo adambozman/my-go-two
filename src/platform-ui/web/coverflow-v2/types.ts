@@ -11,6 +11,7 @@ export interface WebCoverflowProps {
   initialActiveIndex?: number;
   sectionTitle?: string;
   className?: string;
+  variant?: "default" | "hero";
 }
 
 export interface WebCoverflowCardPose {

@@ -114,6 +114,7 @@ export default function MyGoTwoWebView({
             focusedItemId={webFocusedLevelOneId}
             showPagination={false}
             className="relative flex h-full min-h-0 w-full flex-1 items-center justify-center"
+            variant="hero"
             onSelect={(id) => {
               const selected = webLevelOneItems.find((item) => item.id === id);
               if (!selected) return;
