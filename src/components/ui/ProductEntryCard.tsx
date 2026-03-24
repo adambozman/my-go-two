@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Loader2, Camera, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import type { SubtypeItem } from "@/components/TemplateCoverFlow";
+import type { SubtypeItem } from "@/data/templateSubtypes";
 import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
 
 const EntryTagInput = ({

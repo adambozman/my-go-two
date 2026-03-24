@@ -1,10 +1,10 @@
 export const WEB_COVERFLOW_TOKENS = {
   visibleEachSide: 3,
-  stageHeight: 540,
+  stageHeight: 460,
   cardWidth: 420,
   cardHeight: 560,
   borderRadius: 34,
-  centerY: "44%",
+  centerY: "46%",
   xStep: 82,
   yStep: 4,
   rotateYStep: -8,

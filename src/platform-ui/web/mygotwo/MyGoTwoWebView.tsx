@@ -91,7 +91,7 @@ export default function MyGoTwoWebView({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="relative h-full w-full"
+      className="relative w-full"
       style={{ touchAction: "pan-y" }}
       onWheel={(event) => {
         if (Math.abs(event.deltaY) < 14) return;
@@ -103,7 +103,7 @@ export default function MyGoTwoWebView({
       }}
     >
       {webLevelOneItems.length > 0 ? (
-        <div className={WEB_MYGOTWO_STAGE_SHELL_CLASS}>
+        <div className={`${WEB_MYGOTWO_STAGE_SHELL_CLASS} pb-4`}>
           <WebMyGoTwoQuote />
           <WebPaginatedCoverflow
             items={webLevelOneItems}
@@ -118,7 +118,7 @@ export default function MyGoTwoWebView({
           />
         </div>
       ) : (
-        <p className="text-muted-foreground text-center mt-12">No categories found.</p>
+        <p className="mt-12 text-center text-muted-foreground">No categories found.</p>
       )}
     </motion.div>
   );
