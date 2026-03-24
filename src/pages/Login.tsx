@@ -197,6 +197,7 @@ const Login = () => {
                 </div>
 
                 <GoogleSignInButton />
+                <AppleSignInButton />
               </form>
             </motion.div>
 

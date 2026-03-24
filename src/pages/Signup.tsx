@@ -257,6 +257,7 @@ const Signup = () => {
                 </div>
 
                 <GoogleSignInButton />
+                <AppleSignInButton />
               </form>
             </motion.div>
 
