@@ -4,6 +4,7 @@ import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 import WebPaginatedCoverflow from "@/platform-ui/web/mygotwo/WebPaginatedCoverflow";
+import { WEB_MYGOTWO_STAGE_SHELL_CLASS } from "@/platform-ui/web/mygotwo/webMyGoTwo.layout";
 
 interface WebTemplateCoverFlowProps {
   templateName: string;
@@ -80,7 +81,7 @@ export default function WebTemplateCoverFlow({
     }));
 
     return (
-      <div className="coverflow-stage-shell">
+      <div className={WEB_MYGOTWO_STAGE_SHELL_CLASS}>
         <CoverflowTitlePill title={templateName} showBackArrow={Boolean(onBack)} onBack={onBack} />
         <WebPaginatedCoverflow
           items={items}
@@ -106,7 +107,7 @@ export default function WebTemplateCoverFlow({
   }));
 
   return (
-    <div className="coverflow-stage-shell">
+    <div className={WEB_MYGOTWO_STAGE_SHELL_CLASS}>
       <CoverflowTitlePill
         title={activeSubcategory?.name || templateName}
         showBackArrow={Boolean(onBack)}

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { usePagination } from "@/hooks/usePagination";
 import { WebCoverflowV2, type WebCoverflowItem } from "@/platform-ui/web/coverflow-v2";
-import { COVERFLOW_DESKTOP_Y_OFFSET } from "@/lib/carouselConfig";
+import { WEB_MYGOTWO_DOT_STYLE } from "@/platform-ui/web/mygotwo/webMyGoTwo.layout";
 
 interface WebPaginatedCoverflowProps {
   items: WebCoverflowItem[];
@@ -13,13 +13,6 @@ interface WebPaginatedCoverflowProps {
   sectionTitle?: string;
   className?: string;
 }
-
-const RIGHT_SIDE_DOT_STYLE = {
-  right: 18,
-  top: `calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px + ${COVERFLOW_DESKTOP_Y_OFFSET}px)`,
-  transform: "translateY(-50%)",
-  zIndex: 50,
-} as const;
 
 export default function WebPaginatedCoverflow({
   items,
@@ -63,7 +56,7 @@ export default function WebPaginatedCoverflow({
           onPageChange={setCurrentPage}
           orientation="vertical"
           className="fixed"
-          style={RIGHT_SIDE_DOT_STYLE as never}
+          style={WEB_MYGOTWO_DOT_STYLE as never}
         />
       ) : null}
     </div>

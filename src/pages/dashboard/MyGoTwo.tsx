@@ -17,8 +17,7 @@ import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 import ProductEntryCard from "@/components/ui/ProductEntryCard";
 import { resolveStorageUrl } from "@/lib/storageRefs";
 import { normalizeIndex, useVerticalCoverFlow } from "@/hooks/useVerticalCoverFlow";
-import WebPaginatedCoverflow from "@/platform-ui/web/mygotwo/WebPaginatedCoverflow";
-import WebTemplateCoverFlow from "@/platform-ui/web/mygotwo/WebTemplateCoverFlow";
+import MyGoTwoWebView from "@/platform-ui/web/mygotwo/MyGoTwoWebView";
 
 const sectionLabels: Record<string, string> = {
   "style-fit": "Style & Fit",
@@ -774,39 +773,7 @@ const MyGoTwo = () => {
       );
     }
 
-    if (coverFlowState) {
-      if (isDesktopViewport) {
-        return (
-          <motion.div
-            key="drilldown-web"
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="h-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory relative"
-            style={{ scrollbarWidth: "none", overscrollBehavior: "none", touchAction: "pan-y" }}
-          >
-            <div className="snap-start snap-always">
-              <WebTemplateCoverFlow
-                templateName={coverFlowState.name}
-                subtypes={coverFlowState.subtypes}
-                subcategories={coverFlowState.subcategories}
-                activeSubcategory={activeSubcategory}
-                onSubcategorySelect={handleSubcategorySelect}
-                onBack={activeSubcategory ? () => {
-                  setFocusedSubcategoryId(activeSubcategory.id);
-                  setFocusedLeafItemId(null);
-                  setActiveSubcategory(null);
-                } : clearCoverFlow}
-                onSelect={handleSubtypeSelect}
-                focusedSubcategoryId={focusedSubcategoryId}
-                focusedLeafItemId={focusedLeafItemId}
-              />
-            </div>
-          </motion.div>
-        );
-      }
-
+    if (coverFlowState && !isDesktopViewport) {
       return (
         <motion.div
           key="drilldown"
@@ -880,40 +847,26 @@ const MyGoTwo = () => {
     }
 
     return (
-      <motion.div
-        key="main-web"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="relative h-full w-full"
-        style={{ touchAction: "pan-y" }}
-        onWheel={(event) => {
-          if (Math.abs(event.deltaY) < 14) return;
-          rotateSections(event.deltaY > 0 ? 1 : -1);
+      <MyGoTwoWebView
+        coverFlowState={coverFlowState}
+        activeSubcategory={activeSubcategory}
+        focusedSubcategoryId={focusedSubcategoryId}
+        focusedLeafItemId={focusedLeafItemId}
+        webLevelOneItems={webLevelOneItems}
+        webFocusedLevelOneId={webFocusedLevelOneId}
+        rotateSections={rotateSections}
+        getStepFromSwipe={getStepFromSwipe}
+        onRootSelect={handleSelect}
+        onClearCoverFlow={clearCoverFlow}
+        onSubcategoryBack={() => {
+          if (!activeSubcategory) return;
+          setFocusedSubcategoryId(activeSubcategory.id);
+          setFocusedLeafItemId(null);
+          setActiveSubcategory(null);
         }}
-        onPanEnd={(_e, info) => {
-          const step = getStepFromSwipe(0, info.offset.x, info.velocity.x);
-          if (step !== 0) rotateSections(step);
-        }}
-      >
-        {webLevelOneItems.length > 0 ? (
-          <div className="coverflow-stage-shell">
-            <WebPaginatedCoverflow
-              items={webLevelOneItems}
-              pageSize={webLevelOneItems.length}
-              focusedItemId={webFocusedLevelOneId}
-              showPagination={false}
-              onSelect={(id) => {
-                const selected = webLevelOneItems.find((item) => item.id === id);
-                if (!selected) return;
-                handleSelect(selected.sectionKey, selected.sourceId);
-              }}
-            />
-          </div>
-        ) : (
-          <p className="text-muted-foreground text-center mt-12">No categories found.</p>
-        )}
-      </motion.div>
+        onSubcategorySelect={handleSubcategorySelect}
+        onSubtypeSelect={handleSubtypeSelect}
+      />
     );
   };
 
