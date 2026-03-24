@@ -14,7 +14,7 @@ export function WebCoverflowControls({ itemCount, activeIndex, onPrevious, onNex
   if (itemCount <= 1) return null;
 
   return (
-    <div className="absolute bottom-6 left-1/2 z-[250] flex -translate-x-1/2 items-center gap-4">
+    <div className="absolute bottom-3 left-1/2 z-[250] flex -translate-x-1/2 items-center gap-4">
       <button
         type="button"
         aria-label="Previous"

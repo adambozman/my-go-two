@@ -46,6 +46,7 @@ export function WebCoverflowCard({
       style={{
         width: WEB_COVERFLOW_TOKENS.cardWidth,
         height: WEB_COVERFLOW_TOKENS.cardHeight,
+        top: WEB_COVERFLOW_TOKENS.centerY,
         borderRadius: WEB_COVERFLOW_TOKENS.borderRadius,
         zIndex: pose.zIndex,
         boxShadow: pose.isActive ? WEB_COVERFLOW_TOKENS.activeShadow : WEB_COVERFLOW_TOKENS.flankShadow,

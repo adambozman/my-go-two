@@ -18,18 +18,24 @@ export function getWebCoverflowPose(index: number, activeIndex: number, itemCoun
   const depth = Math.abs(relative);
   const isActive = depth === 0;
   const direction = relative === 0 ? 0 : relative > 0 ? 1 : -1;
-  const scale = isActive
-    ? 1
-    : Math.max(WEB_COVERFLOW_TOKENS.minScale, 1 - depth * WEB_COVERFLOW_TOKENS.inactiveScaleStep);
-  const opacity = isActive ? 1 : Math.max(0.92, 1 - depth * WEB_COVERFLOW_TOKENS.opacityStep);
+  const poseByDepth = [
+    { x: 0, y: -26, rotateY: 0, scale: 1, opacity: 1 },
+    { x: 152, y: -6, rotateY: -10, scale: 0.93, opacity: 1 },
+    { x: 266, y: 8, rotateY: -16, scale: 0.86, opacity: 0.98 },
+    { x: 358, y: 18, rotateY: -22, scale: 0.8, opacity: 0.96 },
+  ] as const;
+  const cappedDepth = Math.min(depth, poseByDepth.length - 1);
+  const basePose = poseByDepth[cappedDepth];
+  const scale = basePose.scale;
+  const opacity = basePose.opacity;
 
   return {
     relative,
     depth,
     isActive,
-    x: relative * WEB_COVERFLOW_TOKENS.xStep + direction * depth * depth * 6,
-    y: depth * WEB_COVERFLOW_TOKENS.yStep,
-    rotateY: relative * WEB_COVERFLOW_TOKENS.rotateYStep,
+    x: basePose.x * direction,
+    y: basePose.y,
+    rotateY: basePose.rotateY * direction,
     scale,
     opacity,
     zIndex: 200 - depth,
