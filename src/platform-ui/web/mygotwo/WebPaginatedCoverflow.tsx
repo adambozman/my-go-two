@@ -24,7 +24,7 @@ const RIGHT_SIDE_DOT_STYLE = {
 export default function WebPaginatedCoverflow({
   items,
   onSelect,
-  pageSize = 7,
+  pageSize = Number.MAX_SAFE_INTEGER,
   focusedItemId,
   showPagination = true,
   sectionTitle,
@@ -56,7 +56,7 @@ export default function WebPaginatedCoverflow({
         initialActiveIndex={initialActiveIndex}
         sectionTitle={sectionTitle}
       />
-      {showPagination ? (
+      {showPagination && totalPages > 1 ? (
         <PaginationControls
           currentPage={currentPage}
           totalPages={totalPages}

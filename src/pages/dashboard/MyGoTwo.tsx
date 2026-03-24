@@ -282,6 +282,28 @@ const MyGoTwo = () => {
     items: (sections[key] || []).map((cat) => ({ id: cat.key, label: cat.label, image: cat.image, imageKey: cat.imageKey })),
   }));
 
+  const webLevelOneItems = useMemo(
+    () =>
+      orderedSections.flatMap((section) =>
+        section.items.map((item) => ({
+          id: `${section.key}::${item.id}`,
+          label: item.label,
+          image: item.image,
+          imageKey: item.imageKey,
+          sourceId: item.id,
+          sectionKey: section.key,
+        })),
+      ),
+    [orderedSections],
+  );
+
+  const webFocusedLevelOneId = useMemo(() => {
+    if (!lastMainSectionKey) return null;
+    const categoryId = focusedMainCategoryBySection[lastMainSectionKey];
+    if (!categoryId) return null;
+    return `${lastMainSectionKey}::${categoryId}`;
+  }, [focusedMainCategoryBySection, lastMainSectionKey]);
+
   const {
     activeIndex: activeSectionIndex,
     setActiveIndex: setSectionIndex,
@@ -857,8 +879,6 @@ const MyGoTwo = () => {
       );
     }
 
-    const activeSection = orderedSections[activeSectionIndex];
-
     return (
       <motion.div
         key="main-web"
@@ -872,43 +892,27 @@ const MyGoTwo = () => {
           rotateSections(event.deltaY > 0 ? 1 : -1);
         }}
         onPanEnd={(_e, info) => {
-          const step = getStepFromSwipe(info.offset.y, info.offset.x, info.velocity.y);
+          const step = getStepFromSwipe(0, info.offset.x, info.velocity.x);
           if (step !== 0) rotateSections(step);
         }}
       >
-        {activeSection ? (
+        {webLevelOneItems.length > 0 ? (
           <div className="coverflow-stage-shell">
             <WebPaginatedCoverflow
-              items={activeSection.items}
-              onSelect={(categoryId) => handleSelect(activeSection.key, categoryId)}
-              focusedItemId={focusedMainCategoryBySection[activeSection.key] ?? null}
-              showPagination
-              sectionTitle={activeSection.label}
+              items={webLevelOneItems}
+              pageSize={webLevelOneItems.length}
+              focusedItemId={webFocusedLevelOneId}
+              showPagination={false}
+              onSelect={(id) => {
+                const selected = webLevelOneItems.find((item) => item.id === id);
+                if (!selected) return;
+                handleSelect(selected.sectionKey, selected.sourceId);
+              }}
             />
           </div>
         ) : (
           <p className="text-muted-foreground text-center mt-12">No categories found.</p>
         )}
-
-        <div
-          className="fixed hidden flex-col items-center gap-2 lg:flex"
-          style={{
-            right: 18,
-            top: `calc(var(--header-height) + (100vh - var(--header-height)) / 2 + 23px)`,
-            transform: "translateY(-50%)",
-            zIndex: 60,
-          }}
-        >
-          {orderedSections.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => selectSectionIndex(i)}
-              aria-label={`Go to section ${i + 1}`}
-              style={{ width: 7, height: i === activeSectionIndex ? 20 : 7, borderRadius: 4, background: i === activeSectionIndex ? "var(--swatch-teal)" : "rgba(45,104,112,0.28)", transition: "all 0.3s ease" }}
-            />
-          ))}
-        </div>
       </motion.div>
     );
   };
