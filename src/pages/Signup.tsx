@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 
 const Signup = () => {
@@ -248,6 +249,13 @@ const Signup = () => {
                   {loading ? "Creating account..." : "Get Started Free"}
                   {!loading && <ArrowRight className="ml-2 w-4 h-4" />}
                 </Button>
+                <div className="relative flex items-center my-2">
+                  <div className="flex-1 h-px" style={{ background: "var(--swatch-antique-coin)", opacity: 0.2 }} />
+                  <span className="px-3 text-xs" style={{ color: "var(--swatch-antique-coin)" }}>or</span>
+                  <div className="flex-1 h-px" style={{ background: "var(--swatch-antique-coin)", opacity: 0.2 }} />
+                </div>
+
+                <GoogleSignInButton />
               </form>
             </motion.div>
 
