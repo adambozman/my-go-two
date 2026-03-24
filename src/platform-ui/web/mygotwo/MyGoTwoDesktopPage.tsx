@@ -7,12 +7,13 @@ interface MyGoTwoDesktopPageProps {
   children: ReactNode;
   title?: string;
   onBack?: () => void;
+  topSlot?: ReactNode;
 }
 
-export default function MyGoTwoDesktopPage({ children, title, onBack }: MyGoTwoDesktopPageProps) {
+export default function MyGoTwoDesktopPage({ children, title, onBack, topSlot }: MyGoTwoDesktopPageProps) {
   return (
     <MyGoTwoDesktopFrame quote={<MyGoTwoDesktopQuoteBox />}>
-      <MyGoTwoDesktopStage title={title} onBack={onBack}>
+      <MyGoTwoDesktopStage title={title} onBack={onBack} topSlot={topSlot}>
         {children}
       </MyGoTwoDesktopStage>
     </MyGoTwoDesktopFrame>

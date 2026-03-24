@@ -6,9 +6,10 @@ interface MyGoTwoDesktopStageProps {
   children: ReactNode;
   title?: string;
   onBack?: () => void;
+  topSlot?: ReactNode;
 }
 
-export default function MyGoTwoDesktopStage({ children, title, onBack }: MyGoTwoDesktopStageProps) {
+export default function MyGoTwoDesktopStage({ children, title, onBack, topSlot }: MyGoTwoDesktopStageProps) {
   return (
     <div
       className="relative h-full min-h-0"
@@ -18,6 +19,16 @@ export default function MyGoTwoDesktopStage({ children, title, onBack }: MyGoTwo
         paddingBottom: MYGOTWO_DESKTOP_TOKENS.contentPaddingBottom,
       }}
     >
+      {topSlot ? (
+        <div
+          className="absolute inset-x-0 z-20"
+          style={{ top: MYGOTWO_DESKTOP_TOKENS.titleOverlayTop }}
+        >
+          <div className="mx-auto flex w-full max-w-[min(92vw,920px)] items-center px-4">
+            {topSlot}
+          </div>
+        </div>
+      ) : null}
       {title ? (
         <div
           className="pointer-events-none absolute left-1/2 z-20 flex -translate-x-1/2 items-center justify-center"
