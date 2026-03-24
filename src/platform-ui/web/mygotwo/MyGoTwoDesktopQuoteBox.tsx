@@ -6,13 +6,12 @@ export default function MyGoTwoDesktopQuoteBox() {
 
   return (
     <div
-      className="pointer-events-none relative flex w-full items-start justify-center overflow-hidden text-center"
-      style={{ height: MYGOTWO_DESKTOP_TOKENS.quoteBoxHeight }}
+      className="pointer-events-none relative flex w-full items-start justify-center text-center"
+      style={{ minHeight: MYGOTWO_DESKTOP_TOKENS.quoteBoxMinHeight }}
     >
       <div
-        className="flex h-full items-start justify-center overflow-hidden"
+        className="flex w-full items-start justify-center"
         style={{
-          width: "100%",
           maxWidth: MYGOTWO_DESKTOP_TOKENS.quoteMaxWidth,
           paddingTop: MYGOTWO_DESKTOP_TOKENS.quoteBoxPaddingTop,
           paddingLeft: MYGOTWO_DESKTOP_TOKENS.quoteBoxPaddingX,
