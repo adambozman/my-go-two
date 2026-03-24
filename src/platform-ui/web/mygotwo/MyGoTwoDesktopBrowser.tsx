@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import MyGoTwoDesktopCoverflow, {
@@ -14,6 +15,12 @@ interface MyGoTwoDesktopBrowserProps {
   onCommit: (id: string) => void;
   onRotateSections?: (step: number) => void;
   getStepFromSwipe?: (primaryOffset: number, crossOffset: number, primaryVelocity?: number) => number;
+  topSlot?: ReactNode;
+  overlay?: ReactNode;
+  footer?: ReactNode;
+  showControls?: boolean;
+  visibleEachSide?: number;
+  onActiveIdChange?: (id: string) => void;
 }
 
 export default function MyGoTwoDesktopBrowser({
@@ -25,6 +32,12 @@ export default function MyGoTwoDesktopBrowser({
   onCommit,
   onRotateSections,
   getStepFromSwipe,
+  topSlot,
+  overlay,
+  footer,
+  showControls,
+  visibleEachSide,
+  onActiveIdChange,
 }: MyGoTwoDesktopBrowserProps) {
   return (
     <motion.div
@@ -44,13 +57,26 @@ export default function MyGoTwoDesktopBrowser({
         if (step !== 0) onRotateSections(step);
       } : undefined}
     >
-      <MyGoTwoDesktopPage title={title} onBack={onBack}>
-        <MyGoTwoDesktopCoverflow
-          items={items}
-          focusedItemId={focusedItemId}
-          onCommit={onCommit}
-          stageHeight="100%"
-        />
+      <MyGoTwoDesktopPage title={title} onBack={onBack} topSlot={topSlot}>
+        <div className="flex h-full min-h-0 flex-col">
+          <div className="relative min-h-0 flex-1">
+            <MyGoTwoDesktopCoverflow
+              items={items}
+              focusedItemId={focusedItemId}
+              onCommit={onCommit}
+              stageHeight="100%"
+              showControls={showControls}
+              visibleEachSide={visibleEachSide}
+              onActiveIdChange={onActiveIdChange}
+            />
+            {overlay ? (
+              <div className="pointer-events-none absolute inset-0 z-20">
+                {overlay}
+              </div>
+            ) : null}
+          </div>
+          {footer ? <div className="flex-none">{footer}</div> : null}
+        </div>
       </MyGoTwoDesktopPage>
     </motion.div>
   );

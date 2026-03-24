@@ -19,6 +19,8 @@ interface MyGoTwoDesktopCoverflowProps {
   onActiveIdChange?: (id: string) => void;
   stageHeight?: string;
   commitOnCardClick?: boolean;
+  showControls?: boolean;
+  visibleEachSide?: number;
 }
 
 interface PosePoint {
@@ -135,6 +137,8 @@ export default function MyGoTwoDesktopCoverflow({
   onActiveIdChange,
   stageHeight = "100%",
   commitOnCardClick = false,
+  showControls = true,
+  visibleEachSide = MYGOTWO_DESKTOP_TOKENS.visibleEachSide,
 }: MyGoTwoDesktopCoverflowProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
@@ -263,7 +267,7 @@ export default function MyGoTwoDesktopCoverflow({
               key={item.id}
               item={item}
               isActive={depth === 0}
-              isVisible={depth <= MYGOTWO_DESKTOP_TOKENS.visibleEachSide}
+              isVisible={depth <= visibleEachSide}
               width={cardWidth}
               height={cardHeight}
               pose={pose}
@@ -283,7 +287,7 @@ export default function MyGoTwoDesktopCoverflow({
         })}
       </div>
 
-      {itemCount > 1 ? (
+      {showControls && itemCount > 1 ? (
         <div
           className="absolute left-1/2 z-[60] flex -translate-x-1/2 items-center gap-4"
           style={{ bottom: MYGOTWO_DESKTOP_TOKENS.controlsBottom }}

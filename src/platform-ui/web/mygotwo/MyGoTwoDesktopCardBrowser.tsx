@@ -2,10 +2,8 @@ import type { Dispatch, SetStateAction } from "react";
 import { ChevronLeft } from "lucide-react";
 import ProductEntryCard from "@/components/ui/ProductEntryCard";
 import type { SubtypeItem } from "@/data/templateSubtypes";
-import MyGoTwoDesktopCoverflow, {
-  type MyGoTwoDesktopCoverflowItem,
-} from "@/platform-ui/web/mygotwo/MyGoTwoDesktopCoverflow";
-import MyGoTwoDesktopPage from "@/platform-ui/web/mygotwo/MyGoTwoDesktopPage";
+import MyGoTwoDesktopBrowser from "@/platform-ui/web/mygotwo/MyGoTwoDesktopBrowser";
+import type { MyGoTwoDesktopCoverflowItem } from "@/platform-ui/web/mygotwo/MyGoTwoDesktopCoverflow";
 
 interface CardEntry {
   id: string;
@@ -19,7 +17,7 @@ interface CardEntry {
   updated_at: string;
 }
 
-interface MyGoTwoDesktopEntryPageProps {
+interface MyGoTwoDesktopCardBrowserProps {
   leafSubtype: SubtypeItem;
   leafSubcategoryName?: string;
   leafCategoryName?: string;
@@ -46,7 +44,7 @@ interface MyGoTwoDesktopEntryPageProps {
   onCreateGroup: () => void;
 }
 
-export default function MyGoTwoDesktopEntryPage({
+export default function MyGoTwoDesktopCardBrowser({
   leafSubtype,
   leafSubcategoryName,
   leafCategoryName,
@@ -71,7 +69,7 @@ export default function MyGoTwoDesktopEntryPage({
   onSaveEntry,
   onDeleteEntry,
   onCreateGroup,
-}: MyGoTwoDesktopEntryPageProps) {
+}: MyGoTwoDesktopCardBrowserProps) {
   const currentGroup = productGroups.includes(activeGroup) ? activeGroup : productGroups[0] || leafSubtype.name;
   const groupEntries = entries.filter((entry) => entry.group_name === currentGroup);
   const newEntryId = `${newEntryPrefix}::${currentGroup}`;
@@ -81,7 +79,8 @@ export default function MyGoTwoDesktopEntryPage({
   const activeItemName =
     entryNames[activeItemId]?.trim()
     || activeEntry?.entry_name
-    || `New ${leafSubtype.name}`;
+    || leafSubtype.name;
+
   const editorItems: MyGoTwoDesktopCoverflowItem[] = [
     ...groupEntries.map((entry) => ({
       id: entry.id,
@@ -91,18 +90,36 @@ export default function MyGoTwoDesktopEntryPage({
           resolvedEntryImages[entryImages[entry.id] || entry.image_url || ""]
           || entryImages[entry.id]
           || entry.image_url,
-        ) || "",
+        ) || leafImage,
     })),
     {
       id: newEntryId,
       label: entryNames[newEntryId]?.trim() || `New ${leafSubtype.name}`,
-      image: normalizeImageValue(resolvedEntryImages[entryImages[newEntryId] || ""] || entryImages[newEntryId]) || "",
+      image: normalizeImageValue(resolvedEntryImages[entryImages[newEntryId] || ""] || entryImages[newEntryId]) || leafImage,
     },
   ];
-  const showCoverflow = groupEntries.length > 0;
+
+  const activeItemValues = entryDrafts[activeItemId] || defaultFieldValues;
+  const activeItemImage =
+    normalizeImageValue(entryImages[activeItemId])
+    || normalizeImageValue(activeEntry?.image_url)
+    || "";
 
   return (
-    <MyGoTwoDesktopPage
+    <MyGoTwoDesktopBrowser
+      pageKey={`entry-browser:${leafSubtype.id}:${currentGroup}`}
+      items={editorItems}
+      focusedItemId={activeItemId}
+      onCommit={(id) => {
+        const nextIndex = editorItems.findIndex((item) => item.id === id);
+        if (nextIndex < 0) return;
+        setActiveEntryIndexByGroup((prev) => ({ ...prev, [currentGroup]: nextIndex }));
+      }}
+      onActiveIdChange={(id) => {
+        const nextIndex = editorItems.findIndex((item) => item.id === id);
+        if (nextIndex < 0) return;
+        setActiveEntryIndexByGroup((prev) => ({ ...prev, [currentGroup]: nextIndex }));
+      }}
       topSlot={
         <button
           type="button"
@@ -113,41 +130,20 @@ export default function MyGoTwoDesktopEntryPage({
           <ChevronLeft className="h-5 w-5" />
         </button>
       }
-    >
-      <div className="grid h-full min-h-0 grid-rows-[minmax(280px,38%)_minmax(0,1fr)] gap-5">
-        <div className="min-h-0">
-          <div className={showCoverflow ? "h-full" : "pointer-events-none h-full opacity-0"}>
-            <MyGoTwoDesktopCoverflow
-              items={editorItems}
-              focusedItemId={activeItemId}
-              onActiveIdChange={(id) => {
-                const nextIndex = editorItems.findIndex((item) => item.id === id);
-                if (nextIndex < 0) return;
-                setActiveEntryIndexByGroup((prev) => ({ ...prev, [currentGroup]: nextIndex }));
-              }}
-              onCommit={(id) => {
-                const nextIndex = editorItems.findIndex((item) => item.id === id);
-                if (nextIndex < 0) return;
-                setActiveEntryIndexByGroup((prev) => ({ ...prev, [currentGroup]: nextIndex }));
-              }}
-              stageHeight="100%"
-            />
-          </div>
-        </div>
-
-        <div className="flex min-h-0 flex-col items-center justify-start gap-5 overflow-auto pb-2">
-          <div className="w-full max-w-[680px] overflow-hidden rounded-[34px] shadow-[0_22px_70px_rgba(0,0,0,0.16)]">
+      visibleEachSide={groupEntries.length > 0 ? undefined : 0}
+      overlay={
+        <div className="flex h-full items-center justify-center px-8 pb-8 pt-16">
+          <div
+            className="pointer-events-auto w-full max-w-[462px] overflow-hidden rounded-[32px] shadow-[0_18px_34px_rgba(110,117,118,0.22),0_34px_90px_rgba(75,79,79,0.24)]"
+            style={{ aspectRatio: "462 / 678" }}
+          >
             <ProductEntryCard
               subtype={leafSubtype}
               subcategoryName={leafSubcategoryName}
               categoryName={leafCategoryName}
               entryName={entryNames[activeItemId] || ""}
-              values={entryDrafts[activeItemId] || defaultFieldValues}
-              imageUrl={
-                normalizeImageValue(entryImages[activeItemId])
-                || normalizeImageValue(activeEntry?.image_url)
-                || ""
-              }
+              values={activeItemValues}
+              imageUrl={activeItemImage}
               saving={saving}
               isEditing={!activeItemId.startsWith(`${newEntryPrefix}::`)}
               onEntryNameChange={(name) => onEntryNameChange(activeItemId, name)}
@@ -157,35 +153,36 @@ export default function MyGoTwoDesktopEntryPage({
               onDelete={() => onDeleteEntry(activeItemId)}
             />
           </div>
+        </div>
+      }
+      footer={
+        <div className="flex flex-wrap items-center justify-center gap-5 pb-2 pt-6">
+          <button
+            type="button"
+            className="inline-flex items-center gap-4 rounded-full border px-8 py-4 text-[22px] leading-none shadow-[0_8px_24px_rgba(20,20,30,0.08)]"
+            style={{
+              background: "rgba(255,255,255,0.74)",
+              borderColor: "rgba(190,176,160,0.58)",
+              color: "var(--swatch-teal)",
+              fontFamily: "'Jost', sans-serif",
+            }}
+            onClick={onCreateGroup}
+          >
+            <span className="text-[24px] font-light">+</span>
+            <span className="text-[24px] font-medium tracking-[-0.03em]">New Group</span>
+          </button>
 
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <button
-              type="button"
-              className="rounded-full border px-7 py-3 text-[clamp(18px,1.5vw,22px)] font-medium leading-none shadow-[0_10px_26px_rgba(20,20,30,0.08)]"
-              style={{
-                background: "rgba(255,255,255,0.78)",
-                borderColor: "rgba(45,104,112,0.18)",
-                borderStyle: "dashed",
-                color: "var(--swatch-teal)",
-                fontFamily: "'Cormorant Garamond', serif",
-              }}
-              onClick={onCreateGroup}
-            >
-              New Group
-            </button>
-
-            <div
-              className="text-sm"
-              style={{
-                color: "rgba(45,104,112,0.72)",
-                fontFamily: "'Cormorant Garamond', serif",
-              }}
-            >
-              {saving ? "Saving..." : `Saving to: ${activeItemName}`}
-            </div>
+          <div
+            className="text-[28px] leading-none"
+            style={{
+              color: "rgba(82,110,125,0.72)",
+              fontFamily: "'Cormorant Garamond', serif",
+            }}
+          >
+            {saving ? "Saving..." : `Saving to: ${activeItemName}`}
           </div>
         </div>
-      </div>
-    </MyGoTwoDesktopPage>
+      }
+    />
   );
 }

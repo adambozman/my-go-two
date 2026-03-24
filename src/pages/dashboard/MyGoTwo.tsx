@@ -10,7 +10,7 @@ import {
   NEW_ENTRY_ID,
   useMyGoTwoController,
 } from "@/features/mygotwo/useMyGoTwoController";
-import MyGoTwoWebEntryView from "@/platform-ui/web/mygotwo/MyGoTwoWebEntryView";
+import MyGoTwoDesktopCardBrowser from "@/platform-ui/web/mygotwo/MyGoTwoDesktopCardBrowser";
 import MyGoTwoWebLayout from "@/platform-ui/web/mygotwo/MyGoTwoWebLayout";
 import MyGoTwoWebView from "@/platform-ui/web/mygotwo/MyGoTwoWebView";
 
@@ -52,7 +52,7 @@ const MyGoTwo = () => {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="w-full"
           >
-            <MyGoTwoWebEntryView
+            <MyGoTwoDesktopCardBrowser
               leafSubtype={controller.leafSubtype}
               leafSubcategoryName={controller.leafSubcategoryName}
               leafCategoryName={controller.leafCategoryName}

@@ -39,20 +39,21 @@ const EntryTagInput = ({
   }, [adding]);
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
       {tags.map((tag, ti) => (
         <span
           key={ti}
           onClick={() => removeTag(ti)}
           style={{
-            padding: "4px 11px",
-            borderRadius: 4,
+            padding: "6px 12px",
+            borderRadius: 999,
             fontSize: 13,
-            background: isBrand ? "rgba(45,104,112,0.12)" : "rgba(26,26,26,0.07)",
+            background: isBrand ? "rgba(45,104,112,0.08)" : "rgba(26,26,26,0.04)",
             color: isBrand ? "#2d6870" : "#1a1a1a",
             fontWeight: isBrand ? 600 : 400,
             cursor: "pointer",
             fontFamily: "'Jost', sans-serif",
+            border: "1px solid rgba(68,58,40,0.1)",
           }}
         >
           {tag.trim()} x
@@ -80,10 +81,10 @@ const EntryTagInput = ({
           placeholder={`Add ${fieldLabel.toLowerCase()}...`}
           style={{
             width: 100,
-            padding: "4px 8px",
-            borderRadius: 4,
+            padding: "6px 10px",
+            borderRadius: 14,
             fontSize: 13,
-            border: "1px solid rgba(26,26,26,0.22)",
+            border: "1px solid rgba(68,58,40,0.18)",
             background: "transparent",
             outline: "none",
             fontFamily: "'Jost', sans-serif",
@@ -94,12 +95,12 @@ const EntryTagInput = ({
         <button
           onClick={() => setAdding(true)}
           style={{
-            padding: "4px 12px",
-            borderRadius: 4,
+            padding: "8px 14px",
+            borderRadius: 12,
             fontSize: 12,
-            border: "1px dashed rgba(26,26,26,0.22)",
+            border: "1px dashed rgba(68,58,40,0.22)",
             background: "transparent",
-            color: "rgba(26,26,26,0.32)",
+            color: "rgba(68,58,40,0.34)",
             fontFamily: "'Jost', sans-serif",
             cursor: "pointer",
           }}
@@ -299,7 +300,7 @@ const ProductEntryCard = ({
       style={{
         width: "100%",
         height: "100%",
-        background: "#f0e8d8",
+        background: "#eee7d6",
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
@@ -312,29 +313,29 @@ const ProductEntryCard = ({
       `}</style>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 22px 8px", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "#d4543a", fontWeight: 700 }}>
+        <span style={{ fontSize: 11, letterSpacing: "0.24em", textTransform: "uppercase", color: "#d4543a", fontWeight: 700 }}>
           {subcategoryName ? [categoryName, subcategoryName].filter(Boolean).join(" · ") : (categoryName || "")}
         </span>
-        <span style={{ fontSize: 11, color: "rgba(26,26,26,0.2)", fontStyle: "italic", fontFamily: "'Cormorant Garamond', serif" }}>
+        <span style={{ fontSize: 10, color: "rgba(26,26,26,0.16)", fontStyle: "italic", fontFamily: "'Cormorant Garamond', serif" }}>
           {isEditing ? "edit" : "01"}
         </span>
       </div>
 
-      <div style={{ position: "relative", padding: "0 22px", flexShrink: 0, height: 190 }}>
+      <div style={{ position: "relative", padding: "0 22px", flexShrink: 0, height: 206 }}>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
           style={{
             position: "absolute",
-            top: 0,
+            top: 4,
             right: 22,
             width: 170,
             height: 190,
-            borderRadius: 14,
+            borderRadius: 18,
             border: "none",
             padding: 0,
             overflow: "hidden",
-            background: resolvedImageUrl ? `center / cover no-repeat url(${resolvedImageUrl})` : "#c8bfb4",
+            background: resolvedImageUrl ? `center / cover no-repeat url(${resolvedImageUrl})` : "#cbc2b5",
             cursor: uploadingImage ? "wait" : "pointer",
           }}
           aria-label="Upload image"
@@ -366,18 +367,18 @@ const ProductEntryCard = ({
           style={{ display: "none" }}
         />
 
-        <div style={{ maxWidth: "calc(100% - 196px)", height: 190 }}>
+        <div style={{ maxWidth: "calc(100% - 196px)", height: 176, paddingTop: 4 }}>
           <AutoFitEntryTitle value={entryName} placeholder={subtype.name} onChange={onEntryNameChange} />
         </div>
 
-        <div style={{ display: "flex", gap: 3, paddingTop: 8 }}>
+        <div style={{ display: "flex", gap: 5, paddingTop: 10 }}>
           <div style={{ height: 2, width: 22, background: "#d4543a", borderRadius: 1 }} />
-          <div style={{ height: 2, width: 8, background: "rgba(212,84,58,0.3)", borderRadius: 1 }} />
+          <div style={{ height: 2, width: 8, background: "rgba(212,84,58,0.28)", borderRadius: 1 }} />
         </div>
       </div>
 
-      <div style={{ padding: "6px 22px 10px", flexShrink: 0 }}>
-        <div style={{ height: 1, background: "rgba(26,26,26,0.14)" }} />
+      <div style={{ padding: "2px 22px 8px", flexShrink: 0 }}>
+        <div style={{ height: 1, background: "rgba(68,58,40,0.14)" }} />
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", padding: "0 22px" }}>
@@ -385,12 +386,12 @@ const ProductEntryCard = ({
           <div
             key={field.label}
             style={{
-              paddingBottom: 12,
+              paddingBottom: field.label.toLowerCase() === "notes" ? 0 : 12,
               marginBottom: 12,
-              borderBottom: i < subtype.fields.length - 1 ? "1px solid rgba(26,26,26,0.1)" : "none",
+              borderBottom: i < subtype.fields.length - 1 ? "1px solid rgba(68,58,40,0.1)" : "none",
             }}
           >
-            <p style={{ fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(26,26,26,0.38)", fontWeight: 700, margin: "0 0 8px" }}>
+            <p style={{ fontSize: 10, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(68,58,40,0.34)", fontWeight: 700, margin: "0 0 8px" }}>
               {field.label}
             </p>
 
@@ -403,13 +404,13 @@ const ProductEntryCard = ({
                       key={opt}
                       onClick={() => onChange(field.label, sel ? "" : opt)}
                       style={{
-                        padding: "5px 14px",
+                        padding: "6px 14px",
                         borderRadius: 999,
                         fontSize: 13,
                         fontWeight: 500,
                         cursor: "pointer",
                         transition: "all 0.15s",
-                        border: sel ? "1.5px solid #d4543a" : "1px solid rgba(26,26,26,0.18)",
+                        border: sel ? "1.5px solid #d4543a" : "1px solid rgba(68,58,40,0.18)",
                         background: sel ? "#d4543a" : "transparent",
                         color: sel ? "#fff" : "#1a1a1a",
                         fontFamily: "'Jost', sans-serif",
@@ -437,6 +438,8 @@ const ProductEntryCard = ({
                   color: "#1a1a1a",
                   lineHeight: 1.5,
                   fontFamily: "'Jost', sans-serif",
+                  minHeight: 64,
+                  paddingBottom: 8,
                 }}
               />
             ) : (
@@ -446,7 +449,7 @@ const ProductEntryCard = ({
         ))}
       </div>
 
-      <div style={{ padding: "14px 22px 18px", display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
+      <div style={{ padding: "14px 22px 16px", display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
         <button
           onClick={onSave}
           disabled={saving}
@@ -459,7 +462,7 @@ const ProductEntryCard = ({
             color: "white",
             fontFamily: "'Jost', sans-serif",
             fontSize: 13,
-            fontWeight: 600,
+            fontWeight: 700,
             cursor: saving ? "wait" : "pointer",
             opacity: saving ? 0.7 : 1,
           }}
