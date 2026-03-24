@@ -37,25 +37,34 @@ Deno.serve(async (req) => {
     const user = users.find((u: any) => u.email === normalizedEmail);
     if (!user) throw new Error("Dev user not found. Sign up first.");
 
-    // Generate a magic link — this gives us a valid OTP token
+    // Generate a magic link to get a valid hashed_token for OTP verification
     const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
       type: "magiclink",
       email: normalizedEmail,
     });
     if (linkError) throw linkError;
 
-    // Extract the token_hash and use it
-    const actionLink = linkData?.properties?.action_link;
-    if (!actionLink) throw new Error("Failed to generate link");
+    const hashedToken = linkData?.properties?.hashed_token;
+    if (!hashedToken) throw new Error("No hashed token generated");
 
-    // Parse the token from the action link URL
-    const url = new URL(actionLink);
-    const token_hash = url.searchParams.get("token") || url.hash?.match(/token=([^&]+)/)?.[1];
-    
-    // Return the full action link for client-side verification
-    return new Response(JSON.stringify({ 
-      action_link: actionLink,
+    // Now verify the OTP server-side to get a full session
+    const anonClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+    );
+
+    const { data: sessionData, error: verifyError } = await anonClient.auth.verifyOtp({
       email: normalizedEmail,
+      token: hashedToken,
+      type: "magiclink",
+    });
+
+    if (verifyError) throw verifyError;
+    if (!sessionData?.session) throw new Error("No session returned");
+
+    return new Response(JSON.stringify({
+      access_token: sessionData.session.access_token,
+      refresh_token: sessionData.session.refresh_token,
     }), {
       headers: corsHeaders,
     });
