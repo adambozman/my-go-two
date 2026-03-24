@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Pill } from "@/components/ui/pill";
-import InlinePhotoSearch from "@/components/InlinePhotoSearch";
 import { MYGOTWO_DESKTOP_TOKENS } from "@/platform-ui/web/mygotwo/myGoTwoDesktop.tokens";
 
 export interface MyGoTwoDesktopCoverflowItem {
@@ -117,12 +115,21 @@ function MyGoTwoDesktopCoverflowCard({
         {isActive ? (
           <>
             <div className="absolute inset-0 bg-gradient-to-t from-black/34 via-transparent to-transparent" />
-            <div className="absolute bottom-6 left-6">
-              <Pill variant="title" size="default">
-                {item.label}
-              </Pill>
+            <div
+              className="absolute bottom-6 left-6 inline-flex items-center justify-center whitespace-nowrap rounded-full border px-4 py-2"
+              style={{
+                background: "rgba(255,248,240,0.92)",
+                borderColor: "rgba(255,255,255,0.72)",
+                color: "var(--logo-two-color)",
+                boxShadow: "0 10px 22px rgba(20,20,30,0.12)",
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 20,
+                fontWeight: 700,
+                lineHeight: 0.9,
+              }}
+            >
+              {item.label}
             </div>
-            <InlinePhotoSearch imageKey={item.imageKey || item.id} label={item.label} />
           </>
         ) : null}
       </div>

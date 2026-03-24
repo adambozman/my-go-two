@@ -1,9 +1,9 @@
 import type { Dispatch, SetStateAction } from "react";
 import { ChevronLeft } from "lucide-react";
-import ProductEntryCard from "@/components/ui/ProductEntryCard";
 import type { SubtypeItem } from "@/data/templateSubtypes";
 import MyGoTwoDesktopBrowser from "@/platform-ui/web/mygotwo/MyGoTwoDesktopBrowser";
 import type { MyGoTwoDesktopCoverflowItem } from "@/platform-ui/web/mygotwo/MyGoTwoDesktopCoverflow";
+import MyGoTwoWebProductCard from "@/platform-ui/web/mygotwo/MyGoTwoWebProductCard";
 
 interface CardEntry {
   id: string;
@@ -137,7 +137,7 @@ export default function MyGoTwoDesktopCardBrowser({
             className="pointer-events-auto w-full max-w-[462px] overflow-hidden rounded-[32px] shadow-[0_18px_34px_rgba(110,117,118,0.22),0_34px_90px_rgba(75,79,79,0.24)]"
             style={{ aspectRatio: "462 / 678" }}
           >
-            <ProductEntryCard
+            <MyGoTwoWebProductCard
               subtype={leafSubtype}
               subcategoryName={leafSubcategoryName}
               categoryName={leafCategoryName}

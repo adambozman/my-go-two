@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,13 +10,106 @@ import {
   NEW_ENTRY_ID,
   useMyGoTwoController,
 } from "@/features/mygotwo/useMyGoTwoController";
-import MyGoTwoDesktopCardBrowser from "@/platform-ui/web/mygotwo/MyGoTwoDesktopCardBrowser";
-import MyGoTwoWebLayout from "@/platform-ui/web/mygotwo/MyGoTwoWebLayout";
-import MyGoTwoWebView from "@/platform-ui/web/mygotwo/MyGoTwoWebView";
+import MyGoTwoDesktopExperience from "@/platform-ui/web/mygotwo/MyGoTwoDesktopExperience";
+
+function LegacyMobileMyGoTwo() {
+  const controller = useMyGoTwoController();
+
+  if (controller.isLoading) {
+    return (
+      <MyGoTwoPageLayout isDesktopViewport={false}>
+        <main className="flex flex-1 items-center justify-center overflow-x-hidden px-3 pb-6 sm:px-4 md:px-6 lg:px-8 lg:pb-8">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </main>
+      </MyGoTwoPageLayout>
+    );
+  }
+
+  const content = controller.cardKey && controller.leafSubtype ? (
+    <MyGoTwoMobileEntryView
+      leafSubtype={controller.leafSubtype}
+      leafSubcategoryName={controller.leafSubcategoryName}
+      leafCategoryName={controller.leafCategoryName}
+      leafImage={controller.leafImage}
+      entries={controller.entries}
+      productGroups={controller.productGroups}
+      activeGroup={controller.activeGroup}
+      productGroupScrollRef={controller.productGroupScrollRef}
+      productGroupSectionRefs={controller.productGroupSectionRefs}
+      activeEntryIndexByGroup={controller.activeEntryIndexByGroup}
+      activeEntryPageByGroup={controller.activeEntryPageByGroup}
+      entryNames={controller.entryNames}
+      entryDrafts={controller.entryDrafts}
+      entryImages={controller.entryImages}
+      resolvedEntryImages={controller.resolvedEntryImages}
+      defaultFieldValues={controller.defaultFieldValues}
+      saving={controller.saving}
+      brandedCardSvg={BRANDED_CARD_SVG}
+      newEntryPrefix={NEW_ENTRY_ID}
+      normalizeImageValue={controller.normalizeImageValue}
+      setActiveGroup={controller.setActiveGroup}
+      setActiveEntryIndexByGroup={controller.setActiveEntryIndexByGroup}
+      setActiveEntryPageByGroup={controller.setActiveEntryPageByGroup}
+      onBack={controller.goBackFromEntries}
+      onEntryNameChange={controller.handleNameChange}
+      onFieldChange={controller.handleFieldChange}
+      onImageChange={controller.handleImageChange}
+      onSaveEntry={controller.handleSaveEntry}
+      onDeleteEntry={controller.handleDeleteEntry}
+      onCreateGroup={controller.handleCreateGroup}
+    />
+  ) : (
+    <MyGoTwoMobileRootView
+      coverFlowState={controller.coverFlowState}
+      activeSubcategory={controller.activeSubcategory}
+      focusedSubcategoryId={controller.focusedSubcategoryId}
+      focusedLeafItemId={controller.focusedLeafItemId}
+      activeSection={controller.activeSection}
+      focusedCategoryId={
+        controller.activeSection
+          ? controller.focusedMainCategoryBySection[controller.activeSection.key] ?? null
+          : null
+      }
+      gender={controller.gender}
+      scrollRef={controller.scrollRef}
+      sectionRef={(node) => {
+        if (controller.activeSection) {
+          controller.sectionRefs.current[controller.activeSection.key] = node;
+        }
+      }}
+      onRotateFromSwipe={(info) => {
+        const step = controller.getStepFromSwipe(info.offset.y, info.offset.x, info.velocity.y);
+        if (step !== 0) controller.rotateSections(step);
+      }}
+      onSelectRoot={controller.handleSelect}
+      onClearCoverFlow={controller.clearCoverFlow}
+      onSubcategoryBack={controller.closeActiveSubcategory}
+      onSubcategorySelect={controller.handleSubcategorySelect}
+      onSubtypeSelect={controller.handleSubtypeSelect}
+    />
+  );
+
+  return (
+    <MyGoTwoPageLayout isDesktopViewport={false}>
+      <main className="flex-1 min-h-0 overflow-x-hidden px-3 pb-6 sm:px-4 md:px-6 lg:px-8 lg:pb-8">
+        {content}
+      </main>
+    </MyGoTwoPageLayout>
+  );
+}
 
 const MyGoTwo = () => {
   const { user, loading } = useAuth();
-  const controller = useMyGoTwoController();
+  const [isDesktopViewport, setIsDesktopViewport] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
+  );
+
+  useEffect(() => {
+    const updateViewport = () => setIsDesktopViewport(window.innerWidth >= 1024);
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
 
   if (loading) {
     return (
@@ -30,161 +123,7 @@ const MyGoTwo = () => {
     return <Navigate to="/login" replace />;
   }
 
-  if (controller.isLoading) {
-    return (
-      <MyGoTwoPageLayout isDesktopViewport={controller.isDesktopViewport}>
-        <main className="flex flex-1 items-center justify-center overflow-x-hidden px-3 pb-6 sm:px-4 md:px-6 lg:px-8 lg:pb-8">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </main>
-      </MyGoTwoPageLayout>
-    );
-  }
-
-  const renderContent = () => {
-    if (controller.cardKey && controller.leafSubtype) {
-      if (controller.isDesktopViewport) {
-        return (
-          <motion.div
-            key="entry-web"
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="w-full"
-          >
-            <MyGoTwoDesktopCardBrowser
-              leafSubtype={controller.leafSubtype}
-              leafSubcategoryName={controller.leafSubcategoryName}
-              leafCategoryName={controller.leafCategoryName}
-              leafImage={controller.leafImage}
-              entries={controller.entries}
-              productGroups={controller.productGroups}
-              activeGroup={controller.activeGroup}
-              setActiveGroup={controller.setActiveGroup}
-              activeEntryIndexByGroup={controller.activeEntryIndexByGroup}
-              setActiveEntryIndexByGroup={controller.setActiveEntryIndexByGroup}
-              entryNames={controller.entryNames}
-              entryDrafts={controller.entryDrafts}
-              entryImages={controller.entryImages}
-              resolvedEntryImages={controller.resolvedEntryImages}
-              defaultFieldValues={controller.defaultFieldValues}
-              saving={controller.saving}
-              newEntryPrefix={NEW_ENTRY_ID}
-              fallbackImage={BRANDED_CARD_SVG}
-              normalizeImageValue={controller.normalizeImageValue}
-              onBack={controller.goBackFromEntries}
-              onEntryNameChange={controller.handleNameChange}
-              onFieldChange={controller.handleFieldChange}
-              onImageChange={controller.handleImageChange}
-              onSaveEntry={controller.handleSaveEntry}
-              onDeleteEntry={controller.handleDeleteEntry}
-              onCreateGroup={controller.handleCreateGroup}
-            />
-          </motion.div>
-        );
-      }
-
-      return (
-        <MyGoTwoMobileEntryView
-          leafSubtype={controller.leafSubtype}
-          leafSubcategoryName={controller.leafSubcategoryName}
-          leafCategoryName={controller.leafCategoryName}
-          leafImage={controller.leafImage}
-          entries={controller.entries}
-          productGroups={controller.productGroups}
-          activeGroup={controller.activeGroup}
-          productGroupScrollRef={controller.productGroupScrollRef}
-          productGroupSectionRefs={controller.productGroupSectionRefs}
-          activeEntryIndexByGroup={controller.activeEntryIndexByGroup}
-          activeEntryPageByGroup={controller.activeEntryPageByGroup}
-          entryNames={controller.entryNames}
-          entryDrafts={controller.entryDrafts}
-          entryImages={controller.entryImages}
-          resolvedEntryImages={controller.resolvedEntryImages}
-          defaultFieldValues={controller.defaultFieldValues}
-          saving={controller.saving}
-          brandedCardSvg={BRANDED_CARD_SVG}
-          newEntryPrefix={NEW_ENTRY_ID}
-          normalizeImageValue={controller.normalizeImageValue}
-          setActiveGroup={controller.setActiveGroup}
-          setActiveEntryIndexByGroup={controller.setActiveEntryIndexByGroup}
-          setActiveEntryPageByGroup={controller.setActiveEntryPageByGroup}
-          onBack={controller.goBackFromEntries}
-          onEntryNameChange={controller.handleNameChange}
-          onFieldChange={controller.handleFieldChange}
-          onImageChange={controller.handleImageChange}
-          onSaveEntry={controller.handleSaveEntry}
-          onDeleteEntry={controller.handleDeleteEntry}
-          onCreateGroup={controller.handleCreateGroup}
-        />
-      );
-    }
-
-    if (!controller.isDesktopViewport) {
-      return (
-        <MyGoTwoMobileRootView
-          coverFlowState={controller.coverFlowState}
-          activeSubcategory={controller.activeSubcategory}
-          focusedSubcategoryId={controller.focusedSubcategoryId}
-          focusedLeafItemId={controller.focusedLeafItemId}
-          activeSection={controller.activeSection}
-          focusedCategoryId={
-            controller.activeSection
-              ? controller.focusedMainCategoryBySection[controller.activeSection.key] ?? null
-              : null
-          }
-          gender={controller.gender}
-          scrollRef={controller.scrollRef}
-          sectionRef={(node) => {
-            if (controller.activeSection) {
-              controller.sectionRefs.current[controller.activeSection.key] = node;
-            }
-          }}
-          onRotateFromSwipe={(info) => {
-            const step = controller.getStepFromSwipe(info.offset.y, info.offset.x, info.velocity.y);
-            if (step !== 0) controller.rotateSections(step);
-          }}
-          onSelectRoot={controller.handleSelect}
-          onClearCoverFlow={controller.clearCoverFlow}
-          onSubcategoryBack={controller.closeActiveSubcategory}
-          onSubcategorySelect={controller.handleSubcategorySelect}
-          onSubtypeSelect={controller.handleSubtypeSelect}
-        />
-      );
-    }
-
-    return (
-      <MyGoTwoWebView
-        coverFlowState={controller.coverFlowState}
-        activeSubcategory={controller.activeSubcategory}
-        focusedSubcategoryId={controller.focusedSubcategoryId}
-        focusedLeafItemId={controller.focusedLeafItemId}
-        webLevelOneItems={controller.webLevelOneItems}
-        webFocusedLevelOneId={controller.webFocusedLevelOneId}
-        rotateSections={controller.rotateSections}
-        getStepFromSwipe={controller.getStepFromSwipe}
-        onRootSelect={controller.handleSelect}
-        onClearCoverFlow={controller.clearCoverFlow}
-        onSubcategoryBack={controller.closeActiveSubcategory}
-        onSubcategorySelect={controller.handleSubcategorySelect}
-        onSubtypeSelect={controller.handleSubtypeSelect}
-      />
-    );
-  };
-
-  const content = <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>;
-
-  return (
-    <MyGoTwoPageLayout isDesktopViewport={controller.isDesktopViewport}>
-      {controller.isDesktopViewport ? (
-        <MyGoTwoWebLayout>{content}</MyGoTwoWebLayout>
-      ) : (
-        <main className="flex-1 min-h-0 overflow-x-hidden px-3 pb-6 sm:px-4 md:px-6 lg:px-8 lg:pb-8">
-          {content}
-        </main>
-      )}
-    </MyGoTwoPageLayout>
-  );
+  return isDesktopViewport ? <MyGoTwoDesktopExperience /> : <LegacyMobileMyGoTwo />;
 };
 
 export default MyGoTwo;
