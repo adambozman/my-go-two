@@ -64,6 +64,92 @@ interface ScrapedProduct {
   price: string | null;
 }
 
+/** Words in image URLs that signal non-product images */
+const IMAGE_REJECT_WORDS = [
+  "icon", "logo", "sprite", "1x1", "pixel", ".svg", "badge", "banner-ad",
+  "nav", "navtile", "nav-tile", "category-tile", "placeholder", "spacer",
+  "tracking", "loading", "spinner", "arrow", "chevron", "caret",
+  "social-", "facebook", "twitter", "instagram", "pinterest", "youtube",
+  "flag", "payment", "visa", "mastercard", "amex", "paypal",
+  "star-rating", "review", "trustpilot",
+];
+
+/** Patterns in URLs that suggest a real product image */
+const IMAGE_BOOST_PATTERNS = [
+  /product/i, /pdp/i, /hero/i, /main/i, /primary/i,
+  /detail/i, /zoom/i, /full/i, /large/i, /1200/i, /2048/i, /1024/i,
+];
+
+function scoreImageUrl(url: string, productName: string, brand: string): number {
+  const lower = url.toLowerCase();
+
+  // Immediate reject
+  for (const word of IMAGE_REJECT_WORDS) {
+    if (lower.includes(word)) return -1;
+  }
+  // Reject tiny dimension hints (width=50, height=40, etc.)
+  const dimMatch = lower.match(/(?:width|w|height|h)[=_](\d+)/i);
+  if (dimMatch && parseInt(dimMatch[1]) < 200) return -1;
+
+  let score = 0;
+
+  // Boost for product-like URL patterns
+  for (const pat of IMAGE_BOOST_PATTERNS) {
+    if (pat.test(lower)) score += 2;
+  }
+
+  // Boost for larger explicit dimensions
+  if (dimMatch) {
+    const dim = parseInt(dimMatch[1]);
+    if (dim >= 600) score += 3;
+    else if (dim >= 400) score += 1;
+  }
+
+  // Boost if product name words appear in the URL
+  const nameWords = productName.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+  for (const word of nameWords) {
+    if (lower.includes(word)) score += 2;
+  }
+
+  // Boost common image extensions
+  if (/\.(jpg|jpeg|png|webp|avif)/i.test(lower)) score += 1;
+
+  return score;
+}
+
+function pickBestImage(
+  urls: string[],
+  productName: string,
+  brand: string,
+): string | null {
+  const scored = urls
+    .map(url => ({ url, score: scoreImageUrl(url, productName, brand) }))
+    .filter(x => x.score >= 0)
+    .sort((a, b) => b.score - a.score);
+  return scored[0]?.url ?? null;
+}
+
+/** Pick best search result — prefer product detail pages over collections */
+function pickBestResult(results: Array<Record<string, any>>): Record<string, any> {
+  // Score each result URL
+  const scored = results.map((r, i) => {
+    const url = (r?.url ?? "").toLowerCase();
+    let score = 0;
+    // Prefer product detail pages
+    if (/\/product[s]?\//.test(url)) score += 3;
+    if (/\/p\//.test(url)) score += 3;
+    if (/\/dp\//.test(url)) score += 3;
+    // Penalize collection/category pages
+    if (/\/collection[s]?/i.test(url)) score -= 2;
+    if (/\/categor/i.test(url)) score -= 2;
+    // Prefer first result as tiebreaker
+    score -= i * 0.1;
+    return { result: r, score };
+  });
+  scored.sort((a, b) => b.score - a.score);
+  return scored[0]?.result ?? results[0];
+}
+
 async function scrapeProductWithFirecrawl(
   brand: string,
   productName: string,
@@ -76,7 +162,6 @@ async function scrapeProductWithFirecrawl(
     const query = searchQuery || `${brand} ${productName} buy`;
     console.log("[firecrawl] searching:", query);
 
-    // Step 1: search for the product
     const searchRes = await fetch("https://api.firecrawl.dev/v1/search", {
       method: "POST",
       headers: {
@@ -85,7 +170,7 @@ async function scrapeProductWithFirecrawl(
       },
       body: JSON.stringify({
         query,
-        limit: 3,
+        limit: 5,
         scrapeOptions: { formats: ["markdown"] },
       }),
     });
@@ -99,10 +184,9 @@ async function scrapeProductWithFirecrawl(
     const results = searchData?.data ?? searchData?.results ?? [];
     if (!results.length) return null;
 
-    const bestResult = results[0];
+    const bestResult = pickBestResult(results);
     const productUrl = bestResult?.url ?? bestResult?.metadata?.sourceURL ?? null;
 
-    // Step 2: scrape the actual product page for high-res images
     let imageUrl: string | null = null;
     let scrapedPrice: string | null = null;
 
@@ -118,7 +202,7 @@ async function scrapeProductWithFirecrawl(
             url: productUrl,
             formats: ["markdown"],
             onlyMainContent: true,
-            waitFor: 1000,
+            waitFor: 1500,
           }),
         });
 
@@ -127,53 +211,53 @@ async function scrapeProductWithFirecrawl(
           const meta = scrapeData?.data?.metadata ?? scrapeData?.metadata ?? {};
           const md = scrapeData?.data?.markdown ?? scrapeData?.markdown ?? "";
 
-          // Priority 1: og:image — usually the hero product shot, high-res
+          // Collect ALL candidate images from the page
+          const candidates: string[] = [];
+
+          // og:image is a strong candidate but not always the product
           if (meta.ogImage && /^https?:\/\/.+/i.test(meta.ogImage)) {
-            imageUrl = meta.ogImage;
+            candidates.push(meta.ogImage);
           }
 
-          // Priority 2: large product images from markdown (skip icons/logos by filtering small dimensions)
-          if (!imageUrl) {
-            const allImages = [...md.matchAll(/!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi)]
-              .map((m: RegExpMatchArray) => m[1])
-              .filter((url: string) => {
-                const lower = url.toLowerCase();
-                // Skip tiny assets, svgs, tracking pixels
-                if (lower.includes("icon") || lower.includes("logo") || lower.includes("sprite")) return false;
-                if (lower.includes("1x1") || lower.includes("pixel") || lower.includes(".svg")) return false;
-                if (lower.includes("badge") || lower.includes("banner-ad")) return false;
-                // Prefer known image extensions
-                return /\.(jpg|jpeg|png|webp|avif)/i.test(lower) || lower.includes("image");
-              });
-            if (allImages.length > 0) imageUrl = allImages[0];
-          }
+          // Extract all markdown images
+          const mdImages = [...md.matchAll(/!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi)]
+            .map((m: RegExpMatchArray) => m[1]);
+          candidates.push(...mdImages);
+
+          // Score and pick the best
+          imageUrl = pickBestImage(candidates, productName, brand);
 
           // Extract price
           const priceMatch = md.match(/\$[\d,]+\.?\d{0,2}/);
           if (priceMatch) scrapedPrice = priceMatch[0];
         }
       } catch (scrapeErr) {
-        console.error("[firecrawl] scrape failed, falling back to search data:", scrapeErr);
+        console.error("[firecrawl] scrape failed:", scrapeErr);
       }
     }
 
-    // Fallback: use search result metadata / markdown if scrape didn't yield an image
+    // Fallback to search result metadata
     if (!imageUrl) {
-      const fallbackMeta = bestResult?.metadata ?? {};
-      if (fallbackMeta.ogImage) imageUrl = fallbackMeta.ogImage;
-    }
-    if (!imageUrl) {
-      const fallbackMd = bestResult?.markdown ?? "";
-      const imgMatch = fallbackMd.match(/!\[[^\]]*\]\((https?:\/\/[^\s)]+\.(?:jpg|jpeg|png|webp|avif)[^\s)]*)\)/i);
-      if (imgMatch) imageUrl = imgMatch[1];
-    }
-    if (!scrapedPrice) {
-      const fallbackMd = bestResult?.markdown ?? "";
-      const priceMatch = fallbackMd.match(/\$[\d,]+\.?\d{0,2}/);
-      if (priceMatch) scrapedPrice = priceMatch[0];
+      const candidates: string[] = [];
+      for (const r of results) {
+        const m = r?.metadata ?? {};
+        if (m.ogImage) candidates.push(m.ogImage);
+        const md = r?.markdown ?? "";
+        const imgs = [...md.matchAll(/!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi)].map((x: RegExpMatchArray) => x[1]);
+        candidates.push(...imgs);
+      }
+      imageUrl = pickBestImage(candidates, productName, brand);
     }
 
-    console.log("[firecrawl] found:", { productUrl, imageUrl: imageUrl?.slice(0, 80), scrapedPrice });
+    if (!scrapedPrice) {
+      for (const r of results) {
+        const md = r?.markdown ?? "";
+        const priceMatch = md.match(/\$[\d,]+\.?\d{0,2}/);
+        if (priceMatch) { scrapedPrice = priceMatch[0]; break; }
+      }
+    }
+
+    console.log("[firecrawl] found:", { productUrl, imageUrl: imageUrl?.slice(0, 100), scrapedPrice });
 
     return {
       image_url: imageUrl,
