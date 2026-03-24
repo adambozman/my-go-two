@@ -125,9 +125,20 @@ const Recommendations = () => {
   const fetchProducts = async (forceRefresh = false) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("ai-products", {
+      let { data, error } = await supabase.functions.invoke("ai-products", {
         body: forceRefresh ? { force_refresh: true } : {},
       });
+
+      // If session expired, refresh and retry once
+      if (error && (error as any)?.status === 401) {
+        await supabase.auth.refreshSession();
+        const retry = await supabase.functions.invoke("ai-products", {
+          body: forceRefresh ? { force_refresh: true } : {},
+        });
+        data = retry.data;
+        error = retry.error;
+      }
+
       if (error) throw error;
       if (data?.products) {
         setProducts(data.products);
