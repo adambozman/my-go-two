@@ -13,6 +13,7 @@ interface WebPaginatedCoverflowProps {
   sectionTitle?: string;
   className?: string;
   variant?: "default" | "hero";
+  stageHeight?: string;
 }
 
 export default function WebPaginatedCoverflow({
@@ -24,6 +25,7 @@ export default function WebPaginatedCoverflow({
   sectionTitle,
   className,
   variant = "default",
+  stageHeight,
 }: WebPaginatedCoverflowProps) {
   const focusedIndex = useMemo(
     () => (focusedItemId ? items.findIndex((item) => item.id === focusedItemId) : -1),
@@ -51,6 +53,7 @@ export default function WebPaginatedCoverflow({
         initialActiveIndex={initialActiveIndex}
         sectionTitle={sectionTitle}
         variant={variant}
+        stageHeight={stageHeight}
       />
       {showPagination && totalPages > 1 ? (
         <PaginationControls

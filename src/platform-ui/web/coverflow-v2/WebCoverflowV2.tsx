@@ -12,6 +12,7 @@ export default function WebCoverflowV2({
   sectionTitle,
   className,
   variant = "default",
+  stageHeight,
 }: WebCoverflowProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
@@ -71,7 +72,7 @@ export default function WebCoverflowV2({
         dragStartMs.current = null;
       }}
       style={{
-        height: WEB_COVERFLOW_TOKENS.stageHeight,
+        height: stageHeight ?? WEB_COVERFLOW_TOKENS.stageHeight,
         perspective: "1600px",
         perspectiveOrigin: variant === "hero" ? "50% 44%" : "50% 38%",
       }}

@@ -12,6 +12,7 @@ export interface WebCoverflowProps {
   sectionTitle?: string;
   className?: string;
   variant?: "default" | "hero";
+  stageHeight?: string;
 }
 
 export interface WebCoverflowCardPose {
