@@ -1,10 +1,12 @@
 import type { Dispatch, SetStateAction } from "react";
+import { ChevronLeft } from "lucide-react";
 import ProductEntryCard from "@/components/ui/ProductEntryCard";
 import type { SubtypeItem } from "@/data/templateSubtypes";
 import MyGoTwoDesktopCoverflow, {
   type MyGoTwoDesktopCoverflowItem,
 } from "@/platform-ui/web/mygotwo/MyGoTwoDesktopCoverflow";
-import MyGoTwoDesktopPage from "@/platform-ui/web/mygotwo/MyGoTwoDesktopPage";
+import MyGoTwoDesktopFrame from "@/platform-ui/web/mygotwo/MyGoTwoDesktopFrame";
+import MyGoTwoDesktopQuoteBox from "@/platform-ui/web/mygotwo/MyGoTwoDesktopQuoteBox";
 
 interface CardEntry {
   id: string;
@@ -104,83 +106,106 @@ export default function MyGoTwoDesktopEntryPage({
   const activeItem = editorItems[activeIndex];
 
   return (
-    <MyGoTwoDesktopPage title={leafSubtype.name} onBack={onBack}>
-      <div className="grid h-full min-h-0 grid-rows-[auto_minmax(280px,38%)_minmax(0,1fr)] gap-5">
-        <div className="flex flex-wrap items-center justify-center gap-3 px-4">
-          {productGroups.map((groupName) => {
-            const isActive = groupName === currentGroup;
-            return (
-              <button
-                key={groupName}
-                type="button"
-                className="rounded-full px-4 py-2 text-sm font-medium transition-all"
-                style={{
-                  background: isActive ? "rgba(45,104,112,0.16)" : "rgba(255,255,255,0.66)",
-                  border: isActive ? "1px solid rgba(45,104,112,0.32)" : "1px solid rgba(45,104,112,0.12)",
-                  color: "var(--swatch-teal)",
-                  boxShadow: isActive ? "0 10px 24px rgba(45,104,112,0.12)" : "0 6px 18px rgba(0,0,0,0.04)",
-                }}
-                onClick={() => setActiveGroup(groupName)}
+    <MyGoTwoDesktopFrame quote={<MyGoTwoDesktopQuoteBox />}>
+      <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-5 px-3 pb-3">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              aria-label="Go back"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-[rgba(255,255,255,0.72)] text-[var(--logo-two-color)] shadow-[0_8px_24px_rgba(20,20,30,0.08)]"
+              onClick={onBack}
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <div className="rounded-full border border-white/70 bg-[rgba(255,255,255,0.58)] px-5 py-3 shadow-[0_8px_24px_rgba(20,20,30,0.08)]">
+              <h2
+                className="text-[clamp(20px,2vw,36px)] font-semibold leading-none text-[var(--logo-two-color)]"
+                style={{ fontFamily: "'Cormorant Garamond', serif" }}
               >
-                {groupName.startsWith("__product_group_") ? `Group ${groupName.split("_").pop()}` : groupName}
-              </button>
-            );
-          })}
-          <button
-            type="button"
-            className="rounded-full px-4 py-2 text-sm font-medium"
-            style={{
-              background: "rgba(255,255,255,0.66)",
-              border: "1px dashed rgba(45,104,112,0.22)",
-              color: "var(--swatch-teal)",
-            }}
-            onClick={onCreateGroup}
-          >
-            New Group
-          </button>
-        </div>
-
-        <div className="min-h-0">
-          <MyGoTwoDesktopCoverflow
-            items={editorItems}
-            focusedItemId={activeItem?.id}
-            onActiveIdChange={(id) => {
-              const nextIndex = editorItems.findIndex((item) => item.id === id);
-              if (nextIndex < 0) return;
-              setActiveEntryIndexByGroup((prev) => ({ ...prev, [currentGroup]: nextIndex }));
-            }}
-            onCommit={(id) => {
-              const nextIndex = editorItems.findIndex((item) => item.id === id);
-              if (nextIndex < 0) return;
-              setActiveEntryIndexByGroup((prev) => ({ ...prev, [currentGroup]: nextIndex }));
-            }}
-            stageHeight="100%"
-            commitOnCardClick
-          />
-        </div>
-
-        {activeItem ? (
-          <div className="flex min-h-0 items-start justify-center overflow-auto pb-2">
-            <div className="w-full max-w-[760px] overflow-hidden rounded-[34px] shadow-[0_22px_70px_rgba(0,0,0,0.16)]">
-              <ProductEntryCard
-                subtype={leafSubtype}
-                subcategoryName={leafSubcategoryName}
-                categoryName={leafCategoryName}
-                entryName={entryNames[activeItem.id] || ""}
-                values={entryDrafts[activeItem.id] || defaultFieldValues}
-                imageUrl={normalizeImageValue(entryImages[activeItem.id])}
-                saving={saving}
-                isEditing={!activeItem.id.startsWith(`${newEntryPrefix}::`)}
-                onEntryNameChange={(name) => onEntryNameChange(activeItem.id, name)}
-                onChange={(fieldLabel, value) => onFieldChange(activeItem.id, fieldLabel, value)}
-                onImageChange={(imageUrl) => onImageChange(activeItem.id, imageUrl)}
-                onSave={() => onSaveEntry(activeItem.id)}
-                onDelete={() => onDeleteEntry(activeItem.id)}
-              />
+                {leafSubtype.name}
+              </h2>
             </div>
           </div>
-        ) : null}
+
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            {productGroups.map((groupName) => {
+              const isActive = groupName === currentGroup;
+              return (
+                <button
+                  key={groupName}
+                  type="button"
+                  className="rounded-full px-4 py-2 text-sm font-medium transition-all"
+                  style={{
+                    background: isActive ? "rgba(45,104,112,0.16)" : "rgba(255,255,255,0.66)",
+                    border: isActive ? "1px solid rgba(45,104,112,0.32)" : "1px solid rgba(45,104,112,0.12)",
+                    color: "var(--swatch-teal)",
+                    boxShadow: isActive ? "0 10px 24px rgba(45,104,112,0.12)" : "0 6px 18px rgba(0,0,0,0.04)",
+                  }}
+                  onClick={() => setActiveGroup(groupName)}
+                >
+                  {groupName.startsWith("__product_group_") ? `Group ${groupName.split("_").pop()}` : groupName}
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              className="rounded-full px-4 py-2 text-sm font-medium"
+              style={{
+                background: "rgba(255,255,255,0.66)",
+                border: "1px dashed rgba(45,104,112,0.22)",
+                color: "var(--swatch-teal)",
+              }}
+              onClick={onCreateGroup}
+            >
+              New Group
+            </button>
+          </div>
+        </div>
+
+        <div className="grid h-full min-h-0 gap-6 xl:grid-cols-[minmax(360px,0.44fr)_minmax(540px,0.56fr)]">
+          <div className="min-h-[340px] min-w-0">
+            <MyGoTwoDesktopCoverflow
+              items={editorItems}
+              focusedItemId={activeItem?.id}
+              onActiveIdChange={(id) => {
+                const nextIndex = editorItems.findIndex((item) => item.id === id);
+                if (nextIndex < 0) return;
+                setActiveEntryIndexByGroup((prev) => ({ ...prev, [currentGroup]: nextIndex }));
+              }}
+              onCommit={(id) => {
+                const nextIndex = editorItems.findIndex((item) => item.id === id);
+                if (nextIndex < 0) return;
+                setActiveEntryIndexByGroup((prev) => ({ ...prev, [currentGroup]: nextIndex }));
+              }}
+              stageHeight="100%"
+              commitOnCardClick
+            />
+          </div>
+
+          {activeItem ? (
+            <div className="min-h-0 overflow-auto pb-2">
+              <div className="mx-auto w-full max-w-[860px] overflow-hidden rounded-[34px] shadow-[0_22px_70px_rgba(0,0,0,0.16)]">
+                <ProductEntryCard
+                  subtype={leafSubtype}
+                  subcategoryName={leafSubcategoryName}
+                  categoryName={leafCategoryName}
+                  entryName={entryNames[activeItem.id] || ""}
+                  values={entryDrafts[activeItem.id] || defaultFieldValues}
+                  imageUrl={normalizeImageValue(entryImages[activeItem.id])}
+                  saving={saving}
+                  isEditing={!activeItem.id.startsWith(`${newEntryPrefix}::`)}
+                  onEntryNameChange={(name) => onEntryNameChange(activeItem.id, name)}
+                  onChange={(fieldLabel, value) => onFieldChange(activeItem.id, fieldLabel, value)}
+                  onImageChange={(imageUrl) => onImageChange(activeItem.id, imageUrl)}
+                  onSave={() => onSaveEntry(activeItem.id)}
+                  onDelete={() => onDeleteEntry(activeItem.id)}
+                />
+              </div>
+            </div>
+          ) : null}
+        </div>
       </div>
-    </MyGoTwoDesktopPage>
+    </MyGoTwoDesktopFrame>
   );
 }
