@@ -1,5 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { Navigate } from "react-router-dom";
+import { DashboardTopBar } from "@/components/DashboardTopBar";
+import { useAuth } from "@/contexts/AuthContext";
 import MyGoTwoMobileEntryView from "@/features/mygotwo/MyGoTwoMobileEntryView";
 import MyGoTwoMobileRootView from "@/features/mygotwo/MyGoTwoMobileRootView";
 import {
@@ -8,15 +11,32 @@ import {
   useMyGoTwoController,
 } from "@/features/mygotwo/useMyGoTwoController";
 import MyGoTwoWebEntryView from "@/platform-ui/web/mygotwo/MyGoTwoWebEntryView";
+import MyGoTwoWebLayout from "@/platform-ui/web/mygotwo/MyGoTwoWebLayout";
 import MyGoTwoWebView from "@/platform-ui/web/mygotwo/MyGoTwoWebView";
 
 const MyGoTwo = () => {
+  const { user, loading } = useAuth();
   const controller = useMyGoTwoController();
+
+  if (loading) {
+    return (
+      <div className="app-page flex min-h-screen items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   if (controller.isLoading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="app-page flex min-h-screen flex-col overflow-x-hidden">
+        <DashboardTopBar />
+        <main className="flex flex-1 items-center justify-center overflow-x-hidden px-3 pb-6 sm:px-4 md:px-6 lg:px-8 lg:pb-8">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </main>
       </div>
     );
   }
@@ -153,7 +173,20 @@ const MyGoTwo = () => {
     );
   };
 
-  return <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>;
+  const content = <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>;
+
+  return (
+    <div className="app-page flex min-h-screen flex-col overflow-x-hidden">
+      <DashboardTopBar />
+      {controller.isDesktopViewport ? (
+        <MyGoTwoWebLayout>{content}</MyGoTwoWebLayout>
+      ) : (
+        <main className="flex-1 min-h-0 overflow-x-hidden px-3 pb-6 sm:px-4 md:px-6 lg:px-8 lg:pb-8">
+          {content}
+        </main>
+      )}
+    </div>
+  );
 };
 
 export default MyGoTwo;

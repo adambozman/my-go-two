@@ -14,7 +14,6 @@ import ForgotPassword from "./pages/ForgotPassword";
 
 import Connect from "./pages/Connect";
 import DashboardLayout from "./layouts/DashboardLayout";
-import MyGoTwoLayout from "./layouts/MyGoTwoLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import MyGoTwo from "./pages/dashboard/MyGoTwo";
 
@@ -68,9 +67,7 @@ const App = () => {
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/connect" element={<Connect />} />
               <Route path="/photo-gallery" element={<PhotoGallery />} />
-              <Route path="/dashboard/my-go-two" element={<MyGoTwoLayout />}>
-                <Route index element={<MyGoTwo />} />
-              </Route>
+              <Route path="/dashboard/my-go-two" element={<MyGoTwo />} />
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardHome />} />
                 <Route path="recommendations" element={<Recommendations />} />

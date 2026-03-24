@@ -32,10 +32,13 @@ export function WebCoverflowCard({
 
   const hoverLift = isHovered ? (pose.isActive ? -12 : -8) : 0;
   const hoverScale = isHovered ? (pose.isActive ? 1.025 : 1.015) : 1;
+  const handleCardClick = () => {
+    if (pose.isActive) onCommit();
+    else onActivate();
+  };
 
   return (
-    <motion.button
-      type="button"
+    <motion.div
       initial={false}
       animate={{
         transform: `translate(-50%, -50%) translate3d(${pose.x}px, ${pose.y + hoverLift}px, 0px) rotateY(${pose.rotateY}deg) scale(${pose.scale * hoverScale})`,
@@ -51,14 +54,19 @@ export function WebCoverflowCard({
         zIndex: pose.zIndex,
         boxShadow: pose.isActive ? WEB_COVERFLOW_TOKENS.activeShadow : WEB_COVERFLOW_TOKENS.flankShadow,
         transformStyle: "preserve-3d",
-        cursor: pose.isActive ? "pointer" : "pointer",
+        cursor: "pointer",
       }}
-      onClick={() => {
-        if (pose.isActive) onCommit();
-        else onActivate();
-      }}
+      onClick={handleCardClick}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          handleCardClick();
+        }
+      }}
+      role="button"
+      tabIndex={0}
       aria-label={item.label}
     >
       <div className="relative h-full w-full overflow-hidden" style={{ borderRadius: WEB_COVERFLOW_TOKENS.borderRadius }}>
@@ -100,6 +108,6 @@ export function WebCoverflowCard({
           </>
         ) : null}
       </div>
-    </motion.button>
+    </motion.div>
   );
 }
