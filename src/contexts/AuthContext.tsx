@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const checkSubscription = useCallback(async () => {
     if (!session?.access_token) return;
     // Dev override — skip Stripe check
-    if (user && DEV_USER_IDS.includes(user.id)) {
+    if (user && (DEV_USER_IDS.includes(user.id) || DEV_EMAILS.includes(user.email ?? ""))) {
       setSubscribed(true);
       setSubscriptionEnd(null);
       return;
