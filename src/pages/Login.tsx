@@ -11,6 +11,7 @@ import { ArrowRight } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AppleSignInButton from "@/components/AppleSignInButton";
 
+const DEV_EMAILS = ["adam.bozman@gmail.com"];
 
 const Login = () => {
   const [searchParams] = useSearchParams();
@@ -21,6 +22,8 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const isDevEmail = DEV_EMAILS.includes(email.toLowerCase().trim());
+
   useEffect(() => {
     const inviteId = searchParams.get("invite");
     if (inviteId) {
@@ -28,25 +31,39 @@ const Login = () => {
     }
   }, [searchParams]);
 
+  const navigateAfterLogin = async () => {
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    if (currentUser) {
+      const { data: prefs } = await supabase
+        .from("user_preferences")
+        .select("onboarding_complete")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+      if (!prefs?.onboarding_complete) {
+        navigate("/onboarding");
+      } else {
+        navigate("/dashboard");
+      }
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await signIn(email, password);
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (currentUser) {
-        const { data: prefs } = await supabase
-          .from("user_preferences")
-          .select("onboarding_complete")
-          .eq("user_id", currentUser.id)
-          .maybeSingle();
-        if (!prefs?.onboarding_complete) {
-          navigate("/onboarding");
-        } else {
-          navigate("/dashboard");
-        }
+      if (isDevEmail) {
+        // Dev bypass: send magic link (auto-confirmed, so instant sign-in)
+        const { error } = await supabase.auth.signInWithOtp({
+          email: email.toLowerCase().trim(),
+          options: { shouldCreateUser: false },
+        });
+        if (error) throw error;
+        toast({ title: "Magic link sent!", description: "Check your email for a sign-in link." });
       } else {
-        navigate("/dashboard");
+        await signIn(email, password);
+        await navigateAfterLogin();
       }
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -144,39 +161,43 @@ const Login = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="password"
-                    className="text-sm font-semibold"
-                    style={{ color: "var(--swatch-teal)" }}
-                  >
-                    Password
-                  </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    placeholder="••••••••"
-                    className="rounded-xl h-12 border-0 text-sm"
-                    style={{
-                      background: "rgba(255,255,255,0.6)",
-                      boxShadow: "inset 2px 2px 6px rgba(0,0,0,0.04), inset -2px -2px 6px rgba(255,255,255,0.6)",
-                      color: "var(--swatch-antique-coin)",
-                    }}
-                  />
-                </div>
+                {!isDevEmail && (
+                  <>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="password"
+                        className="text-sm font-semibold"
+                        style={{ color: "var(--swatch-teal)" }}
+                      >
+                        Password
+                      </Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        placeholder="••••••••"
+                        className="rounded-xl h-12 border-0 text-sm"
+                        style={{
+                          background: "rgba(255,255,255,0.6)",
+                          boxShadow: "inset 2px 2px 6px rgba(0,0,0,0.04), inset -2px -2px 6px rgba(255,255,255,0.6)",
+                          color: "var(--swatch-antique-coin)",
+                        }}
+                      />
+                    </div>
 
-                <div className="text-right">
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs font-semibold hover:underline"
-                    style={{ color: "var(--swatch-cedar-grove)" }}
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
+                    <div className="text-right">
+                      <Link
+                        to="/forgot-password"
+                        className="text-xs font-semibold hover:underline"
+                        style={{ color: "var(--swatch-cedar-grove)" }}
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
+                  </>
+                )}
 
                 <Button
                   type="submit"
@@ -187,7 +208,7 @@ const Login = () => {
                     color: "var(--swatch-cream-light)",
                   }}
                 >
-                  {loading ? "Signing in..." : "Sign In"}
+                  {loading ? "Signing in..." : isDevEmail ? "Send Magic Link" : "Sign In"}
                   {!loading && <ArrowRight className="ml-2 w-4 h-4" />}
                 </Button>
                 <div className="relative flex items-center my-2">

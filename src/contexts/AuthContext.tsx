@@ -5,6 +5,7 @@ import { normalizeGender } from "@/lib/gender";
 
 // Dev account always treated as premium
 const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
+const DEV_EMAILS = ["adam.bozman@gmail.com"];
 
 export const SUBSCRIPTION_TIERS = {
   premium: {
@@ -56,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const checkSubscription = useCallback(async () => {
     if (!session?.access_token) return;
     // Dev override — skip Stripe check
-    if (user && DEV_USER_IDS.includes(user.id)) {
+    if (user && (DEV_USER_IDS.includes(user.id) || DEV_EMAILS.includes(user.email ?? ""))) {
       setSubscribed(true);
       setSubscriptionEnd(null);
       return;
