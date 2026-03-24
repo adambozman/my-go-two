@@ -86,13 +86,12 @@ async function scrapeProductWithFirecrawl(
       body: JSON.stringify({
         query,
         limit: 3,
-        scrapeOptions: { formats: ["markdown", "links"] },
+        scrapeOptions: { formats: ["markdown"] },
       }),
     });
 
     if (!searchRes.ok) {
-      const errText = await searchRes.text();
-      console.error("[firecrawl] search failed:", searchRes.status, errText);
+      console.error("[firecrawl] search failed:", searchRes.status);
       return null;
     }
 
@@ -100,26 +99,81 @@ async function scrapeProductWithFirecrawl(
     const results = searchData?.data ?? searchData?.results ?? [];
     if (!results.length) return null;
 
-    // Pick the best result (prefer official brand sites or major retailers)
     const bestResult = results[0];
     const productUrl = bestResult?.url ?? bestResult?.metadata?.sourceURL ?? null;
-    const markdown = bestResult?.markdown ?? "";
 
-    // Extract image from the scraped page content
-    const imageMatch = markdown.match(/!\[[^\]]*\]\((https?:\/\/[^\s)]+\.(?:jpg|jpeg|png|webp|avif)[^\s)]*)\)/i);
-    let imageUrl = imageMatch?.[1] ?? null;
+    // Step 2: scrape the actual product page for high-res images
+    let imageUrl: string | null = null;
+    let scrapedPrice: string | null = null;
 
-    // Also check metadata / og:image if available
-    if (!imageUrl && bestResult?.metadata?.ogImage) {
-      imageUrl = bestResult.metadata.ogImage;
+    if (productUrl) {
+      try {
+        const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            url: productUrl,
+            formats: ["markdown"],
+            onlyMainContent: true,
+            waitFor: 1000,
+          }),
+        });
+
+        if (scrapeRes.ok) {
+          const scrapeData = await scrapeRes.json();
+          const meta = scrapeData?.data?.metadata ?? scrapeData?.metadata ?? {};
+          const md = scrapeData?.data?.markdown ?? scrapeData?.markdown ?? "";
+
+          // Priority 1: og:image — usually the hero product shot, high-res
+          if (meta.ogImage && /^https?:\/\/.+/i.test(meta.ogImage)) {
+            imageUrl = meta.ogImage;
+          }
+
+          // Priority 2: large product images from markdown (skip icons/logos by filtering small dimensions)
+          if (!imageUrl) {
+            const allImages = [...md.matchAll(/!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi)]
+              .map((m: RegExpMatchArray) => m[1])
+              .filter((url: string) => {
+                const lower = url.toLowerCase();
+                // Skip tiny assets, svgs, tracking pixels
+                if (lower.includes("icon") || lower.includes("logo") || lower.includes("sprite")) return false;
+                if (lower.includes("1x1") || lower.includes("pixel") || lower.includes(".svg")) return false;
+                if (lower.includes("badge") || lower.includes("banner-ad")) return false;
+                // Prefer known image extensions
+                return /\.(jpg|jpeg|png|webp|avif)/i.test(lower) || lower.includes("image");
+              });
+            if (allImages.length > 0) imageUrl = allImages[0];
+          }
+
+          // Extract price
+          const priceMatch = md.match(/\$[\d,]+\.?\d{0,2}/);
+          if (priceMatch) scrapedPrice = priceMatch[0];
+        }
+      } catch (scrapeErr) {
+        console.error("[firecrawl] scrape failed, falling back to search data:", scrapeErr);
+      }
     }
 
-    // Try to extract price from markdown
-    let scrapedPrice: string | null = null;
-    const priceMatch = markdown.match(/\$[\d,]+\.?\d{0,2}/);
-    if (priceMatch) scrapedPrice = priceMatch[0];
+    // Fallback: use search result metadata / markdown if scrape didn't yield an image
+    if (!imageUrl) {
+      const fallbackMeta = bestResult?.metadata ?? {};
+      if (fallbackMeta.ogImage) imageUrl = fallbackMeta.ogImage;
+    }
+    if (!imageUrl) {
+      const fallbackMd = bestResult?.markdown ?? "";
+      const imgMatch = fallbackMd.match(/!\[[^\]]*\]\((https?:\/\/[^\s)]+\.(?:jpg|jpeg|png|webp|avif)[^\s)]*)\)/i);
+      if (imgMatch) imageUrl = imgMatch[1];
+    }
+    if (!scrapedPrice) {
+      const fallbackMd = bestResult?.markdown ?? "";
+      const priceMatch = fallbackMd.match(/\$[\d,]+\.?\d{0,2}/);
+      if (priceMatch) scrapedPrice = priceMatch[0];
+    }
 
-    console.log("[firecrawl] found:", { productUrl, imageUrl: !!imageUrl, scrapedPrice });
+    console.log("[firecrawl] found:", { productUrl, imageUrl: imageUrl?.slice(0, 80), scrapedPrice });
 
     return {
       image_url: imageUrl,
