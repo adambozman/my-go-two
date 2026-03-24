@@ -283,14 +283,19 @@ serve(async (req) => {
       });
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    let supabase: ReturnType<typeof createClient>;
+    let user: { id: string; email?: string } | null = null;
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+      supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data, error: authError } = await supabase.auth.getUser();
+      if (authError || !data?.user) throw new Error(authError?.message ?? "No user");
+      user = data.user;
+    } catch (authErr: any) {
+      console.warn("[ai-products] auth failed:", authErr?.message);
       return new Response(JSON.stringify({ error: "Session expired", products: [] }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
