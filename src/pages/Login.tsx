@@ -54,7 +54,7 @@ const Login = () => {
     setLoading(true);
     try {
       if (isDevEmail) {
-        // Dev bypass: instant sign-in via admin-generated token
+        // Dev bypass: instant sign-in via server-generated session
         const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/dev-login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -62,10 +62,9 @@ const Login = () => {
         });
         const result = await res.json();
         if (!res.ok) throw new Error(result.error || "Dev login failed");
-        const { error } = await supabase.auth.verifyOtp({
-          email: email.toLowerCase().trim(),
-          token: result.token,
-          type: "magiclink",
+        const { error } = await supabase.auth.setSession({
+          access_token: result.access_token,
+          refresh_token: result.refresh_token,
         });
         if (error) throw error;
         await navigateAfterLogin();
