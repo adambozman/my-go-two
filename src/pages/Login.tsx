@@ -54,13 +54,21 @@ const Login = () => {
     setLoading(true);
     try {
       if (isDevEmail) {
-        // Dev bypass: send magic link (auto-confirmed, so instant sign-in)
-        const { error } = await supabase.auth.signInWithOtp({
+        // Dev bypass: instant sign-in via admin-generated token
+        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/dev-login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email.toLowerCase().trim() }),
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || "Dev login failed");
+        const { error } = await supabase.auth.verifyOtp({
           email: email.toLowerCase().trim(),
-          options: { shouldCreateUser: false },
+          token: result.token,
+          type: "magiclink",
         });
         if (error) throw error;
-        toast({ title: "Magic link sent!", description: "Check your email for a sign-in link." });
+        await navigateAfterLogin();
       } else {
         await signIn(email, password);
         await navigateAfterLogin();
