@@ -8,6 +8,7 @@ import {
   WEB_MYGOTWO_STAGE_CLASS,
   WEB_MYGOTWO_STAGE_SHELL_CLASS,
   WEB_MYGOTWO_STAGE_STYLE,
+  WEB_MYGOTWO_VIEWPORT_FRAME_CLASS,
 } from "@/platform-ui/web/mygotwo/webMyGoTwo.layout";
 
 interface WebRootItem {
@@ -64,7 +65,7 @@ export default function MyGoTwoWebView({
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -40 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={WEB_MYGOTWO_STAGE_CLASS}
+        className={`${WEB_MYGOTWO_STAGE_CLASS} ${WEB_MYGOTWO_VIEWPORT_FRAME_CLASS} flex flex-col justify-center`}
         style={WEB_MYGOTWO_STAGE_STYLE}
       >
         <div className="snap-start snap-always">
@@ -103,7 +104,7 @@ export default function MyGoTwoWebView({
       }}
     >
       {webLevelOneItems.length > 0 ? (
-        <div className={`${WEB_MYGOTWO_STAGE_SHELL_CLASS} pb-4`}>
+        <div className={`${WEB_MYGOTWO_STAGE_SHELL_CLASS} ${WEB_MYGOTWO_VIEWPORT_FRAME_CLASS} justify-center pb-6`}>
           <WebMyGoTwoQuote />
           <WebPaginatedCoverflow
             items={webLevelOneItems}
