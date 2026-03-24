@@ -91,12 +91,13 @@ export function useCategoryRegistry(
         }
 
         const items: CategoryItem[] = rows.map((r: any) => {
-          const imageKey: string = r.key || "";
+          const fallbackImage = typeof r.image === "string" ? r.image : "";
+          const imageKey: string = fallbackImage || r.key || "";
           return {
             key: r.key,
             label: r.label,
             section: r.section,
-            image: imageMap[imageKey] ?? "",
+            image: imageMap[imageKey] ?? fallbackImage,
             imageKey,
             sort_order: r.sort_order,
             fields: (r.fields as SubtypeItem[]) || [],

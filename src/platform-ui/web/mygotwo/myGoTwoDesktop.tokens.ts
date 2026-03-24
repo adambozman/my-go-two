@@ -3,6 +3,8 @@ export const MYGOTWO_DESKTOP_TOKENS = {
   frameRadius: 34,
   quoteBoxHeight: "clamp(116px, 13vh, 150px)",
   quoteMaxWidth: 1080,
+  quoteBoxPaddingTop: "clamp(6px, 0.9vh, 12px)",
+  quoteBoxPaddingX: "clamp(24px, 3vw, 56px)",
   outerPaddingX: "clamp(12px, 1.8vw, 28px)",
   outerPaddingY: "clamp(12px, 1.8vw, 24px)",
   stagePaddingX: "clamp(8px, 1vw, 18px)",
@@ -14,10 +16,5 @@ export const MYGOTWO_DESKTOP_TOKENS = {
   cardAspectRatio: 396 / 528,
   minCardHeight: 320,
   maxCardHeight: 528,
-  frameBackground: [
-    "radial-gradient(circle at 14% 92%, rgba(111, 211, 247, 0.9) 0%, rgba(111, 211, 247, 0.22) 20%, transparent 42%)",
-    "radial-gradient(circle at 82% 94%, rgba(255, 145, 0, 0.94) 0%, rgba(255, 145, 0, 0.2) 18%, transparent 36%)",
-    "radial-gradient(circle at 84% 6%, rgba(88, 6, 10, 0.78) 0%, rgba(88, 6, 10, 0.12) 16%, transparent 32%)",
-    "linear-gradient(180deg, #fb5d47 0%, #ed2b1d 44%, #f34a13 100%)",
-  ].join(", "),
+  frameBackground: "transparent",
 } as const;
