@@ -1,16 +1,13 @@
-import { useState, useCallback, useRef, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Search, Camera, Loader2, X, Trash2, Sparkles, Plus, ChevronDown, ChevronUp, Upload } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { setImageUrl, deleteImageUrl, OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Camera, Loader2, Search, Sparkles, Trash2, Upload, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { getSpareBank, type LocalPhoto } from "@/lib/localImageLibrary";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { deleteImageUrl, OVERRIDE_CHANGED_EVENT, setImageUrl } from "@/lib/imageOverrides";
 
 const ADMIN_EMAIL = "adam.bozman@gmail.com";
 const UNSPLASH_KEY = "qrGolQ1Yn5Fn3HCqDQfFWRcwjVBrLwVYLBKjaMyxJfY";
 const PEXELS_KEY = "psTr2m0l2jCIzAiXOVMN6aKVFSxfPvXDg4DonTB8TaHV06z2WxP3qgmZ";
-
-interface Photo { id: string; thumb: string; full: string; credit: string; }
 
 interface Props {
   imageKey: string;
@@ -18,7 +15,58 @@ interface Props {
   onImageChanged?: () => void;
 }
 
+interface Photo {
+  id: string;
+  thumb: string;
+  full: string;
+  credit: string;
+}
+
+interface BankPhoto {
+  id: string;
+  image_url: string;
+  filename: string | null;
+}
+
 type Tab = "bank" | "search" | "generate";
+
+function cropAndUpload(sourceUrl: string) {
+  const size = 1024;
+
+  return new Promise<Blob>((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Canvas unavailable"));
+        return;
+      }
+
+      let sx = 0;
+      let sy = 0;
+      let sw = img.width;
+      let sh = img.height;
+
+      if (img.width > img.height) {
+        sw = img.height;
+        sx = (img.width - sw) / 2;
+      } else {
+        sh = img.width;
+        sy = (img.height - sh) / 2;
+      }
+
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
+      canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("toBlob failed"))), "image/jpeg", 0.92);
+    };
+    img.onerror = () => reject(new Error("Image load failed"));
+    img.src = sourceUrl;
+  });
+}
 
 export default function InlinePhotoSearch(props: Props) {
   const { user } = useAuth();
@@ -26,73 +74,41 @@ export default function InlinePhotoSearch(props: Props) {
   return <AdminPanel {...props} />;
 }
 
-// ── Crop helper ──────────────────────────────────────────────
-function cropAndUpload(sourceUrl: string) {
-  const SIZE = 1024; // square crop to match square cards
-  return new Promise<Blob>((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      const c = document.createElement("canvas");
-      c.width = SIZE; c.height = SIZE;
-      const ctx = c.getContext("2d")!;
-      // Center-crop to 1:1 square
-      let sx = 0, sy = 0, sw = img.width, sh = img.height;
-      if (img.width > img.height) { sw = img.height; sx = (img.width - sw) / 2; }
-      else { sh = img.width; sy = (img.height - sh) / 2; }
-      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, SIZE, SIZE);
-      c.toBlob(b => b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", 0.92);
-    };
-    img.onerror = () => reject(new Error("Image load failed"));
-    img.src = sourceUrl;
-  });
-}
-
-// ── DB type for category bank photos ─────────────────────────
-interface BankPhoto {
-  id: string;
-  image_url: string;
-  filename: string | null;
-}
-
-// ── Main admin panel ─────────────────────────────────────────
 function AdminPanel({ imageKey, label, onImageChanged }: Props) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<Tab>("bank");
   const [saving, setSaving] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  // Category-specific bank photos (from DB)
-  const [bankPhotos, setBankPhotos] = useState<BankPhoto[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [loadingBank, setLoadingBank] = useState(false);
-
-  // Spare bank expand
-  const [showSpare, setShowSpare] = useState(false);
-  const sparePhotos = getSpareBank();
-  const [addingToBank, setAddingToBank] = useState<string | null>(null);
-
-  // Web search state
+  const [hasImage, setHasImage] = useState(false);
+  const [bankPhotos, setBankPhotos] = useState<BankPhoto[]>([]);
   const [query, setQuery] = useState(label);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [searching, setSearching] = useState(false);
-
-  // AI generate state
   const [prompt, setPrompt] = useState("");
   const [generating, setGenerating] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Has existing image?
-  const [hasImage, setHasImage] = useState(false);
   useEffect(() => {
-    supabase.from("category_images").select("image_url").eq("category_key", imageKey).maybeSingle()
-      .then(({ data }) => setHasImage(!!data?.image_url));
-    const handler = (e: any) => { if (e.detail?.imageKey === imageKey) setHasImage(!!e.detail?.url); };
+    supabase
+      .from("category_images")
+      .select("image_url")
+      .eq("category_key", imageKey)
+      .maybeSingle()
+      .then(({ data }) => setHasImage(Boolean(data?.image_url)));
+
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent).detail || {};
+      if (detail.imageKey === imageKey) setHasImage(Boolean(detail.url));
+    };
+
     window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
     return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
   }, [imageKey]);
 
-  // Load category bank photos when panel opens
   const loadBankPhotos = useCallback(async () => {
     setLoadingBank(true);
     const { data } = await supabase
@@ -106,198 +122,244 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
 
   useEffect(() => {
     if (open) loadBankPhotos();
-  }, [open, loadBankPhotos]);
+  }, [loadBankPhotos, open]);
 
-  // Outside click
   useEffect(() => {
     if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) setOpen(false);
+
+    const handler = (event: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
     };
+
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  // ── Save a photo as the category image ──
   const savePhoto = useCallback(async (sourceUrl: string, saveId: string) => {
     setSaving(saveId);
     try {
       const blob = await cropAndUpload(sourceUrl);
       const filename = `${imageKey}.jpg`;
-      const { error } = await supabase.storage.from("category-images").upload(filename, blob, { contentType: "image/jpeg", upsert: true });
+      const { error } = await supabase.storage
+        .from("category-images")
+        .upload(filename, blob, { contentType: "image/jpeg", upsert: true });
       if (error) throw error;
+
       const { data } = supabase.storage.from("category-images").getPublicUrl(filename);
       await setImageUrl(imageKey, `${data.publicUrl}?t=${Date.now()}`);
-      toast({ title: "✓ Image set", description: label });
+      toast({ title: "Image set", description: label });
       setOpen(false);
       onImageChanged?.();
-    } catch (e: any) {
-      toast({ title: "Failed", description: e.message, variant: "destructive" });
-    } finally { setSaving(null); }
-  }, [imageKey, label, toast, onImageChanged]);
+    } catch (error: any) {
+      toast({ title: "Failed", description: error.message, variant: "destructive" });
+    } finally {
+      setSaving(null);
+    }
+  }, [imageKey, label, onImageChanged, toast]);
 
-  // ── Add a spare photo to this category's bank (silently) ──
-  const addToBankOnly = useCallback(async (photo: LocalPhoto) => {
-    try {
-      await supabase
-        .from("category_bank_photos")
-        .insert({ category_key: imageKey, image_url: photo.url, filename: photo.filename });
-    } catch { /* ignore duplicates */ }
-    loadBankPhotos();
-  }, [imageKey, loadBankPhotos]);
-
-  // ── Pick a spare photo: add to bank + set as card image ──
-  const pickSparePhoto = useCallback(async (photo: LocalPhoto) => {
-    setAddingToBank(photo.id);
-    try {
-      addToBankOnly(photo);
-      await savePhoto(photo.url, photo.id);
-    } catch (e: any) {
-      toast({ title: "Failed", description: e.message, variant: "destructive" });
-    } finally { setAddingToBank(null); }
-  }, [addToBankOnly, savePhoto, toast]);
-
-  // ── Remove a photo from this category's bank ──
   const removeFromBank = useCallback(async (photoId: string) => {
     const { error } = await supabase.from("category_bank_photos").delete().eq("id", photoId);
     if (error) {
       toast({ title: "Failed", description: error.message, variant: "destructive" });
-    } else {
-      setBankPhotos(prev => prev.filter(p => p.id !== photoId));
+      return;
     }
+
+    setBankPhotos((prev) => prev.filter((photo) => photo.id !== photoId));
   }, [toast]);
 
-  // ── Upload custom photos to this category's bank ──
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
+  const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files?.length) return;
 
-  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
     setUploading(true);
     try {
       for (const file of Array.from(files)) {
         const ext = file.name.split(".").pop() || "jpg";
         const filename = `${imageKey}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
         const path = `bank/${filename}`;
-        const { error: uploadErr } = await supabase.storage
+
+        const { error: uploadError } = await supabase.storage
           .from("category-images")
           .upload(path, file, { contentType: file.type, upsert: false });
-        if (uploadErr) throw uploadErr;
+        if (uploadError) throw uploadError;
+
         const { data: urlData } = supabase.storage.from("category-images").getPublicUrl(path);
         await supabase
           .from("category_bank_photos")
           .insert({ category_key: imageKey, image_url: urlData.publicUrl, filename });
       }
-      toast({ title: "✓ Uploaded", description: `${files.length} photo(s) added` });
+
+      toast({ title: "Uploaded", description: `${files.length} photo(s) added` });
       loadBankPhotos();
-    } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } catch (error: any) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
-  }, [imageKey, toast, loadBankPhotos]);
+  }, [imageKey, loadBankPhotos, toast]);
 
-  // ── Web search ──
   const searchWeb = useCallback(async () => {
     setSearching(true);
     setPhotos([]);
+
     try {
-      const [u, px] = await Promise.all([
-        fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=9&orientation=landscape`, { headers: { Authorization: `Client-ID ${UNSPLASH_KEY}` } }).then(r => r.json()),
-        fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=9&orientation=landscape`, { headers: { Authorization: PEXELS_KEY } }).then(r => r.json()),
+      const [unsplash, pexels] = await Promise.all([
+        fetch(
+          `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=9&orientation=landscape`,
+          { headers: { Authorization: `Client-ID ${UNSPLASH_KEY}` } },
+        ).then((response) => response.json()),
+        fetch(
+          `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=9&orientation=landscape`,
+          { headers: { Authorization: PEXELS_KEY } },
+        ).then((response) => response.json()),
       ]);
+
       const combined: Photo[] = [];
-      for (let i = 0; i < 9; i++) {
-        const uP = u.results || [];
-        const pP = px.photos || [];
-        if (uP[i]) combined.push({ id: `u-${uP[i].id}`, thumb: uP[i].urls.small, full: `${uP[i].urls.raw}&w=2030&h=1372&fit=crop`, credit: uP[i].user.name });
-        if (pP[i]) combined.push({ id: `p-${pP[i].id}`, thumb: pP[i].src.small, full: pP[i].src.large, credit: pP[i].photographer });
+      for (let index = 0; index < 9; index += 1) {
+        const unsplashPhoto = unsplash.results?.[index];
+        const pexelsPhoto = pexels.photos?.[index];
+
+        if (unsplashPhoto) {
+          combined.push({
+            id: `u-${unsplashPhoto.id}`,
+            thumb: unsplashPhoto.urls.small,
+            full: `${unsplashPhoto.urls.raw}&w=2030&h=1372&fit=crop`,
+            credit: unsplashPhoto.user.name,
+          });
+        }
+
+        if (pexelsPhoto) {
+          combined.push({
+            id: `p-${pexelsPhoto.id}`,
+            thumb: pexelsPhoto.src.small,
+            full: pexelsPhoto.src.large,
+            credit: pexelsPhoto.photographer,
+          });
+        }
       }
+
       setPhotos(combined.slice(0, 12));
-    } catch (e: any) {
-      toast({ title: "Search failed", description: e.message, variant: "destructive" });
-    } finally { setSearching(false); }
+    } catch (error: any) {
+      toast({ title: "Search failed", description: error.message, variant: "destructive" });
+    } finally {
+      setSearching(false);
+    }
   }, [query, toast]);
 
-  // ── AI Generate ──
   const generateImage = useCallback(async () => {
     if (!prompt.trim()) return;
+
     setGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-category-image", {
         body: { categoryKey: imageKey, gender: "male", imagePrompt: prompt.trim() },
       });
       if (error) throw error;
-      if (data?.image_url) {
-        window.dispatchEvent(new CustomEvent(OVERRIDE_CHANGED_EVENT, { detail: { imageKey, url: `${data.image_url}?t=${Date.now()}` } }));
-        toast({ title: "✓ Image generated", description: label });
-        setOpen(false);
-        onImageChanged?.();
-      } else {
-        throw new Error(data?.error || "No image returned");
-      }
-    } catch (e: any) {
-      toast({ title: "Generation failed", description: e.message, variant: "destructive" });
-    } finally { setGenerating(false); }
-  }, [prompt, imageKey, label, toast, onImageChanged]);
+      if (!data?.image_url) throw new Error(data?.error || "No image returned");
 
-  // ── Delete ──
+      window.dispatchEvent(new CustomEvent(OVERRIDE_CHANGED_EVENT, {
+        detail: { imageKey, url: `${data.image_url}?t=${Date.now()}` },
+      }));
+
+      toast({ title: "Image generated", description: label });
+      setOpen(false);
+      onImageChanged?.();
+    } catch (error: any) {
+      toast({ title: "Generation failed", description: error.message, variant: "destructive" });
+    } finally {
+      setGenerating(false);
+    }
+  }, [imageKey, label, onImageChanged, prompt, toast]);
+
   const handleDelete = useCallback(async () => {
     setDeleting(true);
     try {
       await supabase.storage.from("category-images").remove([`${imageKey}.jpg`]);
       await deleteImageUrl(imageKey);
-      toast({ title: "✓ Image removed", description: label });
+      toast({ title: "Image removed", description: label });
       setOpen(false);
       onImageChanged?.();
-    } catch (e: any) {
-      toast({ title: "Delete failed", description: e.message, variant: "destructive" });
-    } finally { setDeleting(false); }
-  }, [imageKey, label, toast, onImageChanged]);
+    } catch (error: any) {
+      toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+    } finally {
+      setDeleting(false);
+    }
+  }, [imageKey, label, onImageChanged, toast]);
 
-  const tabStyle = (t: Tab) => ({
-    flex: 1, padding: "5px 0", borderRadius: 6, fontSize: 11, fontWeight: 600 as const,
-    border: "none", cursor: "pointer" as const,
-    background: tab === t ? "#2d6870" : "rgba(45,104,112,0.08)",
-    color: tab === t ? "#fff" : "#2d6870",
+  const tabStyle = (current: Tab) => ({
+    flex: 1,
+    padding: "5px 0",
+    borderRadius: 6,
+    fontSize: 11,
+    fontWeight: 600 as const,
+    border: "none",
+    cursor: "pointer" as const,
+    background: tab === current ? "#2d6870" : "rgba(45,104,112,0.08)",
+    color: tab === current ? "#fff" : "#2d6870",
   });
 
   return (
     <>
-      {/* Camera button */}
       <button
-        onClick={(e) => { e.stopPropagation(); setOpen(true); setQuery(label); setTab("bank"); setPhotos([]); setPrompt(""); setShowSpare(false); }}
+        onClick={(event) => {
+          event.stopPropagation();
+          setOpen(true);
+          setQuery(label);
+          setTab("bank");
+          setPhotos([]);
+          setPrompt("");
+        }}
         style={{
-          position: "absolute", top: 8, right: 8, zIndex: 20,
-          width: 32, height: 32, borderRadius: 999,
-          background: "rgba(0,0,0,0.45)", backdropFilter: "blur(8px)",
+          position: "absolute",
+          top: 8,
+          right: 8,
+          zIndex: 20,
+          width: 32,
+          height: 32,
+          borderRadius: 999,
+          background: "rgba(0,0,0,0.45)",
+          backdropFilter: "blur(8px)",
           border: "1px solid rgba(255,255,255,0.25)",
-          display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
           transition: "background 0.2s",
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = "rgba(45,104,112,0.8)")}
-        onMouseLeave={e => (e.currentTarget.style.background = "rgba(0,0,0,0.45)")}
+        onMouseEnter={(event) => {
+          event.currentTarget.style.background = "rgba(45,104,112,0.8)";
+        }}
+        onMouseLeave={(event) => {
+          event.currentTarget.style.background = "rgba(0,0,0,0.45)";
+        }}
       >
         <Camera style={{ width: 16, height: 16, color: "#fff" }} />
       </button>
 
-      {/* Panel */}
-      {open && (
+      {open ? (
         <div
           ref={panelRef}
-          onClick={e => e.stopPropagation()}
+          onClick={(event) => event.stopPropagation()}
           style={{
-            position: "absolute", bottom: 40, right: 4, zIndex: 30,
-            width: 350, maxHeight: 520, overflowY: "auto",
-            background: "rgba(255,255,255,0.97)", backdropFilter: "blur(16px)",
-            borderRadius: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
-            border: "1px solid rgba(45,104,112,0.15)", padding: 12,
+            position: "absolute",
+            bottom: 40,
+            right: 4,
+            zIndex: 30,
+            width: 350,
+            maxHeight: 520,
+            overflowY: "auto",
+            background: "rgba(255,255,255,0.97)",
+            backdropFilter: "blur(16px)",
+            borderRadius: 14,
+            boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
+            border: "1px solid rgba(45,104,112,0.15)",
+            padding: 12,
             scrollbarWidth: "none",
           }}
         >
-          {/* Tab bar + delete + close */}
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 8 }}>
             <div style={{ display: "flex", gap: 3, flex: 1 }}>
               <button onClick={() => setTab("bank")} style={tabStyle("bank")}>Bank</button>
@@ -308,22 +370,51 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
                 </span>
               </button>
             </div>
-            {hasImage && (
-              <button onClick={handleDelete} disabled={deleting}
-                style={{ width: 28, height: 28, borderRadius: 6, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
-                {deleting ? <Loader2 style={{ width: 12, height: 12, color: "#ef4444" }} className="animate-spin" /> : <Trash2 style={{ width: 12, height: 12, color: "#ef4444" }} />}
+            {hasImage ? (
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 6,
+                  background: "rgba(239,68,68,0.1)",
+                  border: "1px solid rgba(239,68,68,0.3)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  flexShrink: 0,
+                }}
+              >
+                {deleting ? (
+                  <Loader2 style={{ width: 12, height: 12, color: "#ef4444" }} className="animate-spin" />
+                ) : (
+                  <Trash2 style={{ width: 12, height: 12, color: "#ef4444" }} />
+                )}
               </button>
-            )}
-            <button onClick={() => setOpen(false)}
-              style={{ width: 28, height: 28, borderRadius: 6, background: "transparent", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+            ) : null}
+            <button
+              onClick={() => setOpen(false)}
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: 6,
+                background: "transparent",
+                border: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                flexShrink: 0,
+              }}
+            >
               <X style={{ width: 14, height: 14, color: "#666" }} />
             </button>
           </div>
 
-          {/* ── BANK TAB ── */}
-          {tab === "bank" && (
+          {tab === "bank" ? (
             <div>
-              {/* Category-specific photos */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
                 <p style={{ fontSize: 11, fontWeight: 600, color: "#2d6870", margin: 0 }}>
                   Photos for "{label}"
@@ -332,16 +423,34 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
                   style={{
-                    display: "flex", alignItems: "center", gap: 4, padding: "3px 8px",
-                    borderRadius: 6, fontSize: 10, fontWeight: 600, cursor: "pointer",
-                    background: "rgba(45,104,112,0.08)", border: "1px solid rgba(45,104,112,0.2)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                    padding: "3px 8px",
+                    borderRadius: 6,
+                    fontSize: 10,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    background: "rgba(45,104,112,0.08)",
+                    border: "1px solid rgba(45,104,112,0.2)",
                     color: "#2d6870",
                   }}
                 >
-                  {uploading ? <Loader2 style={{ width: 10, height: 10 }} className="animate-spin" /> : <Upload style={{ width: 10, height: 10 }} />}
+                  {uploading ? (
+                    <Loader2 style={{ width: 10, height: 10 }} className="animate-spin" />
+                  ) : (
+                    <Upload style={{ width: 10, height: 10 }} />
+                  )}
                   Upload
                 </button>
-                <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileUpload} style={{ display: "none" }} />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileUpload}
+                  style={{ display: "none" }}
+                />
               </div>
 
               {loadingBank ? (
@@ -350,22 +459,56 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
                 </div>
               ) : bankPhotos.length > 0 ? (
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6, marginBottom: 10 }}>
-                  {bankPhotos.map(photo => (
+                  {bankPhotos.map((photo) => (
                     <div key={photo.id} style={{ position: "relative" }}>
-                      <button onClick={() => savePhoto(photo.image_url, photo.id)} disabled={!!saving}
-                        style={{ width: "100%", borderRadius: 8, overflow: "hidden", aspectRatio: "3/2", border: "2px solid transparent", cursor: "pointer", background: "#eee", padding: 0, display: "block" }}
-                        onMouseEnter={e => (e.currentTarget.style.borderColor = "#2d6870")}
-                        onMouseLeave={e => (e.currentTarget.style.borderColor = "transparent")}>
+                      <button
+                        onClick={() => savePhoto(photo.image_url, photo.id)}
+                        disabled={Boolean(saving)}
+                        style={{
+                          width: "100%",
+                          borderRadius: 8,
+                          overflow: "hidden",
+                          aspectRatio: "3/2",
+                          border: "2px solid transparent",
+                          cursor: "pointer",
+                          background: "#eee",
+                          padding: 0,
+                          display: "block",
+                        }}
+                        onMouseEnter={(event) => {
+                          event.currentTarget.style.borderColor = "#2d6870";
+                        }}
+                        onMouseLeave={(event) => {
+                          event.currentTarget.style.borderColor = "transparent";
+                        }}
+                      >
                         <img src={photo.image_url} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                        {saving === photo.id && (
+                        {saving === photo.id ? (
                           <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <Loader2 style={{ width: 16, height: 16, color: "#fff" }} className="animate-spin" />
                           </div>
-                        )}
+                        ) : null}
                       </button>
-                      {/* Remove from bank */}
-                      <button onClick={(e) => { e.stopPropagation(); removeFromBank(photo.id); }}
-                        style={{ position: "absolute", top: 3, right: 3, width: 18, height: 18, borderRadius: 4, background: "rgba(0,0,0,0.5)", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                      <button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          removeFromBank(photo.id);
+                        }}
+                        style={{
+                          position: "absolute",
+                          top: 3,
+                          right: 3,
+                          width: 18,
+                          height: 18,
+                          borderRadius: 4,
+                          background: "rgba(0,0,0,0.5)",
+                          border: "none",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                        }}
+                      >
                         <X style={{ width: 10, height: 10, color: "#fff" }} />
                       </button>
                     </div>
@@ -373,99 +516,85 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
                 </div>
               ) : (
                 <p style={{ fontSize: 12, color: "#999", textAlign: "center", padding: "12px 0", marginBottom: 8 }}>
-                  No photos assigned yet — add from the spare bank below
+                  No photos assigned yet
                 </p>
               )}
-
-              {/* Expandable spare bank */}
-              <button
-                onClick={() => setShowSpare(!showSpare)}
-                style={{
-                  width: "100%", padding: "8px 10px", borderRadius: 8,
-                  background: "rgba(45,104,112,0.06)", border: "1px solid rgba(45,104,112,0.15)",
-                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between",
-                  fontSize: 12, fontWeight: 600, color: "#2d6870",
-                }}
-              >
-                <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <Plus style={{ width: 12, height: 12 }} /> Add from Spare Bank ({sparePhotos.length})
-                </span>
-                {showSpare ? <ChevronUp style={{ width: 12, height: 12 }} /> : <ChevronDown style={{ width: 12, height: 12 }} />}
-              </button>
-
-              {showSpare && (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6, marginTop: 8 }}>
-                  {sparePhotos.map(photo => {
-                    const alreadyAdded = bankPhotos.some(bp => bp.image_url === photo.url);
-                    return (
-                      <button key={photo.id}
-                        onClick={() => !alreadyAdded && pickSparePhoto(photo)}
-                        disabled={!!addingToBank || alreadyAdded}
-                        style={{
-                          position: "relative", borderRadius: 8, overflow: "hidden", aspectRatio: "3/2",
-                          border: alreadyAdded ? "2px solid #2d6870" : "2px solid transparent",
-                          cursor: alreadyAdded ? "default" : "pointer", background: "#eee", padding: 0,
-                          opacity: alreadyAdded ? 0.5 : 1,
-                        }}
-                        onMouseEnter={e => { if (!alreadyAdded) e.currentTarget.style.borderColor = "#2d6870"; }}
-                        onMouseLeave={e => { if (!alreadyAdded) e.currentTarget.style.borderColor = "transparent"; }}>
-                        <img src={photo.url} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                        {addingToBank === photo.id && (
-                          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <Loader2 style={{ width: 16, height: 16, color: "#fff" }} className="animate-spin" />
-                          </div>
-                        )}
-                        {alreadyAdded && (
-                          <div style={{ position: "absolute", inset: 0, background: "rgba(45,104,112,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <span style={{ fontSize: 9, color: "#fff", fontWeight: 700, background: "rgba(0,0,0,0.4)", padding: "2px 6px", borderRadius: 4 }}>Added</span>
-                          </div>
-                        )}
-                        {!alreadyAdded && (
-                          <div style={{ position: "absolute", bottom: 3, right: 3, width: 18, height: 18, borderRadius: 4, background: "rgba(45,104,112,0.8)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <Plus style={{ width: 10, height: 10, color: "#fff" }} />
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
             </div>
-          )}
+          ) : null}
 
-          {/* ── SEARCH TAB ── */}
-          {tab === "search" && (
+          {tab === "search" ? (
             <>
               <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
                 <input
                   value={query}
-                  onChange={e => setQuery(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && searchWeb()}
+                  onChange={(event) => setQuery(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") searchWeb();
+                  }}
                   placeholder="Search photos..."
                   autoFocus
                   style={{
-                    flex: 1, fontSize: 13, padding: "6px 10px", borderRadius: 8,
-                    border: "1px solid rgba(45,104,112,0.2)", background: "rgba(45,104,112,0.04)", outline: "none",
+                    flex: 1,
+                    fontSize: 13,
+                    padding: "6px 10px",
+                    borderRadius: 8,
+                    border: "1px solid rgba(45,104,112,0.2)",
+                    background: "rgba(45,104,112,0.04)",
+                    outline: "none",
                   }}
                 />
-                <button onClick={searchWeb} disabled={searching}
-                  style={{ width: 30, height: 30, borderRadius: 8, background: "#2d6870", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-                  {searching ? <Loader2 style={{ width: 14, height: 14, color: "#fff" }} className="animate-spin" /> : <Search style={{ width: 14, height: 14, color: "#fff" }} />}
+                <button
+                  onClick={searchWeb}
+                  disabled={searching}
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 8,
+                    background: "#2d6870",
+                    border: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  {searching ? (
+                    <Loader2 style={{ width: 14, height: 14, color: "#fff" }} className="animate-spin" />
+                  ) : (
+                    <Search style={{ width: 14, height: 14, color: "#fff" }} />
+                  )}
                 </button>
               </div>
               {photos.length > 0 ? (
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
-                  {photos.map(photo => (
-                    <button key={photo.id} onClick={() => savePhoto(photo.full, photo.id)} disabled={!!saving}
-                      style={{ position: "relative", borderRadius: 8, overflow: "hidden", aspectRatio: "3/2", border: "2px solid transparent", cursor: "pointer", background: "#eee", padding: 0 }}
-                      onMouseEnter={e => (e.currentTarget.style.borderColor = "#2d6870")}
-                      onMouseLeave={e => (e.currentTarget.style.borderColor = "transparent")}>
+                  {photos.map((photo) => (
+                    <button
+                      key={photo.id}
+                      onClick={() => savePhoto(photo.full, photo.id)}
+                      disabled={Boolean(saving)}
+                      style={{
+                        position: "relative",
+                        borderRadius: 8,
+                        overflow: "hidden",
+                        aspectRatio: "3/2",
+                        border: "2px solid transparent",
+                        cursor: "pointer",
+                        background: "#eee",
+                        padding: 0,
+                      }}
+                      onMouseEnter={(event) => {
+                        event.currentTarget.style.borderColor = "#2d6870";
+                      }}
+                      onMouseLeave={(event) => {
+                        event.currentTarget.style.borderColor = "transparent";
+                      }}
+                    >
                       <img src={photo.thumb} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                      {saving === photo.id && (
+                      {saving === photo.id ? (
                         <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                           <Loader2 style={{ width: 16, height: 16, color: "#fff" }} className="animate-spin" />
                         </div>
-                      )}
+                      ) : null}
                       <span style={{ position: "absolute", bottom: 2, right: 3, fontSize: 7, color: "rgba(255,255,255,0.7)" }}>{photo.credit}</span>
                     </button>
                   ))}
@@ -476,35 +605,49 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
                 </p>
               ) : null}
             </>
-          )}
+          ) : null}
 
-          {/* ── GENERATE TAB ── */}
-          {tab === "generate" && (
+          {tab === "generate" ? (
             <div>
               <p style={{ fontSize: 11, color: "#666", marginBottom: 6 }}>
                 Describe the image you want for <strong>{label}</strong>
               </p>
               <textarea
                 value={prompt}
-                onChange={e => setPrompt(e.target.value)}
-                placeholder={`e.g. "Man in casual linen shirt walking through a sunny city street"`}
+                onChange={(event) => setPrompt(event.target.value)}
+                placeholder='e.g. "Man in casual linen shirt walking through a sunny city street"'
                 autoFocus
                 rows={3}
                 style={{
-                  width: "100%", fontSize: 13, padding: "8px 10px", borderRadius: 8,
-                  border: "1px solid rgba(45,104,112,0.2)", background: "rgba(45,104,112,0.04)",
-                  outline: "none", resize: "none", fontFamily: "inherit",
+                  width: "100%",
+                  fontSize: 13,
+                  padding: "8px 10px",
+                  borderRadius: 8,
+                  border: "1px solid rgba(45,104,112,0.2)",
+                  background: "rgba(45,104,112,0.04)",
+                  outline: "none",
+                  resize: "none",
+                  fontFamily: "inherit",
                 }}
               />
               <button
                 onClick={generateImage}
                 disabled={generating || !prompt.trim()}
                 style={{
-                  width: "100%", marginTop: 8, padding: "10px 0", borderRadius: 8,
+                  width: "100%",
+                  marginTop: 8,
+                  padding: "10px 0",
+                  borderRadius: 8,
                   background: generating ? "rgba(45,104,112,0.5)" : "#2d6870",
-                  color: "#fff", border: "none", fontSize: 13, fontWeight: 600,
+                  color: "#fff",
+                  border: "none",
+                  fontSize: 13,
+                  fontWeight: 600,
                   cursor: generating ? "wait" : "pointer",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
                 }}
               >
                 {generating ? (
@@ -519,15 +662,15 @@ function AdminPanel({ imageKey, label, onImageChanged }: Props) {
                   </>
                 )}
               </button>
-              {generating && (
+              {generating ? (
                 <p style={{ fontSize: 11, color: "#999", textAlign: "center", marginTop: 6 }}>
                   This may take 10-20 seconds
                 </p>
-              )}
+              ) : null}
             </div>
-          )}
+          ) : null}
         </div>
-      )}
+      ) : null}
     </>
   );
 }
