@@ -15,9 +15,9 @@ export default function MyGoTwoPageLayout({ children, isDesktopViewport }: MyGoT
       className={`app-page overflow-x-hidden ${
         isDesktopViewport ? "grid h-screen grid-rows-[auto_minmax(0,1fr)] overflow-hidden" : "flex min-h-screen flex-col"
       }`}
-      style={{
-        ["--header-height" as const]: isDesktopViewport ? desktopHeaderHeight : undefined,
-      }}
+      style={
+        isDesktopViewport ? ({ "--header-height": desktopHeaderHeight } as React.CSSProperties) : undefined
+      }
     >
       <MyGoTwoHeader />
       {isDesktopViewport ? (
