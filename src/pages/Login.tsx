@@ -157,39 +157,43 @@ const Login = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="password"
-                    className="text-sm font-semibold"
-                    style={{ color: "var(--swatch-teal)" }}
-                  >
-                    Password
-                  </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    placeholder="••••••••"
-                    className="rounded-xl h-12 border-0 text-sm"
-                    style={{
-                      background: "rgba(255,255,255,0.6)",
-                      boxShadow: "inset 2px 2px 6px rgba(0,0,0,0.04), inset -2px -2px 6px rgba(255,255,255,0.6)",
-                      color: "var(--swatch-antique-coin)",
-                    }}
-                  />
-                </div>
+                {!isDevEmail && (
+                  <>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="password"
+                        className="text-sm font-semibold"
+                        style={{ color: "var(--swatch-teal)" }}
+                      >
+                        Password
+                      </Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        placeholder="••••••••"
+                        className="rounded-xl h-12 border-0 text-sm"
+                        style={{
+                          background: "rgba(255,255,255,0.6)",
+                          boxShadow: "inset 2px 2px 6px rgba(0,0,0,0.04), inset -2px -2px 6px rgba(255,255,255,0.6)",
+                          color: "var(--swatch-antique-coin)",
+                        }}
+                      />
+                    </div>
 
-                <div className="text-right">
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs font-semibold hover:underline"
-                    style={{ color: "var(--swatch-cedar-grove)" }}
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
+                    <div className="text-right">
+                      <Link
+                        to="/forgot-password"
+                        className="text-xs font-semibold hover:underline"
+                        style={{ color: "var(--swatch-cedar-grove)" }}
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
+                  </>
+                )}
 
                 <Button
                   type="submit"
