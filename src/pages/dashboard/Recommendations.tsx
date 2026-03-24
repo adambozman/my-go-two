@@ -108,9 +108,12 @@ function getProductImage(product: Product) {
   return getFallbackImage(product);
 }
 
+const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
+
 const Recommendations = () => {
   const { personalization, loading: personalizationLoading } = usePersonalization();
-  const { subscribed } = useAuth();
+  const { subscribed, user } = useAuth();
+  const isDev = user && DEV_USER_IDS.includes(user.id);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -237,6 +240,18 @@ const Recommendations = () => {
                   <p className="surface-meta mt-3">
                     {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
                   </p>
+                )}
+                {isDev && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="mt-3 gap-1.5 text-xs opacity-60 hover:opacity-100"
+                    disabled={loading}
+                    onClick={() => fetchProducts(true)}
+                  >
+                    {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                    Dev Refresh
+                  </Button>
                 )}
               </div>
 
