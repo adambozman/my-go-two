@@ -33,11 +33,11 @@ export function WebCoverflowCard({
       type="button"
       initial={false}
       animate={{
-        transform: `translate3d(${pose.x}px, ${pose.y}px, 0px) rotateY(${pose.rotateY}deg) scale(${pose.scale})`,
+        transform: `translate(-50%, -50%) translate3d(${pose.x}px, ${pose.y}px, 0px) rotateY(${pose.rotateY}deg) scale(${pose.scale})`,
         opacity: pose.opacity,
       }}
       transition={WEB_COVERFLOW_MOTION.card}
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden border-0 bg-transparent p-0"
+      className="absolute left-1/2 top-1/2 overflow-hidden border-0 bg-transparent p-0"
       style={{
         width: WEB_COVERFLOW_TOKENS.cardWidth,
         height: WEB_COVERFLOW_TOKENS.cardHeight,
