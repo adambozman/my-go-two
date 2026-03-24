@@ -13,6 +13,9 @@ export const WEB_MYGOTWO_STAGE_STYLE: CSSProperties = {
 export const WEB_MYGOTWO_STAGE_SHELL_CLASS =
   "grid h-full w-full min-h-0 grid-rows-[auto_minmax(0,1fr)] items-center";
 
+export const WEB_MYGOTWO_OVERLAY_STAGE_SHELL_CLASS =
+  "relative flex h-full w-full min-h-0 overflow-hidden";
+
 export const WEB_MYGOTWO_DOT_STYLE: CSSProperties = {
   right: WEB_LAYOUT_PROFILE.coverflow.indicatorRight,
   top: `calc(${WEB_LAYOUT_PROFILE.coverflow.indicatorTop} + var(--coverflow-desktop-y-offset))`,

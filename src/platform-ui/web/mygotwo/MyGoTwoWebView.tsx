@@ -5,6 +5,7 @@ import WebPaginatedCoverflow from "@/platform-ui/web/mygotwo/WebPaginatedCoverfl
 import WebMyGoTwoQuote from "@/platform-ui/web/mygotwo/WebMyGoTwoQuote";
 import WebTemplateCoverFlow from "@/platform-ui/web/mygotwo/WebTemplateCoverFlow";
 import {
+  WEB_MYGOTWO_OVERLAY_STAGE_SHELL_CLASS,
   WEB_MYGOTWO_STAGE_CLASS,
   WEB_MYGOTWO_STAGE_SHELL_CLASS,
   WEB_MYGOTWO_STAGE_STYLE,
@@ -105,13 +106,14 @@ export default function MyGoTwoWebView({
       }}
     >
       {webLevelOneItems.length > 0 ? (
-        <div className={`${WEB_MYGOTWO_STAGE_SHELL_CLASS} relative overflow-hidden`}>
+        <div className={WEB_MYGOTWO_OVERLAY_STAGE_SHELL_CLASS}>
           <WebMyGoTwoQuote className="absolute left-0 right-0 top-0 z-20" />
           <WebPaginatedCoverflow
             items={webLevelOneItems}
             pageSize={webLevelOneItems.length}
             focusedItemId={webFocusedLevelOneId}
             showPagination={false}
+            className="relative flex h-full min-h-0 w-full flex-1 items-center justify-center"
             onSelect={(id) => {
               const selected = webLevelOneItems.find((item) => item.id === id);
               if (!selected) return;

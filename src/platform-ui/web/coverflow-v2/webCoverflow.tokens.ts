@@ -1,6 +1,6 @@
 export const WEB_COVERFLOW_TOKENS = {
   visibleEachSide: 3,
-  stageHeight: "clamp(500px, calc(100dvh - var(--header-height) - 210px), 620px)",
+  stageHeight: "100%",
   cardWidth: 396,
   cardHeight: 528,
   borderRadius: 34,
