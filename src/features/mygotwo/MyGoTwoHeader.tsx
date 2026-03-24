@@ -14,13 +14,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
 
-const navItems = [
+interface MyGoTwoNavItem {
+  icon: typeof Home;
+  url: string;
+  label: string;
+  end?: boolean;
+}
+
+const navItems: MyGoTwoNavItem[] = [
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
   { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
   { icon: Sparkles, url: "/dashboard/recommendations", label: "For You" },
   { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Know Me" },
   { icon: Bell, url: "/dashboard/notifications", label: "Notifications" },
-] as const;
+];
 
 export default function MyGoTwoHeader() {
   const navigate = useNavigate();

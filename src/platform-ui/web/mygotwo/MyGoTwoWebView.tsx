@@ -103,7 +103,7 @@ export default function MyGoTwoWebView({
       }}
     >
       {webLevelOneItems.length > 0 ? (
-        <div className={`${WEB_MYGOTWO_STAGE_SHELL_CLASS} pb-6`}>
+        <div className={WEB_MYGOTWO_STAGE_SHELL_CLASS}>
           <WebMyGoTwoQuote />
           <WebPaginatedCoverflow
             items={webLevelOneItems}
