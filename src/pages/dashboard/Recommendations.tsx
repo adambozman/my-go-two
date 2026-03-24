@@ -241,6 +241,18 @@ const Recommendations = () => {
                     {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
                   </p>
                 )}
+                {isDev && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="mt-3 gap-1.5 text-xs opacity-60 hover:opacity-100"
+                    disabled={loading}
+                    onClick={() => fetchProducts(true)}
+                  >
+                    {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                    Dev Refresh
+                  </Button>
+                )}
               </div>
 
               {/* Right — compact role rail */}
