@@ -176,10 +176,16 @@ const MyGoTwo = () => {
   const content = <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>;
 
   return (
-    <div className="app-page flex min-h-screen flex-col overflow-x-hidden">
+    <div
+      className={`app-page flex flex-col overflow-x-hidden ${
+        controller.isDesktopViewport ? "h-screen overflow-hidden" : "min-h-screen"
+      }`}
+    >
       <DashboardTopBar />
       {controller.isDesktopViewport ? (
-        <MyGoTwoWebLayout>{content}</MyGoTwoWebLayout>
+        <div className="flex-1 min-h-0">
+          <MyGoTwoWebLayout>{content}</MyGoTwoWebLayout>
+        </div>
       ) : (
         <main className="flex-1 min-h-0 overflow-x-hidden px-3 pb-6 sm:px-4 md:px-6 lg:px-8 lg:pb-8">
           {content}
