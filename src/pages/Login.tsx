@@ -12,7 +12,6 @@ import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AppleSignInButton from "@/components/AppleSignInButton";
 
 const DEV_EMAILS = ["adam.bozman@gmail.com"];
-const DEV_PASSWORD = "GoTwoDev2025!";
 
 const Login = () => {
   const [searchParams] = useSearchParams();
@@ -54,15 +53,20 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await signIn(email, isDevEmail ? DEV_PASSWORD : password);
-      await navigateAfterLogin();
-    } catch (error: any) {
-      // If dev email fails with wrong password, the dev account may use a different password
       if (isDevEmail) {
-        toast({ title: "Dev login failed", description: "Check that the dev account password matches.", variant: "destructive" });
+        // Dev bypass: send magic link (auto-confirmed, so instant sign-in)
+        const { error } = await supabase.auth.signInWithOtp({
+          email: email.toLowerCase().trim(),
+          options: { shouldCreateUser: false },
+        });
+        if (error) throw error;
+        toast({ title: "Magic link sent!", description: "Check your email for a sign-in link." });
       } else {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
+        await signIn(email, password);
+        await navigateAfterLogin();
       }
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
