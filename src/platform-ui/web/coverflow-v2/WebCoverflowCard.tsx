@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Pill } from "@/components/ui/pill";
 import InlinePhotoSearch from "@/components/InlinePhotoSearch";
 import type { WebCoverflowCardPose, WebCoverflowItem } from "@/platform-ui/web/coverflow-v2/types";
@@ -25,15 +26,19 @@ export function WebCoverflowCard({
   onImageError,
 }: WebCoverflowCardProps) {
   const isVisible = pose.depth <= WEB_COVERFLOW_TOKENS.visibleEachSide;
+  const [isHovered, setIsHovered] = useState(false);
 
   if (!isVisible) return null;
+
+  const hoverLift = isHovered ? (pose.isActive ? -12 : -8) : 0;
+  const hoverScale = isHovered ? (pose.isActive ? 1.025 : 1.015) : 1;
 
   return (
     <motion.button
       type="button"
       initial={false}
       animate={{
-        transform: `translate(-50%, -50%) translate3d(${pose.x}px, ${pose.y}px, 0px) rotateY(${pose.rotateY}deg) scale(${pose.scale})`,
+        transform: `translate(-50%, -50%) translate3d(${pose.x}px, ${pose.y + hoverLift}px, 0px) rotateY(${pose.rotateY}deg) scale(${pose.scale * hoverScale})`,
         opacity: pose.opacity,
       }}
       transition={WEB_COVERFLOW_MOTION.card}
@@ -51,6 +56,8 @@ export function WebCoverflowCard({
         if (pose.isActive) onCommit();
         else onActivate();
       }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
       aria-label={item.label}
     >
       <div className="relative h-full w-full overflow-hidden" style={{ borderRadius: WEB_COVERFLOW_TOKENS.borderRadius }}>

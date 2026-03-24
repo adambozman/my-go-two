@@ -14,27 +14,17 @@ export function WebCoverflowControls({ itemCount, activeIndex, onPrevious, onNex
   if (itemCount <= 1) return null;
 
   return (
-    <>
-      <div className="absolute right-8 top-8 z-[250] flex items-center gap-3">
-        <button
-          type="button"
-          aria-label="Previous"
-          className="h-12 w-12 rounded-full bg-black/40 text-white backdrop-blur hover:bg-black/55"
-          onClick={onPrevious}
-        >
-          <ChevronLeft className="mx-auto h-6 w-6" />
-        </button>
-        <button
-          type="button"
-          aria-label="Next"
-          className="h-12 w-12 rounded-full bg-black/40 text-white backdrop-blur hover:bg-black/55"
-          onClick={onNext}
-        >
-          <ChevronRight className="mx-auto h-6 w-6" />
-        </button>
-      </div>
+    <div className="absolute bottom-6 left-1/2 z-[250] flex -translate-x-1/2 items-center gap-4">
+      <button
+        type="button"
+        aria-label="Previous"
+        className="h-11 w-11 rounded-full border border-white/70 bg-[rgba(255,255,255,0.72)] text-[var(--swatch-teal)] shadow-[0_10px_24px_rgba(0,0,0,0.12)] backdrop-blur hover:bg-[rgba(255,255,255,0.88)]"
+        onClick={onPrevious}
+      >
+        <ChevronLeft className="mx-auto h-5 w-5" />
+      </button>
 
-      <div className="absolute bottom-6 left-1/2 z-[250] flex -translate-x-1/2 items-center gap-2">
+      <div className="flex items-center gap-2 rounded-full border border-white/60 bg-[rgba(255,255,255,0.34)] px-4 py-2 shadow-[0_10px_24px_rgba(0,0,0,0.10)] backdrop-blur">
         {Array.from({ length: itemCount }).map((_, index) => {
           const isActive = index === activeIndex;
           return (
@@ -42,14 +32,23 @@ export function WebCoverflowControls({ itemCount, activeIndex, onPrevious, onNex
               key={`dot-${index}`}
               type="button"
               aria-label={`Go to slide ${index + 1}`}
-              animate={{ width: isActive ? 24 : 8, opacity: isActive ? 1 : 0.35 }}
+              animate={{ width: isActive ? 22 : 7, opacity: isActive ? 1 : 0.45 }}
               transition={WEB_COVERFLOW_MOTION.controls}
-              className="h-2 rounded-full bg-white"
+              className="h-[7px] rounded-full bg-white"
               onClick={() => onDotSelect(index)}
             />
           );
         })}
       </div>
-    </>
+
+      <button
+        type="button"
+        aria-label="Next"
+        className="h-11 w-11 rounded-full border border-white/70 bg-[rgba(255,255,255,0.72)] text-[var(--swatch-teal)] shadow-[0_10px_24px_rgba(0,0,0,0.12)] backdrop-blur hover:bg-[rgba(255,255,255,0.88)]"
+        onClick={onNext}
+      >
+        <ChevronRight className="mx-auto h-5 w-5" />
+      </button>
+    </div>
   );
 }

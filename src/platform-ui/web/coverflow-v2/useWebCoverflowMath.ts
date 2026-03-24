@@ -17,16 +17,17 @@ export function getWebCoverflowPose(index: number, activeIndex: number, itemCoun
   const relative = shortestRelative(index, activeIndex, itemCount);
   const depth = Math.abs(relative);
   const isActive = depth === 0;
+  const direction = relative === 0 ? 0 : relative > 0 ? 1 : -1;
   const scale = isActive
     ? 1
     : Math.max(WEB_COVERFLOW_TOKENS.minScale, 1 - depth * WEB_COVERFLOW_TOKENS.inactiveScaleStep);
-  const opacity = isActive ? 1 : Math.max(0, 1 - depth * WEB_COVERFLOW_TOKENS.opacityStep);
+  const opacity = isActive ? 1 : Math.max(0.92, 1 - depth * WEB_COVERFLOW_TOKENS.opacityStep);
 
   return {
     relative,
     depth,
     isActive,
-    x: relative * WEB_COVERFLOW_TOKENS.xStep,
+    x: relative * WEB_COVERFLOW_TOKENS.xStep + direction * depth * depth * 6,
     y: depth * WEB_COVERFLOW_TOKENS.yStep,
     rotateY: relative * WEB_COVERFLOW_TOKENS.rotateYStep,
     scale,
