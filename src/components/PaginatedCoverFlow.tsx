@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import CoverFlowCarousel, { type CoverFlowItem } from "@/components/ui/CoverFlowCarousel";
 import MobileCoverFlow from "@/components/ui/MobileCoverFlow";
 import { usePagination } from "@/hooks/usePagination";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { COVERFLOW_DESKTOP_Y_OFFSET } from "@/lib/carouselConfig";
+import { WebCoverflowV2, type WebCoverflowItem } from "@/platform-ui/web/coverflow-v2";
 
 interface PaginatedCoverFlowProps {
-  items: CoverFlowItem[];
+  items: WebCoverflowItem[];
   onSelect: (id: string) => void;
   pageSize?: number;
   className?: string;
@@ -74,7 +74,7 @@ export default function PaginatedCoverFlow({
 
   return (
     <div className={className ?? "w-full flex flex-col items-center relative"}>
-      <CoverFlowCarousel
+      <WebCoverflowV2
         items={paginatedItems}
         onSelect={onSelect}
         initialActiveIndex={initialActiveIndex}
