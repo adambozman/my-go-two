@@ -108,9 +108,12 @@ function getProductImage(product: Product) {
   return getFallbackImage(product);
 }
 
+const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
+
 const Recommendations = () => {
   const { personalization, loading: personalizationLoading } = usePersonalization();
-  const { subscribed } = useAuth();
+  const { subscribed, user } = useAuth();
+  const isDev = user && DEV_USER_IDS.includes(user.id);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
