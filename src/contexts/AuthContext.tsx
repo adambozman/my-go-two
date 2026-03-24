@@ -3,6 +3,9 @@ import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeGender } from "@/lib/gender";
 
+// Dev account always treated as premium
+const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
+
 export const SUBSCRIPTION_TIERS = {
   premium: {
     product_id: "prod_U7vTm1mY6aBgKf",
