@@ -55,6 +55,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkSubscription = useCallback(async () => {
     if (!session?.access_token) return;
+    // Dev override — skip Stripe check
+    if (user && DEV_USER_IDS.includes(user.id)) {
+      setSubscribed(true);
+      setSubscriptionEnd(null);
+      return;
+    }
     setSubscriptionLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("check-subscription", {
@@ -69,7 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setSubscriptionLoading(false);
     }
-  }, [session?.access_token]);
+  }, [session?.access_token, user]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
