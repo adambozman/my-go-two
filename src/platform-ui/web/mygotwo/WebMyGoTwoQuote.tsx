@@ -1,10 +1,14 @@
 import { useRotatingQuote } from "@/hooks/useRotatingQuote";
 
-export default function WebMyGoTwoQuote() {
+interface WebMyGoTwoQuoteProps {
+  className?: string;
+}
+
+export default function WebMyGoTwoQuote({ className = "" }: WebMyGoTwoQuoteProps) {
   const quote = useRotatingQuote();
 
   return (
-    <div className="w-full px-6 pt-2 text-center">
+    <div className={`pointer-events-none w-full px-6 pt-2 text-center ${className}`.trim()}>
       <p
         className="mx-auto max-w-[720px] text-[28px] font-semibold italic leading-[1.25] text-[var(--logo-two-color)]"
         style={{

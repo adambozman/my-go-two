@@ -67,19 +67,21 @@ export default function MyGoTwoWebView({
         className={`${WEB_MYGOTWO_STAGE_CLASS} flex min-h-[calc(100dvh-var(--header-height))] flex-col`}
         style={WEB_MYGOTWO_STAGE_STYLE}
       >
-        <div className="flex flex-1 snap-start snap-always flex-col">
-          <WebMyGoTwoQuote />
-          <WebTemplateCoverFlow
-            templateName={coverFlowState.name}
-            subtypes={coverFlowState.subtypes}
-            subcategories={coverFlowState.subcategories}
-            activeSubcategory={activeSubcategory}
-            onSubcategorySelect={onSubcategorySelect}
-            onBack={activeSubcategory ? onSubcategoryBack : onClearCoverFlow}
-            onSelect={onSubtypeSelect}
-            focusedSubcategoryId={focusedSubcategoryId}
-            focusedLeafItemId={focusedLeafItemId}
-          />
+        <div className="relative flex flex-1 snap-start snap-always flex-col overflow-hidden">
+          <WebMyGoTwoQuote className="absolute left-0 right-0 top-0 z-20" />
+          <div className="flex flex-1 min-h-0 flex-col">
+            <WebTemplateCoverFlow
+              templateName={coverFlowState.name}
+              subtypes={coverFlowState.subtypes}
+              subcategories={coverFlowState.subcategories}
+              activeSubcategory={activeSubcategory}
+              onSubcategorySelect={onSubcategorySelect}
+              onBack={activeSubcategory ? onSubcategoryBack : onClearCoverFlow}
+              onSelect={onSubtypeSelect}
+              focusedSubcategoryId={focusedSubcategoryId}
+              focusedLeafItemId={focusedLeafItemId}
+            />
+          </div>
         </div>
       </motion.div>
     );
@@ -103,8 +105,8 @@ export default function MyGoTwoWebView({
       }}
     >
       {webLevelOneItems.length > 0 ? (
-        <div className={WEB_MYGOTWO_STAGE_SHELL_CLASS}>
-          <WebMyGoTwoQuote />
+        <div className={`${WEB_MYGOTWO_STAGE_SHELL_CLASS} relative overflow-hidden`}>
+          <WebMyGoTwoQuote className="absolute left-0 right-0 top-0 z-20" />
           <WebPaginatedCoverflow
             items={webLevelOneItems}
             pageSize={webLevelOneItems.length}

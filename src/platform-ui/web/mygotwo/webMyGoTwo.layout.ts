@@ -11,7 +11,7 @@ export const WEB_MYGOTWO_STAGE_STYLE: CSSProperties = {
 };
 
 export const WEB_MYGOTWO_STAGE_SHELL_CLASS =
-  "flex w-full flex-1 min-h-0 flex-col items-center justify-center gap-4 pt-2";
+  "flex w-full flex-1 min-h-0 flex-col items-center justify-center";
 
 export const WEB_MYGOTWO_DOT_STYLE: CSSProperties = {
   right: WEB_LAYOUT_PROFILE.coverflow.indicatorRight,
