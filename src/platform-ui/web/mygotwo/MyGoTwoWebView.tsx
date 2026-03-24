@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 import WebPaginatedCoverflow from "@/platform-ui/web/mygotwo/WebPaginatedCoverflow";
+import WebMyGoTwoQuote from "@/platform-ui/web/mygotwo/WebMyGoTwoQuote";
 import WebTemplateCoverFlow from "@/platform-ui/web/mygotwo/WebTemplateCoverFlow";
 import {
   WEB_MYGOTWO_STAGE_CLASS,
@@ -67,6 +68,7 @@ export default function MyGoTwoWebView({
         style={WEB_MYGOTWO_STAGE_STYLE}
       >
         <div className="snap-start snap-always">
+          <WebMyGoTwoQuote />
           <WebTemplateCoverFlow
             templateName={coverFlowState.name}
             subtypes={coverFlowState.subtypes}
@@ -102,6 +104,7 @@ export default function MyGoTwoWebView({
     >
       {webLevelOneItems.length > 0 ? (
         <div className={WEB_MYGOTWO_STAGE_SHELL_CLASS}>
+          <WebMyGoTwoQuote />
           <WebPaginatedCoverflow
             items={webLevelOneItems}
             pageSize={webLevelOneItems.length}

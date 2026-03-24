@@ -35,6 +35,10 @@ const DashboardLayout = () => {
     );
   }
 
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <div className="app-page flex min-h-screen flex-col overflow-x-hidden lg:h-screen lg:overflow-hidden">
       <DashboardTopBar />
