@@ -3,6 +3,9 @@ import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeGender } from "@/lib/gender";
 
+// Dev account always treated as premium
+const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
+
 export const SUBSCRIPTION_TIERS = {
   premium: {
     product_id: "prod_U7vTm1mY6aBgKf",
@@ -52,6 +55,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkSubscription = useCallback(async () => {
     if (!session?.access_token) return;
+    // Dev override — skip Stripe check
+    if (user && DEV_USER_IDS.includes(user.id)) {
+      setSubscribed(true);
+      setSubscriptionEnd(null);
+      return;
+    }
     setSubscriptionLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("check-subscription", {
@@ -66,7 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setSubscriptionLoading(false);
     }
-  }, [session?.access_token]);
+  }, [session?.access_token, user]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
