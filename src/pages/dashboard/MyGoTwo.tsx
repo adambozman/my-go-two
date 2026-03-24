@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { Navigate } from "react-router-dom";
-import { DashboardTopBar } from "@/components/DashboardTopBar";
 import { useAuth } from "@/contexts/AuthContext";
+import MyGoTwoPageLayout from "@/features/mygotwo/MyGoTwoPageLayout";
 import MyGoTwoMobileEntryView from "@/features/mygotwo/MyGoTwoMobileEntryView";
 import MyGoTwoMobileRootView from "@/features/mygotwo/MyGoTwoMobileRootView";
 import {
@@ -32,12 +32,11 @@ const MyGoTwo = () => {
 
   if (controller.isLoading) {
     return (
-      <div className="app-page flex min-h-screen flex-col overflow-x-hidden">
-        <DashboardTopBar />
+      <MyGoTwoPageLayout isDesktopViewport={controller.isDesktopViewport}>
         <main className="flex flex-1 items-center justify-center overflow-x-hidden px-3 pb-6 sm:px-4 md:px-6 lg:px-8 lg:pb-8">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </main>
-      </div>
+      </MyGoTwoPageLayout>
     );
   }
 
@@ -176,12 +175,7 @@ const MyGoTwo = () => {
   const content = <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>;
 
   return (
-    <div
-      className={`app-page flex flex-col overflow-x-hidden ${
-        controller.isDesktopViewport ? "h-screen overflow-hidden" : "min-h-screen"
-      }`}
-    >
-      <DashboardTopBar />
+    <MyGoTwoPageLayout isDesktopViewport={controller.isDesktopViewport}>
       {controller.isDesktopViewport ? (
         <div className="flex-1 min-h-0">
           <MyGoTwoWebLayout>{content}</MyGoTwoWebLayout>
@@ -191,7 +185,7 @@ const MyGoTwo = () => {
           {content}
         </main>
       )}
-    </div>
+    </MyGoTwoPageLayout>
   );
 };
 
