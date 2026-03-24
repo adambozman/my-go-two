@@ -1,0 +1,15 @@
+export const MYGOTWO_DESKTOP_TOKENS = {
+  frameMaxWidth: 1680,
+  frameRadius: 34,
+  quoteMinHeight: 94,
+  outerPaddingX: "clamp(12px, 1.8vw, 28px)",
+  outerPaddingY: "clamp(12px, 1.8vw, 24px)",
+  stageGap: "clamp(14px, 1.6vw, 22px)",
+  stagePaddingX: "clamp(8px, 1vw, 18px)",
+  contentPaddingBottom: "clamp(12px, 1.8vw, 24px)",
+  controlsBottom: 20,
+  visibleEachSide: 3,
+  cardAspectRatio: 396 / 528,
+  minCardHeight: 320,
+  maxCardHeight: 528,
+} as const;
