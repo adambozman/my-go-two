@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { WEB_LAYOUT_PROFILE } from "@/platform-ui/layout/web.layout";
 
 export const WEB_MYGOTWO_STAGE_CLASS =
-  "w-full overflow-x-hidden relative";
+  "relative h-full min-h-0 w-full overflow-x-hidden";
 
 export const WEB_MYGOTWO_STAGE_STYLE: CSSProperties = {
   scrollbarWidth: "none",
@@ -11,7 +11,7 @@ export const WEB_MYGOTWO_STAGE_STYLE: CSSProperties = {
 };
 
 export const WEB_MYGOTWO_STAGE_SHELL_CLASS =
-  "flex w-full flex-1 min-h-0 flex-col items-center justify-center";
+  "grid h-full w-full min-h-0 grid-rows-[auto_minmax(0,1fr)] items-center";
 
 export const WEB_MYGOTWO_DOT_STYLE: CSSProperties = {
   right: WEB_LAYOUT_PROFILE.coverflow.indicatorRight,

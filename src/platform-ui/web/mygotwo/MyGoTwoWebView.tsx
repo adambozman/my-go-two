@@ -64,7 +64,7 @@ export default function MyGoTwoWebView({
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -40 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={`${WEB_MYGOTWO_STAGE_CLASS} flex min-h-[calc(100dvh-var(--header-height))] flex-col`}
+        className={`${WEB_MYGOTWO_STAGE_CLASS} flex flex-col`}
         style={WEB_MYGOTWO_STAGE_STYLE}
       >
         <div className="relative flex flex-1 snap-start snap-always flex-col overflow-hidden">
@@ -93,7 +93,7 @@ export default function MyGoTwoWebView({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="relative flex min-h-[calc(100dvh-var(--header-height))] w-full flex-col"
+      className={`${WEB_MYGOTWO_STAGE_CLASS} flex flex-col`}
       style={{ touchAction: "pan-y" }}
       onWheel={(event) => {
         if (Math.abs(event.deltaY) < 14) return;

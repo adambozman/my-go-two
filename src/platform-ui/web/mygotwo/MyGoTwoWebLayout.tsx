@@ -6,8 +6,8 @@ interface MyGoTwoWebLayoutProps {
 
 export default function MyGoTwoWebLayout({ children }: MyGoTwoWebLayoutProps) {
   return (
-    <main className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto px-3 sm:px-4 md:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-[1680px] flex-col">{children}</div>
+    <main className="h-full min-h-0 overflow-hidden px-3 sm:px-4 md:px-6 lg:px-8">
+      <div className="mx-auto grid h-full w-full max-w-[1680px] grid-rows-[minmax(0,1fr)] overflow-hidden">{children}</div>
     </main>
   );
 }
