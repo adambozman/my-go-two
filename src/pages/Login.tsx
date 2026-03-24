@@ -208,7 +208,7 @@ const Login = () => {
                     color: "var(--swatch-cream-light)",
                   }}
                 >
-                  {loading ? "Signing in..." : "Sign In"}
+                  {loading ? "Signing in..." : isDevEmail ? "Send Magic Link" : "Sign In"}
                   {!loading && <ArrowRight className="ml-2 w-4 h-4" />}
                 </Button>
                 <div className="relative flex items-center my-2">
