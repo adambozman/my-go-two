@@ -32,7 +32,6 @@ const sanitizeIntents = (rawIntents: unknown): (RecommendationIntent & { product
       const category = cleanText(intent.category).toLowerCase();
       const recommendationKind = cleanText(intent.recommendation_kind).toLowerCase();
       const rawImageUrl = cleanText(intent.product_image_url);
-      // Only keep URLs that look like real image links
       const imageUrl = rawImageUrl && /^https?:\/\/.+\.(jpg|jpeg|png|webp|avif)/i.test(rawImageUrl) ? rawImageUrl : undefined;
       return {
         brand: cleanText(intent.brand),
@@ -56,6 +55,84 @@ const getUsageCount = (value: unknown): number => {
   const candidate = toObject(value).usage_count;
   return typeof candidate === "number" && Number.isFinite(candidate) ? candidate : 0;
 };
+
+/* ── Firecrawl product scraper ─────────────────────────────── */
+
+interface ScrapedProduct {
+  image_url: string | null;
+  product_url: string | null;
+  price: string | null;
+}
+
+async function scrapeProductWithFirecrawl(
+  brand: string,
+  productName: string,
+  searchQuery: string | null,
+): Promise<ScrapedProduct | null> {
+  const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
+  if (!FIRECRAWL_API_KEY) return null;
+
+  try {
+    const query = searchQuery || `${brand} ${productName} buy`;
+    console.log("[firecrawl] searching:", query);
+
+    // Step 1: search for the product
+    const searchRes = await fetch("https://api.firecrawl.dev/v1/search", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query,
+        limit: 3,
+        scrapeOptions: { formats: ["markdown", "links"] },
+      }),
+    });
+
+    if (!searchRes.ok) {
+      const errText = await searchRes.text();
+      console.error("[firecrawl] search failed:", searchRes.status, errText);
+      return null;
+    }
+
+    const searchData = await searchRes.json();
+    const results = searchData?.data ?? searchData?.results ?? [];
+    if (!results.length) return null;
+
+    // Pick the best result (prefer official brand sites or major retailers)
+    const bestResult = results[0];
+    const productUrl = bestResult?.url ?? bestResult?.metadata?.sourceURL ?? null;
+    const markdown = bestResult?.markdown ?? "";
+
+    // Extract image from the scraped page content
+    const imageMatch = markdown.match(/!\[[^\]]*\]\((https?:\/\/[^\s)]+\.(?:jpg|jpeg|png|webp|avif)[^\s)]*)\)/i);
+    let imageUrl = imageMatch?.[1] ?? null;
+
+    // Also check metadata / og:image if available
+    if (!imageUrl && bestResult?.metadata?.ogImage) {
+      imageUrl = bestResult.metadata.ogImage;
+    }
+
+    // Try to extract price from markdown
+    let scrapedPrice: string | null = null;
+    const priceMatch = markdown.match(/\$[\d,]+\.?\d{0,2}/);
+    if (priceMatch) scrapedPrice = priceMatch[0];
+
+    console.log("[firecrawl] found:", { productUrl, imageUrl: !!imageUrl, scrapedPrice });
+
+    return {
+      image_url: imageUrl,
+      product_url: productUrl,
+      price: scrapedPrice,
+    };
+  } catch (err) {
+    console.error("[firecrawl] error:", err);
+    return null;
+  }
+}
+
+/* ── Main handler ──────────────────────────────────────────── */
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -152,10 +229,9 @@ RULES:
    - generic: broader branded recommendation when an exact item is too narrow.
    - catalog: recommendation that can reasonably reuse a shared catalog-style item.
 5. Use real brands only.
-6. Never output a URL except for product_image_url.
-7. search_query should be present for generic recommendations when useful.
+6. Never output a URL.
+7. search_query MUST be present — a web search query to find this product on the brand website or a retailer. Be specific, e.g. "Nike Air Max 90 white mens" not just "Nike shoes".
 8. Keep hook and why concise and profile-specific.
-9. For product_image_url: provide a direct URL to an official product image from the brand's website, CDN, or a major retailer (e.g. the .jpg or .png URL of the product photo). This must be a real, publicly accessible image URL — not a page URL. If you cannot confidently provide one, leave it as an empty string.
 
 Use the provided tool.`;
 
@@ -189,10 +265,9 @@ Use the provided tool.`;
                           hook: { type: "string" },
                           why: { type: "string" },
                           recommendation_kind: { type: "string", enum: ["specific", "generic", "catalog"] },
-                          search_query: { type: "string" },
-                          product_image_url: { type: "string", description: "Direct URL to an official product image (.jpg/.png/.webp). Leave empty string if unsure." },
+                          search_query: { type: "string", description: "Specific web search query to find this exact product, e.g. 'Nike Air Max 90 white mens size 10'" },
                         },
-                        required: ["brand", "name", "price", "category", "hook", "why", "recommendation_kind"],
+                        required: ["brand", "name", "price", "category", "hook", "why", "recommendation_kind", "search_query"],
                         additionalProperties: false,
                       },
                     },
@@ -214,9 +289,18 @@ Use the provided tool.`;
         const intents = sanitizeIntents(parsed?.intents);
 
         if (intents.length > 0) {
+          // Scrape all products in parallel via Firecrawl
+          const scrapePromises = intents.map((intent) =>
+            scrapeProductWithFirecrawl(intent.brand, intent.name, intent.search_query)
+          );
+          const scrapeResults = await Promise.all(scrapePromises);
+
           const resolvedProducts = [];
 
-          for (const intent of intents) {
+          for (let i = 0; i < intents.length; i++) {
+            const intent = intents[i];
+            const scraped = scrapeResults[i];
+
             const fingerprint = buildRecommendationFingerprint(
               intent.category,
               intent.brand,
@@ -232,32 +316,50 @@ Use the provided tool.`;
 
             const resolved = existing ?? resolveIntentToCatalogEntry(intent);
 
+            // Prefer Firecrawl-scraped data over everything else
+            const finalImageUrl = scraped?.image_url || intent.product_image_url || resolved.image_url;
+            const finalProductUrl = scraped?.product_url || (resolved.link_kind === "product" ? resolved.link_url : null);
+            const finalPrice = scraped?.price || intent.price;
+
             if (!existing) {
-              await supabase.from("resolved_recommendation_catalog").upsert(resolved, {
+              // Store with scraped data
+              const enrichedResolved = {
+                ...resolved,
+                image_url: finalImageUrl,
+                link_url: finalProductUrl || resolved.link_url,
+                link_kind: finalProductUrl ? "product" : resolved.link_kind,
+                resolver_source: scraped?.product_url ? "firecrawl" : resolved.resolver_source,
+              };
+              await supabase.from("resolved_recommendation_catalog").upsert(enrichedResolved, {
                 onConflict: "fingerprint",
               });
             } else {
               await supabase
                 .from("resolved_recommendation_catalog")
-                .update({ usage_count: getUsageCount(existing) + 1 })
+                .update({
+                  usage_count: getUsageCount(existing) + 1,
+                  // Update image if we got a better one from Firecrawl
+                  ...(scraped?.image_url ? { image_url: scraped.image_url } : {}),
+                  ...(scraped?.product_url ? { link_url: scraped.product_url, link_kind: "product", resolver_source: "firecrawl" } : {}),
+                })
                 .eq("fingerprint", fingerprint);
             }
 
             resolvedProducts.push({
               name: intent.name,
               brand: intent.brand,
-              price: intent.price,
+              price: finalPrice,
               category: intent.category,
               hook: intent.hook,
               why: intent.why,
               is_partner_pick: intent.recommendation_kind === "specific",
               is_sponsored: false,
-              affiliate_url: resolved.link_kind === "product" ? resolved.link_url : null,
-              search_url: resolved.link_kind === "search" ? resolved.link_url : null,
+              affiliate_url: finalProductUrl,
+              search_url: !finalProductUrl && resolved.link_kind === "search" ? resolved.link_url : null,
               product_query: resolved.search_query,
               sponsored_id: null,
-              image_url: intent.product_image_url || resolved.image_url,
-              source_kind: resolved.link_kind === "product" ? "specific-product" : "brand-search",
+              image_url: finalImageUrl,
+              source_kind: finalProductUrl ? "specific-product" : "brand-search",
               source_version: resolved.source_version,
             });
           }
