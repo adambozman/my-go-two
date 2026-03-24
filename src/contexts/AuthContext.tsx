@@ -5,6 +5,7 @@ import { normalizeGender } from "@/lib/gender";
 
 // Dev account always treated as premium
 const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
+const DEV_EMAILS = ["adam.bozman@gmail.com"];
 
 export const SUBSCRIPTION_TIERS = {
   premium: {
