@@ -429,7 +429,7 @@ Use the provided tool.`;
         if (intents.length > 0) {
           // Scrape all products in parallel via Firecrawl
           const scrapePromises = intents.map((intent) =>
-            scrapeProductWithFirecrawl(intent.brand, intent.name, intent.search_query)
+            scrapeProductWithFirecrawl(intent.brand, intent.name, intent.search_query ?? null)
           );
           const scrapeResults = await Promise.all(scrapePromises);
 
