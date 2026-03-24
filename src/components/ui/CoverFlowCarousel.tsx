@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, forwardRef, useReducer } from "react";
 import { motion } from "framer-motion";
-import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP, COVERFLOW_DESKTOP_Y_OFFSET } from "@/lib/carouselConfig";
+import { CAROUSEL_LAYOUT, CAROUSEL_LAYOUT_DESKTOP } from "@/lib/carouselConfig";
 import GoTwoCard from "@/components/ui/GoTwoCard";
 import { Pill } from "@/components/ui/pill";
 import InlinePhotoSearch from "@/components/InlinePhotoSearch";
@@ -120,7 +120,7 @@ const CoverFlowCarousel = forwardRef<HTMLDivElement, CoverFlowCarouselProps>(
           style={{
             height: stageHeight,
             marginTop: isDesktop
-              ? 44 + COVERFLOW_DESKTOP_Y_OFFSET
+              ? 44
               : 24,
           }}
         >

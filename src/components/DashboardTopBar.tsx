@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Bell, Settings, Upload, Trash2, ChevronDown, LogOut, Home, Heart, Sparkles, ClipboardList } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,8 +13,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
-
-import { useTopBar } from "@/contexts/TopBarContext";
+import { useRotatingQuote } from "@/hooks/useRotatingQuote";
 
 const navItems = [
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
@@ -26,9 +25,10 @@ const navItems = [
 
 export function DashboardTopBar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, signOut } = useAuth();
   const { toast } = useToast();
-  const { backState } = useTopBar();
+  const quote = useRotatingQuote();
   const [unreadCount, setUnreadCount] = useState(0);
   const [avatarValue, setAvatarValue] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -154,13 +154,16 @@ export function DashboardTopBar() {
     }
   };
 
-  const collapsedHeaderHeight = "calc(var(--header-top-padding) + var(--header-icons-row-height) + var(--header-divider-margin-top) + 1px)";
+  const showQuote = location.pathname.startsWith("/dashboard/my-go-two");
+  const headerHeight = showQuote
+    ? "var(--header-height)"
+    : "calc(var(--header-top-padding) + var(--header-icons-row-height) + var(--header-divider-margin-top) + 1px)";
 
   return (
     <header
       className="shrink-0 flex flex-col px-3 sm:px-4 md:px-6 lg:px-8"
       style={{
-        minHeight: collapsedHeaderHeight,
+        minHeight: headerHeight,
         paddingTop: "var(--header-top-padding)",
       }}
     >
@@ -296,6 +299,16 @@ export function DashboardTopBar() {
       </div>
 
       <div className="border-b border-border/30" style={{ marginTop: "var(--header-divider-margin-top)" }} />
+      {showQuote ? (
+        <div className="header-tagline-wrapper text-center" style={{ marginTop: "var(--header-tagline-margin-top)" }}>
+          <p
+            className="header-tagline-quote"
+            style={{ opacity: quote.visible ? 1 : 0, transition: "opacity 300ms ease" }}
+          >
+            "{quote.text}"
+          </p>
+        </div>
+      ) : null}
     </header>
   );
 }
