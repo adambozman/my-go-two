@@ -87,7 +87,7 @@ function MyGoTwoDesktopCoverflowCard({
         opacity: pose.opacity,
       }}
       transition={{ type: "spring", stiffness: 260, damping: 28 }}
-      className="absolute left-1/2 top-[46%] overflow-hidden border-0 bg-transparent p-0"
+      className="absolute left-1/2 top-1/2 overflow-hidden border-0 bg-transparent p-0"
       style={{
         width,
         height,
@@ -220,7 +220,7 @@ export default function MyGoTwoDesktopCoverflow({
         height: stageHeight,
         minHeight: 0,
         perspective: "1800px",
-        perspectiveOrigin: "50% 44%",
+        perspectiveOrigin: "50% 48%",
       }}
       onPointerDown={(event) => {
         dragStartX.current = event.clientX;

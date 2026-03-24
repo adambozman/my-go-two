@@ -45,6 +45,14 @@ function toDesktopItems(
   }));
 }
 
+function resolveMappedImage(imageMap: Record<string, string>, source: string | undefined, fallbackId: string) {
+  const imageKey = source || fallbackId;
+  const mapped = imageMap[imageKey];
+  if (mapped) return mapped;
+  if (source && source.includes("/")) return source;
+  return "";
+}
+
 export default function MyGoTwoWebView({
   coverFlowState,
   activeSubcategory,
@@ -93,7 +101,7 @@ export default function MyGoTwoWebView({
     const items = coverFlowState.subcategories!.map((subcategory) => ({
       id: subcategory.id,
       label: subcategory.name,
-      image: drilldownImageMap[subcategory.image || subcategory.id] || "",
+      image: resolveMappedImage(drilldownImageMap, subcategory.image, subcategory.id),
       imageKey: subcategory.image || subcategory.id,
     }));
 
@@ -118,7 +126,7 @@ export default function MyGoTwoWebView({
   const productItems = products.map((product) => ({
     id: product.id,
     label: product.name,
-    image: drilldownImageMap[(product as any).image || product.id] || "",
+    image: resolveMappedImage(drilldownImageMap, (product as any).image, product.id),
     imageKey: (product as any).image || product.id,
   }));
 
