@@ -11,6 +11,8 @@ import { ArrowRight } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AppleSignInButton from "@/components/AppleSignInButton";
 
+const DEV_EMAILS = ["adam.bozman@gmail.com"];
+const DEV_PASSWORD = "GoTwoDev2025!";
 
 const Login = () => {
   const [searchParams] = useSearchParams();
@@ -21,6 +23,8 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const isDevEmail = DEV_EMAILS.includes(email.toLowerCase().trim());
+
   useEffect(() => {
     const inviteId = searchParams.get("invite");
     if (inviteId) {
@@ -28,28 +32,37 @@ const Login = () => {
     }
   }, [searchParams]);
 
+  const navigateAfterLogin = async () => {
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    if (currentUser) {
+      const { data: prefs } = await supabase
+        .from("user_preferences")
+        .select("onboarding_complete")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+      if (!prefs?.onboarding_complete) {
+        navigate("/onboarding");
+      } else {
+        navigate("/dashboard");
+      }
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await signIn(email, password);
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (currentUser) {
-        const { data: prefs } = await supabase
-          .from("user_preferences")
-          .select("onboarding_complete")
-          .eq("user_id", currentUser.id)
-          .maybeSingle();
-        if (!prefs?.onboarding_complete) {
-          navigate("/onboarding");
-        } else {
-          navigate("/dashboard");
-        }
-      } else {
-        navigate("/dashboard");
-      }
+      await signIn(email, isDevEmail ? DEV_PASSWORD : password);
+      await navigateAfterLogin();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      // If dev email fails with wrong password, the dev account may use a different password
+      if (isDevEmail) {
+        toast({ title: "Dev login failed", description: "Check that the dev account password matches.", variant: "destructive" });
+      } else {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      }
     } finally {
       setLoading(false);
     }
