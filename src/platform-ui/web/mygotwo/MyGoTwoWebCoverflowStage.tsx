@@ -35,8 +35,8 @@ const POSES: Record<number, CardPose> = {
 };
 
 const HIDDEN_POSES: Record<"left" | "right", CardPose> = {
-  left: { x: -452, y: 104, scale: 0.71, rotate: -24, rotateY: 32, zIndex: 5 },
-  right: { x: 452, y: 104, scale: 0.71, rotate: 24, rotateY: -32, zIndex: 5 },
+  left: { x: -320, y: 57, scale: 0.81, rotate: -16, rotateY: 22, zIndex: 15 },
+  right: { x: 320, y: 57, scale: 0.81, rotate: 16, rotateY: -22, zIndex: 15 },
 };
 
 function normalizeIndex(index: number, length: number) {
@@ -58,8 +58,29 @@ function getWrappedOffset(index: number, activeIndex: number, length: number) {
   return raw;
 }
 
+function isVisibleOffset(offset: number, length: number) {
+  const half = Math.floor(length / 2);
+  const maxVisibleOffset = Math.min(3, half);
+
+  if (Math.abs(offset) > maxVisibleOffset) {
+    return false;
+  }
+
+  if (length % 2 === 0 && Math.abs(offset) === half) {
+    return false;
+  }
+
+  return true;
+}
+
+function isRightHiddenStackOffset(offset: number, length: number) {
+  const half = Math.floor(length / 2);
+  return length % 2 === 0 && half <= 3 && Math.abs(offset) === half;
+}
+
 type MyGoTwoWebCoverflowStageProps = {
   items: MyGoTwoRootItem[];
+  onActiveCardSelect?: (item: MyGoTwoRootItem) => void;
 };
 
 function buildCoverflowItems(items: MyGoTwoRootItem[]): CoverflowItem[] {
@@ -70,8 +91,12 @@ function buildCoverflowItems(items: MyGoTwoRootItem[]): CoverflowItem[] {
   }));
 }
 
-export default function MyGoTwoWebCoverflowStage({ items }: MyGoTwoWebCoverflowStageProps) {
+export default function MyGoTwoWebCoverflowStage({
+  items,
+  onActiveCardSelect,
+}: MyGoTwoWebCoverflowStageProps) {
   const coverflowItems = useMemo(() => buildCoverflowItems(items), [items]);
+  const itemSignature = useMemo(() => items.map((item) => item.id).join("|"), [items]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [previousActiveIndex, setPreviousActiveIndex] = useState(0);
   const [navigationDirection, setNavigationDirection] = useState<-1 | 1>(1);
@@ -86,9 +111,9 @@ export default function MyGoTwoWebCoverflowStage({ items }: MyGoTwoWebCoverflowS
       return;
     }
 
-    setActiveIndex((current) => normalizeIndex(current, itemCount));
-    setPreviousActiveIndex((current) => normalizeIndex(current, itemCount));
-  }, [itemCount]);
+    setActiveIndex(0);
+    setPreviousActiveIndex(0);
+  }, [itemCount, itemSignature]);
 
   const visibleItems = useMemo(
     () =>
@@ -98,7 +123,13 @@ export default function MyGoTwoWebCoverflowStage({ items }: MyGoTwoWebCoverflowS
           offset: getWrappedOffset(index, activeIndex, itemCount),
           previousOffset: getWrappedOffset(index, previousActiveIndex, itemCount),
         }))
-        .filter((item) => Math.abs(item.offset) <= 3 || Math.abs(item.previousOffset) <= 3),
+        .filter(
+          (item) =>
+            isVisibleOffset(item.offset, itemCount) ||
+            isVisibleOffset(item.previousOffset, itemCount) ||
+            isRightHiddenStackOffset(item.offset, itemCount) ||
+            isRightHiddenStackOffset(item.previousOffset, itemCount),
+        ),
     [activeIndex, coverflowItems, itemCount, previousActiveIndex],
   );
 
@@ -169,24 +200,32 @@ export default function MyGoTwoWebCoverflowStage({ items }: MyGoTwoWebCoverflowS
     >
       {visibleItems.map((item) => {
         const itemIndex = coverflowItems.findIndex((entry) => entry.id === item.id);
-        const currentVisible = Math.abs(item.offset) <= 3;
+        const sourceItem = items[itemIndex];
+        const inRightHiddenStack = isRightHiddenStackOffset(item.offset, itemCount);
+        const currentVisible = isVisibleOffset(item.offset, itemCount);
         const isHovered = hoveredIndex === itemIndex && item.offset !== 0 && currentVisible;
         const hoverScale = isHovered ? 0.03 : 0;
         const hoverLift = isHovered ? -10 : 0;
         const enteringSide =
-          currentVisible && Math.abs(item.previousOffset) > 3
+          currentVisible && !isVisibleOffset(item.previousOffset, itemCount) && !isRightHiddenStackOffset(item.previousOffset, itemCount)
             ? navigationDirection === 1
               ? "right"
               : "left"
             : null;
         const enteringPose = enteringSide ? HIDDEN_POSES[enteringSide] : null;
         const exitingSide =
-          !currentVisible && Math.abs(item.previousOffset) <= 3
+          !currentVisible && !inRightHiddenStack && isVisibleOffset(item.previousOffset, itemCount)
             ? navigationDirection === 1
               ? "right"
               : "left"
             : null;
-        const pose = currentVisible ? POSES[item.offset] : exitingSide ? HIDDEN_POSES[exitingSide] : null;
+        const pose = currentVisible
+          ? POSES[item.offset]
+          : inRightHiddenStack
+            ? HIDDEN_POSES.right
+            : exitingSide
+              ? HIDDEN_POSES[exitingSide]
+              : null;
 
         if (!pose) {
           return null;
@@ -196,7 +235,14 @@ export default function MyGoTwoWebCoverflowStage({ items }: MyGoTwoWebCoverflowS
           <motion.button
             key={item.id}
             type="button"
-            onClick={() => navigateToIndex(itemIndex)}
+            onClick={() => {
+              if (currentVisible && itemIndex === activeIndex && sourceItem && onActiveCardSelect) {
+                onActiveCardSelect(sourceItem);
+                return;
+              }
+
+              navigateToIndex(itemIndex);
+            }}
             onMouseEnter={() => setHoveredIndex(itemIndex)}
             onMouseLeave={() => setHoveredIndex(null)}
             aria-label={`Show slide ${itemIndex + 1}`}
