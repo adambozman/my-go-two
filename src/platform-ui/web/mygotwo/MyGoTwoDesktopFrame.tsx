@@ -15,7 +15,7 @@ export default function MyGoTwoDesktopFrame({ quote, children }: MyGoTwoDesktopF
         borderRadius: MYGOTWO_DESKTOP_TOKENS.frameRadius,
         paddingLeft: MYGOTWO_DESKTOP_TOKENS.outerPaddingX,
         paddingRight: MYGOTWO_DESKTOP_TOKENS.outerPaddingX,
-        paddingTop: "clamp(52px, 8vh, 88px)",
+        paddingTop: "clamp(34px, 5vh, 56px)",
         paddingBottom: MYGOTWO_DESKTOP_TOKENS.outerPaddingY,
         background: MYGOTWO_DESKTOP_TOKENS.frameBackground,
       }}

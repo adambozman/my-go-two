@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import MyGoTwoDesktopFrame from "@/platform-ui/web/mygotwo/MyGoTwoDesktopFrame";
-import MyGoTwoDesktopQuoteBox from "@/platform-ui/web/mygotwo/MyGoTwoDesktopQuoteBox";
 import MyGoTwoDesktopStage from "@/platform-ui/web/mygotwo/MyGoTwoDesktopStage";
+import WebMyGoTwoQuote from "@/platform-ui/web/mygotwo/WebMyGoTwoQuote";
 
 interface MyGoTwoDesktopPageProps {
   children: ReactNode;
@@ -12,7 +12,7 @@ interface MyGoTwoDesktopPageProps {
 
 export default function MyGoTwoDesktopPage({ children, title, onBack, topSlot }: MyGoTwoDesktopPageProps) {
   return (
-    <MyGoTwoDesktopFrame quote={<MyGoTwoDesktopQuoteBox />}>
+    <MyGoTwoDesktopFrame quote={<WebMyGoTwoQuote />}>
       <MyGoTwoDesktopStage title={title} onBack={onBack} topSlot={topSlot}>
         {children}
       </MyGoTwoDesktopStage>

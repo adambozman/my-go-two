@@ -1,7 +1,10 @@
 import type { SubcategoryGroup, SubtypeItem } from "@/data/templateSubtypes";
 import { useCategoryImageMap } from "@/features/mygotwo/useCategoryImageMap";
-import MyGoTwoDesktopBrowser from "@/platform-ui/web/mygotwo/MyGoTwoDesktopBrowser";
-import type { MyGoTwoWebCoverflowItem } from "@/platform-ui/web/mygotwo/MyGoTwoWebCoverflow";
+import MyGoTwoDesktopPage from "@/platform-ui/web/mygotwo/MyGoTwoDesktopPage";
+import WebPaginatedCoverflow from "@/platform-ui/web/mygotwo/WebPaginatedCoverflow";
+import WebTemplateCoverFlow from "@/platform-ui/web/mygotwo/WebTemplateCoverFlow";
+import { WEB_MYGOTWO_STAGE_SHELL_CLASS } from "@/platform-ui/web/mygotwo/webMyGoTwo.layout";
+import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 
 interface WebRootItem {
   id: string;
@@ -30,17 +33,6 @@ interface MyGoTwoWebViewProps {
   onSubcategoryBack: () => void;
   onSubcategorySelect: (subcategory: SubcategoryGroup) => void;
   onSubtypeSelect: (subtype: SubtypeItem, subcategoryName?: string) => void;
-}
-
-function toDesktopItems(
-  items: Array<{ id: string; label: string; image: string; imageKey?: string }>,
-): MyGoTwoWebCoverflowItem[] {
-  return items.map((item) => ({
-    id: item.id,
-    label: item.label,
-    image: item.image,
-    imageKey: item.imageKey,
-  }));
 }
 
 function resolveMappedImage(imageMap: Record<string, string>, source: string | undefined, fallbackId: string) {
@@ -83,66 +75,51 @@ export default function MyGoTwoWebView({
   const drilldownImageMap = useCategoryImageMap(drilldownImageKeys);
 
   if (!coverFlowState) {
-    return (
-      <MyGoTwoDesktopBrowser
-        pageKey="root"
-        items={toDesktopItems(webLevelOneItems)}
-        focusedItemId={webFocusedLevelOneId}
-        onCommit={onRootSelect}
-      />
-    );
-  }
-
-  const hasSubcategories = Boolean(coverFlowState.subcategories?.length);
-
-  if (hasSubcategories && !activeSubcategory) {
-    const items = coverFlowState.subcategories!.map((subcategory) => ({
-      id: subcategory.id,
-      label: subcategory.name,
-      image: resolveMappedImage(drilldownImageMap, subcategory.image, subcategory.id),
-      imageKey: subcategory.image || subcategory.id,
+    const rootItems = webLevelOneItems.map((item) => ({
+      id: item.id,
+      label: item.label,
+      image: item.image,
+      imageKey: item.imageKey,
     }));
 
     return (
-      <MyGoTwoDesktopBrowser
-        pageKey={`subcategory-browser:${coverFlowState.name}`}
-        title={coverFlowState.name}
-        onBack={onClearCoverFlow}
-        items={items}
-        focusedItemId={focusedSubcategoryId}
-        onCommit={(id) => {
-          const selectedSubcategory = coverFlowState.subcategories!.find((subcategory) => subcategory.id === id);
-          const selectedItem = items.find((item) => item.id === id);
-          if (!selectedSubcategory) return;
-          onSubcategorySelect({ ...selectedSubcategory, image: selectedItem?.image || selectedSubcategory.image });
-        }}
-      />
+      <MyGoTwoDesktopPage>
+        <div className={WEB_MYGOTWO_STAGE_SHELL_CLASS}>
+          <CoverflowTitlePill title="My Go Two" />
+          <WebPaginatedCoverflow
+            items={rootItems}
+            focusedItemId={webFocusedLevelOneId}
+            onSelect={onRootSelect}
+            variant="hero"
+          />
+        </div>
+      </MyGoTwoDesktopPage>
     );
   }
 
-  const productItems = leafItems.map((product) => ({
-    id: product.id,
-    label: product.name,
-    image: resolveMappedImage(drilldownImageMap, product.image, product.id),
-    imageKey: product.image || product.id,
-  }));
-
   return (
-    <MyGoTwoDesktopBrowser
-      pageKey={`leaf-browser:${activeSubcategory?.id || coverFlowState.name}`}
-      title={activeSubcategory?.name || coverFlowState.name}
-      onBack={activeSubcategory ? onSubcategoryBack : onClearCoverFlow}
-      items={productItems}
-      focusedItemId={focusedLeafItemId}
-      onCommit={(id) => {
-        const selectedProduct = leafItems.find((product) => product.id === id);
-        const selectedItem = productItems.find((item) => item.id === id);
-        if (!selectedProduct) return;
-        onSubtypeSelect(
-          { ...selectedProduct, image: selectedItem?.image || selectedProduct.image },
-          activeSubcategory?.name,
-        );
-      }}
-    />
+    <MyGoTwoDesktopPage>
+      <WebTemplateCoverFlow
+        templateName={coverFlowState.name}
+        subtypes={coverFlowState.subtypes.map((subtype) => ({
+          ...subtype,
+          image: resolveMappedImage(drilldownImageMap, subtype.image, subtype.id),
+        }))}
+        subcategories={coverFlowState.subcategories?.map((subcategory) => ({
+          ...subcategory,
+          image: resolveMappedImage(drilldownImageMap, subcategory.image, subcategory.id),
+          products: subcategory.products?.map((product) => ({
+            ...product,
+            image: resolveMappedImage(drilldownImageMap, product.image, product.id),
+          })),
+        }))}
+        activeSubcategory={activeSubcategory}
+        onSubcategorySelect={onSubcategorySelect}
+        onBack={activeSubcategory ? onSubcategoryBack : onClearCoverFlow}
+        onSelect={onSubtypeSelect}
+        focusedSubcategoryId={focusedSubcategoryId}
+        focusedLeafItemId={focusedLeafItemId}
+      />
+    </MyGoTwoDesktopPage>
   );
 }
