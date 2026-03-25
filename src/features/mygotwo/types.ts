@@ -28,3 +28,18 @@ export interface MyGoTwoRootItem {
   sourceId: string;
   sectionKey: string;
 }
+
+export type MyGoTwoFlowLevel = 1 | 2 | 3 | 4;
+
+export type MyGoTwoFlowItemKind =
+  | "category"
+  | "subcategory"
+  | "product"
+  | "entry"
+  | "create-entry";
+
+export interface MyGoTwoFlowItem extends MyGoTwoRootItem {
+  level: MyGoTwoFlowLevel;
+  kind: MyGoTwoFlowItemKind;
+  parentId?: string;
+}

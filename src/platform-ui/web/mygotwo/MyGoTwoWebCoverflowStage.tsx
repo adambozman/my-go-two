@@ -311,38 +311,6 @@ export default function MyGoTwoWebCoverflowStage({
           <HandDrawnArrowLeft className="h-5 w-5" />
         </button>
 
-        <div className="flex items-center gap-2">
-          {visibleDotIndices.map((index) => {
-            const active = index === activeIndex;
-            const item = coverflowItems[index];
-
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => navigateToIndex(index)}
-                aria-label={`Go to slide ${index + 1}`}
-                aria-pressed={active}
-                className="rounded-full border-0 p-0 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(31,88,120,0.42)]"
-                style={{
-                  width: active ? "28px" : "8px",
-                  height: "8px",
-                  background: active
-                    ? "linear-gradient(180deg, rgba(255,255,255,0.82) 0%, rgba(239,233,225,0.92) 100%)"
-                    : "rgba(255,255,255,0.32)",
-                  backdropFilter: "blur(14px)",
-                  border: active
-                    ? "1px solid rgba(255,255,255,0.58)"
-                    : "1px solid rgba(255,255,255,0.22)",
-                  boxShadow: active
-                    ? "inset 0 1px 1px rgba(255,255,255,0.7), inset 0 -1px 1px rgba(180,165,148,0.28), 0 8px 18px rgba(31,88,120,0.12)"
-                    : "inset 0 1px 0 rgba(255,255,255,0.36), 0 4px 10px rgba(31,88,120,0.08)",
-                }}
-              />
-            );
-          })}
-        </div>
-
         <button
           type="button"
           onClick={() => navigateToIndex(activeIndex + 1)}

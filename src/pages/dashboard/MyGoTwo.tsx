@@ -1,53 +1,21 @@
-import { useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { HandDrawnArrowLeft } from "@/components/ui/hand-drawn-arrows";
 import { useAuth } from "@/contexts/AuthContext";
-import { BRANDED_CARD_SVG } from "@/features/mygotwo/shared";
-import type { MyGoTwoRootItem } from "@/features/mygotwo/types";
-import { useCategoryImageMap } from "@/features/mygotwo/useCategoryImageMap";
 import { useMyGoTwoCatalogData } from "@/features/mygotwo/useMyGoTwoCatalogData";
+import { useMyGoTwoFlow } from "@/features/mygotwo/useMyGoTwoFlow";
 import MyGoTwoWebHeader from "@/platform-ui/web/mygotwo/MyGoTwoWebHeader";
 import MyGoTwoWebCoverflowStage from "@/platform-ui/web/mygotwo/MyGoTwoWebCoverflowStage";
 
 const MyGoTwo = () => {
   const { user, loading } = useAuth();
-  const { categories, webLevelOneItems } = useMyGoTwoCatalogData();
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const { categories, webLevelOneItems, isLoading } = useMyGoTwoCatalogData();
+  const { currentLevel, items, hasBack, goBack, selectItem } = useMyGoTwoFlow({
+    userId: user?.id ?? "",
+    categories,
+    levelOneItems: webLevelOneItems,
+  });
 
-  const selectedCategory = useMemo(
-    () => categories.find((category) => category.key === selectedCategoryId) ?? null,
-    [categories, selectedCategoryId],
-  );
-
-  const levelTwoImageKeys = useMemo(() => {
-    if (!selectedCategory?.subcategories) return [];
-
-    return selectedCategory.subcategories
-      .map((subcategory) => (typeof subcategory.image === "string" ? subcategory.image : ""))
-      .filter(Boolean);
-  }, [selectedCategory]);
-
-  const levelTwoImageMap = useCategoryImageMap(levelTwoImageKeys);
-
-  const levelTwoItems = useMemo<MyGoTwoRootItem[]>(() => {
-    if (!selectedCategory?.subcategories) return [];
-
-    return selectedCategory.subcategories.map((subcategory) => {
-      const imageKey = typeof subcategory.image === "string" ? subcategory.image : "";
-
-      return {
-        id: `${selectedCategory.key}::${subcategory.id}`,
-        label: subcategory.name,
-        image: levelTwoImageMap[imageKey] || imageKey || BRANDED_CARD_SVG,
-        imageKey,
-        sourceId: subcategory.id,
-        sectionKey: selectedCategory.section,
-      };
-    });
-  }, [levelTwoImageMap, selectedCategory]);
-
-  const visibleItems = selectedCategory ? levelTwoItems : webLevelOneItems;
-
-  if (loading) {
+  if (loading || isLoading) {
     return (
       <div className="app-page flex min-h-screen items-center justify-center">
         <p className="text-muted-foreground">Loading...</p>
@@ -60,17 +28,38 @@ const MyGoTwo = () => {
   }
 
   return (
-    <div className="app-page flex h-screen flex-col overflow-hidden">
+    <div className="app-page relative flex h-screen flex-col overflow-hidden">
       <MyGoTwoWebHeader />
+      {hasBack ? (
+        <button
+          type="button"
+          onClick={goBack}
+          aria-label={`Back from level ${currentLevel}`}
+          className="absolute left-4 top-[122px] z-20 flex items-center gap-2 text-[#26495d] transition-transform duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(31,88,120,0.42)] sm:left-6 md:left-8"
+          style={{
+            background: "transparent",
+          }}
+        >
+          <span
+            className="flex h-14 w-14 items-center justify-center rounded-full"
+            style={{
+              background: "linear-gradient(145deg, rgba(222,234,238,0.62) 0%, rgba(176,201,210,0.28) 100%)",
+              backdropFilter: "blur(22px) saturate(160%)",
+              border: "1px solid rgba(214,239,246,0.52)",
+              boxShadow:
+                "inset 8px 8px 18px rgba(255,255,255,0.22), inset -10px -12px 20px rgba(33,88,107,0.18), 0 10px 22px rgba(31,88,120,0.16)",
+            }}
+          >
+            <HandDrawnArrowLeft className="h-5 w-5" />
+          </span>
+          <span className="text-sm font-medium tracking-[0.18em] uppercase">
+            Back
+          </span>
+        </button>
+      ) : null}
       <MyGoTwoWebCoverflowStage
-        items={visibleItems}
-        onActiveCardSelect={(item) => {
-          if (selectedCategory) {
-            return;
-          }
-
-          setSelectedCategoryId(item.sourceId);
-        }}
+        items={items}
+        onActiveCardSelect={selectItem}
       />
     </div>
   );
