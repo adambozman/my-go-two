@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMyGoTwoController } from "@/features/mygotwo/useMyGoTwoController";
+import { useMyGoTwoWebController } from "@/platform-ui/web/mygotwo/useMyGoTwoWebController";
 import MyGoTwoMobileExperience from "@/platform-ui/mobile/mygotwo/MyGoTwoMobileExperience";
 import { getUiPlatformFromWidth } from "@/platform-ui/platformSelector";
 import MyGoTwoDesktopExperience from "@/platform-ui/web/mygotwo/MyGoTwoDesktopExperience";
@@ -11,7 +12,6 @@ const MyGoTwo = () => {
   const [isDesktopViewport, setIsDesktopViewport] = useState(() =>
     typeof window !== "undefined" ? getUiPlatformFromWidth(window.innerWidth) === "web" : false,
   );
-  const controller = useMyGoTwoController();
 
   useEffect(() => {
     const updateViewport = () => setIsDesktopViewport(getUiPlatformFromWidth(window.innerWidth) === "web");
@@ -32,9 +32,17 @@ const MyGoTwo = () => {
     return <Navigate to="/login" replace />;
   }
 
-  return isDesktopViewport
-    ? <MyGoTwoDesktopExperience controller={controller} />
-    : <MyGoTwoMobileExperience controller={controller} />;
+  return isDesktopViewport ? <DesktopMyGoTwoRoute /> : <MobileMyGoTwoRoute />;
 };
+
+function DesktopMyGoTwoRoute() {
+  const controller = useMyGoTwoWebController();
+  return <MyGoTwoDesktopExperience controller={controller} />;
+}
+
+function MobileMyGoTwoRoute() {
+  const controller = useMyGoTwoController();
+  return <MyGoTwoMobileExperience controller={controller} />;
+}
 
 export default MyGoTwo;

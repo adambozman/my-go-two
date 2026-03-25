@@ -1,8 +1,9 @@
 import type { Dispatch, SetStateAction } from "react";
 import { ChevronLeft } from "lucide-react";
 import type { SubtypeItem } from "@/data/templateSubtypes";
-import MyGoTwoDesktopBrowser from "@/platform-ui/web/mygotwo/MyGoTwoDesktopBrowser";
+import MyGoTwoDesktopPage from "@/platform-ui/web/mygotwo/MyGoTwoDesktopPage";
 import type { MyGoTwoWebCoverflowItem } from "@/platform-ui/web/mygotwo/MyGoTwoWebCoverflow";
+import MyGoTwoWebCoverflow from "@/platform-ui/web/mygotwo/MyGoTwoWebCoverflow";
 import MyGoTwoWebProductCard from "@/platform-ui/web/mygotwo/MyGoTwoWebProductCard";
 
 interface CardEntry {
@@ -25,8 +26,9 @@ interface MyGoTwoDesktopCardBrowserProps {
   entries: CardEntry[];
   productGroups: string[];
   activeGroup: string;
-  activeEntryIndexByGroup: Record<string, number>;
-  setActiveEntryIndexByGroup: Dispatch<SetStateAction<Record<string, number>>>;
+  setActiveGroup: Dispatch<SetStateAction<string>>;
+  focusedEntryIdByGroup: Record<string, string>;
+  setFocusedEntryIdByGroup: Dispatch<SetStateAction<Record<string, string>>>;
   entryNames: Record<string, string>;
   entryDrafts: Record<string, Record<string, string>>;
   entryImages: Record<string, string>;
@@ -63,8 +65,9 @@ export default function MyGoTwoDesktopCardBrowser({
   entries,
   productGroups,
   activeGroup,
-  activeEntryIndexByGroup,
-  setActiveEntryIndexByGroup,
+  setActiveGroup,
+  focusedEntryIdByGroup,
+  setFocusedEntryIdByGroup,
   entryNames,
   entryDrafts,
   entryImages,
@@ -84,14 +87,6 @@ export default function MyGoTwoDesktopCardBrowser({
   const currentGroup = productGroups.includes(activeGroup) ? activeGroup : productGroups[0] || leafSubtype.name;
   const groupEntries = entries.filter((entry) => entry.group_name === currentGroup);
   const newEntryId = `${newEntryPrefix}::${currentGroup}`;
-  const activeIndex = Math.min(activeEntryIndexByGroup[currentGroup] ?? 0, Math.max(groupEntries.length, 0));
-  const activeEntry = groupEntries[activeIndex] ?? null;
-  const activeItemId = activeEntry?.id ?? newEntryId;
-  const activeDisplayName = getDisplayEntryName(entryNames[activeItemId] || activeEntry?.entry_name, leafSubtype.name);
-  const activeItemName =
-    activeDisplayName
-    || leafSubtype.name;
-
   const editorItems: MyGoTwoWebCoverflowItem[] = [
     ...groupEntries.map((entry) => ({
       id: entry.id,
@@ -107,31 +102,30 @@ export default function MyGoTwoDesktopCardBrowser({
       id: newEntryId,
       label: getDisplayEntryName(entryNames[newEntryId]?.trim(), leafSubtype.name) || leafSubtype.name,
       previewTitle: getDisplayEntryName(entryNames[newEntryId]?.trim(), leafSubtype.name) || leafSubtype.name,
-      image: normalizeImageValue(resolvedEntryImages[entryImages[newEntryId] || ""] || entryImages[newEntryId]),
+      image: normalizeImageValue(resolvedEntryImages[entryImages[newEntryId] || ""] || entryImages[newEntryId] || leafImage),
     },
   ];
 
+  const preferredActiveItemId = focusedEntryIdByGroup[currentGroup];
+  const activeItemId = editorItems.some((item) => item.id === preferredActiveItemId)
+    ? preferredActiveItemId
+    : editorItems[0]?.id ?? newEntryId;
+  const activeEntry = groupEntries.find((entry) => entry.id === activeItemId) ?? null;
+  const activeDisplayName = getDisplayEntryName(entryNames[activeItemId] || activeEntry?.entry_name, leafSubtype.name);
+  const activeItemName =
+    activeDisplayName
+    || leafSubtype.name;
+
   const activeItemValues = entryDrafts[activeItemId] || defaultFieldValues;
   const activeItemImage =
-    normalizeImageValue(entryImages[activeItemId])
+    normalizeImageValue(resolvedEntryImages[entryImages[activeItemId] || activeEntry?.image_url || ""])
+    || normalizeImageValue(entryImages[activeItemId])
     || normalizeImageValue(activeEntry?.image_url)
+    || normalizeImageValue(leafImage)
     || "";
 
   return (
-    <MyGoTwoDesktopBrowser
-      pageKey={`entry-browser:${leafSubtype.id}:${currentGroup}`}
-      items={editorItems}
-      focusedItemId={activeItemId}
-      onCommit={(id) => {
-        const nextIndex = editorItems.findIndex((item) => item.id === id);
-        if (nextIndex < 0) return;
-        setActiveEntryIndexByGroup((prev) => ({ ...prev, [currentGroup]: nextIndex }));
-      }}
-      onActiveIdChange={(id) => {
-        const nextIndex = editorItems.findIndex((item) => item.id === id);
-        if (nextIndex < 0) return;
-        setActiveEntryIndexByGroup((prev) => ({ ...prev, [currentGroup]: nextIndex }));
-      }}
+    <MyGoTwoDesktopPage
       topSlot={
         <button
           type="button"
@@ -142,11 +136,73 @@ export default function MyGoTwoDesktopCardBrowser({
           <ChevronLeft className="h-5 w-5" />
         </button>
       }
-      visibleEachSide={groupEntries.length > 0 ? undefined : 0}
-      overlay={
-        <div className="flex h-full items-center justify-center px-8 pb-8 pt-16">
+    >
+      <div className="grid h-full min-h-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(400px,462px)]">
+        <section className="flex min-h-0 flex-col rounded-[32px] border border-white/60 bg-[rgba(255,255,255,0.28)] px-5 pb-5 pt-16 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_18px_42px_rgba(20,20,30,0.08)] backdrop-blur-md">
+          <div className="flex flex-wrap items-center gap-3">
+            {productGroups.map((groupName) => {
+              const isActive = groupName === currentGroup;
+              const isSyntheticGroup = /^__product_group_\d+$/.test(groupName);
+              const label = isSyntheticGroup ? `Group ${groupName.split("_").pop()}` : groupName;
+
+              return (
+                <button
+                  key={groupName}
+                  type="button"
+                  className="rounded-full px-4 py-2 text-[13px] transition-all"
+                  style={{
+                    fontFamily: "'Jost', sans-serif",
+                    background: isActive ? "var(--swatch-teal)" : "rgba(255,255,255,0.6)",
+                    color: isActive ? "white" : "var(--swatch-teal)",
+                    border: isActive ? "1px solid var(--swatch-teal)" : "1px solid rgba(45,104,112,0.18)",
+                  }}
+                  onClick={() => setActiveGroup(groupName)}
+                >
+                  {label}
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              className="rounded-full border border-dashed px-4 py-2 text-[13px]"
+              style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", borderColor: "rgba(45,104,112,0.32)" }}
+              onClick={onCreateGroup}
+            >
+              + New Group
+            </button>
+          </div>
+
+          <div className="mt-4 min-h-0 flex-1">
+            <MyGoTwoWebCoverflow
+              items={editorItems}
+              focusedItemId={activeItemId}
+              onCommit={(id) => {
+                setFocusedEntryIdByGroup((prev) => ({ ...prev, [currentGroup]: id }));
+              }}
+              onActiveIdChange={(id) => {
+                setFocusedEntryIdByGroup((prev) => ({ ...prev, [currentGroup]: id }));
+              }}
+              stageHeight="100%"
+              visibleEachSide={editorItems.length > 1 ? 2 : 0}
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-4">
+            <div
+              className="text-[22px] leading-none"
+              style={{
+                color: "rgba(82,110,125,0.72)",
+                fontFamily: "'Cormorant Garamond', serif",
+              }}
+            >
+              {saving ? "Saving..." : `Editing: ${activeItemName}`}
+            </div>
+          </div>
+        </section>
+
+        <aside className="flex min-h-0 items-center justify-center pb-4 xl:pb-0">
           <div
-            className="pointer-events-auto w-full max-w-[462px] overflow-hidden rounded-[32px] shadow-[0_18px_34px_rgba(110,117,118,0.22),0_34px_90px_rgba(75,79,79,0.24)]"
+            className="w-full max-w-[462px] overflow-hidden rounded-[32px] shadow-[0_18px_34px_rgba(110,117,118,0.22),0_34px_90px_rgba(75,79,79,0.24)]"
             style={{ aspectRatio: "462 / 678" }}
           >
             <MyGoTwoWebProductCard
@@ -165,36 +221,8 @@ export default function MyGoTwoDesktopCardBrowser({
               onDelete={() => onDeleteEntry(activeItemId)}
             />
           </div>
-        </div>
-      }
-      footer={
-        <div className="flex flex-wrap items-center justify-center gap-5 pb-2 pt-6">
-          <button
-            type="button"
-            className="inline-flex items-center gap-4 rounded-full border px-8 py-4 text-[22px] leading-none shadow-[0_8px_24px_rgba(20,20,30,0.08)]"
-            style={{
-              background: "rgba(255,255,255,0.74)",
-              borderColor: "rgba(190,176,160,0.58)",
-              color: "var(--swatch-teal)",
-              fontFamily: "'Jost', sans-serif",
-            }}
-            onClick={onCreateGroup}
-          >
-            <span className="text-[24px] font-light">+</span>
-            <span className="text-[24px] font-medium tracking-[-0.03em]">New Group</span>
-          </button>
-
-          <div
-            className="text-[28px] leading-none"
-            style={{
-              color: "rgba(82,110,125,0.72)",
-              fontFamily: "'Cormorant Garamond', serif",
-            }}
-          >
-            {saving ? "Saving..." : `Saving to: ${activeItemName}`}
-          </div>
-        </div>
-      }
-    />
+        </aside>
+      </div>
+    </MyGoTwoDesktopPage>
   );
 }

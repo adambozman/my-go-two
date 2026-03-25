@@ -25,9 +25,7 @@ interface MyGoTwoWebViewProps {
   focusedLeafItemId: string | null;
   webLevelOneItems: WebRootItem[];
   webFocusedLevelOneId: string | null;
-  rotateSections: (step: number) => void;
-  getStepFromSwipe: (primaryOffset: number, crossOffset: number, primaryVelocity?: number) => number;
-  onRootSelect: (sectionKey: string, categoryId: string) => void;
+  onRootSelect: (itemId: string) => void;
   onClearCoverFlow: () => void;
   onSubcategoryBack: () => void;
   onSubcategorySelect: (subcategory: SubcategoryGroup) => void;
@@ -67,8 +65,6 @@ export default function MyGoTwoWebView({
   focusedLeafItemId,
   webLevelOneItems,
   webFocusedLevelOneId,
-  rotateSections,
-  getStepFromSwipe,
   onRootSelect,
   onClearCoverFlow,
   onSubcategoryBack,
@@ -92,13 +88,7 @@ export default function MyGoTwoWebView({
         pageKey="root"
         items={toDesktopItems(webLevelOneItems)}
         focusedItemId={webFocusedLevelOneId}
-        onRotateSections={rotateSections}
-        getStepFromSwipe={getStepFromSwipe}
-        onCommit={(id) => {
-          const selected = webLevelOneItems.find((item) => item.id === id);
-          if (!selected) return;
-          onRootSelect(selected.sectionKey, selected.sourceId);
-        }}
+        onCommit={onRootSelect}
       />
     );
   }

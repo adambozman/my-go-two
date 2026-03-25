@@ -1,14 +1,14 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import type { MyGoTwoController } from "@/features/mygotwo/useMyGoTwoController";
-import { NEW_ENTRY_ID } from "@/features/mygotwo/useMyGoTwoController";
+import { NEW_ENTRY_ID } from "@/features/mygotwo/shared";
 import MyGoTwoDesktopCardBrowser from "@/platform-ui/web/mygotwo/MyGoTwoDesktopCardBrowser";
 import MyGoTwoWebPageLayout from "@/platform-ui/web/mygotwo/MyGoTwoWebPageLayout";
 import MyGoTwoWebLayout from "@/platform-ui/web/mygotwo/MyGoTwoWebLayout";
 import MyGoTwoWebView from "@/platform-ui/web/mygotwo/MyGoTwoWebView";
+import type { MyGoTwoWebController } from "@/platform-ui/web/mygotwo/useMyGoTwoWebController";
 
 interface MyGoTwoDesktopExperienceProps {
-  controller: MyGoTwoController;
+  controller: MyGoTwoWebController;
 }
 
 export default function MyGoTwoDesktopExperience({ controller }: MyGoTwoDesktopExperienceProps) {
@@ -46,8 +46,9 @@ export default function MyGoTwoDesktopExperience({ controller }: MyGoTwoDesktopE
                 entries={controller.entries}
                 productGroups={controller.productGroups}
                 activeGroup={controller.activeGroup}
-                activeEntryIndexByGroup={controller.activeEntryIndexByGroup}
-                setActiveEntryIndexByGroup={controller.setActiveEntryIndexByGroup}
+                setActiveGroup={controller.setActiveGroup}
+                focusedEntryIdByGroup={controller.focusedEntryIdByGroup}
+                setFocusedEntryIdByGroup={controller.setFocusedEntryIdByGroup}
                 entryNames={controller.entryNames}
                 entryDrafts={controller.entryDrafts}
                 entryImages={controller.entryImages}
@@ -72,10 +73,8 @@ export default function MyGoTwoDesktopExperience({ controller }: MyGoTwoDesktopE
               focusedSubcategoryId={controller.focusedSubcategoryId}
               focusedLeafItemId={controller.focusedLeafItemId}
               webLevelOneItems={controller.webLevelOneItems}
-              webFocusedLevelOneId={controller.webFocusedLevelOneId}
-              rotateSections={controller.rotateSections}
-              getStepFromSwipe={controller.getStepFromSwipe}
-              onRootSelect={controller.handleSelect}
+              webFocusedLevelOneId={controller.focusedRootItemId}
+              onRootSelect={controller.handleRootSelect}
               onClearCoverFlow={controller.clearCoverFlow}
               onSubcategoryBack={controller.closeActiveSubcategory}
               onSubcategorySelect={controller.handleSubcategorySelect}
