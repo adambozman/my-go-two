@@ -34,6 +34,18 @@ const MyGoTwo = () => {
     () => Object.fromEntries(productEntries.map((entry) => [entry.id, entry])),
     [productEntries],
   );
+  const stageItems = useMemo(() => {
+    if (currentLevel !== 4 || !activeItemId) {
+      return items;
+    }
+
+    const activeIndex = items.findIndex((item) => item.id === activeItemId);
+    if (activeIndex <= 0) {
+      return items;
+    }
+
+    return [items[activeIndex], ...items.slice(0, activeIndex), ...items.slice(activeIndex + 1)];
+  }, [activeItemId, currentLevel, items]);
 
   if (loading || isLoading) {
     return (
@@ -78,7 +90,7 @@ const MyGoTwo = () => {
         </button>
       ) : null}
       <MyGoTwoWebCoverflowStage
-        items={items}
+        items={stageItems}
         onActiveCardSelect={selectItem}
         onActiveItemChange={(item) => setActiveItemId(item.id)}
         interactiveItemId={currentLevel === 4 ? activeItemId : null}
