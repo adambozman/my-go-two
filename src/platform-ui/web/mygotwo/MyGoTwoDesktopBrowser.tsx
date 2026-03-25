@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import type { PanInfo } from "framer-motion";
-import MyGoTwoDesktopCoverflow, {
-  type MyGoTwoDesktopCoverflowItem,
-} from "@/platform-ui/web/mygotwo/MyGoTwoDesktopCoverflow";
 import MyGoTwoDesktopPage from "@/platform-ui/web/mygotwo/MyGoTwoDesktopPage";
+import MyGoTwoWebCoverflow, {
+  type MyGoTwoWebCoverflowItem,
+} from "@/platform-ui/web/mygotwo/MyGoTwoWebCoverflow";
 
 interface MyGoTwoDesktopBrowserProps {
   pageKey: string;
-  items: MyGoTwoDesktopCoverflowItem[];
+  items: MyGoTwoWebCoverflowItem[];
   focusedItemId?: string | null;
   title?: string;
   onBack?: () => void;
@@ -60,7 +60,7 @@ export default function MyGoTwoDesktopBrowser({
       <MyGoTwoDesktopPage title={title} onBack={onBack} topSlot={topSlot}>
         <div className="flex h-full min-h-0 flex-col">
           <div className="relative min-h-0 flex-1">
-            <MyGoTwoDesktopCoverflow
+            <MyGoTwoWebCoverflow
               items={items}
               focusedItemId={focusedItemId}
               onCommit={onCommit}

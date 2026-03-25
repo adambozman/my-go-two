@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { MYGOTWO_DESKTOP_TOKENS } from "@/platform-ui/web/mygotwo/myGoTwoDesktop.tokens";
 
-export interface MyGoTwoDesktopCoverflowItem {
+export interface MyGoTwoWebCoverflowItem {
   id: string;
   label: string;
   image: string;
@@ -11,73 +11,86 @@ export interface MyGoTwoDesktopCoverflowItem {
   previewTitle?: string;
 }
 
-interface MyGoTwoDesktopCoverflowProps {
-  items: MyGoTwoDesktopCoverflowItem[];
+interface MyGoTwoWebCoverflowProps {
+  items: MyGoTwoWebCoverflowItem[];
   focusedItemId?: string | null;
   onCommit?: (id: string) => void;
   onActiveIdChange?: (id: string) => void;
   stageHeight?: string;
-  commitOnCardClick?: boolean;
   showControls?: boolean;
   visibleEachSide?: number;
 }
 
-interface PosePoint {
+interface CardPose {
+  relative: number;
+  depth: number;
   x: number;
   y: number;
   rotateY: number;
   scale: number;
   opacity: number;
+  zIndex: number;
+  isActive: boolean;
 }
+
+const BASE_POSES = [
+  { x: 0, y: -20, rotateY: 0, scale: 1, opacity: 1 },
+  { x: 252, y: -2, rotateY: -9, scale: 0.93, opacity: 1 },
+  { x: 410, y: 12, rotateY: -14, scale: 0.85, opacity: 0.98 },
+  { x: 530, y: 24, rotateY: -18, scale: 0.76, opacity: 0.94 },
+] as const;
 
 function normalizeIndex(index: number, length: number) {
   if (length <= 0) return 0;
   return ((index % length) + length) % length;
 }
 
-function shortestRelative(index: number, activeIndex: number, length: number) {
+function getRelativeIndex(index: number, activeIndex: number, length: number) {
   if (length <= 0) return 0;
   let delta = normalizeIndex(index - activeIndex, length);
   if (delta > length / 2) delta -= length;
   return delta;
 }
 
-const BASE_POSE_BY_DEPTH: readonly PosePoint[] = [
-  { x: 0, y: -22, rotateY: 0, scale: 1, opacity: 1 },
-  { x: 248, y: -4, rotateY: -8, scale: 0.93, opacity: 1 },
-  { x: 404, y: 10, rotateY: -13, scale: 0.85, opacity: 0.98 },
-  { x: 526, y: 24, rotateY: -18, scale: 0.76, opacity: 0.94 },
-] as const;
+function buildPose(index: number, activeIndex: number, count: number, scaleFactor: number): CardPose {
+  const relative = getRelativeIndex(index, activeIndex, count);
+  const depth = Math.abs(relative);
+  const direction = relative === 0 ? 0 : relative > 0 ? 1 : -1;
+  const template = BASE_POSES[Math.min(depth, BASE_POSES.length - 1)];
 
-function MyGoTwoDesktopCoverflowCard({
+  return {
+    relative,
+    depth,
+    x: template.x * scaleFactor * direction,
+    y: template.y * scaleFactor,
+    rotateY: template.rotateY * direction,
+    scale: template.scale,
+    opacity: template.opacity,
+    zIndex: 200 - depth,
+    isActive: depth === 0,
+  };
+}
+
+function EntryPreviewCard({
   item,
-  isActive,
-  isVisible,
+  pose,
   width,
   height,
-  pose,
-  zIndex,
   imageFailed,
   onImageError,
   onClick,
 }: {
-  item: MyGoTwoDesktopCoverflowItem;
-  isActive: boolean;
-  isVisible: boolean;
+  item: MyGoTwoWebCoverflowItem;
+  pose: CardPose;
   width: number;
   height: number;
-  pose: PosePoint;
-  zIndex: number;
   imageFailed: boolean;
   onImageError: () => void;
   onClick: () => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
-
-  if (!isVisible) return null;
-
-  const hoverLift = isHovered ? (isActive ? -12 : -8) : 0;
-  const hoverScale = isHovered ? (isActive ? 1.025 : 1.01) : 1;
+  const hoverLift = isHovered ? (pose.isActive ? -10 : -6) : 0;
+  const hoverScale = isHovered ? (pose.isActive ? 1.02 : 1.01) : 1;
 
   return (
     <motion.button
@@ -87,14 +100,14 @@ function MyGoTwoDesktopCoverflowCard({
         transform: `translate(-50%, -50%) translate3d(${pose.x}px, ${pose.y + hoverLift}px, 0) rotateY(${pose.rotateY}deg) scale(${pose.scale * hoverScale})`,
         opacity: pose.opacity,
       }}
-      transition={{ type: "spring", stiffness: 260, damping: 28 }}
+      transition={{ type: "spring", stiffness: 280, damping: 30 }}
       className="absolute left-1/2 top-1/2 overflow-hidden border-0 bg-transparent p-0"
       style={{
         width,
         height,
         borderRadius: 34,
-        zIndex,
-        boxShadow: isActive
+        zIndex: pose.zIndex,
+        boxShadow: pose.isActive
           ? "0 26px 80px rgba(20,20,30,0.28)"
           : "0 16px 38px rgba(20,20,30,0.18)",
         transformStyle: "preserve-3d",
@@ -104,7 +117,7 @@ function MyGoTwoDesktopCoverflowCard({
       onMouseLeave={() => setIsHovered(false)}
       aria-label={item.label}
     >
-      <div className="relative h-full w-full overflow-hidden rounded-[34px] bg-[linear-gradient(160deg,#d0d2d6_0%,#b2b6bc_100%)]">
+      <div className="relative h-full w-full overflow-hidden rounded-[34px]">
         {item.image && !imageFailed ? (
           <img
             src={item.image}
@@ -147,17 +160,13 @@ function MyGoTwoDesktopCoverflowCard({
                 {item.previewTitle || item.label}
               </div>
             </div>
-            <div
-              style={{
-                height: 1,
-                background: "rgba(68,58,40,0.14)",
-              }}
-            />
+            <div style={{ height: 1, background: "rgba(68,58,40,0.14)" }} />
           </div>
         )}
-        {isActive ? (
+
+        {pose.isActive ? (
           <>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/34 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/28 via-transparent to-transparent" />
             <div
               className="absolute bottom-6 left-6 inline-flex items-center justify-center whitespace-nowrap rounded-full border px-4 py-2"
               style={{
@@ -180,22 +189,21 @@ function MyGoTwoDesktopCoverflowCard({
   );
 }
 
-export default function MyGoTwoDesktopCoverflow({
+export default function MyGoTwoWebCoverflow({
   items,
   focusedItemId,
   onCommit,
   onActiveIdChange,
   stageHeight = "100%",
-  commitOnCardClick = false,
   showControls = true,
   visibleEachSide = MYGOTWO_DESKTOP_TOKENS.visibleEachSide,
-}: MyGoTwoDesktopCoverflowProps) {
+}: MyGoTwoWebCoverflowProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
   const stageRef = useRef<HTMLDivElement>(null);
-  const dragStartX = useRef<number | null>(null);
-  const dragStartMs = useRef<number | null>(null);
+  const pointerStartX = useRef<number | null>(null);
+  const pointerStartMs = useRef<number | null>(null);
   const lastWheelMs = useRef(0);
 
   const itemCount = items.length;
@@ -223,26 +231,25 @@ export default function MyGoTwoDesktopCoverflow({
 
   useEffect(() => {
     if (itemCount === 0) return;
-    if (focusedItemId) {
-      const focusedIndex = items.findIndex((item) => item.id === focusedItemId);
-      if (focusedIndex >= 0) {
-        setActiveIndex(focusedIndex);
-        return;
-      }
+    if (!focusedItemId) {
+      setActiveIndex((current) => normalizeIndex(current, itemCount));
+      return;
     }
-    setActiveIndex((prev) => normalizeIndex(prev, itemCount));
+
+    const nextIndex = items.findIndex((item) => item.id === focusedItemId);
+    if (nextIndex >= 0) setActiveIndex(nextIndex);
   }, [focusedItemId, items, itemCount]);
 
   useEffect(() => {
     if (itemCount <= 1) return;
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowLeft") setActiveIndex((prev) => normalizeIndex(prev - 1, itemCount));
-      if (event.key === "ArrowRight") setActiveIndex((prev) => normalizeIndex(prev + 1, itemCount));
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") setActiveIndex((current) => normalizeIndex(current - 1, itemCount));
+      if (event.key === "ArrowRight") setActiveIndex((current) => normalizeIndex(current + 1, itemCount));
     };
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [itemCount]);
 
   useEffect(() => {
@@ -250,20 +257,16 @@ export default function MyGoTwoDesktopCoverflow({
     if (activeItem) onActiveIdChange?.(activeItem.id);
   }, [activeIndex, items, onActiveIdChange]);
 
+  const scaleFactor = useMemo(() => {
+    if (stageSize.width <= 0 || stageSize.height <= 0) return 1;
+    return Math.max(0.72, Math.min(1, Math.min(stageSize.width / 1400, stageSize.height / 900)));
+  }, [stageSize.height, stageSize.width]);
+
   if (itemCount === 0) return null;
 
-  const sizeScale = Math.max(
-    0.72,
-    Math.min(
-      1,
-      stageSize.width > 0 && stageSize.height > 0
-        ? Math.min(stageSize.width / 1400, stageSize.height / 900)
-        : 1,
-    ),
-  );
   const cardHeight = Math.max(
     MYGOTWO_DESKTOP_TOKENS.minCardHeight,
-    Math.min(MYGOTWO_DESKTOP_TOKENS.maxCardHeight, Math.round(MYGOTWO_DESKTOP_TOKENS.maxCardHeight * sizeScale)),
+    Math.min(MYGOTWO_DESKTOP_TOKENS.maxCardHeight, Math.round(MYGOTWO_DESKTOP_TOKENS.maxCardHeight * scaleFactor)),
   );
   const cardWidth = Math.round(cardHeight * MYGOTWO_DESKTOP_TOKENS.cardAspectRatio);
 
@@ -274,84 +277,69 @@ export default function MyGoTwoDesktopCoverflow({
       style={{
         height: stageHeight,
         minHeight: 0,
-        perspective: "1800px",
-        perspectiveOrigin: "50% 48%",
+        perspective: "1600px",
+        perspectiveOrigin: "50% 46%",
       }}
       onWheel={(event) => {
         if (itemCount <= 1) return;
+        const primaryDelta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+        if (Math.abs(primaryDelta) < 20) return;
+
         const now = performance.now();
         if (now - lastWheelMs.current < 180) {
           event.preventDefault();
           return;
         }
 
-        const primaryDelta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
-        if (Math.abs(primaryDelta) < 20) return;
-
         event.preventDefault();
         lastWheelMs.current = now;
-        setActiveIndex((prev) => normalizeIndex(prev + (primaryDelta > 0 ? 1 : -1), itemCount));
+        setActiveIndex((current) => normalizeIndex(current + (primaryDelta > 0 ? 1 : -1), itemCount));
       }}
       onPointerDown={(event) => {
-        dragStartX.current = event.clientX;
-        dragStartMs.current = performance.now();
+        pointerStartX.current = event.clientX;
+        pointerStartMs.current = performance.now();
       }}
       onPointerCancel={() => {
-        dragStartX.current = null;
-        dragStartMs.current = null;
+        pointerStartX.current = null;
+        pointerStartMs.current = null;
       }}
       onPointerLeave={() => {
-        dragStartX.current = null;
-        dragStartMs.current = null;
+        pointerStartX.current = null;
+        pointerStartMs.current = null;
       }}
       onPointerUp={(event) => {
-        if (dragStartX.current === null || dragStartMs.current === null || itemCount <= 1) return;
+        if (pointerStartX.current === null || pointerStartMs.current === null || itemCount <= 1) return;
 
-        const deltaX = event.clientX - dragStartX.current;
-        const elapsedMs = Math.max(1, performance.now() - dragStartMs.current);
+        const deltaX = event.clientX - pointerStartX.current;
+        const elapsedMs = Math.max(1, performance.now() - pointerStartMs.current);
         const velocity = Math.abs(deltaX / elapsedMs);
-        const qualifies = Math.abs(deltaX) >= 70 || velocity >= 0.55;
 
-        if (qualifies) {
-          if (deltaX < 0) setActiveIndex((prev) => normalizeIndex(prev + 1, itemCount));
-          if (deltaX > 0) setActiveIndex((prev) => normalizeIndex(prev - 1, itemCount));
+        if (Math.abs(deltaX) >= 70 || velocity >= 0.55) {
+          setActiveIndex((current) => normalizeIndex(current + (deltaX < 0 ? 1 : -1), itemCount));
         }
 
-        dragStartX.current = null;
-        dragStartMs.current = null;
+        pointerStartX.current = null;
+        pointerStartMs.current = null;
       }}
     >
       <div className="absolute inset-0 overflow-hidden rounded-[30px]" style={{ transformStyle: "preserve-3d" }}>
         {items.map((item, index) => {
-          const relative = shortestRelative(index, activeIndex, itemCount);
-          const depth = Math.abs(relative);
-          const direction = relative === 0 ? 0 : relative > 0 ? 1 : -1;
-          const basePose = BASE_POSE_BY_DEPTH[Math.min(depth, BASE_POSE_BY_DEPTH.length - 1)];
-          const pose = {
-            x: basePose.x * sizeScale * direction,
-            y: basePose.y * sizeScale,
-            rotateY: basePose.rotateY * direction,
-            scale: basePose.scale,
-            opacity: basePose.opacity,
-          };
-          const imageKey = `${item.id}::${item.image || ""}`;
+          const pose = buildPose(index, activeIndex, itemCount, scaleFactor);
+          if (pose.depth > visibleEachSide) return null;
 
+          const imageKey = `${item.id}::${item.image || ""}`;
           return (
-            <MyGoTwoDesktopCoverflowCard
+            <EntryPreviewCard
               key={item.id}
               item={item}
-              isActive={depth === 0}
-              isVisible={depth <= visibleEachSide}
+              pose={pose}
               width={cardWidth}
               height={cardHeight}
-              pose={pose}
-              zIndex={200 - depth}
               imageFailed={Boolean(failedImages[imageKey])}
-              onImageError={() => setFailedImages((prev) => ({ ...prev, [imageKey]: true }))}
+              onImageError={() => setFailedImages((current) => ({ ...current, [imageKey]: true }))}
               onClick={() => {
-                if (depth !== 0) {
+                if (!pose.isActive) {
                   setActiveIndex(index);
-                  if (commitOnCardClick) onCommit?.(item.id);
                   return;
                 }
                 onCommit?.(item.id);
@@ -370,7 +358,7 @@ export default function MyGoTwoDesktopCoverflow({
             type="button"
             aria-label="Previous"
             className="h-12 w-12 rounded-full border border-white/70 bg-[rgba(255,255,255,0.72)] text-[var(--swatch-teal)] shadow-[0_10px_24px_rgba(0,0,0,0.12)] backdrop-blur"
-            onClick={() => setActiveIndex((prev) => normalizeIndex(prev - 1, itemCount))}
+            onClick={() => setActiveIndex((current) => normalizeIndex(current - 1, itemCount))}
           >
             <ChevronLeft className="mx-auto h-5 w-5" />
           </button>
@@ -396,7 +384,7 @@ export default function MyGoTwoDesktopCoverflow({
             type="button"
             aria-label="Next"
             className="h-12 w-12 rounded-full border border-white/70 bg-[rgba(255,255,255,0.72)] text-[var(--swatch-teal)] shadow-[0_10px_24px_rgba(0,0,0,0.12)] backdrop-blur"
-            onClick={() => setActiveIndex((prev) => normalizeIndex(prev + 1, itemCount))}
+            onClick={() => setActiveIndex((current) => normalizeIndex(current + 1, itemCount))}
           >
             <ChevronRight className="mx-auto h-5 w-5" />
           </button>

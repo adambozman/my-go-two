@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { ChevronLeft } from "lucide-react";
 import type { SubtypeItem } from "@/data/templateSubtypes";
 import MyGoTwoDesktopBrowser from "@/platform-ui/web/mygotwo/MyGoTwoDesktopBrowser";
-import type { MyGoTwoDesktopCoverflowItem } from "@/platform-ui/web/mygotwo/MyGoTwoDesktopCoverflow";
+import type { MyGoTwoWebCoverflowItem } from "@/platform-ui/web/mygotwo/MyGoTwoWebCoverflow";
 import MyGoTwoWebProductCard from "@/platform-ui/web/mygotwo/MyGoTwoWebProductCard";
 
 interface CardEntry {
@@ -92,7 +92,7 @@ export default function MyGoTwoDesktopCardBrowser({
     activeDisplayName
     || leafSubtype.name;
 
-  const editorItems: MyGoTwoDesktopCoverflowItem[] = [
+  const editorItems: MyGoTwoWebCoverflowItem[] = [
     ...groupEntries.map((entry) => ({
       id: entry.id,
       label: getDisplayEntryName(entryNames[entry.id] || entry.entry_name, leafSubtype.name) || leafSubtype.name,

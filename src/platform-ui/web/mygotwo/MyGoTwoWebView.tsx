@@ -1,6 +1,6 @@
 import type { SubcategoryGroup, SubtypeItem } from "@/data/templateSubtypes";
 import MyGoTwoDesktopBrowser from "@/platform-ui/web/mygotwo/MyGoTwoDesktopBrowser";
-import type { MyGoTwoDesktopCoverflowItem } from "@/platform-ui/web/mygotwo/MyGoTwoDesktopCoverflow";
+import type { MyGoTwoWebCoverflowItem } from "@/platform-ui/web/mygotwo/MyGoTwoWebCoverflow";
 import { useMyGoTwoDesktopImageMap } from "@/platform-ui/web/mygotwo/useMyGoTwoDesktopImageMap";
 
 interface WebRootItem {
@@ -36,7 +36,7 @@ interface MyGoTwoWebViewProps {
 
 function toDesktopItems(
   items: Array<{ id: string; label: string; image: string; imageKey?: string }>,
-): MyGoTwoDesktopCoverflowItem[] {
+): MyGoTwoWebCoverflowItem[] {
   return items.map((item) => ({
     id: item.id,
     label: item.label,
