@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Camera, Loader2, Trash2 } from "lucide-react";
 import type { SubtypeItem } from "@/data/templateSubtypes";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
+import { useMyGoTwoImageField } from "@/features/mygotwo/useMyGoTwoImageField";
 
 interface MobileEntryCardProps {
   subtype: SubtypeItem;
@@ -115,61 +113,7 @@ export default function MobileEntryCard({
   onSave,
   onDelete,
 }: MobileEntryCardProps) {
-  const { toast } = useToast();
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [resolvedImageUrl, setResolvedImageUrl] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadImage = async () => {
-      const resolved = await resolveStorageUrl(imageUrl);
-      if (!cancelled) setResolvedImageUrl(resolved || "");
-    };
-
-    loadImage();
-    return () => {
-      cancelled = true;
-    };
-  }, [imageUrl]);
-
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast({ title: "Invalid file", description: "Please choose an image file.", variant: "destructive" });
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: "Image too large", description: "Please choose an image under 5MB.", variant: "destructive" });
-      return;
-    }
-
-    setUploadingImage(true);
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Please sign in to upload photos.");
-
-      const ext = file.name.split(".").pop() || "jpg";
-      const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from("card-images")
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      onImageChange(makeStorageRef("card-images", filePath));
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Could not upload image.";
-      toast({ title: "Upload failed", description: message, variant: "destructive" });
-    } finally {
-      setUploadingImage(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
+  const { fileInputRef, resolvedImageUrl, uploadingImage, handleImageUpload } = useMyGoTwoImageField(imageUrl, onImageChange);
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-[#eee7d6]" style={{ fontFamily: "'Jost', sans-serif" }}>

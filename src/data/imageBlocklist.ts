@@ -11,6 +11,10 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
+interface ImageBlocklistRow {
+  path: string;
+}
+
 /* ── Build-time glob for active asset buckets only ── */
 const activeAssetGlobs = [
   import.meta.glob<string>("/src/assets/styles/**/*.{jpg,jpeg,png,webp,svg}", {
@@ -52,7 +56,7 @@ let blocklistReady = false;
  */
 export async function initBlocklist(): Promise<void> {
   const { data, error } = await supabase
-    .from("image_blocklist" as any)
+    .from("image_blocklist")
     .select("path");
 
   if (error) {
@@ -61,7 +65,8 @@ export async function initBlocklist(): Promise<void> {
     return;
   }
 
-  const paths: string[] = (data as any[])?.map((r: any) => r.path) ?? [];
+  const rows = (data ?? []) as ImageBlocklistRow[];
+  const paths = rows.map((row) => row.path);
   blockedPaths = new Set(paths);
   blockedUrls = new Set(
     paths.map((p) => allAssets[p]).filter(Boolean),
@@ -90,8 +95,8 @@ export function isPathBlocked(path: string): boolean {
  */
 export async function addToBlocklist(path: string): Promise<boolean> {
   const { error } = await supabase
-    .from("image_blocklist" as any)
-    .insert({ path } as any);
+    .from("image_blocklist")
+    .insert({ path });
 
   if (error) {
     if (error.code === "23505") {
@@ -115,7 +120,7 @@ export async function addToBlocklist(path: string): Promise<boolean> {
  */
 export async function removeFromBlocklist(path: string): Promise<boolean> {
   const { error } = await supabase
-    .from("image_blocklist" as any)
+    .from("image_blocklist")
     .delete()
     .eq("path", path);
 

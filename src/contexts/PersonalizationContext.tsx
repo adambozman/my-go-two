@@ -3,6 +3,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { type Gender, normalizeGender } from "@/lib/gender";
 
+type ProfileAnswers = Record<string, string | string[]>;
+type JsonRecord = Record<string, unknown>;
+type ProfileGenderPayload = {
+  gender?: string | null;
+};
+
 export interface Personalization {
   recommended_brands: string[];
   recommended_stores: string[];
@@ -16,7 +22,7 @@ export interface Personalization {
 
 interface PersonalizationContextType {
   personalization: Personalization | null;
-  profileAnswers: Record<string, string | string[]> | null;
+  profileAnswers: ProfileAnswers | null;
   gender: Gender;
   loading: boolean;
   refetch: () => Promise<void>;
@@ -35,7 +41,7 @@ export const usePersonalization = () => useContext(PersonalizationContext);
 export const PersonalizationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [personalization, setPersonalization] = useState<Personalization | null>(null);
-  const [profileAnswers, setProfileAnswers] = useState<Record<string, string | string[]> | null>(null);
+  const [profileAnswers, setProfileAnswers] = useState<ProfileAnswers | null>(null);
   const [gender, setGender] = useState<Gender>("non-binary");
   const [loading, setLoading] = useState(true);
 
@@ -67,7 +73,7 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
           .single();
 
         if (prefData?.profile_answers) {
-          const answers = prefData.profile_answers as any;
+          const answers = prefData.profile_answers as ProfileAnswers;
           const identity = answers?.identity;
           const resolved = Array.isArray(identity) ? identity[0] : identity;
           setGender(normalizeGender(resolved));
@@ -83,16 +89,16 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
         .single();
 
       if (data) {
-        setProfileAnswers(data.profile_answers as any);
+        setProfileAnswers((data.profile_answers as ProfileAnswers | null) ?? null);
 
         // Sanitize corrupted unicode characters from AI personalization data
-        const raw = data.ai_personalization as any;
+        const raw = data.ai_personalization as JsonRecord | null;
         if (raw) {
           const sanitize = (v: unknown): unknown => {
             if (typeof v === "string") {
               let s = v.replace(/[^\x20-\x7E\n\r\t]/g, "").trim();
-              s = s.replace(/^[\[\]{},\s:]+/, "").replace(/[\[\]{},\s:]+$/, "").trim();
-              if (/[{}\[\]]/.test(s) || s.includes("_keywords") || s.length < 2) return "";
+              s = s.replace(/^[[]{},\s:]+/, "").replace(/[[]{},\s:]+$/, "").trim();
+              if (/[[\]{}]/.test(s) || s.includes("_keywords") || s.length < 2) return "";
               return s;
             }
             if (Array.isArray(v)) return v.map(sanitize).filter(x => typeof x === "string" ? x.length > 0 : Boolean(x));
@@ -124,7 +130,7 @@ export const PersonalizationProvider = ({ children }: { children: ReactNode }) =
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "profiles", filter: `user_id=eq.${user.id}` },
         (payload) => {
-          const newGender = (payload.new as any)?.gender;
+          const newGender = (payload.new as ProfileGenderPayload | null)?.gender;
           setGender(normalizeGender(newGender));
         }
       )

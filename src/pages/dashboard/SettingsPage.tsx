@@ -24,6 +24,22 @@ interface Couple {
   display_label: string | null;
 }
 
+interface UserSettingsRow {
+  user_id: string;
+  gift_reminders: boolean;
+  partner_activity: boolean;
+  recommendations: boolean;
+  email_digests: boolean;
+}
+
+interface DemoSeedUser {
+  display_name?: string;
+  email?: string;
+}
+
+interface DemoSeedResult {
+  users?: DemoSeedUser[];
+}
 
 const SettingsPage = () => {
   const { user } = useAuth();
@@ -63,10 +79,11 @@ const SettingsPage = () => {
   const fetchSettings = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase.from("user_settings").select("*").eq("user_id", user.id).maybeSingle();
-    if (data) {
+    const row = data as UserSettingsRow | null;
+    if (row) {
       setSettings({
-        gift_reminders: data.gift_reminders, partner_activity: data.partner_activity,
-        recommendations: data.recommendations, email_digests: data.email_digests,
+        gift_reminders: row.gift_reminders, partner_activity: row.partner_activity,
+        recommendations: row.recommendations, email_digests: row.email_digests,
       });
     }
     setSettingsLoaded(true);
@@ -79,8 +96,9 @@ const SettingsPage = () => {
     const newVal = !settings[key];
     setSettings(prev => ({ ...prev, [key]: newVal }));
     // Upsert
+    const payload: Pick<UserSettingsRow, "user_id"> & Partial<UserSettingsRow> = { user_id: user.id, [key]: newVal };
     const { error } = await supabase.from("user_settings").upsert(
-      { user_id: user.id, [key]: newVal } as any,
+      payload,
       { onConflict: "user_id" }
     );
     if (error) {
@@ -106,19 +124,21 @@ const SettingsPage = () => {
         setGender(data?.gender ? normalizeGender(data.gender) : "");
         setBirthday(data?.birthday ?? "");
         setAnniversary(data?.anniversary ?? "");
-      } catch {}
+      } catch (error) {
+        console.error("Failed to fetch profile settings", error);
+      }
     };
     fetchProfile();
   }, []);
 
   // Connections logic
-  const callEdgeFunction = async (action: string, extra: Record<string, string> = {}) => {
+  const callEdgeFunction = useCallback(async (action: string, extra: Record<string, string> = {}) => {
     const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
       body: { action, ...extra },
     });
     if (error) throw error;
     return data;
-  };
+  }, []);
 
   const ensureShareToken = useCallback(async () => {
     if (shareToken) return shareToken;
@@ -127,14 +147,14 @@ const SettingsPage = () => {
     if (!nextToken) throw new Error("Could not create invite link");
     setShareToken(nextToken);
     return nextToken as string;
-  }, [shareToken]);
+  }, [callEdgeFunction, shareToken]);
 
   useEffect(() => {
     if (!user || !qrDialogOpen || shareToken) return;
     ensureShareToken().catch(() => undefined);
   }, [ensureShareToken, qrDialogOpen, shareToken, user]);
 
-  const fetchConnections = async () => {
+  const fetchConnections = useCallback(async () => {
     if (!user) { setConnectionsLoading(false); return; }
     try {
       const { data: myData } = await supabase
@@ -145,11 +165,13 @@ const SettingsPage = () => {
       setCouples(myData ?? []);
       const result = await callEdgeFunction("get-pending");
       setPendingForMe(result?.pending ?? []);
-    } catch {}
+    } catch (error) {
+      console.error("Failed to fetch connections", error);
+    }
     setConnectionsLoading(false);
-  };
+  }, [callEdgeFunction, user]);
 
-  useEffect(() => { fetchConnections(); }, [user]);
+  useEffect(() => { fetchConnections(); }, [fetchConnections]);
 
   // Fetch user's lists for sharing toggles
   const handleDeleteConnection = async (coupleId: string) => {
@@ -177,8 +199,9 @@ const SettingsPage = () => {
       setInviteEmail("");
       setEmailDialogOpen(false);
       fetchConnections();
-    } catch (error: any) {
-      toast({ title: "Could not send invite", description: error?.message || "Failed to send invite", variant: "destructive" });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to send invite";
+      toast({ title: "Could not send invite", description: message, variant: "destructive" });
     } finally {
       setSending(false);
     }
@@ -228,12 +251,14 @@ const SettingsPage = () => {
       if (error) {
         throw error;
       }
-      const summary = Array.isArray(result?.users)
-        ? result.users.map((entry: any) => `${entry.display_name} (${entry.email})`).join(", ")
+      const typedResult = result as DemoSeedResult | null;
+      const summary = Array.isArray(typedResult?.users)
+        ? typedResult.users.map((entry) => `${entry.display_name ?? "Unknown"} (${entry.email ?? "no-email"})`).join(", ")
         : "Demo profiles created";
       toast({ title: "Demo profiles ready", description: summary });
-    } catch (error: any) {
-      toast({ title: "Failed to create demo profiles", description: error?.message || "Try again.", variant: "destructive" });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Try again.";
+      toast({ title: "Failed to create demo profiles", description: message, variant: "destructive" });
     } finally {
       setSeedingDemoProfiles(false);
     }
@@ -265,9 +290,11 @@ const SettingsPage = () => {
         gender: gender ? normalizeGender(gender) : null,
         birthday: birthday || null,
         anniversary: anniversary || null,
-      } as any).eq("user_id", user.id);
+      }).eq("user_id", user.id);
       toast({ title: "Profile updated" });
-    } catch {} finally {
+    } catch (error) {
+      console.error("Failed to save profile settings", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -392,8 +419,9 @@ const SettingsPage = () => {
                           toast({ title: "Password updated" });
                           setNewPassword("");
                           setConfirmPassword("");
-                        } catch (error: any) {
-                          toast({ title: "Error", description: error.message, variant: "destructive" });
+                        } catch (error: unknown) {
+                          const message = error instanceof Error ? error.message : "Could not update password";
+                          toast({ title: "Error", description: message, variant: "destructive" });
                         } finally {
                           setPasswordLoading(false);
                         }

@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import CoverflowTitlePill from "@/components/ui/CoverflowTitlePill";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
+import { useCategoryImageMap } from "@/features/mygotwo/useCategoryImageMap";
 import WebPaginatedCoverflow from "@/platform-ui/web/mygotwo/WebPaginatedCoverflow";
 import { WEB_MYGOTWO_STAGE_SHELL_CLASS } from "@/platform-ui/web/mygotwo/webMyGoTwo.layout";
 
@@ -18,37 +16,6 @@ interface WebTemplateCoverFlowProps {
   focusedLeafItemId?: string | null;
 }
 
-function useImageMap(keys: string[]) {
-  const [imageMap, setImageMap] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    if (keys.length === 0) return;
-    supabase
-      .from("category_images")
-      .select("category_key, image_url")
-      .in("category_key", keys)
-      .then(({ data }) => {
-        const map: Record<string, string> = {};
-        for (const row of data || []) map[row.category_key] = row.image_url;
-        setImageMap(map);
-      });
-  }, [keys.join(",")]);
-
-  useEffect(() => {
-    const handler = (event: Event) => {
-      const detail = (event as CustomEvent).detail || {};
-      const { imageKey, url } = detail;
-      if (imageKey) {
-        setImageMap((prev) => ({ ...prev, [imageKey]: url || "" }));
-      }
-    };
-    window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
-    return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
-  }, []);
-
-  return imageMap;
-}
-
 export default function WebTemplateCoverFlow({
   templateName,
   subtypes,
@@ -61,16 +28,16 @@ export default function WebTemplateCoverFlow({
   focusedLeafItemId,
 }: WebTemplateCoverFlowProps) {
   const hasSubcategories = Boolean(subcategories && subcategories.length > 0);
+  const products = activeSubcategory ? (activeSubcategory.products ?? []) : subtypes;
 
   const allKeys: string[] = [];
   if (hasSubcategories && !activeSubcategory) {
     subcategories!.forEach((subcategory) => allKeys.push(subcategory.image || subcategory.id));
   } else {
-    const products = activeSubcategory ? (activeSubcategory.products ?? []) : subtypes;
-    products.forEach((product) => allKeys.push((product as any).image || product.id));
+    products.forEach((product) => allKeys.push(product.image || product.id));
   }
 
-  const imageMap = useImageMap(allKeys);
+  const imageMap = useCategoryImageMap(allKeys);
 
   if (hasSubcategories && !activeSubcategory) {
     const items = subcategories!.map((subcategory) => ({
@@ -98,12 +65,11 @@ export default function WebTemplateCoverFlow({
     );
   }
 
-  const products = activeSubcategory ? (activeSubcategory.products ?? []) : subtypes;
   const productItems = products.map((product) => ({
     id: product.id,
     label: product.name,
-    image: imageMap[(product as any).image || product.id] || "",
-    imageKey: (product as any).image || product.id,
+    image: imageMap[product.image || product.id] || "",
+    imageKey: product.image || product.id,
   }));
 
   return (

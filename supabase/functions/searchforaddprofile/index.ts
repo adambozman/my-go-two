@@ -59,6 +59,42 @@ type ShareTokenRow = {
   used_count?: number;
 };
 
+type AppSupabaseClient = ReturnType<typeof createClient>;
+
+type ProfileIdentityRow = {
+  user_id: string;
+  display_name: string | null;
+  avatar_url?: string | null;
+};
+
+type DiscoverySettingsRow = {
+  user_id: string;
+  allow_name_discovery?: boolean | null;
+  allow_phone_discovery?: boolean | null;
+  share_avatar_in_discovery?: boolean | null;
+};
+
+type DiscoveryContactRow = {
+  user_id: string | null;
+};
+
+type SearchRpcRow = {
+  user_id: string;
+  display_name: string | null;
+  discovery_avatar_url: string | null;
+  match_type: string | null;
+};
+
+type ConnectionRequestRow = {
+  couple_id?: string | null;
+  request_status?: string | null;
+};
+
+type LinkByTokenRow = {
+  result?: string | null;
+  couple_id?: string | null;
+};
+
 const demoProfiles: DemoProfile[] = [
   {
     email: "abby.demo@gotwo.local",
@@ -456,7 +492,7 @@ async function sendInviteEmail(inviterName: string, inviteeEmail: string, invite
 }
 
 async function createNotification(
-  supabase: any,
+  supabase: AppSupabaseClient,
   userId: string,
   title: string,
   body: string,
@@ -472,7 +508,7 @@ async function createNotification(
 }
 
 async function getDisplayName(
-  supabase: any,
+  supabase: AppSupabaseClient,
   userId: string,
 ) {
   const { data } = await supabase
@@ -485,7 +521,7 @@ async function getDisplayName(
 }
 
 async function findAuthUserByEmail(
-  supabase: any,
+  supabase: AppSupabaseClient,
   email: string,
   excludeUserId?: string,
 ) {
@@ -499,7 +535,7 @@ async function findAuthUserByEmail(
     const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
     if (error) throw error;
 
-    const found = data.users.find((candidate: any) => {
+    const found = data.users.find((candidate) => {
       if (!candidate.email) return false;
       if (excludeUserId && candidate.id === excludeUserId) return false;
       return candidate.email.toLowerCase() === normalized;
@@ -514,7 +550,7 @@ async function findAuthUserByEmail(
 }
 
 async function findAuthUsersByIds(
-  supabase: any,
+  supabase: AppSupabaseClient,
   userIds: string[],
 ) {
   const wantedIds = new Set(userIds.filter(Boolean));
@@ -546,7 +582,7 @@ async function findAuthUsersByIds(
 }
 
 async function resolveConnectionIdentity(
-  adminClient: any,
+  adminClient: AppSupabaseClient,
   targetUserId: string,
   coupleId?: string | null,
 ) {
@@ -598,7 +634,7 @@ function getDisplayNameFromAuthUser(user: AuthUserSummary | undefined) {
 }
 
 async function seedDemoProfileContent(
-  supabase: any,
+  supabase: AppSupabaseClient,
   demoUserId: string,
   demo: DemoProfile,
 ) {
@@ -664,7 +700,7 @@ async function seedDemoProfileContent(
   }
 }
 
-async function ensureDemoProfiles(supabase: any) {
+async function ensureDemoProfiles(supabase: AppSupabaseClient) {
   for (const demo of demoProfiles) {
     let demoUser = await findAuthUserByEmail(supabase, demo.email);
     if (!demoUser) {
@@ -708,7 +744,7 @@ async function ensureDemoProfiles(supabase: any) {
 }
 
 async function searchDiscoverableUsersFallback(
-  adminClient: any,
+  adminClient: AppSupabaseClient,
   requesterId: string,
   rawQuery: string,
   limit = 25,
@@ -736,7 +772,7 @@ async function searchDiscoverableUsersFallback(
     });
   };
 
-  const profileQueries: Promise<{ data: any[] | null; error: any }>[] = [
+  const profileQueries: Array<Promise<{ data: ProfileIdentityRow[] | null; error: { message: string } | null }>> = [
     adminClient
       .from("profiles")
       .select("user_id, display_name, avatar_url")
@@ -758,7 +794,7 @@ async function searchDiscoverableUsersFallback(
     if (result.error) throw new Error(result.error.message);
   }
 
-  const nameCandidatesById = new Map<string, any>();
+  const nameCandidatesById = new Map<string, ProfileIdentityRow>();
   for (const result of profileResults) {
     for (const row of result.data ?? []) {
       if (row?.user_id && row.user_id !== requesterId) {
@@ -776,7 +812,7 @@ async function searchDiscoverableUsersFallback(
       .limit(limit);
     if (phoneError) throw new Error(phoneError.message);
     phoneMatchedIds = (phoneRows ?? [])
-      .map((row: any) => row.user_id)
+      .map((row) => row.user_id)
       .filter((id: string | null | undefined) => Boolean(id) && id !== requesterId);
   }
 
@@ -801,12 +837,12 @@ async function searchDiscoverableUsersFallback(
   if (settingsError) throw new Error(settingsError.message);
   if (profileRowsByIdsError) throw new Error(profileRowsByIdsError.message);
 
-  const settingsById = new Map((settingsRows ?? []).map((row: any) => [row.user_id, row]));
-  const profilesById = new Map((profileRowsByIds ?? []).map((row: any) => [row.user_id, row]));
+  const settingsById = new Map((settingsRows ?? []).map((row) => [row.user_id, row] as const));
+  const profilesById = new Map((profileRowsByIds ?? []).map((row) => [row.user_id, row] as const));
 
   for (const userId of phoneMatchedIds) {
     const profile = profilesById.get(userId) ?? nameCandidatesById.get(userId);
-    const settings: any = settingsById.get(userId);
+    const settings = settingsById.get(userId);
     const allowPhone = settings?.allow_phone_discovery ?? false;
     const shareAvatar = settings?.share_avatar_in_discovery ?? false;
     if (!allowPhone) continue;
@@ -814,7 +850,7 @@ async function searchDiscoverableUsersFallback(
   }
 
   for (const [userId, profile] of nameCandidatesById) {
-    const settings: any = settingsById.get(userId);
+    const settings = settingsById.get(userId);
     const allowName = settings?.allow_name_discovery ?? true;
     const shareAvatar = settings?.share_avatar_in_discovery ?? false;
     if (!allowName) continue;
@@ -839,8 +875,8 @@ async function searchDiscoverableUsersFallback(
 }
 
 async function searchUsers(
-  viewerClient: any,
-  adminClient: any,
+  viewerClient: AppSupabaseClient,
+  adminClient: AppSupabaseClient,
   requesterId: string,
   query: string,
 ) {
@@ -872,7 +908,7 @@ async function searchUsers(
     discoverableRows = discoverableData;
   }
 
-  const rpcResults = (discoverableRows as any[])
+  const rpcResults = (discoverableRows as SearchRpcRow[])
     .filter((row): row is SearchResult => Boolean(row?.user_id))
     .map((row) => ({
       user_id: String(row.user_id),
@@ -900,13 +936,13 @@ async function searchUsers(
     ]);
 
     const authUsersById = await findAuthUsersByIds(adminClient, candidateIds);
-    const profilesByUserId = new Map((profiles ?? []).map((row: any) => [row.user_id, row]));
-    const settingsByUserId = new Map((settings ?? []).map((row: any) => [row.user_id, row]));
+    const profilesByUserId = new Map((profiles ?? []).map((row) => [row.user_id, row] as const));
+    const settingsByUserId = new Map((settings ?? []).map((row) => [row.user_id, row] as const));
 
     for (const userId of candidateIds) {
       if (combinedById.has(userId) || userId === requesterId) continue;
-      const profile: any = profilesByUserId.get(userId);
-      const prefs: any = settingsByUserId.get(userId);
+      const profile = profilesByUserId.get(userId);
+      const prefs = settingsByUserId.get(userId);
       const authUser = authUsersById.get(userId);
       combinedById.set(userId, {
         user_id: userId,
@@ -921,8 +957,8 @@ async function searchUsers(
 }
 
 async function createConnectionRequest(
-  viewerClient: any,
-  adminClient: any,
+  viewerClient: AppSupabaseClient,
+  adminClient: AppSupabaseClient,
   requesterId: string,
   targetUserId: string,
   connectionDisplayName?: string | null,
@@ -934,7 +970,7 @@ async function createConnectionRequest(
   if (error) {
     return { success: false, error: error.message, statusCode: 400 };
   }
-  const first = Array.isArray(data) ? data[0] : null;
+  const first = Array.isArray(data) ? data[0] as ConnectionRequestRow | null : null;
 
   const coupleId = first?.couple_id ?? null;
   if (coupleId) {
@@ -965,7 +1001,7 @@ async function createConnectionRequest(
 }
 
 async function createConnectionShareToken(
-  viewerClient: any,
+  viewerClient: AppSupabaseClient,
   channel: string,
   daysValid: number,
 ) {
@@ -982,8 +1018,8 @@ async function createConnectionShareToken(
 }
 
 async function sendConnectionInvite(
-  viewerClient: any,
-  supabase: any,
+  viewerClient: AppSupabaseClient,
+  supabase: AppSupabaseClient,
   requesterId: string,
   payload: Record<string, unknown>,
   req: Request,
@@ -1037,7 +1073,7 @@ async function sendConnectionInvite(
 }
 
 async function getPendingInvites(
-  supabase: any,
+  supabase: AppSupabaseClient,
   userId: string,
   email: string | null,
 ) {
@@ -1052,7 +1088,7 @@ async function getPendingInvites(
 }
 
 async function acceptInvite(
-  supabase: any,
+  supabase: AppSupabaseClient,
   userId: string,
   inviteId: string,
 ) {
@@ -1086,7 +1122,7 @@ async function acceptInvite(
 }
 
 async function acceptInvitesByEmail(
-  supabase: any,
+  supabase: AppSupabaseClient,
   userId: string,
   email: string | null,
 ) {
@@ -1127,7 +1163,7 @@ async function acceptInvitesByEmail(
 }
 
 async function linkByInviter(
-  supabase: any,
+  supabase: AppSupabaseClient,
   userId: string,
   email: string | null,
   inviterId: string,
@@ -1177,7 +1213,7 @@ async function linkByInviter(
 }
 
 async function linkByToken(
-  viewerClient: any,
+  viewerClient: AppSupabaseClient,
   rawToken: string,
 ) {
   if (!rawToken) throw new Error("Missing token");
@@ -1186,7 +1222,7 @@ async function linkByToken(
     p_token: rawToken,
   });
   if (error) throw new Error(error.message);
-  const first = Array.isArray(data) ? data[0] : null;
+  const first = Array.isArray(data) ? data[0] as LinkByTokenRow | null : null;
   return {
     success: true,
     status: first?.result ?? "invite_sent",

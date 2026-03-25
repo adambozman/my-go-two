@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Lock, Sparkles } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -677,7 +678,7 @@ export default function ConnectionPage() {
     }
 
     toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
-  }, [connection, loadConnection, toast, user]);
+  }, [connection, toast, user]);
 
   const handleToggleCardShare = useCallback(async (entry: EntryRecord, nextValue: boolean) => {
     if (!user || !connection || !connection.partnerId) return;
@@ -737,7 +738,7 @@ export default function ConnectionPage() {
     }
 
     toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection?.name || "them"}.` });
-  }, [connection, loadConnection, toast, user]);
+  }, [connection, toast, user]);
 
   const handleToggleDerivedFeature = useCallback(async (key: DerivedFeatureKey, nextValue: boolean) => {
     if (!user || !connection || !connection.partnerId) return;
@@ -776,7 +777,7 @@ export default function ConnectionPage() {
       title: nextValue ? "Derived feature shared" : "Derived feature hidden",
       description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableDerivedFeatures.find((feature) => feature.key === key)?.label.toLowerCase()}.`,
     });
-  }, [connection, loadConnection, toast, user]);
+  }, [connection, toast, user]);
 
   const handleBulkShare = useCallback(async (mode: "share" | "unshare") => {
     if (!user || !connection || !connection.partnerId) return;
@@ -805,7 +806,7 @@ export default function ConnectionPage() {
       title: mode === "share" ? "All cards shared" : "All cards hidden",
       description: `${connection.name} ${mode === "share" ? "can now see" : "can no longer see"} your product cards. ${typeof data === "number" ? `(${data} changed)` : ""}`.trim(),
     });
-  }, [connection, loadConnection, myEntries, toast, user]);
+  }, [connection, myEntries, toast, user]);
 
   const handleConnectionKindChange = useCallback(async (nextKind: ConnectionKind) => {
     if (!user || !connection || !connection.partnerId || nextKind === connectionKind) return;

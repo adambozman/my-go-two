@@ -11,6 +11,26 @@ import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import type { SubtypeItem, SubcategoryGroup } from "@/data/templateSubtypes";
 import { CATEGORY_REGISTRY_SEED } from "@/data/categoryRegistrySeed";
 
+type CategoryImageOverrideEvent = Event & {
+  detail?: {
+    imageKey?: string;
+    url?: string;
+  };
+};
+
+interface CategoryRegistryRow {
+  key: string;
+  label: string;
+  section: string;
+  image?: string | null;
+  sort_order: number;
+  fields?: SubtypeItem[] | null;
+  subcategories?: SubcategoryGroup[] | null;
+  page: "mygotwo" | "dashboard";
+  is_active: boolean;
+  genders?: string[] | null;
+}
+
 export interface CategoryItem {
   key: string;
   label: string;
@@ -31,7 +51,7 @@ export function useCategoryRegistry(
   const [error, setError] = useState<string | null>(null);
   // Optimistically update the image in local state when an override fires
   useEffect(() => {
-    const handler = (e: any) => {
+    const handler = (e: CategoryImageOverrideEvent) => {
       const { imageKey, url } = e.detail || {};
       if (!imageKey) return;
       setCategories(prev =>
@@ -56,7 +76,7 @@ export function useCategoryRegistry(
 
       try {
         const { data: dbRows, error: fetchError } = await supabase
-          .from("category_registry" as any)
+          .from("category_registry")
           .select("*")
           .eq("page", page)
           .eq("is_active", true)
@@ -66,7 +86,8 @@ export function useCategoryRegistry(
         const fallbackRows = CATEGORY_REGISTRY_SEED.filter(
           (row) => row.page === page && row.is_active && row.genders?.includes(dbGender),
         );
-        const rows = ((dbRows as any[])?.length ? dbRows : fallbackRows) as any[];
+        const typedDbRows = (dbRows ?? []) as CategoryRegistryRow[];
+        const rows: CategoryRegistryRow[] = typedDbRows.length > 0 ? typedDbRows : fallbackRows;
 
         if (fetchError && rows.length === 0) throw fetchError;
         if (cancelled) return;
@@ -80,7 +101,7 @@ export function useCategoryRegistry(
         if (cancelled) return;
 
         // Fetch all image URLs for this page from category_images table
-        const keys = Array.from(new Set(rows.map((r: any) => r.key).filter(Boolean)));
+        const keys = Array.from(new Set(rows.map((r) => r.key).filter(Boolean)));
         const { data: imageRows } = await supabase
           .from("category_images")
           .select("category_key, image_url")
@@ -90,7 +111,7 @@ export function useCategoryRegistry(
           imageMap[row.category_key] = row.image_url;
         }
 
-        const items: CategoryItem[] = rows.map((r: any) => {
+        const items: CategoryItem[] = rows.map((r) => {
           const fallbackImage = typeof r.image === "string" ? r.image : "";
           const imageKey: string = fallbackImage || r.key || "";
           return {
@@ -120,8 +141,10 @@ export function useCategoryRegistry(
         }
 
         setCategories(items);
-      } catch (e: any) {
-        if (!cancelled) setError(e.message);
+      } catch (e: unknown) {
+        if (!cancelled) {
+          setError(e instanceof Error ? e.message : "Failed to load category registry");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }

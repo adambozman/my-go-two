@@ -53,6 +53,13 @@ function resolveMappedImage(imageMap: Record<string, string>, source: string | u
   return "";
 }
 
+function resolveSubtypeItems(
+  coverFlowState: WebCoverFlowState,
+  activeSubcategory: SubcategoryGroup | null,
+): SubtypeItem[] {
+  return activeSubcategory?.products?.length ? activeSubcategory.products : coverFlowState.subtypes;
+}
+
 export default function MyGoTwoWebView({
   coverFlowState,
   activeSubcategory,
@@ -68,12 +75,13 @@ export default function MyGoTwoWebView({
   onSubcategorySelect,
   onSubtypeSelect,
 }: MyGoTwoWebViewProps) {
+  const leafItems = coverFlowState ? resolveSubtypeItems(coverFlowState, activeSubcategory) : [];
   const drilldownImageKeys = coverFlowState
     ? activeSubcategory?.products?.length
-      ? activeSubcategory.products.map((product) => (product as any).image || product.id)
+      ? activeSubcategory.products.map((product) => product.image || product.id)
       : coverFlowState.subcategories?.length
         ? coverFlowState.subcategories.map((subcategory) => subcategory.image || subcategory.id)
-        : coverFlowState.subtypes.map((subtype) => (subtype as any).image || subtype.id)
+        : leafItems.map((subtype) => subtype.image || subtype.id)
     : [];
 
   const drilldownImageMap = useCategoryImageMap(drilldownImageKeys);
@@ -122,12 +130,11 @@ export default function MyGoTwoWebView({
     );
   }
 
-  const products = activeSubcategory?.products?.length ? activeSubcategory.products : coverFlowState.subtypes;
-  const productItems = products.map((product) => ({
+  const productItems = leafItems.map((product) => ({
     id: product.id,
     label: product.name,
-    image: resolveMappedImage(drilldownImageMap, (product as any).image, product.id),
-    imageKey: (product as any).image || product.id,
+    image: resolveMappedImage(drilldownImageMap, product.image, product.id),
+    imageKey: product.image || product.id,
   }));
 
   return (
@@ -138,7 +145,7 @@ export default function MyGoTwoWebView({
       items={productItems}
       focusedItemId={focusedLeafItemId}
       onCommit={(id) => {
-        const selectedProduct = products.find((product) => product.id === id);
+        const selectedProduct = leafItems.find((product) => product.id === id);
         const selectedItem = productItems.find((item) => item.id === id);
         if (!selectedProduct) return;
         onSubtypeSelect(

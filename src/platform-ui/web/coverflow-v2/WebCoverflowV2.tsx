@@ -9,6 +9,8 @@ export default function WebCoverflowV2({
   items,
   onSelect,
   initialActiveIndex = 0,
+  focusedItemId,
+  onActiveItemChange,
   sectionTitle,
   className,
   variant = "default",
@@ -27,6 +29,14 @@ export default function WebCoverflowV2({
   }, [initialActiveIndex, itemCount]);
 
   useEffect(() => {
+    if (!focusedItemId || itemCount === 0) return;
+    const nextIndex = items.findIndex((item) => item.id === focusedItemId);
+    if (nextIndex >= 0) {
+      setActiveIndex(normalizeActiveIndex(nextIndex, itemCount));
+    }
+  }, [focusedItemId, itemCount, items]);
+
+  useEffect(() => {
     if (itemCount <= 1) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -42,9 +52,13 @@ export default function WebCoverflowV2({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [itemCount]);
 
-  if (itemCount === 0) return null;
+  const activeItem = itemCount > 0 ? items[activeIndex] : undefined;
 
-  const activeItem = items[activeIndex];
+  useEffect(() => {
+    if (activeItem) onActiveItemChange?.(activeItem.id);
+  }, [activeItem, onActiveItemChange]);
+
+  if (itemCount === 0) return null;
 
   return (
     <div

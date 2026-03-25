@@ -15,6 +15,34 @@ type ChatMessage = {
   content: string;
 };
 
+type ProfileAnswerValue = string | string[] | undefined;
+type ProfileAnswersMap = Record<string, ProfileAnswerValue> | null | undefined;
+type SectionDefinition = (typeof SECTIONS)[number];
+type ThisOrThatCategoryDefinition = (typeof THIS_OR_THAT_CATEGORIES)[number];
+
+type CategoryState = SectionDefinition & {
+  title: string;
+  description: string;
+  questions: QuizQuestion[];
+  answered: number;
+  visibleTotal: number;
+  visibleAnswered: number;
+  nextQuestionIndex: number;
+  complete: boolean;
+  isLocked: boolean;
+};
+
+type ThisOrThatCategoryState = ThisOrThatCategoryDefinition & {
+  questions: BrandBankQuestion[];
+  answered: number;
+  visibleTotal: number;
+  visibleAnswered: number;
+  nextQuestionIndex: number;
+  complete: boolean;
+  isLocked: boolean;
+  isLive: boolean;
+};
+
 const FREE_CATEGORY_LIMIT = 4;
 const FREE_THIS_OR_THAT_LIMIT = 8;
 
@@ -65,6 +93,75 @@ const normalizeBankGender = (value?: string) => {
   return "non-binary";
 };
 
+const getStyleChatIntro = (personaSummary?: string | null) =>
+  personaSummary ||
+  "Ask me what your style looks like so far, why I'm asking certain questions, or what kinds of recommendations I'm building toward.";
+
+const getAnswerValues = (value: ProfileAnswerValue): string[] => {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === "string");
+  }
+
+  return typeof value === "string" ? [value] : [];
+};
+
+const buildCategoryState = (
+  section: SectionDefinition,
+  allQuestions: QuizQuestion[],
+  profileAnswers: ProfileAnswersMap,
+  subscribed: boolean,
+): CategoryState => {
+  const questions = allQuestions.filter((question) => question.section === section.id);
+  const answered = questions.filter((question) => getAnswerValues(profileAnswers?.[question.id]).length > 0).length;
+  const visibleTotal = subscribed ? questions.length : Math.min(questions.length, FREE_CATEGORY_LIMIT);
+  const visibleAnswered = subscribed ? answered : Math.min(answered, visibleTotal);
+  const firstUnanswered = questions.findIndex((question) => getAnswerValues(profileAnswers?.[question.id]).length === 0);
+  const nextQuestionIndex = firstUnanswered === -1 ? Math.max(questions.length - 1, 0) : firstUnanswered;
+  const isLocked = !subscribed && answered >= FREE_CATEGORY_LIMIT;
+
+  return {
+    ...section,
+    title: CATEGORY_COPY[section.id]?.title ?? section.label,
+    description: CATEGORY_COPY[section.id]?.description ?? "",
+    questions,
+    answered,
+    visibleTotal,
+    visibleAnswered,
+    nextQuestionIndex,
+    complete: answered === questions.length,
+    isLocked,
+  };
+};
+
+const buildThisOrThatCategoryState = (
+  category: ThisOrThatCategoryDefinition,
+  bankGender: string,
+  profileAnswers: ProfileAnswersMap,
+  subscribed: boolean,
+): ThisOrThatCategoryState => {
+  const bank = getThisOrThatBank(category.id, bankGender);
+  const questions = bank?.questions ?? [];
+  const answered = questions.filter((question) => getAnswerValues(profileAnswers?.[question.id]).length > 0).length;
+  const visibleTotal = subscribed ? questions.length : Math.min(questions.length, FREE_THIS_OR_THAT_LIMIT);
+  const visibleAnswered = subscribed ? answered : Math.min(answered, visibleTotal);
+  const firstUnanswered = questions.findIndex((question) => getAnswerValues(profileAnswers?.[question.id]).length === 0);
+  const nextQuestionIndex = firstUnanswered === -1 ? Math.max(questions.length - 1, 0) : firstUnanswered;
+  const isLocked = !subscribed && answered >= FREE_THIS_OR_THAT_LIMIT;
+  const isLive = category.status === "live" && questions.length > 0;
+
+  return {
+    ...category,
+    questions,
+    answered,
+    visibleTotal,
+    visibleAnswered,
+    nextQuestionIndex,
+    complete: questions.length > 0 && answered === questions.length,
+    isLocked,
+    isLive,
+  };
+};
+
 const Questionnaires = () => {
   const { subscribed } = useAuth();
   const { personalization, profileAnswers, gender, loading: contextLoading, refetch } = usePersonalization();
@@ -74,28 +171,7 @@ const Questionnaires = () => {
   const bankGender = useMemo(() => normalizeBankGender(gender), [gender]);
 
   const categories = useMemo(() => {
-    return SECTIONS.map((section) => {
-      const questions = allQuestions.filter((question) => question.section === section.id);
-      const answered = questions.filter((question) => profileAnswers?.[question.id]).length;
-      const visibleTotal = subscribed ? questions.length : Math.min(questions.length, FREE_CATEGORY_LIMIT);
-      const visibleAnswered = subscribed ? answered : Math.min(answered, visibleTotal);
-      const firstUnanswered = questions.findIndex((question) => !profileAnswers?.[question.id]);
-      const nextQuestionIndex = firstUnanswered === -1 ? Math.max(questions.length - 1, 0) : firstUnanswered;
-      const isLocked = !subscribed && answered >= FREE_CATEGORY_LIMIT;
-
-      return {
-        ...section,
-        title: CATEGORY_COPY[section.id]?.title ?? section.label,
-        description: CATEGORY_COPY[section.id]?.description ?? "",
-        questions,
-        answered,
-        visibleTotal,
-        visibleAnswered,
-        nextQuestionIndex,
-        complete: answered === questions.length,
-        isLocked,
-      };
-    });
+    return SECTIONS.map((section) => buildCategoryState(section, allQuestions, profileAnswers, subscribed));
   }, [allQuestions, profileAnswers, subscribed]);
 
   const totalAnswered = categories.reduce((sum, category) => sum + category.answered, 0);
@@ -124,47 +200,20 @@ const Questionnaires = () => {
   const [styleChatMessages, setStyleChatMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      content:
-        personalization?.persona_summary ||
-        "Ask me what your style looks like so far, why I'm asking certain questions, or what kinds of recommendations I'm building toward.",
+      content: getStyleChatIntro(personalization?.persona_summary),
     },
   ]);
 
   const activeCategory = categories.find((category) => category.id === activeCategoryId) ?? categories[0];
   const currentQuestion: QuizQuestion | undefined = activeCategory?.questions[quizQuestionIdx];
   const currentSelected = currentQuestion
-    ? selections[currentQuestion.id] ||
-      (profileAnswers?.[currentQuestion.id]
-        ? Array.isArray(profileAnswers[currentQuestion.id])
-          ? (profileAnswers[currentQuestion.id] as string[])
-          : [profileAnswers[currentQuestion.id] as string]
-        : [])
+    ? selections[currentQuestion.id] || getAnswerValues(profileAnswers?.[currentQuestion.id])
     : [];
 
   const thisOrThatCategories = useMemo(() => {
-    return THIS_OR_THAT_CATEGORIES.map((category) => {
-      const bank = getThisOrThatBank(category.id, bankGender);
-      const questions = bank?.questions ?? [];
-      const answered = questions.filter((question) => profileAnswers?.[question.id]).length;
-      const visibleTotal = subscribed ? questions.length : Math.min(questions.length, FREE_THIS_OR_THAT_LIMIT);
-      const visibleAnswered = subscribed ? answered : Math.min(answered, visibleTotal);
-      const firstUnanswered = questions.findIndex((question) => !profileAnswers?.[question.id]);
-      const nextQuestionIndex = firstUnanswered === -1 ? Math.max(questions.length - 1, 0) : firstUnanswered;
-      const isLocked = !subscribed && answered >= FREE_THIS_OR_THAT_LIMIT;
-      const isLive = category.status === "live" && questions.length > 0;
-
-      return {
-        ...category,
-        questions,
-        answered,
-        visibleTotal,
-        visibleAnswered,
-        nextQuestionIndex,
-        complete: questions.length > 0 && answered === questions.length,
-        isLocked,
-        isLive,
-      };
-    });
+    return THIS_OR_THAT_CATEGORIES.map((category) =>
+      buildThisOrThatCategoryState(category, bankGender, profileAnswers, subscribed),
+    );
   }, [bankGender, profileAnswers, subscribed]);
 
   const activeTotCategory = thisOrThatCategories.find((category) => category.id === activeTotCategoryId) ?? null;
@@ -184,9 +233,7 @@ const Questionnaires = () => {
     setStyleChatMessages([
       {
         role: "assistant",
-        content:
-          personalization?.persona_summary ||
-          "Ask me what your style looks like so far, why I'm asking certain questions, or what kinds of recommendations I'm building toward.",
+        content: getStyleChatIntro(personalization?.persona_summary),
       },
     ]);
     setStylePrompt("");
@@ -953,11 +1000,13 @@ const Questionnaires = () => {
               </div>
             </motion.button>
 
-            <motion.div
+            <motion.button
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
-              className="lg:col-span-5 card-design-sand rounded-[30px] p-5 relative overflow-hidden min-h-[260px]"
+              whileTap={{ scale: 0.99 }}
+              onClick={openStyleChat}
+              className="lg:col-span-5 card-design-sand rounded-[30px] p-5 relative overflow-hidden min-h-[260px] text-left"
               style={{ borderRadius: 30 }}
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
@@ -974,9 +1023,9 @@ const Questionnaires = () => {
                 <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                   Open style chat
                 </p>
-                <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
-              </div>
-            </motion.div>
+                  <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
+                </div>
+            </motion.button>
 
             <motion.button
               initial={{ opacity: 0, y: 18 }}

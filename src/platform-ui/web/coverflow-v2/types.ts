@@ -9,6 +9,8 @@ export interface WebCoverflowProps {
   items: WebCoverflowItem[];
   onSelect: (id: string) => void;
   initialActiveIndex?: number;
+  focusedItemId?: string | null;
+  onActiveItemChange?: (id: string) => void;
   sectionTitle?: string;
   className?: string;
   variant?: "default" | "hero";

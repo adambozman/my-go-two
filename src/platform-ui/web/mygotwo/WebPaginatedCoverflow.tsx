@@ -9,6 +9,7 @@ interface WebPaginatedCoverflowProps {
   onSelect: (id: string) => void;
   pageSize?: number;
   focusedItemId?: string | null;
+  onActiveIdChange?: (id: string) => void;
   showPagination?: boolean;
   sectionTitle?: string;
   className?: string;
@@ -21,6 +22,7 @@ export default function WebPaginatedCoverflow({
   onSelect,
   pageSize = Number.MAX_SAFE_INTEGER,
   focusedItemId,
+  onActiveIdChange,
   showPagination = true,
   sectionTitle,
   className,
@@ -51,6 +53,8 @@ export default function WebPaginatedCoverflow({
         items={paginatedItems}
         onSelect={onSelect}
         initialActiveIndex={initialActiveIndex}
+        focusedItemId={focusedItemId}
+        onActiveItemChange={onActiveIdChange}
         sectionTitle={sectionTitle}
         variant={variant}
         stageHeight={stageHeight}

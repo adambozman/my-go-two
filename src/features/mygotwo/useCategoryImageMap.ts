@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 
 export function useCategoryImageMap(keys: string[]) {
   const [imageMap, setImageMap] = useState<Record<string, string>>({});
+  const keySignature = useMemo(() => keys.join(","), [keys]);
 
   useEffect(() => {
     if (keys.length === 0) {
@@ -27,7 +28,7 @@ export function useCategoryImageMap(keys: string[]) {
     return () => {
       cancelled = true;
     };
-  }, [keys.join(",")]);
+  }, [keySignature, keys]);
 
   useEffect(() => {
     const handler = (event: Event) => {

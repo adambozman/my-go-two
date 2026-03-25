@@ -6,19 +6,19 @@
 
 import { type Gender } from "@/lib/gender";
 
-export function getTemplateImage(_imageKey: string, ..._rest: any[]): string {
+export function getTemplateImage(_imageKey: string, ..._rest: unknown[]): string {
   return "";
 }
 
-export function getStyleImage(_styleId: string, ..._rest: any[]): string {
+export function getStyleImage(_styleId: string, ..._rest: unknown[]): string {
   return "";
 }
 
-export function getCategoryImage(_categoryId: string, ..._rest: any[]): string {
+export function getCategoryImage(_categoryId: string, ..._rest: unknown[]): string {
   return "";
 }
 
-export function getProductImage(_productId: string, ..._rest: any[]): string {
+export function getProductImage(_productId: string, ..._rest: unknown[]): string {
   return "";
 }
 
@@ -27,5 +27,5 @@ export async function getImage(_imageKey: string, _gender?: Gender): Promise<str
 }
 
 export async function preloadImages(categoryKeys: string[], _gender?: Gender): Promise<Map<string, string>> {
-  return new Map(categoryKeys.map(k => [k, ""]));
+  return new Map(categoryKeys.map((key) => [key, ""]));
 }
