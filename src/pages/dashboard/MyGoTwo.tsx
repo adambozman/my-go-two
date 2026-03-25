@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { HandDrawnArrowLeft } from "@/components/ui/hand-drawn-arrows";
 import { useAuth } from "@/contexts/AuthContext";
@@ -49,6 +49,9 @@ const MyGoTwo = () => {
     () => Object.fromEntries(productEntries.map((entry) => [entry.id, entry])),
     [productEntries],
   );
+  const handleActiveItemChange = useCallback((item: MyGoTwoFlowItem) => {
+    setActiveItemId(item.id);
+  }, []);
 
   if (loading || isLoading) {
     return (
@@ -95,7 +98,8 @@ const MyGoTwo = () => {
       <MyGoTwoWebCoverflowStage
         items={items}
         onActiveCardSelect={selectItem}
-        onActiveItemChange={(item) => setActiveItemId(item.id)}
+        activeItemId={activeItemId}
+        onActiveItemChange={handleActiveItemChange}
         interactiveItemId={currentLevel === 4 ? activeItemId : null}
         visibleRadius={currentLevel === 4 ? 2 : 3}
         renderCard={

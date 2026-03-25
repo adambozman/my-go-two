@@ -203,7 +203,11 @@ export function useMyGoTwoFlow({
       parentId: selectedProduct.id,
     }));
 
-    return [createItem, ...entryItems];
+    if (entryItems.length > 0) {
+      return entryItems;
+    }
+
+    return [createItem];
   }, [
     entryImageMap,
     levelThreeImageMap,
