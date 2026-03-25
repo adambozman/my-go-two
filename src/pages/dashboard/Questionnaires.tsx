@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTopBar } from "@/contexts/TopBarContext";
 import { buildSprints, getThisOrThatBank, SECTIONS, THIS_OR_THAT, THIS_OR_THAT_CATEGORIES, type BrandBankQuestion, type QuizQuestion } from "@/data/knowMeQuestions";
+import type { Gender } from "@/lib/gender";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -135,7 +136,7 @@ const buildCategoryState = (
 
 const buildThisOrThatCategoryState = (
   category: ThisOrThatCategoryDefinition,
-  bankGender: string,
+  bankGender: Gender,
   profileAnswers: ProfileAnswersMap,
   subscribed: boolean,
 ): ThisOrThatCategoryState => {

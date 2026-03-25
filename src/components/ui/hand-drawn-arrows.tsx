@@ -46,10 +46,10 @@ function HandDrawnArrowBase({
   );
 }
 
-export function HandDrawnArrowRight(props: SVGProps<SVGSVGElement>) {
+export function HandDrawnArrowRight(props: Omit<SVGProps<SVGSVGElement>, 'direction'>) {
   return <HandDrawnArrowBase direction="right" {...props} />;
 }
 
-export function HandDrawnArrowLeft(props: SVGProps<SVGSVGElement>) {
+export function HandDrawnArrowLeft(props: Omit<SVGProps<SVGSVGElement>, 'direction'>) {
   return <HandDrawnArrowBase direction="left" {...props} />;
 }

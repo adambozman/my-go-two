@@ -256,7 +256,7 @@ export default function MyGoTwoWebCoverflowStage({
           marginLeft: `${-CARD_WIDTH / 2}px`,
           transformOrigin: "center bottom",
           transformStyle: "preserve-3d" as const,
-          pointerEvents: currentVisible ? "auto" : "none" as const,
+          pointerEvents: (currentVisible ? "auto" : "none") as React.CSSProperties["pointerEvents"],
         };
         const animation = {
           x: pose.x,

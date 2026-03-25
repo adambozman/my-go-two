@@ -73,7 +73,7 @@ export function useMyGoTwoFlow({
   );
 
   const selectedProduct = useMemo(
-    () => selectedSubcategory?.products.find((product) => product.id === selectedProductId) ?? null,
+    () => selectedSubcategory?.products?.find((product) => product.id === selectedProductId) ?? null,
     [selectedProductId, selectedSubcategory],
   );
 
@@ -88,7 +88,7 @@ export function useMyGoTwoFlow({
   const levelThreeImageKeys = useMemo(
     () =>
       (selectedSubcategory?.products ?? [])
-        .map((product) => product.image)
+        .map((product) => product?.image)
         .filter(Boolean),
     [selectedSubcategory],
   );
