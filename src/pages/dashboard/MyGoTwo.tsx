@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import MyGoTwoWebHeader from "@/platform-ui/web/mygotwo/MyGoTwoWebHeader";
+import MyGoTwoWebCoverflowStage from "@/platform-ui/web/mygotwo/MyGoTwoWebCoverflowStage";
 
 const MyGoTwo = () => {
   const { user, loading } = useAuth();
@@ -20,6 +21,7 @@ const MyGoTwo = () => {
   return (
     <div className="app-page min-h-screen overflow-x-hidden">
       <MyGoTwoWebHeader />
+      <MyGoTwoWebCoverflowStage />
     </div>
   );
 };
