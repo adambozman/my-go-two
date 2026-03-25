@@ -6,8 +6,8 @@ export default function MyGoTwoDesktopQuoteBox() {
 
   return (
     <div
-      className="pointer-events-none relative flex w-full items-start justify-center"
-      style={{ minHeight: MYGOTWO_DESKTOP_TOKENS.quoteBoxMinHeight }}
+      className="pointer-events-none absolute inset-x-0 z-30 flex justify-center"
+      style={{ top: MYGOTWO_DESKTOP_TOKENS.quoteOverlayTop }}
     >
       <div
         className="flex items-start justify-center"
@@ -25,7 +25,7 @@ export default function MyGoTwoDesktopQuoteBox() {
             fontFamily: "'Cormorant Garamond', serif",
             opacity: quote.visible ? 1 : 0,
             transition: "opacity 300ms ease",
-            maxWidth: "32ch",
+            maxWidth: "30ch",
           }}
         >
           "{quote.text}"

@@ -8,6 +8,7 @@ export interface MyGoTwoDesktopCoverflowItem {
   label: string;
   image: string;
   imageKey?: string;
+  previewTitle?: string;
 }
 
 interface MyGoTwoDesktopCoverflowProps {
@@ -111,7 +112,49 @@ function MyGoTwoDesktopCoverflowCard({
             className="absolute inset-0 h-full w-full object-cover"
             onError={onImageError}
           />
-        ) : null}
+        ) : (
+          <div
+            className="absolute inset-0 flex flex-col justify-between"
+            style={{
+              background: "#eee7d6",
+              padding: "22px 20px 18px",
+              color: "#1a1a1a",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: 10,
+                  letterSpacing: "0.24em",
+                  textTransform: "uppercase",
+                  color: "#d4543a",
+                  fontWeight: 700,
+                  fontFamily: "'Jost', sans-serif",
+                }}
+              >
+                Product Card
+              </div>
+              <div
+                style={{
+                  marginTop: 10,
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: 42,
+                  fontWeight: 700,
+                  lineHeight: 0.95,
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                {item.previewTitle || item.label}
+              </div>
+            </div>
+            <div
+              style={{
+                height: 1,
+                background: "rgba(68,58,40,0.14)",
+              }}
+            />
+          </div>
+        )}
         {isActive ? (
           <>
             <div className="absolute inset-0 bg-gradient-to-t from-black/34 via-transparent to-transparent" />
@@ -153,6 +196,7 @@ export default function MyGoTwoDesktopCoverflow({
   const stageRef = useRef<HTMLDivElement>(null);
   const dragStartX = useRef<number | null>(null);
   const dragStartMs = useRef<number | null>(null);
+  const lastWheelMs = useRef(0);
 
   const itemCount = items.length;
 
@@ -233,9 +277,32 @@ export default function MyGoTwoDesktopCoverflow({
         perspective: "1800px",
         perspectiveOrigin: "50% 48%",
       }}
+      onWheel={(event) => {
+        if (itemCount <= 1) return;
+        const now = performance.now();
+        if (now - lastWheelMs.current < 180) {
+          event.preventDefault();
+          return;
+        }
+
+        const primaryDelta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+        if (Math.abs(primaryDelta) < 20) return;
+
+        event.preventDefault();
+        lastWheelMs.current = now;
+        setActiveIndex((prev) => normalizeIndex(prev + (primaryDelta > 0 ? 1 : -1), itemCount));
+      }}
       onPointerDown={(event) => {
         dragStartX.current = event.clientX;
         dragStartMs.current = performance.now();
+      }}
+      onPointerCancel={() => {
+        dragStartX.current = null;
+        dragStartMs.current = null;
+      }}
+      onPointerLeave={() => {
+        dragStartX.current = null;
+        dragStartMs.current = null;
       }}
       onPointerUp={(event) => {
         if (dragStartX.current === null || dragStartMs.current === null || itemCount <= 1) return;

@@ -1,9 +1,9 @@
 export const MYGOTWO_DESKTOP_TOKENS = {
   frameMaxWidth: 1680,
   frameRadius: 34,
-  quoteBoxMinHeight: "clamp(48px, 6vh, 72px)",
   quoteMaxWidth: 760,
-  quoteBoxPaddingTop: "clamp(4px, 0.5vh, 8px)",
+  quoteOverlayTop: "clamp(8px, 1vh, 16px)",
+  quoteBoxPaddingTop: "clamp(2px, 0.3vh, 6px)",
   quoteBoxPaddingX: "clamp(12px, 1.4vw, 24px)",
   outerPaddingX: "clamp(12px, 1.8vw, 28px)",
   outerPaddingY: "clamp(12px, 1.8vw, 24px)",

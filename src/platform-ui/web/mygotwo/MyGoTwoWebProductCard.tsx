@@ -171,6 +171,7 @@ const WebAutoFitTitle = ({
         {text}
       </div>
       <textarea
+        className="mygotwo-web-title"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
@@ -295,6 +296,7 @@ export default function MyGoTwoWebProductCard({
     >
       <style>{`
         .mygotwo-web-title::placeholder { color: #1a1a1a; }
+        .mygotwo-web-title { caret-color: #1a1a1a; }
         .mygotwo-web-notes::placeholder { color: rgba(26,26,26,0.3); }
       `}</style>
 
