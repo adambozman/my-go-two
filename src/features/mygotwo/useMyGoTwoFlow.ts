@@ -182,7 +182,7 @@ export function useMyGoTwoFlow({
 
     const createItem: MyGoTwoFlowItem = {
       id: `${selectedCategory.key}::${selectedSubcategory.id}::${selectedProduct.id}::__create__`,
-      label: `New ${selectedProduct.name}`,
+      label: selectedProduct.name,
       image: productImage,
       imageKey: selectedProduct.image,
       sourceId: selectedProduct.id,

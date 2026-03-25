@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { HandDrawnArrowLeft, HandDrawnArrowRight } from "@/components/ui/hand-drawn-arrows";
 import type { MyGoTwoRootItem } from "@/features/mygotwo/types";
 import { BRANDED_CARD_SVG } from "@/features/mygotwo/shared";
+import type { ReactNode } from "react";
 
 type CoverflowItem = {
   id: string;
@@ -58,9 +59,9 @@ function getWrappedOffset(index: number, activeIndex: number, length: number) {
   return raw;
 }
 
-function isVisibleOffset(offset: number, length: number) {
+function isVisibleOffset(offset: number, length: number, visibleRadius: number) {
   const half = Math.floor(length / 2);
-  const maxVisibleOffset = Math.min(3, half);
+  const maxVisibleOffset = Math.min(visibleRadius, half);
 
   if (Math.abs(offset) > maxVisibleOffset) {
     return false;
@@ -73,14 +74,18 @@ function isVisibleOffset(offset: number, length: number) {
   return true;
 }
 
-function isRightHiddenStackOffset(offset: number, length: number) {
+function isRightHiddenStackOffset(offset: number, length: number, visibleRadius: number) {
   const half = Math.floor(length / 2);
-  return length % 2 === 0 && half <= 3 && Math.abs(offset) === half;
+  return length % 2 === 0 && half <= visibleRadius && Math.abs(offset) === half;
 }
 
 type MyGoTwoWebCoverflowStageProps = {
   items: MyGoTwoRootItem[];
   onActiveCardSelect?: (item: MyGoTwoRootItem) => void;
+  onActiveItemChange?: (item: MyGoTwoRootItem) => void;
+  renderCard?: (item: MyGoTwoRootItem, isActive: boolean) => ReactNode;
+  interactiveItemId?: string | null;
+  visibleRadius?: number;
 };
 
 function buildCoverflowItems(items: MyGoTwoRootItem[]): CoverflowItem[] {
@@ -94,6 +99,10 @@ function buildCoverflowItems(items: MyGoTwoRootItem[]): CoverflowItem[] {
 export default function MyGoTwoWebCoverflowStage({
   items,
   onActiveCardSelect,
+  onActiveItemChange,
+  renderCard,
+  interactiveItemId = null,
+  visibleRadius = 3,
 }: MyGoTwoWebCoverflowStageProps) {
   const coverflowItems = useMemo(() => buildCoverflowItems(items), [items]);
   const itemSignature = useMemo(() => items.map((item) => item.id).join("|"), [items]);
@@ -125,21 +134,13 @@ export default function MyGoTwoWebCoverflowStage({
         }))
         .filter(
           (item) =>
-            isVisibleOffset(item.offset, itemCount) ||
-            isVisibleOffset(item.previousOffset, itemCount) ||
-            isRightHiddenStackOffset(item.offset, itemCount) ||
-            isRightHiddenStackOffset(item.previousOffset, itemCount),
+            isVisibleOffset(item.offset, itemCount, visibleRadius) ||
+            isVisibleOffset(item.previousOffset, itemCount, visibleRadius) ||
+            isRightHiddenStackOffset(item.offset, itemCount, visibleRadius) ||
+            isRightHiddenStackOffset(item.previousOffset, itemCount, visibleRadius),
         ),
-    [activeIndex, coverflowItems, itemCount, previousActiveIndex],
+    [activeIndex, coverflowItems, itemCount, previousActiveIndex, visibleRadius],
   );
-
-  const visibleDotIndices = useMemo(() => {
-    if (itemCount <= 7) {
-      return Array.from({ length: itemCount }, (_, index) => index);
-    }
-
-    return [-3, -2, -1, 0, 1, 2, 3].map((offset) => normalizeIndex(activeIndex + offset, itemCount));
-  }, [activeIndex, itemCount]);
 
   const navigateToIndex = useCallback(
     (nextIndex: number) => {
@@ -181,6 +182,15 @@ export default function MyGoTwoWebCoverflowStage({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [handleArrowKey, itemCount]);
 
+  useEffect(() => {
+    if (!onActiveItemChange || itemCount === 0) return;
+
+    const activeItem = items[activeIndex];
+    if (activeItem) {
+      onActiveItemChange(activeItem);
+    }
+  }, [activeIndex, itemCount, items, onActiveItemChange]);
+
   const transition = reduceMotion
     ? { duration: 0 }
     : {
@@ -201,20 +211,24 @@ export default function MyGoTwoWebCoverflowStage({
       {visibleItems.map((item) => {
         const itemIndex = coverflowItems.findIndex((entry) => entry.id === item.id);
         const sourceItem = items[itemIndex];
-        const inRightHiddenStack = isRightHiddenStackOffset(item.offset, itemCount);
-        const currentVisible = isVisibleOffset(item.offset, itemCount);
+        const inRightHiddenStack = isRightHiddenStackOffset(item.offset, itemCount, visibleRadius);
+        const currentVisible = isVisibleOffset(item.offset, itemCount, visibleRadius);
         const isHovered = hoveredIndex === itemIndex && item.offset !== 0 && currentVisible;
         const hoverScale = isHovered ? 0.03 : 0;
         const hoverLift = isHovered ? -10 : 0;
         const enteringSide =
-          currentVisible && !isVisibleOffset(item.previousOffset, itemCount) && !isRightHiddenStackOffset(item.previousOffset, itemCount)
+          currentVisible &&
+          !isVisibleOffset(item.previousOffset, itemCount, visibleRadius) &&
+          !isRightHiddenStackOffset(item.previousOffset, itemCount, visibleRadius)
             ? navigationDirection === 1
               ? "right"
               : "left"
             : null;
         const enteringPose = enteringSide ? HIDDEN_POSES[enteringSide] : null;
         const exitingSide =
-          !currentVisible && !inRightHiddenStack && isVisibleOffset(item.previousOffset, itemCount)
+          !currentVisible &&
+          !inRightHiddenStack &&
+          isVisibleOffset(item.previousOffset, itemCount, visibleRadius)
             ? navigationDirection === 1
               ? "right"
               : "left"
@@ -226,9 +240,57 @@ export default function MyGoTwoWebCoverflowStage({
             : exitingSide
               ? HIDDEN_POSES[exitingSide]
               : null;
+        const isActive = currentVisible && itemIndex === activeIndex;
+        const isInteractive = Boolean(renderCard && sourceItem && interactiveItemId === item.id && isActive);
+        const baseStyle = {
+          width: `${CARD_WIDTH}px`,
+          height: `${CARD_HEIGHT}px`,
+          zIndex: pose.zIndex,
+          marginLeft: `${-CARD_WIDTH / 2}px`,
+          transformOrigin: "center bottom",
+          transformStyle: "preserve-3d" as const,
+          pointerEvents: currentVisible ? "auto" : "none" as const,
+        };
+        const animation = {
+          x: pose.x,
+          y: pose.y + STAGE_OFFSET_Y + hoverLift,
+          scale: pose.scale + hoverScale,
+          rotate: pose.rotate,
+          rotateY: pose.rotateY,
+          opacity: 1,
+          boxShadow:
+            item.offset === 0 && currentVisible
+              ? "0 28px 64px rgba(18,35,54,0.24)"
+              : "0 16px 42px rgba(18,35,54,0.18)",
+        };
 
         if (!pose) {
           return null;
+        }
+
+        if (isInteractive) {
+          return (
+            <motion.div
+              key={item.id}
+              className="absolute left-1/2 top-0 overflow-hidden rounded-[34px] border-0 bg-transparent"
+              style={baseStyle}
+              initial={
+                enteringPose && !reduceMotion
+                  ? {
+                      x: enteringPose.x,
+                      y: enteringPose.y + STAGE_OFFSET_Y,
+                      scale: enteringPose.scale,
+                      rotate: enteringPose.rotate,
+                      rotateY: enteringPose.rotateY,
+                    }
+                  : false
+              }
+              animate={animation}
+              transition={transition}
+            >
+              <div className="h-full w-full">{renderCard(sourceItem, true)}</div>
+            </motion.div>
+          );
         }
 
         return (
@@ -247,15 +309,7 @@ export default function MyGoTwoWebCoverflowStage({
             onMouseLeave={() => setHoveredIndex(null)}
             aria-label={`Show slide ${itemIndex + 1}`}
             className="absolute left-1/2 top-0 overflow-hidden rounded-[34px] border-0 bg-transparent p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(31,88,120,0.45)]"
-            style={{
-              width: `${CARD_WIDTH}px`,
-              height: `${CARD_HEIGHT}px`,
-              zIndex: pose.zIndex,
-              marginLeft: `${-CARD_WIDTH / 2}px`,
-              transformOrigin: "center bottom",
-              transformStyle: "preserve-3d",
-              pointerEvents: currentVisible ? "auto" : "none",
-            }}
+            style={baseStyle}
             initial={
               enteringPose && !reduceMotion
                 ? {
@@ -267,26 +321,19 @@ export default function MyGoTwoWebCoverflowStage({
                   }
                 : false
             }
-            animate={{
-              x: pose.x,
-              y: pose.y + STAGE_OFFSET_Y + hoverLift,
-              scale: pose.scale + hoverScale,
-              rotate: pose.rotate,
-              rotateY: pose.rotateY,
-              opacity: 1,
-              boxShadow:
-                item.offset === 0 && currentVisible
-                  ? "0 28px 64px rgba(18,35,54,0.24)"
-                  : "0 16px 42px rgba(18,35,54,0.18)",
-            }}
+            animate={animation}
             transition={transition}
           >
-            <img
-              src={item.image}
-              alt={item.alt}
-              className="h-full w-full object-cover"
-              draggable={false}
-            />
+            {renderCard && sourceItem ? (
+              <div className="h-full w-full">{renderCard(sourceItem, false)}</div>
+            ) : (
+              <img
+                src={item.image}
+                alt={item.alt}
+                className="h-full w-full object-cover"
+                draggable={false}
+              />
+            )}
           </motion.button>
         );
       })}

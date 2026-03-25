@@ -1,19 +1,54 @@
+import { useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { HandDrawnArrowLeft } from "@/components/ui/hand-drawn-arrows";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMyGoTwoCatalogData } from "@/features/mygotwo/useMyGoTwoCatalogData";
+import type { MyGoTwoFlowItem } from "@/features/mygotwo/types";
 import { useMyGoTwoFlow } from "@/features/mygotwo/useMyGoTwoFlow";
+import MyGoTwoProductCard from "@/platform-ui/web/mygotwo/MyGoTwoProductCard";
 import MyGoTwoWebHeader from "@/platform-ui/web/mygotwo/MyGoTwoWebHeader";
 import MyGoTwoWebCoverflowStage from "@/platform-ui/web/mygotwo/MyGoTwoWebCoverflowStage";
 
 const MyGoTwo = () => {
   const { user, loading } = useAuth();
   const { categories, webLevelOneItems, isLoading } = useMyGoTwoCatalogData();
-  const { currentLevel, items, hasBack, goBack, selectItem } = useMyGoTwoFlow({
+  const {
+    currentLevel,
+    items,
+    hasBack,
+    goBack,
+    selectItem,
+    selectedCategory,
+    selectedSubcategory,
+    selectedProduct,
+    productEntries,
+    refreshProductEntries,
+  } = useMyGoTwoFlow({
     userId: user?.id ?? "",
     categories,
     levelOneItems: webLevelOneItems,
   });
+  const [activeItemId, setActiveItemId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setActiveItemId((current) => {
+      if (current && items.some((item) => item.id === current)) {
+        return current;
+      }
+
+      return items[0]?.id ?? null;
+    });
+  }, [items]);
+
+  const activeLevelFourItem = useMemo(
+    () => items.find((item) => item.id === activeItemId) as MyGoTwoFlowItem | undefined,
+    [activeItemId, items],
+  );
+
+  const productEntryMap = useMemo(
+    () => Object.fromEntries(productEntries.map((entry) => [entry.id, entry])),
+    [productEntries],
+  );
 
   if (loading || isLoading) {
     return (
@@ -60,6 +95,36 @@ const MyGoTwo = () => {
       <MyGoTwoWebCoverflowStage
         items={items}
         onActiveCardSelect={selectItem}
+        onActiveItemChange={(item) => setActiveItemId(item.id)}
+        interactiveItemId={currentLevel === 4 ? activeItemId : null}
+        visibleRadius={currentLevel === 4 ? 2 : 3}
+        renderCard={
+          currentLevel === 4 && selectedCategory && selectedSubcategory && selectedProduct
+            ? (item, isActive) => {
+                const flowItem = item as MyGoTwoFlowItem;
+                const activeEntry =
+                  flowItem.kind === "entry" ? productEntryMap[flowItem.sourceId] ?? null : null;
+
+                return (
+                  <MyGoTwoProductCard
+                    userId={user.id}
+                    categoryLabel={selectedCategory.label}
+                    subcategory={selectedSubcategory}
+                    product={selectedProduct}
+                    activeEntry={activeEntry}
+                    compact
+                    interactive={isActive}
+                    onSaved={async (entryId) => {
+                      await refreshProductEntries();
+                      if (entryId) {
+                        setActiveItemId(entryId);
+                      }
+                    }}
+                  />
+                );
+              }
+            : undefined
+        }
       />
     </div>
   );
