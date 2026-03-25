@@ -135,7 +135,7 @@ const buildCategoryState = (
 
 const buildThisOrThatCategoryState = (
   category: ThisOrThatCategoryDefinition,
-  bankGender: string,
+  bankGender: Gender,
   profileAnswers: ProfileAnswersMap,
   subscribed: boolean,
 ): ThisOrThatCategoryState => {
