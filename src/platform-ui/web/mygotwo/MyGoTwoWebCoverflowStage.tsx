@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { HandDrawnArrowLeft, HandDrawnArrowRight } from "@/components/ui/hand-drawn-arrows";
 import type { MyGoTwoRootItem } from "@/features/mygotwo/types";
 import { BRANDED_CARD_SVG } from "@/features/mygotwo/shared";
 
@@ -308,7 +308,7 @@ export default function MyGoTwoWebCoverflowStage({
               "inset 8px 8px 18px rgba(255,255,255,0.22), inset -10px -12px 20px rgba(33,88,107,0.18), 0 10px 22px rgba(31,88,120,0.16)",
           }}
         >
-          <ChevronLeft className="h-5 w-5" />
+          <HandDrawnArrowLeft className="h-5 w-5" />
         </button>
 
         <div className="flex items-center gap-2">
@@ -356,7 +356,7 @@ export default function MyGoTwoWebCoverflowStage({
               "inset 8px 8px 18px rgba(255,255,255,0.22), inset -10px -12px 20px rgba(33,88,107,0.18), 0 10px 22px rgba(31,88,120,0.16)",
           }}
         >
-          <ChevronRight className="h-5 w-5" />
+          <HandDrawnArrowRight className="h-5 w-5" />
         </button>
       </div>
     </section>
