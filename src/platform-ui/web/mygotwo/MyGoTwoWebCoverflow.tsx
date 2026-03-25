@@ -287,11 +287,9 @@ export default function MyGoTwoWebCoverflow({
 
         const now = performance.now();
         if (now - lastWheelMs.current < 180) {
-          event.preventDefault();
           return;
         }
 
-        event.preventDefault();
         lastWheelMs.current = now;
         setActiveIndex((current) => normalizeIndex(current + (primaryDelta > 0 ? 1 : -1), itemCount));
       }}

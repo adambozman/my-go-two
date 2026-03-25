@@ -39,6 +39,14 @@ export default function MyGoTwoDesktopBrowser({
   visibleEachSide,
   onActiveIdChange,
 }: MyGoTwoDesktopBrowserProps) {
+  const rotateOverlaySelection = (step: number) => {
+    if (items.length <= 1 || !focusedItemId || step === 0) return;
+    const currentIndex = items.findIndex((item) => item.id === focusedItemId);
+    if (currentIndex < 0) return;
+    const nextIndex = ((currentIndex + step) % items.length + items.length) % items.length;
+    onCommit(items[nextIndex].id);
+  };
+
   return (
     <motion.div
       key={pageKey}
@@ -70,7 +78,15 @@ export default function MyGoTwoDesktopBrowser({
               onActiveIdChange={onActiveIdChange}
             />
             {overlay ? (
-              <div className="pointer-events-none absolute inset-0 z-20">
+              <div
+                className="pointer-events-none absolute inset-0 z-20"
+                onWheelCapture={(event) => {
+                  if (items.length <= 1) return;
+                  const primaryDelta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+                  if (Math.abs(primaryDelta) < 20) return;
+                  rotateOverlaySelection(primaryDelta > 0 ? 1 : -1);
+                }}
+              >
                 {overlay}
               </div>
             ) : null}
