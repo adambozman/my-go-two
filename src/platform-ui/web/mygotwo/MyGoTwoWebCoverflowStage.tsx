@@ -1,14 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import spare001 from "@/assets/spare/spare-001.jpg";
-import spare002 from "@/assets/spare/spare-002.jpg";
-import spare003 from "@/assets/spare/spare-003.jpg";
-import spare004 from "@/assets/spare/spare-004.jpg";
-import spare005 from "@/assets/spare/spare-005.jpg";
-import spare006 from "@/assets/spare/spare-006.jpg";
-import spare007 from "@/assets/spare/spare-007.jpg";
+import type { MyGoTwoRootItem } from "@/features/mygotwo/types";
+import { BRANDED_CARD_SVG } from "@/features/mygotwo/shared";
 
 type CoverflowItem = {
   id: string;
@@ -39,15 +34,10 @@ const POSES: Record<number, CardPose> = {
   [3]: { x: 452, y: 104, scale: 0.71, rotate: 24, rotateY: -32, zIndex: 10 },
 };
 
-const ITEMS: CoverflowItem[] = [
-  { id: "spare-001", image: spare001, alt: "Floral astronaut editorial portrait" },
-  { id: "spare-002", image: spare002, alt: "Portrait with flower crown cap" },
-  { id: "spare-003", image: spare003, alt: "Glitch fashion editorial portrait" },
-  { id: "spare-004", image: spare004, alt: "Underwater cinematic portrait" },
-  { id: "spare-005", image: spare005, alt: "Stone statue portrait with purple flowers" },
-  { id: "spare-006", image: spare006, alt: "Prismatic portrait with bright reflections" },
-  { id: "spare-007", image: spare007, alt: "Red neon visor editorial portrait" },
-];
+const HIDDEN_POSES: Record<"left" | "right", CardPose> = {
+  left: { x: -452, y: 104, scale: 0.71, rotate: -24, rotateY: 32, zIndex: 5 },
+  right: { x: 452, y: 104, scale: 0.71, rotate: 24, rotateY: -32, zIndex: 5 },
+};
 
 function normalizeIndex(index: number, length: number) {
   return (index + length) % length;
@@ -68,34 +58,89 @@ function getWrappedOffset(index: number, activeIndex: number, length: number) {
   return raw;
 }
 
-export default function MyGoTwoWebCoverflowStage() {
-  const [activeIndex, setActiveIndex] = useState(3);
+type MyGoTwoWebCoverflowStageProps = {
+  items: MyGoTwoRootItem[];
+};
+
+function buildCoverflowItems(items: MyGoTwoRootItem[]): CoverflowItem[] {
+  return items.map((item) => ({
+    id: item.id,
+    image: item.image || BRANDED_CARD_SVG,
+    alt: item.label,
+  }));
+}
+
+export default function MyGoTwoWebCoverflowStage({ items }: MyGoTwoWebCoverflowStageProps) {
+  const coverflowItems = useMemo(() => buildCoverflowItems(items), [items]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [previousActiveIndex, setPreviousActiveIndex] = useState(0);
+  const [navigationDirection, setNavigationDirection] = useState<-1 | 1>(1);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const reduceMotion = useReducedMotion();
+  const itemCount = coverflowItems.length;
+
+  useEffect(() => {
+    if (itemCount === 0) {
+      setActiveIndex(0);
+      setPreviousActiveIndex(0);
+      return;
+    }
+
+    setActiveIndex((current) => normalizeIndex(current, itemCount));
+    setPreviousActiveIndex((current) => normalizeIndex(current, itemCount));
+  }, [itemCount]);
 
   const visibleItems = useMemo(
     () =>
-      ITEMS.map((item, index) => ({
+      coverflowItems.map((item, index) => ({
         ...item,
-        offset: getWrappedOffset(index, activeIndex, ITEMS.length),
-      })).filter((item) => Math.abs(item.offset) <= 3),
-    [activeIndex],
+        offset: getWrappedOffset(index, activeIndex, itemCount),
+        previousOffset: getWrappedOffset(index, previousActiveIndex, itemCount),
+      })).filter((item) => Math.abs(item.offset) <= 3 || Math.abs(item.previousOffset) <= 3),
+    [activeIndex, coverflowItems, itemCount, previousActiveIndex],
   );
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowLeft") {
-        setActiveIndex((current) => normalizeIndex(current - 1, ITEMS.length));
-      }
+  const visibleDotIndices = useMemo(() => {
+    if (itemCount <= 7) {
+      return Array.from({ length: itemCount }, (_, index) => index);
+    }
 
-      if (event.key === "ArrowRight") {
-        setActiveIndex((current) => normalizeIndex(current + 1, ITEMS.length));
-      }
+    return [-3, -2, -1, 0, 1, 2, 3].map((offset) => normalizeIndex(activeIndex + offset, itemCount));
+  }, [activeIndex, itemCount]);
+
+  const navigateToIndex = useCallback((nextIndex: number) => {
+    if (itemCount === 0) return;
+
+    const normalizedNext = normalizeIndex(nextIndex, itemCount);
+    const wrappedStep = getWrappedOffset(normalizedNext, activeIndex, itemCount);
+
+    setPreviousActiveIndex(activeIndex);
+    setNavigationDirection(wrappedStep < 0 ? -1 : 1);
+    setHoveredIndex(null);
+
+    setActiveIndex(normalizedNext);
+  }, [activeIndex, itemCount]);
+
+  const handleArrowKey = useCallback((key: string) => {
+    if (key === "ArrowLeft") {
+      navigateToIndex(activeIndex - 1);
+    }
+
+    if (key === "ArrowRight") {
+      navigateToIndex(activeIndex + 1);
+    }
+  }, [activeIndex, navigateToIndex]);
+
+  useEffect(() => {
+    if (itemCount === 0) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      handleArrowKey(event.key);
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [handleArrowKey, itemCount]);
 
   const transition = reduceMotion
     ? { duration: 0 }
@@ -104,6 +149,10 @@ export default function MyGoTwoWebCoverflowStage() {
         ease: [0.22, 1, 0.36, 1] as const,
       };
 
+  if (itemCount === 0) {
+    return null;
+  }
+
   return (
     <section
       aria-label="My Go Two coverflow"
@@ -111,17 +160,35 @@ export default function MyGoTwoWebCoverflowStage() {
       style={{ minHeight: "520px" }}
     >
       {visibleItems.map((item) => {
-        const pose = POSES[item.offset];
-        const itemIndex = ITEMS.findIndex((entry) => entry.id === item.id);
-        const isHovered = hoveredIndex === itemIndex && item.offset !== 0;
+        const itemIndex = coverflowItems.findIndex((entry) => entry.id === item.id);
+        const currentVisible = Math.abs(item.offset) <= 3;
+        const isHovered = hoveredIndex === itemIndex && item.offset !== 0 && currentVisible;
         const hoverScale = isHovered ? 0.03 : 0;
         const hoverLift = isHovered ? -10 : 0;
+        const enteringSide =
+          currentVisible && Math.abs(item.previousOffset) > 3
+            ? navigationDirection === 1
+              ? "right"
+              : "left"
+            : null;
+        const enteringPose = enteringSide ? HIDDEN_POSES[enteringSide] : null;
+        const exitingSide =
+          !currentVisible && Math.abs(item.previousOffset) <= 3
+            ? navigationDirection === 1
+              ? "right"
+              : "left"
+            : null;
+        const pose = currentVisible ? POSES[item.offset] : exitingSide ? HIDDEN_POSES[exitingSide] : null;
+
+        if (!pose) {
+          return null;
+        }
 
         return (
           <motion.button
             key={item.id}
             type="button"
-            onClick={() => setActiveIndex(itemIndex)}
+            onClick={() => navigateToIndex(itemIndex)}
             onMouseEnter={() => setHoveredIndex(itemIndex)}
             onMouseLeave={() => setHoveredIndex(null)}
             aria-label={`Show slide ${itemIndex + 1}`}
@@ -133,8 +200,19 @@ export default function MyGoTwoWebCoverflowStage() {
               marginLeft: `${-CARD_WIDTH / 2}px`,
               transformOrigin: "center bottom",
               transformStyle: "preserve-3d",
+              pointerEvents: currentVisible ? "auto" : "none",
             }}
-            initial={false}
+            initial={
+              enteringPose && !reduceMotion
+                ? {
+                    x: enteringPose.x,
+                    y: enteringPose.y + STAGE_OFFSET_Y,
+                    scale: enteringPose.scale,
+                    rotate: enteringPose.rotate,
+                    rotateY: enteringPose.rotateY,
+                  }
+                : false
+            }
             animate={{
               x: pose.x,
               y: pose.y + STAGE_OFFSET_Y + hoverLift,
@@ -143,7 +221,7 @@ export default function MyGoTwoWebCoverflowStage() {
               rotateY: pose.rotateY,
               opacity: 1,
               boxShadow:
-                item.offset === 0
+                item.offset === 0 && currentVisible
                   ? "0 28px 64px rgba(18,35,54,0.24)"
                   : "0 16px 42px rgba(18,35,54,0.18)",
             }}
@@ -165,7 +243,7 @@ export default function MyGoTwoWebCoverflowStage() {
       >
         <button
           type="button"
-          onClick={() => setActiveIndex((current) => normalizeIndex(current - 1, ITEMS.length))}
+          onClick={() => navigateToIndex(activeIndex - 1)}
           aria-label="Previous card"
           className="flex h-14 w-14 items-center justify-center rounded-full border-0 text-[#26495d] shadow-[0_16px_30px_rgba(38,73,93,0.16)] transition-transform duration-300 hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(31,88,120,0.42)]"
           style={{
@@ -177,14 +255,15 @@ export default function MyGoTwoWebCoverflowStage() {
         </button>
 
         <div className="flex items-center gap-2">
-          {ITEMS.map((item, index) => {
+          {visibleDotIndices.map((index) => {
             const active = index === activeIndex;
+            const item = coverflowItems[index];
 
             return (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setActiveIndex(index)}
+                onClick={() => navigateToIndex(index)}
                 aria-label={`Go to slide ${index + 1}`}
                 aria-pressed={active}
                 className="rounded-full border-0 p-0 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(31,88,120,0.42)]"
@@ -200,7 +279,7 @@ export default function MyGoTwoWebCoverflowStage() {
 
         <button
           type="button"
-          onClick={() => setActiveIndex((current) => normalizeIndex(current + 1, ITEMS.length))}
+          onClick={() => navigateToIndex(activeIndex + 1)}
           aria-label="Next card"
           className="flex h-14 w-14 items-center justify-center rounded-full border-0 text-[#4f2f08] shadow-[0_18px_36px_rgba(255,110,20,0.22)] transition-transform duration-300 hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(255,123,32,0.45)]"
           style={{

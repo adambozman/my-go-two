@@ -1,10 +1,12 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMyGoTwoCatalogData } from "@/features/mygotwo/useMyGoTwoCatalogData";
 import MyGoTwoWebHeader from "@/platform-ui/web/mygotwo/MyGoTwoWebHeader";
 import MyGoTwoWebCoverflowStage from "@/platform-ui/web/mygotwo/MyGoTwoWebCoverflowStage";
 
 const MyGoTwo = () => {
   const { user, loading } = useAuth();
+  const { webLevelOneItems } = useMyGoTwoCatalogData();
 
   if (loading) {
     return (
@@ -21,7 +23,7 @@ const MyGoTwo = () => {
   return (
     <div className="app-page flex h-screen flex-col overflow-hidden">
       <MyGoTwoWebHeader />
-      <MyGoTwoWebCoverflowStage />
+      <MyGoTwoWebCoverflowStage items={webLevelOneItems} />
     </div>
   );
 };
