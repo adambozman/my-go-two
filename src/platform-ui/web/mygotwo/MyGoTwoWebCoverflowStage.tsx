@@ -91,7 +91,6 @@ type MyGoTwoWebCoverflowStageProps = {
   onActiveCardSelect?: (item: MyGoTwoRootItem) => void;
   onActiveItemChange?: (item: MyGoTwoRootItem) => void;
   renderCard?: (item: MyGoTwoRootItem, isActive: boolean) => ReactNode;
-  activeItemId?: string | null;
   interactiveItemId?: string | null;
   visibleRadius?: number;
 };
@@ -109,13 +108,11 @@ export default function MyGoTwoWebCoverflowStage({
   onActiveCardSelect,
   onActiveItemChange,
   renderCard,
-  activeItemId = null,
   interactiveItemId = null,
   visibleRadius = 3,
 }: MyGoTwoWebCoverflowStageProps) {
   const coverflowItems = useMemo(() => buildCoverflowItems(items), [items]);
   const itemSignature = useMemo(() => items.map((item) => item.id).join("|"), [items]);
-  const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [previousActiveIndex, setPreviousActiveIndex] = useState(0);
   const [navigationDirection, setNavigationDirection] = useState<-1 | 1>(1);
@@ -130,32 +127,9 @@ export default function MyGoTwoWebCoverflowStage({
       return;
     }
 
-    const nextIndex = activeItemId
-      ? itemIds.findIndex((itemId) => itemId === activeItemId)
-      : 0;
-    const normalizedNextIndex = nextIndex >= 0 ? nextIndex : 0;
-
-    setActiveIndex((current) => (current === normalizedNextIndex ? current : normalizedNextIndex));
-    setPreviousActiveIndex((current) =>
-      current === normalizedNextIndex ? current : normalizedNextIndex,
-    );
-  }, [activeItemId, itemCount, itemIds, itemSignature]);
-
-  useEffect(() => {
-    if (!activeItemId || itemCount === 0) {
-      return;
-    }
-
-    const nextIndex = itemIds.findIndex((itemId) => itemId === activeItemId);
-    if (nextIndex < 0 || nextIndex === activeIndex) {
-      return;
-    }
-
-    setPreviousActiveIndex(activeIndex);
-    setNavigationDirection(getWrappedOffset(nextIndex, activeIndex, itemCount) < 0 ? -1 : 1);
-    setHoveredIndex(null);
-    setActiveIndex(nextIndex);
-  }, [activeIndex, activeItemId, itemCount, itemIds]);
+    setActiveIndex(0);
+    setPreviousActiveIndex(0);
+  }, [itemCount, itemSignature]);
 
   const visibleItems = useMemo(
     () =>
@@ -222,7 +196,7 @@ export default function MyGoTwoWebCoverflowStage({
     if (activeItem) {
       onActiveItemChange(activeItem);
     }
-  }, [activeIndex, itemCount, itemSignature, items, onActiveItemChange]);
+  }, [activeIndex, itemCount, items, onActiveItemChange]);
 
   const transition = reduceMotion
     ? { duration: 0 }

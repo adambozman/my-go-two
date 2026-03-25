@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { HandDrawnArrowLeft } from "@/components/ui/hand-drawn-arrows";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,28 +30,10 @@ const MyGoTwo = () => {
   });
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
 
-  useEffect(() => {
-    setActiveItemId((current) => {
-      if (current && items.some((item) => item.id === current)) {
-        return current;
-      }
-
-      return items[0]?.id ?? null;
-    });
-  }, [items]);
-
-  const activeLevelFourItem = useMemo(
-    () => items.find((item) => item.id === activeItemId) as MyGoTwoFlowItem | undefined,
-    [activeItemId, items],
-  );
-
   const productEntryMap = useMemo(
     () => Object.fromEntries(productEntries.map((entry) => [entry.id, entry])),
     [productEntries],
   );
-  const handleActiveItemChange = useCallback((item: MyGoTwoFlowItem) => {
-    setActiveItemId(item.id);
-  }, []);
 
   if (loading || isLoading) {
     return (
@@ -98,8 +80,7 @@ const MyGoTwo = () => {
       <MyGoTwoWebCoverflowStage
         items={items}
         onActiveCardSelect={selectItem}
-        activeItemId={activeItemId}
-        onActiveItemChange={handleActiveItemChange}
+        onActiveItemChange={(item) => setActiveItemId(item.id)}
         interactiveItemId={currentLevel === 4 ? activeItemId : null}
         visibleRadius={currentLevel === 4 ? 2 : 3}
         renderCard={
