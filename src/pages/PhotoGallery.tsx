@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Images, RefreshCw } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { resolveStorageUrl } from "@/lib/storageRefs";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { resolveStorageUrl } from "@/lib/storageRefs";
 
-type SourceKind = "cards" | "templates" | "profile" | "connections";
+type SourceKind = "pages" | "cards" | "templates" | "profile" | "connections";
 
 interface GalleryPhoto {
   id: string;
@@ -21,6 +21,7 @@ interface GalleryPhoto {
 
 const FILTERS: Array<{ key: SourceKind | "all"; label: string }> = [
   { key: "all", label: "All Photos" },
+  { key: "pages", label: "Page Photos" },
   { key: "cards", label: "My Cards" },
   { key: "templates", label: "Templates" },
   { key: "profile", label: "Profile" },
@@ -28,6 +29,7 @@ const FILTERS: Array<{ key: SourceKind | "all"; label: string }> = [
 ];
 
 const SOURCE_LABELS: Record<SourceKind, string> = {
+  pages: "Pages",
   cards: "My Go Two",
   templates: "Templates",
   profile: "Profile",
@@ -46,8 +48,12 @@ function formatDate(value: string | null) {
   }).format(date);
 }
 
-function uniqueUsages(values: string[]) {
+function uniqueStrings(values: string[]) {
   return Array.from(new Set(values.filter(Boolean)));
+}
+
+function normalizeSubtitle(...parts: Array<string | null | undefined>) {
+  return parts.filter(Boolean).join(" · ");
 }
 
 export default function PhotoGallery() {
@@ -59,45 +65,107 @@ export default function PhotoGallery() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["key"]>("all");
 
   const loadPhotos = useCallback(async () => {
-    if (!user) {
-      setPhotos([]);
-      setLoading(false);
-      setRefreshing(false);
-      return;
-    }
-
     setLoading(true);
 
-    const [{ data: profile }, { data: cardEntries }, { data: customTemplates }, { data: couples }] =
-      await Promise.all([
-        supabase
-          .from("profiles")
-          .select("avatar_url, display_name, updated_at")
-          .eq("user_id", user.id)
-          .maybeSingle(),
-        supabase
-          .from("card_entries")
-          .select("id, entry_name, group_name, card_key, image_url, created_at, updated_at")
-          .eq("user_id", user.id)
-          .not("image_url", "is", null)
-          .order("updated_at", { ascending: false }),
-        supabase
-          .from("custom_templates")
-          .select("id, name, category, image_url, created_at")
-          .eq("user_id", user.id)
-          .not("image_url", "is", null)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("couples")
-          .select("id, display_label, photo_url, updated_at, created_at, inviter_id, invitee_id")
-          .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`)
-          .not("photo_url", "is", null)
-          .order("updated_at", { ascending: false }),
-      ]);
+    const [
+      { data: categoryRegistry },
+      { data: categoryImages },
+      { data: profile },
+      { data: cardEntries },
+      { data: customTemplates },
+      { data: couples },
+    ] = await Promise.all([
+      supabase
+        .from("category_registry")
+        .select("key, label, page, section, subcategories")
+        .eq("is_active", true),
+      supabase
+        .from("category_images")
+        .select("category_key, image_url, gender, created_at")
+        .order("created_at", { ascending: false }),
+      user
+        ? supabase
+            .from("profiles")
+            .select("avatar_url, display_name, updated_at")
+            .eq("user_id", user.id)
+            .maybeSingle()
+        : Promise.resolve({ data: null }),
+      user
+        ? supabase
+            .from("card_entries")
+            .select("id, entry_name, group_name, card_key, image_url, created_at, updated_at")
+            .eq("user_id", user.id)
+            .not("image_url", "is", null)
+            .order("updated_at", { ascending: false })
+        : Promise.resolve({ data: [] }),
+      user
+        ? supabase
+            .from("custom_templates")
+            .select("id, name, category, image_url, created_at")
+            .eq("user_id", user.id)
+            .not("image_url", "is", null)
+            .order("created_at", { ascending: false })
+        : Promise.resolve({ data: [] }),
+      user
+        ? supabase
+            .from("couples")
+            .select("id, display_label, photo_url, updated_at, created_at")
+            .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`)
+            .not("photo_url", "is", null)
+            .order("updated_at", { ascending: false })
+        : Promise.resolve({ data: [] }),
+    ]);
+
+    const registryMeta = new Map<string, { title: string; subtitle: string }>();
+
+    for (const row of categoryRegistry || []) {
+      registryMeta.set(row.key, {
+        title: row.label,
+        subtitle: normalizeSubtitle(row.page, row.section),
+      });
+
+      const subcategories = Array.isArray(row.subcategories) ? row.subcategories : [];
+      for (const subcategory of subcategories) {
+        const subId = typeof subcategory?.id === "string" ? subcategory.id : "";
+        const subName = typeof subcategory?.name === "string" ? subcategory.name : "";
+        const products = Array.isArray(subcategory?.products) ? subcategory.products : [];
+
+        if (subId) {
+          registryMeta.set(subId, {
+            title: subName || row.label,
+            subtitle: normalizeSubtitle(row.label, row.page),
+          });
+        }
+
+        for (const product of products) {
+          const productId = typeof product?.id === "string" ? product.id : "";
+          const productName = typeof product?.name === "string" ? product.name : "";
+          if (!productId) continue;
+
+          registryMeta.set(productId, {
+            title: productName || subName || row.label,
+            subtitle: normalizeSubtitle(row.label, subName || row.section),
+          });
+        }
+      }
+    }
 
     const records: Array<Omit<GalleryPhoto, "resolvedUrl">> = [];
 
-    if (profile?.avatar_url) {
+    for (const row of categoryImages || []) {
+      const meta = registryMeta.get(row.category_key);
+      records.push({
+        id: `page-${row.gender}-${row.category_key}`,
+        rawUrl: row.image_url,
+        title: meta?.title || row.category_key,
+        subtitle: normalizeSubtitle(meta?.subtitle || "Saved page image", row.gender),
+        source: "pages",
+        createdAt: row.created_at || null,
+        usages: ["Website page"],
+      });
+    }
+
+    if (profile?.avatar_url && user) {
       records.push({
         id: `profile-${user.id}`,
         rawUrl: profile.avatar_url,
@@ -115,7 +183,7 @@ export default function PhotoGallery() {
         id: `card-${row.id}`,
         rawUrl: row.image_url,
         title: row.entry_name || "Untitled card",
-        subtitle: `${row.group_name} · ${row.card_key}`,
+        subtitle: normalizeSubtitle(row.group_name, row.card_key),
         source: "cards",
         createdAt: row.updated_at || row.created_at || null,
         usages: ["My Go Two card"],
@@ -148,34 +216,24 @@ export default function PhotoGallery() {
       });
     }
 
-    const grouped = new Map<
-      string,
-      Omit<GalleryPhoto, "resolvedUrl" | "id"> & { ids: string[] }
-    >();
-
+    const grouped = new Map<string, Omit<GalleryPhoto, "id" | "resolvedUrl">>();
     for (const record of records) {
       const existing = grouped.get(record.rawUrl);
       if (existing) {
-        existing.ids.push(record.id);
-        existing.usages = uniqueUsages([...existing.usages, ...record.usages]);
+        existing.usages = uniqueStrings([...existing.usages, ...record.usages]);
         if (!existing.createdAt || (record.createdAt && record.createdAt > existing.createdAt)) {
           existing.createdAt = record.createdAt;
+          existing.title = record.title;
+          existing.subtitle = record.subtitle;
+          existing.source = record.source;
         }
         continue;
       }
 
-      grouped.set(record.rawUrl, {
-        rawUrl: record.rawUrl,
-        title: record.title,
-        subtitle: record.subtitle,
-        source: record.source,
-        createdAt: record.createdAt,
-        usages: record.usages,
-        ids: [record.id],
-      });
+      grouped.set(record.rawUrl, { ...record });
     }
 
-    const resolvedEntries = await Promise.all(
+    const resolved = await Promise.all(
       Array.from(grouped.values()).map(async (record, index) => ({
         id: `${record.source}-${index}`,
         rawUrl: record.rawUrl,
@@ -184,12 +242,12 @@ export default function PhotoGallery() {
         subtitle: record.subtitle,
         source: record.source,
         createdAt: record.createdAt,
-        usages: uniqueUsages(record.usages),
+        usages: uniqueStrings(record.usages),
       })),
     );
 
     setPhotos(
-      resolvedEntries
+      resolved
         .filter((record) => !!record.resolvedUrl)
         .sort((a, b) => {
           const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
@@ -203,7 +261,7 @@ export default function PhotoGallery() {
 
   useEffect(() => {
     if (authLoading) return;
-    loadPhotos();
+    void loadPhotos();
   }, [authLoading, loadPhotos]);
 
   const filteredPhotos = useMemo(() => {
@@ -211,30 +269,17 @@ export default function PhotoGallery() {
     return photos.filter((photo) => photo.source === filter);
   }, [photos, filter]);
 
-  const counts = useMemo(() => {
-    return photos.reduce<Record<SourceKind, number>>(
-      (acc, photo) => {
-        acc[photo.source] += 1;
-        return acc;
-      },
-      { cards: 0, templates: 0, profile: 0, connections: 0 },
-    );
-  }, [photos]);
-
-  if (!authLoading && !user) {
-    return (
-      <div className="min-h-screen bg-background px-6 py-16 text-foreground">
-        <div className="mx-auto flex max-w-xl flex-col items-center gap-4 text-center">
-          <Images className="h-12 w-12 text-muted-foreground" />
-          <h1 className="text-3xl font-semibold">Photo Gallery</h1>
-          <p className="text-sm text-muted-foreground">
-            Sign in to see every saved photo from your cards, templates, profile, and connections.
-          </p>
-          <Button onClick={() => navigate("/login")}>Go To Login</Button>
-        </div>
-      </div>
-    );
-  }
+  const counts = useMemo(
+    () =>
+      photos.reduce<Record<SourceKind, number>>(
+        (acc, photo) => {
+          acc[photo.source] += 1;
+          return acc;
+        },
+        { pages: 0, cards: 0, templates: 0, profile: 0, connections: 0 },
+      ),
+    [photos],
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -246,7 +291,7 @@ export default function PhotoGallery() {
           <div className="min-w-0">
             <h1 className="text-lg font-semibold">Photo Gallery</h1>
             <p className="text-xs text-muted-foreground">
-              Every saved photo across your cards, templates, profile, and connection pages.
+              Every saved photo across page images, cards, templates, profile, and connections.
             </p>
           </div>
           <Button
@@ -265,12 +310,15 @@ export default function PhotoGallery() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        {!user && !authLoading && (
+          <div className="mb-6 rounded-2xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+            Showing page photos. Sign in to also see photos saved in your cards, templates, profile, and connections.
+          </div>
+        )}
+
+        <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
           {FILTERS.map((item) => {
-            const count =
-              item.key === "all"
-                ? photos.length
-                : counts[item.key as SourceKind];
+            const count = item.key === "all" ? photos.length : counts[item.key as SourceKind];
 
             return (
               <button
@@ -283,7 +331,9 @@ export default function PhotoGallery() {
                 }`}
               >
                 <div className="text-sm font-semibold">{item.label}</div>
-                <div className="text-xs text-muted-foreground">{count} photo{count === 1 ? "" : "s"}</div>
+                <div className="text-xs text-muted-foreground">
+                  {count} photo{count === 1 ? "" : "s"}
+                </div>
               </button>
             );
           })}
@@ -291,7 +341,7 @@ export default function PhotoGallery() {
 
         {loading ? (
           <div className="flex min-h-[40vh] items-center justify-center text-sm text-muted-foreground">
-            Loading saved photos...
+            Loading photos...
           </div>
         ) : filteredPhotos.length === 0 ? (
           <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border bg-card/50 px-6 text-center">
@@ -299,7 +349,7 @@ export default function PhotoGallery() {
             <div>
               <h2 className="text-lg font-semibold">No photos here yet</h2>
               <p className="text-sm text-muted-foreground">
-                Saved images will appear here as soon as you add them anywhere in the app.
+                This filter does not have any saved images yet.
               </p>
             </div>
           </div>
@@ -329,23 +379,19 @@ export default function PhotoGallery() {
                     </span>
                   </div>
 
-                  {photo.usages.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {photo.usages.map((usage) => (
-                        <span
-                          key={usage}
-                          className="rounded-full border border-border px-2 py-1 text-[10px] text-muted-foreground"
-                        >
-                          {usage}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {photo.usages.map((usage) => (
+                      <span
+                        key={usage}
+                        className="rounded-full border border-border px-2 py-1 text-[10px] text-muted-foreground"
+                      >
+                        {usage}
+                      </span>
+                    ))}
+                  </div>
 
                   {photo.createdAt && (
-                    <p className="text-xs text-muted-foreground">
-                      Saved {formatDate(photo.createdAt)}
-                    </p>
+                    <p className="text-xs text-muted-foreground">Saved {formatDate(photo.createdAt)}</p>
                   )}
                 </div>
               </article>
