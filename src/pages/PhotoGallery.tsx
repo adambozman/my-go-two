@@ -126,9 +126,10 @@ export default function PhotoGallery() {
 
       const subcategories = Array.isArray(row.subcategories) ? row.subcategories : [];
       for (const subcategory of subcategories) {
-        const subId = typeof subcategory?.id === "string" ? subcategory.id : "";
-        const subName = typeof subcategory?.name === "string" ? subcategory.name : "";
-        const products = Array.isArray(subcategory?.products) ? subcategory.products : [];
+        const sub = subcategory as Record<string, unknown>;
+        const subId = typeof sub?.id === "string" ? sub.id : "";
+        const subName = typeof sub?.name === "string" ? sub.name : "";
+        const products = Array.isArray(sub?.products) ? sub.products : [];
 
         if (subId) {
           registryMeta.set(subId, {

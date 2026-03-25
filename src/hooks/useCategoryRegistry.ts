@@ -86,8 +86,8 @@ export function useCategoryRegistry(
         const fallbackRows = CATEGORY_REGISTRY_SEED.filter(
           (row) => row.page === page && row.is_active && row.genders?.includes(dbGender),
         );
-        const typedDbRows = (dbRows ?? []) as CategoryRegistryRow[];
-        const rows: CategoryRegistryRow[] = typedDbRows.length > 0 ? typedDbRows : fallbackRows;
+        const typedDbRows = (dbRows ?? []) as unknown as CategoryRegistryRow[];
+        const rows: CategoryRegistryRow[] = typedDbRows.length > 0 ? typedDbRows : fallbackRows as unknown as CategoryRegistryRow[];
 
         if (fetchError && rows.length === 0) throw fetchError;
         if (cancelled) return;
