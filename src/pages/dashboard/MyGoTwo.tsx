@@ -19,9 +19,20 @@ const MyGoTwo = () => {
   }
 
   return (
-    <div className="app-page min-h-screen overflow-x-hidden">
-      <MyGoTwoWebHeader />
-      <MyGoTwoWebCoverflowStage />
+    <div className="app-page flex h-screen flex-col overflow-hidden">
+      <div className="relative z-10">
+        <MyGoTwoWebHeader />
+      </div>
+      <div
+        className="pointer-events-none absolute inset-x-0 z-0"
+        style={{
+          top: "calc(var(--header-top-padding) + var(--header-icons-row-height) + var(--header-divider-margin-top) + 25px)",
+        }}
+      >
+        <div className="pointer-events-auto px-4 sm:px-6 md:px-8">
+          <MyGoTwoWebCoverflowStage />
+        </div>
+      </div>
     </div>
   );
 };

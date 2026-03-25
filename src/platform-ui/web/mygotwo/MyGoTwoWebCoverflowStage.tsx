@@ -20,6 +20,8 @@ type CardPose = {
   x: number;
   y: number;
   scale: number;
+  rotate: number;
+  rotateY: number;
   zIndex: number;
   brightness: number;
 };
@@ -28,13 +30,13 @@ const CARD_WIDTH = 244;
 const CARD_HEIGHT = 376;
 
 const POSES: Record<number, CardPose> = {
-  [-3]: { x: -420, y: 48, scale: 0.77, zIndex: 10, brightness: 0.72 },
-  [-2]: { x: -296, y: 28, scale: 0.86, zIndex: 20, brightness: 0.82 },
-  [-1]: { x: -162, y: 12, scale: 0.95, zIndex: 30, brightness: 0.92 },
-  [0]: { x: 0, y: 0, scale: 1.17, zIndex: 40, brightness: 1 },
-  [1]: { x: 162, y: 12, scale: 0.95, zIndex: 30, brightness: 0.92 },
-  [2]: { x: 296, y: 28, scale: 0.86, zIndex: 20, brightness: 0.82 },
-  [3]: { x: 420, y: 48, scale: 0.77, zIndex: 10, brightness: 0.72 },
+  [-3]: { x: -452, y: 138, scale: 0.71, rotate: -24, rotateY: 32, zIndex: 10, brightness: 0.66 },
+  [-2]: { x: -320, y: 76, scale: 0.81, rotate: -16, rotateY: 22, zIndex: 20, brightness: 0.78 },
+  [-1]: { x: -172, y: 22, scale: 0.94, rotate: -8, rotateY: 11, zIndex: 30, brightness: 0.92 },
+  [0]: { x: 0, y: 0, scale: 1.17, rotate: 0, rotateY: 0, zIndex: 40, brightness: 1 },
+  [1]: { x: 172, y: 22, scale: 0.94, rotate: 8, rotateY: -11, zIndex: 30, brightness: 0.92 },
+  [2]: { x: 320, y: 76, scale: 0.81, rotate: 16, rotateY: -22, zIndex: 20, brightness: 0.78 },
+  [3]: { x: 452, y: 138, scale: 0.71, rotate: 24, rotateY: -32, zIndex: 10, brightness: 0.66 },
 };
 
 const ITEMS: CoverflowItem[] = [
@@ -103,28 +105,17 @@ export default function MyGoTwoWebCoverflowStage() {
       };
 
   return (
-    <main
-      className="px-4 pt-6 sm:px-6 md:px-8"
-      style={{
-        minHeight: "calc(100vh - 118px)",
-      }}
+    <section
+      aria-label="My Go Two coverflow"
+      className="relative mx-auto w-full max-w-[1220px]"
+      style={{ height: "500px" }}
     >
-      <section
-        aria-label="My Go Two coverflow"
-        className="mx-auto flex w-full max-w-[1220px] items-center justify-center"
-        style={{
-          minHeight: "calc(100vh - 150px)",
-        }}
-      >
+      <div className="relative h-full w-full">
         <div
-          className="relative mx-auto w-full"
-          style={{
-            height: "min(46vw, 600px)",
-            minHeight: "500px",
-            maxHeight: "600px",
-          }}
+          className="absolute inset-x-0 top-0 bottom-[80px] overflow-hidden"
+          style={{ perspective: "1400px" }}
         >
-          <div className="absolute inset-x-0 top-0 bottom-[92px] flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-x-0 top-[6px] flex h-[380px] items-start justify-center">
             {visibleItems.map((item) => {
               const pose = POSES[item.offset];
               const itemIndex = ITEMS.findIndex((entry) => entry.id === item.id);
@@ -145,13 +136,16 @@ export default function MyGoTwoWebCoverflowStage() {
                     width: `${CARD_WIDTH}px`,
                     height: `${CARD_HEIGHT}px`,
                     zIndex: pose.zIndex,
-                    transformOrigin: "center center",
+                    transformOrigin: "center bottom",
+                    transformStyle: "preserve-3d",
                   }}
                   initial={false}
                   animate={{
                     x: pose.x,
                     y: pose.y + hoverLift,
                     scale: pose.scale + hoverScale,
+                    rotate: pose.rotate,
+                    rotateY: pose.rotateY,
                     opacity: 1,
                     filter: `brightness(${pose.brightness}) saturate(${item.offset === 0 ? 1.02 : 0.94})`,
                     boxShadow:
@@ -173,7 +167,7 @@ export default function MyGoTwoWebCoverflowStage() {
           </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-5">
+        <div className="absolute inset-x-0 bottom-2 flex items-center justify-center gap-5">
           <button
             type="button"
             onClick={() => setActiveIndex((current) => normalizeIndex(current - 1, ITEMS.length))}
@@ -221,7 +215,7 @@ export default function MyGoTwoWebCoverflowStage() {
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
   );
 }
