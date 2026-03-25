@@ -1,6 +1,7 @@
 # MyGoTwo Rebuild Rules
 
 Read this file before doing any work on `MyGoTwo`.
+Then read `docs/mygotwo-coverflow-baseline.md` before changing the web coverflow.
 
 ## Goal
 
