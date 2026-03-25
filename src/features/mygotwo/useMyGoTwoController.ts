@@ -77,22 +77,8 @@ export function useMyGoTwoController() {
   const [leafImage, setLeafImage] = useState("");
   const [leafSubcategoryName, setLeafSubcategoryName] = useState<string | undefined>();
   const [leafCategoryName, setLeafCategoryName] = useState<string | undefined>();
-  const [isDesktopViewport, setIsDesktopViewport] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
-  );
   const productGroupScrollRef = useRef<HTMLDivElement>(null);
   const productGroupSectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-  useEffect(() => {
-    const updateViewport = () => setIsDesktopViewport(window.innerWidth >= 1024);
-    updateViewport();
-    window.addEventListener("resize", updateViewport);
-    return () => window.removeEventListener("resize", updateViewport);
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.style.removeProperty("--header-height");
-  }, []);
 
   const defaultFieldValues = useMemo(() => {
     if (!leafSubtype?.fields) return {} as Record<string, string>;
@@ -313,7 +299,7 @@ export function useMyGoTwoController() {
   );
 
   useEffect(() => {
-    if (isDesktopViewport || coverFlowState || cardKey) return;
+    if (coverFlowState || cardKey) return;
 
     requestAnimationFrame(() => {
       const el = scrollRef.current;
@@ -330,7 +316,7 @@ export function useMyGoTwoController() {
       savedScrollTop.current = targetScrollTop;
       setSectionIndex(getNearestSectionIndex(targetScrollTop));
     });
-  }, [isDesktopViewport, coverFlowState, cardKey, lastMainSectionKey, getNearestSectionIndex, setSectionIndex]);
+  }, [coverFlowState, cardKey, lastMainSectionKey, getNearestSectionIndex, setSectionIndex]);
 
   const clearCoverFlow = useCallback(() => {
     setCoverFlowState(null);
@@ -620,7 +606,6 @@ export function useMyGoTwoController() {
   return {
     isLoading: registryLoading || genderLoading,
     gender,
-    isDesktopViewport,
     coverFlowState,
     activeSubcategory,
     focusedSubcategoryId,
@@ -669,3 +654,5 @@ export function useMyGoTwoController() {
     handleCreateGroup,
   };
 }
+
+export type MyGoTwoController = ReturnType<typeof useMyGoTwoController>;

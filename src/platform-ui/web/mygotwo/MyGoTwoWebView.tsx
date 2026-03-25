@@ -1,7 +1,7 @@
 import type { SubcategoryGroup, SubtypeItem } from "@/data/templateSubtypes";
+import { useCategoryImageMap } from "@/features/mygotwo/useCategoryImageMap";
 import MyGoTwoDesktopBrowser from "@/platform-ui/web/mygotwo/MyGoTwoDesktopBrowser";
 import type { MyGoTwoWebCoverflowItem } from "@/platform-ui/web/mygotwo/MyGoTwoWebCoverflow";
-import { useMyGoTwoDesktopImageMap } from "@/platform-ui/web/mygotwo/useMyGoTwoDesktopImageMap";
 
 interface WebRootItem {
   id: string;
@@ -76,7 +76,7 @@ export default function MyGoTwoWebView({
         : coverFlowState.subtypes.map((subtype) => (subtype as any).image || subtype.id)
     : [];
 
-  const drilldownImageMap = useMyGoTwoDesktopImageMap(drilldownImageKeys);
+  const drilldownImageMap = useCategoryImageMap(drilldownImageKeys);
 
   if (!coverFlowState) {
     return (

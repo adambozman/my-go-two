@@ -1,13 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import type { MyGoTwoController } from "@/features/mygotwo/useMyGoTwoController";
+import { NEW_ENTRY_ID } from "@/features/mygotwo/useMyGoTwoController";
 import MyGoTwoDesktopCardBrowser from "@/platform-ui/web/mygotwo/MyGoTwoDesktopCardBrowser";
 import MyGoTwoWebPageLayout from "@/platform-ui/web/mygotwo/MyGoTwoWebPageLayout";
 import MyGoTwoWebLayout from "@/platform-ui/web/mygotwo/MyGoTwoWebLayout";
 import MyGoTwoWebView from "@/platform-ui/web/mygotwo/MyGoTwoWebView";
-import { useMyGoTwoWebController, WEB_NEW_ENTRY_ID } from "@/platform-ui/web/mygotwo/useMyGoTwoWebController";
 
-export default function MyGoTwoDesktopExperience() {
-  const controller = useMyGoTwoWebController();
+interface MyGoTwoDesktopExperienceProps {
+  controller: MyGoTwoController;
+}
+
+export default function MyGoTwoDesktopExperience({ controller }: MyGoTwoDesktopExperienceProps) {
 
   if (controller.isLoading) {
     return (
@@ -50,7 +54,7 @@ export default function MyGoTwoDesktopExperience() {
                 resolvedEntryImages={controller.resolvedEntryImages}
                 defaultFieldValues={controller.defaultFieldValues}
                 saving={controller.saving}
-                newEntryPrefix={WEB_NEW_ENTRY_ID}
+                newEntryPrefix={NEW_ENTRY_ID}
                 normalizeImageValue={controller.normalizeImageValue}
                 onBack={controller.goBackFromEntries}
                 onEntryNameChange={controller.handleNameChange}
