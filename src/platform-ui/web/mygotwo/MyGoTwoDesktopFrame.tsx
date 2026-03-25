@@ -9,7 +9,7 @@ interface MyGoTwoDesktopFrameProps {
 export default function MyGoTwoDesktopFrame({ quote, children }: MyGoTwoDesktopFrameProps) {
   return (
     <div
-      className="relative h-full min-h-0 w-full overflow-visible"
+      className="grid h-full min-h-0 w-full grid-rows-[auto_minmax(0,1fr)] overflow-visible"
       style={{
         maxWidth: MYGOTWO_DESKTOP_TOKENS.frameMaxWidth,
         borderRadius: MYGOTWO_DESKTOP_TOKENS.frameRadius,
@@ -20,7 +20,9 @@ export default function MyGoTwoDesktopFrame({ quote, children }: MyGoTwoDesktopF
         background: MYGOTWO_DESKTOP_TOKENS.frameBackground,
       }}
     >
-      {quote}
+      <div className="flex justify-center pb-2 pt-1">
+        {quote}
+      </div>
       <div className="relative h-full min-h-0">{children}</div>
     </div>
   );

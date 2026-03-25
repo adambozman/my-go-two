@@ -5,12 +5,9 @@ export default function MyGoTwoDesktopQuoteBox() {
   const quote = useRotatingQuote();
 
   return (
-    <div
-      className="pointer-events-none absolute inset-x-0 z-30 flex justify-center"
-      style={{ top: MYGOTWO_DESKTOP_TOKENS.quoteOverlayTop }}
-    >
+    <div className="pointer-events-none flex w-full justify-center">
       <div
-        className="flex items-start justify-center"
+        className="flex items-start justify-center text-center"
         style={{
           maxWidth: MYGOTWO_DESKTOP_TOKENS.quoteMaxWidth,
           paddingTop: MYGOTWO_DESKTOP_TOKENS.quoteBoxPaddingTop,

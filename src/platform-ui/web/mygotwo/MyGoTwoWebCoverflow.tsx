@@ -207,6 +207,13 @@ export default function MyGoTwoWebCoverflow({
   const lastWheelMs = useRef(0);
 
   const itemCount = items.length;
+  const commitPreviewIndex = (nextIndex: number) => {
+    if (itemCount <= 0) return;
+    const normalizedIndex = normalizeIndex(nextIndex, itemCount);
+    setActiveIndex(normalizedIndex);
+    const nextItem = items[normalizedIndex];
+    if (nextItem) onActiveIdChange?.(nextItem.id);
+  };
 
   useEffect(() => {
     if (!stageRef.current) return;
@@ -244,18 +251,13 @@ export default function MyGoTwoWebCoverflow({
     if (itemCount <= 1) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowLeft") setActiveIndex((current) => normalizeIndex(current - 1, itemCount));
-      if (event.key === "ArrowRight") setActiveIndex((current) => normalizeIndex(current + 1, itemCount));
+      if (event.key === "ArrowLeft") commitPreviewIndex(activeIndex - 1);
+      if (event.key === "ArrowRight") commitPreviewIndex(activeIndex + 1);
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [itemCount]);
-
-  useEffect(() => {
-    const activeItem = items[activeIndex];
-    if (activeItem) onActiveIdChange?.(activeItem.id);
-  }, [activeIndex, items, onActiveIdChange]);
+  }, [activeIndex, itemCount]);
 
   const scaleFactor = useMemo(() => {
     if (stageSize.width <= 0 || stageSize.height <= 0) return 1;
@@ -291,7 +293,7 @@ export default function MyGoTwoWebCoverflow({
         }
 
         lastWheelMs.current = now;
-        setActiveIndex((current) => normalizeIndex(current + (primaryDelta > 0 ? 1 : -1), itemCount));
+        commitPreviewIndex(activeIndex + (primaryDelta > 0 ? 1 : -1));
       }}
       onPointerDown={(event) => {
         pointerStartX.current = event.clientX;
@@ -313,7 +315,7 @@ export default function MyGoTwoWebCoverflow({
         const velocity = Math.abs(deltaX / elapsedMs);
 
         if (Math.abs(deltaX) >= 70 || velocity >= 0.55) {
-          setActiveIndex((current) => normalizeIndex(current + (deltaX < 0 ? 1 : -1), itemCount));
+          commitPreviewIndex(activeIndex + (deltaX < 0 ? 1 : -1));
         }
 
         pointerStartX.current = null;
@@ -337,7 +339,7 @@ export default function MyGoTwoWebCoverflow({
               onImageError={() => setFailedImages((current) => ({ ...current, [imageKey]: true }))}
               onClick={() => {
                 if (!pose.isActive) {
-                  setActiveIndex(index);
+                  commitPreviewIndex(index);
                   return;
                 }
                 onCommit?.(item.id);
@@ -356,7 +358,7 @@ export default function MyGoTwoWebCoverflow({
             type="button"
             aria-label="Previous"
             className="h-12 w-12 rounded-full border border-white/70 bg-[rgba(255,255,255,0.72)] text-[var(--swatch-teal)] shadow-[0_10px_24px_rgba(0,0,0,0.12)] backdrop-blur"
-            onClick={() => setActiveIndex((current) => normalizeIndex(current - 1, itemCount))}
+            onClick={() => commitPreviewIndex(activeIndex - 1)}
           >
             <ChevronLeft className="mx-auto h-5 w-5" />
           </button>
@@ -372,7 +374,7 @@ export default function MyGoTwoWebCoverflow({
                   animate={{ width: isActive ? 22 : 7, opacity: isActive ? 1 : 0.45 }}
                   transition={{ duration: 0.18 }}
                   className="h-[7px] rounded-full bg-white"
-                  onClick={() => setActiveIndex(index)}
+                  onClick={() => commitPreviewIndex(index)}
                 />
               );
             })}
@@ -382,7 +384,7 @@ export default function MyGoTwoWebCoverflow({
             type="button"
             aria-label="Next"
             className="h-12 w-12 rounded-full border border-white/70 bg-[rgba(255,255,255,0.72)] text-[var(--swatch-teal)] shadow-[0_10px_24px_rgba(0,0,0,0.12)] backdrop-blur"
-            onClick={() => setActiveIndex((current) => normalizeIndex(current + 1, itemCount))}
+            onClick={() => commitPreviewIndex(activeIndex + 1)}
           >
             <ChevronRight className="mx-auto h-5 w-5" />
           </button>
