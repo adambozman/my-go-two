@@ -98,7 +98,7 @@ const StripCell = memo(function StripCell({
         <>
           <div
             aria-hidden="true"
-            className="absolute inset-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            className="absolute inset-0"
             style={{
               backgroundImage: `url("${panoramaBaseUrl}")`,
               backgroundRepeat: "no-repeat",
@@ -107,13 +107,12 @@ const StripCell = memo(function StripCell({
                 strip.panoramaIndex >= 0 && panoramaStripCount > 1
                   ? `${(strip.panoramaIndex / (panoramaStripCount - 1)) * 100}% center`
                   : "50% center",
-              transform: "scale(1.02)",
             }}
           />
           {panoramaNextUrl ? (
             <div
               aria-hidden="true"
-              className="absolute inset-0 transition-[opacity,transform,filter] ease-[cubic-bezier(0.22,1,0.36,1)]"
+              className="absolute inset-0 transition-[opacity,filter] ease-[cubic-bezier(0.22,1,0.36,1)]"
               style={{
                 backgroundImage: `url("${panoramaNextUrl}")`,
                 backgroundRepeat: "no-repeat",
@@ -122,7 +121,6 @@ const StripCell = memo(function StripCell({
                   strip.panoramaIndex >= 0 && panoramaStripCount > 1
                   ? `${(strip.panoramaIndex / (panoramaStripCount - 1)) * 100}% center`
                   : "50% center",
-                transform: isPanoramaTransitioning ? "scale(1)" : "scale(1.035)",
                 filter: isPanoramaTransitioning ? "blur(0px) saturate(1)" : "blur(8px) saturate(0.94)",
                 transitionDuration: `${PANORAMA_TRANSITION_MS}ms`,
                 opacity: isPanoramaTransitioning ? 1 : 0,
