@@ -11,6 +11,7 @@ import {
 
 const PREVIEW_COLLAPSE_DELAY_MS = 5000;
 const COLLAPSE_ROTATE_INTERVAL_MS = 10000;
+const PANORAMA_TRANSITION_MS = 950;
 
 type StripPresentation = {
   id: string;
@@ -36,7 +37,9 @@ type StripCellProps = {
   hoveredCategoryId: string | null;
   previewCollapsed: boolean;
   hoveredId: string | null;
-  activePanoramaUrl: string;
+  panoramaBaseUrl: string;
+  panoramaNextUrl: string;
+  isPanoramaTransitioning: boolean;
   panoramaStripCount: number;
   onHover: (id: string) => void;
 };
@@ -46,7 +49,9 @@ const StripCell = memo(function StripCell({
   hoveredCategoryId,
   previewCollapsed,
   hoveredId,
-  activePanoramaUrl,
+  panoramaBaseUrl,
+  panoramaNextUrl,
+  isPanoramaTransitioning,
   panoramaStripCount,
   onHover,
 }: StripCellProps) {
@@ -90,20 +95,41 @@ const StripCell = memo(function StripCell({
       }}
     >
       {showPanorama ? (
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-          style={{
-            backgroundImage: `url("${activePanoramaUrl}")`,
-            backgroundRepeat: "no-repeat",
-            backgroundSize: `${panoramaStripCount * 100}% 100%`,
-            backgroundPosition:
-              strip.panoramaIndex >= 0 && panoramaStripCount > 1
-                ? `${(strip.panoramaIndex / (panoramaStripCount - 1)) * 100}% center`
-                : "50% center",
-            transform: "scale(1.02)",
-          }}
-        />
+        <>
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{
+              backgroundImage: `url("${panoramaBaseUrl}")`,
+              backgroundRepeat: "no-repeat",
+              backgroundSize: `${panoramaStripCount * 100}% 100%`,
+              backgroundPosition:
+                strip.panoramaIndex >= 0 && panoramaStripCount > 1
+                  ? `${(strip.panoramaIndex / (panoramaStripCount - 1)) * 100}% center`
+                  : "50% center",
+              transform: "scale(1.02)",
+            }}
+          />
+          {panoramaNextUrl ? (
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 transition-[opacity,transform,filter] ease-[cubic-bezier(0.22,1,0.36,1)]"
+              style={{
+                backgroundImage: `url("${panoramaNextUrl}")`,
+                backgroundRepeat: "no-repeat",
+                backgroundSize: `${panoramaStripCount * 100}% 100%`,
+                backgroundPosition:
+                  strip.panoramaIndex >= 0 && panoramaStripCount > 1
+                  ? `${(strip.panoramaIndex / (panoramaStripCount - 1)) * 100}% center`
+                  : "50% center",
+                transform: isPanoramaTransitioning ? "scale(1)" : "scale(1.035)",
+                filter: isPanoramaTransitioning ? "blur(0px) saturate(1)" : "blur(8px) saturate(0.94)",
+                transitionDuration: `${PANORAMA_TRANSITION_MS}ms`,
+                opacity: isPanoramaTransitioning ? 1 : 0,
+              }}
+            />
+          ) : null}
+        </>
       ) : strip.image ? (
         <img
           aria-hidden="true"
@@ -158,6 +184,9 @@ export default function MyGoTwoStripGalleryAsset() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
   const [collapseImageIndex, setCollapseImageIndex] = useState(0);
+  const [panoramaBaseUrl, setPanoramaBaseUrl] = useState("");
+  const [panoramaNextUrl, setPanoramaNextUrl] = useState("");
+  const [isPanoramaTransitioning, setIsPanoramaTransitioning] = useState(false);
   const [isInitialLoadPending, setIsInitialLoadPending] = useState(true);
   const [stripImages, setStripImages] = useState(() =>
     MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
@@ -169,6 +198,7 @@ export default function MyGoTwoStripGalleryAsset() {
   const hoverTimerRef = useRef<number | null>(null);
   const collapseTimerRef = useRef<number | null>(null);
   const rotateTimerRef = useRef<number | null>(null);
+  const panoramaTransitionTimerRef = useRef<number | null>(null);
   const assignmentSignatureRef = useRef("");
   const hasLoadedOnceRef = useRef(false);
   const stripImagesRef = useRef(stripImages);
@@ -336,6 +366,9 @@ export default function MyGoTwoStripGalleryAsset() {
       if (rotateTimerRef.current !== null) {
         window.clearInterval(rotateTimerRef.current);
       }
+      if (panoramaTransitionTimerRef.current !== null) {
+        window.clearTimeout(panoramaTransitionTimerRef.current);
+      }
     };
   }, []);
 
@@ -371,6 +404,45 @@ export default function MyGoTwoStripGalleryAsset() {
 
     setCollapseImageIndex((current) => current % collapseImages.length);
   }, [collapseImages.length]);
+
+  useEffect(() => {
+    if (!activePanoramaUrl) {
+      if (panoramaTransitionTimerRef.current !== null) {
+        window.clearTimeout(panoramaTransitionTimerRef.current);
+        panoramaTransitionTimerRef.current = null;
+      }
+      setPanoramaBaseUrl("");
+      setPanoramaNextUrl("");
+      setIsPanoramaTransitioning(false);
+      return;
+    }
+
+    if (!panoramaBaseUrl) {
+      setPanoramaBaseUrl(activePanoramaUrl);
+      setPanoramaNextUrl("");
+      setIsPanoramaTransitioning(false);
+      return;
+    }
+
+    if (activePanoramaUrl === panoramaBaseUrl) {
+      return;
+    }
+
+    if (panoramaTransitionTimerRef.current !== null) {
+      window.clearTimeout(panoramaTransitionTimerRef.current);
+      panoramaTransitionTimerRef.current = null;
+    }
+
+    setPanoramaNextUrl(activePanoramaUrl);
+    setIsPanoramaTransitioning(true);
+
+    panoramaTransitionTimerRef.current = window.setTimeout(() => {
+      setPanoramaBaseUrl(activePanoramaUrl);
+      setPanoramaNextUrl("");
+      setIsPanoramaTransitioning(false);
+      panoramaTransitionTimerRef.current = null;
+    }, PANORAMA_TRANSITION_MS);
+  }, [activePanoramaUrl, panoramaBaseUrl]);
 
   useEffect(() => {
     if (!previewCollapsed || collapseImages.length <= 1) {
@@ -447,7 +519,9 @@ export default function MyGoTwoStripGalleryAsset() {
               hoveredCategoryId={hoveredCategoryId}
               previewCollapsed={previewCollapsed}
               hoveredId={hoveredId}
-              activePanoramaUrl={activePanoramaUrl}
+              panoramaBaseUrl={panoramaBaseUrl}
+              panoramaNextUrl={panoramaNextUrl}
+              isPanoramaTransitioning={isPanoramaTransitioning}
               panoramaStripCount={panoramaStripCount}
               onHover={queueHoveredId}
             />

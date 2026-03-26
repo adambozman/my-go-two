@@ -7,7 +7,6 @@ const PRIVATE_BUCKETS = new Set([
   "avatars-1",
   "card-images",
   "connection-photos",
-  "photo-bank",
 ]);
 
 export interface StorageRef {
@@ -67,6 +66,11 @@ export function toStorageRefIfPossible(value?: string | null) {
   return makeStorageRef(parsedUrl.bucket, parsedUrl.path);
 }
 
+function buildPublicStorageUrl(bucket: string, path: string) {
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl || "";
+}
+
 export async function resolveStorageUrls(values: Array<string | null | undefined>, expiresIn = 3600) {
   const results = new Array<string>(values.length).fill("");
   const groupedRequests = new Map<
@@ -95,7 +99,7 @@ export async function resolveStorageUrls(values: Array<string | null | undefined
 
     const { bucket, path } = storageRef;
     if (!PRIVATE_BUCKETS.has(bucket)) {
-      results[index] = value;
+      results[index] = buildPublicStorageUrl(bucket, path);
       return;
     }
 

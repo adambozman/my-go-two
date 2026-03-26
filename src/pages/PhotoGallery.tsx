@@ -88,12 +88,11 @@ export default function PhotoGallery() {
     }
 
     const rows = (data ?? []) as BankPhoto[];
-    const withUrls = await Promise.all(
-      rows.map(async (photo) => ({
-        ...photo,
-        display_url: await resolveStorageUrl(photo.image_url),
-      })),
-    );
+    const resolvedUrls = await resolveStorageUrls(rows.map((photo) => photo.image_url));
+    const withUrls = rows.map((photo, index) => ({
+      ...photo,
+      display_url: resolvedUrls[index] ?? "",
+    }));
 
     setPhotos(withUrls);
     setLoading(false);
