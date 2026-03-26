@@ -1,39 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Images, RefreshCw } from "lucide-react";
+import { ArrowLeft, Copy, ImagePlus, RefreshCw, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { resolveStorageUrl } from "@/lib/storageRefs";
 
-type SourceKind = "pages" | "cards" | "templates" | "profile" | "connections";
-
-interface GalleryPhoto {
+type BankPhoto = {
   id: string;
-  rawUrl: string;
-  resolvedUrl: string;
-  title: string;
-  subtitle: string;
-  source: SourceKind;
-  createdAt: string | null;
-  usages: string[];
-}
-
-const FILTERS: Array<{ key: SourceKind | "all"; label: string }> = [
-  { key: "all", label: "All Photos" },
-  { key: "pages", label: "Page Photos" },
-  { key: "cards", label: "My Cards" },
-  { key: "templates", label: "Templates" },
-  { key: "profile", label: "Profile" },
-  { key: "connections", label: "Connections" },
-];
-
-const SOURCE_LABELS: Record<SourceKind, string> = {
-  pages: "Pages",
-  cards: "My Go Two",
-  templates: "Templates",
-  profile: "Profile",
-  connections: "Connections",
+  image_url: string;
+  filename: string | null;
+  created_at: string;
+  category_key: string;
 };
 
 function formatDate(value: string | null) {
@@ -48,217 +27,42 @@ function formatDate(value: string | null) {
   }).format(date);
 }
 
-function uniqueStrings(values: string[]) {
-  return Array.from(new Set(values.filter(Boolean)));
-}
-
-function normalizeSubtitle(...parts: Array<string | null | undefined>) {
-  return parts.filter(Boolean).join(" · ");
-}
-
 export default function PhotoGallery() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]["key"]>("all");
+  const [uploading, setUploading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<BankPhoto[]>([]);
+  const [query, setQuery] = useState("");
 
   const loadPhotos = useCallback(async () => {
     setLoading(true);
 
-    const [
-      { data: categoryRegistry },
-      { data: categoryImages },
-      { data: profile },
-      { data: cardEntries },
-      { data: customTemplates },
-      { data: couples },
-    ] = await Promise.all([
-      supabase
-        .from("category_registry")
-        .select("key, label, page, section, subcategories")
-        .eq("is_active", true),
-      supabase
-        .from("category_images")
-        .select("category_key, image_url, gender, created_at")
-        .order("created_at", { ascending: false }),
-      user
-        ? supabase
-            .from("profiles")
-            .select("avatar_url, display_name, updated_at")
-            .eq("user_id", user.id)
-            .maybeSingle()
-        : Promise.resolve({ data: null }),
-      user
-        ? supabase
-            .from("card_entries")
-            .select("id, entry_name, group_name, card_key, image_url, created_at, updated_at")
-            .eq("user_id", user.id)
-            .not("image_url", "is", null)
-            .order("updated_at", { ascending: false })
-        : Promise.resolve({ data: [] }),
-      user
-        ? supabase
-            .from("custom_templates")
-            .select("id, name, category, image_url, created_at")
-            .eq("user_id", user.id)
-            .not("image_url", "is", null)
-            .order("created_at", { ascending: false })
-        : Promise.resolve({ data: [] }),
-      user
-        ? supabase
-            .from("couples")
-            .select("id, display_label, photo_url, updated_at, created_at")
-            .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`)
-            .not("photo_url", "is", null)
-            .order("updated_at", { ascending: false })
-        : Promise.resolve({ data: [] }),
-    ]);
+    const { data, error } = await supabase
+      .from("category_bank_photos")
+      .select("id, image_url, filename, created_at, category_key")
+      .order("created_at", { ascending: false });
 
-    const registryMeta = new Map<string, { title: string; subtitle: string }>();
-
-    for (const row of categoryRegistry || []) {
-      registryMeta.set(row.key, {
-        title: row.label,
-        subtitle: normalizeSubtitle(row.page, row.section),
+    if (error) {
+      toast({
+        title: "Failed to load bank",
+        description: error.message,
+        variant: "destructive",
       });
-
-      const subcategories = Array.isArray(row.subcategories) ? row.subcategories : [];
-      for (const subcategory of subcategories) {
-        const sub = subcategory as Record<string, unknown>;
-        const subId = typeof sub?.id === "string" ? sub.id : "";
-        const subName = typeof sub?.name === "string" ? sub.name : "";
-        const products = Array.isArray(sub?.products) ? sub.products : [];
-
-        if (subId) {
-          registryMeta.set(subId, {
-            title: subName || row.label,
-            subtitle: normalizeSubtitle(row.label, row.page),
-          });
-        }
-
-        for (const product of products) {
-          const productId = typeof product?.id === "string" ? product.id : "";
-          const productName = typeof product?.name === "string" ? product.name : "";
-          if (!productId) continue;
-
-          registryMeta.set(productId, {
-            title: productName || subName || row.label,
-            subtitle: normalizeSubtitle(row.label, subName || row.section),
-          });
-        }
-      }
+      setPhotos([]);
+      setLoading(false);
+      setRefreshing(false);
+      return;
     }
 
-    const records: Array<Omit<GalleryPhoto, "resolvedUrl">> = [];
-
-    for (const row of categoryImages || []) {
-      const meta = registryMeta.get(row.category_key);
-      records.push({
-        id: `page-${row.gender}-${row.category_key}`,
-        rawUrl: row.image_url,
-        title: meta?.title || row.category_key,
-        subtitle: normalizeSubtitle(meta?.subtitle || "Saved page image", row.gender),
-        source: "pages",
-        createdAt: row.created_at || null,
-        usages: ["Website page"],
-      });
-    }
-
-    if (profile?.avatar_url && user) {
-      records.push({
-        id: `profile-${user.id}`,
-        rawUrl: profile.avatar_url,
-        title: profile.display_name || "Profile photo",
-        subtitle: "Saved from your profile",
-        source: "profile",
-        createdAt: profile.updated_at ?? null,
-        usages: ["Top bar", "Settings", "Connection identity"],
-      });
-    }
-
-    for (const row of cardEntries || []) {
-      if (!row.image_url) continue;
-      records.push({
-        id: `card-${row.id}`,
-        rawUrl: row.image_url,
-        title: row.entry_name || "Untitled card",
-        subtitle: normalizeSubtitle(row.group_name, row.card_key),
-        source: "cards",
-        createdAt: row.updated_at || row.created_at || null,
-        usages: ["My Go Two card"],
-      });
-    }
-
-    for (const row of customTemplates || []) {
-      if (!row.image_url) continue;
-      records.push({
-        id: `template-${row.id}`,
-        rawUrl: row.image_url,
-        title: row.name || "Custom template",
-        subtitle: row.category || "Template",
-        source: "templates",
-        createdAt: row.created_at || null,
-        usages: ["Custom template"],
-      });
-    }
-
-    for (const row of couples || []) {
-      if (!row.photo_url) continue;
-      records.push({
-        id: `connection-${row.id}`,
-        rawUrl: row.photo_url,
-        title: row.display_label || "Connection photo",
-        subtitle: "Saved from connections",
-        source: "connections",
-        createdAt: row.updated_at || row.created_at || null,
-        usages: ["Dashboard home", "Connection card"],
-      });
-    }
-
-    const grouped = new Map<string, Omit<GalleryPhoto, "id" | "resolvedUrl">>();
-    for (const record of records) {
-      const existing = grouped.get(record.rawUrl);
-      if (existing) {
-        existing.usages = uniqueStrings([...existing.usages, ...record.usages]);
-        if (!existing.createdAt || (record.createdAt && record.createdAt > existing.createdAt)) {
-          existing.createdAt = record.createdAt;
-          existing.title = record.title;
-          existing.subtitle = record.subtitle;
-          existing.source = record.source;
-        }
-        continue;
-      }
-
-      grouped.set(record.rawUrl, { ...record });
-    }
-
-    const resolved = await Promise.all(
-      Array.from(grouped.values()).map(async (record, index) => ({
-        id: `${record.source}-${index}`,
-        rawUrl: record.rawUrl,
-        resolvedUrl: await resolveStorageUrl(record.rawUrl),
-        title: record.title,
-        subtitle: record.subtitle,
-        source: record.source,
-        createdAt: record.createdAt,
-        usages: uniqueStrings(record.usages),
-      })),
-    );
-
-    setPhotos(
-      resolved
-        .filter((record) => !!record.resolvedUrl)
-        .sort((a, b) => {
-          const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return bTime - aTime;
-        }),
-    );
+    setPhotos(data ?? []);
     setLoading(false);
     setRefreshing(false);
-  }, [user]);
+  }, [toast]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -266,20 +70,121 @@ export default function PhotoGallery() {
   }, [authLoading, loadPhotos]);
 
   const filteredPhotos = useMemo(() => {
-    if (filter === "all") return photos;
-    return photos.filter((photo) => photo.source === filter);
-  }, [photos, filter]);
+    const normalized = query.trim().toLowerCase();
+    if (!normalized) return photos;
 
-  const counts = useMemo(
-    () =>
-      photos.reduce<Record<SourceKind, number>>(
-        (acc, photo) => {
-          acc[photo.source] += 1;
-          return acc;
-        },
-        { pages: 0, cards: 0, templates: 0, profile: 0, connections: 0 },
-      ),
-    [photos],
+    return photos.filter((photo) => {
+      const haystack = [
+        photo.filename ?? "",
+        photo.category_key ?? "",
+        photo.image_url ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(normalized);
+    });
+  }, [photos, query]);
+
+  const handleUpload = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      if (!files?.length) return;
+
+      setUploading(true);
+
+      try {
+        for (const file of Array.from(files)) {
+          const ext = file.name.split(".").pop() || "jpg";
+          const filename = `dev-bank-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+          const path = `bank/${filename}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from("category-images")
+            .upload(path, file, { contentType: file.type, upsert: false });
+
+          if (uploadError) throw uploadError;
+
+          const { data: urlData } = supabase.storage.from("category-images").getPublicUrl(path);
+          const { error: insertError } = await supabase.from("category_bank_photos").insert({
+            category_key: "dev-bank",
+            image_url: urlData.publicUrl,
+            filename: file.name,
+          });
+
+          if (insertError) throw insertError;
+        }
+
+        toast({
+          title: "Uploaded",
+          description: `${files.length} image${files.length === 1 ? "" : "s"} added to the bank.`,
+        });
+        await loadPhotos();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Upload failed.";
+        toast({
+          title: "Upload failed",
+          description: message,
+          variant: "destructive",
+        });
+      } finally {
+        setUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+    },
+    [loadPhotos, toast],
+  );
+
+  const handleDelete = useCallback(
+    async (photo: BankPhoto) => {
+      setDeletingId(photo.id);
+
+      try {
+        const url = new URL(photo.image_url);
+        const path = decodeURIComponent(url.pathname.split("/object/public/category-images/")[1] ?? "");
+
+        const { error: deleteRowError } = await supabase
+          .from("category_bank_photos")
+          .delete()
+          .eq("id", photo.id);
+
+        if (deleteRowError) throw deleteRowError;
+
+        if (path) {
+          const { error: removeFileError } = await supabase.storage.from("category-images").remove([path]);
+          if (removeFileError) throw removeFileError;
+        }
+
+        setPhotos((current) => current.filter((item) => item.id !== photo.id));
+        toast({ title: "Deleted", description: "Image removed from the bank." });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Delete failed.";
+        toast({
+          title: "Delete failed",
+          description: message,
+          variant: "destructive",
+        });
+      } finally {
+        setDeletingId(null);
+      }
+    },
+    [toast],
+  );
+
+  const copyText = useCallback(
+    async (value: string, label: string) => {
+      try {
+        await navigator.clipboard.writeText(value);
+        toast({ title: "Copied", description: `${label} copied.` });
+      } catch {
+        toast({
+          title: "Copy failed",
+          description: "Clipboard write was blocked.",
+          variant: "destructive",
+        });
+      }
+    },
+    [toast],
   );
 
   return (
@@ -290,9 +195,9 @@ export default function PhotoGallery() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="min-w-0">
-            <h1 className="text-lg font-semibold">Photo Gallery</h1>
+            <h1 className="text-lg font-semibold">Dev Image Bank</h1>
             <p className="text-xs text-muted-foreground">
-              Every saved photo across page images, cards, templates, profile, and connections.
+              Upload, preview, search, copy, and delete reusable image assets.
             </p>
           </div>
           <Button
@@ -307,97 +212,126 @@ export default function PhotoGallery() {
             <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
             Refresh
           </Button>
+          <Button
+            className="gap-2"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={!user || authLoading || uploading}
+          >
+            <ImagePlus className="h-4 w-4" />
+            {uploading ? "Uploading..." : "Upload"}
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={handleUpload}
+          />
         </div>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        {!user && !authLoading && (
-          <div className="mb-6 rounded-2xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
-            Showing page photos. Sign in to also see photos saved in your cards, templates, profile, and connections.
-          </div>
-        )}
-
-        <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-          {FILTERS.map((item) => {
-            const count = item.key === "all" ? photos.length : counts[item.key as SourceKind];
-
-            return (
-              <button
-                key={item.key}
-                onClick={() => setFilter(item.key)}
-                className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
-                  filter === item.key
-                    ? "border-primary bg-primary/10"
-                    : "border-border bg-card hover:bg-muted/50"
-                }`}
-              >
-                <div className="text-sm font-semibold">{item.label}</div>
-                <div className="text-xs text-muted-foreground">
-                  {count} photo{count === 1 ? "" : "s"}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {loading ? (
-          <div className="flex min-h-[40vh] items-center justify-center text-sm text-muted-foreground">
-            Loading photos...
-          </div>
-        ) : filteredPhotos.length === 0 ? (
-          <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border bg-card/50 px-6 text-center">
-            <Images className="h-10 w-10 text-muted-foreground" />
-            <div>
-              <h2 className="text-lg font-semibold">No photos here yet</h2>
-              <p className="text-sm text-muted-foreground">
-                This filter does not have any saved images yet.
-              </p>
-            </div>
+        {!user && !authLoading ? (
+          <div className="rounded-2xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+            Sign in to use the dev image bank.
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredPhotos.map((photo) => (
-              <article
-                key={photo.id}
-                className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm"
-              >
-                <div className="aspect-[4/5] bg-muted">
-                  <img
-                    src={photo.resolvedUrl}
-                    alt={photo.title}
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                  />
+          <>
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="relative w-full max-w-md">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search filename or ref"
+                  className="pl-9"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {filteredPhotos.length} image{filteredPhotos.length === 1 ? "" : "s"}
+              </p>
+            </div>
+
+            {loading ? (
+              <div className="flex min-h-[40vh] items-center justify-center text-sm text-muted-foreground">
+                Loading bank...
+              </div>
+            ) : filteredPhotos.length === 0 ? (
+              <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border bg-card/50 px-6 text-center">
+                <ImagePlus className="h-10 w-10 text-muted-foreground" />
+                <div>
+                  <h2 className="text-lg font-semibold">No banked images yet</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Upload images here first, then use them in rebuilt assets later.
+                  </p>
                 </div>
-                <div className="space-y-3 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold">{photo.title}</p>
-                      <p className="truncate text-xs text-muted-foreground">{photo.subtitle}</p>
+              </div>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {filteredPhotos.map((photo) => (
+                  <article
+                    key={photo.id}
+                    className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm"
+                  >
+                    <div className="aspect-[4/5] bg-muted">
+                      <img
+                        src={photo.image_url}
+                        alt={photo.filename ?? "Bank image"}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
                     </div>
-                    <span className="shrink-0 rounded-full bg-muted px-2 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                      {SOURCE_LABELS[photo.source]}
-                    </span>
-                  </div>
+                    <div className="space-y-3 p-4">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">
+                          {photo.filename || "Untitled image"}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {photo.category_key}
+                        </p>
+                      </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    {photo.usages.map((usage) => (
-                      <span
-                        key={usage}
-                        className="rounded-full border border-border px-2 py-1 text-[10px] text-muted-foreground"
-                      >
-                        {usage}
-                      </span>
-                    ))}
-                  </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-2"
+                          onClick={() => void copyText(photo.image_url, "Public URL")}
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                          Copy URL
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-2"
+                          onClick={() => void copyText(photo.id, "Image id")}
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                          Copy ID
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-2 text-destructive"
+                          onClick={() => void handleDelete(photo)}
+                          disabled={deletingId === photo.id}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          {deletingId === photo.id ? "Deleting..." : "Delete"}
+                        </Button>
+                      </div>
 
-                  {photo.createdAt && (
-                    <p className="text-xs text-muted-foreground">Saved {formatDate(photo.createdAt)}</p>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
+                      <p className="text-xs text-muted-foreground">
+                        Added {formatDate(photo.created_at)}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
