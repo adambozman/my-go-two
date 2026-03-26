@@ -388,6 +388,33 @@ export type Database = {
         }
         Relationships: []
       }
+      dev_asset_image_overrides: {
+        Row: {
+          asset_key: string
+          created_at: string
+          id: string
+          image_url: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asset_key: string
+          created_at?: string
+          id?: string
+          image_url: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asset_key?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       connection_context_preferences: {
         Row: {
           access_tier: string

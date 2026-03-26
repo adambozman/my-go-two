@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Image as ImageIcon, RefreshCw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { OVERRIDE_CHANGED_EVENT, setImageUrl } from "@/lib/imageOverrides";
 import { MYGOTWO_STRIP_GALLERY_IMAGES } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.images";
 
 type BankPhoto = {
@@ -15,34 +15,51 @@ function stripImageKey(id: string) {
   return `mygotwo-strip-${id}`;
 }
 
+function localOverrideStorageKey(userKey: string) {
+  return `mygotwo-strip-overrides:${userKey}`;
+}
+
 export default function MyGoTwoStripGalleryAsset() {
   const isDev = import.meta.env.DEV;
+  const { user } = useAuth();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedStripId, setSelectedStripId] = useState<string | null>(null);
   const [loadingBank, setLoadingBank] = useState(false);
   const [loadingOverrides, setLoadingOverrides] = useState(false);
   const [bankPhotos, setBankPhotos] = useState<BankPhoto[]>([]);
   const [imageOverrides, setImageOverrides] = useState<Record<string, string>>({});
+  const hoverTimerRef = useRef<number | null>(null);
 
   const strips = useMemo(() => MYGOTWO_STRIP_GALLERY_IMAGES, []);
+  const userKey = user?.email || user?.id || "";
 
   const loadOverrides = useCallback(async () => {
+    if (!user || !userKey) {
+      setImageOverrides({});
+      return;
+    }
+
     setLoadingOverrides(true);
-    const keys = strips.map((strip) => stripImageKey(strip.id));
-    const { data } = await supabase
-      .from("category_images")
-      .select("category_key, image_url")
-      .eq("gender", "dev")
-      .in("category_key", keys);
+    let localOverrides: Record<string, string> = {};
+    try {
+      const raw = localStorage.getItem(localOverrideStorageKey(userKey));
+      localOverrides = raw ? (JSON.parse(raw) as Record<string, string>) : {};
+    } catch {
+      localOverrides = {};
+    }
 
     const nextOverrides: Record<string, string> = {};
-    for (const row of data ?? []) {
-      nextOverrides[row.category_key] = row.image_url;
+    const keys = strips.map((strip) => stripImageKey(strip.id));
+
+    for (const [key, value] of Object.entries(localOverrides)) {
+      if (keys.includes(key)) {
+        nextOverrides[key] = value;
+      }
     }
 
     setImageOverrides(nextOverrides);
     setLoadingOverrides(false);
-  }, [strips]);
+  }, [strips, user, userKey]);
 
   const loadBank = useCallback(async () => {
     setLoadingBank(true);
@@ -61,36 +78,41 @@ export default function MyGoTwoStripGalleryAsset() {
   }, [isDev, loadBank, loadOverrides]);
 
   useEffect(() => {
-    if (!isDev) return;
-
-    const handler = (event: Event) => {
-      const detail = (event as CustomEvent).detail || {};
-      const imageKey = typeof detail.imageKey === "string" ? detail.imageKey : "";
-      const url = typeof detail.url === "string" ? detail.url : "";
-      if (!imageKey.startsWith("mygotwo-strip-")) return;
-
-      setImageOverrides((current) => {
-        if (!url) {
-          const next = { ...current };
-          delete next[imageKey];
-          return next;
-        }
-        return { ...current, [imageKey]: url };
-      });
+    return () => {
+      if (hoverTimerRef.current !== null) {
+        window.clearTimeout(hoverTimerRef.current);
+      }
     };
-
-    window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
-    return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
-  }, [isDev]);
+  }, []);
 
   const assignPhoto = useCallback(
     async (photoUrl: string) => {
-      if (!selectedStripId) return;
-      await setImageUrl(stripImageKey(selectedStripId), photoUrl, "dev");
+      if (!selectedStripId || !user || !userKey) return;
+
+      const assetKey = stripImageKey(selectedStripId);
+      const nextOverrides = {
+        ...imageOverrides,
+        [assetKey]: photoUrl,
+      };
+
+      localStorage.setItem(localOverrideStorageKey(userKey), JSON.stringify(nextOverrides));
+      setImageOverrides(nextOverrides);
+
       setSelectedStripId(null);
     },
-    [selectedStripId],
+    [imageOverrides, selectedStripId, user, userKey],
   );
+
+  const queueHoveredId = useCallback((nextId: string | null) => {
+    if (hoverTimerRef.current !== null) {
+      window.clearTimeout(hoverTimerRef.current);
+    }
+
+    hoverTimerRef.current = window.setTimeout(() => {
+      setHoveredId(nextId);
+      hoverTimerRef.current = null;
+    }, 90);
+  }, []);
 
   return (
     <section
@@ -108,7 +130,7 @@ export default function MyGoTwoStripGalleryAsset() {
       >
         <div
           className="flex h-full w-full items-stretch gap-[6px] overflow-hidden"
-          onMouseLeave={() => setHoveredId(null)}
+          onMouseLeave={() => queueHoveredId(null)}
         >
           {strips.map((strip) => {
             const isHovered = strip.id === hoveredId;
@@ -119,7 +141,7 @@ export default function MyGoTwoStripGalleryAsset() {
               <div
                 key={strip.id}
                 aria-label={`Strip ${strip.id}`}
-                onMouseEnter={() => setHoveredId(strip.id)}
+                onMouseEnter={() => queueHoveredId(strip.id)}
                 className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                 style={{
                   flexBasis: 0,
