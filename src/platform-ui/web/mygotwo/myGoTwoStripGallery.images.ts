@@ -159,10 +159,10 @@ export const MYGOTWO_COLLAPSE_IMAGES: MyGoTwoCollapseImage[] = [
   },
 ];
 
-export const MYGOTWO_STRIP_SLOT_TARGETS: MyGoTwoSlotTarget[] = MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
+export const MYGOTWO_STRIP_SLOT_TARGETS: MyGoTwoSlotTarget[] = MYGOTWO_STRIP_GALLERY_IMAGES.map((strip, index) => ({
   key: `mygotwo-strip-${strip.id}`,
   id: strip.id,
-  label: strip.label ?? `Strip ${strip.id}`,
+  label: strip.label ?? `Strip ${index + 1}`,
   kind: "strip",
 }));
 

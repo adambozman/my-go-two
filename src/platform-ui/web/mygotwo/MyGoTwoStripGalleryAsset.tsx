@@ -10,7 +10,7 @@ import {
 } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.images";
 
 const PREVIEW_COLLAPSE_DELAY_MS = 5000;
-const COLLAPSE_ROTATE_INTERVAL_MS = 4000;
+const COLLAPSE_ROTATE_INTERVAL_MS = 10000;
 
 type StripPresentation = {
   id: string;
@@ -198,7 +198,8 @@ export default function MyGoTwoStripGalleryAsset() {
           {strips.map((strip) => {
             const isHovered = strip.id === hoveredId;
             const collapseCategoryStrip = Boolean(previewCollapsed && strip.label && !hoveredId);
-            const showPanorama = previewCollapsed && strip.isPanoramaStrip;
+            const showPanorama = strip.isPanoramaStrip;
+            const expandPanoramaStrip = previewCollapsed && strip.isPanoramaStrip;
 
             return (
               <div
@@ -210,7 +211,7 @@ export default function MyGoTwoStripGalleryAsset() {
                   flexBasis: 0,
                   flexGrow: collapseCategoryStrip
                     ? 0.0001
-                    : showPanorama
+                    : expandPanoramaStrip
                       ? 1.55
                       : isHovered
                         ? 3.35
@@ -219,13 +220,13 @@ export default function MyGoTwoStripGalleryAsset() {
                           : 1,
                   minWidth: collapseCategoryStrip
                     ? "0px"
-                    : showPanorama
+                    : expandPanoramaStrip
                       ? "clamp(12px, 2.4vw, 22px)"
                       : isHovered
                         ? "clamp(60px, 10.5vw, 94px)"
                         : "clamp(12px, 2.4vw, 22px)",
                   contain: "layout paint style",
-                  transform: showPanorama ? "translateY(0)" : isHovered ? "translateY(-2px)" : "translateY(0)",
+                  transform: isHovered ? "translateY(-2px)" : "translateY(0)",
                   opacity: collapseCategoryStrip ? 0 : 1,
                   pointerEvents: collapseCategoryStrip ? "none" : "auto",
                 }}
