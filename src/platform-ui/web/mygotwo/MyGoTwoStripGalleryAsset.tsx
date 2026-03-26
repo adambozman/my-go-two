@@ -301,6 +301,7 @@ export default function MyGoTwoStripGalleryAsset() {
             const resolvedOverrideUrl = imageOverrides[imageKey];
             const panoramaIndex = panoramaStripIds.indexOf(strip.id);
             const isPanoramaStrip = panoramaStripIdSet.has(strip.id);
+            const lockPanoramaStripHover = Boolean(previewPanoramaUrl && isPanoramaStrip);
             const imageUrl =
               previewPanoramaUrl && isPanoramaStrip
                 ? previewPanoramaUrl
@@ -315,10 +316,14 @@ export default function MyGoTwoStripGalleryAsset() {
                 className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
                 style={{
                   flexBasis: 0,
-                  flexGrow: isHovered ? 3.35 : hoveredId ? 0.58 : 1,
-                  minWidth: isHovered ? "clamp(60px, 10.5vw, 94px)" : "clamp(12px, 2.4vw, 22px)",
+                  flexGrow: lockPanoramaStripHover ? 1 : isHovered ? 3.35 : hoveredId ? 0.58 : 1,
+                  minWidth: lockPanoramaStripHover
+                    ? "clamp(12px, 2.4vw, 22px)"
+                    : isHovered
+                      ? "clamp(60px, 10.5vw, 94px)"
+                      : "clamp(12px, 2.4vw, 22px)",
                   contain: "layout paint style",
-                  transform: isHovered ? "translateY(-2px)" : "translateY(0)",
+                  transform: lockPanoramaStripHover ? "translateY(0)" : isHovered ? "translateY(-2px)" : "translateY(0)",
                 }}
               >
                 {previewPanoramaUrl && isPanoramaStrip ? (
@@ -333,7 +338,7 @@ export default function MyGoTwoStripGalleryAsset() {
                         panoramaIndex >= 0 && panoramaStripIds.length > 1
                           ? `${(panoramaIndex / (panoramaStripIds.length - 1)) * 100}% center`
                           : "50% center",
-                      transform: isHovered ? "scale(1.03)" : "scale(1.02)",
+                      transform: "scale(1.02)",
                     }}
                   />
                 ) : imageUrl ? (
