@@ -9,7 +9,7 @@ export type WebsiteAssetAssignment = {
 export async function getWebsiteAssetAssignments(assetKeys: string[]) {
   if (assetKeys.length === 0) return [] as WebsiteAssetAssignment[];
 
-  const { data: assignmentRows, error: assignmentError } = await supabase
+  const { data: assignmentRows, error: assignmentError } = await (supabase as any)
     .from("website_asset_assignments")
     .select("asset_key, bank_photo_id")
     .in("asset_key", assetKeys);
@@ -54,7 +54,7 @@ export async function setWebsiteAssetAssignment(params: {
   bankPhotoId: string;
   updatedBy?: string | null;
 }) {
-  const { error } = await supabase.from("website_asset_assignments").upsert(
+  const { error } = await (supabase as any).from("website_asset_assignments").upsert(
     {
       asset_key: params.assetKey,
       bank_photo_id: params.bankPhotoId,

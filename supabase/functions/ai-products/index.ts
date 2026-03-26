@@ -283,7 +283,8 @@ serve(async (req) => {
       });
     }
 
-    let supabase: ReturnType<typeof createClient>;
+    // deno-lint-ignore no-explicit-any
+    let supabase: any;
     let user: { id: string; email?: string } | null = null;
     try {
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
