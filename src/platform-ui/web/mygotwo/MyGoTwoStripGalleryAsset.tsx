@@ -30,8 +30,13 @@ export default function MyGoTwoStripGalleryAsset() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
   const [collapseImageIndex, setCollapseImageIndex] = useState(0);
-  const [stripImages, setStripImages] = useState(() => MYGOTWO_STRIP_GALLERY_IMAGES);
-  const [collapseImages, setCollapseImages] = useState(() => MYGOTWO_COLLAPSE_IMAGES);
+  const [stripImages, setStripImages] = useState(() =>
+    MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
+      ...strip,
+      image: "",
+    })),
+  );
+  const [collapseImages, setCollapseImages] = useState(() => [] as typeof MYGOTWO_COLLAPSE_IMAGES);
   const hoverTimerRef = useRef<number | null>(null);
   const collapseTimerRef = useRef<number | null>(null);
   const rotateTimerRef = useRef<number | null>(null);
@@ -62,7 +67,7 @@ export default function MyGoTwoStripGalleryAsset() {
     setStripImages(
       MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
         ...strip,
-        image: resolvedByKey.get(`mygotwo-strip-${strip.id}`) || strip.image,
+        image: resolvedByKey.get(`mygotwo-strip-${strip.id}`) || "",
       })),
     );
 
