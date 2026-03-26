@@ -198,7 +198,8 @@ export default function MyGoTwoStripGalleryAsset() {
           {strips.map((strip) => {
             const isHovered = strip.id === hoveredId;
             const collapseCategoryStrip = Boolean(previewCollapsed && strip.label && !hoveredId);
-            const showPanorama = previewCollapsed && strip.isPanoramaStrip;
+            const showPanorama = strip.isPanoramaStrip;
+            const expandPanoramaStrip = previewCollapsed && strip.isPanoramaStrip;
 
             return (
               <div
@@ -210,7 +211,7 @@ export default function MyGoTwoStripGalleryAsset() {
                   flexBasis: 0,
                   flexGrow: collapseCategoryStrip
                     ? 0.0001
-                    : showPanorama
+                    : expandPanoramaStrip
                       ? 1.55
                       : isHovered
                         ? 3.35
@@ -219,7 +220,7 @@ export default function MyGoTwoStripGalleryAsset() {
                           : 1,
                   minWidth: collapseCategoryStrip
                     ? "0px"
-                    : showPanorama
+                    : expandPanoramaStrip
                       ? "clamp(12px, 2.4vw, 22px)"
                       : isHovered
                         ? "clamp(60px, 10.5vw, 94px)"
