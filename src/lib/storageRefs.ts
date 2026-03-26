@@ -8,7 +8,6 @@ const PRIVATE_BUCKETS = new Set([
   "card-images",
   "connection-photos",
   "photo-bank",
-  "images-mygotwo-strip",
 ]);
 
 export interface StorageRef {

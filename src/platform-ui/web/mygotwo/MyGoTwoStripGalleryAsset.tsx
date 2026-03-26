@@ -1,225 +1,108 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Image as ImageIcon, RefreshCw, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
+import { resolveStorageUrls } from "@/lib/storageRefs";
 import {
-  makeStorageRef,
-  parseStorageRef,
-  resolveStorageUrl,
-  resolveStorageUrls,
-  toStorageRefIfPossible,
-} from "@/lib/storageRefs";
-import {
-  getWebsiteAssetAssignments,
-  setWebsiteAssetAssignment,
-  setWebsiteAssetAssignments,
-} from "@/lib/websiteAssetAssignments";
-import { MYGOTWO_STRIP_GALLERY_IMAGES } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.images";
+  MYGOTWO_COLLAPSE_IMAGES,
+  MYGOTWO_COLLAPSE_SLOT_TARGETS,
+  MYGOTWO_STRIP_GALLERY_IMAGES,
+  MYGOTWO_STRIP_SLOT_TARGETS,
+} from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.images";
 
-type BankPhoto = {
+const PREVIEW_COLLAPSE_DELAY_MS = 5000;
+const COLLAPSE_ROTATE_INTERVAL_MS = 4000;
+
+type StripPresentation = {
   id: string;
-  image_url: string;
-  filename: string | null;
-  display_url: string;
+  image: string;
+  align?: string;
+  label?: string;
+  isPanoramaStrip: boolean;
+  panoramaIndex: number;
 };
 
-function stripImageKey(id: string) {
-  return `mygotwo-strip-${id}`;
-}
-
-function buildAssetKeySet(assetKeys: string[]) {
-  return assetKeys.reduce<Set<string>>((accumulator, assetKey) => {
-    accumulator.add(assetKey);
-    return accumulator;
-  }, new Set<string>());
-}
-
-function buildPreviousImageMap(imageOverrides: Record<string, string>, assetKeys: string[]) {
-  return assetKeys.reduce<Record<string, string>>((accumulator, assetKey) => {
-    if (imageOverrides[assetKey]) {
-      accumulator[assetKey] = imageOverrides[assetKey];
-    }
-    return accumulator;
-  }, {});
-}
-
-function getSharedPanoramaUrl(imageOverrides: Record<string, string>, panoramaStripIds: string[]) {
-  const urls = panoramaStripIds
-    .map((stripId) => imageOverrides[stripImageKey(stripId)] || "")
-    .filter(Boolean);
-
-  if (urls.length !== panoramaStripIds.length) {
-    return null;
-  }
-
-  return urls.every((url) => url === urls[0]) ? urls[0] : null;
-}
-
-const imagePreloadCache = new Map<string, Promise<void>>();
-async function preloadImage(url: string) {
-  const cached = imagePreloadCache.get(url);
-  if (cached) {
-    await cached;
-    return;
-  }
-
-  const preloadPromise = new Promise<void>((resolve, reject) => {
-    const image = new window.Image();
-    image.decoding = "async";
-    image.onload = () => {
-      if (typeof image.decode === "function") {
-        image.decode().then(resolve).catch(resolve);
-        return;
-      }
-      resolve();
-    };
-    image.onerror = () => {
-      imagePreloadCache.delete(url);
-      reject(new Error(`Failed to preload image: ${url}`));
-    };
-    image.src = url;
-  });
-
-  imagePreloadCache.set(url, preloadPromise);
-  await preloadPromise;
-}
+const SLOT_KEYS = [
+  ...MYGOTWO_STRIP_SLOT_TARGETS.map((target) => target.key),
+  ...MYGOTWO_COLLAPSE_SLOT_TARGETS.map((target) => target.key),
+];
 
 export default function MyGoTwoStripGalleryAsset() {
-  const BANK_PAGE_SIZE = 10;
-  const PREVIEW_COLLAPSE_DELAY_MS = 5000;
-  const isDev = import.meta.env.DEV;
-  const { user } = useAuth();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [selectedStripId, setSelectedStripId] = useState<string | null>(null);
-  const [loadingBank, setLoadingBank] = useState(false);
-  const [loadingOverrides, setLoadingOverrides] = useState(false);
-  const [bankPhotos, setBankPhotos] = useState<BankPhoto[]>([]);
-  const [imageOverrides, setImageOverrides] = useState<Record<string, string>>({});
-  const [assignedAssetKeys, setAssignedAssetKeys] = useState<Set<string>>(() => new Set());
-  const [previewPanoramaOverrideUrl, setPreviewPanoramaOverrideUrl] = useState<string | null>(null);
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
-  const [wallReady, setWallReady] = useState(false);
-  const [wallVisible, setWallVisible] = useState(false);
-  const [bankPage, setBankPage] = useState(0);
+  const [collapseImageIndex, setCollapseImageIndex] = useState(0);
+  const [stripImages, setStripImages] = useState(() => MYGOTWO_STRIP_GALLERY_IMAGES);
+  const [collapseImages, setCollapseImages] = useState(() => MYGOTWO_COLLAPSE_IMAGES);
   const hoverTimerRef = useRef<number | null>(null);
   const collapseTimerRef = useRef<number | null>(null);
+  const rotateTimerRef = useRef<number | null>(null);
 
-  const strips = useMemo(() => MYGOTWO_STRIP_GALLERY_IMAGES, []);
-  const panoramaStripIds = useMemo(
-    () => strips.filter((strip) => !strip.label).map((strip) => strip.id),
-    [strips],
-  );
-  const panoramaStripIdSet = useMemo(() => new Set(panoramaStripIds), [panoramaStripIds]);
-  const persistedPanoramaUrl = useMemo(
-    () => getSharedPanoramaUrl(imageOverrides, panoramaStripIds),
-    [imageOverrides, panoramaStripIds],
-  );
-  const activePanoramaUrl = previewPanoramaOverrideUrl || persistedPanoramaUrl;
+  const loadAssignedImages = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("category_images")
+      .select("category_key, image_url")
+      .eq("gender", "male")
+      .in("category_key", SLOT_KEYS);
 
-  const loadOverrides = useCallback(async () => {
-    if (!user) {
-      setImageOverrides({});
-      setAssignedAssetKeys(new Set());
-      setWallReady(true);
-      setWallVisible(true);
+    if (error) {
+      console.error("Failed to load My Go Two strip images:", error);
       return;
     }
 
-    setLoadingOverrides(true);
-    setWallReady(false);
-    setWallVisible(false);
-    try {
-      const assignments = await getWebsiteAssetAssignments(
-        strips.map((strip) => stripImageKey(strip.id)),
-      );
-      const nextAssignedAssetKeys = new Set(assignments.map((assignment) => assignment.assetKey));
+    const rows = data ?? [];
+    const urls = await resolveStorageUrls(rows.map((row) => row.image_url));
+    const resolvedByKey = new Map<string, string>();
 
-      const resolvedUrls = await resolveStorageUrls(
-        assignments.map((assignment) => assignment.imageUrl),
-      );
-      const resolvedAssignments = assignments.map((assignment, index) => ({
-        assetKey: assignment.assetKey,
-        imageUrl: resolvedUrls[index] || "",
-      }));
-
-      await Promise.all(
-        resolvedAssignments
-          .filter((assignment) => assignment.imageUrl)
-          .map(async (assignment) => {
-            try {
-              await preloadImage(assignment.imageUrl);
-            } catch (error) {
-              console.warn("strip override preload failed", error);
-            }
-          }),
-      );
-
-      const nextOverrides = resolvedAssignments.reduce<Record<string, string>>((accumulator, assignment) => {
-        if (assignment.imageUrl) {
-          accumulator[assignment.assetKey] = assignment.imageUrl;
-        }
-        return accumulator;
-      }, {});
-
-      setAssignedAssetKeys(nextAssignedAssetKeys);
-      setImageOverrides(nextOverrides);
-      setWallReady(true);
-      window.requestAnimationFrame(() => {
-        setWallVisible(true);
-      });
-    } catch (error) {
-      console.warn("website asset assignments load failed", error);
-      setImageOverrides({});
-      setAssignedAssetKeys(new Set());
-      setWallReady(true);
-      window.requestAnimationFrame(() => {
-        setWallVisible(true);
-      });
-    } finally {
-      setLoadingOverrides(false);
-    }
-  }, [strips, user]);
-
-  const loadBank = useCallback(async () => {
-    setLoadingBank(true);
-    try {
-      const { data, error } = await supabase
-        .from("category_bank_photos")
-        .select("id, image_url, filename")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        throw error;
+    rows.forEach((row, index) => {
+      const resolvedUrl = urls[index] ?? "";
+      if (row.category_key && resolvedUrl) {
+        resolvedByKey.set(row.category_key, resolvedUrl);
       }
+    });
 
-      const rows = (data ?? []) as Array<{
-        id: string;
-        image_url: string;
-        filename: string | null;
-      }>;
+    setStripImages(
+      MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
+        ...strip,
+        image: resolvedByKey.get(`mygotwo-strip-${strip.id}`) || strip.image,
+      })),
+    );
 
-      const resolvedUrls = await resolveStorageUrls(rows.map((photo) => photo.image_url));
-      const resolvedRows = rows.map((photo, index) => ({
-        ...photo,
-        display_url: resolvedUrls[index] || "",
-      }));
-
-      setBankPhotos(resolvedRows);
-    } catch (error) {
-      console.warn("category bank load failed", error);
-      setBankPhotos([]);
-    } finally {
-      setLoadingBank(false);
-    }
+    setCollapseImages(
+      MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
+        ...image,
+        image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || image.image,
+      })),
+    );
   }, []);
 
+  const strips = useMemo<StripPresentation[]>(() => {
+    const panoramaIds = stripImages.filter((strip) => !strip.label).map((strip) => strip.id);
+    const panoramaIdSet = new Set(panoramaIds);
+
+    return stripImages.map((strip) => ({
+      ...strip,
+      isPanoramaStrip: panoramaIdSet.has(strip.id),
+      panoramaIndex: panoramaIds.indexOf(strip.id),
+    }));
+  }, [stripImages]);
+
+  const panoramaStripCount = useMemo(
+    () => strips.filter((strip) => strip.isPanoramaStrip).length,
+    [strips],
+  );
+
+  const activePanoramaUrl =
+    collapseImages[collapseImageIndex % collapseImages.length]?.image || "";
+
   useEffect(() => {
-    void loadOverrides();
-    if (isDev) {
-      void loadBank();
-    }
-  }, [isDev, loadBank, loadOverrides]);
+    void loadAssignedImages();
+
+    const handler = () => {
+      void loadAssignedImages();
+    };
+
+    window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
+  }, [loadAssignedImages]);
 
   useEffect(() => {
     return () => {
@@ -229,6 +112,9 @@ export default function MyGoTwoStripGalleryAsset() {
       if (collapseTimerRef.current !== null) {
         window.clearTimeout(collapseTimerRef.current);
       }
+      if (rotateTimerRef.current !== null) {
+        window.clearInterval(rotateTimerRef.current);
+      }
     };
   }, []);
 
@@ -236,11 +122,6 @@ export default function MyGoTwoStripGalleryAsset() {
     if (collapseTimerRef.current !== null) {
       window.clearTimeout(collapseTimerRef.current);
       collapseTimerRef.current = null;
-    }
-
-    if (!activePanoramaUrl) {
-      setPreviewCollapsed(false);
-      return;
     }
 
     if (hoveredId) {
@@ -259,107 +140,28 @@ export default function MyGoTwoStripGalleryAsset() {
         collapseTimerRef.current = null;
       }
     };
-  }, [activePanoramaUrl, hoveredId]);
+  }, [hoveredId]);
 
-  const assignPhoto = useCallback(
-    async (photo: BankPhoto) => {
-      if (!selectedStripId || !user) return;
-
-      const isPanoramaAssignment = panoramaStripIdSet.has(selectedStripId);
-      const targetStripIds = isPanoramaAssignment ? panoramaStripIds : [selectedStripId];
-      const targetAssetKeys = targetStripIds.map((stripId) => stripImageKey(stripId));
-      const previousImageUrls = buildPreviousImageMap(imageOverrides, targetAssetKeys);
-      const previousAssignedAssetKeys = buildAssetKeySet(Array.from(assignedAssetKeys));
-      const sourceRef = parseStorageRef(toStorageRefIfPossible(photo.image_url));
-      const sourceUrl = await resolveStorageUrl(photo.image_url, 3600);
-
-      if (!sourceUrl) return;
-
-      const response = await fetch(sourceUrl);
-      const blob = await response.blob();
-
-      const sourceExt = sourceRef?.path.split(".").pop() || photo.filename?.split(".").pop() || "jpg";
-      const targetPath = `${targetAssetKeys[0]}/${Date.now()}.${sourceExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("images-mygotwo-strip")
-        .upload(targetPath, blob, { contentType: blob.type || "image/jpeg", upsert: false });
-
-      if (uploadError) {
-        console.warn("strip bucket upload failed", uploadError);
-        return;
+  useEffect(() => {
+    if (!previewCollapsed || collapseImages.length <= 1) {
+      if (rotateTimerRef.current !== null) {
+        window.clearInterval(rotateTimerRef.current);
+        rotateTimerRef.current = null;
       }
+      return;
+    }
 
-      const targetRef = makeStorageRef("images-mygotwo-strip", targetPath);
-      const targetUrl = await resolveStorageUrl(targetRef, 3600);
-      if (!targetUrl) {
-        return;
-      }
-      await preloadImage(targetUrl);
-      const nextOverrides = { ...imageOverrides };
-      targetAssetKeys.forEach((assetKey) => {
-        nextOverrides[assetKey] = targetUrl;
-      });
+    rotateTimerRef.current = window.setInterval(() => {
+      setCollapseImageIndex((current) => (current + 1) % collapseImages.length);
+    }, COLLAPSE_ROTATE_INTERVAL_MS);
 
-      setImageOverrides(nextOverrides);
-      setAssignedAssetKeys((current) => {
-        const next = new Set(current);
-        targetAssetKeys.forEach((assetKey) => {
-          next.add(assetKey);
-        });
-        return next;
-      });
-      if (isPanoramaAssignment) {
-        setPreviewPanoramaOverrideUrl(null);
+    return () => {
+      if (rotateTimerRef.current !== null) {
+        window.clearInterval(rotateTimerRef.current);
+        rotateTimerRef.current = null;
       }
-
-      try {
-        if (isPanoramaAssignment) {
-          await setWebsiteAssetAssignments(
-            targetAssetKeys.map((assetKey) => ({
-              assetKey,
-              bankPhotoId: photo.id,
-              imageUrl: targetRef,
-            })),
-          );
-        } else {
-          await setWebsiteAssetAssignment({
-            assetKey: targetAssetKeys[0],
-            bankPhotoId: photo.id,
-            imageUrl: targetRef,
-          });
-        }
-        setSelectedStripId(null);
-      } catch (error) {
-        const rollbackOverrides = { ...imageOverrides };
-        targetAssetKeys.forEach((assetKey) => {
-          if (previousImageUrls[assetKey]) {
-            rollbackOverrides[assetKey] = previousImageUrls[assetKey];
-            return;
-          }
-          delete rollbackOverrides[assetKey];
-        });
-        setImageOverrides(rollbackOverrides);
-        setAssignedAssetKeys(previousAssignedAssetKeys);
-        console.warn("website asset assignment save failed", error);
-      }
-    },
-    [assignedAssetKeys, imageOverrides, panoramaStripIdSet, panoramaStripIds, selectedStripId, user],
-  );
-
-  const previewPanorama = useCallback(
-    async (photo: BankPhoto) => {
-      try {
-        await preloadImage(photo.display_url);
-        setPreviewCollapsed(false);
-        setHoveredId(null);
-        setPreviewPanoramaOverrideUrl(photo.display_url);
-      } catch (error) {
-        console.warn("panorama preview preload failed", error);
-      }
-    },
-    [],
-  );
+    };
+  }, [collapseImages.length, previewCollapsed]);
 
   const queueHoveredId = useCallback((nextId: string | null) => {
     if (hoverTimerRef.current !== null) {
@@ -371,16 +173,6 @@ export default function MyGoTwoStripGalleryAsset() {
       hoverTimerRef.current = null;
     }, 90);
   }, []);
-
-  const totalBankPages = Math.max(1, Math.ceil(bankPhotos.length / BANK_PAGE_SIZE));
-  const visibleBankPhotos = bankPhotos.slice(
-    bankPage * BANK_PAGE_SIZE,
-    (bankPage + 1) * BANK_PAGE_SIZE,
-  );
-
-  useEffect(() => {
-    setBankPage((current) => Math.min(current, totalBankPages - 1));
-  }, [totalBankPages]);
 
   return (
     <section
@@ -399,27 +191,14 @@ export default function MyGoTwoStripGalleryAsset() {
           className="relative flex h-full w-full items-stretch gap-[3px] overflow-hidden sm:gap-[4px] md:gap-[6px]"
           onMouseLeave={() => queueHoveredId(null)}
           style={{
-            opacity: wallVisible ? 1 : 0,
+            opacity: 1,
             transition: "opacity 320ms ease",
           }}
         >
           {strips.map((strip) => {
             const isHovered = strip.id === hoveredId;
-            const isSelected = strip.id === selectedStripId;
-            const imageKey = stripImageKey(strip.id);
-            const hasSavedOverride = assignedAssetKeys.has(imageKey);
-            const resolvedOverrideUrl = imageOverrides[imageKey];
-            const panoramaIndex = panoramaStripIds.indexOf(strip.id);
-            const isPanoramaStrip = panoramaStripIdSet.has(strip.id);
-            const lockPanoramaStripHover = Boolean(activePanoramaUrl && isPanoramaStrip);
-            const collapseCategoryStrip = Boolean(previewCollapsed && activePanoramaUrl && strip.label && !hoveredId);
-            const imageUrl =
-              !wallReady
-                ? ""
-                : activePanoramaUrl && isPanoramaStrip
-                ? activePanoramaUrl
-                : resolvedOverrideUrl || (hasSavedOverride ? "" : strip.image);
-            const showPlaceholder = wallReady && hasSavedOverride && !resolvedOverrideUrl;
+            const collapseCategoryStrip = Boolean(previewCollapsed && strip.label && !hoveredId);
+            const showPanorama = previewCollapsed && strip.isPanoramaStrip;
 
             return (
               <div
@@ -431,10 +210,8 @@ export default function MyGoTwoStripGalleryAsset() {
                   flexBasis: 0,
                   flexGrow: collapseCategoryStrip
                     ? 0.0001
-                    : lockPanoramaStripHover
-                      ? previewCollapsed && !hoveredId
-                        ? 1.55
-                        : 1
+                    : showPanorama
+                      ? 1.55
                       : isHovered
                         ? 3.35
                         : hoveredId
@@ -442,37 +219,37 @@ export default function MyGoTwoStripGalleryAsset() {
                           : 1,
                   minWidth: collapseCategoryStrip
                     ? "0px"
-                    : lockPanoramaStripHover
-                    ? "clamp(12px, 2.4vw, 22px)"
-                    : isHovered
-                      ? "clamp(60px, 10.5vw, 94px)"
-                      : "clamp(12px, 2.4vw, 22px)",
+                    : showPanorama
+                      ? "clamp(12px, 2.4vw, 22px)"
+                      : isHovered
+                        ? "clamp(60px, 10.5vw, 94px)"
+                        : "clamp(12px, 2.4vw, 22px)",
                   contain: "layout paint style",
-                  transform: lockPanoramaStripHover ? "translateY(0)" : isHovered ? "translateY(-2px)" : "translateY(0)",
+                  transform: showPanorama ? "translateY(0)" : isHovered ? "translateY(-2px)" : "translateY(0)",
                   opacity: collapseCategoryStrip ? 0 : 1,
                   pointerEvents: collapseCategoryStrip ? "none" : "auto",
                 }}
               >
-                {activePanoramaUrl && isPanoramaStrip ? (
+                {showPanorama ? (
                   <div
                     aria-hidden="true"
                     className="absolute inset-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     style={{
                       backgroundImage: `url("${activePanoramaUrl}")`,
                       backgroundRepeat: "no-repeat",
-                      backgroundSize: `${panoramaStripIds.length * 100}% 100%`,
+                      backgroundSize: `${panoramaStripCount * 100}% 100%`,
                       backgroundPosition:
-                        panoramaIndex >= 0 && panoramaStripIds.length > 1
-                          ? `${(panoramaIndex / (panoramaStripIds.length - 1)) * 100}% center`
+                        strip.panoramaIndex >= 0 && panoramaStripCount > 1
+                          ? `${(strip.panoramaIndex / (panoramaStripCount - 1)) * 100}% center`
                           : "50% center",
                       transform: "scale(1.02)",
                     }}
                   />
-                ) : imageUrl ? (
+                ) : strip.image ? (
                   <img
                     aria-hidden="true"
                     alt=""
-                    src={imageUrl}
+                    src={strip.image}
                     decoding="async"
                     loading="lazy"
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -486,33 +263,11 @@ export default function MyGoTwoStripGalleryAsset() {
                   aria-hidden="true"
                   className="absolute inset-0 transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                   style={{
-                    background: showPlaceholder
-                      ? "linear-gradient(180deg, rgba(248,242,233,0.92) 0%, rgba(231,220,206,0.92) 100%)"
-                      : "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
-                    opacity: showPlaceholder ? 1 : isHovered ? 0.48 : 0.7,
+                    background:
+                      "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
+                    opacity: isHovered ? 0.48 : 0.7,
                   }}
                 />
-                {isDev && wallReady ? (
-                  <button
-                    type="button"
-                    aria-label={`Edit strip ${strip.id}`}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setSelectedStripId(strip.id);
-                      setBankPage(0);
-                    }}
-                    className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full border shadow-[0_6px_18px_rgba(41,32,24,0.14)] backdrop-blur-[12px]"
-                    style={{
-                      borderColor: isSelected ? "rgba(226,89,52,0.72)" : "rgba(255,255,255,0.6)",
-                      background: isSelected
-                        ? "rgba(226,89,52,0.92)"
-                        : "rgba(248,242,233,0.86)",
-                      color: isSelected ? "#fff7f1" : "#2c2925",
-                    }}
-                  >
-                    <ImageIcon className="h-4 w-4" />
-                  </button>
-                ) : null}
                 {strip.label ? (
                   <span
                     className="pointer-events-none absolute bottom-2 left-1/2 z-10 text-[9px] font-medium uppercase tracking-[0.16em] text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.42)] sm:bottom-3 sm:text-[10px] md:bottom-4 md:text-[12px] md:tracking-[0.2em]"
@@ -540,143 +295,7 @@ export default function MyGoTwoStripGalleryAsset() {
             );
           })}
         </div>
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 transition-opacity duration-300 ease-out"
-          style={{
-            opacity: wallReady ? 0 : 1,
-            background:
-              "linear-gradient(180deg, rgba(247,244,239,0.98) 0%, rgba(241,235,228,0.97) 42%, rgba(233,225,215,0.95) 100%)",
-          }}
-        />
       </div>
-      {isDev && selectedStripId ? (
-        <div className="absolute bottom-6 right-6 z-30 w-[min(560px,calc(100vw-2rem))] rounded-[24px] border border-[rgba(255,255,255,0.58)] bg-[rgba(248,242,233,0.94)] p-4 shadow-[0_24px_60px_rgba(41,32,24,0.2)] backdrop-blur-[18px]">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold text-[#2c2925]">Edit Strip {selectedStripId}</p>
-              <p className="text-xs text-[#6d655d]">
-                Choose a bank image to replace this strip.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={() => void loadBank()}
-                disabled={loadingBank}
-              >
-                <RefreshCw className={`h-3.5 w-3.5 ${loadingBank ? "animate-spin" : ""}`} />
-                Refresh
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => setSelectedStripId(null)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          {activePanoramaUrl ? (
-            <div className="mb-3 flex items-center justify-between gap-3 rounded-[16px] border border-[rgba(44,41,37,0.08)] bg-white/50 px-3 py-2">
-              <p className="text-xs text-[#6d655d]">
-                Panorama active across the 8 unlabeled strips only.
-              </p>
-              {previewPanoramaOverrideUrl ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPreviewPanoramaOverrideUrl(null)}
-                >
-                  Clear Preview
-                </Button>
-              ) : null}
-            </div>
-          ) : null}
-
-          <div className="grid max-h-[48vh] grid-cols-3 gap-3 overflow-y-auto pr-1 sm:grid-cols-4">
-            {loadingOverrides || loadingBank ? (
-              <div className="col-span-full py-8 text-center text-sm text-[#6d655d]">Loading bank...</div>
-            ) : bankPhotos.length === 0 ? (
-              <div className="col-span-full py-8 text-center text-sm text-[#6d655d]">
-                No bank images yet. Upload them in Photo Gallery first.
-              </div>
-            ) : (
-              visibleBankPhotos.map((photo) => (
-                <div
-                  key={photo.id}
-                  className="overflow-hidden rounded-[18px] border border-[rgba(255,255,255,0.58)] bg-white/60 text-left shadow-[0_10px_24px_rgba(41,32,24,0.1)] transition-transform duration-200 hover:scale-[1.02]"
-                >
-                  <div className="aspect-[4/5] bg-[#e8dfd2]">
-                    <img src={photo.display_url} alt={photo.filename ?? photo.id} className="h-full w-full object-cover" />
-                  </div>
-                  <div className="px-2.5 py-2">
-                    <p className="truncate text-[11px] font-medium text-[#2c2925]">
-                      {photo.filename || photo.id}
-                    </p>
-                  </div>
-                  <div className="flex gap-2 px-2.5 pb-2">
-                    <Button
-                      type="button"
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => void assignPhoto(photo)}
-                    >
-                      Use
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void previewPanorama(photo);
-                      }}
-                    >
-                      Preview
-                    </Button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-          {!loadingOverrides && !loadingBank && bankPhotos.length > BANK_PAGE_SIZE ? (
-            <div className="mt-4 flex items-center justify-between gap-3">
-              <p className="text-xs text-[#6d655d]">
-                Page {bankPage + 1} of {totalBankPages}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setBankPage((current) => Math.max(0, current - 1))}
-                  disabled={bankPage === 0}
-                >
-                  Previous
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setBankPage((current) => Math.min(totalBankPages - 1, current + 1))
-                  }
-                  disabled={bankPage >= totalBankPages - 1}
-                >
-                  Next Page
-                </Button>
-              </div>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
     </section>
   );
 }

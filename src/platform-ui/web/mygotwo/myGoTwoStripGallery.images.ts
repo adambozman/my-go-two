@@ -5,8 +5,18 @@ export type MyGoTwoStripGalleryImage = {
   label?: string;
 };
 
-// Change these entries to swap images or add your own.
-// Local files should be placed under /public and referenced like "/mygotwo/01.jpg".
+export type MyGoTwoCollapseImage = {
+  id: string;
+  image: string;
+};
+
+export type MyGoTwoSlotTarget = {
+  key: string;
+  id: string;
+  label: string;
+  kind: "strip" | "collapse";
+};
+
 export const MYGOTWO_STRIP_GALLERY_IMAGES: MyGoTwoStripGalleryImage[] = [
   {
     id: "01",
@@ -119,4 +129,51 @@ export const MYGOTWO_STRIP_GALLERY_IMAGES: MyGoTwoStripGalleryImage[] = [
     align: "44%",
     label: "Travel",
   },
+];
+
+export const MYGOTWO_COLLAPSE_IMAGES: MyGoTwoCollapseImage[] = [
+  {
+    id: "collapse-01",
+    image:
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1800&q=80",
+  },
+  {
+    id: "collapse-02",
+    image:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80",
+  },
+  {
+    id: "collapse-03",
+    image:
+      "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1800&q=80",
+  },
+  {
+    id: "collapse-04",
+    image:
+      "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=1800&q=80",
+  },
+  {
+    id: "collapse-05",
+    image:
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1800&q=80",
+  },
+];
+
+export const MYGOTWO_STRIP_SLOT_TARGETS: MyGoTwoSlotTarget[] = MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
+  key: `mygotwo-strip-${strip.id}`,
+  id: strip.id,
+  label: strip.label ?? `Strip ${strip.id}`,
+  kind: "strip",
+}));
+
+export const MYGOTWO_COLLAPSE_SLOT_TARGETS: MyGoTwoSlotTarget[] = MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
+  key: `mygotwo-collapse-${String(index + 1).padStart(2, "0")}`,
+  id: image.id,
+  label: `Collapse ${String(index + 1).padStart(2, "0")}`,
+  kind: "collapse",
+}));
+
+export const MYGOTWO_SLOT_TARGETS: MyGoTwoSlotTarget[] = [
+  ...MYGOTWO_STRIP_SLOT_TARGETS,
+  ...MYGOTWO_COLLAPSE_SLOT_TARGETS,
 ];
