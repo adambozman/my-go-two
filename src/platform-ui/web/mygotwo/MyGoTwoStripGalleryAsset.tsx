@@ -7,6 +7,7 @@ import {
   makeStorageRef,
   parseStorageRef,
   resolveStorageUrl,
+  resolveStorageUrls,
   toStorageRefIfPossible,
 } from "@/lib/storageRefs";
 import {
@@ -26,6 +27,15 @@ function stripImageKey(id: string) {
   return `mygotwo-strip-${id}`;
 }
 
+async function preloadImage(url: string) {
+  await new Promise<void>((resolve, reject) => {
+    const image = new window.Image();
+    image.onload = () => resolve();
+    image.onerror = () => reject(new Error(`Failed to preload image: ${url}`));
+    image.src = url;
+  });
+}
+
 export default function MyGoTwoStripGalleryAsset() {
   const BANK_PAGE_SIZE = 10;
   const isDev = import.meta.env.DEV;
@@ -36,6 +46,7 @@ export default function MyGoTwoStripGalleryAsset() {
   const [loadingOverrides, setLoadingOverrides] = useState(false);
   const [bankPhotos, setBankPhotos] = useState<BankPhoto[]>([]);
   const [imageOverrides, setImageOverrides] = useState<Record<string, string>>({});
+  const [assignedAssetKeys, setAssignedAssetKeys] = useState<Set<string>>(() => new Set());
   const [bankPage, setBankPage] = useState(0);
   const hoverTimerRef = useRef<number | null>(null);
 
@@ -44,6 +55,7 @@ export default function MyGoTwoStripGalleryAsset() {
   const loadOverrides = useCallback(async () => {
     if (!user) {
       setImageOverrides({});
+      setAssignedAssetKeys(new Set());
       return;
     }
 
@@ -53,15 +65,40 @@ export default function MyGoTwoStripGalleryAsset() {
         strips.map((strip) => stripImageKey(strip.id)),
       );
 
-      const nextOverrides: Record<string, string> = {};
-      for (const assignment of assignments) {
-        nextOverrides[assignment.assetKey] = await resolveStorageUrl(assignment.imageUrl);
-      }
+      setAssignedAssetKeys(new Set(assignments.map((assignment) => assignment.assetKey)));
+
+      const resolvedUrls = await resolveStorageUrls(
+        assignments.map((assignment) => assignment.imageUrl),
+      );
+      const resolvedAssignments = assignments.map((assignment, index) => ({
+        assetKey: assignment.assetKey,
+        imageUrl: resolvedUrls[index] || "",
+      }));
+
+      await Promise.all(
+        resolvedAssignments
+          .filter((assignment) => assignment.imageUrl)
+          .map(async (assignment) => {
+            try {
+              await preloadImage(assignment.imageUrl);
+            } catch (error) {
+              console.warn("strip override preload failed", error);
+            }
+          }),
+      );
+
+      const nextOverrides = resolvedAssignments.reduce<Record<string, string>>((accumulator, assignment) => {
+        if (assignment.imageUrl) {
+          accumulator[assignment.assetKey] = assignment.imageUrl;
+        }
+        return accumulator;
+      }, {});
 
       setImageOverrides(nextOverrides);
     } catch (error) {
       console.warn("website asset assignments load failed", error);
       setImageOverrides({});
+      setAssignedAssetKeys(new Set());
     } finally {
       setLoadingOverrides(false);
     }
@@ -85,12 +122,11 @@ export default function MyGoTwoStripGalleryAsset() {
         filename: string | null;
       }>;
 
-      const resolvedRows = await Promise.all(
-        rows.map(async (photo) => ({
-          ...photo,
-          display_url: await resolveStorageUrl(photo.image_url),
-        })),
-      );
+      const resolvedUrls = await resolveStorageUrls(rows.map((photo) => photo.image_url));
+      const resolvedRows = rows.map((photo, index) => ({
+        ...photo,
+        display_url: resolvedUrls[index] || "",
+      }));
 
       setBankPhotos(resolvedRows);
     } catch (error) {
@@ -144,12 +180,21 @@ export default function MyGoTwoStripGalleryAsset() {
 
       const targetRef = makeStorageRef("images-mygotwo-strip", targetPath);
       const targetUrl = await resolveStorageUrl(targetRef, 3600);
+      if (!targetUrl) {
+        return;
+      }
+      await preloadImage(targetUrl);
       const nextOverrides = {
         ...imageOverrides,
         [assetKey]: targetUrl,
       };
 
       setImageOverrides(nextOverrides);
+      setAssignedAssetKeys((current) => {
+        const next = new Set(current);
+        next.add(assetKey);
+        return next;
+      });
 
       try {
         await setWebsiteAssetAssignment({
@@ -214,25 +259,45 @@ export default function MyGoTwoStripGalleryAsset() {
             const isHovered = strip.id === hoveredId;
             const isSelected = strip.id === selectedStripId;
             const imageKey = stripImageKey(strip.id);
-            const imageUrl = imageOverrides[imageKey] || strip.image;
+            const hasSavedOverride = assignedAssetKeys.has(imageKey);
+            const resolvedOverrideUrl = imageOverrides[imageKey];
+            const imageUrl = resolvedOverrideUrl || (hasSavedOverride ? "" : strip.image);
+            const showPlaceholder = hasSavedOverride && !resolvedOverrideUrl;
 
             return (
               <div
                 key={strip.id}
                 aria-label={`Strip ${strip.id}`}
                 onMouseEnter={() => queueHoveredId(strip.id)}
-                className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
                 style={{
                   flexBasis: 0,
                   flexGrow: isHovered ? 3.35 : hoveredId ? 0.58 : 1,
                   minWidth: isHovered ? "clamp(60px, 10.5vw, 94px)" : "clamp(12px, 2.4vw, 22px)",
-                  backgroundImage: `url(${imageUrl})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: `${strip.align ?? "50%"} center`,
-                  filter: isHovered ? "saturate(1.04) contrast(1.02)" : "saturate(0.96)",
                   transform: isHovered ? "translateY(-2px)" : "translateY(0)",
                 }}
               >
+                {imageUrl ? (
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
+                    style={{
+                      backgroundImage: `url(${imageUrl})`,
+                      backgroundPosition: `${strip.align ?? "50%"} center`,
+                      transform: isHovered ? "scale(1.015)" : "scale(1)",
+                    }}
+                  />
+                ) : null}
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                  style={{
+                    background: showPlaceholder
+                      ? "linear-gradient(180deg, rgba(248,242,233,0.92) 0%, rgba(231,220,206,0.92) 100%)"
+                      : "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
+                    opacity: showPlaceholder ? 1 : isHovered ? 0.48 : 0.7,
+                  }}
+                />
                 {isDev ? (
                   <button
                     type="button"

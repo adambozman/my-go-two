@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 const STORAGE_REF_PREFIX = "storage://";
+const signedUrlCache = new Map<string, { url: string; expiresAt: number }>();
 const PRIVATE_BUCKETS = new Set([
   "avatars",
   "avatars-1",
@@ -67,22 +68,82 @@ export function toStorageRefIfPossible(value?: string | null) {
   return makeStorageRef(parsedUrl.bucket, parsedUrl.path);
 }
 
+export async function resolveStorageUrls(values: Array<string | null | undefined>, expiresIn = 3600) {
+  const results = new Array<string>(values.length).fill("");
+  const groupedRequests = new Map<
+    string,
+    Array<{ index: number; path: string }>
+  >();
+  const now = Date.now();
+
+  values.forEach((value, index) => {
+    if (!value) {
+      results[index] = "";
+      return;
+    }
+
+    if (value.startsWith("data:") || value.startsWith("blob:")) {
+      results[index] = value;
+      return;
+    }
+
+    const storageRef = parseStorageRef(value) ?? parseSupabaseStorageUrl(value);
+    if (!storageRef) {
+      results[index] = value;
+      return;
+    }
+
+    const { bucket, path } = storageRef;
+    if (!PRIVATE_BUCKETS.has(bucket)) {
+      results[index] = value;
+      return;
+    }
+
+    const cacheKey = `${bucket}/${path}`;
+    const cached = signedUrlCache.get(cacheKey);
+    if (cached && cached.expiresAt > now + 30_000) {
+      results[index] = cached.url;
+      return;
+    }
+
+    const bucketRequests = groupedRequests.get(bucket) ?? [];
+    bucketRequests.push({ index, path });
+    groupedRequests.set(bucket, bucketRequests);
+  });
+
+  await Promise.all(
+    Array.from(groupedRequests.entries()).map(async ([bucket, requests]) => {
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .createSignedUrls(
+          requests.map((request) => request.path),
+          expiresIn,
+        );
+
+      if (error || !data) {
+        requests.forEach((request) => {
+          results[request.index] = "";
+        });
+        return;
+      }
+
+      requests.forEach((request, requestIndex) => {
+        const signed = data[requestIndex]?.signedUrl ?? "";
+        results[request.index] = signed;
+        if (signed) {
+          signedUrlCache.set(`${bucket}/${request.path}`, {
+            url: signed,
+            expiresAt: now + expiresIn * 1000,
+          });
+        }
+      });
+    }),
+  );
+
+  return results;
+}
+
 export async function resolveStorageUrl(value?: string | null, expiresIn = 3600) {
-  if (!value) return "";
-  if (value.startsWith("data:") || value.startsWith("blob:")) return value;
-
-  const storageRef = parseStorageRef(value) ?? parseSupabaseStorageUrl(value);
-  if (!storageRef) return value;
-
-  const { bucket, path } = storageRef;
-  if (!PRIVATE_BUCKETS.has(bucket)) {
-    return value;
-  }
-
-  const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresIn);
-  if (error || !data?.signedUrl) {
-    return "";
-  }
-
-  return data.signedUrl;
+  const [resolved] = await resolveStorageUrls([value], expiresIn);
+  return resolved ?? "";
 }
