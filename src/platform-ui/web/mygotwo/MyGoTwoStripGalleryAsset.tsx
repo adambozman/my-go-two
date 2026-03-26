@@ -195,17 +195,18 @@ export default function MyGoTwoStripGalleryAsset() {
   return (
     <section
       aria-label="Strip gallery asset"
-      className="flex min-h-0 flex-1 items-center justify-center overflow-hidden py-4 md:py-6"
+      className="flex min-h-0 flex-1 items-center justify-center overflow-hidden py-3 sm:py-4 md:py-6"
     >
       <div
         className="h-full w-full overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.58)] shadow-[0_18px_44px_rgba(41,32,24,0.16)]"
         style={{
           maxWidth: "1480px",
-          maxHeight: "900px",
+          maxHeight: "min(900px, 100%)",
+          minHeight: "clamp(360px, 56vh, 900px)",
         }}
       >
         <div
-          className="flex h-full w-full items-stretch gap-[6px] overflow-hidden"
+          className="flex h-full w-full items-stretch gap-[3px] overflow-hidden sm:gap-[4px] md:gap-[6px]"
           onMouseLeave={() => queueHoveredId(null)}
         >
           {strips.map((strip) => {
@@ -223,7 +224,7 @@ export default function MyGoTwoStripGalleryAsset() {
                 style={{
                   flexBasis: 0,
                   flexGrow: isHovered ? 3.6 : hoveredId ? 0.52 : 1,
-                  minWidth: isHovered ? "88px" : "18px",
+                  minWidth: isHovered ? "clamp(56px, 10vw, 88px)" : "clamp(10px, 2.1vw, 18px)",
                   backgroundImage: `url(${imageUrl})`,
                   backgroundSize: "cover",
                   backgroundPosition: `${strip.align ?? "50%"} center`,
@@ -254,7 +255,7 @@ export default function MyGoTwoStripGalleryAsset() {
                 ) : null}
                 {strip.label ? (
                   <span
-                    className="pointer-events-none absolute bottom-4 left-1/2 z-10 text-[12px] font-medium uppercase tracking-[0.2em] text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.42)]"
+                    className="pointer-events-none absolute bottom-2 left-1/2 z-10 text-[9px] font-medium uppercase tracking-[0.16em] text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.42)] sm:bottom-3 sm:text-[10px] md:bottom-4 md:text-[12px] md:tracking-[0.2em]"
                     style={{
                       writingMode: "vertical-rl",
                       transform: "translateX(-50%) rotate(180deg)",
