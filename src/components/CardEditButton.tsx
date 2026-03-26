@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Pencil, Check, Camera, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { initBlocklist } from "@/data/imageBlocklist";
 import { STOCK_PHOTOS, getPhotosForLabel } from "@/data/stockPhotos";
 import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
 
@@ -26,6 +27,7 @@ const CardEditButton = ({
   const [selectedPhoto, setSelectedPhoto] = useState(currentImage || "");
   const [resolvedSelectedPhoto, setResolvedSelectedPhoto] = useState(currentImage || "");
   const [uploading, setUploading] = useState(false);
+  const [blocklistLoading, setBlocklistLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -54,6 +56,23 @@ const CardEditButton = ({
       setEmail(currentEmail || "");
     }
   }, [editing, title, currentImage, currentEmail]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!editing || !isConnection) return;
+
+    setBlocklistLoading(true);
+    initBlocklist().finally(() => {
+      if (!cancelled) {
+        setBlocklistLoading(false);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [editing, isConnection]);
 
   useEffect(() => {
     let cancelled = false;
@@ -175,7 +194,11 @@ const CardEditButton = ({
             onChange={handleFileUpload}
           />
 
-          {photos.map((photo) => {
+          {blocklistLoading ? (
+            <div className="col-span-2 flex items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[11px] uppercase tracking-wide text-white/60">
+              Loading photos...
+            </div>
+          ) : photos.map((photo) => {
             const isSelected = selectedPhoto === photo.url;
             return (
               <button

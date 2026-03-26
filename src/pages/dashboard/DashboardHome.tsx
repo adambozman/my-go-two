@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { assignUniquePhotos } from "@/data/stockPhotos";
+import { initBlocklist } from "@/data/imageBlocklist";
 import { type Milestone } from "@/components/home/MilestoneCountdown";
 import { EventCalendar } from "@/components/home/EventCalendar";
 import { type DirectoryEntry } from "@/components/home/ConnectionDirectory";
@@ -153,6 +154,8 @@ const DashboardHome = () => {
 
   const loadConnections = useCallback(async () => {
     if (!user) return;
+
+    await initBlocklist();
 
     const { data, error } = await supabase
       .from("couples")
