@@ -195,13 +195,11 @@ export default function MyGoTwoStripGalleryAsset() {
   return (
     <section
       aria-label="Strip gallery asset"
-      className="flex flex-1 items-center justify-center overflow-hidden px-3 py-8 md:px-4 md:py-10"
+      className="flex min-h-0 flex-1 items-center justify-center overflow-hidden py-4 md:py-6"
     >
       <div
-        className="overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.58)] shadow-[0_18px_44px_rgba(41,32,24,0.16)]"
+        className="h-full w-full overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.58)] shadow-[0_18px_44px_rgba(41,32,24,0.16)]"
         style={{
-          width: "95vw",
-          height: "95vh",
           maxWidth: "1480px",
           maxHeight: "900px",
         }}

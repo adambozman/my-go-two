@@ -66,9 +66,9 @@ const App = () => {
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/connect" element={<Connect />} />
               <Route path="/photo-gallery" element={<PhotoGallery />} />
-              <Route path="/dashboard/my-go-two" element={<MyGoTwo />} />
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardHome />} />
+                <Route path="my-go-two" element={<MyGoTwo />} />
                 <Route path="recommendations" element={<Recommendations />} />
                 <Route path="questionnaires" element={<Questionnaires />} />
                 <Route path="settings" element={<SettingsPage />} />

@@ -1,6 +1,5 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import MyGoTwoWebHeader from "@/platform-ui/web/mygotwo/MyGoTwoWebHeader";
 import MyGoTwoStripGalleryAsset from "@/platform-ui/web/mygotwo/MyGoTwoStripGalleryAsset";
 
 const MyGoTwo = () => {
@@ -19,8 +18,7 @@ const MyGoTwo = () => {
   }
 
   return (
-    <div className="app-page relative flex h-screen flex-col overflow-hidden">
-      <MyGoTwoWebHeader />
+    <div className="flex h-full min-h-0 flex-col">
       <MyGoTwoStripGalleryAsset />
     </div>
   );
