@@ -67,10 +67,16 @@ export default function MyGoTwoStripGalleryAsset() {
   const [bankPhotos, setBankPhotos] = useState<BankPhoto[]>([]);
   const [imageOverrides, setImageOverrides] = useState<Record<string, string>>({});
   const [assignedAssetKeys, setAssignedAssetKeys] = useState<Set<string>>(() => new Set());
+  const [previewPanoramaUrl, setPreviewPanoramaUrl] = useState<string | null>(null);
   const [bankPage, setBankPage] = useState(0);
   const hoverTimerRef = useRef<number | null>(null);
 
   const strips = useMemo(() => MYGOTWO_STRIP_GALLERY_IMAGES, []);
+  const panoramaStripIds = useMemo(
+    () => strips.filter((strip) => !strip.label).map((strip) => strip.id),
+    [strips],
+  );
+  const panoramaStripIdSet = useMemo(() => new Set(panoramaStripIds), [panoramaStripIds]);
 
   const loadOverrides = useCallback(async () => {
     if (!user) {
@@ -237,6 +243,18 @@ export default function MyGoTwoStripGalleryAsset() {
     [imageOverrides, selectedStripId, user],
   );
 
+  const previewPanorama = useCallback(
+    async (photo: BankPhoto) => {
+      try {
+        await preloadImage(photo.display_url);
+        setPreviewPanoramaUrl(photo.display_url);
+      } catch (error) {
+        console.warn("panorama preview preload failed", error);
+      }
+    },
+    [],
+  );
+
   const queueHoveredId = useCallback((nextId: string | null) => {
     if (hoverTimerRef.current !== null) {
       window.clearTimeout(hoverTimerRef.current);
@@ -281,7 +299,16 @@ export default function MyGoTwoStripGalleryAsset() {
             const imageKey = stripImageKey(strip.id);
             const hasSavedOverride = assignedAssetKeys.has(imageKey);
             const resolvedOverrideUrl = imageOverrides[imageKey];
-            const imageUrl = resolvedOverrideUrl || (hasSavedOverride ? "" : strip.image);
+            const panoramaIndex = panoramaStripIds.indexOf(strip.id);
+            const isPanoramaStrip = panoramaStripIdSet.has(strip.id);
+            const panoramaPosition =
+              panoramaIndex >= 0 && panoramaStripIds.length > 1
+                ? `${(panoramaIndex / (panoramaStripIds.length - 1)) * 100}%`
+                : "50%";
+            const imageUrl =
+              previewPanoramaUrl && isPanoramaStrip
+                ? previewPanoramaUrl
+                : resolvedOverrideUrl || (hasSavedOverride ? "" : strip.image);
             const showPlaceholder = hasSavedOverride && !resolvedOverrideUrl;
 
             return (
@@ -308,8 +335,18 @@ export default function MyGoTwoStripGalleryAsset() {
                     fetchPriority={isHovered ? "high" : "auto"}
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     style={{
-                      objectPosition: `${strip.align ?? "50%"} center`,
-                      transform: isHovered ? "scale(1.015)" : "scale(1)",
+                      objectPosition:
+                        previewPanoramaUrl && isPanoramaStrip
+                          ? `${panoramaPosition} center`
+                          : `${strip.align ?? "50%"} center`,
+                      transform:
+                        previewPanoramaUrl && isPanoramaStrip
+                          ? isHovered
+                            ? "scale(1.03)"
+                            : "scale(1.02)"
+                          : isHovered
+                            ? "scale(1.015)"
+                            : "scale(1)",
                     }}
                   />
                 ) : null}
@@ -399,6 +436,21 @@ export default function MyGoTwoStripGalleryAsset() {
               </Button>
             </div>
           </div>
+          {previewPanoramaUrl ? (
+            <div className="mb-3 flex items-center justify-between gap-3 rounded-[16px] border border-[rgba(44,41,37,0.08)] bg-white/50 px-3 py-2">
+              <p className="text-xs text-[#6d655d]">
+                Preview active across the 8 unlabeled strips only.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setPreviewPanoramaUrl(null)}
+              >
+                Clear Preview
+              </Button>
+            </div>
+          ) : null}
 
           <div className="grid max-h-[48vh] grid-cols-3 gap-3 overflow-y-auto pr-1 sm:grid-cols-4">
             {loadingOverrides || loadingBank ? (
@@ -409,10 +461,8 @@ export default function MyGoTwoStripGalleryAsset() {
               </div>
             ) : (
               visibleBankPhotos.map((photo) => (
-                <button
+                <div
                   key={photo.id}
-                  type="button"
-                  onClick={() => void assignPhoto(photo)}
                   className="overflow-hidden rounded-[18px] border border-[rgba(255,255,255,0.58)] bg-white/60 text-left shadow-[0_10px_24px_rgba(41,32,24,0.1)] transition-transform duration-200 hover:scale-[1.02]"
                 >
                   <div className="aspect-[4/5] bg-[#e8dfd2]">
@@ -423,7 +473,29 @@ export default function MyGoTwoStripGalleryAsset() {
                       {photo.filename || photo.id}
                     </p>
                   </div>
-                </button>
+                  <div className="flex gap-2 px-2.5 pb-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => void assignPhoto(photo)}
+                    >
+                      Use
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void previewPanorama(photo);
+                      }}
+                    >
+                      Preview
+                    </Button>
+                  </div>
+                </div>
               ))
             )}
           </div>
