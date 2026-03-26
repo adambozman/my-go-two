@@ -1,28 +1,25 @@
 
 
-# Assessment: Recommendation Caching Is Already Working
+## Fix: Stop repeated logouts during development
 
-## What's Already Implemented
+**Problem**: The `dev-login` edge function resets your password on every login call. Supabase treats password changes as a security event and revokes all refresh tokens. The 60-second subscription check timer then tries to refresh the session, gets "Refresh Token Not Found", and kicks you to login.
 
-The caching system you described is fully in place:
+**Solution**: Rewrite `dev-login` to use `admin.auth.admin.generateLink()` instead of password rotation. This creates a magic link token server-side without touching the password, so existing sessions stay valid.
 
-1. **Weekly cache** (`weekly_recommendations` table) — saves each user's 12 picks per week. On next load, returns cached results instantly without calling AI or Firecrawl.
+### Changes
 
-2. **Global product bank** (`resolved_recommendation_catalog` table) — every product scraped via Firecrawl is stored by fingerprint. When the same brand+product combo appears for another user, the cached image/URL/price is reused instead of re-scraping.
+**1. Rewrite `supabase/functions/dev-login/index.ts`**
+- Remove the `updateUserById` password reset logic
+- Use `admin.auth.admin.generateLink({ type: 'magiclink', email })` to get a one-time token
+- Extract the token from the link and use `admin.auth.admin.getUserById` + sign-in via the OTP token approach
+- Alternative simpler approach: keep the password-set approach but only do it once (check if a known static dev password is already set), or better yet, just use `generateLink` to produce a session without password changes
 
-3. **Cache-check flow**: The function checks the weekly cache first (lines 305-332). Only generates new recommendations if no cache exists for the current week, or if `force_refresh` is true.
+**Concrete new flow:**
+1. Verify email is in `DEV_EMAILS`
+2. Find user via `listUsers`
+3. Call `generateLink({ type: 'magiclink', email })` — this returns an `action_link` containing a token hash
+4. Parse the token from the link, then call `admin.auth.admin.verifyOtp()` or extract the hashed token and use `supabase.auth.verifyOtp({ token_hash, type: 'magiclink' })` to get a session
+5. Return `access_token` and `refresh_token` — no password touched, no token revocation
 
-## The 500 Error
-
-The "Unauthorized" error in the logs is a **session/auth issue**, not a caching problem. The edge function log shows an error at the auth step. This happens when your session token expires (common with the dev-login bypass since those tokens have normal expiration).
-
-### Fix (already partially done)
-The code already handles 401 gracefully and the frontend retries after refreshing the session. The logged error appears to be from a stale deployment or a race condition where the token expired mid-request.
-
-### Recommended Hardening
-- Wrap the `createClient` call in a secondary try/catch so even unexpected auth library errors return a clean 401 instead of a 500.
-- Ensure the `dev-login` function issues tokens with a longer expiry to reduce session expiration frequency for your dev account.
-
-## No Code Changes Needed for Caching
-The recommendation bank is already being built. Every Firecrawl scrape is persisted. Repeated loads hit the cache. The system works as designed.
+**2. No client-side changes needed** — `Login.tsx` already calls `supabase.auth.setSession()` with the returned tokens, which will continue to work.
 
