@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { resolveStorageUrls } from "@/lib/storageRefs";
@@ -26,6 +26,129 @@ const SLOT_KEYS = [
   ...MYGOTWO_COLLAPSE_SLOT_TARGETS.map((target) => target.key),
 ];
 
+type StripCellProps = {
+  strip: StripPresentation;
+  hoveredCategoryId: string | null;
+  previewCollapsed: boolean;
+  hoveredId: string | null;
+  activePanoramaUrl: string;
+  panoramaStripCount: number;
+  onHover: (id: string) => void;
+};
+
+const StripCell = memo(function StripCell({
+  strip,
+  hoveredCategoryId,
+  previewCollapsed,
+  hoveredId,
+  activePanoramaUrl,
+  panoramaStripCount,
+  onHover,
+}: StripCellProps) {
+  const isHoveredCategory = strip.id === hoveredCategoryId;
+  const categoryHoverActive = Boolean(hoveredCategoryId);
+  const collapseCategoryStrip = Boolean(previewCollapsed && strip.label && !hoveredId);
+  const showPanorama = strip.isPanoramaStrip;
+  const expandPanoramaStrip = previewCollapsed && strip.isPanoramaStrip;
+
+  return (
+    <div
+      aria-label={`Strip ${strip.id}`}
+      onMouseEnter={() => onHover(strip.id)}
+      className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
+      style={{
+        flexBasis: 0,
+        flexGrow: collapseCategoryStrip
+          ? 0.0001
+          : expandPanoramaStrip
+            ? 1.55
+            : strip.isPanoramaStrip
+              ? 1.35
+              : isHoveredCategory
+                ? 3.35
+                : categoryHoverActive
+                  ? 0.58
+                  : 0.82,
+        minWidth: collapseCategoryStrip
+          ? "0px"
+          : expandPanoramaStrip
+            ? "clamp(12px, 2.4vw, 22px)"
+            : strip.isPanoramaStrip
+              ? "clamp(20px, 3.4vw, 34px)"
+              : isHoveredCategory
+                ? "clamp(60px, 10.5vw, 94px)"
+                : "clamp(12px, 2.4vw, 22px)",
+        contain: "layout paint style",
+        transform: isHoveredCategory ? "translateY(-2px)" : "translateY(0)",
+        opacity: collapseCategoryStrip ? 0 : 1,
+        pointerEvents: collapseCategoryStrip ? "none" : "auto",
+      }}
+    >
+      {showPanorama ? (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+          style={{
+            backgroundImage: `url("${activePanoramaUrl}")`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: `${panoramaStripCount * 100}% 100%`,
+            backgroundPosition:
+              strip.panoramaIndex >= 0 && panoramaStripCount > 1
+                ? `${(strip.panoramaIndex / (panoramaStripCount - 1)) * 100}% center`
+                : "50% center",
+            transform: "scale(1.02)",
+          }}
+        />
+      ) : strip.image ? (
+        <img
+          aria-hidden="true"
+          alt=""
+          src={strip.image}
+          decoding="async"
+          loading="lazy"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+          style={{
+            objectPosition: `${strip.align ?? "50%"} center`,
+            transform: isHoveredCategory ? "scale(1.015)" : "scale(1)",
+          }}
+        />
+      ) : null}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
+          opacity: isHoveredCategory ? 0.48 : 0.7,
+        }}
+      />
+      {strip.label ? (
+        <span
+          className="pointer-events-none absolute bottom-2 left-1/2 z-10 text-[9px] font-medium uppercase tracking-[0.16em] text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.42)] sm:bottom-3 sm:text-[10px] md:bottom-4 md:text-[12px] md:tracking-[0.2em]"
+          style={{
+            opacity: collapseCategoryStrip ? 0 : 1,
+            transition: "opacity 260ms ease",
+            writingMode: "vertical-rl",
+            transform: "translateX(-50%) rotate(180deg)",
+          }}
+        >
+          {strip.label}
+        </span>
+      ) : null}
+      <span
+        aria-hidden="true"
+        className="absolute inset-y-0 left-0 w-[1px] bg-white/85"
+        style={{ opacity: collapseCategoryStrip ? 0 : 1, transition: "opacity 260ms ease" }}
+      />
+      <span
+        aria-hidden="true"
+        className="absolute inset-y-0 right-0 w-[1px] bg-white/85"
+        style={{ opacity: collapseCategoryStrip ? 0 : 1, transition: "opacity 260ms ease" }}
+      />
+    </div>
+  );
+});
+
 export default function MyGoTwoStripGalleryAsset() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
@@ -40,6 +163,7 @@ export default function MyGoTwoStripGalleryAsset() {
   const hoverTimerRef = useRef<number | null>(null);
   const collapseTimerRef = useRef<number | null>(null);
   const rotateTimerRef = useRef<number | null>(null);
+  const assignmentSignatureRef = useRef("");
 
   const loadAssignedImages = useCallback(async () => {
     const { data, error } = await supabase
@@ -54,28 +178,38 @@ export default function MyGoTwoStripGalleryAsset() {
     }
 
     const rows = data ?? [];
-    const urls = await resolveStorageUrls(rows.map((row) => row.image_url));
+    const rowsWithImages = rows.filter((row) => Boolean(row.image_url));
+    const urls = await resolveStorageUrls(rowsWithImages.map((row) => row.image_url));
     const resolvedByKey = new Map<string, string>();
 
-    rows.forEach((row, index) => {
+    rowsWithImages.forEach((row, index) => {
       const resolvedUrl = urls[index] ?? "";
       if (row.category_key && resolvedUrl) {
         resolvedByKey.set(row.category_key, resolvedUrl);
       }
     });
 
-    setStripImages(
-      MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
-        ...strip,
-        image: resolvedByKey.get(`mygotwo-strip-${strip.id}`) || "",
-      })),
-    );
+    const nextStripImages = MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
+      ...strip,
+      image: resolvedByKey.get(`mygotwo-strip-${strip.id}`) || "",
+    }));
 
     const assignedCollapseImages = MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
       ...image,
       image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || "",
     })).filter((image) => Boolean(image.image));
 
+    const nextSignature = JSON.stringify({
+      stripImages: nextStripImages.map((strip) => [strip.id, strip.image]),
+      collapseImages: assignedCollapseImages.map((image) => [image.id, image.image]),
+    });
+
+    if (assignmentSignatureRef.current === nextSignature) {
+      return;
+    }
+
+    assignmentSignatureRef.current = nextSignature;
+    setStripImages(nextStripImages);
     setCollapseImages(assignedCollapseImages);
   }, []);
 
@@ -184,6 +318,21 @@ export default function MyGoTwoStripGalleryAsset() {
     };
   }, [collapseImages.length, previewCollapsed]);
 
+  useEffect(() => {
+    if (!previewCollapsed || collapseImages.length <= 1) {
+      return;
+    }
+
+    const nextImage = collapseImages[(collapseImageIndex + 1) % collapseImages.length]?.image;
+    if (!nextImage) {
+      return;
+    }
+
+    const preloader = new window.Image();
+    preloader.decoding = "async";
+    preloader.src = nextImage;
+  }, [collapseImageIndex, collapseImages, previewCollapsed]);
+
   const queueHoveredId = useCallback((nextId: string | null) => {
     if (hoverTimerRef.current !== null) {
       window.clearTimeout(hoverTimerRef.current);
@@ -216,111 +365,18 @@ export default function MyGoTwoStripGalleryAsset() {
             transition: "opacity 320ms ease",
           }}
         >
-          {strips.map((strip) => {
-            const isHoveredCategory = strip.id === hoveredCategoryId;
-            const categoryHoverActive = Boolean(hoveredCategoryId);
-            const collapseCategoryStrip = Boolean(previewCollapsed && strip.label && !hoveredId);
-            const showPanorama = strip.isPanoramaStrip;
-            const expandPanoramaStrip = previewCollapsed && strip.isPanoramaStrip;
-
-            return (
-              <div
-                key={strip.id}
-                aria-label={`Strip ${strip.id}`}
-                onMouseEnter={() => queueHoveredId(strip.id)}
-                className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
-                style={{
-                  flexBasis: 0,
-                  flexGrow: collapseCategoryStrip
-                    ? 0.0001
-                    : expandPanoramaStrip
-                      ? 1.55
-                      : strip.isPanoramaStrip
-                        ? 1.35
-                      : isHoveredCategory
-                        ? 3.35
-                        : categoryHoverActive
-                          ? 0.58
-                          : 0.82,
-                  minWidth: collapseCategoryStrip
-                    ? "0px"
-                    : expandPanoramaStrip
-                      ? "clamp(12px, 2.4vw, 22px)"
-                      : strip.isPanoramaStrip
-                        ? "clamp(20px, 3.4vw, 34px)"
-                      : isHoveredCategory
-                        ? "clamp(60px, 10.5vw, 94px)"
-                        : "clamp(12px, 2.4vw, 22px)",
-                  contain: "layout paint style",
-                  transform: isHoveredCategory ? "translateY(-2px)" : "translateY(0)",
-                  opacity: collapseCategoryStrip ? 0 : 1,
-                  pointerEvents: collapseCategoryStrip ? "none" : "auto",
-                }}
-              >
-                {showPanorama ? (
-                  <div
-                    aria-hidden="true"
-                    className="absolute inset-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                    style={{
-                      backgroundImage: `url("${activePanoramaUrl}")`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundSize: `${panoramaStripCount * 100}% 100%`,
-                      backgroundPosition:
-                        strip.panoramaIndex >= 0 && panoramaStripCount > 1
-                          ? `${(strip.panoramaIndex / (panoramaStripCount - 1)) * 100}% center`
-                          : "50% center",
-                      transform: "scale(1.02)",
-                    }}
-                  />
-                ) : strip.image ? (
-                  <img
-                    aria-hidden="true"
-                    alt=""
-                    src={strip.image}
-                    decoding="async"
-                    loading="lazy"
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                    style={{
-                      objectPosition: `${strip.align ?? "50%"} center`,
-                      transform: isHoveredCategory ? "scale(1.015)" : "scale(1)",
-                    }}
-                  />
-                ) : null}
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                  style={{
-                    background:
-                      "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
-                    opacity: isHoveredCategory ? 0.48 : 0.7,
-                  }}
-                />
-                {strip.label ? (
-                  <span
-                    className="pointer-events-none absolute bottom-2 left-1/2 z-10 text-[9px] font-medium uppercase tracking-[0.16em] text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.42)] sm:bottom-3 sm:text-[10px] md:bottom-4 md:text-[12px] md:tracking-[0.2em]"
-                    style={{
-                      opacity: collapseCategoryStrip ? 0 : 1,
-                      transition: "opacity 260ms ease",
-                      writingMode: "vertical-rl",
-                      transform: "translateX(-50%) rotate(180deg)",
-                    }}
-                  >
-                    {strip.label}
-                  </span>
-                ) : null}
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-y-0 left-0 w-[1px] bg-white/85"
-                  style={{ opacity: collapseCategoryStrip ? 0 : 1, transition: "opacity 260ms ease" }}
-                />
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-y-0 right-0 w-[1px] bg-white/85"
-                  style={{ opacity: collapseCategoryStrip ? 0 : 1, transition: "opacity 260ms ease" }}
-                />
-              </div>
-            );
-          })}
+          {strips.map((strip) => (
+            <StripCell
+              key={strip.id}
+              strip={strip}
+              hoveredCategoryId={hoveredCategoryId}
+              previewCollapsed={previewCollapsed}
+              hoveredId={hoveredId}
+              activePanoramaUrl={activePanoramaUrl}
+              panoramaStripCount={panoramaStripCount}
+              onHover={queueHoveredId}
+            />
+          ))}
         </div>
       </div>
     </section>

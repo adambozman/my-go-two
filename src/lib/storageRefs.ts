@@ -73,6 +73,7 @@ export async function resolveStorageUrls(values: Array<string | null | undefined
     string,
     Array<{ index: number; path: string }>
   >();
+  const groupedPaths = new Map<string, Map<string, number[]>>();
   const now = Date.now();
 
   values.forEach((value, index) => {
@@ -106,8 +107,19 @@ export async function resolveStorageUrls(values: Array<string | null | undefined
     }
 
     const bucketRequests = groupedRequests.get(bucket) ?? [];
+    const bucketPaths = groupedPaths.get(bucket) ?? new Map<string, number[]>();
+    const existingIndexes = bucketPaths.get(path);
+
+    if (existingIndexes) {
+      existingIndexes.push(index);
+      groupedPaths.set(bucket, bucketPaths);
+      return;
+    }
+
     bucketRequests.push({ index, path });
+    bucketPaths.set(path, [index]);
     groupedRequests.set(bucket, bucketRequests);
+    groupedPaths.set(bucket, bucketPaths);
   });
 
   await Promise.all(
@@ -128,7 +140,10 @@ export async function resolveStorageUrls(values: Array<string | null | undefined
 
       requests.forEach((request, requestIndex) => {
         const signed = data[requestIndex]?.signedUrl ?? "";
-        results[request.index] = signed;
+        const indexes = groupedPaths.get(bucket)?.get(request.path) ?? [request.index];
+        indexes.forEach((resultIndex) => {
+          results[resultIndex] = signed;
+        });
         if (signed) {
           signedUrlCache.set(`${bucket}/${request.path}`, {
             url: signed,
