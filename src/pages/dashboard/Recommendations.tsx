@@ -132,6 +132,22 @@ const Recommendations = () => {
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [isCached, setIsCached] = useState(false);
 
+  const activePillarConfig = useMemo(
+    () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
+    [activePillar],
+  );
+
+  const filtered = useMemo(() => {
+    if (activePillar === "all") return products;
+    return products.filter((p) => (activePillarConfig.matches as readonly string[]).includes(p.category));
+  }, [products, activePillar, activePillarConfig]);
+
+  const { currentPage, setCurrentPage, totalPages, paginatedItems: paginatedProducts } = usePagination({
+    items: filtered,
+    pageSize: PAGE_SIZE,
+    resetKeys: [activePillar],
+  });
+
   const fetchProducts = useCallback(
     async (forceRefresh = false) => {
     setLoading(true);
@@ -174,22 +190,6 @@ const Recommendations = () => {
       fetchProducts();
     }
   }, [fetchProducts, personalizationLoading, personalization, hasLoaded]);
-
-  const activePillarConfig = useMemo(
-    () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
-    [activePillar],
-  );
-
-  const filtered = useMemo(() => {
-    if (activePillar === "all") return products;
-    return products.filter((p) => (activePillarConfig.matches as readonly string[]).includes(p.category));
-  }, [products, activePillar, activePillarConfig]);
-
-  const { currentPage, setCurrentPage, totalPages, paginatedItems: paginatedProducts } = usePagination({
-    items: filtered,
-    pageSize: PAGE_SIZE,
-    resetKeys: [activePillar],
-  });
 
   const toggleSave = (id: string) => {
     setSavedItems((prev) => {
