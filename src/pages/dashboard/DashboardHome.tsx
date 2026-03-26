@@ -93,7 +93,6 @@ interface CoupleRow {
   id: string;
   inviter_id: string;
   invitee_id: string | null;
-  inviter_email: string | null;
   invitee_email: string | null;
   display_label: string | null;
   status: string;
