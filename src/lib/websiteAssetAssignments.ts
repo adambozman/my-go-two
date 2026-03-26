@@ -43,3 +43,28 @@ export async function setWebsiteAssetAssignment(params: {
     throw error;
   }
 }
+
+export async function setWebsiteAssetAssignments(
+  rows: Array<{
+    assetKey: string;
+    bankPhotoId: string;
+    imageUrl: string;
+  }>,
+) {
+  if (rows.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase.from("website_asset_assignments").upsert(
+    rows.map((row) => ({
+      asset_key: row.assetKey,
+      bank_photo_id: row.bankPhotoId,
+      image_url: row.imageUrl,
+    })),
+    { onConflict: "asset_key" },
+  );
+
+  if (error) {
+    throw error;
+  }
+}

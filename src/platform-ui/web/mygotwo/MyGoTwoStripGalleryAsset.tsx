@@ -13,6 +13,7 @@ import {
 import {
   getWebsiteAssetAssignments,
   setWebsiteAssetAssignment,
+  setWebsiteAssetAssignments,
 } from "@/lib/websiteAssetAssignments";
 import { MYGOTWO_STRIP_GALLERY_IMAGES } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.images";
 
@@ -25,6 +26,34 @@ type BankPhoto = {
 
 function stripImageKey(id: string) {
   return `mygotwo-strip-${id}`;
+}
+
+function buildAssetKeySet(assetKeys: string[]) {
+  return assetKeys.reduce<Set<string>>((accumulator, assetKey) => {
+    accumulator.add(assetKey);
+    return accumulator;
+  }, new Set<string>());
+}
+
+function buildPreviousImageMap(imageOverrides: Record<string, string>, assetKeys: string[]) {
+  return assetKeys.reduce<Record<string, string>>((accumulator, assetKey) => {
+    if (imageOverrides[assetKey]) {
+      accumulator[assetKey] = imageOverrides[assetKey];
+    }
+    return accumulator;
+  }, {});
+}
+
+function getSharedPanoramaUrl(imageOverrides: Record<string, string>, panoramaStripIds: string[]) {
+  const urls = panoramaStripIds
+    .map((stripId) => imageOverrides[stripImageKey(stripId)] || "")
+    .filter(Boolean);
+
+  if (urls.length !== panoramaStripIds.length) {
+    return null;
+  }
+
+  return urls.every((url) => url === urls[0]) ? urls[0] : null;
 }
 
 const imagePreloadCache = new Map<string, Promise<void>>();
@@ -68,7 +97,7 @@ export default function MyGoTwoStripGalleryAsset() {
   const [bankPhotos, setBankPhotos] = useState<BankPhoto[]>([]);
   const [imageOverrides, setImageOverrides] = useState<Record<string, string>>({});
   const [assignedAssetKeys, setAssignedAssetKeys] = useState<Set<string>>(() => new Set());
-  const [previewPanoramaUrl, setPreviewPanoramaUrl] = useState<string | null>(null);
+  const [previewPanoramaOverrideUrl, setPreviewPanoramaOverrideUrl] = useState<string | null>(null);
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
   const [wallReady, setWallReady] = useState(false);
   const [wallVisible, setWallVisible] = useState(false);
@@ -82,18 +111,11 @@ export default function MyGoTwoStripGalleryAsset() {
     [strips],
   );
   const panoramaStripIdSet = useMemo(() => new Set(panoramaStripIds), [panoramaStripIds]);
-  const savedPanoramaUrl = useMemo(() => {
-    const urls = panoramaStripIds
-      .map((stripId) => imageOverrides[stripImageKey(stripId)] || "")
-      .filter(Boolean);
-
-    if (urls.length !== panoramaStripIds.length) {
-      return null;
-    }
-
-    return urls.every((url) => url === urls[0]) ? urls[0] : null;
-  }, [imageOverrides, panoramaStripIds]);
-  const activePanoramaUrl = previewPanoramaUrl || savedPanoramaUrl;
+  const persistedPanoramaUrl = useMemo(
+    () => getSharedPanoramaUrl(imageOverrides, panoramaStripIds),
+    [imageOverrides, panoramaStripIds],
+  );
+  const activePanoramaUrl = previewPanoramaOverrideUrl || persistedPanoramaUrl;
 
   const loadOverrides = useCallback(async () => {
     if (!user) {
@@ -243,16 +265,11 @@ export default function MyGoTwoStripGalleryAsset() {
     async (photo: BankPhoto) => {
       if (!selectedStripId || !user) return;
 
-      const targetStripIds = panoramaStripIdSet.has(selectedStripId)
-        ? panoramaStripIds
-        : [selectedStripId];
+      const isPanoramaAssignment = panoramaStripIdSet.has(selectedStripId);
+      const targetStripIds = isPanoramaAssignment ? panoramaStripIds : [selectedStripId];
       const targetAssetKeys = targetStripIds.map((stripId) => stripImageKey(stripId));
-      const previousImageUrls = targetAssetKeys.reduce<Record<string, string>>((accumulator, assetKey) => {
-        if (imageOverrides[assetKey]) {
-          accumulator[assetKey] = imageOverrides[assetKey];
-        }
-        return accumulator;
-      }, {});
+      const previousImageUrls = buildPreviousImageMap(imageOverrides, targetAssetKeys);
+      const previousAssignedAssetKeys = buildAssetKeySet(Array.from(assignedAssetKeys));
       const sourceRef = parseStorageRef(toStorageRefIfPossible(photo.image_url));
       const sourceUrl = await resolveStorageUrl(photo.image_url, 3600);
 
@@ -292,17 +309,26 @@ export default function MyGoTwoStripGalleryAsset() {
         });
         return next;
       });
+      if (isPanoramaAssignment) {
+        setPreviewPanoramaOverrideUrl(null);
+      }
 
       try {
-        await Promise.all(
-          targetAssetKeys.map((assetKey) =>
-            setWebsiteAssetAssignment({
+        if (isPanoramaAssignment) {
+          await setWebsiteAssetAssignments(
+            targetAssetKeys.map((assetKey) => ({
               assetKey,
               bankPhotoId: photo.id,
               imageUrl: targetRef,
-            }),
-          ),
-        );
+            })),
+          );
+        } else {
+          await setWebsiteAssetAssignment({
+            assetKey: targetAssetKeys[0],
+            bankPhotoId: photo.id,
+            imageUrl: targetRef,
+          });
+        }
         setSelectedStripId(null);
       } catch (error) {
         const rollbackOverrides = { ...imageOverrides };
@@ -314,10 +340,11 @@ export default function MyGoTwoStripGalleryAsset() {
           delete rollbackOverrides[assetKey];
         });
         setImageOverrides(rollbackOverrides);
+        setAssignedAssetKeys(previousAssignedAssetKeys);
         console.warn("website asset assignment save failed", error);
       }
     },
-    [imageOverrides, panoramaStripIdSet, panoramaStripIds, selectedStripId, user],
+    [assignedAssetKeys, imageOverrides, panoramaStripIdSet, panoramaStripIds, selectedStripId, user],
   );
 
   const previewPanorama = useCallback(
@@ -326,7 +353,7 @@ export default function MyGoTwoStripGalleryAsset() {
         await preloadImage(photo.display_url);
         setPreviewCollapsed(false);
         setHoveredId(null);
-        setPreviewPanoramaUrl(photo.display_url);
+        setPreviewPanoramaOverrideUrl(photo.display_url);
       } catch (error) {
         console.warn("panorama preview preload failed", error);
       }
@@ -559,12 +586,12 @@ export default function MyGoTwoStripGalleryAsset() {
               <p className="text-xs text-[#6d655d]">
                 Panorama active across the 8 unlabeled strips only.
               </p>
-              {previewPanoramaUrl ? (
+              {previewPanoramaOverrideUrl ? (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setPreviewPanoramaUrl(null)}
+                  onClick={() => setPreviewPanoramaOverrideUrl(null)}
                 >
                   Clear Preview
                 </Button>
