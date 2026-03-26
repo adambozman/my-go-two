@@ -154,7 +154,7 @@ export default function MyGoTwoStripGalleryAsset() {
       try {
         await setWebsiteAssetAssignment({
           assetKey,
-          imageUrl: targetRef,
+          bankPhotoId: photo.id,
         });
         setSelectedStripId(null);
       } catch (error) {
