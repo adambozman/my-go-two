@@ -254,7 +254,7 @@ export default function MyGoTwoStripGalleryAsset() {
       try {
         await preloadImage(photo.display_url);
         setPreviewPanoramaUrl(photo.display_url);
-        setPreviewCollapsed(true);
+        setPreviewCollapsed(false);
       } catch (error) {
         console.warn("panorama preview preload failed", error);
       }
@@ -360,9 +360,9 @@ export default function MyGoTwoStripGalleryAsset() {
                 style={{
                   flexBasis: 0,
                   flexGrow: collapsePreviewLayout
-                    ? isPanoramaStrip
-                      ? 1.7
-                      : 0.16
+                    ? isCategoryStrip
+                      ? 0.2
+                      : 1
                     : lockPanoramaStripHover
                       ? 1
                       : isHovered
