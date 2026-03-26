@@ -13,7 +13,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
-import { useRotatingQuote } from "@/hooks/useRotatingQuote";
 
 const navItems = [
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
@@ -28,7 +27,6 @@ export function DashboardTopBar() {
   const location = useLocation();
   const { user, signOut } = useAuth();
   const { toast } = useToast();
-  const quote = useRotatingQuote();
   const [unreadCount, setUnreadCount] = useState(0);
   const [avatarValue, setAvatarValue] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -154,18 +152,13 @@ export function DashboardTopBar() {
     }
   };
 
-  const showQuote = location.pathname.startsWith("/dashboard/my-go-two");
   const compactHeaderHeight = "calc(var(--header-top-padding) + var(--header-icons-row-height) + var(--header-divider-margin-top) + 1px)";
 
   return (
     <header
-      className={`shrink-0 flex flex-col px-3 sm:px-4 md:px-6 lg:px-8 ${
-        showQuote
-          ? "min-h-[var(--header-height)] lg:min-h-[calc(var(--header-top-padding)+var(--header-icons-row-height)+var(--header-divider-margin-top)+1px)]"
-          : ""
-      }`}
+      className="shrink-0 flex flex-col px-3 sm:px-4 md:px-6 lg:px-8"
       style={{
-        minHeight: showQuote ? undefined : compactHeaderHeight,
+        minHeight: compactHeaderHeight,
         paddingTop: "var(--header-top-padding)",
       }}
     >
@@ -301,16 +294,6 @@ export function DashboardTopBar() {
       </div>
 
       <div className="border-b border-border/30" style={{ marginTop: "var(--header-divider-margin-top)" }} />
-      {showQuote ? (
-        <div className="header-tagline-wrapper text-center lg:hidden" style={{ marginTop: "var(--header-tagline-margin-top)" }}>
-          <p
-            className="header-tagline-quote"
-            style={{ opacity: quote.visible ? 1 : 0, transition: "opacity 300ms ease" }}
-          >
-            "{quote.text}"
-          </p>
-        </div>
-      ) : null}
     </header>
   );
 }
