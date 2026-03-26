@@ -94,6 +94,11 @@ export default function MyGoTwoStripGalleryAsset() {
     () => strips.filter((strip) => strip.isPanoramaStrip).length,
     [strips],
   );
+  const hoveredStrip = useMemo(
+    () => strips.find((strip) => strip.id === hoveredId) ?? null,
+    [hoveredId, strips],
+  );
+  const hoveredCategoryId = hoveredStrip?.label ? hoveredStrip.id : null;
 
   const activePanoramaUrl =
     collapseImages.length > 0
@@ -212,7 +217,8 @@ export default function MyGoTwoStripGalleryAsset() {
           }}
         >
           {strips.map((strip) => {
-            const isHovered = strip.id === hoveredId;
+            const isHoveredCategory = strip.id === hoveredCategoryId;
+            const categoryHoverActive = Boolean(hoveredCategoryId);
             const collapseCategoryStrip = Boolean(previewCollapsed && strip.label && !hoveredId);
             const showPanorama = strip.isPanoramaStrip;
             const expandPanoramaStrip = previewCollapsed && strip.isPanoramaStrip;
@@ -229,20 +235,24 @@ export default function MyGoTwoStripGalleryAsset() {
                     ? 0.0001
                     : expandPanoramaStrip
                       ? 1.55
-                      : isHovered
+                      : strip.isPanoramaStrip
+                        ? 1.35
+                      : isHoveredCategory
                         ? 3.35
-                        : hoveredId
+                        : categoryHoverActive
                           ? 0.58
-                          : 1,
+                          : 0.82,
                   minWidth: collapseCategoryStrip
                     ? "0px"
                     : expandPanoramaStrip
                       ? "clamp(12px, 2.4vw, 22px)"
-                      : isHovered
+                      : strip.isPanoramaStrip
+                        ? "clamp(20px, 3.4vw, 34px)"
+                      : isHoveredCategory
                         ? "clamp(60px, 10.5vw, 94px)"
                         : "clamp(12px, 2.4vw, 22px)",
                   contain: "layout paint style",
-                  transform: isHovered ? "translateY(-2px)" : "translateY(0)",
+                  transform: isHoveredCategory ? "translateY(-2px)" : "translateY(0)",
                   opacity: collapseCategoryStrip ? 0 : 1,
                   pointerEvents: collapseCategoryStrip ? "none" : "auto",
                 }}
@@ -272,7 +282,7 @@ export default function MyGoTwoStripGalleryAsset() {
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     style={{
                       objectPosition: `${strip.align ?? "50%"} center`,
-                      transform: isHovered ? "scale(1.015)" : "scale(1)",
+                      transform: isHoveredCategory ? "scale(1.015)" : "scale(1)",
                     }}
                   />
                 ) : null}
@@ -282,7 +292,7 @@ export default function MyGoTwoStripGalleryAsset() {
                   style={{
                     background:
                       "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
-                    opacity: isHovered ? 0.48 : 0.7,
+                    opacity: isHoveredCategory ? 0.48 : 0.7,
                   }}
                 />
                 {strip.label ? (
