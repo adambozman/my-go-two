@@ -28,6 +28,8 @@ function stripImageKey(id: string) {
 }
 
 const imagePreloadCache = new Map<string, Promise<void>>();
+const STRIP_NOISE_TEXTURE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E";
 
 async function preloadImage(url: string) {
   const cached = imagePreloadCache.get(url);
@@ -188,11 +190,11 @@ export default function MyGoTwoStripGalleryAsset() {
       const blob = await response.blob();
 
       const sourceExt = sourceRef?.path.split(".").pop() || photo.filename?.split(".").pop() || "jpg";
-      const targetPath = `${assetKey}.${sourceExt}`;
+      const targetPath = `${assetKey}/${Date.now()}.${sourceExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("images-mygotwo-strip")
-        .upload(targetPath, blob, { contentType: blob.type || "image/jpeg", upsert: true });
+        .upload(targetPath, blob, { contentType: blob.type || "image/jpeg", upsert: false });
 
       if (uploadError) {
         console.warn("strip bucket upload failed", uploadError);
@@ -322,6 +324,16 @@ export default function MyGoTwoStripGalleryAsset() {
                       ? "linear-gradient(180deg, rgba(248,242,233,0.92) 0%, rgba(231,220,206,0.92) 100%)"
                       : "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
                     opacity: showPlaceholder ? 1 : isHovered ? 0.48 : 0.7,
+                  }}
+                />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 mix-blend-soft-light"
+                  style={{
+                    backgroundImage: `url("${STRIP_NOISE_TEXTURE}")`,
+                    backgroundRepeat: "repeat",
+                    backgroundSize: "128px 128px",
+                    opacity: showPlaceholder ? 0.1 : isHovered ? 0.14 : 0.18,
                   }}
                 />
                 {isDev ? (
