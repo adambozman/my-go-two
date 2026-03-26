@@ -27,13 +27,34 @@ function stripImageKey(id: string) {
   return `mygotwo-strip-${id}`;
 }
 
+const imagePreloadCache = new Map<string, Promise<void>>();
+
 async function preloadImage(url: string) {
-  await new Promise<void>((resolve, reject) => {
+  const cached = imagePreloadCache.get(url);
+  if (cached) {
+    await cached;
+    return;
+  }
+
+  const preloadPromise = new Promise<void>((resolve, reject) => {
     const image = new window.Image();
-    image.onload = () => resolve();
-    image.onerror = () => reject(new Error(`Failed to preload image: ${url}`));
+    image.decoding = "async";
+    image.onload = () => {
+      if (typeof image.decode === "function") {
+        image.decode().then(resolve).catch(resolve);
+        return;
+      }
+      resolve();
+    };
+    image.onerror = () => {
+      imagePreloadCache.delete(url);
+      reject(new Error(`Failed to preload image: ${url}`));
+    };
     image.src = url;
   });
+
+  imagePreloadCache.set(url, preloadPromise);
+  await preloadPromise;
 }
 
 export default function MyGoTwoStripGalleryAsset() {
@@ -274,16 +295,21 @@ export default function MyGoTwoStripGalleryAsset() {
                   flexBasis: 0,
                   flexGrow: isHovered ? 3.35 : hoveredId ? 0.58 : 1,
                   minWidth: isHovered ? "clamp(60px, 10.5vw, 94px)" : "clamp(12px, 2.4vw, 22px)",
+                  contain: "layout paint style",
                   transform: isHovered ? "translateY(-2px)" : "translateY(0)",
                 }}
               >
                 {imageUrl ? (
-                  <div
+                  <img
                     aria-hidden="true"
-                    className="absolute inset-0 bg-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
+                    alt=""
+                    src={imageUrl}
+                    decoding="async"
+                    loading="eager"
+                    fetchPriority={isHovered ? "high" : "auto"}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     style={{
-                      backgroundImage: `url(${imageUrl})`,
-                      backgroundPosition: `${strip.align ?? "50%"} center`,
+                      objectPosition: `${strip.align ?? "50%"} center`,
                       transform: isHovered ? "scale(1.015)" : "scale(1)",
                     }}
                   />
