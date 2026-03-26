@@ -400,7 +400,6 @@ export default function MyGoTwoStripGalleryAsset() {
                     src={imageUrl}
                     decoding="async"
                     loading="lazy"
-                    fetchPriority={isHovered ? "high" : "auto"}
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     style={{
                       objectPosition: `${strip.align ?? "50%"} center`,
