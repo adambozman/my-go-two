@@ -33,63 +33,43 @@ Deno.serve(async (req) => {
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
-    const { data: usersData, error: listError } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    if (listError) throw listError;
-
-    const matchedUser = usersData.users.find(
-      (u) => (u.email ?? "").toLowerCase().trim() === normalizedEmail,
-    );
-
-    if (!matchedUser) {
-      return new Response(JSON.stringify({ error: "Dev user not found" }), {
-        status: 404,
-        headers: corsHeaders,
-      });
-    }
-
-    const tempPassword = `dev-${crypto.randomUUID()}-A9!`;
-
-    const { error: updateError } = await admin.auth.admin.updateUserById(matchedUser.id, {
-      password: tempPassword,
-      email_confirm: true,
+    // Generate a magic link server-side (no password change = no token revocation)
+    const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+      type: "magiclink",
+      email: normalizedEmail,
     });
-    if (updateError) throw updateError;
+    if (linkError) throw linkError;
 
+    // Extract token_hash from the action link properties
+    const tokenHash = linkData?.properties?.hashed_token;
+    if (!tokenHash) throw new Error("No token hash returned from generateLink");
+
+    // Verify the OTP to get a full session
     const anon = createClient(supabaseUrl, anonKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
-    const { data: signInData, error: signInError } = await anon.auth.signInWithPassword({
-      email: normalizedEmail,
-      password: tempPassword,
+    const { data: verifyData, error: verifyError } = await anon.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: "magiclink",
     });
-
-    if (signInError) throw signInError;
-    if (!signInData.session) throw new Error("No session returned for dev login");
+    if (verifyError) throw verifyError;
+    if (!verifyData.session) throw new Error("No session returned for dev login");
 
     return new Response(
       JSON.stringify({
-        access_token: signInData.session.access_token,
-        refresh_token: signInData.session.refresh_token,
-        expires_at: signInData.session.expires_at,
-        token_type: signInData.session.token_type,
+        access_token: verifyData.session.access_token,
+        refresh_token: verifyData.session.refresh_token,
+        expires_at: verifyData.session.expires_at,
+        token_type: verifyData.session.token_type,
       }),
-      {
-        status: 200,
-        headers: corsHeaders,
-      },
+      { status: 200, headers: corsHeaders },
     );
   } catch (err: any) {
     console.error("Dev login error:", err?.message ?? err);
-
     return new Response(
-      JSON.stringify({
-        error: err?.message ?? "Dev login failed",
-      }),
-      {
-        status: 500,
-        headers: corsHeaders,
-      },
+      JSON.stringify({ error: err?.message ?? "Dev login failed" }),
+      { status: 500, headers: corsHeaders },
     );
   }
 });
