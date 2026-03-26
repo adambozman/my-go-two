@@ -66,12 +66,12 @@ export default function MyGoTwoStripGalleryAsset() {
       })),
     );
 
-    setCollapseImages(
-      MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
-        ...image,
-        image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || image.image,
-      })),
-    );
+    const assignedCollapseImages = MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
+      ...image,
+      image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || "",
+    })).filter((image) => Boolean(image.image));
+
+    setCollapseImages(assignedCollapseImages);
   }, []);
 
   const strips = useMemo<StripPresentation[]>(() => {
@@ -91,7 +91,9 @@ export default function MyGoTwoStripGalleryAsset() {
   );
 
   const activePanoramaUrl =
-    collapseImages[collapseImageIndex % collapseImages.length]?.image || "";
+    collapseImages.length > 0
+      ? collapseImages[collapseImageIndex % collapseImages.length]?.image || ""
+      : "";
 
   useEffect(() => {
     void loadAssignedImages();
@@ -141,6 +143,15 @@ export default function MyGoTwoStripGalleryAsset() {
       }
     };
   }, [hoveredId]);
+
+  useEffect(() => {
+    if (collapseImages.length === 0) {
+      setCollapseImageIndex(0);
+      return;
+    }
+
+    setCollapseImageIndex((current) => current % collapseImages.length);
+  }, [collapseImages.length]);
 
   useEffect(() => {
     if (!previewCollapsed || collapseImages.length <= 1) {
