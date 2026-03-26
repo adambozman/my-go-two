@@ -20,6 +20,7 @@ function localOverrideStorageKey(userKey: string) {
 }
 
 export default function MyGoTwoStripGalleryAsset() {
+  const BANK_PAGE_SIZE = 10;
   const isDev = import.meta.env.DEV;
   const { user } = useAuth();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -28,6 +29,7 @@ export default function MyGoTwoStripGalleryAsset() {
   const [loadingOverrides, setLoadingOverrides] = useState(false);
   const [bankPhotos, setBankPhotos] = useState<BankPhoto[]>([]);
   const [imageOverrides, setImageOverrides] = useState<Record<string, string>>({});
+  const [bankPage, setBankPage] = useState(0);
   const hoverTimerRef = useRef<number | null>(null);
 
   const strips = useMemo(() => MYGOTWO_STRIP_GALLERY_IMAGES, []);
@@ -114,6 +116,12 @@ export default function MyGoTwoStripGalleryAsset() {
     }, 90);
   }, []);
 
+  const totalBankPages = Math.max(1, Math.ceil(bankPhotos.length / BANK_PAGE_SIZE));
+  const visibleBankPhotos = bankPhotos.slice(
+    bankPage * BANK_PAGE_SIZE,
+    (bankPage + 1) * BANK_PAGE_SIZE,
+  );
+
   return (
     <section
       aria-label="Strip gallery asset"
@@ -161,6 +169,7 @@ export default function MyGoTwoStripGalleryAsset() {
                     onClick={(event) => {
                       event.stopPropagation();
                       setSelectedStripId(strip.id);
+                      setBankPage(0);
                     }}
                     className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full border border-white/60 bg-[rgba(248,242,233,0.86)] text-[#2c2925] shadow-[0_6px_18px_rgba(41,32,24,0.14)] backdrop-blur-[12px]"
                   >
@@ -231,7 +240,7 @@ export default function MyGoTwoStripGalleryAsset() {
                 No bank images yet. Upload them in Photo Gallery first.
               </div>
             ) : (
-              bankPhotos.map((photo) => (
+              visibleBankPhotos.map((photo) => (
                 <button
                   key={photo.id}
                   type="button"
@@ -250,6 +259,35 @@ export default function MyGoTwoStripGalleryAsset() {
               ))
             )}
           </div>
+          {!loadingOverrides && !loadingBank && bankPhotos.length > BANK_PAGE_SIZE ? (
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <p className="text-xs text-[#6d655d]">
+                Page {bankPage + 1} of {totalBankPages}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setBankPage((current) => Math.max(0, current - 1))}
+                  disabled={bankPage === 0}
+                >
+                  Previous
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setBankPage((current) => Math.min(totalBankPages - 1, current + 1))
+                  }
+                  disabled={bankPage >= totalBankPages - 1}
+                >
+                  Next Page
+                </Button>
+              </div>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </section>
