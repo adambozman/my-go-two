@@ -3,6 +3,10 @@ import { Image as ImageIcon, RefreshCw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  getWebsiteAssetAssignments,
+  setWebsiteAssetAssignment,
+} from "@/lib/websiteAssetAssignments";
 import { MYGOTWO_STRIP_GALLERY_IMAGES } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.images";
 
 type BankPhoto = {
@@ -13,10 +17,6 @@ type BankPhoto = {
 
 function stripImageKey(id: string) {
   return `mygotwo-strip-${id}`;
-}
-
-function localOverrideStorageKey(userKey: string) {
-  return `mygotwo-strip-overrides:${userKey}`;
 }
 
 export default function MyGoTwoStripGalleryAsset() {
@@ -33,35 +33,32 @@ export default function MyGoTwoStripGalleryAsset() {
   const hoverTimerRef = useRef<number | null>(null);
 
   const strips = useMemo(() => MYGOTWO_STRIP_GALLERY_IMAGES, []);
-  const userKey = user?.email || user?.id || "";
 
   const loadOverrides = useCallback(async () => {
-    if (!user || !userKey) {
+    if (!user) {
       setImageOverrides({});
       return;
     }
 
     setLoadingOverrides(true);
-    let localOverrides: Record<string, string> = {};
     try {
-      const raw = localStorage.getItem(localOverrideStorageKey(userKey));
-      localOverrides = raw ? (JSON.parse(raw) as Record<string, string>) : {};
-    } catch {
-      localOverrides = {};
-    }
+      const assignments = await getWebsiteAssetAssignments(
+        strips.map((strip) => stripImageKey(strip.id)),
+      );
 
-    const nextOverrides: Record<string, string> = {};
-    const keys = strips.map((strip) => stripImageKey(strip.id));
-
-    for (const [key, value] of Object.entries(localOverrides)) {
-      if (keys.includes(key)) {
-        nextOverrides[key] = value;
+      const nextOverrides: Record<string, string> = {};
+      for (const assignment of assignments) {
+        nextOverrides[assignment.assetKey] = assignment.imageUrl;
       }
-    }
 
-    setImageOverrides(nextOverrides);
-    setLoadingOverrides(false);
-  }, [strips, user, userKey]);
+      setImageOverrides(nextOverrides);
+    } catch (error) {
+      console.warn("website asset assignments load failed", error);
+      setImageOverrides({});
+    } finally {
+      setLoadingOverrides(false);
+    }
+  }, [strips, user]);
 
   const loadBank = useCallback(async () => {
     setLoadingBank(true);
@@ -88,21 +85,29 @@ export default function MyGoTwoStripGalleryAsset() {
   }, []);
 
   const assignPhoto = useCallback(
-    async (photoUrl: string) => {
-      if (!selectedStripId || !user || !userKey) return;
+    async (photo: BankPhoto) => {
+      if (!selectedStripId || !user) return;
 
       const assetKey = stripImageKey(selectedStripId);
       const nextOverrides = {
         ...imageOverrides,
-        [assetKey]: photoUrl,
+        [assetKey]: photo.image_url,
       };
 
-      localStorage.setItem(localOverrideStorageKey(userKey), JSON.stringify(nextOverrides));
       setImageOverrides(nextOverrides);
 
-      setSelectedStripId(null);
+      try {
+        await setWebsiteAssetAssignment({
+          assetKey,
+          bankPhotoId: photo.id,
+          updatedBy: user.id,
+        });
+        setSelectedStripId(null);
+      } catch (error) {
+        console.warn("website asset assignment save failed", error);
+      }
     },
-    [imageOverrides, selectedStripId, user, userKey],
+    [imageOverrides, selectedStripId, user],
   );
 
   const queueHoveredId = useCallback((nextId: string | null) => {
@@ -244,7 +249,7 @@ export default function MyGoTwoStripGalleryAsset() {
                 <button
                   key={photo.id}
                   type="button"
-                  onClick={() => void assignPhoto(photo.image_url)}
+                  onClick={() => void assignPhoto(photo)}
                   className="overflow-hidden rounded-[18px] border border-[rgba(255,255,255,0.58)] bg-white/60 text-left shadow-[0_10px_24px_rgba(41,32,24,0.1)] transition-transform duration-200 hover:scale-[1.02]"
                 >
                   <div className="aspect-[4/5] bg-[#e8dfd2]">
