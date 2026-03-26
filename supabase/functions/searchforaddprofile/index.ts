@@ -59,7 +59,8 @@ type ShareTokenRow = {
   used_count?: number;
 };
 
-type AppSupabaseClient = ReturnType<typeof createClient>;
+// deno-lint-ignore no-explicit-any
+type AppSupabaseClient = any;
 
 type ProfileIdentityRow = {
   user_id: string;
