@@ -158,6 +158,7 @@ export default function MyGoTwoStripGalleryAsset() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
   const [collapseImageIndex, setCollapseImageIndex] = useState(0);
+  const [isInitialLoadPending, setIsInitialLoadPending] = useState(true);
   const [stripImages, setStripImages] = useState(() =>
     MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
       ...strip,
@@ -169,6 +170,7 @@ export default function MyGoTwoStripGalleryAsset() {
   const collapseTimerRef = useRef<number | null>(null);
   const rotateTimerRef = useRef<number | null>(null);
   const assignmentSignatureRef = useRef("");
+  const hasLoadedOnceRef = useRef(false);
   const stripImagesRef = useRef(stripImages);
   const collapseImagesRef = useRef(collapseImages);
 
@@ -196,40 +198,49 @@ export default function MyGoTwoStripGalleryAsset() {
   );
 
   const loadAssignedImages = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("category_images")
-      .select("category_key, image_url")
-      .eq("gender", "male")
-      .in("category_key", SLOT_KEYS);
+    try {
+      const { data, error } = await supabase
+        .from("category_images")
+        .select("category_key, image_url")
+        .eq("gender", "male")
+        .in("category_key", SLOT_KEYS);
 
-    if (error) {
-      console.error("Failed to load My Go Two strip images:", error);
-      return;
-    }
-
-    const rows = data ?? [];
-    const rowsWithImages = rows.filter((row) => Boolean(row.image_url));
-    const urls = await resolveStorageUrls(rowsWithImages.map((row) => row.image_url));
-    const resolvedByKey = new Map<string, string>();
-
-    rowsWithImages.forEach((row, index) => {
-      const resolvedUrl = urls[index] ?? "";
-      if (row.category_key && resolvedUrl) {
-        resolvedByKey.set(row.category_key, resolvedUrl);
+      if (error) {
+        console.error("Failed to load My Go Two strip images:", error);
+        return;
       }
-    });
 
-    const nextStripImages = MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
-      ...strip,
-      image: resolvedByKey.get(`mygotwo-strip-${strip.id}`) || "",
-    }));
+      const rows = data ?? [];
+      const rowsWithImages = rows.filter((row) => Boolean(row.image_url));
+      const urls = await resolveStorageUrls(rowsWithImages.map((row) => row.image_url));
+      const resolvedByKey = new Map<string, string>();
 
-    const assignedCollapseImages = MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
-      ...image,
-      image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || "",
-    })).filter((image) => Boolean(image.image));
+      rowsWithImages.forEach((row, index) => {
+        const resolvedUrl = urls[index] ?? "";
+        if (row.category_key && resolvedUrl) {
+          resolvedByKey.set(row.category_key, resolvedUrl);
+        }
+      });
 
-    commitAssignedImages(nextStripImages, assignedCollapseImages);
+      const nextStripImages = MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
+        ...strip,
+        image: resolvedByKey.get(`mygotwo-strip-${strip.id}`) || "",
+      }));
+
+      const assignedCollapseImages = MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
+        ...image,
+        image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || "",
+      })).filter((image) => Boolean(image.image));
+
+      commitAssignedImages(nextStripImages, assignedCollapseImages);
+    } finally {
+      if (!hasLoadedOnceRef.current) {
+        hasLoadedOnceRef.current = true;
+        window.requestAnimationFrame(() => {
+          setIsInitialLoadPending(false);
+        });
+      }
+    }
   }, [commitAssignedImages]);
 
   const strips = useMemo<StripPresentation[]>(() => {
@@ -425,7 +436,7 @@ export default function MyGoTwoStripGalleryAsset() {
           className="relative flex h-full w-full items-stretch gap-[3px] overflow-hidden sm:gap-[4px] md:gap-[6px]"
           onMouseLeave={() => queueHoveredId(null)}
           style={{
-            opacity: 1,
+            opacity: isInitialLoadPending ? 0 : 1,
             transition: "opacity 320ms ease",
           }}
         >
@@ -441,6 +452,24 @@ export default function MyGoTwoStripGalleryAsset() {
               onHover={queueHoveredId}
             />
           ))}
+        </div>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 transition-opacity duration-500 ease-out"
+          style={{
+            opacity: isInitialLoadPending ? 1 : 0,
+            background:
+              "linear-gradient(135deg, rgba(248,242,233,0.96) 0%, rgba(244,236,228,0.92) 40%, rgba(248,242,233,0.96) 100%)",
+          }}
+        >
+          <div
+            className="absolute inset-0 animate-pulse"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.32) 50%, rgba(255,255,255,0) 100%)",
+              transform: "translateX(-18%)",
+            }}
+          />
         </div>
       </div>
     </section>
