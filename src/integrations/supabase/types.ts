@@ -1258,30 +1258,33 @@ export type Database = {
         }
         Relationships: []
       }
-      website_asset_assignments: {
-        Row: {
-          asset_key: string
-          bank_photo_id: string
-          created_at: string
-          id: string
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          asset_key: string
-          bank_photo_id: string
-          created_at?: string
-          id?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          asset_key?: string
-          bank_photo_id?: string
-          created_at?: string
-          id?: string
-          updated_at?: string
-          updated_by?: string | null
+        website_asset_assignments: {
+          Row: {
+            asset_key: string
+            bank_photo_id: string
+            created_at: string
+            image_url: string
+            id: string
+            updated_at: string
+            updated_by: string | null
+          }
+          Insert: {
+            asset_key: string
+            bank_photo_id: string
+            created_at?: string
+            image_url: string
+            id?: string
+            updated_at?: string
+            updated_by?: string | null
+          }
+          Update: {
+            asset_key?: string
+            bank_photo_id?: string
+            created_at?: string
+            image_url?: string
+            id?: string
+            updated_at?: string
+            updated_by?: string | null
         }
         Relationships: [
           {
