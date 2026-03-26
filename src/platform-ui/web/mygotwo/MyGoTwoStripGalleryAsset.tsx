@@ -58,6 +58,7 @@ async function preloadImage(url: string) {
 
 export default function MyGoTwoStripGalleryAsset() {
   const BANK_PAGE_SIZE = 10;
+  const PREVIEW_COLLAPSE_DELAY_MS = 5000;
   const isDev = import.meta.env.DEV;
   const { user } = useAuth();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -68,8 +69,10 @@ export default function MyGoTwoStripGalleryAsset() {
   const [imageOverrides, setImageOverrides] = useState<Record<string, string>>({});
   const [assignedAssetKeys, setAssignedAssetKeys] = useState<Set<string>>(() => new Set());
   const [previewPanoramaUrl, setPreviewPanoramaUrl] = useState<string | null>(null);
+  const [previewCollapsed, setPreviewCollapsed] = useState(false);
   const [bankPage, setBankPage] = useState(0);
   const hoverTimerRef = useRef<number | null>(null);
+  const collapseTimerRef = useRef<number | null>(null);
 
   const strips = useMemo(() => MYGOTWO_STRIP_GALLERY_IMAGES, []);
   const panoramaStripIds = useMemo(
@@ -175,8 +178,40 @@ export default function MyGoTwoStripGalleryAsset() {
       if (hoverTimerRef.current !== null) {
         window.clearTimeout(hoverTimerRef.current);
       }
+      if (collapseTimerRef.current !== null) {
+        window.clearTimeout(collapseTimerRef.current);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (collapseTimerRef.current !== null) {
+      window.clearTimeout(collapseTimerRef.current);
+      collapseTimerRef.current = null;
+    }
+
+    if (!previewPanoramaUrl) {
+      setPreviewCollapsed(false);
+      return;
+    }
+
+    if (hoveredId) {
+      setPreviewCollapsed(false);
+      return;
+    }
+
+    collapseTimerRef.current = window.setTimeout(() => {
+      setPreviewCollapsed(true);
+      collapseTimerRef.current = null;
+    }, PREVIEW_COLLAPSE_DELAY_MS);
+
+    return () => {
+      if (collapseTimerRef.current !== null) {
+        window.clearTimeout(collapseTimerRef.current);
+        collapseTimerRef.current = null;
+      }
+    };
+  }, [hoveredId, previewPanoramaUrl]);
 
   const assignPhoto = useCallback(
     async (photo: BankPhoto) => {
@@ -247,6 +282,8 @@ export default function MyGoTwoStripGalleryAsset() {
     async (photo: BankPhoto) => {
       try {
         await preloadImage(photo.display_url);
+        setPreviewCollapsed(false);
+        setHoveredId(null);
         setPreviewPanoramaUrl(photo.display_url);
       } catch (error) {
         console.warn("panorama preview preload failed", error);
@@ -302,6 +339,7 @@ export default function MyGoTwoStripGalleryAsset() {
             const panoramaIndex = panoramaStripIds.indexOf(strip.id);
             const isPanoramaStrip = panoramaStripIdSet.has(strip.id);
             const lockPanoramaStripHover = Boolean(previewPanoramaUrl && isPanoramaStrip);
+            const collapseCategoryStrip = Boolean(previewCollapsed && previewPanoramaUrl && strip.label && !hoveredId);
             const imageUrl =
               previewPanoramaUrl && isPanoramaStrip
                 ? previewPanoramaUrl
@@ -316,14 +354,28 @@ export default function MyGoTwoStripGalleryAsset() {
                 className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
                 style={{
                   flexBasis: 0,
-                  flexGrow: lockPanoramaStripHover ? 1 : isHovered ? 3.35 : hoveredId ? 0.58 : 1,
-                  minWidth: lockPanoramaStripHover
+                  flexGrow: collapseCategoryStrip
+                    ? 0.0001
+                    : lockPanoramaStripHover
+                      ? previewCollapsed && !hoveredId
+                        ? 1.55
+                        : 1
+                      : isHovered
+                        ? 3.35
+                        : hoveredId
+                          ? 0.58
+                          : 1,
+                  minWidth: collapseCategoryStrip
+                    ? "0px"
+                    : lockPanoramaStripHover
                     ? "clamp(12px, 2.4vw, 22px)"
                     : isHovered
                       ? "clamp(60px, 10.5vw, 94px)"
                       : "clamp(12px, 2.4vw, 22px)",
                   contain: "layout paint style",
                   transform: lockPanoramaStripHover ? "translateY(0)" : isHovered ? "translateY(-2px)" : "translateY(0)",
+                  opacity: collapseCategoryStrip ? 0 : 1,
+                  pointerEvents: collapseCategoryStrip ? "none" : "auto",
                 }}
               >
                 {previewPanoramaUrl && isPanoramaStrip ? (
@@ -391,6 +443,8 @@ export default function MyGoTwoStripGalleryAsset() {
                   <span
                     className="pointer-events-none absolute bottom-2 left-1/2 z-10 text-[9px] font-medium uppercase tracking-[0.16em] text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.42)] sm:bottom-3 sm:text-[10px] md:bottom-4 md:text-[12px] md:tracking-[0.2em]"
                     style={{
+                      opacity: collapseCategoryStrip ? 0 : 1,
+                      transition: "opacity 260ms ease",
                       writingMode: "vertical-rl",
                       transform: "translateX(-50%) rotate(180deg)",
                     }}
@@ -401,10 +455,12 @@ export default function MyGoTwoStripGalleryAsset() {
                 <span
                   aria-hidden="true"
                   className="absolute inset-y-0 left-0 w-[1px] bg-white/85"
+                  style={{ opacity: collapseCategoryStrip ? 0 : 1, transition: "opacity 260ms ease" }}
                 />
                 <span
                   aria-hidden="true"
                   className="absolute inset-y-0 right-0 w-[1px] bg-white/85"
+                  style={{ opacity: collapseCategoryStrip ? 0 : 1, transition: "opacity 260ms ease" }}
                 />
               </div>
             );
