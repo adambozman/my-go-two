@@ -82,6 +82,18 @@ export default function MyGoTwoStripGalleryAsset() {
     [strips],
   );
   const panoramaStripIdSet = useMemo(() => new Set(panoramaStripIds), [panoramaStripIds]);
+  const savedPanoramaUrl = useMemo(() => {
+    const urls = panoramaStripIds
+      .map((stripId) => imageOverrides[stripImageKey(stripId)] || "")
+      .filter(Boolean);
+
+    if (urls.length !== panoramaStripIds.length) {
+      return null;
+    }
+
+    return urls.every((url) => url === urls[0]) ? urls[0] : null;
+  }, [imageOverrides, panoramaStripIds]);
+  const activePanoramaUrl = previewPanoramaUrl || savedPanoramaUrl;
 
   const loadOverrides = useCallback(async () => {
     if (!user) {
@@ -204,7 +216,7 @@ export default function MyGoTwoStripGalleryAsset() {
       collapseTimerRef.current = null;
     }
 
-    if (!previewPanoramaUrl) {
+    if (!activePanoramaUrl) {
       setPreviewCollapsed(false);
       return;
     }
@@ -225,14 +237,22 @@ export default function MyGoTwoStripGalleryAsset() {
         collapseTimerRef.current = null;
       }
     };
-  }, [hoveredId, previewPanoramaUrl]);
+  }, [activePanoramaUrl, hoveredId]);
 
   const assignPhoto = useCallback(
     async (photo: BankPhoto) => {
       if (!selectedStripId || !user) return;
 
-      const assetKey = stripImageKey(selectedStripId);
-      const previousImageUrl = imageOverrides[assetKey];
+      const targetStripIds = panoramaStripIdSet.has(selectedStripId)
+        ? panoramaStripIds
+        : [selectedStripId];
+      const targetAssetKeys = targetStripIds.map((stripId) => stripImageKey(stripId));
+      const previousImageUrls = targetAssetKeys.reduce<Record<string, string>>((accumulator, assetKey) => {
+        if (imageOverrides[assetKey]) {
+          accumulator[assetKey] = imageOverrides[assetKey];
+        }
+        return accumulator;
+      }, {});
       const sourceRef = parseStorageRef(toStorageRefIfPossible(photo.image_url));
       const sourceUrl = await resolveStorageUrl(photo.image_url, 3600);
 
@@ -242,7 +262,7 @@ export default function MyGoTwoStripGalleryAsset() {
       const blob = await response.blob();
 
       const sourceExt = sourceRef?.path.split(".").pop() || photo.filename?.split(".").pop() || "jpg";
-      const targetPath = `${assetKey}/${Date.now()}.${sourceExt}`;
+      const targetPath = `${targetAssetKeys[0]}/${Date.now()}.${sourceExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("images-mygotwo-strip")
@@ -259,37 +279,45 @@ export default function MyGoTwoStripGalleryAsset() {
         return;
       }
       await preloadImage(targetUrl);
-      const nextOverrides = {
-        ...imageOverrides,
-        [assetKey]: targetUrl,
-      };
+      const nextOverrides = { ...imageOverrides };
+      targetAssetKeys.forEach((assetKey) => {
+        nextOverrides[assetKey] = targetUrl;
+      });
 
       setImageOverrides(nextOverrides);
       setAssignedAssetKeys((current) => {
         const next = new Set(current);
-        next.add(assetKey);
+        targetAssetKeys.forEach((assetKey) => {
+          next.add(assetKey);
+        });
         return next;
       });
 
       try {
-        await setWebsiteAssetAssignment({
-          assetKey,
-          bankPhotoId: photo.id,
-          imageUrl: targetRef,
-        });
+        await Promise.all(
+          targetAssetKeys.map((assetKey) =>
+            setWebsiteAssetAssignment({
+              assetKey,
+              bankPhotoId: photo.id,
+              imageUrl: targetRef,
+            }),
+          ),
+        );
         setSelectedStripId(null);
       } catch (error) {
         const rollbackOverrides = { ...imageOverrides };
-        if (previousImageUrl) {
-          rollbackOverrides[assetKey] = previousImageUrl;
-        } else {
+        targetAssetKeys.forEach((assetKey) => {
+          if (previousImageUrls[assetKey]) {
+            rollbackOverrides[assetKey] = previousImageUrls[assetKey];
+            return;
+          }
           delete rollbackOverrides[assetKey];
-        }
+        });
         setImageOverrides(rollbackOverrides);
         console.warn("website asset assignment save failed", error);
       }
     },
-    [imageOverrides, selectedStripId, user],
+    [imageOverrides, panoramaStripIdSet, panoramaStripIds, selectedStripId, user],
   );
 
   const previewPanorama = useCallback(
@@ -356,13 +384,13 @@ export default function MyGoTwoStripGalleryAsset() {
             const resolvedOverrideUrl = imageOverrides[imageKey];
             const panoramaIndex = panoramaStripIds.indexOf(strip.id);
             const isPanoramaStrip = panoramaStripIdSet.has(strip.id);
-            const lockPanoramaStripHover = Boolean(previewPanoramaUrl && isPanoramaStrip);
-            const collapseCategoryStrip = Boolean(previewCollapsed && previewPanoramaUrl && strip.label && !hoveredId);
+            const lockPanoramaStripHover = Boolean(activePanoramaUrl && isPanoramaStrip);
+            const collapseCategoryStrip = Boolean(previewCollapsed && activePanoramaUrl && strip.label && !hoveredId);
             const imageUrl =
               !wallReady
                 ? ""
-                : previewPanoramaUrl && isPanoramaStrip
-                ? previewPanoramaUrl
+                : activePanoramaUrl && isPanoramaStrip
+                ? activePanoramaUrl
                 : resolvedOverrideUrl || (hasSavedOverride ? "" : strip.image);
             const showPlaceholder = wallReady && hasSavedOverride && !resolvedOverrideUrl;
 
@@ -398,12 +426,12 @@ export default function MyGoTwoStripGalleryAsset() {
                   pointerEvents: collapseCategoryStrip ? "none" : "auto",
                 }}
               >
-                {previewPanoramaUrl && isPanoramaStrip ? (
+                {activePanoramaUrl && isPanoramaStrip ? (
                   <div
                     aria-hidden="true"
                     className="absolute inset-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     style={{
-                      backgroundImage: `url("${previewPanoramaUrl}")`,
+                      backgroundImage: `url("${activePanoramaUrl}")`,
                       backgroundRepeat: "no-repeat",
                       backgroundSize: `${panoramaStripIds.length * 100}% 100%`,
                       backgroundPosition:
@@ -526,19 +554,21 @@ export default function MyGoTwoStripGalleryAsset() {
               </Button>
             </div>
           </div>
-          {previewPanoramaUrl ? (
+          {activePanoramaUrl ? (
             <div className="mb-3 flex items-center justify-between gap-3 rounded-[16px] border border-[rgba(44,41,37,0.08)] bg-white/50 px-3 py-2">
               <p className="text-xs text-[#6d655d]">
-                Preview active across the 8 unlabeled strips only.
+                Panorama active across the 8 unlabeled strips only.
               </p>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setPreviewPanoramaUrl(null)}
-              >
-                Clear Preview
-              </Button>
+              {previewPanoramaUrl ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPreviewPanoramaUrl(null)}
+                >
+                  Clear Preview
+                </Button>
+              ) : null}
             </div>
           ) : null}
 
