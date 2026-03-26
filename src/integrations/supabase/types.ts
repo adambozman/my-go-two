@@ -1231,6 +1231,44 @@ export type Database = {
         }
         Relationships: []
       }
+      website_asset_assignments: {
+        Row: {
+          asset_key: string
+          bank_photo_id: string
+          created_at: string
+          id: string
+          image_url: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          asset_key: string
+          bank_photo_id: string
+          created_at?: string
+          id?: string
+          image_url: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          asset_key?: string
+          bank_photo_id?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_asset_assignments_bank_photo_id_fkey"
+            columns: ["bank_photo_id"]
+            isOneToOne: false
+            referencedRelation: "category_bank_photos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       weekly_recommendations: {
         Row: {
           generated_at: string
@@ -1257,44 +1295,6 @@ export type Database = {
           week_start?: string
         }
         Relationships: []
-      }
-        website_asset_assignments: {
-          Row: {
-            asset_key: string
-            bank_photo_id: string
-            created_at: string
-            image_url: string
-            id: string
-            updated_at: string
-            updated_by: string | null
-          }
-          Insert: {
-            asset_key: string
-            bank_photo_id: string
-            created_at?: string
-            image_url: string
-            id?: string
-            updated_at?: string
-            updated_by?: string | null
-          }
-          Update: {
-            asset_key?: string
-            bank_photo_id?: string
-            created_at?: string
-            image_url?: string
-            id?: string
-            updated_at?: string
-            updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "website_asset_assignments_bank_photo_id_fkey"
-            columns: ["bank_photo_id"]
-            isOneToOne: false
-            referencedRelation: "category_bank_photos"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Views: {
