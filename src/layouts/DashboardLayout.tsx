@@ -25,7 +25,7 @@ const DashboardLayout = () => {
         toast({ title: "Connected!", description: "You're now linked with your partner." });
       }
     });
-  }, [user]);
+  }, [toast, user]);
 
   if (loading) {
     return (

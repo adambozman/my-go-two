@@ -89,6 +89,40 @@ interface HomeSearchEdgePayload {
   circle_entries?: Array<SearchableEntryRow & { owner_label?: string }>;
 }
 
+interface CoupleRow {
+  id: string;
+  inviter_id: string;
+  invitee_id: string | null;
+  inviter_email: string | null;
+  invitee_email: string | null;
+  display_label: string | null;
+  status: string;
+  photo_url: string | null;
+  updated_at: string | null;
+}
+
+interface RelevantOccasionRow {
+  occasion_type: string;
+  occasion_label: string;
+  occasion_date: string;
+}
+
+interface PartnerOccasionSet {
+  user_id: string;
+  couple: CoupleRow;
+  occasions: RelevantOccasionRow[];
+}
+
+type RpcResult<T> = {
+  data: T | null;
+  error: { message?: string } | null;
+};
+
+const rpc = supabase.rpc as unknown as <T>(
+  fn: string,
+  args?: Record<string, unknown>,
+) => Promise<RpcResult<T>>;
+
 const DashboardHome = () => {
   const { user, subscribed } = useAuth();
   const navigate = useNavigate();
@@ -128,7 +162,8 @@ const DashboardHome = () => {
 
     if (error || !data) return;
 
-    const cards: ConnectionCard[] = data.map((row: any) => {
+    const rows = (data || []) as CoupleRow[];
+    const cards: ConnectionCard[] = rows.map((row) => {
       const isInviter = row.inviter_id === user.id;
       const partnerId = isInviter ? row.invitee_id : row.inviter_id;
       const label = row.display_label || (isInviter && row.invitee_email ? row.invitee_email.split("@")[0] : "Connection");
@@ -192,11 +227,11 @@ const DashboardHome = () => {
         .eq("user_id", user.id)
         .maybeSingle(),
       Promise.all(
-        (couples || []).map(async (couple: any) => {
+        ((couples || []) as CoupleRow[]).map(async (couple) => {
           const partnerId = couple.inviter_id === user.id ? couple.invitee_id : couple.inviter_id;
           if (!partnerId) return null;
 
-          const { data } = await (supabase.rpc as any)("get_connection_relevant_occasions", {
+          const { data } = await rpc<RelevantOccasionRow[]>("get_connection_relevant_occasions", {
             p_connection_user_id: partnerId,
             p_days_ahead: 365,
           });
@@ -248,7 +283,7 @@ const DashboardHome = () => {
       addMilestone("self-anniversary", "Anniversary", ownProfile.display_name || "You", ownProfile.anniversary, "anniversary", "self", ownProfile.user_id);
     }
 
-    for (const p of partnerOccasionSets.filter(Boolean) as Array<{ user_id: string; couple: any; occasions: Array<{ occasion_type: string; occasion_label: string; occasion_date: string }> }>) {
+    for (const p of partnerOccasionSets.filter(Boolean) as PartnerOccasionSet[]) {
       const name = p.couple?.display_label || "Connection";
 
       for (const occasion of p.occasions) {
@@ -353,7 +388,7 @@ const DashboardHome = () => {
       if (!user) return;
 
       if (cancelled) return;
-      const { data } = await (supabase.rpc as any)("get_connection_feed_preview", {
+      const { data } = await rpc<ConnectionFeedRow[]>("get_connection_feed_preview", {
         p_limit: 12,
       });
 

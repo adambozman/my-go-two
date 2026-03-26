@@ -25,11 +25,7 @@ const Search = () => {
       setLoading(true);
 
       const [templatesRes, entriesRes] = await Promise.all([
-        supabase
-          .from("card_templates")
-          .select("*")
-          .ilike("name", `%${query}%`)
-          .limit(10),
+        supabase.from("card_templates").select("*").ilike("name", `%${query}%`).limit(10),
         user
           ? supabase
               .from("card_entries")
@@ -51,7 +47,7 @@ const Search = () => {
   return (
     <div className="mx-auto min-h-full max-w-2xl px-3 py-6 sm:px-4 md:px-6">
       <h1
-        className="text-2xl font-bold mb-6"
+        className="mb-6 text-2xl font-bold"
         style={{
           fontFamily: "'Cormorant Garamond', serif",
           color: "var(--swatch-teal)",
@@ -61,7 +57,7 @@ const Search = () => {
       </h1>
 
       <div className="relative mb-8">
-        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search templates and entries..."
           value={query}
@@ -71,16 +67,14 @@ const Search = () => {
         />
       </div>
 
-      {loading && (
-        <p className="text-muted-foreground text-sm">Searching...</p>
-      )}
+      {loading && <p className="text-sm text-muted-foreground">Searching...</p>}
 
       {!loading && query.trim() && (
         <div className="space-y-8">
           {entryResults.length > 0 && (
             <section>
               <h2
-                className="text-lg font-semibold mb-3"
+                className="mb-3 text-lg font-semibold"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   color: "var(--swatch-teal)",
@@ -94,16 +88,13 @@ const Search = () => {
                     key={e.id}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => navigate("/dashboard/my-go-two")}
-                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-accent/50 transition-colors"
+                    className="w-full rounded-xl px-4 py-3 text-left transition-colors hover:bg-accent/50"
                   >
-                    <p
-                      className="font-medium"
-                      style={{ color: "var(--swatch-teal)" }}
-                    >
+                    <p className="font-medium" style={{ color: "var(--swatch-teal)" }}>
                       {e.entry_name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {e.group_name} · {e.card_key?.split("__").pop()}
+                      {e.group_name} &middot; {e.card_key?.split("__").pop()}
                     </p>
                   </motion.button>
                 ))}
@@ -114,7 +105,7 @@ const Search = () => {
           {templateResults.length > 0 && (
             <section>
               <h2
-                className="text-lg font-semibold mb-3"
+                className="mb-3 text-lg font-semibold"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   color: "var(--swatch-teal)",
@@ -128,17 +119,12 @@ const Search = () => {
                     key={t.id}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => navigate("/dashboard/my-go-two")}
-                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-accent/50 transition-colors"
+                    className="w-full rounded-xl px-4 py-3 text-left transition-colors hover:bg-accent/50"
                   >
-                    <p
-                      className="font-medium"
-                      style={{ color: "var(--swatch-teal)" }}
-                    >
+                    <p className="font-medium" style={{ color: "var(--swatch-teal)" }}>
                       {t.name}
                     </p>
-                    <p className="text-xs text-muted-foreground capitalize">
-                      {t.category}
-                    </p>
+                    <p className="text-xs capitalize text-muted-foreground">{t.category}</p>
                   </motion.button>
                 ))}
               </div>
@@ -146,7 +132,7 @@ const Search = () => {
           )}
 
           {templateResults.length === 0 && entryResults.length === 0 && (
-            <p className="text-muted-foreground text-center py-8">
+            <p className="py-8 text-center text-muted-foreground">
               No results found for &quot;{query}&quot;
             </p>
           )}

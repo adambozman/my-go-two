@@ -1,7 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 
 const STORAGE_REF_PREFIX = "storage://";
-const PRIVATE_BUCKETS = new Set(["avatars", "card-images", "connection-photos"]);
+const PRIVATE_BUCKETS = new Set([
+  "avatars",
+  "avatars-1",
+  "card-images",
+  "connection-photos",
+  "photo-bank",
+  "images-mygotwo-strip",
+]);
 
 export interface StorageRef {
   bucket: string;

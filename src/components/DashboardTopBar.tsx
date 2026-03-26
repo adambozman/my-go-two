@@ -107,7 +107,7 @@ export function DashboardTopBar() {
     const path = `${user.id}/avatar.${ext}`;
 
     const { error: uploadError } = await supabase.storage
-      .from("avatars")
+      .from("avatars-1")
       .upload(path, file, { upsert: true });
 
     if (uploadError) {
@@ -115,7 +115,7 @@ export function DashboardTopBar() {
       return;
     }
 
-    const storageRef = makeStorageRef("avatars", path);
+    const storageRef = makeStorageRef("avatars-1", path);
 
     const { error: updateError } = await supabase
       .from("profiles")
@@ -133,9 +133,9 @@ export function DashboardTopBar() {
   const handleRemovePhoto = async () => {
     if (!user) return;
 
-    const { data: files } = await supabase.storage.from("avatars").list(user.id);
+    const { data: files } = await supabase.storage.from("avatars-1").list(user.id);
     if (files?.length) {
-      await supabase.storage.from("avatars").remove(files.map((f) => `${user.id}/${f.name}`));
+      await supabase.storage.from("avatars-1").remove(files.map((f) => `${user.id}/${f.name}`));
     }
 
     await supabase.from("profiles").update({ avatar_url: null }).eq("user_id", user.id);

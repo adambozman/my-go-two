@@ -48,6 +48,17 @@ interface PublicFeedItem {
   isFollowing: boolean;
 }
 
+type RpcError = { message?: string; status?: number } | null;
+type RpcResult<T> = { data: T | null; error: RpcError };
+
+const rpc = supabase.rpc as unknown as <T>(
+  fn: string,
+  args?: Record<string, unknown>,
+) => Promise<RpcResult<T>>;
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Something went wrong";
+
 function toViewItem(row: PublicFeedRow): PublicFeedItem {
   const category: PublicFeedCategory = row.entity_kind === "outfit" ? "Outfit" : "Product";
   const partCount = Math.max(Number(row.card_count || 0), 1);
@@ -86,7 +97,7 @@ export default function PublicFeed() {
     setLoading(true);
     try {
       const entityKindFilter = filter === "All" ? null : filter.toLowerCase();
-      const { data, error } = await (supabase.rpc as any)("get_public_feed_items", {
+      const { data, error } = await rpc<PublicFeedRow[]>("get_public_feed_items", {
         p_limit: 40,
         p_entity_kind: entityKindFilter,
         p_creator_user_id: null,
@@ -95,10 +106,10 @@ export default function PublicFeed() {
       if (error) throw error;
       const rows = Array.isArray(data) ? (data as PublicFeedRow[]) : [];
       setItems(rows.map(toViewItem));
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Public feed unavailable",
-        description: error?.message || "Could not load public feed.",
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       setItems([]);
@@ -116,19 +127,19 @@ export default function PublicFeed() {
     setActionBusyKey(`follow:${creatorId}`);
     try {
       if (isFollowing) {
-        await (supabase.rpc as any)("unfollow_public_creator", {
+        await rpc("unfollow_public_creator", {
           p_creator_user_id: creatorId,
         });
       } else {
-        await (supabase.rpc as any)("follow_public_creator", {
+        await rpc("follow_public_creator", {
           p_creator_user_id: creatorId,
         });
       }
       await loadFeed();
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Follow update failed",
-        description: error?.message || "Could not update follow status.",
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -140,16 +151,16 @@ export default function PublicFeed() {
     if (!user) return;
     setActionBusyKey(`reaction:${itemId}:${reaction}`);
     try {
-      const { error } = await (supabase.rpc as any)("toggle_public_entity_reaction", {
+      const { error } = await rpc("toggle_public_entity_reaction", {
         p_published_entity_id: itemId,
         p_reaction_type: reaction,
       });
       if (error) throw error;
       await loadFeed();
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Reaction failed",
-        description: error?.message || "Could not update reaction.",
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {

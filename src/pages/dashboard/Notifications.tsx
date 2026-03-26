@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Bell, Heart, Gift, Sparkles, Check, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,7 +31,7 @@ export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!user || !subscribed) {
       setLoading(false);
       return;
@@ -43,7 +43,7 @@ export default function Notifications() {
       .order("created_at", { ascending: false });
     if (!error && data) setNotifications(data as Notification[]);
     setLoading(false);
-  };
+  }, [subscribed, user]);
 
   useEffect(() => {
     fetchNotifications();
@@ -59,7 +59,7 @@ export default function Notifications() {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [user, subscribed]);
+  }, [fetchNotifications, subscribed]);
 
   const markAllRead = async () => {
     if (!user) return;

@@ -17,6 +17,16 @@ interface ConnectionFeedRow {
   event_at: string | null;
 }
 
+type RpcResult<T> = {
+  data: T | null;
+  error: { message?: string } | null;
+};
+
+const rpc = supabase.rpc as unknown as <T>(
+  fn: string,
+  args?: Record<string, unknown>,
+) => Promise<RpcResult<T>>;
+
 function formatRelativeDateLabel(value?: string | null) {
   if (!value) return "Just updated";
   const date = new Date(value);
@@ -59,7 +69,7 @@ export default function ConnectionFeed() {
 
   const loadFeed = useCallback(async () => {
     setLoading(true);
-    const { data } = await (supabase.rpc as any)("get_connection_feed", {
+    const { data } = await rpc<ConnectionFeedRow[]>("get_connection_feed", {
       p_limit: 120,
       p_couple_id: selectedCoupleId === "all" ? null : selectedCoupleId,
     });

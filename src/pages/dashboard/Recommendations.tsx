@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { usePersonalization } from "@/contexts/PersonalizationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -66,6 +66,16 @@ interface Product {
   source_version?: string;
 }
 
+type RpcError = { message?: string; status?: number } | null;
+
+const getRpcStatus = (error: unknown) =>
+  typeof error === "object" && error !== null && "status" in error
+    ? Number((error as { status?: unknown }).status)
+    : undefined;
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Failed to load recommendations";
+
 const PILLARS = [
   { key: "all", label: "For You", matches: ["food", "clothes", "tech", "home"] },
   { key: "clothes", label: "Style & Fit", matches: ["clothes"] },
@@ -122,7 +132,8 @@ const Recommendations = () => {
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [isCached, setIsCached] = useState(false);
 
-  const fetchProducts = async (forceRefresh = false) => {
+  const fetchProducts = useCallback(
+    async (forceRefresh = false) => {
     setLoading(true);
     try {
       let { data, error } = await supabase.functions.invoke("ai-products", {
@@ -130,7 +141,7 @@ const Recommendations = () => {
       });
 
       // If session expired, refresh and retry once
-      if (error && (error as any)?.status === 401) {
+      if (error && getRpcStatus(error) === 401) {
         await supabase.auth.refreshSession();
         const retry = await supabase.functions.invoke("ai-products", {
           body: forceRefresh ? { force_refresh: true } : {},
@@ -146,22 +157,23 @@ const Recommendations = () => {
         setIsCached(Boolean(data.cached));
         setCurrentPage(1);
       }
-    } catch (e: any) {
-      console.error("Products error:", e);
-      if (e?.status === 429) toast.error("Rate limit reached. Try again shortly.");
-      else if (e?.status === 402) toast.error("AI credits exhausted.");
-      else toast.error("Failed to load recommendations");
+    } catch (error: unknown) {
+      console.error("Products error:", error);
+      const status = getRpcStatus(error);
+      if (status === 429) toast.error("Rate limit reached. Try again shortly.");
+      else if (status === 402) toast.error("AI credits exhausted.");
+      else toast.error(getErrorMessage(error));
     } finally {
       setLoading(false);
       setHasLoaded(true);
     }
-  };
+  }, [setCurrentPage]);
 
   useEffect(() => {
     if (!personalizationLoading && personalization && !hasLoaded) {
       fetchProducts();
     }
-  }, [personalizationLoading, personalization, hasLoaded]);
+  }, [fetchProducts, personalizationLoading, personalization, hasLoaded]);
 
   const activePillarConfig = useMemo(
     () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],

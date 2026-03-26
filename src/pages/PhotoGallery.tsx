@@ -6,6 +6,12 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  makeStorageRef,
+  parseStorageRef,
+  resolveStorageUrl,
+  toStorageRefIfPossible,
+} from "@/lib/storageRefs";
 
 type BankPhoto = {
   id: string;
@@ -13,6 +19,10 @@ type BankPhoto = {
   filename: string | null;
   created_at: string;
   category_key: string;
+};
+
+type ResolvedBankPhoto = BankPhoto & {
+  display_url: string;
 };
 
 function formatDate(value: string | null) {
@@ -36,7 +46,7 @@ export default function PhotoGallery() {
   const [refreshing, setRefreshing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [photos, setPhotos] = useState<BankPhoto[]>([]);
+  const [photos, setPhotos] = useState<ResolvedBankPhoto[]>([]);
   const [query, setQuery] = useState("");
 
   const loadPhotos = useCallback(async () => {
@@ -59,7 +69,15 @@ export default function PhotoGallery() {
       return;
     }
 
-    setPhotos(data ?? []);
+    const rows = (data ?? []) as BankPhoto[];
+    const withUrls = await Promise.all(
+      rows.map(async (photo) => ({
+        ...photo,
+        display_url: await resolveStorageUrl(photo.image_url),
+      })),
+    );
+
+    setPhotos(withUrls);
     setLoading(false);
     setRefreshing(false);
   }, [toast]);
@@ -100,15 +118,14 @@ export default function PhotoGallery() {
           const path = `bank/${filename}`;
 
           const { error: uploadError } = await supabase.storage
-            .from("category-images")
+            .from("photo-bank")
             .upload(path, file, { contentType: file.type, upsert: false });
 
           if (uploadError) throw uploadError;
 
-          const { data: urlData } = supabase.storage.from("category-images").getPublicUrl(path);
           const { error: insertError } = await supabase.from("category_bank_photos").insert({
             category_key: "dev-bank",
-            image_url: urlData.publicUrl,
+            image_url: makeStorageRef("photo-bank", path),
             filename: file.name,
           });
 
@@ -140,8 +157,9 @@ export default function PhotoGallery() {
       setDeletingId(photo.id);
 
       try {
-        const url = new URL(photo.image_url);
-        const path = decodeURIComponent(url.pathname.split("/object/public/category-images/")[1] ?? "");
+        const storageRef = parseStorageRef(toStorageRefIfPossible(photo.image_url));
+        const path = storageRef?.path ?? "";
+        const bucket = storageRef?.bucket ?? "";
 
         const { error: deleteRowError } = await supabase
           .from("category_bank_photos")
@@ -150,8 +168,8 @@ export default function PhotoGallery() {
 
         if (deleteRowError) throw deleteRowError;
 
-        if (path) {
-          const { error: removeFileError } = await supabase.storage.from("category-images").remove([path]);
+        if (path && bucket) {
+          const { error: removeFileError } = await supabase.storage.from(bucket).remove([path]);
           if (removeFileError) throw removeFileError;
         }
 
@@ -276,7 +294,7 @@ export default function PhotoGallery() {
                   >
                     <div className="aspect-[4/5] bg-muted">
                       <img
-                        src={photo.image_url}
+                        src={photo.display_url}
                         alt={photo.filename ?? "Bank image"}
                         className="h-full w-full object-cover"
                         loading="lazy"
@@ -297,10 +315,10 @@ export default function PhotoGallery() {
                           variant="outline"
                           size="sm"
                           className="gap-2"
-                          onClick={() => void copyText(photo.image_url, "Public URL")}
+                          onClick={() => void copyText(photo.image_url, "Storage ref")}
                         >
                           <Copy className="h-3.5 w-3.5" />
-                          Copy URL
+                          Copy Ref
                         </Button>
                         <Button
                           variant="outline"

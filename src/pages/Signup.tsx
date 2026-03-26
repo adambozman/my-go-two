@@ -12,6 +12,8 @@ import { ArrowRight } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AppleSignInButton from "@/components/AppleSignInButton";
 
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Something went wrong";
 
 const Signup = () => {
   const [searchParams] = useSearchParams();
@@ -44,8 +46,8 @@ const Signup = () => {
       }
       toast({ title: "Check your email", description: "We sent you a confirmation link." });
       navigate("/login");
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } catch (error: unknown) {
+      toast({ title: "Error", description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setLoading(false);
     }

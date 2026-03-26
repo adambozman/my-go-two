@@ -1,70 +1,42 @@
 import { supabase } from "@/integrations/supabase/client";
 
+const WEBSITE_ASSET_GENDER = "male";
+
 export type WebsiteAssetAssignment = {
   assetKey: string;
-  bankPhotoId: string;
   imageUrl: string;
 };
 
 export async function getWebsiteAssetAssignments(assetKeys: string[]) {
   if (assetKeys.length === 0) return [] as WebsiteAssetAssignment[];
 
-  const { data: assignmentRows, error: assignmentError } = await (supabase as any)
-    .from("website_asset_assignments")
-    .select("asset_key, bank_photo_id")
-    .in("asset_key", assetKeys);
+  const { data, error } = await supabase
+    .from("category_images")
+    .select("category_key, image_url")
+    .eq("gender", WEBSITE_ASSET_GENDER)
+    .in("category_key", assetKeys);
 
-  if (assignmentError) {
-    throw assignmentError;
+  if (error) {
+    throw error;
   }
 
-  const bankPhotoIds: string[] = Array.from(
-    new Set(
-      (assignmentRows ?? [])
-        .map((row) => row.bank_photo_id)
-        .filter((value): value is string => typeof value === "string" && value.length > 0),
-    ),
-  );
-
-  if (bankPhotoIds.length === 0) return [] as WebsiteAssetAssignment[];
-
-  const { data: bankRows, error: bankError } = await supabase
-    .from("category_bank_photos")
-    .select("id, image_url")
-    .in("id", bankPhotoIds);
-
-  if (bankError) {
-    throw bankError;
-  }
-
-  const bankMap = new Map((bankRows ?? []).map((row) => [row.id, row.image_url]));
-
-  return (assignmentRows ?? [])
-    .map((row) => {
-      const imageUrl = bankMap.get(row.bank_photo_id);
-      if (!imageUrl) return null;
-
-      return {
-        assetKey: row.asset_key,
-        bankPhotoId: row.bank_photo_id,
-        imageUrl,
-      } satisfies WebsiteAssetAssignment;
-    })
-    .filter((value): value is WebsiteAssetAssignment => value !== null);
+  return (data ?? []).map((row) => ({
+    assetKey: row.category_key,
+    imageUrl: row.image_url,
+  }));
 }
 
 export async function setWebsiteAssetAssignment(params: {
   assetKey: string;
-  bankPhotoId: string;
-  updatedBy?: string | null;
+  imageUrl: string;
 }) {
-  const { error } = await (supabase as any).from("website_asset_assignments").upsert(
+  const { error } = await supabase.from("category_images").upsert(
     {
-      asset_key: params.assetKey,
-      bank_photo_id: params.bankPhotoId,
-      updated_by: params.updatedBy ?? null,
+      category_key: params.assetKey,
+      gender: WEBSITE_ASSET_GENDER,
+      image_url: params.imageUrl,
     },
-    { onConflict: "asset_key" },
+    { onConflict: "category_key,gender" },
   );
 
   if (error) {

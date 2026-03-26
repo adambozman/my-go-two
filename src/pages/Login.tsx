@@ -13,6 +13,9 @@ import AppleSignInButton from "@/components/AppleSignInButton";
 
 const DEV_EMAILS = ["adam.bozman@gmail.com"];
 
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Something went wrong";
+
 const Login = () => {
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
@@ -72,8 +75,8 @@ const Login = () => {
         await signIn(email, password);
         await navigateAfterLogin();
       }
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } catch (error: unknown) {
+      toast({ title: "Error", description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setLoading(false);
     }

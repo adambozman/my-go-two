@@ -46,6 +46,9 @@ const normalizeOptionalDate = (value: string | string[] | undefined) => {
   return /^\d{4}-\d{2}-\d{2}$/.test(trimmed) ? trimmed : null;
 };
 
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Something went wrong";
+
 const Onboarding = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -144,7 +147,9 @@ const Onboarding = () => {
         onboarding_complete: true,
         updated_at: new Date().toISOString(),
       });
-    } catch {}
+    } catch (error) {
+      console.error("Onboarding skip save failed:", error);
+    }
 
     navigate("/dashboard");
   };
@@ -207,9 +212,9 @@ const Onboarding = () => {
       await Promise.race([personalizationPromise, timeoutPromise]);
       await refetchPersonalization();
       setPhase("complete");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Onboarding save error:", error);
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: "Error", description: getErrorMessage(error), variant: "destructive" });
       setPhase("profile");
     }
   };

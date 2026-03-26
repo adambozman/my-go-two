@@ -94,6 +94,9 @@ const normalizeBankGender = (value?: string) => {
   return "non-binary";
 };
 
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "I couldn't reach the style chat right now.";
+
 const getStyleChatIntro = (personaSummary?: string | null) =>
   personaSummary ||
   "Ask me what your style looks like so far, why I'm asking certain questions, or what kinds of recommendations I'm building toward.";
@@ -268,10 +271,11 @@ const Questionnaires = () => {
           content: data?.reply || "I have a rough read on your vibe already—answer a few more questions and I can get sharper.",
         },
       ]);
-    } catch (error: any) {
-      const messageText = error?.message?.includes("429")
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const messageText = message.includes("429")
         ? "The style chat is busy right now. Try again in a moment."
-        : error?.message?.includes("402")
+        : message.includes("402")
           ? "AI credits are unavailable right now. Please try again later."
           : "I couldn't reach the style chat right now.";
       toast.error(messageText);

@@ -9,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Something went wrong";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -36,8 +38,8 @@ const ForgotPassword = () => {
     try {
       await resetPassword(email);
       setSent(true);
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } catch (error: unknown) {
+      toast({ title: "Error", description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -59,8 +61,8 @@ const ForgotPassword = () => {
       if (error) throw error;
       toast({ title: "Success", description: "Password updated successfully!" });
       navigate("/dashboard");
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } catch (error: unknown) {
+      toast({ title: "Error", description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setLoading(false);
     }

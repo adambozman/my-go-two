@@ -4,6 +4,12 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
+  makeStorageRef,
+  parseStorageRef,
+  resolveStorageUrl,
+  toStorageRefIfPossible,
+} from "@/lib/storageRefs";
+import {
   getWebsiteAssetAssignments,
   setWebsiteAssetAssignment,
 } from "@/lib/websiteAssetAssignments";
@@ -13,6 +19,7 @@ type BankPhoto = {
   id: string;
   image_url: string;
   filename: string | null;
+  display_url: string;
 };
 
 function stripImageKey(id: string) {
@@ -48,7 +55,7 @@ export default function MyGoTwoStripGalleryAsset() {
 
       const nextOverrides: Record<string, string> = {};
       for (const assignment of assignments) {
-        nextOverrides[assignment.assetKey] = assignment.imageUrl;
+        nextOverrides[assignment.assetKey] = await resolveStorageUrl(assignment.imageUrl);
       }
 
       setImageOverrides(nextOverrides);
@@ -72,7 +79,20 @@ export default function MyGoTwoStripGalleryAsset() {
         throw error;
       }
 
-      setBankPhotos(data ?? []);
+      const rows = (data ?? []) as Array<{
+        id: string;
+        image_url: string;
+        filename: string | null;
+      }>;
+
+      const resolvedRows = await Promise.all(
+        rows.map(async (photo) => ({
+          ...photo,
+          display_url: await resolveStorageUrl(photo.image_url),
+        })),
+      );
+
+      setBankPhotos(resolvedRows);
     } catch (error) {
       console.warn("category bank load failed", error);
       setBankPhotos([]);
@@ -102,9 +122,31 @@ export default function MyGoTwoStripGalleryAsset() {
 
       const assetKey = stripImageKey(selectedStripId);
       const previousImageUrl = imageOverrides[assetKey];
+      const sourceRef = parseStorageRef(toStorageRefIfPossible(photo.image_url));
+      const sourceUrl = await resolveStorageUrl(photo.image_url, 3600);
+
+      if (!sourceUrl) return;
+
+      const response = await fetch(sourceUrl);
+      const blob = await response.blob();
+
+      const sourceExt = sourceRef?.path.split(".").pop() || photo.filename?.split(".").pop() || "jpg";
+      const targetPath = `${assetKey}.${sourceExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("images-mygotwo-strip")
+        .upload(targetPath, blob, { contentType: blob.type || "image/jpeg", upsert: true });
+
+      if (uploadError) {
+        console.warn("strip bucket upload failed", uploadError);
+        return;
+      }
+
+      const targetRef = makeStorageRef("images-mygotwo-strip", targetPath);
+      const targetUrl = await resolveStorageUrl(targetRef, 3600);
       const nextOverrides = {
         ...imageOverrides,
-        [assetKey]: photo.image_url,
+        [assetKey]: targetUrl,
       };
 
       setImageOverrides(nextOverrides);
@@ -112,8 +154,7 @@ export default function MyGoTwoStripGalleryAsset() {
       try {
         await setWebsiteAssetAssignment({
           assetKey,
-          bankPhotoId: photo.id,
-          updatedBy: user.id,
+          imageUrl: targetRef,
         });
         setSelectedStripId(null);
       } catch (error) {
@@ -285,7 +326,7 @@ export default function MyGoTwoStripGalleryAsset() {
                   className="overflow-hidden rounded-[18px] border border-[rgba(255,255,255,0.58)] bg-white/60 text-left shadow-[0_10px_24px_rgba(41,32,24,0.1)] transition-transform duration-200 hover:scale-[1.02]"
                 >
                   <div className="aspect-[4/5] bg-[#e8dfd2]">
-                    <img src={photo.image_url} alt={photo.filename ?? photo.id} className="h-full w-full object-cover" />
+                    <img src={photo.display_url} alt={photo.filename ?? photo.id} className="h-full w-full object-cover" />
                   </div>
                   <div className="px-2.5 py-2">
                     <p className="truncate text-[11px] font-medium text-[#2c2925]">

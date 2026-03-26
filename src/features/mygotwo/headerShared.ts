@@ -103,7 +103,7 @@ export function useMyGoTwoHeaderState(channelName: string) {
     const path = `${user.id}/avatar.${ext}`;
 
     const { error: uploadError } = await supabase.storage
-      .from("avatars")
+      .from("avatars-1")
       .upload(path, file, { upsert: true });
 
     if (uploadError) {
@@ -111,7 +111,7 @@ export function useMyGoTwoHeaderState(channelName: string) {
       return;
     }
 
-    const storageRef = makeStorageRef("avatars", path);
+    const storageRef = makeStorageRef("avatars-1", path);
     const { error: updateError } = await supabase
       .from("profiles")
       .update({ avatar_url: storageRef })
@@ -128,9 +128,9 @@ export function useMyGoTwoHeaderState(channelName: string) {
   const handleRemovePhoto = async () => {
     if (!user) return;
 
-    const { data: files } = await supabase.storage.from("avatars").list(user.id);
+    const { data: files } = await supabase.storage.from("avatars-1").list(user.id);
     if (files?.length) {
-      await supabase.storage.from("avatars").remove(files.map((file) => `${user.id}/${file.name}`));
+      await supabase.storage.from("avatars-1").remove(files.map((file) => `${user.id}/${file.name}`));
     }
 
     await supabase.from("profiles").update({ avatar_url: null }).eq("user_id", user.id);
