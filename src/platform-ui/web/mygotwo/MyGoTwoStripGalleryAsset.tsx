@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
-import { resolveStorageUrls } from "@/lib/storageRefs";
+import { resolveStorageUrl, resolveStorageUrls } from "@/lib/storageRefs";
 import {
   MYGOTWO_COLLAPSE_IMAGES,
   MYGOTWO_COLLAPSE_SLOT_TARGETS,
@@ -25,6 +25,11 @@ const SLOT_KEYS = [
   ...MYGOTWO_STRIP_SLOT_TARGETS.map((target) => target.key),
   ...MYGOTWO_COLLAPSE_SLOT_TARGETS.map((target) => target.key),
 ];
+
+type OverrideChangedDetail = {
+  imageKey?: string;
+  url?: string | null;
+};
 
 type StripCellProps = {
   strip: StripPresentation;
@@ -164,6 +169,31 @@ export default function MyGoTwoStripGalleryAsset() {
   const collapseTimerRef = useRef<number | null>(null);
   const rotateTimerRef = useRef<number | null>(null);
   const assignmentSignatureRef = useRef("");
+  const stripImagesRef = useRef(stripImages);
+  const collapseImagesRef = useRef(collapseImages);
+
+  const commitAssignedImages = useCallback(
+    (
+      nextStripImages: typeof stripImages,
+      nextCollapseImages: typeof collapseImages,
+    ) => {
+      const nextSignature = JSON.stringify({
+        stripImages: nextStripImages.map((strip) => [strip.id, strip.image]),
+        collapseImages: nextCollapseImages.map((image) => [image.id, image.image]),
+      });
+
+      if (assignmentSignatureRef.current === nextSignature) {
+        return;
+      }
+
+      assignmentSignatureRef.current = nextSignature;
+      stripImagesRef.current = nextStripImages;
+      collapseImagesRef.current = nextCollapseImages;
+      setStripImages(nextStripImages);
+      setCollapseImages(nextCollapseImages);
+    },
+    [],
+  );
 
   const loadAssignedImages = useCallback(async () => {
     const { data, error } = await supabase
@@ -199,19 +229,8 @@ export default function MyGoTwoStripGalleryAsset() {
       image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || "",
     })).filter((image) => Boolean(image.image));
 
-    const nextSignature = JSON.stringify({
-      stripImages: nextStripImages.map((strip) => [strip.id, strip.image]),
-      collapseImages: assignedCollapseImages.map((image) => [image.id, image.image]),
-    });
-
-    if (assignmentSignatureRef.current === nextSignature) {
-      return;
-    }
-
-    assignmentSignatureRef.current = nextSignature;
-    setStripImages(nextStripImages);
-    setCollapseImages(assignedCollapseImages);
-  }, []);
+    commitAssignedImages(nextStripImages, assignedCollapseImages);
+  }, [commitAssignedImages]);
 
   const strips = useMemo<StripPresentation[]>(() => {
     const panoramaIds = stripImages.filter((strip) => !strip.label).map((strip) => strip.id);
@@ -240,15 +259,60 @@ export default function MyGoTwoStripGalleryAsset() {
       : "";
 
   useEffect(() => {
+    stripImagesRef.current = stripImages;
+  }, [stripImages]);
+
+  useEffect(() => {
+    collapseImagesRef.current = collapseImages;
+  }, [collapseImages]);
+
+  useEffect(() => {
     void loadAssignedImages();
 
-    const handler = () => {
-      void loadAssignedImages();
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<OverrideChangedDetail>).detail;
+      const imageKey = detail?.imageKey ?? "";
+
+      if (!imageKey || !SLOT_KEYS.includes(imageKey)) {
+        void loadAssignedImages();
+        return;
+      }
+
+      void (async () => {
+        const resolvedUrl = detail?.url ? await resolveStorageUrl(detail.url, 3600) : "";
+
+        if (imageKey.startsWith("mygotwo-strip-")) {
+          const stripId = imageKey.slice("mygotwo-strip-".length);
+          const nextStripImages = stripImagesRef.current.map((strip) =>
+            strip.id === stripId ? { ...strip, image: resolvedUrl } : strip,
+          );
+          commitAssignedImages(nextStripImages, collapseImagesRef.current);
+          return;
+        }
+
+        if (imageKey.startsWith("mygotwo-collapse-")) {
+          const collapseId = `collapse-${imageKey.slice("mygotwo-collapse-".length)}`;
+          const nextCollapseImages = resolvedUrl
+            ? MYGOTWO_COLLAPSE_IMAGES.map((image) => {
+                if (image.id === collapseId) {
+                  return { ...image, image: resolvedUrl };
+                }
+
+                const existing = collapseImagesRef.current.find((current) => current.id === image.id);
+                return existing ?? { ...image, image: "" };
+              }).filter((image) => Boolean(image.image))
+            : collapseImagesRef.current.filter((image) => image.id !== collapseId);
+          commitAssignedImages(stripImagesRef.current, nextCollapseImages);
+          return;
+        }
+
+        void loadAssignedImages();
+      })();
     };
 
     window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
     return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
-  }, [loadAssignedImages]);
+  }, [commitAssignedImages, loadAssignedImages]);
 
   useEffect(() => {
     return () => {
