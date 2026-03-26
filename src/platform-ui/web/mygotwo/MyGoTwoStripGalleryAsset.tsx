@@ -301,10 +301,6 @@ export default function MyGoTwoStripGalleryAsset() {
             const resolvedOverrideUrl = imageOverrides[imageKey];
             const panoramaIndex = panoramaStripIds.indexOf(strip.id);
             const isPanoramaStrip = panoramaStripIdSet.has(strip.id);
-            const panoramaPosition =
-              panoramaIndex >= 0 && panoramaStripIds.length > 1
-                ? `${(panoramaIndex / (panoramaStripIds.length - 1)) * 100}%`
-                : "50%";
             const imageUrl =
               previewPanoramaUrl && isPanoramaStrip
                 ? previewPanoramaUrl
@@ -325,7 +321,22 @@ export default function MyGoTwoStripGalleryAsset() {
                   transform: isHovered ? "translateY(-2px)" : "translateY(0)",
                 }}
               >
-                {imageUrl ? (
+                {previewPanoramaUrl && isPanoramaStrip ? (
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                    style={{
+                      backgroundImage: `url("${previewPanoramaUrl}")`,
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: `${panoramaStripIds.length * 100}% 100%`,
+                      backgroundPosition:
+                        panoramaIndex >= 0 && panoramaStripIds.length > 1
+                          ? `${(panoramaIndex / (panoramaStripIds.length - 1)) * 100}% center`
+                          : "50% center",
+                      transform: isHovered ? "scale(1.03)" : "scale(1.02)",
+                    }}
+                  />
+                ) : imageUrl ? (
                   <img
                     aria-hidden="true"
                     alt=""
@@ -335,18 +346,8 @@ export default function MyGoTwoStripGalleryAsset() {
                     fetchPriority={isHovered ? "high" : "auto"}
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     style={{
-                      objectPosition:
-                        previewPanoramaUrl && isPanoramaStrip
-                          ? `${panoramaPosition} center`
-                          : `${strip.align ?? "50%"} center`,
-                      transform:
-                        previewPanoramaUrl && isPanoramaStrip
-                          ? isHovered
-                            ? "scale(1.03)"
-                            : "scale(1.02)"
-                          : isHovered
-                            ? "scale(1.015)"
-                            : "scale(1)",
+                      objectPosition: `${strip.align ?? "50%"} center`,
+                      transform: isHovered ? "scale(1.015)" : "scale(1)",
                     }}
                   />
                 ) : null}
