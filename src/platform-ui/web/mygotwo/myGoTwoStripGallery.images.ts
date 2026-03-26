@@ -119,10 +119,4 @@ export const MYGOTWO_STRIP_GALLERY_IMAGES: MyGoTwoStripGalleryImage[] = [
     align: "44%",
     label: "Travel",
   },
-  {
-    id: "18",
-    image:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
-    align: "18%",
-  },
 ];

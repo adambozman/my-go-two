@@ -223,8 +223,8 @@ export default function MyGoTwoStripGalleryAsset() {
                 className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                 style={{
                   flexBasis: 0,
-                  flexGrow: isHovered ? 3.6 : hoveredId ? 0.52 : 1,
-                  minWidth: isHovered ? "clamp(56px, 10vw, 88px)" : "clamp(10px, 2.1vw, 18px)",
+                  flexGrow: isHovered ? 3.35 : hoveredId ? 0.58 : 1,
+                  minWidth: isHovered ? "clamp(60px, 10.5vw, 94px)" : "clamp(12px, 2.4vw, 22px)",
                   backgroundImage: `url(${imageUrl})`,
                   backgroundSize: "cover",
                   backgroundPosition: `${strip.align ?? "50%"} center`,
