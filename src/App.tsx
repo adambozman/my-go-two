@@ -29,7 +29,6 @@ import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import PhotoGallery from "./pages/PhotoGallery";
 import Search from "./pages/Search";
-import CategorySync from "./pages/admin/CategorySync";
 import SponsoredAdmin from "./pages/admin/SponsoredAdmin";
 
 import CarouselTest from "./pages/CarouselTest";
@@ -78,7 +77,6 @@ const App = () => {
                 <Route path="public-feed" element={<PublicFeed />} />
                 <Route path="connection-feed" element={<ConnectionFeed />} />
                 <Route path="connections/:connectionId" element={<ConnectionPage />} />
-                <Route path="data-sync" element={<CategorySync />} />
                 <Route path="sponsored" element={<SponsoredAdmin />} />
               </Route>
               <Route path="*" element={<NotFound />} />

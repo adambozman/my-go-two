@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import { createMyGoTwoEntry, updateMyGoTwoEntry } from "@/features/mygotwo/myGoTwoData";
 import type { CardEntry } from "@/features/mygotwo/types";
-import { useMyGoTwoImageField } from "@/features/mygotwo/useMyGoTwoImageField";
 import type { SubcategoryGroup, SubtypeItem } from "@/data/templateSubtypes";
 import { useToast } from "@/hooks/use-toast";
 
@@ -111,18 +110,11 @@ export default function MyGoTwoProductCard({
   const [fieldValues, setFieldValues] = useState<Record<string, string>>(
     buildInitialFieldValues(fields, activeEntry),
   );
-  const [imageUrl, setImageUrl] = useState(activeEntry?.image_url || "");
   const [saving, setSaving] = useState(false);
-
-  const { fileInputRef, resolvedImageUrl, uploadingImage, handleImageUpload } = useMyGoTwoImageField(
-    imageUrl,
-    setImageUrl,
-  );
 
   useEffect(() => {
     setEntryName(activeEntry?.entry_name || product.name);
     setFieldValues(buildInitialFieldValues(fields, activeEntry));
-    setImageUrl(activeEntry?.image_url || "");
   }, [activeEntry, fields, product.name]);
 
   const cardEyebrow = useMemo(
@@ -141,7 +133,6 @@ export default function MyGoTwoProductCard({
           entryId: activeEntry.id,
           entryName,
           fieldValues,
-          imageUrl: imageUrl || null,
         });
       } else {
         const createdEntry = await createMyGoTwoEntry({
@@ -150,7 +141,6 @@ export default function MyGoTwoProductCard({
           groupName: subcategory.name,
           entryName,
           fieldValues,
-          imageUrl: imageUrl || null,
         });
         savedEntryId = createdEntry.id;
       }
@@ -213,39 +203,11 @@ export default function MyGoTwoProductCard({
             borderColor: "rgba(177, 169, 157, 0.46)",
           }}
         >
-          {resolvedImageUrl ? (
-            <img
-              src={resolvedImageUrl}
-              alt={entryName}
-              className="h-full w-full object-cover"
-            />
-          ) : null}
-          {interactive ? (
-            <>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute inset-0 flex items-center justify-center text-[#857c70] transition-colors duration-200 hover:text-[#5e574f] focus:outline-none"
-              >
-                <span className={compact ? "rounded-full border px-2.5 py-1.5 text-[10px] tracking-[0.12em] uppercase" : "rounded-full border px-4 py-2 text-sm tracking-[0.16em] uppercase"}>
-                  {uploadingImage ? "Uploading" : "Photo"}
-                </span>
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageUpload}
-              />
-            </>
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-[#857c70]">
-              <span className={compact ? "rounded-full border px-2.5 py-1.5 text-[10px] tracking-[0.12em] uppercase" : "rounded-full border px-4 py-2 text-sm tracking-[0.16em] uppercase"}>
-                Photo
-              </span>
-            </div>
-          )}
+          <div className="absolute inset-0 flex items-center justify-center text-[#857c70]">
+            <span className={compact ? "rounded-full border px-2.5 py-1.5 text-[10px] tracking-[0.12em] uppercase" : "rounded-full border px-4 py-2 text-sm tracking-[0.16em] uppercase"}>
+              Photo
+            </span>
+          </div>
         </div>
       </div>
 
@@ -301,7 +263,7 @@ export default function MyGoTwoProductCard({
         <button
           type="button"
           onClick={handleSave}
-          disabled={saving || uploadingImage}
+          disabled={saving}
           className={compact ? "mt-3 h-10 w-full rounded-full border-0 text-[13px] font-semibold text-white transition-opacity duration-200 disabled:cursor-not-allowed disabled:opacity-70" : "mt-8 h-14 w-full rounded-full border-0 text-base font-semibold text-white transition-opacity duration-200 disabled:cursor-not-allowed disabled:opacity-70"}
           style={{
             background: "linear-gradient(180deg, #dd5d38 0%, #d65334 100%)",
