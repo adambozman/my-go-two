@@ -70,6 +70,8 @@ export default function MyGoTwoStripGalleryAsset() {
   const [assignedAssetKeys, setAssignedAssetKeys] = useState<Set<string>>(() => new Set());
   const [previewPanoramaUrl, setPreviewPanoramaUrl] = useState<string | null>(null);
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
+  const [wallReady, setWallReady] = useState(false);
+  const [wallVisible, setWallVisible] = useState(false);
   const [bankPage, setBankPage] = useState(0);
   const hoverTimerRef = useRef<number | null>(null);
   const collapseTimerRef = useRef<number | null>(null);
@@ -85,16 +87,19 @@ export default function MyGoTwoStripGalleryAsset() {
     if (!user) {
       setImageOverrides({});
       setAssignedAssetKeys(new Set());
+      setWallReady(true);
+      setWallVisible(true);
       return;
     }
 
     setLoadingOverrides(true);
+    setWallReady(false);
+    setWallVisible(false);
     try {
       const assignments = await getWebsiteAssetAssignments(
         strips.map((strip) => stripImageKey(strip.id)),
       );
-
-      setAssignedAssetKeys(new Set(assignments.map((assignment) => assignment.assetKey)));
+      const nextAssignedAssetKeys = new Set(assignments.map((assignment) => assignment.assetKey));
 
       const resolvedUrls = await resolveStorageUrls(
         assignments.map((assignment) => assignment.imageUrl),
@@ -123,11 +128,20 @@ export default function MyGoTwoStripGalleryAsset() {
         return accumulator;
       }, {});
 
+      setAssignedAssetKeys(nextAssignedAssetKeys);
       setImageOverrides(nextOverrides);
+      setWallReady(true);
+      window.requestAnimationFrame(() => {
+        setWallVisible(true);
+      });
     } catch (error) {
       console.warn("website asset assignments load failed", error);
       setImageOverrides({});
       setAssignedAssetKeys(new Set());
+      setWallReady(true);
+      window.requestAnimationFrame(() => {
+        setWallVisible(true);
+      });
     } finally {
       setLoadingOverrides(false);
     }
@@ -327,8 +341,12 @@ export default function MyGoTwoStripGalleryAsset() {
         }}
       >
         <div
-          className="flex h-full w-full items-stretch gap-[3px] overflow-hidden sm:gap-[4px] md:gap-[6px]"
+          className="relative flex h-full w-full items-stretch gap-[3px] overflow-hidden sm:gap-[4px] md:gap-[6px]"
           onMouseLeave={() => queueHoveredId(null)}
+          style={{
+            opacity: wallVisible ? 1 : 0,
+            transition: "opacity 320ms ease",
+          }}
         >
           {strips.map((strip) => {
             const isHovered = strip.id === hoveredId;
@@ -341,10 +359,12 @@ export default function MyGoTwoStripGalleryAsset() {
             const lockPanoramaStripHover = Boolean(previewPanoramaUrl && isPanoramaStrip);
             const collapseCategoryStrip = Boolean(previewCollapsed && previewPanoramaUrl && strip.label && !hoveredId);
             const imageUrl =
-              previewPanoramaUrl && isPanoramaStrip
+              !wallReady
+                ? ""
+                : previewPanoramaUrl && isPanoramaStrip
                 ? previewPanoramaUrl
                 : resolvedOverrideUrl || (hasSavedOverride ? "" : strip.image);
-            const showPlaceholder = hasSavedOverride && !resolvedOverrideUrl;
+            const showPlaceholder = wallReady && hasSavedOverride && !resolvedOverrideUrl;
 
             return (
               <div
@@ -417,7 +437,7 @@ export default function MyGoTwoStripGalleryAsset() {
                     opacity: showPlaceholder ? 1 : isHovered ? 0.48 : 0.7,
                   }}
                 />
-                {isDev ? (
+                {isDev && wallReady ? (
                   <button
                     type="button"
                     aria-label={`Edit strip ${strip.id}`}
@@ -465,6 +485,15 @@ export default function MyGoTwoStripGalleryAsset() {
             );
           })}
         </div>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 transition-opacity duration-300 ease-out"
+          style={{
+            opacity: wallReady ? 0 : 1,
+            background:
+              "linear-gradient(180deg, rgba(247,244,239,0.98) 0%, rgba(241,235,228,0.97) 42%, rgba(233,225,215,0.95) 100%)",
+          }}
+        />
       </div>
       {isDev && selectedStripId ? (
         <div className="absolute bottom-6 right-6 z-30 w-[min(560px,calc(100vw-2rem))] rounded-[24px] border border-[rgba(255,255,255,0.58)] bg-[rgba(248,242,233,0.94)] p-4 shadow-[0_24px_60px_rgba(41,32,24,0.2)] backdrop-blur-[18px]">
