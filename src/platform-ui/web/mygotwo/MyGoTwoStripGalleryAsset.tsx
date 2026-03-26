@@ -62,18 +62,30 @@ export default function MyGoTwoStripGalleryAsset() {
 
   const loadBank = useCallback(async () => {
     setLoadingBank(true);
-    const { data } = await supabase
-      .from("category_bank_photos")
-      .select("id, image_url, filename")
-      .order("created_at", { ascending: false });
-    setBankPhotos(data ?? []);
-    setLoadingBank(false);
+    try {
+      const { data, error } = await supabase
+        .from("category_bank_photos")
+        .select("id, image_url, filename")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      setBankPhotos(data ?? []);
+    } catch (error) {
+      console.warn("category bank load failed", error);
+      setBankPhotos([]);
+    } finally {
+      setLoadingBank(false);
+    }
   }, []);
 
   useEffect(() => {
-    if (!isDev) return;
     void loadOverrides();
-    void loadBank();
+    if (isDev) {
+      void loadBank();
+    }
   }, [isDev, loadBank, loadOverrides]);
 
   useEffect(() => {
@@ -89,6 +101,7 @@ export default function MyGoTwoStripGalleryAsset() {
       if (!selectedStripId || !user) return;
 
       const assetKey = stripImageKey(selectedStripId);
+      const previousImageUrl = imageOverrides[assetKey];
       const nextOverrides = {
         ...imageOverrides,
         [assetKey]: photo.image_url,
@@ -104,6 +117,13 @@ export default function MyGoTwoStripGalleryAsset() {
         });
         setSelectedStripId(null);
       } catch (error) {
+        const rollbackOverrides = { ...imageOverrides };
+        if (previousImageUrl) {
+          rollbackOverrides[assetKey] = previousImageUrl;
+        } else {
+          delete rollbackOverrides[assetKey];
+        }
+        setImageOverrides(rollbackOverrides);
         console.warn("website asset assignment save failed", error);
       }
     },
@@ -127,6 +147,10 @@ export default function MyGoTwoStripGalleryAsset() {
     (bankPage + 1) * BANK_PAGE_SIZE,
   );
 
+  useEffect(() => {
+    setBankPage((current) => Math.min(current, totalBankPages - 1));
+  }, [totalBankPages]);
+
   return (
     <section
       aria-label="Strip gallery asset"
@@ -147,6 +171,7 @@ export default function MyGoTwoStripGalleryAsset() {
         >
           {strips.map((strip) => {
             const isHovered = strip.id === hoveredId;
+            const isSelected = strip.id === selectedStripId;
             const imageKey = stripImageKey(strip.id);
             const imageUrl = imageOverrides[imageKey] || strip.image;
 
@@ -176,7 +201,14 @@ export default function MyGoTwoStripGalleryAsset() {
                       setSelectedStripId(strip.id);
                       setBankPage(0);
                     }}
-                    className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full border border-white/60 bg-[rgba(248,242,233,0.86)] text-[#2c2925] shadow-[0_6px_18px_rgba(41,32,24,0.14)] backdrop-blur-[12px]"
+                    className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full border shadow-[0_6px_18px_rgba(41,32,24,0.14)] backdrop-blur-[12px]"
+                    style={{
+                      borderColor: isSelected ? "rgba(226,89,52,0.72)" : "rgba(255,255,255,0.6)",
+                      background: isSelected
+                        ? "rgba(226,89,52,0.92)"
+                        : "rgba(248,242,233,0.86)",
+                      color: isSelected ? "#fff7f1" : "#2c2925",
+                    }}
                   >
                     <ImageIcon className="h-4 w-4" />
                   </button>

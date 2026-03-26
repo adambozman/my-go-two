@@ -18,8 +18,12 @@ export async function getWebsiteAssetAssignments(assetKeys: string[]) {
     throw assignmentError;
   }
 
-  const bankPhotoIds = Array.from(
-    new Set((assignmentRows ?? []).map((row) => row.bank_photo_id).filter(Boolean)),
+  const bankPhotoIds: string[] = Array.from(
+    new Set(
+      (assignmentRows ?? [])
+        .map((row) => row.bank_photo_id)
+        .filter((value): value is string => typeof value === "string" && value.length > 0),
+    ),
   );
 
   if (bankPhotoIds.length === 0) return [] as WebsiteAssetAssignment[];
