@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, QrCode, Send, Copy, Check, UserPlus, Search, Loader2, AtSign, Phone } from "lucide-react";
+import { X, Mail, QrCode, Send, Copy, Check, UserPlus, Search, Loader2, AtSign, Phone, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -12,6 +12,7 @@ interface AddConnectionModalProps {
 }
 
 type Tab = "search" | "invite" | "qr";
+type ShareChannel = "link" | "qr";
 
 interface SearchResult {
   user_id: string;
@@ -31,8 +32,11 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const [invitePhone, setInvitePhone] = useState("");
   const [inviteUsername, setInviteUsername] = useState("");
   const [sending, setSending] = useState(false);
+  const [sharingInvite, setSharingInvite] = useState(false);
   const [copied, setCopied] = useState(false);
   const [shareToken, setShareToken] = useState("");
+  const [shareChannel, setShareChannel] = useState<ShareChannel | null>(null);
+  const [shareMessage, setShareMessage] = useState("");
   const [loadingShareToken, setLoadingShareToken] = useState(false);
   const [shareTokenError, setShareTokenError] = useState("");
   const [seedingDemoProfiles, setSeedingDemoProfiles] = useState(false);
@@ -101,61 +105,91 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     setInviteUsername("");
     setCopied(false);
     setShareToken("");
+    setShareChannel(null);
+    setShareMessage("");
     setShareTokenError("");
   }, [open]);
 
-  useEffect(() => {
-    if (!open || !user || tab !== "qr" || shareToken || loadingShareToken) return;
+  const ensureSharePayload = useCallback(async (channel: ShareChannel) => {
+    if (shareToken && shareChannel === channel) {
+      return {
+        token: shareToken,
+        inviteLink,
+        shareMessage,
+        channel,
+      };
+    }
 
-    const loadShareToken = async () => {
-      setLoadingShareToken(true);
-      setShareTokenError("");
-      try {
-        const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
-          body: { action: "create-connection-share-token", channel: "qr", days_valid: 30 },
-        });
+    setLoadingShareToken(true);
+    setShareTokenError("");
+    try {
+      const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
+        body: { action: "prepare-connection-share", channel, days_valid: 30 },
+      });
 
-        if (error) {
-          throw error;
-        }
-
-        const tokenValue = data?.share_token?.token;
-        if (tokenValue) {
-          setShareToken(tokenValue);
-        }
-      } catch (error: any) {
-        setShareTokenError(error?.message || "Could not create a QR invite link right now.");
-      } finally {
-        setLoadingShareToken(false);
+      if (error) {
+        throw error;
       }
-    };
 
-    loadShareToken();
-  }, [loadingShareToken, open, shareToken, tab, user]);
+      const tokenValue = data?.share_token?.token;
+      const nextInviteLink = data?.invite_link;
+      if (!tokenValue || !nextInviteLink) {
+        throw new Error("Could not create an invite link.");
+      }
+
+      setShareToken(tokenValue);
+      setShareChannel(channel);
+      setShareMessage(data?.share_message || "");
+
+      return {
+        token: tokenValue,
+        inviteLink: nextInviteLink as string,
+        shareMessage: (data?.share_message as string) || "",
+        channel,
+      };
+    } catch (error: any) {
+      const message = error?.message || "Could not create an invite link right now.";
+      setShareTokenError(message);
+      throw new Error(message);
+    } finally {
+      setLoadingShareToken(false);
+    }
+  }, [inviteLink, shareChannel, shareMessage, shareToken]);
+
+  useEffect(() => {
+    if (!open || !user || tab !== "qr" || loadingShareToken || (shareToken && shareChannel === "qr")) return;
+
+    ensureSharePayload("qr").catch(() => undefined);
+  }, [ensureSharePayload, loadingShareToken, open, shareChannel, shareToken, tab, user]);
+
+  const trackInviteEvent = useCallback(async (
+    eventType: "share_clicked",
+    token: string,
+    channel: ShareChannel,
+    metadata: Record<string, unknown>,
+  ) => {
+    try {
+      await supabase.functions.invoke("searchforaddprofile", {
+        body: {
+          action: "track-connection-invite-event",
+          event_type: eventType,
+          token,
+          channel,
+          metadata,
+        },
+      });
+    } catch {
+      // Growth tracking should never block the user path.
+    }
+  }, []);
 
   const handleSendInvite = async () => {
     if (!user || (!email.trim() && !invitePhone.trim() && !inviteUsername.trim())) return;
 
     setSending(true);
     try {
-      let generatedInviteLink = inviteLink;
-      if (!generatedInviteLink) {
-        const { data: tokenData, error: tokenError } = await supabase.functions.invoke("searchforaddprofile", {
-          body: { action: "create-connection-share-token", channel: "link", days_valid: 30 },
-        });
-
-        if (tokenError) {
-          throw tokenError;
-        }
-
-        const tokenValue = tokenData?.share_token?.token;
-        if (!tokenValue) {
-          throw new Error("Could not create an invite link.");
-        }
-
-        generatedInviteLink = `${window.location.origin}/connect?token=${tokenValue}`;
-        setShareToken(tokenValue);
-      }
+      const preparedShare = await ensureSharePayload("link");
+      const generatedInviteLink = preparedShare.inviteLink;
 
       const normalizedEmail = email.trim().toLowerCase();
       const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
@@ -181,6 +215,11 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       } else {
         await navigator.clipboard.writeText(generatedInviteLink);
         setCopied(true);
+        await trackInviteEvent("share_clicked", preparedShare.token, "link", {
+          surface: "manual_copy",
+          invitee_phone_present: Boolean(invitePhone.trim()),
+          invitee_username_present: Boolean(inviteUsername.trim()),
+        });
         toast.success("Invite link copied. Send it to them directly.");
       }
       onConnectionCreated?.();
@@ -280,14 +319,55 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   };
 
   const handleCopyLink = async () => {
-    if (!inviteLink) return;
+    const channel: ShareChannel = tab === "qr" ? "qr" : "link";
     try {
-      await navigator.clipboard.writeText(inviteLink);
+      const preparedShare = await ensureSharePayload(channel);
+      await navigator.clipboard.writeText(preparedShare.inviteLink);
       setCopied(true);
+      await trackInviteEvent("share_clicked", preparedShare.token, channel, {
+        surface: channel === "qr" ? "qr_copy" : "link_copy",
+      });
       toast.success("Invite link copied!");
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Failed to copy");
+    }
+  };
+
+  const handleNativeShare = async (channel: ShareChannel) => {
+    setSharingInvite(true);
+    try {
+      const preparedShare = await ensureSharePayload(channel);
+      const shareText = preparedShare.shareMessage
+        ? `${preparedShare.shareMessage}\n\n${preparedShare.inviteLink}`
+        : preparedShare.inviteLink;
+
+      if (typeof navigator.share === "function") {
+        await navigator.share({
+          title: "Connect on Go Two",
+          text: shareText,
+          url: preparedShare.inviteLink,
+        });
+
+        await trackInviteEvent("share_clicked", preparedShare.token, channel, {
+          surface: channel === "qr" ? "qr_native_share" : "invite_native_share",
+        });
+        toast.success("Invite sent from your share sheet.");
+      } else {
+        await navigator.clipboard.writeText(preparedShare.inviteLink);
+        setCopied(true);
+        await trackInviteEvent("share_clicked", preparedShare.token, channel, {
+          surface: channel === "qr" ? "qr_share_fallback_copy" : "invite_share_fallback_copy",
+        });
+        toast.success("Invite link copied. Send it anywhere.");
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch (error: any) {
+      if (error?.name !== "AbortError") {
+        toast.error(error?.message || "Could not share invite");
+      }
+    } finally {
+      setSharingInvite(false);
     }
   };
 
@@ -552,6 +632,20 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                     <Send className="w-4 h-4" />
                     {sending ? "Sending..." : "Send Invite Link"}
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleNativeShare("link")}
+                    disabled={sharingInvite || sending}
+                    className="surface-pill w-full flex items-center justify-center gap-2 py-3 rounded-full text-[13px] font-semibold transition-all active:scale-[0.98] disabled:opacity-50"
+                    style={{
+                      color: "var(--swatch-teal)",
+                      fontFamily: "'Jost', sans-serif",
+                    }}
+                  >
+                    {sharingInvite ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />}
+                    {sharingInvite ? "Preparing..." : "Share Invite"}
+                  </button>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -606,6 +700,21 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                       </div>
                     )}
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleNativeShare("qr")}
+                    disabled={loadingShareToken || sharingInvite || Boolean(shareTokenError)}
+                    className="surface-button-primary w-full flex items-center justify-center gap-2 py-3 rounded-full text-[13px] font-semibold transition-all active:scale-[0.98] disabled:opacity-50"
+                    style={{
+                      background: "var(--swatch-teal)",
+                      color: "white",
+                      fontFamily: "'Jost', sans-serif",
+                    }}
+                  >
+                    {sharingInvite ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />}
+                    {sharingInvite ? "Preparing..." : "Share Invite"}
+                  </button>
 
                   <p className="text-[10px] text-center" style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}>
                     Scan this QR code to send a connection invite

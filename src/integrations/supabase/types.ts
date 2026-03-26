@@ -444,6 +444,57 @@ export type Database = {
           },
         ]
       }
+      connection_invite_events: {
+        Row: {
+          channel: string
+          couple_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          invitee_user_id: string | null
+          metadata: Json
+          owner_user_id: string
+          token_id: string | null
+        }
+        Insert: {
+          channel?: string
+          couple_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          invitee_user_id?: string | null
+          metadata?: Json
+          owner_user_id: string
+          token_id?: string | null
+        }
+        Update: {
+          channel?: string
+          couple_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          invitee_user_id?: string | null
+          metadata?: Json
+          owner_user_id?: string
+          token_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connection_invite_events_couple_id_fkey"
+            columns: ["couple_id"]
+            isOneToOne: false
+            referencedRelation: "couples"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "connection_invite_events_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "connection_share_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       connection_recommendations: {
         Row: {
           access_tier: string

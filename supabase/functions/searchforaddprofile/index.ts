@@ -59,6 +59,8 @@ type ShareTokenRow = {
   used_count?: number;
 };
 
+type InviteEventType = "share_clicked" | "invite_accepted";
+
 // deno-lint-ignore no-explicit-any
 type AppSupabaseClient = any;
 
@@ -432,6 +434,86 @@ function normalizeUsername(value: string | null | undefined) {
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
+}
+
+function buildOriginFromRequest(req: Request) {
+  const originHeader = req.headers.get("origin");
+  if (originHeader) return originHeader.replace(/\/+$/, "");
+
+  const refererHeader = req.headers.get("referer");
+  if (refererHeader) {
+    try {
+      return new URL(refererHeader).origin;
+    } catch {
+      // Ignore malformed referer headers.
+    }
+  }
+
+  return "https://mygotwo.com";
+}
+
+function extractTokenFromInviteLink(inviteLink: string) {
+  if (!inviteLink) return "";
+
+  try {
+    const parsed = new URL(inviteLink);
+    return parsed.searchParams.get("token")?.trim() || "";
+  } catch {
+    const match = inviteLink.match(/[?&]token=([^&]+)/i);
+    return match?.[1] ? decodeURIComponent(match[1]) : "";
+  }
+}
+
+function buildConnectionInviteMessage(inviterName: string) {
+  return `${inviterName} invited you to connect on Go Two so they can keep your gifts, sizes, and favorites straight.`;
+}
+
+async function getConnectionShareTokenByToken(
+  supabase: AppSupabaseClient,
+  token: string,
+) {
+  if (!token) return null;
+
+  const { data, error } = await supabase
+    .from("connection_share_tokens")
+    .select("id, owner_user_id, channel")
+    .eq("token", token)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data as Pick<ShareTokenRow, "id" | "owner_user_id" | "channel"> | null;
+}
+
+async function trackConnectionInviteEvent(
+  supabase: AppSupabaseClient,
+  args: {
+    ownerUserId: string;
+    eventType: InviteEventType;
+    channel?: string | null;
+    tokenId?: string | null;
+    coupleId?: string | null;
+    inviteeUserId?: string | null;
+    metadata?: Record<string, unknown>;
+  },
+) {
+  if (!args.ownerUserId || !args.eventType) return;
+
+  const { error } = await supabase.from("connection_invite_events").insert({
+    owner_user_id: args.ownerUserId,
+    invitee_user_id: args.inviteeUserId ?? null,
+    token_id: args.tokenId ?? null,
+    couple_id: args.coupleId ?? null,
+    event_type: args.eventType,
+    channel: args.channel ?? "link",
+    metadata: (args.metadata ?? {}) as Record<string, unknown>,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
 }
 
 async function sendInviteEmail(inviterName: string, inviteeEmail: string, inviteLink: string) {
@@ -1018,6 +1100,30 @@ async function createConnectionShareToken(
   return first as ShareTokenRow;
 }
 
+async function prepareConnectionShare(
+  viewerClient: AppSupabaseClient,
+  adminClient: AppSupabaseClient,
+  requesterId: string,
+  req: Request,
+  channel: string,
+  daysValid: number,
+) {
+  const shareToken = await createConnectionShareToken(
+    viewerClient,
+    channel,
+    daysValid,
+  );
+  const inviterName = await getDisplayName(adminClient, requesterId);
+  const inviteLink = `${buildOriginFromRequest(req)}/connect?token=${shareToken.token}`;
+
+  return {
+    share_token: shareToken,
+    invite_link: inviteLink,
+    inviter_name: inviterName,
+    share_message: buildConnectionInviteMessage(inviterName),
+  };
+}
+
 async function sendConnectionInvite(
   viewerClient: AppSupabaseClient,
   supabase: AppSupabaseClient,
@@ -1040,13 +1146,14 @@ async function sendConnectionInvite(
       "link",
       Number(payload.days_valid ?? 30),
     );
-    const origin = req.headers.get("origin")
-      || req.headers.get("referer")?.replace(/\/+$/, "")
-      || "https://mygotwo.com";
-    inviteLink = `${origin}/connect?token=${shareToken.token}`;
+    inviteLink = `${buildOriginFromRequest(req)}/connect?token=${shareToken.token}`;
   }
 
   const inviterName = await getDisplayName(supabase, requesterId);
+  const tokenValue = extractTokenFromInviteLink(inviteLink);
+  const trackedToken = tokenValue
+    ? await getConnectionShareTokenByToken(supabase, tokenValue)
+    : null;
 
   if (inviteeEmail) {
     await sendInviteEmail(inviterName, inviteeEmail, inviteLink);
@@ -1059,6 +1166,22 @@ async function sendConnectionInvite(
         `${inviterName} wants to connect with you on GoTwo!`,
         "partner",
       );
+    }
+
+    try {
+      await trackConnectionInviteEvent(supabase, {
+        ownerUserId: trackedToken?.owner_user_id ?? requesterId,
+        tokenId: trackedToken?.id ?? null,
+        channel: trackedToken?.channel ?? "email",
+        eventType: "share_clicked",
+        inviteeUserId: inviteeUser?.id ?? null,
+        metadata: {
+          surface: "invite_email",
+          invitee_email: inviteeEmail,
+        },
+      });
+    } catch (trackingError) {
+      console.error("invite share tracking failed", trackingError);
     }
   }
 
@@ -1215,6 +1338,8 @@ async function linkByInviter(
 
 async function linkByToken(
   viewerClient: AppSupabaseClient,
+  adminClient: AppSupabaseClient,
+  inviteeUserId: string,
   rawToken: string,
 ) {
   if (!rawToken) throw new Error("Missing token");
@@ -1224,6 +1349,28 @@ async function linkByToken(
   });
   if (error) throw new Error(error.message);
   const first = Array.isArray(data) ? data[0] as LinkByTokenRow | null : null;
+
+  if (first?.result && !["already_connected", "pending_exists"].includes(first.result)) {
+    const trackedToken = await getConnectionShareTokenByToken(adminClient, rawToken);
+    if (trackedToken?.owner_user_id) {
+      try {
+        await trackConnectionInviteEvent(adminClient, {
+          ownerUserId: trackedToken.owner_user_id,
+          inviteeUserId,
+          tokenId: trackedToken.id,
+          coupleId: first?.couple_id ?? null,
+          channel: trackedToken.channel ?? "link",
+          eventType: "invite_accepted",
+          metadata: {
+            result: first.result,
+          },
+        });
+      } catch (trackingError) {
+        console.error("invite acceptance tracking failed", trackingError);
+      }
+    }
+  }
+
   return {
     success: true,
     status: first?.result ?? "invite_sent",
@@ -1297,6 +1444,42 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ success: true, share_token: shareToken }), { headers: corsHeaders });
     }
 
+    if (actionName === "prepare-connection-share") {
+      const sharePayload = await prepareConnectionShare(
+        viewerClient,
+        adminClient,
+        authData.user.id,
+        req,
+        String(payload?.channel ?? "link"),
+        Number(payload?.days_valid ?? 30),
+      );
+      return new Response(JSON.stringify({ success: true, ...sharePayload }), { headers: corsHeaders });
+    }
+
+    if (actionName === "track-connection-invite-event") {
+      const eventType = String(payload?.event_type ?? "").trim().toLowerCase() as InviteEventType;
+      if (!["share_clicked", "invite_accepted"].includes(eventType)) {
+        throw new Error("Unsupported invite event");
+      }
+
+      const tokenValue = String(payload?.token ?? "").trim();
+      const trackedToken = tokenValue
+        ? await getConnectionShareTokenByToken(adminClient, tokenValue)
+        : null;
+
+      await trackConnectionInviteEvent(adminClient, {
+        ownerUserId: trackedToken?.owner_user_id ?? authData.user.id,
+        tokenId: trackedToken?.id ?? null,
+        channel: String(payload?.channel ?? trackedToken?.channel ?? "link"),
+        eventType,
+        metadata: typeof payload?.metadata === "object" && payload?.metadata !== null
+          ? payload.metadata as Record<string, unknown>
+          : {},
+      });
+
+      return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+    }
+
     if (actionName === "resolve-connection-identity") {
       const targetUserId = String(payload?.target_user_id ?? "").trim();
       const coupleId = String(payload?.couple_id ?? "").trim();
@@ -1332,7 +1515,12 @@ Deno.serve(async (req) => {
     }
 
     if (actionName === "link-by-token") {
-      const result = await linkByToken(viewerClient, String(payload?.token ?? "").trim());
+      const result = await linkByToken(
+        viewerClient,
+        adminClient,
+        authData.user.id,
+        String(payload?.token ?? "").trim(),
+      );
       return new Response(JSON.stringify(result), { headers: corsHeaders });
     }
 
