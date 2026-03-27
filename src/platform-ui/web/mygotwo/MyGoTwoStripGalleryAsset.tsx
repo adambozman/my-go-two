@@ -590,7 +590,7 @@ export default function MyGoTwoStripGalleryAsset() {
           maxWidth: "1480px",
           maxHeight: "min(900px, 100%)",
           minHeight: "clamp(360px, 56vh, 900px)",
-          borderRadius: "32px",
+          borderRadius: "44px",
         }}
       >
         <div
