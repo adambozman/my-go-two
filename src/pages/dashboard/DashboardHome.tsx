@@ -390,24 +390,28 @@ const DashboardHome = () => {
       if (!user) return;
 
       if (cancelled) return;
-      const { data } = await rpc<ConnectionFeedRow[]>("get_connection_feed_preview", {
-        p_limit: 12,
-      });
+      try {
+        const { data } = await rpc<ConnectionFeedRow[]>("get_connection_feed_preview", {
+          p_limit: 12,
+        });
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      const feedRows = (Array.isArray(data) ? data : []) as ConnectionFeedRow[];
+        const feedRows = (Array.isArray(data) ? data : []) as ConnectionFeedRow[];
 
-      const nextItems = feedRows.map((row) => ({
-        id: row.feed_item_id,
-        coupleId: row.couple_id,
-        title: row.connection_label || row.subtitle || "Connection",
-        detail: row.body || row.title || "Shared an update.",
-        meta: formatRelativeDateLabel(row.event_at),
-        accent: row.item_kind === "occasion" ? "var(--swatch-coral)" : "var(--swatch-cedar-grove)",
-      }));
+        const nextItems = feedRows.map((row) => ({
+          id: row.feed_item_id,
+          coupleId: row.couple_id,
+          title: row.connection_label || row.subtitle || "Connection",
+          detail: row.body || row.title || "Shared an update.",
+          meta: formatRelativeDateLabel(row.event_at),
+          accent: row.item_kind === "occasion" ? "var(--swatch-coral)" : "var(--swatch-cedar-grove)",
+        }));
 
-      setRecentActivityItems(nextItems);
+        setRecentActivityItems(nextItems);
+      } catch (err) {
+        console.warn("get_connection_feed_preview not available:", err);
+      }
     };
 
     loadRecentActivity();
