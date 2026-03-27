@@ -258,6 +258,7 @@ export default function MyGoTwoStripGalleryAsset() {
       const rows = data ?? [];
       const rowsWithImages = rows.filter((row) => Boolean(row.image_url));
       const urls = await resolveStorageUrls(rowsWithImages.map((row) => row.image_url));
+      console.log("[StripGallery] resolved URLs:", rowsWithImages.map((r) => r.image_url), "=>", urls);
       const resolvedByKey = new Map<string, string>();
 
       rowsWithImages.forEach((row, index) => {
