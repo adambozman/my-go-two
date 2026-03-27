@@ -37,7 +37,6 @@ type StripCellProps = {
   hoveredCategoryId: string | null;
   previewCollapsed: boolean;
   hoveredId: string | null;
-  activeCategoryId: string | null;
   panoramaBaseUrl: string;
   panoramaNextUrl: string;
   isPanoramaTransitioning: boolean;
@@ -51,7 +50,6 @@ const StripCell = memo(function StripCell({
   hoveredCategoryId,
   previewCollapsed,
   hoveredId,
-  activeCategoryId,
   panoramaBaseUrl,
   panoramaNextUrl,
   isPanoramaTransitioning,
@@ -61,12 +59,9 @@ const StripCell = memo(function StripCell({
 }: StripCellProps) {
   const isHoveredCategory = strip.id === hoveredCategoryId;
   const categoryHoverActive = Boolean(hoveredCategoryId);
-  const isActiveCategory = strip.id === activeCategoryId;
-  const anotherCategoryActive = Boolean(activeCategoryId && !isActiveCategory);
   const collapseCategoryStrip = Boolean(previewCollapsed && strip.label && !hoveredId);
   const showPanorama = strip.isPanoramaStrip;
   const expandPanoramaStrip = previewCollapsed && strip.isPanoramaStrip;
-  const hideForActiveCategory = anotherCategoryActive;
 
   return (
     <div
@@ -76,11 +71,7 @@ const StripCell = memo(function StripCell({
       className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
       style={{
         flexBasis: 0,
-        flexGrow: hideForActiveCategory
-          ? 0.0001
-          : isActiveCategory
-            ? 1
-            : collapseCategoryStrip
+        flexGrow: collapseCategoryStrip
           ? 0.0001
           : expandPanoramaStrip
             ? 1.55
@@ -91,11 +82,7 @@ const StripCell = memo(function StripCell({
                 : categoryHoverActive
                   ? 0.58
                   : 0.82,
-        minWidth: hideForActiveCategory
-          ? "0px"
-          : isActiveCategory
-            ? "100%"
-            : collapseCategoryStrip
+        minWidth: collapseCategoryStrip
           ? "0px"
           : expandPanoramaStrip
             ? "clamp(12px, 2.4vw, 22px)"
@@ -105,20 +92,9 @@ const StripCell = memo(function StripCell({
                 ? "clamp(60px, 10.5vw, 94px)"
                 : "clamp(12px, 2.4vw, 22px)",
         contain: "layout paint style",
-        transform: isActiveCategory
-          ? "translateY(0)"
-          : isHoveredCategory
-            ? "translateY(-2px)"
-            : "translateY(0)",
-        opacity: hideForActiveCategory || collapseCategoryStrip ? 0 : 1,
-        pointerEvents:
-          hideForActiveCategory || collapseCategoryStrip
-            ? "none"
-            : strip.label
-              ? "auto"
-              : activeCategoryId
-                ? "none"
-                : "auto",
+        transform: isHoveredCategory ? "translateY(-2px)" : "translateY(0)",
+        opacity: collapseCategoryStrip ? 0 : 1,
+        pointerEvents: collapseCategoryStrip ? "none" : "auto",
         cursor: strip.label ? "pointer" : "default",
       }}
     >
@@ -551,44 +527,67 @@ export default function MyGoTwoStripGalleryAsset() {
         }}
       >
         <div
-          className="relative flex h-full w-full items-stretch gap-[3px] overflow-hidden sm:gap-[4px] md:gap-[6px]"
-          onMouseLeave={() => {
-            if (!activeCategoryId) {
-              queueHoveredId(null);
-            }
-          }}
+          className="relative h-full w-full overflow-hidden"
           style={{
             opacity: isInitialLoadPending ? 0 : 1,
             transition: "opacity 320ms ease",
           }}
         >
-          {strips.map((strip) => (
-            <StripCell
-              key={strip.id}
-              strip={strip}
-              hoveredCategoryId={hoveredCategoryId}
-              previewCollapsed={previewCollapsed}
-              hoveredId={hoveredId}
-              activeCategoryId={activeCategoryId}
-              panoramaBaseUrl={panoramaBaseUrl}
-              panoramaNextUrl={panoramaNextUrl}
-              isPanoramaTransitioning={isPanoramaTransitioning}
-              panoramaStripCount={panoramaStripCount}
-              onHover={queueHoveredId}
-              onClick={handleStripClick}
-            />
-          ))}
           {activeCategory ? (
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-end p-4 sm:p-5">
-              <button
-                type="button"
-                onClick={() => setActiveCategoryId(null)}
-                className="pointer-events-auto rounded-full border border-white/60 bg-[rgba(23,18,14,0.36)] px-4 py-2 text-xs font-medium uppercase tracking-[0.16em] text-white backdrop-blur-sm transition-colors duration-200 hover:bg-[rgba(23,18,14,0.52)]"
-              >
-                Back
-              </button>
+            <>
+              {activeCategory.image ? (
+                <img
+                  src={activeCategory.image}
+                  alt={activeCategory.label}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  style={{ objectPosition: `${activeCategory.align ?? "50%"} center` }}
+                />
+              ) : null}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
+                }}
+              />
+              <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-end p-4 sm:p-5">
+                <button
+                  type="button"
+                  onClick={() => setActiveCategoryId(null)}
+                  className="pointer-events-auto rounded-full border border-white/60 bg-[rgba(23,18,14,0.36)] px-4 py-2 text-xs font-medium uppercase tracking-[0.16em] text-white backdrop-blur-sm transition-colors duration-200 hover:bg-[rgba(23,18,14,0.52)]"
+                >
+                  Back
+                </button>
+              </div>
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-center p-5 sm:p-6">
+                <span className="text-sm font-medium uppercase tracking-[0.28em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] sm:text-base">
+                  {activeCategory.label}
+                </span>
+              </div>
+            </>
+          ) : (
+            <div
+              className="relative flex h-full w-full items-stretch gap-[3px] overflow-hidden sm:gap-[4px] md:gap-[6px]"
+              onMouseLeave={() => queueHoveredId(null)}
+            >
+              {strips.map((strip) => (
+                <StripCell
+                  key={strip.id}
+                  strip={strip}
+                  hoveredCategoryId={hoveredCategoryId}
+                  previewCollapsed={previewCollapsed}
+                  hoveredId={hoveredId}
+                  panoramaBaseUrl={panoramaBaseUrl}
+                  panoramaNextUrl={panoramaNextUrl}
+                  isPanoramaTransitioning={isPanoramaTransitioning}
+                  panoramaStripCount={panoramaStripCount}
+                  onHover={queueHoveredId}
+                  onClick={handleStripClick}
+                />
+              ))}
             </div>
-          ) : null}
+          )}
         </div>
         <div
           aria-hidden="true"
