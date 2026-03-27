@@ -1,24 +1,37 @@
 <svg width="796" height="240" viewBox="0 0 796 240" fill="none" xmlns="http://www.w3.org/2000/svg">
   <title>GoTwo Script Logo</title>
   <g aria-label="GoTwo">
-    <text
-      x="18"
-      y="162"
-      fill="#D9654F"
-      font-family="'Brush Script MT', 'Segoe Script', 'Snell Roundhand', cursive"
-      font-size="154"
-      font-style="italic"
-      font-weight="400"
-      letter-spacing="-8"
-    >Go</text>
-    <text
-      x="230"
-      y="152"
+    <path
+      d="M124 48C97 48 73 74 58 108C45 136 45 162 57 176C67 187 83 184 100 170C117 156 133 132 143 106C149 90 152 75 150 63C148 52 141 48 132 48C110 48 84 78 70 117C58 149 58 177 73 189C89 202 110 192 132 171C151 153 168 131 182 112C197 91 211 75 226 64C239 54 252 51 264 54C271 56 275 60 275 66C275 74 269 79 262 79C257 79 253 77 251 74"
+      stroke="#D9654F"
+      stroke-width="10"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M151 123C164 119 179 117 194 117"
+      stroke="#D9654F"
+      stroke-width="8"
+      stroke-linecap="round"
+    />
+    <path
+      d="M226 95C238 81 254 74 268 78C280 81 286 92 286 106C286 118 281 129 273 137C264 145 253 149 243 149C233 149 226 145 222 137C218 130 218 120 223 109C230 92 247 78 265 74C283 70 300 79 307 95"
+      stroke="#D9654F"
+      stroke-width="8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M318 61H432L425 77H388V180H360V77H318V61Z"
       fill="#2F5F6D"
-      font-family="'Cormorant Garamond', 'Times New Roman', serif"
-      font-size="142"
-      font-weight="500"
-      letter-spacing="2"
-    >TWO</text>
+    />
+    <path
+      d="M432 61H462L494 148L520 86L510 61H540L573 148L601 61H624L585 180H557L526 95L496 180H468L432 61Z"
+      fill="#2F5F6D"
+    />
+    <path
+      d="M693 56C729 56 757 68 775 93C790 114 796 138 790 160C783 184 765 201 739 211C722 217 704 220 686 219C650 217 623 204 607 179C595 160 591 139 596 118C601 96 613 80 633 68C650 60 670 56 693 56ZM690 72C668 72 651 80 639 97C629 111 625 128 628 146C631 164 639 180 653 191C664 200 678 205 694 205C716 205 733 197 746 182C757 168 761 150 758 130C755 112 747 97 734 86C722 77 708 72 690 72Z"
+      fill="#2F5F6D"
+    />
   </g>
 </svg>
