@@ -91,7 +91,8 @@ export async function resolveStorageUrls(values: Array<string | null | undefined
       return;
     }
 
-    const storageRef = parseStorageRef(value) ?? parseSupabaseStorageUrl(value);
+    const directStorageRef = parseStorageRef(value);
+    const storageRef = directStorageRef ?? parseSupabaseStorageUrl(value);
     if (!storageRef) {
       results[index] = value;
       return;
@@ -99,7 +100,7 @@ export async function resolveStorageUrls(values: Array<string | null | undefined
 
     const { bucket, path } = storageRef;
     if (!PRIVATE_BUCKETS.has(bucket)) {
-      results[index] = buildPublicStorageUrl(bucket, path);
+      results[index] = directStorageRef ? buildPublicStorageUrl(bucket, path) : value;
       return;
     }
 
