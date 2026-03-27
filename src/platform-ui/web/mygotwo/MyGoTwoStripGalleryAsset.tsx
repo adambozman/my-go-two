@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
+import { cleanupLegacyBrokenImageRows } from "@/lib/legacyImageCleanup";
 import { resolveStorageUrl, resolveStorageUrls } from "@/lib/storageRefs";
 import {
   MYGOTWO_COLLAPSE_IMAGES,
@@ -204,6 +205,7 @@ export default function MyGoTwoStripGalleryAsset() {
   const panoramaTransitionTimerRef = useRef<number | null>(null);
   const assignmentSignatureRef = useRef("");
   const hasLoadedOnceRef = useRef(false);
+  const hasCleanedLegacyRowsRef = useRef(false);
   const stripImagesRef = useRef(stripImages);
   const collapseImagesRef = useRef(collapseImages);
 
@@ -313,6 +315,22 @@ export default function MyGoTwoStripGalleryAsset() {
   useEffect(() => {
     collapseImagesRef.current = collapseImages;
   }, [collapseImages]);
+
+  useEffect(() => {
+    if (hasCleanedLegacyRowsRef.current) {
+      return;
+    }
+
+    hasCleanedLegacyRowsRef.current = true;
+
+    void cleanupLegacyBrokenImageRows()
+      .catch((error) => {
+        console.error("Legacy image cleanup failed:", error);
+      })
+      .finally(() => {
+        void loadAssignedImages();
+      });
+  }, [loadAssignedImages]);
 
   useEffect(() => {
     void loadAssignedImages();

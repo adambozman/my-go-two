@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteImageUrl, setImageUrl } from "@/lib/imageOverrides";
+import { cleanupLegacyBrokenImageRows } from "@/lib/legacyImageCleanup";
 import {
   makeStorageRef,
   parseStorageRef,
@@ -66,6 +67,7 @@ export default function PhotoGallery() {
   const [assignedSlots, setAssignedSlots] = useState<AssignedSlot[]>([]);
   const [selectedTargetKey, setSelectedTargetKey] = useState(MYGOTWO_SLOT_TARGETS[0]?.key ?? "");
   const [query, setQuery] = useState("");
+  const hasCleanedLegacyRowsRef = useRef(false);
 
   const loadPhotos = useCallback(async () => {
     setLoading(true);
@@ -147,6 +149,27 @@ export default function PhotoGallery() {
     void loadPhotos();
     void loadAssignedSlots();
   }, [authLoading, loadAssignedSlots, loadPhotos]);
+
+  useEffect(() => {
+    if (authLoading || !user || hasCleanedLegacyRowsRef.current) return;
+
+    hasCleanedLegacyRowsRef.current = true;
+
+    void (async () => {
+      try {
+        const result = await cleanupLegacyBrokenImageRows();
+        if (result.deletedBankRows || result.deletedAssignedRows) {
+          await Promise.all([loadPhotos(), loadAssignedSlots()]);
+          toast({
+            title: "Removed broken image rows",
+            description: `${result.deletedBankRows} bank rows and ${result.deletedAssignedRows} assigned rows were deleted.`,
+          });
+        }
+      } catch (error) {
+        console.error("Legacy image cleanup failed:", error);
+      }
+    })();
+  }, [authLoading, loadAssignedSlots, loadPhotos, toast, user]);
 
   const filteredPhotos = useMemo(() => {
     const normalized = query.trim().toLowerCase();
