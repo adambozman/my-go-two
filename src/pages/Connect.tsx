@@ -102,7 +102,6 @@ const Connect = () => {
           <Link to="/">
             <GoTwoText
               style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)" }}
-              variant="script"
             />
           </Link>
         </nav>
