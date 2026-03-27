@@ -292,7 +292,7 @@ function CategoryOverlay({
                 {overlayContent.description}
               </p>
             </div>
-            <div className="pointer-events-none flex w-full justify-start lg:w-auto lg:justify-end">
+              <div className="pointer-events-none flex w-full justify-start lg:w-auto lg:justify-end">
               <div
                 className="relative w-[min(100%,22rem)] overflow-hidden rounded-[30px] border border-white/14 bg-[rgba(16,14,12,0.48)] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.34)] backdrop-blur-[12px] sm:w-[min(72vw,24rem)] sm:rounded-[34px] sm:p-4"
                 style={{
@@ -329,14 +329,12 @@ function CategoryOverlay({
                       Featured
                     </span>
                   </div>
-                  <div className="overflow-hidden rounded-[18px] border border-[rgba(218,211,198,0.12)] bg-[#f1eadc] px-4 py-4 text-[#1b1a18] sm:rounded-[22px] sm:px-5 sm:py-5">
-                    <div className="overflow-hidden rounded-[16px] border border-[rgba(182,174,163,0.22)] bg-[#ede5d8] sm:rounded-[20px]">
-                      <img
-                        src={overlayContent.cardImage}
-                        alt={overlayContent.cardAlt}
-                        className="h-auto w-full object-cover"
-                      />
-                    </div>
+                  <div className="overflow-hidden rounded-[18px] bg-transparent sm:rounded-[22px]">
+                    <img
+                      src={overlayContent.cardImage}
+                      alt={overlayContent.cardAlt}
+                      className="h-auto w-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
