@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowLeft } from "lucide-react";
+import GoTwoText from "@/components/GoTwoText";
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Something went wrong";
@@ -80,10 +81,10 @@ const ForgotPassword = () => {
       <div className="relative z-10 flex min-h-screen flex-col">
         <nav className="flex items-center justify-between px-4 py-5 sm:px-6 md:px-10 lg:px-16">
           <Link to="/">
-            <span className="logo-text" style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)", lineHeight: 1 }}>
-              <span className="go">Go</span>
-              <span className="two">Two</span>
-            </span>
+            <GoTwoText
+              style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)" }}
+              variant="script"
+            />
           </Link>
           <Button
             asChild

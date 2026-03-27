@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AppleSignInButton from "@/components/AppleSignInButton";
+import GoTwoText from "@/components/GoTwoText";
 
 const DEV_EMAILS = ["adam.bozman@gmail.com"];
 
@@ -90,13 +91,10 @@ const Login = () => {
         {/* Nav */}
         <nav className="flex items-center justify-between px-4 py-5 sm:px-6 md:px-10 lg:px-16">
           <Link to="/">
-            <span
-              className="logo-text"
-              style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)", lineHeight: 1 }}
-            >
-              <span className="go">Go</span>
-              <span className="two">Two</span>
-            </span>
+            <GoTwoText
+              style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)" }}
+              variant="script"
+            />
           </Link>
           <Button
             asChild

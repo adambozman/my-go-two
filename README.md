@@ -1,73 +1,92 @@
-# Welcome to your Lovable project
+# My Go Two
 
-## Project info
+## What This Repo Is
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+This is the working website for Go Two.
 
-## How can I edit this code?
+The active image system for `My Go Two` is:
 
-There are several ways of editing your application.
+- `photo-bank` storage bucket
+- `category_bank_photos` table
+- `category_images` table
+- `src/pages/PhotoGallery.tsx`
+- `src/platform-ui/web/mygotwo/MyGoTwoStripGalleryAsset.tsx`
+- `src/lib/imageOverrides.ts`
+- `src/lib/storageRefs.ts`
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+The current local Vite app runs with:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm run dev -- --host 127.0.0.1 --port 5180
 ```
 
-**Edit a file directly in GitHub**
+Local URL:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```txt
+http://127.0.0.1:5180/
+```
 
-**Use GitHub Codespaces**
+## Current Rules
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+These rules are intentional and should not be broken:
 
-## What technologies are used for this project?
+1. Do not redesign `My Go Two` when making behavior fixes.
+2. The 8 preview strips stay the 8 preview strips in both states.
+3. In uncollapsed state, the preview strips are larger than normal strips but do not grow on hover.
+4. Only labeled category strips grow on hover.
+5. In collapsed state, only the preview strips remain visible and fill the stage.
+6. Collapse rotation happens only while collapsed.
+7. Collapse rotation is 10 seconds per image.
+8. The 5-image collapse bank is separate from the normal strip images.
+9. Clicking a labeled category opens an in-place full-stage panel, not a stretched strip, popup, or route change.
+10. The strip page must use assigned images only. Do not fall back to starter images.
+11. `photo-bank` is the live source for uploaded bank images.
+12. Do not reintroduce the deleted legacy `category-images/bank/...` upload flow.
+13. Do not leave extra old Vite windows running. Use the current local server only.
 
-This project is built with:
+## Still Needs To Be Done
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. `My Go Two` still needs more load cleanup around first paint and route-level startup work. The strip itself is better, but the dashboard route still does too much before the page settles.
+2. The click-open category state needs full visual validation for every category so corners, overlays, and back behavior stay clean.
+3. The strip label sizing and spacing may need more tuning now that the corner radius increased.
+4. Photo upload flow is still slower than it should be because `PhotoGallery` reloads too much after upload.
+5. Old broken rows should continue to be kept out of `category_images` and `category_bank_photos`.
+6. The overall dashboard is still making many unrelated requests before `My Go Two` finishes settling.
 
-## How can I deploy this project?
+## Deleted Legacy Path
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+These were removed because they were not part of the current working site flow:
 
-## Can I connect a custom domain to my Lovable project?
+- `src/components/InlinePhotoSearch.tsx`
+- `src/lib/localImageLibrary.ts`
+- `src/components/CreateCustomCardSheet.tsx`
+- `supabase/functions/generate-category-image/index.ts`
+- `supabase/functions/bulk-generate-category-images/index.ts`
 
-Yes, you can!
+`src/lib/imageResolver.ts` was kept because onboarding still uses it.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Working Commands
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Install:
+
+```sh
+npm i
+```
+
+Run local app:
+
+```sh
+npm run dev -- --host 127.0.0.1 --port 5180
+```
+
+Build:
+
+```sh
+npm run build
+```
+
+Tests:
+
+```sh
+npm run test
+```

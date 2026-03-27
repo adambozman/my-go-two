@@ -1,0 +1,24 @@
+<svg width="796" height="240" viewBox="0 0 796 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>GoTwo Script Logo</title>
+  <g aria-label="GoTwo">
+    <text
+      x="18"
+      y="162"
+      fill="#D9654F"
+      font-family="'Brush Script MT', 'Segoe Script', 'Snell Roundhand', cursive"
+      font-size="154"
+      font-style="italic"
+      font-weight="400"
+      letter-spacing="-8"
+    >Go</text>
+    <text
+      x="230"
+      y="152"
+      fill="#2F5F6D"
+      font-family="'Cormorant Garamond', 'Times New Roman', serif"
+      font-size="142"
+      font-weight="500"
+      letter-spacing="2"
+    >TWO</text>
+  </g>
+</svg>

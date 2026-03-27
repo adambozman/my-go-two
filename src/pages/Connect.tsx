@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Users, Loader2, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import GoTwoText from "@/components/GoTwoText";
 
 const Connect = () => {
   const [searchParams] = useSearchParams();
@@ -99,10 +100,10 @@ const Connect = () => {
         {/* Nav */}
         <nav className="flex items-center justify-center px-4 py-5 sm:px-6 md:px-10 lg:px-16">
           <Link to="/">
-            <span className="logo-text" style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)", lineHeight: 1 }}>
-              <span className="go">Go</span>
-              <span className="two">Two</span>
-            </span>
+            <GoTwoText
+              style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)" }}
+              variant="script"
+            />
           </Link>
         </nav>
 
@@ -133,10 +134,7 @@ const Connect = () => {
               </h1>
               <p className="text-lg md:text-xl" style={{ color: "var(--swatch-antique-coin)" }}>
                 {hasInvite ? "Someone wants to connect with you on " : "Previewing the connection invite page for "}
-                <span className="logo-text text-2xl md:text-3xl">
-                  <span className="go">Go</span>
-                  <span className="two">Two</span>
-                </span>
+                <GoTwoText className="text-2xl md:text-3xl" />
               </p>
             </div>
 

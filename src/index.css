@@ -680,6 +680,18 @@ body {
 }
 
 /* Logo text */
+.logo-lockup {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.logo-mark-script {
+  display: block;
+  width: auto;
+  height: 1em;
+}
+
 .logo-text {
   display: inline-flex;
   align-items: baseline;
