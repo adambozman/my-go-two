@@ -1,9 +1,10 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import savedProductCardImage from "@/assets/templates/saved-product-card.png";
 import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { cleanupLegacyBrokenImageRows } from "@/lib/legacyImageCleanup";
 import { resolveStorageUrl, resolveStorageUrls } from "@/lib/storageRefs";
+import MyGoTwoProductCard from "@/platform-ui/web/mygotwo/MyGoTwoProductCard";
+import type { SubcategoryGroup, SubtypeItem } from "@/data/templateSubtypes";
 import {
   MYGOTWO_COLLAPSE_IMAGES,
   MYGOTWO_COLLAPSE_SLOT_TARGETS,
@@ -26,15 +27,53 @@ type StripPresentation = {
 
 type CategoryOverlayContent = {
   title: string;
-  cardImage: string;
-  cardAlt: string;
+  categoryLabel: string;
+  subcategory: SubcategoryGroup;
+  product: SubtypeItem;
+};
+
+const BEVERAGES_PRODUCT: SubtypeItem = {
+  id: "beverages-featured-product-card",
+  name: "Beverage",
+  image: "",
+  fields: [
+    {
+      label: "Size",
+      type: "select",
+      value: "M",
+      options: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+    },
+    {
+      label: "Preferred brands",
+      type: "text",
+      value: "",
+    },
+    {
+      label: "Keywords",
+      type: "text",
+      value: "",
+    },
+    {
+      label: "Notes",
+      type: "text",
+      value: "",
+    },
+  ],
+};
+
+const BEVERAGES_SUBCATEGORY: SubcategoryGroup = {
+  id: "beverages-featured",
+  name: "Featured",
+  image: "",
+  products: [BEVERAGES_PRODUCT],
 };
 
 const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
   Beverages: {
     title: "Pour Something Worth Staying For",
-    cardImage: savedProductCardImage,
-    cardAlt: "Saved product card asset",
+    categoryLabel: "Beverages",
+    subcategory: BEVERAGES_SUBCATEGORY,
+    product: BEVERAGES_PRODUCT,
   },
 };
 
@@ -273,11 +312,17 @@ function CategoryOverlay({
               {overlayContent.title}
             </h2>
           </div>
-          <img
-            src={overlayContent.cardImage}
-            alt={overlayContent.cardAlt}
-            className="absolute bottom-16 right-4 h-auto w-[min(44vw,25rem)] object-contain drop-shadow-[0_28px_80px_rgba(0,0,0,0.34)] sm:bottom-20 sm:right-8 sm:w-[min(42vw,27rem)] lg:bottom-14 lg:right-12 lg:w-[min(34vw,28rem)]"
-          />
+          <div className="pointer-events-none absolute inset-0">
+            <MyGoTwoProductCard
+              userId=""
+              categoryLabel={overlayContent.categoryLabel}
+              subcategory={overlayContent.subcategory}
+              product={overlayContent.product}
+              activeEntry={null}
+              onSaved={() => undefined}
+              interactive={false}
+            />
+          </div>
         </div>
       ) : null}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-center p-5 sm:p-6">
