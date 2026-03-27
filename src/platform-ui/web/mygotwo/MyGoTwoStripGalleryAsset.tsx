@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { cleanupLegacyBrokenImageRows } from "@/lib/legacyImageCleanup";
@@ -275,6 +276,7 @@ function CategoryOverlay({
   category: StripPresentation;
   onBack: () => void;
 }) {
+  const { user } = useAuth();
   const overlayContent = category.label ? CATEGORY_OVERLAY_CONTENT[category.label] : null;
 
   return (
@@ -306,21 +308,20 @@ function CategoryOverlay({
         </button>
       </div>
       {overlayContent ? (
-        <div className="pointer-events-none absolute inset-0 z-10">
-          <div className="absolute bottom-20 left-5 max-w-[min(36rem,62vw)] sm:bottom-24 sm:left-8 md:left-10 lg:bottom-24 lg:left-14">
+        <div className="absolute inset-0 z-10">
+          <div className="pointer-events-none absolute bottom-20 left-5 max-w-[min(36rem,62vw)] sm:bottom-24 sm:left-8 md:left-10 lg:bottom-24 lg:left-14">
             <h2 className="max-w-[14ch] text-[clamp(2.25rem,5vw,4.8rem)] font-serif leading-[0.9] tracking-[-0.05em] text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.42)]">
               {overlayContent.title}
             </h2>
           </div>
-          <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0">
             <MyGoTwoProductCard
-              userId=""
+              userId={user?.id ?? ""}
               categoryLabel={overlayContent.categoryLabel}
               subcategory={overlayContent.subcategory}
               product={overlayContent.product}
               activeEntry={null}
               onSaved={() => undefined}
-              interactive={false}
             />
           </div>
         </div>
