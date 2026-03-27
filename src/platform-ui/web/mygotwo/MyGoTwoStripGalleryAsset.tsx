@@ -33,6 +33,26 @@ type OverrideChangedDetail = {
   url?: string | null;
 };
 
+async function preloadImageUrls(urls: string[]) {
+  const uniqueUrls = Array.from(new Set(urls.filter(Boolean)));
+
+  await Promise.all(
+    uniqueUrls.map(
+      (url) =>
+        new Promise<void>((resolve) => {
+          const image = new window.Image();
+          image.decoding = "async";
+          image.onload = () => resolve();
+          image.onerror = () => resolve();
+          image.src = url;
+          if (image.complete) {
+            resolve();
+          }
+        }),
+    ),
+  );
+}
+
 type StripCellProps = {
   strip: StripPresentation;
   hoveredCategoryId: string | null;
@@ -143,7 +163,8 @@ const StripCell = memo(function StripCell({
           alt=""
           src={strip.image}
           decoding="async"
-          loading="lazy"
+          loading="eager"
+          fetchPriority="high"
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{
             objectPosition: `${strip.align ?? "50%"} center`,
@@ -162,7 +183,7 @@ const StripCell = memo(function StripCell({
       />
       {strip.label ? (
         <span
-          className="pointer-events-none absolute bottom-2 left-1/2 z-10 text-[9px] font-medium uppercase tracking-[0.16em] text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.42)] sm:bottom-3 sm:text-[10px] md:bottom-4 md:text-[12px] md:tracking-[0.2em]"
+          className="pointer-events-none absolute bottom-2 left-1/2 z-10 text-[11px] font-medium uppercase tracking-[0.16em] text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.42)] sm:bottom-3 sm:text-[12px] md:bottom-4 md:text-[14px] md:tracking-[0.2em]"
           style={{
             opacity: collapseCategoryStrip ? 0 : 1,
             transition: "opacity 260ms ease",
@@ -277,6 +298,13 @@ export default function MyGoTwoStripGalleryAsset() {
         image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || "",
       })).filter((image) => Boolean(image.image));
 
+      if (!hasLoadedOnceRef.current) {
+        await preloadImageUrls([
+          ...nextStripImages.map((strip) => strip.image),
+          ...assignedCollapseImages.map((image) => image.image),
+        ]);
+      }
+
       commitAssignedImages(nextStripImages, assignedCollapseImages);
     } finally {
       if (!hasLoadedOnceRef.current) {
@@ -351,7 +379,9 @@ export default function MyGoTwoStripGalleryAsset() {
   }, [loadAssignedImages]);
 
   useEffect(() => {
-    void loadAssignedImages();
+    if (!hasCleanedLegacyRowsRef.current) {
+      return;
+    }
 
     const handler = (event: Event) => {
       const detail = (event as CustomEvent<OverrideChangedDetail>).detail;
