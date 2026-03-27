@@ -42,6 +42,8 @@ type StripCellProps = {
   panoramaNextUrl: string;
   isPanoramaTransitioning: boolean;
   panoramaStripCount: number;
+  showLeftDivider: boolean;
+  showRightDivider: boolean;
   onHover: (id: string) => void;
   onClick: (strip: StripPresentation) => void;
 };
@@ -55,6 +57,8 @@ const StripCell = memo(function StripCell({
   panoramaNextUrl,
   isPanoramaTransitioning,
   panoramaStripCount,
+  showLeftDivider,
+  showRightDivider,
   onHover,
   onClick,
 }: StripCellProps) {
@@ -172,12 +176,18 @@ const StripCell = memo(function StripCell({
       <span
         aria-hidden="true"
         className="absolute inset-y-0 left-0 w-[1px] bg-white/85"
-        style={{ opacity: collapseCategoryStrip ? 0 : 1, transition: "opacity 260ms ease" }}
+        style={{
+          opacity: collapseCategoryStrip || !showLeftDivider ? 0 : 1,
+          transition: "opacity 260ms ease",
+        }}
       />
       <span
         aria-hidden="true"
         className="absolute inset-y-0 right-0 w-[1px] bg-white/85"
-        style={{ opacity: collapseCategoryStrip ? 0 : 1, transition: "opacity 260ms ease" }}
+        style={{
+          opacity: collapseCategoryStrip || !showRightDivider ? 0 : 1,
+          transition: "opacity 260ms ease",
+        }}
       />
     </div>
   );
@@ -301,6 +311,14 @@ export default function MyGoTwoStripGalleryAsset() {
   const activeCategory = useMemo(
     () => strips.find((strip) => strip.id === activeCategoryId && strip.label) ?? null,
     [activeCategoryId, strips],
+  );
+  const visibleStrips = useMemo(
+    () => (
+      previewCollapsed && !hoveredId
+        ? strips.filter((strip) => !strip.label)
+        : strips
+    ),
+    [hoveredId, previewCollapsed, strips],
   );
 
   const activePanoramaUrl =
@@ -589,7 +607,7 @@ export default function MyGoTwoStripGalleryAsset() {
               className="relative flex h-full w-full items-stretch gap-[3px] overflow-hidden sm:gap-[4px] md:gap-[6px]"
               onMouseLeave={() => queueHoveredId(null)}
             >
-              {strips.map((strip) => (
+              {visibleStrips.map((strip, index) => (
                 <StripCell
                   key={strip.id}
                   strip={strip}
@@ -600,6 +618,8 @@ export default function MyGoTwoStripGalleryAsset() {
                   panoramaNextUrl={panoramaNextUrl}
                   isPanoramaTransitioning={isPanoramaTransitioning}
                   panoramaStripCount={panoramaStripCount}
+                  showLeftDivider={index > 0}
+                  showRightDivider={index < visibleStrips.length - 1}
                   onHover={queueHoveredId}
                   onClick={handleStripClick}
                 />
