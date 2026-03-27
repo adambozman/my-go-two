@@ -25,19 +25,14 @@ type StripPresentation = {
 };
 
 type CategoryOverlayContent = {
-  eyebrow: string;
   title: string;
-  description: string;
   cardImage: string;
   cardAlt: string;
 };
 
 const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
   Beverages: {
-    eyebrow: "Curated beverage picks",
     title: "Pour Something Worth Staying For",
-    description:
-      "A refined beverage moment layered into the scene, with the product card floating forward while the venue image remains the atmosphere behind it.",
     cardImage: savedProductCardImage,
     cardAlt: "Saved product card asset",
   },
@@ -274,18 +269,9 @@ function CategoryOverlay({
       {overlayContent ? (
         <div className="pointer-events-none absolute inset-0 z-10">
           <div className="absolute bottom-20 left-5 max-w-[min(36rem,62vw)] sm:bottom-24 sm:left-8 md:left-10 lg:bottom-24 lg:left-14">
-            <p
-              className="mb-3 text-[11px] font-medium uppercase tracking-[0.28em] text-white/78 sm:text-[12px]"
-              style={{ color: "rgba(255,255,255,0.78)" }}
-            >
-              {overlayContent.eyebrow}
-            </p>
             <h2 className="max-w-[14ch] text-[clamp(2.25rem,5vw,4.8rem)] font-serif leading-[0.9] tracking-[-0.05em] text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.42)]">
               {overlayContent.title}
             </h2>
-            <p className="mt-4 max-w-[30rem] text-sm leading-6 text-white/76 drop-shadow-[0_8px_18px_rgba(0,0,0,0.34)] sm:text-[15px]">
-              {overlayContent.description}
-            </p>
           </div>
           <img
             src={overlayContent.cardImage}
