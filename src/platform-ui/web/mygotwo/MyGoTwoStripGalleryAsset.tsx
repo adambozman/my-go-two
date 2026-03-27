@@ -28,10 +28,8 @@ type CategoryOverlayContent = {
   eyebrow: string;
   title: string;
   description: string;
-  accent: string;
   cardImage: string;
   cardAlt: string;
-  cardMeta: string;
 };
 
 const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
@@ -40,10 +38,8 @@ const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
     title: "Pour Something Worth Staying For",
     description:
       "A refined beverage moment layered into the scene, with the product card floating forward while the venue image remains the atmosphere behind it.",
-    accent: "#d97542",
     cardImage: savedProductCardImage,
     cardAlt: "Saved product card asset",
-    cardMeta: "Saved Product Card",
   },
 };
 
@@ -292,52 +288,12 @@ function CategoryOverlay({
                 {overlayContent.description}
               </p>
             </div>
-              <div className="pointer-events-none flex w-full justify-start lg:w-auto lg:justify-end">
-              <div
-                className="relative w-[min(100%,22rem)] overflow-hidden rounded-[30px] border border-white/14 bg-[rgba(16,14,12,0.48)] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.34)] backdrop-blur-[12px] sm:w-[min(72vw,24rem)] sm:rounded-[34px] sm:p-4"
-                style={{
-                  transform: "translateY(0)",
-                }}
-              >
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 34%, rgba(0,0,0,0) 100%)",
-                  }}
-                />
-                <div
-                  className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[#120f0d] p-3 sm:rounded-[28px] sm:p-4"
-                  style={{
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
-                  }}
-                >
-                  <div className="mb-3 flex items-center justify-between gap-3 sm:mb-4">
-                    <div>
-                      <p
-                        className="text-[10px] font-medium uppercase tracking-[0.22em] sm:text-[11px]"
-                        style={{ color: overlayContent.accent }}
-                      >
-                        {category.label}
-                      </p>
-                      <p className="mt-1 text-[12px] uppercase tracking-[0.18em] text-white/52 sm:text-[13px]">
-                        {overlayContent.cardMeta}
-                      </p>
-                    </div>
-                    <span className="rounded-full border border-white/14 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white/60">
-                      Featured
-                    </span>
-                  </div>
-                  <div className="overflow-hidden rounded-[18px] bg-transparent sm:rounded-[22px]">
-                    <img
-                      src={overlayContent.cardImage}
-                      alt={overlayContent.cardAlt}
-                      className="h-auto w-full object-cover"
-                    />
-                  </div>
-                </div>
-              </div>
+            <div className="pointer-events-none flex w-full justify-start lg:w-auto lg:justify-end">
+              <img
+                src={overlayContent.cardImage}
+                alt={overlayContent.cardAlt}
+                className="h-auto w-[min(100%,22rem)] object-contain drop-shadow-[0_28px_80px_rgba(0,0,0,0.34)] sm:w-[min(72vw,24rem)]"
+              />
             </div>
           </div>
         </div>
