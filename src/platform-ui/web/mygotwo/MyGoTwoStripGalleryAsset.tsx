@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import updatedCardsImage from "@/assets/stock/updated-cards.jpg";
+import savedProductCardImage from "@/assets/templates/saved-product-card.png";
 import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { cleanupLegacyBrokenImageRows } from "@/lib/legacyImageCleanup";
@@ -28,9 +28,10 @@ type CategoryOverlayContent = {
   eyebrow: string;
   title: string;
   description: string;
+  accent: string;
   cardImage: string;
   cardAlt: string;
-  accent: string;
+  cardMeta: string;
 };
 
 const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
@@ -39,9 +40,10 @@ const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
     title: "Pour Something Worth Staying For",
     description:
       "A refined beverage moment layered into the scene, with the product card floating forward while the venue image remains the atmosphere behind it.",
-    cardImage: updatedCardsImage,
-    cardAlt: "Beverages product card",
     accent: "#d97542",
+    cardImage: savedProductCardImage,
+    cardAlt: "Saved product card asset",
+    cardMeta: "Saved Product Card",
   },
 };
 
@@ -320,19 +322,21 @@ function CategoryOverlay({
                         {category.label}
                       </p>
                       <p className="mt-1 text-[12px] uppercase tracking-[0.18em] text-white/52 sm:text-[13px]">
-                        Product Card
+                        {overlayContent.cardMeta}
                       </p>
                     </div>
                     <span className="rounded-full border border-white/14 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white/60">
                       Featured
                     </span>
                   </div>
-                  <div className="overflow-hidden rounded-[18px] border border-white/8 bg-[#1a1613] sm:rounded-[22px]">
-                    <img
-                      src={overlayContent.cardImage}
-                      alt={overlayContent.cardAlt}
-                      className="h-auto w-full object-cover"
-                    />
+                  <div className="overflow-hidden rounded-[18px] border border-[rgba(218,211,198,0.12)] bg-[#f1eadc] px-4 py-4 text-[#1b1a18] sm:rounded-[22px] sm:px-5 sm:py-5">
+                    <div className="overflow-hidden rounded-[16px] border border-[rgba(182,174,163,0.22)] bg-[#ede5d8] sm:rounded-[20px]">
+                      <img
+                        src={overlayContent.cardImage}
+                        alt={overlayContent.cardAlt}
+                        className="h-auto w-full object-cover"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
