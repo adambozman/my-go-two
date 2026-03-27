@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import updatedCardsImage from "@/assets/stock/updated-cards.jpg";
 import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { cleanupLegacyBrokenImageRows } from "@/lib/legacyImageCleanup";
@@ -21,6 +22,27 @@ type StripPresentation = {
   label?: string;
   isPanoramaStrip: boolean;
   panoramaIndex: number;
+};
+
+type CategoryOverlayContent = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  cardImage: string;
+  cardAlt: string;
+  accent: string;
+};
+
+const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
+  Beverages: {
+    eyebrow: "Curated beverage picks",
+    title: "Pour Something Worth Staying For",
+    description:
+      "A refined beverage moment layered into the scene, with the product card floating forward while the venue image remains the atmosphere behind it.",
+    cardImage: updatedCardsImage,
+    cardAlt: "Beverages product card",
+    accent: "#d97542",
+  },
 };
 
 const SLOT_KEYS = [
@@ -213,6 +235,119 @@ const StripCell = memo(function StripCell({
     </div>
   );
 });
+
+function CategoryOverlay({
+  category,
+  onBack,
+}: {
+  category: StripPresentation;
+  onBack: () => void;
+}) {
+  const overlayContent = category.label ? CATEGORY_OVERLAY_CONTENT[category.label] : null;
+
+  return (
+    <>
+      {category.image ? (
+        <img
+          src={category.image}
+          alt={category.label}
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: `${category.align ?? "50%"} center` }}
+        />
+      ) : null}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{
+          background: overlayContent
+            ? "linear-gradient(90deg, rgba(17,14,12,0.66) 0%, rgba(17,14,12,0.38) 31%, rgba(17,14,12,0.18) 54%, rgba(17,14,12,0.46) 100%)"
+            : "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
+        }}
+      />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-end p-4 sm:p-5">
+        <button
+          type="button"
+          onClick={onBack}
+          className="pointer-events-auto rounded-full border border-white/60 bg-[rgba(23,18,14,0.36)] px-4 py-2 text-xs font-medium uppercase tracking-[0.16em] text-white backdrop-blur-sm transition-colors duration-200 hover:bg-[rgba(23,18,14,0.52)]"
+        >
+          Back
+        </button>
+      </div>
+      {overlayContent ? (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-end px-5 pb-20 pt-20 sm:px-8 sm:pb-24 sm:pt-24 md:px-10 lg:px-14">
+          <div className="flex w-full flex-col gap-6 md:gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
+            <div className="max-w-[min(42rem,58vw)]">
+              <p
+                className="mb-3 text-[11px] font-medium uppercase tracking-[0.28em] text-white/78 sm:text-[12px]"
+                style={{ color: "rgba(255,255,255,0.78)" }}
+              >
+                {overlayContent.eyebrow}
+              </p>
+              <h2 className="max-w-[16ch] text-[clamp(2.25rem,5vw,4.8rem)] font-serif leading-[0.9] tracking-[-0.05em] text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.42)]">
+                {overlayContent.title}
+              </h2>
+              <p className="mt-4 max-w-[30rem] text-sm leading-6 text-white/76 drop-shadow-[0_8px_18px_rgba(0,0,0,0.34)] sm:text-[15px]">
+                {overlayContent.description}
+              </p>
+            </div>
+            <div className="pointer-events-none flex w-full justify-start lg:w-auto lg:justify-end">
+              <div
+                className="relative w-[min(100%,22rem)] overflow-hidden rounded-[30px] border border-white/14 bg-[rgba(16,14,12,0.48)] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.34)] backdrop-blur-[12px] sm:w-[min(72vw,24rem)] sm:rounded-[34px] sm:p-4"
+                style={{
+                  transform: "translateY(0)",
+                }}
+              >
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 34%, rgba(0,0,0,0) 100%)",
+                  }}
+                />
+                <div
+                  className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[#120f0d] p-3 sm:rounded-[28px] sm:p-4"
+                  style={{
+                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
+                  }}
+                >
+                  <div className="mb-3 flex items-center justify-between gap-3 sm:mb-4">
+                    <div>
+                      <p
+                        className="text-[10px] font-medium uppercase tracking-[0.22em] sm:text-[11px]"
+                        style={{ color: overlayContent.accent }}
+                      >
+                        {category.label}
+                      </p>
+                      <p className="mt-1 text-[12px] uppercase tracking-[0.18em] text-white/52 sm:text-[13px]">
+                        Product Card
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-white/14 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white/60">
+                      Featured
+                    </span>
+                  </div>
+                  <div className="overflow-hidden rounded-[18px] border border-white/8 bg-[#1a1613] sm:rounded-[22px]">
+                    <img
+                      src={overlayContent.cardImage}
+                      alt={overlayContent.cardAlt}
+                      className="h-auto w-full object-cover"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-center p-5 sm:p-6">
+        <span className="text-sm font-medium uppercase tracking-[0.28em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] sm:text-base">
+          {category.label}
+        </span>
+      </div>
+    </>
+  );
+}
 
 export default function MyGoTwoStripGalleryAsset() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -601,38 +736,7 @@ export default function MyGoTwoStripGalleryAsset() {
           }}
         >
           {activeCategory ? (
-            <>
-              {activeCategory.image ? (
-                <img
-                  src={activeCategory.image}
-                  alt={activeCategory.label}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  style={{ objectPosition: `${activeCategory.align ?? "50%"} center` }}
-                />
-              ) : null}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
-                }}
-              />
-              <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-end p-4 sm:p-5">
-                <button
-                  type="button"
-                  onClick={() => setActiveCategoryId(null)}
-                  className="pointer-events-auto rounded-full border border-white/60 bg-[rgba(23,18,14,0.36)] px-4 py-2 text-xs font-medium uppercase tracking-[0.16em] text-white backdrop-blur-sm transition-colors duration-200 hover:bg-[rgba(23,18,14,0.52)]"
-                >
-                  Back
-                </button>
-              </div>
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-center p-5 sm:p-6">
-                <span className="text-sm font-medium uppercase tracking-[0.28em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] sm:text-base">
-                  {activeCategory.label}
-                </span>
-              </div>
-            </>
+            <CategoryOverlay category={activeCategory} onBack={() => setActiveCategoryId(null)} />
           ) : (
             <div
               className="relative flex h-full w-full items-stretch gap-[3px] overflow-hidden sm:gap-[4px] md:gap-[6px]"
