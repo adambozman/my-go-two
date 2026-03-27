@@ -1,31 +1,39 @@
-/**
- * Image resolver — legacy sync API.
- * All image data now comes from the category_images table via hooks.
- * These functions exist only for backward compatibility and return "".
- */
+import { profileQuestions } from "@/data/profileQuestions";
 
-import { type Gender } from "@/lib/gender";
+const STYLE_FALLBACK_ID = "minimal";
 
-export function getTemplateImage(_imageKey: string, ..._rest: unknown[]): string {
+const INTRO_IMAGE_TO_STYLE_ID: Record<string, string> = {
+  shopping: "luxury",
+  style: "elegant",
+  food: "dining",
+  gifts: "thoughtful",
+  lifestyle: "staying-in",
+  fit: "fitness",
+  taste: "minimal",
+};
+
+function findOptionImage(optionId: string): string {
+  for (const question of profileQuestions) {
+    const match = question.options?.find((option) => option.id === optionId && option.localImage);
+    if (match?.localImage) {
+      return match.localImage;
+    }
+  }
+
+  for (const question of profileQuestions) {
+    const fallback = question.options?.find((option) => option.id === STYLE_FALLBACK_ID && option.localImage);
+    if (fallback?.localImage) {
+      return fallback.localImage;
+    }
+  }
+
   return "";
 }
 
-export function getStyleImage(_styleId: string, ..._rest: unknown[]): string {
-  return "";
+export function getStyleImage(optionId: string, _gender?: string): string {
+  return findOptionImage(optionId);
 }
 
-export function getCategoryImage(_categoryId: string, ..._rest: unknown[]): string {
-  return "";
-}
-
-export function getProductImage(_productId: string, ..._rest: unknown[]): string {
-  return "";
-}
-
-export async function getImage(_imageKey: string, _gender?: Gender): Promise<string> {
-  return "";
-}
-
-export async function preloadImages(categoryKeys: string[], _gender?: Gender): Promise<Map<string, string>> {
-  return new Map(categoryKeys.map((key) => [key, ""]));
+export function getCategoryImage(categoryId: string, _gender?: string): string {
+  return findOptionImage(INTRO_IMAGE_TO_STYLE_ID[categoryId] || STYLE_FALLBACK_ID);
 }

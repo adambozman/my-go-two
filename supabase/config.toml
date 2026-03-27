@@ -9,12 +9,6 @@ verify_jwt = false
 [functions.trending-feed]
 verify_jwt = false
 
-[functions.generate-category-image]
-verify_jwt = false
-
-[functions.bulk-generate-category-images]
-verify_jwt = false
-
 [functions.check-subscription]
 verify_jwt = false
 
