@@ -102,30 +102,39 @@ function BeverageField({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-[18px] border px-4 ${isNotes ? "py-3" : "py-3.5"} ${
+      className={`relative overflow-hidden rounded-[20px] border px-4 ${isNotes ? "py-3" : "py-3.5"} ${
         compact ? "" : ""
       }`}
       style={{
-        background: "rgba(247, 236, 209, 0.78)",
-        borderColor: "rgba(126, 97, 49, 0.18)",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.38)",
+        background: "rgba(247, 242, 233, 0.82)",
+        borderColor: "rgba(188, 180, 167, 0.42)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)",
       }}
     >
       <div
         aria-hidden="true"
-        className="absolute inset-0 opacity-55"
+        className="absolute inset-x-4 top-0 h-px"
         style={{
-          backgroundImage:
-            "repeating-linear-gradient(180deg, rgba(121, 95, 57, 0) 0px, rgba(121, 95, 57, 0) 29px, rgba(121, 95, 57, 0.08) 29px, rgba(121, 95, 57, 0.08) 30px)",
+          background: "rgba(255,255,255,0.72)",
         }}
       />
+      {!isNotes ? (
+        <div
+          aria-hidden="true"
+          className="absolute right-4 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full border"
+          style={{
+            borderColor: "rgba(127, 151, 160, 0.32)",
+            background: "rgba(255,255,255,0.28)",
+          }}
+        />
+      ) : null}
       <div className="relative">
         <p
           className="mb-2 font-medium uppercase tracking-[0.24em]"
           style={{
-            color: "#8d7140",
+            color: "#a9a08f",
             fontSize: compact ? "9px" : "10px",
-            fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+            fontFamily: "'Jost', sans-serif",
           }}
         >
           {field.label}
@@ -136,25 +145,25 @@ function BeverageField({
               value={value}
               onChange={(event) => onChange(event.target.value)}
               placeholder={placeholder}
-              className="min-h-[78px] w-full resize-none bg-transparent text-[14px] leading-[1.5] text-[#2d2417] placeholder:text-[#ab9775] focus:outline-none"
-              style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
+              className="min-h-[78px] w-full resize-none bg-transparent text-[14px] leading-[1.55] text-[#4a4338] placeholder:text-[#b8ae9e] focus:outline-none"
+              style={{ fontFamily: "'Jost', sans-serif" }}
             />
           ) : (
             <input
               value={value}
               onChange={(event) => onChange(event.target.value)}
               placeholder={placeholder}
-              className="w-full bg-transparent text-[14px] leading-[1.45] text-[#2d2417] placeholder:text-[#ab9775] focus:outline-none"
-              style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
+              className="w-full bg-transparent pr-10 text-[14px] leading-[1.45] text-[#4a4338] placeholder:text-[#b8ae9e] focus:outline-none"
+              style={{ fontFamily: "'Jost', sans-serif" }}
             />
           )
         ) : (
           <p
-            className={`text-[#2d2417] ${isNotes ? "min-h-[78px]" : ""}`}
+            className={`text-[#4a4338] ${isNotes ? "min-h-[78px]" : ""}`}
             style={{
               fontSize: "14px",
-              lineHeight: 1.45,
-              fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+              lineHeight: 1.5,
+              fontFamily: "'Jost', sans-serif",
             }}
           >
             {value || placeholder}
@@ -242,32 +251,24 @@ export default function MyProductCardBeverages({
       style={{
         top: compact ? undefined : "122px",
         right: compact ? undefined : "48px",
-        width: compact ? "100%" : "432px",
+        width: compact ? "100%" : "428px",
       }}
     >
       <div
         aria-hidden="true"
-        className="absolute inset-x-3 top-[9px] h-full rounded-[34px]"
+        className="absolute inset-x-2 top-[8px] h-full rounded-[34px]"
         style={{
-          background: "rgba(94, 77, 47, 0.16)",
+          background: "rgba(52, 45, 38, 0.1)",
           filter: "blur(0.5px)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-1 top-[4px] h-full rounded-[36px] border"
-        style={{
-          background: "rgba(239, 226, 191, 0.72)",
-          borderColor: "rgba(102, 82, 48, 0.12)",
         }}
       />
 
       <div
         className="relative overflow-hidden rounded-[36px] border"
         style={{
-          background: "linear-gradient(180deg, #f3e2b8 0%, #ecd8ab 100%)",
-          borderColor: "rgba(108, 84, 44, 0.28)",
-          boxShadow: "0 28px 58px rgba(23, 17, 10, 0.24), inset 0 1px 0 rgba(255,255,255,0.44)",
+          background: "linear-gradient(180deg, #f5efe2 0%, #efe6d8 100%)",
+          borderColor: "rgba(190, 183, 171, 0.54)",
+          boxShadow: "0 22px 54px rgba(34, 31, 27, 0.18), inset 0 1px 0 rgba(255,255,255,0.42)",
         }}
       >
         <div
@@ -281,40 +282,23 @@ export default function MyProductCardBeverages({
 
         <div
           aria-hidden="true"
-          className="absolute left-6 top-0 flex -translate-y-[58%] gap-2"
+          className="absolute right-8 top-0 flex -translate-y-[62%] gap-1.5"
         >
-          {["Order", "Place", "Ritual", "Notes"].map((tab, index) => (
+          {["Taste", "Places", "Notes"].map((tab, index) => (
             <span
               key={tab}
-              className="flex h-9 items-end rounded-t-[12px] border border-b-0 px-3 pb-1.5 text-[9px] font-medium uppercase tracking-[0.22em]"
+              className="flex h-7 items-end rounded-t-[10px] border border-b-0 px-3 pb-1 text-[8px] font-medium uppercase tracking-[0.2em]"
               style={{
-                background: index % 2 === 0 ? "#e6cf9f" : "#edd9ad",
-                borderColor: "rgba(108, 84, 44, 0.24)",
-                color: "#7d6130",
-                fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                background: index === 0 ? "#f2e9d8" : "#ece1cf",
+                borderColor: "rgba(190, 183, 171, 0.54)",
+                color: "#a59a88",
+                fontFamily: "'Jost', sans-serif",
               }}
             >
               {tab}
             </span>
           ))}
         </div>
-
-        <div
-          aria-hidden="true"
-          className="absolute right-6 top-6 h-[132px] w-[120px] rounded-[24px]"
-          style={{
-            background: "linear-gradient(180deg, rgba(82,97,104,0.92) 0%, rgba(57,69,74,0.96) 100%)",
-            boxShadow: "inset 0 2px 10px rgba(255,255,255,0.06)",
-          }}
-        />
-        <div
-          aria-hidden="true"
-          className="absolute right-[62px] top-[54px] h-[84px] w-[34px] rounded-full"
-          style={{
-            background: "linear-gradient(180deg, #6f8289 0%, #51636b 100%)",
-            boxShadow: "inset 0 1px 2px rgba(255,255,255,0.25), 0 2px 8px rgba(0,0,0,0.18)",
-          }}
-        />
 
         <div className="relative px-7 pb-6 pt-8">
           <div className="mb-6 flex items-start justify-between gap-5">
@@ -323,7 +307,7 @@ export default function MyProductCardBeverages({
                 className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1"
                 style={{
                   color: "#cb6843",
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                  fontFamily: "'Jost', sans-serif",
                 }}
               >
                 <span className="text-[10px] font-medium uppercase tracking-[0.28em]">
@@ -332,7 +316,7 @@ export default function MyProductCardBeverages({
                 <span className="text-[10px] font-medium uppercase tracking-[0.28em]">
                   Featured
                 </span>
-                <span className="text-[9px] uppercase tracking-[0.22em] text-[#8d7140]">
+                <span className="text-[9px] uppercase tracking-[0.22em] text-[#a79c8a]">
                   Card B-01
                 </span>
               </div>
@@ -342,10 +326,10 @@ export default function MyProductCardBeverages({
                   value={entryName}
                   onChange={(event) => setEntryName(event.target.value)}
                   rows={2}
-                  className="w-full resize-none bg-transparent font-serif text-[52px] leading-[0.86] tracking-[-0.05em] text-[#1d1710] focus:outline-none"
+                  className="w-full resize-none bg-transparent font-serif text-[52px] leading-[0.86] tracking-[-0.05em] text-[#1b1a18] focus:outline-none"
                 />
               ) : (
-                <p className="font-serif text-[52px] leading-[0.86] tracking-[-0.05em] text-[#1d1710]">
+                <p className="font-serif text-[52px] leading-[0.86] tracking-[-0.05em] text-[#1b1a18]">
                   {cardTitle}
                 </p>
               )}
@@ -353,8 +337,8 @@ export default function MyProductCardBeverages({
               <p
                 className="mt-3 text-[10px] uppercase tracking-[0.28em]"
                 style={{
-                  color: "#8d7140",
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                  color: "#a59a88",
+                  fontFamily: "'Jost', sans-serif",
                 }}
               >
                 Personal beverage file
@@ -362,26 +346,26 @@ export default function MyProductCardBeverages({
             </div>
 
             <div
-              className="relative mt-1 h-[138px] w-[126px] shrink-0 rounded-[20px] border p-3"
+              className="relative mt-1 h-[138px] w-[118px] shrink-0 rounded-[24px] border p-3"
               style={{
-                background: "linear-gradient(180deg, rgba(243,232,205,0.92) 0%, rgba(235,219,184,0.92) 100%)",
-                borderColor: "rgba(108, 84, 44, 0.2)",
-                boxShadow: "0 4px 14px rgba(55,42,21,0.12)",
+                background: "linear-gradient(180deg, rgba(242,236,226,0.98) 0%, rgba(235,228,216,0.98) 100%)",
+                borderColor: "rgba(190, 183, 171, 0.54)",
+                boxShadow: "0 4px 14px rgba(55,42,21,0.08)",
               }}
             >
               <div
-                className="absolute left-1/2 top-2 h-3 w-10 -translate-x-1/2 rounded-full"
+                className="absolute left-1/2 top-3 h-2.5 w-9 -translate-x-1/2 rounded-full"
                 style={{
-                  background: "rgba(97, 120, 130, 0.84)",
+                  background: "rgba(118, 141, 150, 0.76)",
                   boxShadow: "inset 0 1px 1px rgba(255,255,255,0.24)",
                 }}
               />
               <div
                 className="flex h-full items-center justify-center rounded-[14px] border border-dashed"
                 style={{
-                  borderColor: "rgba(117, 139, 146, 0.58)",
-                  color: "#6e8085",
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                  borderColor: "rgba(127, 151, 160, 0.54)",
+                  color: "#7b9097",
+                  fontFamily: "'Jost', sans-serif",
                 }}
               >
                 <div className="text-center">
@@ -397,20 +381,20 @@ export default function MyProductCardBeverages({
           <div
             className="mb-5 rounded-[20px] border px-4 py-3"
             style={{
-              background: "rgba(246, 235, 206, 0.72)",
-              borderColor: "rgba(108, 84, 44, 0.16)",
+              background: "rgba(248, 244, 236, 0.72)",
+              borderColor: "rgba(190, 183, 171, 0.42)",
             }}
           >
             <p
               className="mb-1 text-[9px] uppercase tracking-[0.24em]"
               style={{
-                color: "#8d7140",
-                fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                color: "#a59a88",
+                fontFamily: "'Jost', sans-serif",
               }}
             >
               Indexed under
             </p>
-            <p className="text-[14px] text-[#342818]" style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}>
+            <p className="text-[14px] text-[#4a4338]" style={{ fontFamily: "'Jost', sans-serif" }}>
               Taste, ritual, spots, and hard no's.
             </p>
           </div>
@@ -498,12 +482,12 @@ export default function MyProductCardBeverages({
             <div
               className="rounded-full border px-4 py-2 text-[9px] uppercase tracking-[0.24em]"
               style={{
-                borderColor: "rgba(108, 84, 44, 0.22)",
-                color: "#86693a",
-                fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                borderColor: "rgba(190, 183, 171, 0.54)",
+                color: "#9c907e",
+                fontFamily: "'Jost', sans-serif",
               }}
             >
-              Rolodex file
+              Indexed card
             </div>
 
             {interactive ? (
@@ -513,22 +497,22 @@ export default function MyProductCardBeverages({
                 disabled={saving}
                 className="h-11 rounded-full px-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f4ead0] transition-opacity duration-200 disabled:cursor-not-allowed disabled:opacity-70"
                 style={{
-                  background: "linear-gradient(180deg, #62545f 0%, #424c53 100%)",
+                  background: "linear-gradient(180deg, #617984 0%, #4f6770 100%)",
                   boxShadow: "0 8px 18px rgba(37,32,27,0.22), inset 0 1px 0 rgba(255,255,255,0.18)",
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                  fontFamily: "'Jost', sans-serif",
                 }}
               >
-                {saving ? "Filing..." : "File Card"}
+                {saving ? "Saving..." : "Save Card"}
               </button>
             ) : (
               <div
                 className="flex h-11 items-center rounded-full px-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f4ead0]"
                 style={{
-                  background: "linear-gradient(180deg, #62545f 0%, #424c53 100%)",
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                  background: "linear-gradient(180deg, #617984 0%, #4f6770 100%)",
+                  fontFamily: "'Jost', sans-serif",
                 }}
               >
-                File Card
+                Save Card
               </div>
             )}
           </div>
