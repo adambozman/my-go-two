@@ -4,8 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import { cleanupLegacyBrokenImageRows } from "@/lib/legacyImageCleanup";
 import { resolveStorageUrl, resolveStorageUrls } from "@/lib/storageRefs";
-import MyGoTwoProductCard from "@/platform-ui/web/mygotwo/MyGoTwoProductCard";
-import type { SubcategoryGroup, SubtypeItem } from "@/data/templateSubtypes";
+import MyProductCardBeverages from "@/platform-ui/web/mygotwo/MyProductCardBeverages";
 import {
   MYGOTWO_COLLAPSE_IMAGES,
   MYGOTWO_COLLAPSE_SLOT_TARGETS,
@@ -28,53 +27,11 @@ type StripPresentation = {
 
 type CategoryOverlayContent = {
   title: string;
-  categoryLabel: string;
-  subcategory: SubcategoryGroup;
-  product: SubtypeItem;
-};
-
-const BEVERAGES_PRODUCT: SubtypeItem = {
-  id: "beverages-featured-product-card",
-  name: "Beverage",
-  image: "",
-  fields: [
-    {
-      label: "Size",
-      type: "select",
-      value: "M",
-      options: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
-    },
-    {
-      label: "Preferred brands",
-      type: "text",
-      value: "",
-    },
-    {
-      label: "Keywords",
-      type: "text",
-      value: "",
-    },
-    {
-      label: "Notes",
-      type: "text",
-      value: "",
-    },
-  ],
-};
-
-const BEVERAGES_SUBCATEGORY: SubcategoryGroup = {
-  id: "beverages-featured",
-  name: "Featured",
-  image: "",
-  products: [BEVERAGES_PRODUCT],
 };
 
 const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
   Beverages: {
     title: "Pour Something Worth Staying For",
-    categoryLabel: "Beverages",
-    subcategory: BEVERAGES_SUBCATEGORY,
-    product: BEVERAGES_PRODUCT,
   },
 };
 
@@ -315,11 +272,8 @@ function CategoryOverlay({
             </h2>
           </div>
           <div className="absolute inset-0">
-            <MyGoTwoProductCard
+            <MyProductCardBeverages
               userId={user?.id ?? ""}
-              categoryLabel={overlayContent.categoryLabel}
-              subcategory={overlayContent.subcategory}
-              product={overlayContent.product}
               activeEntry={null}
               onSaved={() => undefined}
             />
