@@ -286,7 +286,7 @@ function CategoryOverlay({
                 {overlayContent.title}
               </h2>
               <p
-                className="mx-auto mt-5 max-w-[31rem] whitespace-pre-line text-[1.12rem] leading-8 text-white/92 drop-shadow-[0_10px_22px_rgba(0,0,0,0.38)] sm:text-[1.2rem]"
+                className="mx-auto mt-5 max-w-[31rem] whitespace-pre-line text-[1.12rem] leading-8 text-white drop-shadow-[0_10px_22px_rgba(0,0,0,0.38)] sm:text-[1.2rem]"
                 style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 {overlayContent.description}
