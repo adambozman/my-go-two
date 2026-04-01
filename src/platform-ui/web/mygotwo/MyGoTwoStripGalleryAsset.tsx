@@ -270,35 +270,28 @@ function CategoryOverlay({
       {overlayContent ? (
         <div className="absolute inset-0 z-10">
           <div
-            className="pointer-events-none absolute bottom-24 left-5 max-w-[min(30rem,48vw)] rounded-[32px] px-6 py-6 sm:bottom-28 sm:left-8 sm:px-7 md:left-10 lg:bottom-28 lg:left-14"
+            className="pointer-events-none absolute inset-y-0 left-5 flex items-center sm:left-8 md:left-10 lg:left-14"
             style={{
-              background:
-                "linear-gradient(140deg, rgba(255,255,255,0.76) 0%, rgba(250,244,236,0.72) 42%, rgba(239,224,207,0.62) 100%)",
-              border: "1px solid rgba(255,255,255,0.78)",
-              boxShadow:
-                "inset 0 1px 0 rgba(255,255,255,0.92), 0 22px 52px rgba(var(--swatch-cedar-grove-rgb), 0.16), 0 10px 28px rgba(var(--swatch-viridian-odyssey-rgb), 0.1)",
-              backdropFilter: "blur(8px)",
+              right: "calc(clamp(480px, 37.5%, 560px) + clamp(0.875rem, 1.8vw, 1.5rem))",
             }}
           >
-            <h2
-              className="max-w-[9ch] text-[clamp(2.35rem,4.7vw,4.35rem)] leading-[0.9] tracking-[-0.05em]"
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontWeight: 700,
-                color: "var(--swatch-teal)",
-              }}
-            >
-              {overlayContent.title}
-            </h2>
-            <p
-              className="mt-4 max-w-[23rem] whitespace-pre-line text-[0.98rem] leading-7 sm:text-[1.02rem]"
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                color: "rgba(var(--swatch-antique-coin-rgb), 0.98)",
-              }}
-            >
-              {overlayContent.description}
-            </p>
+            <div className="mx-auto max-w-[min(36rem,82%)] text-center">
+              <h2
+                className="mx-auto max-w-[10ch] text-[clamp(3.35rem,6.8vw,6rem)] leading-[0.88] tracking-[-0.05em] text-white drop-shadow-[0_16px_34px_rgba(0,0,0,0.44)]"
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontWeight: 700,
+                }}
+              >
+                {overlayContent.title}
+              </h2>
+              <p
+                className="mx-auto mt-5 max-w-[31rem] whitespace-pre-line text-[1.12rem] leading-8 text-white/92 drop-shadow-[0_10px_22px_rgba(0,0,0,0.38)] sm:text-[1.2rem]"
+                style={{ fontFamily: "'Jost', sans-serif" }}
+              >
+                {overlayContent.description}
+              </p>
+            </div>
           </div>
           <div className="absolute inset-0">
             <MyProductCardBeverages
