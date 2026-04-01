@@ -255,7 +255,7 @@ function CategoryOverlay({
             : "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
         }}
       />
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-end p-4 sm:p-5">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-start p-4 sm:p-5">
         <button
           type="button"
           onClick={onBack}
@@ -280,11 +280,6 @@ function CategoryOverlay({
           </div>
         </div>
       ) : null}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-center p-5 sm:p-6">
-        <span className="text-sm font-medium uppercase tracking-[0.28em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] sm:text-base">
-          {category.label}
-        </span>
-      </div>
     </>
   );
 }

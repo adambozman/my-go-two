@@ -249,14 +249,15 @@ export default function MyProductCardBeverages({
       aria-label="Favorite Drink product card"
       className={compact ? "relative z-20 w-full" : "absolute z-20"}
       style={{
-        top: compact ? undefined : "122px",
-        right: compact ? undefined : "48px",
+        top: compact ? undefined : "14px",
+        right: compact ? undefined : "14px",
+        bottom: compact ? undefined : "14px",
         width: compact ? "100%" : "428px",
       }}
     >
       <div
         aria-hidden="true"
-        className="absolute inset-x-2 top-[8px] h-full rounded-[34px]"
+        className="absolute inset-x-2 bottom-0 top-[8px] rounded-[34px]"
         style={{
           background: "rgba(52, 45, 38, 0.1)",
           filter: "blur(0.5px)",
@@ -264,7 +265,7 @@ export default function MyProductCardBeverages({
       />
 
       <div
-        className="relative overflow-hidden rounded-[36px] border"
+        className="relative flex h-full flex-col overflow-hidden rounded-[36px] border"
         style={{
           background: "linear-gradient(180deg, #f5efe2 0%, #efe6d8 100%)",
           borderColor: "rgba(190, 183, 171, 0.54)",
@@ -300,8 +301,8 @@ export default function MyProductCardBeverages({
           ))}
         </div>
 
-        <div className="relative px-7 pb-6 pt-8">
-          <div className="mb-6 flex items-start justify-between gap-5">
+        <div className="relative flex h-full flex-col px-7 pb-5 pt-8">
+          <div className="mb-5 flex items-start justify-between gap-5">
             <div className="min-w-0 flex-1 pr-1">
               <div
                 className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1"
@@ -379,7 +380,7 @@ export default function MyProductCardBeverages({
           </div>
 
           <div
-            className="mb-5 rounded-[20px] border px-4 py-3"
+            className="mb-4 rounded-[20px] border px-4 py-3"
             style={{
               background: "rgba(248, 244, 236, 0.72)",
               borderColor: "rgba(190, 183, 171, 0.42)",
@@ -399,7 +400,7 @@ export default function MyProductCardBeverages({
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="flex flex-1 flex-col gap-3">
             {goToOrder ? (
               <BeverageField
                 field={goToOrder}
@@ -462,23 +463,25 @@ export default function MyProductCardBeverages({
               />
             ) : null}
 
-            {notes ? (
-              <BeverageField
-                field={notes}
-                value={fieldValues[slugFieldLabel(notes.label)] || ""}
-                interactive={interactive}
-                compact={compact}
-                onChange={(nextValue) =>
-                  setFieldValues((current) => ({
-                    ...current,
-                    [slugFieldLabel(notes.label)]: nextValue,
-                  }))
-                }
-              />
-            ) : null}
+            <div className="flex-1">
+              {notes ? (
+                <BeverageField
+                  field={notes}
+                  value={fieldValues[slugFieldLabel(notes.label)] || ""}
+                  interactive={interactive}
+                  compact={compact}
+                  onChange={(nextValue) =>
+                    setFieldValues((current) => ({
+                      ...current,
+                      [slugFieldLabel(notes.label)]: nextValue,
+                    }))
+                  }
+                />
+              ) : null}
+            </div>
           </div>
 
-          <div className="mt-5 flex items-center justify-between gap-4">
+          <div className="mt-4 flex items-center justify-between gap-4">
             <div
               className="rounded-full border px-4 py-2 text-[9px] uppercase tracking-[0.24em]"
               style={{
