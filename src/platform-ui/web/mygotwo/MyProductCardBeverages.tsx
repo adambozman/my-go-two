@@ -252,7 +252,8 @@ export default function MyProductCardBeverages({
         top: compact ? undefined : "14px",
         right: compact ? undefined : "14px",
         bottom: compact ? undefined : "14px",
-        width: compact ? "100%" : "428px",
+        width: compact ? "100%" : "min(37.5%, 560px)",
+        minWidth: compact ? undefined : "480px",
       }}
     >
       <div
