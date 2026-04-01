@@ -282,32 +282,6 @@ export default function MyProductCardBeverages({
           }}
         />
 
-        <div
-          aria-hidden="true"
-          className="absolute right-8 top-0 flex -translate-y-[62%] gap-1.5"
-        >
-          {["Taste", "Places", "Notes"].map((tab, index) => (
-            <span
-              key={tab}
-              className="flex h-7 items-end rounded-t-[10px] border border-b-0 px-3 pb-1 text-[8px] font-medium uppercase tracking-[0.2em]"
-              style={{
-                background:
-                  index === 0
-                    ? "rgba(var(--swatch-paper-rgb), 0.98)"
-                    : "rgba(var(--swatch-paper-rgb), 0.82)",
-                borderColor: "rgba(var(--swatch-teal-rgb), 0.12)",
-                color:
-                  index === 0
-                    ? "rgba(var(--swatch-teal-rgb), 0.82)"
-                    : "rgba(var(--swatch-antique-coin-rgb), 0.88)",
-                fontFamily: "'Jost', sans-serif",
-              }}
-            >
-              {tab}
-            </span>
-          ))}
-        </div>
-
         <div className="relative flex h-full flex-col px-7 pb-5 pt-8">
           <div className="mb-5 flex items-start justify-between gap-5">
             <div className="min-w-0 flex-1 pr-1">
