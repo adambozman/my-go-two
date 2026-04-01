@@ -461,6 +461,8 @@ export default function MyGoTwoStripGalleryAsset() {
 
     hasCleanedLegacyRowsRef.current = true;
 
+    void loadAssignedImages();
+
     void cleanupLegacyBrokenImageRows()
       .catch((error) => {
         console.error("Legacy image cleanup failed:", error);
@@ -685,13 +687,7 @@ export default function MyGoTwoStripGalleryAsset() {
           borderRadius: "44px",
         }}
       >
-        <div
-          className="relative h-full w-full overflow-hidden"
-          style={{
-            opacity: isInitialLoadPending ? 0 : 1,
-            transition: "opacity 320ms ease",
-          }}
-        >
+        <div className="relative h-full w-full overflow-hidden">
           {activeCategory ? (
             <CategoryOverlay category={activeCategory} onBack={() => setActiveCategoryId(null)} />
           ) : (
