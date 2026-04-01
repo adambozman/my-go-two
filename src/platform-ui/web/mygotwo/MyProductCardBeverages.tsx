@@ -14,6 +14,16 @@ type MyProductCardBeveragesProps = {
 };
 
 type ProductField = SubtypeItem["fields"][number];
+type FieldKey = "go_to_order" | "favorite_place" | "how_i_take_it" | "avoid" | "notes";
+type FieldPresentation = "searchable" | "freeform";
+
+type BeverageFieldConfig = {
+  key: FieldKey;
+  label: string;
+  placeholder: string;
+  presentation: FieldPresentation;
+  multiline?: boolean;
+};
 
 const BEVERAGES_PRODUCT: SubtypeItem = {
   id: "beverages-featured-product-card",
@@ -55,13 +65,39 @@ const BEVERAGES_SUBCATEGORY: SubcategoryGroup = {
   products: [BEVERAGES_PRODUCT],
 };
 
-const FIELD_PLACEHOLDERS: Record<string, string> = {
-  "Go-to order": "Iced matcha, half sweet, oat milk",
-  "Favorite place": "Cafe, bar, or spot",
-  "How I take it": "Extra cold, strong, no foam",
-  Avoid: "Too sweet, watery, no pulp",
-  Notes: "Add a note...",
-};
+const FIELD_CONFIGS: BeverageFieldConfig[] = [
+  {
+    key: "go_to_order",
+    label: "Go-to order",
+    placeholder: "Iced matcha, half sweet, oat milk",
+    presentation: "searchable",
+  },
+  {
+    key: "favorite_place",
+    label: "Favorite place",
+    placeholder: "Cafe, bar, or spot",
+    presentation: "searchable",
+  },
+  {
+    key: "how_i_take_it",
+    label: "How I take it",
+    placeholder: "Extra cold, strong, no foam",
+    presentation: "searchable",
+  },
+  {
+    key: "avoid",
+    label: "Avoid",
+    placeholder: "Too sweet, watery, no pulp",
+    presentation: "searchable",
+  },
+  {
+    key: "notes",
+    label: "Notes",
+    placeholder: "Add a note...",
+    presentation: "freeform",
+    multiline: true,
+  },
+];
 
 function slugFieldLabel(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
@@ -84,6 +120,18 @@ function buildInitialFieldValues(fields: ProductField[], activeEntry: CardEntry 
   }, {});
 }
 
+function getFieldConfig(field: ProductField): BeverageFieldConfig {
+  const key = slugFieldLabel(field.label) as FieldKey;
+  return (
+    FIELD_CONFIGS.find((config) => config.key === key) ?? {
+      key,
+      label: field.label,
+      placeholder: "+ add",
+      presentation: "freeform",
+    }
+  );
+}
+
 function SectionEyebrow({ children }: { children: string }) {
   return (
     <p
@@ -102,28 +150,43 @@ function RecordField({
   field,
   value,
   interactive,
-  multiline = false,
   onChange,
 }: {
   field: ProductField;
   value: string;
   interactive: boolean;
-  multiline?: boolean;
   onChange: (value: string) => void;
 }) {
-  const placeholder = FIELD_PLACEHOLDERS[field.label] ?? "+ add";
+  const config = getFieldConfig(field);
+  const placeholder = config.placeholder;
+  const multiline = Boolean(config.multiline);
 
   return (
     <div className="py-3.5">
-      <p
-        className="mb-2 text-[9px] uppercase tracking-[0.22em]"
-        style={{
-          fontFamily: "'Jost', sans-serif",
-          color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
-        }}
-      >
-        {field.label}
-      </p>
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <p
+          className="text-[9px] uppercase tracking-[0.22em]"
+          style={{
+            fontFamily: "'Jost', sans-serif",
+            color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
+          }}
+        >
+          {field.label}
+        </p>
+        {config.presentation === "searchable" ? (
+          <span
+            className="rounded-full px-2.5 py-1 text-[8px] uppercase tracking-[0.16em]"
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              color: "rgba(var(--swatch-teal-rgb), 0.72)",
+              background: "rgba(255,255,255,0.2)",
+              border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
+            }}
+          >
+            Search-ready
+          </span>
+        ) : null}
+      </div>
       {interactive ? (
         multiline ? (
           <textarea
@@ -275,11 +338,12 @@ export default function MyProductCardBeverages({
     }
   }
 
-  const goToOrder = fields.find((field) => field.label === "Go-to order");
-  const favoritePlace = fields.find((field) => field.label === "Favorite place");
-  const howITakeIt = fields.find((field) => field.label === "How I take it");
-  const avoid = fields.find((field) => field.label === "Avoid");
-  const notes = fields.find((field) => field.label === "Notes");
+  const fieldsByKey = useMemo(() => {
+    return fields.reduce<Partial<Record<FieldKey, ProductField>>>((acc, field) => {
+      acc[slugFieldLabel(field.label) as FieldKey] = field;
+      return acc;
+    }, {});
+  }, [fields]);
   const cardTitle = entryName.trim() || "Beverage";
 
   return (
@@ -385,15 +449,15 @@ export default function MyProductCardBeverages({
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
             }}
           >
-            {goToOrder ? (
+            {fieldsByKey.go_to_order ? (
               <RecordField
-                field={goToOrder}
-                value={fieldValues[slugFieldLabel(goToOrder.label)] || ""}
+                field={fieldsByKey.go_to_order}
+                value={fieldValues.go_to_order || ""}
                 interactive={interactive}
                 onChange={(nextValue) =>
                   setFieldValues((current) => ({
                     ...current,
-                    [slugFieldLabel(goToOrder.label)]: nextValue,
+                    go_to_order: nextValue,
                   }))
                 }
               />
@@ -406,29 +470,29 @@ export default function MyProductCardBeverages({
             />
 
             <div className="grid grid-cols-2 gap-5">
-              {favoritePlace ? (
+              {fieldsByKey.favorite_place ? (
                 <RecordField
-                  field={favoritePlace}
-                  value={fieldValues[slugFieldLabel(favoritePlace.label)] || ""}
+                  field={fieldsByKey.favorite_place}
+                  value={fieldValues.favorite_place || ""}
                   interactive={interactive}
                   onChange={(nextValue) =>
                     setFieldValues((current) => ({
                       ...current,
-                      [slugFieldLabel(favoritePlace.label)]: nextValue,
+                      favorite_place: nextValue,
                     }))
                   }
                 />
               ) : null}
 
-              {howITakeIt ? (
+              {fieldsByKey.how_i_take_it ? (
                 <RecordField
-                  field={howITakeIt}
-                  value={fieldValues[slugFieldLabel(howITakeIt.label)] || ""}
+                  field={fieldsByKey.how_i_take_it}
+                  value={fieldValues.how_i_take_it || ""}
                   interactive={interactive}
                   onChange={(nextValue) =>
                     setFieldValues((current) => ({
                       ...current,
-                      [slugFieldLabel(howITakeIt.label)]: nextValue,
+                      how_i_take_it: nextValue,
                     }))
                   }
                 />
@@ -441,15 +505,15 @@ export default function MyProductCardBeverages({
               style={{ background: "rgba(var(--swatch-teal-rgb), 0.12)" }}
             />
 
-            {avoid ? (
+            {fieldsByKey.avoid ? (
               <RecordField
-                field={avoid}
-                value={fieldValues[slugFieldLabel(avoid.label)] || ""}
+                field={fieldsByKey.avoid}
+                value={fieldValues.avoid || ""}
                 interactive={interactive}
                 onChange={(nextValue) =>
                   setFieldValues((current) => ({
                     ...current,
-                    [slugFieldLabel(avoid.label)]: nextValue,
+                    avoid: nextValue,
                   }))
                 }
               />
@@ -464,16 +528,15 @@ export default function MyProductCardBeverages({
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.46)",
             }}
           >
-            {notes ? (
+            {fieldsByKey.notes ? (
               <RecordField
-                field={notes}
-                value={fieldValues[slugFieldLabel(notes.label)] || ""}
+                field={fieldsByKey.notes}
+                value={fieldValues.notes || ""}
                 interactive={interactive}
-                multiline
                 onChange={(nextValue) =>
                   setFieldValues((current) => ({
                     ...current,
-                    [slugFieldLabel(notes.label)]: nextValue,
+                    notes: nextValue,
                   }))
                 }
               />
