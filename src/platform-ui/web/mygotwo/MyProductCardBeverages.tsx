@@ -150,11 +150,13 @@ function RecordField({
   field,
   value,
   interactive,
+  framed = false,
   onChange,
 }: {
   field: ProductField;
   value: string;
   interactive: boolean;
+  framed?: boolean;
   onChange: (value: string) => void;
 }) {
   const config = getFieldConfig(field);
@@ -162,8 +164,29 @@ function RecordField({
   const multiline = Boolean(config.multiline);
 
   return (
-    <div className="py-3.5">
-      <div className="mb-2 flex items-center justify-between gap-3">
+    <div
+      className={framed ? "rounded-[22px] px-4 py-3.5" : "py-3.5"}
+      style={
+        framed
+          ? {
+              background: "rgba(255,255,255,0.22)",
+              border: "1px solid rgba(var(--swatch-teal-rgb), 0.1)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4)",
+            }
+          : undefined
+      }
+    >
+      <div className="mb-2 flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className="inline-block h-1.5 w-1.5 rounded-full"
+          style={{
+            background:
+              config.presentation === "searchable"
+                ? "rgba(var(--swatch-cedar-grove-rgb), 0.9)"
+                : "rgba(var(--swatch-antique-coin-rgb), 0.9)",
+          }}
+        />
         <p
           className="text-[9px] uppercase tracking-[0.22em]"
           style={{
@@ -173,19 +196,6 @@ function RecordField({
         >
           {field.label}
         </p>
-        {config.presentation === "searchable" ? (
-          <span
-            className="rounded-full px-2.5 py-1 text-[8px] uppercase tracking-[0.16em]"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              color: "rgba(var(--swatch-teal-rgb), 0.72)",
-              background: "rgba(255,255,255,0.2)",
-              border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
-            }}
-          >
-            Search-ready
-          </span>
-        ) : null}
       </div>
       {interactive ? (
         multiline ? (
@@ -193,7 +203,7 @@ function RecordField({
             value={value}
             onChange={(event) => onChange(event.target.value)}
             placeholder={placeholder}
-            className="min-h-[120px] w-full resize-none bg-transparent text-[15px] leading-[1.65] focus:outline-none"
+            className="min-h-[132px] w-full resize-none bg-transparent text-[15px] leading-[1.7] focus:outline-none"
             style={{
               fontFamily: "'Jost', sans-serif",
               color: "rgba(var(--swatch-teal-rgb), 0.84)",
@@ -204,7 +214,7 @@ function RecordField({
             value={value}
             onChange={(event) => onChange(event.target.value)}
             placeholder={placeholder}
-            className="w-full bg-transparent text-[15px] leading-[1.55] focus:outline-none"
+            className="w-full bg-transparent text-[15px] leading-[1.6] focus:outline-none"
             style={{
               fontFamily: "'Jost', sans-serif",
               color: "rgba(var(--swatch-teal-rgb), 0.84)",
@@ -213,10 +223,10 @@ function RecordField({
         )
       ) : (
         <p
-          className={multiline ? "min-h-[120px]" : ""}
+          className={multiline ? "min-h-[132px]" : ""}
           style={{
             fontSize: "15px",
-            lineHeight: 1.65,
+            lineHeight: 1.7,
             fontFamily: "'Jost', sans-serif",
             color: "rgba(var(--swatch-teal-rgb), 0.84)",
           }}
@@ -231,13 +241,18 @@ function RecordField({
 function SnapshotSlot() {
   return (
     <div
-      className="relative h-[136px] w-[112px] shrink-0 rounded-[28px] border p-3"
+      className="relative h-[128px] w-[108px] shrink-0 overflow-hidden rounded-[28px] border p-3"
       style={{
-        background: "rgba(255,255,255,0.18)",
-        borderColor: "rgba(var(--swatch-teal-rgb), 0.2)",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.52)",
+        background: "linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0.12))",
+        borderColor: "rgba(var(--swatch-teal-rgb), 0.18)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.52), 0 10px 24px rgba(var(--swatch-viridian-odyssey-rgb), 0.06)",
       }}
     >
+      <div
+        aria-hidden="true"
+        className="absolute -right-5 -top-5 h-16 w-16 rounded-full"
+        style={{ background: "rgba(var(--swatch-teal-rgb), 0.08)" }}
+      />
       <div
         aria-hidden="true"
         className="absolute left-1/2 top-3 h-2.5 w-9 -translate-x-1/2 rounded-full"
@@ -246,9 +261,10 @@ function SnapshotSlot() {
         }}
       />
       <div
-        className="flex h-full items-center justify-center rounded-[18px] border border-dashed"
+        className="flex h-full items-center justify-center rounded-[18px] border"
         style={{
-          borderColor: "rgba(var(--swatch-teal-rgb), 0.22)",
+          borderColor: "rgba(var(--swatch-teal-rgb), 0.16)",
+          background: "rgba(255,255,255,0.16)",
         }}
       >
         <div className="text-center">
@@ -382,14 +398,14 @@ export default function MyProductCardBeverages({
 
         <div className="relative flex h-full flex-col px-7 pb-5 pt-7">
           <div className="flex items-start justify-between gap-5">
-            <div className="min-w-0 flex-1 max-w-[19rem]">
+            <div className="min-w-0 flex-1 max-w-[18rem]">
               <SectionEyebrow>My Go Two / Vault</SectionEyebrow>
               {interactive ? (
                 <textarea
                   value={entryName}
                   onChange={(event) => setEntryName(event.target.value)}
                   rows={2}
-                  className="mt-3 w-full resize-none bg-transparent text-[58px] leading-[0.9] tracking-[-0.05em] focus:outline-none"
+                  className="mt-3 w-full resize-none bg-transparent text-[54px] leading-[0.92] tracking-[-0.045em] focus:outline-none"
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
                     fontWeight: 700,
@@ -398,7 +414,7 @@ export default function MyProductCardBeverages({
                 />
               ) : (
                 <h2
-                  className="mt-3 text-[58px] leading-[0.9] tracking-[-0.05em]"
+                  className="mt-3 text-[54px] leading-[0.92] tracking-[-0.045em]"
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
                     fontWeight: 700,
@@ -408,6 +424,15 @@ export default function MyProductCardBeverages({
                   {cardTitle}
                 </h2>
               )}
+              <p
+                className="mt-3 max-w-[16rem] text-[13px] leading-[1.55]"
+                style={{
+                  fontFamily: "'Jost', sans-serif",
+                  color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
+                }}
+              >
+                Save the exact drink, the exact spot, and the way you always get it.
+              </p>
             </div>
 
             <SnapshotSlot />
@@ -416,8 +441,8 @@ export default function MyProductCardBeverages({
           <div
             className="mt-6 rounded-[24px] px-5 py-4"
             style={{
-              background: "rgba(255,255,255,0.22)",
-              border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)",
+              background: "rgba(255,255,255,0.26)",
+              border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.56)",
             }}
           >
@@ -442,11 +467,11 @@ export default function MyProductCardBeverages({
           </div>
 
           <div
-            className="mt-5 flex-1 rounded-[28px] px-5 py-2"
+            className="mt-5 flex-1 rounded-[30px] px-5 py-5"
             style={{
-              background: "rgba(255,255,255,0.18)",
-              border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
+              background: "rgba(255,255,255,0.14)",
+              border: "1px solid rgba(var(--swatch-teal-rgb), 0.1)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.46)",
             }}
           >
             {fieldsByKey.go_to_order ? (
@@ -454,6 +479,7 @@ export default function MyProductCardBeverages({
                 field={fieldsByKey.go_to_order}
                 value={fieldValues.go_to_order || ""}
                 interactive={interactive}
+                framed
                 onChange={(nextValue) =>
                   setFieldValues((current) => ({
                     ...current,
@@ -475,6 +501,7 @@ export default function MyProductCardBeverages({
                   field={fieldsByKey.favorite_place}
                   value={fieldValues.favorite_place || ""}
                   interactive={interactive}
+                  framed
                   onChange={(nextValue) =>
                     setFieldValues((current) => ({
                       ...current,
@@ -489,6 +516,7 @@ export default function MyProductCardBeverages({
                   field={fieldsByKey.how_i_take_it}
                   value={fieldValues.how_i_take_it || ""}
                   interactive={interactive}
+                  framed
                   onChange={(nextValue) =>
                     setFieldValues((current) => ({
                       ...current,
@@ -510,6 +538,7 @@ export default function MyProductCardBeverages({
                 field={fieldsByKey.avoid}
                 value={fieldValues.avoid || ""}
                 interactive={interactive}
+                framed
                 onChange={(nextValue) =>
                   setFieldValues((current) => ({
                     ...current,
@@ -521,9 +550,9 @@ export default function MyProductCardBeverages({
           </div>
 
           <div
-            className="mt-4 rounded-[28px] px-5 py-2"
+            className="mt-4 rounded-[30px] px-5 py-4"
             style={{
-              background: "rgba(255,255,255,0.16)",
+              background: "rgba(255,255,255,0.14)",
               border: "1px solid rgba(var(--swatch-teal-rgb), 0.1)",
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.46)",
             }}
@@ -547,13 +576,13 @@ export default function MyProductCardBeverages({
             <div
               className="rounded-full px-4 py-2 text-[10px] uppercase tracking-[0.18em]"
               style={{
-                background: "rgba(255,255,255,0.22)",
+                background: "rgba(255,255,255,0.26)",
                 border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)",
                 color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
                 fontFamily: "'Jost', sans-serif",
               }}
             >
-              Indexed card
+              Vault card
             </div>
 
             {interactive ? (
@@ -563,8 +592,8 @@ export default function MyProductCardBeverages({
                 disabled={saving}
                 className="h-11 rounded-full px-7 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f4ead0] transition-opacity duration-200 disabled:cursor-not-allowed disabled:opacity-70"
                 style={{
-                  background: "linear-gradient(180deg, #617984 0%, #4f6770 100%)",
-                  boxShadow: "0 8px 18px rgba(37,32,27,0.18), inset 0 1px 0 rgba(255,255,255,0.18)",
+                  background: "linear-gradient(180deg, #617984 0%, #506973 100%)",
+                  boxShadow: "0 10px 22px rgba(37,32,27,0.16), inset 0 1px 0 rgba(255,255,255,0.18)",
                   fontFamily: "'Jost', sans-serif",
                 }}
               >
