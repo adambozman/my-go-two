@@ -17,7 +17,7 @@ type ProductField = SubtypeItem["fields"][number];
 
 const BEVERAGES_PRODUCT: SubtypeItem = {
   id: "beverages-featured-product-card",
-  name: "Favorite Drink",
+  name: "Beverage",
   image: "",
   fields: [
     {
@@ -250,7 +250,7 @@ export default function MyProductCardBeverages({
   const avoid = fields.find((field) => field.label === "Avoid");
   const notes = fields.find((field) => field.label === "Notes");
 
-  const cardTitle = entryName.trim() || "Favorite Drink";
+  const cardTitle = entryName.trim() || "Beverage";
 
   return (
     <section
@@ -296,26 +296,14 @@ export default function MyProductCardBeverages({
           <div className="mb-5 flex items-start justify-between gap-5">
             <div className="min-w-0 flex-1 pr-1">
               <div
-                className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1"
+                className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1"
                 style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 <span
-                  className="text-[10px] font-medium uppercase tracking-[0.28em]"
+                  className="text-[10px] font-medium uppercase tracking-[0.22em]"
                   style={{ color: "var(--swatch-cedar-grove)" }}
                 >
-                  Beverages
-                </span>
-                <span
-                  className="text-[10px] font-medium uppercase tracking-[0.28em]"
-                  style={{ color: "var(--swatch-cedar-grove)" }}
-                >
-                  Featured
-                </span>
-                <span
-                  className="text-[9px] uppercase tracking-[0.22em]"
-                  style={{ color: "rgba(var(--swatch-antique-coin-rgb), 0.9)" }}
-                >
-                  Card B-01
+                  My Go To / Beverage
                 </span>
               </div>
 
