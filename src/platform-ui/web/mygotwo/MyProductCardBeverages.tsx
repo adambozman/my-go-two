@@ -106,16 +106,17 @@ function BeverageField({
         compact ? "" : ""
       }`}
       style={{
-        background: "rgba(247, 242, 233, 0.82)",
-        borderColor: "rgba(188, 180, 167, 0.42)",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)",
+        background: "rgba(255,255,255,0.56)",
+        borderColor: "rgba(255,255,255,0.8)",
+        boxShadow:
+          "inset 0 1px 0 rgba(255,255,255,0.96), 0 10px 24px rgba(var(--swatch-viridian-odyssey-rgb), 0.04)",
       }}
     >
       <div
         aria-hidden="true"
         className="absolute inset-x-4 top-0 h-px"
         style={{
-          background: "rgba(255,255,255,0.72)",
+          background: "rgba(255,255,255,0.96)",
         }}
       />
       {!isNotes ? (
@@ -123,8 +124,8 @@ function BeverageField({
           aria-hidden="true"
           className="absolute right-4 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full border"
           style={{
-            borderColor: "rgba(127, 151, 160, 0.32)",
-            background: "rgba(255,255,255,0.28)",
+            borderColor: "rgba(var(--swatch-teal-rgb), 0.18)",
+            background: "rgba(255,255,255,0.42)",
           }}
         />
       ) : null}
@@ -132,7 +133,7 @@ function BeverageField({
         <p
           className="mb-2 font-medium uppercase tracking-[0.24em]"
           style={{
-            color: "#a9a08f",
+            color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
             fontSize: compact ? "9px" : "10px",
             fontFamily: "'Jost', sans-serif",
           }}
@@ -145,25 +146,32 @@ function BeverageField({
               value={value}
               onChange={(event) => onChange(event.target.value)}
               placeholder={placeholder}
-              className="min-h-[78px] w-full resize-none bg-transparent text-[14px] leading-[1.55] text-[#4a4338] placeholder:text-[#b8ae9e] focus:outline-none"
-              style={{ fontFamily: "'Jost', sans-serif" }}
+              className="min-h-[78px] w-full resize-none bg-transparent text-[14px] leading-[1.55] focus:outline-none"
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                color: "rgba(var(--swatch-teal-rgb), 0.84)",
+              }}
             />
           ) : (
             <input
               value={value}
               onChange={(event) => onChange(event.target.value)}
               placeholder={placeholder}
-              className="w-full bg-transparent pr-10 text-[14px] leading-[1.45] text-[#4a4338] placeholder:text-[#b8ae9e] focus:outline-none"
-              style={{ fontFamily: "'Jost', sans-serif" }}
+              className="w-full bg-transparent pr-10 text-[14px] leading-[1.45] focus:outline-none"
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                color: "rgba(var(--swatch-teal-rgb), 0.84)",
+              }}
             />
           )
         ) : (
           <p
-            className={`text-[#4a4338] ${isNotes ? "min-h-[78px]" : ""}`}
+            className={isNotes ? "min-h-[78px]" : ""}
             style={{
               fontSize: "14px",
               lineHeight: 1.5,
               fontFamily: "'Jost', sans-serif",
+              color: "rgba(var(--swatch-teal-rgb), 0.84)",
             }}
           >
             {value || placeholder}
@@ -260,25 +268,27 @@ export default function MyProductCardBeverages({
         aria-hidden="true"
         className="absolute inset-x-2 bottom-0 top-[8px] rounded-[34px]"
         style={{
-          background: "rgba(52, 45, 38, 0.1)",
-          filter: "blur(0.5px)",
+          background: "rgba(var(--swatch-cedar-grove-rgb), 0.08)",
+          filter: "blur(10px)",
         }}
       />
 
       <div
         className="relative flex h-full flex-col overflow-hidden rounded-[36px] border"
         style={{
-          background: "linear-gradient(180deg, #f5efe2 0%, #efe6d8 100%)",
-          borderColor: "rgba(190, 183, 171, 0.54)",
-          boxShadow: "0 22px 54px rgba(34, 31, 27, 0.18), inset 0 1px 0 rgba(255,255,255,0.42)",
+          background:
+            "linear-gradient(140deg, rgba(255,255,255,0.94) 0%, rgba(250,244,236,0.9) 42%, rgba(239,224,207,0.8) 100%)",
+          borderColor: "rgba(255,255,255,0.92)",
+          boxShadow:
+            "inset 0 1px 0 rgba(255,255,255,0.96), 0 22px 52px rgba(var(--swatch-cedar-grove-rgb), 0.12), 0 10px 28px rgba(var(--swatch-viridian-odyssey-rgb), 0.08), 0 2px 8px rgba(255,255,255,0.34)",
         }}
       >
         <div
           aria-hidden="true"
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0"
           style={{
-            backgroundImage:
-              "linear-gradient(90deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 22%), radial-gradient(circle at top left, rgba(255,255,255,0.28), rgba(255,255,255,0) 48%)",
+            background:
+              "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)",
           }}
         />
 
@@ -348,10 +358,9 @@ export default function MyProductCardBeverages({
             <div
               className="relative mt-1 h-[138px] w-[118px] shrink-0 rounded-[24px] border p-3"
               style={{
-                background:
-                  "linear-gradient(180deg, rgba(var(--swatch-paper-rgb), 0.98) 0%, rgba(var(--swatch-paper-rgb), 0.88) 100%)",
-                borderColor: "rgba(var(--swatch-teal-rgb), 0.12)",
-                boxShadow: "0 8px 18px rgba(34, 31, 27, 0.08)",
+                background: "rgba(255,255,255,0.24)",
+                borderColor: "rgba(var(--swatch-teal-rgb), 0.18)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)",
               }}
             >
               <div
@@ -385,20 +394,27 @@ export default function MyProductCardBeverages({
           <div
             className="mb-4 rounded-[20px] border px-4 py-3"
             style={{
-              background: "rgba(248, 244, 236, 0.72)",
-              borderColor: "rgba(190, 183, 171, 0.42)",
+              background: "rgba(255,255,255,0.56)",
+              borderColor: "rgba(255,255,255,0.8)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.96)",
             }}
           >
             <p
               className="mb-1 text-[9px] uppercase tracking-[0.24em]"
               style={{
-                color: "#a59a88",
+                color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
                 fontFamily: "'Jost', sans-serif",
               }}
             >
               Indexed under
             </p>
-            <p className="text-[14px] text-[#4a4338]" style={{ fontFamily: "'Jost', sans-serif" }}>
+            <p
+              className="text-[14px]"
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                color: "rgba(var(--swatch-teal-rgb), 0.84)",
+              }}
+            >
               Taste, ritual, spots, and hard no's.
             </p>
           </div>
@@ -488,8 +504,9 @@ export default function MyProductCardBeverages({
             <div
               className="rounded-full border px-4 py-2 text-[9px] uppercase tracking-[0.24em]"
               style={{
-                borderColor: "rgba(190, 183, 171, 0.54)",
-                color: "#9c907e",
+                borderColor: "rgba(var(--swatch-teal-rgb), 0.16)",
+                background: "rgba(255,255,255,0.38)",
+                color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
                 fontFamily: "'Jost', sans-serif",
               }}
             >
