@@ -269,13 +269,33 @@ function CategoryOverlay({
       </div>
       {overlayContent ? (
         <div className="absolute inset-0 z-10">
-          <div className="pointer-events-none absolute bottom-28 left-5 max-w-[min(34rem,58vw)] sm:bottom-32 sm:left-8 md:left-10 lg:bottom-32 lg:left-14">
-            <h2 className="max-w-[14ch] text-[clamp(2.25rem,5vw,4.8rem)] font-serif leading-[0.9] tracking-[-0.05em] text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.42)]">
+          <div
+            className="pointer-events-none absolute bottom-24 left-5 max-w-[min(30rem,48vw)] rounded-[32px] px-6 py-6 sm:bottom-28 sm:left-8 sm:px-7 md:left-10 lg:bottom-28 lg:left-14"
+            style={{
+              background:
+                "linear-gradient(140deg, rgba(255,255,255,0.76) 0%, rgba(250,244,236,0.72) 42%, rgba(239,224,207,0.62) 100%)",
+              border: "1px solid rgba(255,255,255,0.78)",
+              boxShadow:
+                "inset 0 1px 0 rgba(255,255,255,0.92), 0 22px 52px rgba(var(--swatch-cedar-grove-rgb), 0.16), 0 10px 28px rgba(var(--swatch-viridian-odyssey-rgb), 0.1)",
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            <h2
+              className="max-w-[9ch] text-[clamp(2.35rem,4.7vw,4.35rem)] leading-[0.9] tracking-[-0.05em]"
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontWeight: 700,
+                color: "var(--swatch-teal)",
+              }}
+            >
               {overlayContent.title}
             </h2>
             <p
-              className="mt-5 max-w-[24rem] whitespace-pre-line text-[0.98rem] leading-7 text-white/88 drop-shadow-[0_10px_24px_rgba(0,0,0,0.36)] sm:text-[1.02rem]"
-              style={{ fontFamily: "'Jost', sans-serif" }}
+              className="mt-4 max-w-[23rem] whitespace-pre-line text-[0.98rem] leading-7 sm:text-[1.02rem]"
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                color: "rgba(var(--swatch-antique-coin-rgb), 0.98)",
+              }}
             >
               {overlayContent.description}
             </p>
