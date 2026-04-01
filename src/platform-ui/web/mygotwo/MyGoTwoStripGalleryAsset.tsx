@@ -254,7 +254,7 @@ function CategoryOverlay({
         className="absolute inset-0"
         style={{
           background: overlayContent
-            ? "linear-gradient(90deg, rgba(17,14,12,0.66) 0%, rgba(17,14,12,0.38) 31%, rgba(17,14,12,0.18) 54%, rgba(17,14,12,0.46) 100%)"
+            ? "linear-gradient(90deg, rgba(17,14,12,0.7) 0%, rgba(17,14,12,0.5) 26%, rgba(17,14,12,0.14) 52%, rgba(17,14,12,0.46) 100%), radial-gradient(circle at 26% 28%, rgba(17,14,12,0.1) 0%, rgba(17,14,12,0.04) 22%, transparent 44%)"
             : "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
         }}
       />
@@ -270,14 +270,14 @@ function CategoryOverlay({
       {overlayContent ? (
         <div className="absolute inset-0 z-10">
           <div
-            className="pointer-events-none absolute inset-y-0 left-5 flex items-center sm:left-8 md:left-10 lg:left-14"
+            className="pointer-events-none absolute left-5 top-[17%] sm:left-8 md:left-10 lg:left-14"
             style={{
               right: "calc(clamp(480px, 37.5%, 560px) + clamp(0.875rem, 1.8vw, 1.5rem))",
             }}
           >
-            <div className="mx-auto max-w-[min(36rem,82%)] text-center">
+            <div className="mx-auto max-w-[min(31rem,72%)] text-center">
               <h2
-                className="mx-auto max-w-[10ch] text-[clamp(3.35rem,6.8vw,6rem)] leading-[0.88] tracking-[-0.05em] text-white drop-shadow-[0_16px_34px_rgba(0,0,0,0.44)]"
+                className="mx-auto max-w-[8ch] text-[clamp(3rem,5.2vw,4.85rem)] leading-[0.9] tracking-[-0.045em] text-white drop-shadow-[0_16px_34px_rgba(0,0,0,0.48)]"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontWeight: 700,
@@ -286,7 +286,7 @@ function CategoryOverlay({
                 {overlayContent.title}
               </h2>
               <p
-                className="mx-auto mt-5 max-w-[31rem] whitespace-pre-line text-[1.12rem] leading-8 text-white drop-shadow-[0_10px_22px_rgba(0,0,0,0.38)] sm:text-[1.2rem]"
+                className="mx-auto mt-7 max-w-[24rem] whitespace-pre-line text-[1rem] leading-[1.85] text-white drop-shadow-[0_10px_22px_rgba(0,0,0,0.42)] sm:text-[1.06rem]"
                 style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 {overlayContent.description}
