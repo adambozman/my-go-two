@@ -291,9 +291,15 @@ export default function MyProductCardBeverages({
               key={tab}
               className="flex h-7 items-end rounded-t-[10px] border border-b-0 px-3 pb-1 text-[8px] font-medium uppercase tracking-[0.2em]"
               style={{
-                background: index === 0 ? "#f2e9d8" : "#ece1cf",
-                borderColor: "rgba(190, 183, 171, 0.54)",
-                color: "#a59a88",
+                background:
+                  index === 0
+                    ? "rgba(var(--swatch-paper-rgb), 0.98)"
+                    : "rgba(var(--swatch-paper-rgb), 0.82)",
+                borderColor: "rgba(var(--swatch-teal-rgb), 0.12)",
+                color:
+                  index === 0
+                    ? "rgba(var(--swatch-teal-rgb), 0.82)"
+                    : "rgba(var(--swatch-antique-coin-rgb), 0.88)",
                 fontFamily: "'Jost', sans-serif",
               }}
             >
@@ -306,19 +312,25 @@ export default function MyProductCardBeverages({
           <div className="mb-5 flex items-start justify-between gap-5">
             <div className="min-w-0 flex-1 pr-1">
               <div
-                className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1"
-                style={{
-                  color: "#cb6843",
-                  fontFamily: "'Jost', sans-serif",
-                }}
+                className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1"
+                style={{ fontFamily: "'Jost', sans-serif" }}
               >
-                <span className="text-[10px] font-medium uppercase tracking-[0.28em]">
+                <span
+                  className="text-[10px] font-medium uppercase tracking-[0.28em]"
+                  style={{ color: "var(--swatch-cedar-grove)" }}
+                >
                   Beverages
                 </span>
-                <span className="text-[10px] font-medium uppercase tracking-[0.28em]">
+                <span
+                  className="text-[10px] font-medium uppercase tracking-[0.28em]"
+                  style={{ color: "var(--swatch-cedar-grove)" }}
+                >
                   Featured
                 </span>
-                <span className="text-[9px] uppercase tracking-[0.22em] text-[#a79c8a]">
+                <span
+                  className="text-[9px] uppercase tracking-[0.22em]"
+                  style={{ color: "rgba(var(--swatch-antique-coin-rgb), 0.9)" }}
+                >
                   Card B-01
                 </span>
               </div>
@@ -328,10 +340,22 @@ export default function MyProductCardBeverages({
                   value={entryName}
                   onChange={(event) => setEntryName(event.target.value)}
                   rows={2}
-                  className="w-full resize-none bg-transparent font-serif text-[52px] leading-[0.86] tracking-[-0.05em] text-[#1b1a18] focus:outline-none"
+                  className="w-full resize-none bg-transparent text-[58px] leading-[0.86] tracking-[-0.05em] focus:outline-none"
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontWeight: 700,
+                    color: "var(--swatch-teal)",
+                  }}
                 />
               ) : (
-                <p className="font-serif text-[52px] leading-[0.86] tracking-[-0.05em] text-[#1b1a18]">
+                <p
+                  className="text-[58px] leading-[0.86] tracking-[-0.05em]"
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontWeight: 700,
+                    color: "var(--swatch-teal)",
+                  }}
+                >
                   {cardTitle}
                 </p>
               )}
@@ -339,7 +363,7 @@ export default function MyProductCardBeverages({
               <p
                 className="mt-3 text-[10px] uppercase tracking-[0.28em]"
                 style={{
-                  color: "#a59a88",
+                  color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
                   fontFamily: "'Jost', sans-serif",
                 }}
               >
@@ -350,29 +374,33 @@ export default function MyProductCardBeverages({
             <div
               className="relative mt-1 h-[138px] w-[118px] shrink-0 rounded-[24px] border p-3"
               style={{
-                background: "linear-gradient(180deg, rgba(242,236,226,0.98) 0%, rgba(235,228,216,0.98) 100%)",
-                borderColor: "rgba(190, 183, 171, 0.54)",
-                boxShadow: "0 4px 14px rgba(55,42,21,0.08)",
+                background:
+                  "linear-gradient(180deg, rgba(var(--swatch-paper-rgb), 0.98) 0%, rgba(var(--swatch-paper-rgb), 0.88) 100%)",
+                borderColor: "rgba(var(--swatch-teal-rgb), 0.12)",
+                boxShadow: "0 8px 18px rgba(34, 31, 27, 0.08)",
               }}
             >
               <div
                 className="absolute left-1/2 top-3 h-2.5 w-9 -translate-x-1/2 rounded-full"
                 style={{
-                  background: "rgba(118, 141, 150, 0.76)",
+                  background: "rgba(var(--swatch-text-light-rgb, 138 158 164), 0.88)",
                   boxShadow: "inset 0 1px 1px rgba(255,255,255,0.24)",
                 }}
               />
               <div
                 className="flex h-full items-center justify-center rounded-[14px] border border-dashed"
                 style={{
-                  borderColor: "rgba(127, 151, 160, 0.54)",
-                  color: "#7b9097",
+                  borderColor: "rgba(var(--swatch-teal-rgb), 0.2)",
+                  color: "rgba(var(--swatch-teal-rgb), 0.58)",
                   fontFamily: "'Jost', sans-serif",
                 }}
               >
                 <div className="text-center">
                   <span className="block text-[10px] uppercase tracking-[0.24em]">Snapshot</span>
-                  <span className="mt-2 block text-[9px] uppercase tracking-[0.18em] text-[#96856a]">
+                  <span
+                    className="mt-2 block text-[9px] uppercase tracking-[0.18em]"
+                    style={{ color: "rgba(var(--swatch-antique-coin-rgb), 0.96)" }}
+                  >
                     add photo
                   </span>
                 </div>
