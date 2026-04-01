@@ -303,7 +303,7 @@ export default function MyProductCardBeverages({
                   className="text-[10px] font-medium uppercase tracking-[0.22em]"
                   style={{ color: "var(--swatch-cedar-grove)" }}
                 >
-                  My Go To / Beverage
+                  My Go Two / Vault
                 </span>
               </div>
 
@@ -332,15 +332,6 @@ export default function MyProductCardBeverages({
                 </p>
               )}
 
-              <p
-                className="mt-3 text-[10px] uppercase tracking-[0.28em]"
-                style={{
-                  color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
-                  fontFamily: "'Jost', sans-serif",
-                }}
-              >
-                Personal beverage file
-              </p>
             </div>
 
             <div
