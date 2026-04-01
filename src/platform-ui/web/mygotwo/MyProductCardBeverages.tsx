@@ -84,99 +84,130 @@ function buildInitialFieldValues(fields: ProductField[], activeEntry: CardEntry 
   }, {});
 }
 
-function BeverageField({
+function SectionEyebrow({ children }: { children: string }) {
+  return (
+    <p
+      className="text-[10px] uppercase tracking-[0.2em]"
+      style={{
+        fontFamily: "'Jost', sans-serif",
+        color: "var(--swatch-cedar-grove)",
+      }}
+    >
+      {children}
+    </p>
+  );
+}
+
+function RecordField({
   field,
   value,
   interactive,
-  compact,
+  multiline = false,
   onChange,
 }: {
   field: ProductField;
   value: string;
   interactive: boolean;
-  compact: boolean;
+  multiline?: boolean;
   onChange: (value: string) => void;
 }) {
-  const isNotes = field.label === "Notes";
   const placeholder = FIELD_PLACEHOLDERS[field.label] ?? "+ add";
 
   return (
+    <div className="py-3.5">
+      <p
+        className="mb-2 text-[9px] uppercase tracking-[0.22em]"
+        style={{
+          fontFamily: "'Jost', sans-serif",
+          color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
+        }}
+      >
+        {field.label}
+      </p>
+      {interactive ? (
+        multiline ? (
+          <textarea
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder={placeholder}
+            className="min-h-[120px] w-full resize-none bg-transparent text-[15px] leading-[1.65] focus:outline-none"
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              color: "rgba(var(--swatch-teal-rgb), 0.84)",
+            }}
+          />
+        ) : (
+          <input
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder={placeholder}
+            className="w-full bg-transparent text-[15px] leading-[1.55] focus:outline-none"
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              color: "rgba(var(--swatch-teal-rgb), 0.84)",
+            }}
+          />
+        )
+      ) : (
+        <p
+          className={multiline ? "min-h-[120px]" : ""}
+          style={{
+            fontSize: "15px",
+            lineHeight: 1.65,
+            fontFamily: "'Jost', sans-serif",
+            color: "rgba(var(--swatch-teal-rgb), 0.84)",
+          }}
+        >
+          {value || placeholder}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function SnapshotSlot() {
+  return (
     <div
-      className={`relative overflow-hidden rounded-[20px] border px-4 ${isNotes ? "py-3" : "py-3.5"} ${
-        compact ? "" : ""
-      }`}
+      className="relative h-[136px] w-[112px] shrink-0 rounded-[28px] border p-3"
       style={{
-        background: "rgba(255,255,255,0.56)",
-        borderColor: "rgba(255,255,255,0.8)",
-        boxShadow:
-          "inset 0 1px 0 rgba(255,255,255,0.96), 0 10px 24px rgba(var(--swatch-viridian-odyssey-rgb), 0.04)",
+        background: "rgba(255,255,255,0.18)",
+        borderColor: "rgba(var(--swatch-teal-rgb), 0.2)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.52)",
       }}
     >
       <div
         aria-hidden="true"
-        className="absolute inset-x-4 top-0 h-px"
+        className="absolute left-1/2 top-3 h-2.5 w-9 -translate-x-1/2 rounded-full"
         style={{
-          background: "rgba(255,255,255,0.96)",
+          background: "rgba(var(--swatch-text-light-rgb, 138 158 164), 0.82)",
         }}
       />
-      {!isNotes ? (
-        <div
-          aria-hidden="true"
-          className="absolute right-4 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full border"
-          style={{
-            borderColor: "rgba(var(--swatch-teal-rgb), 0.18)",
-            background: "rgba(255,255,255,0.42)",
-          }}
-        />
-      ) : null}
-      <div className="relative">
-        <p
-          className="mb-2 font-medium uppercase tracking-[0.24em]"
-          style={{
-            color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
-            fontSize: compact ? "9px" : "10px",
-            fontFamily: "'Jost', sans-serif",
-          }}
-        >
-          {field.label}
-        </p>
-        {interactive ? (
-          isNotes ? (
-            <textarea
-              value={value}
-              onChange={(event) => onChange(event.target.value)}
-              placeholder={placeholder}
-              className="min-h-[78px] w-full resize-none bg-transparent text-[14px] leading-[1.55] focus:outline-none"
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                color: "rgba(var(--swatch-teal-rgb), 0.84)",
-              }}
-            />
-          ) : (
-            <input
-              value={value}
-              onChange={(event) => onChange(event.target.value)}
-              placeholder={placeholder}
-              className="w-full bg-transparent pr-10 text-[14px] leading-[1.45] focus:outline-none"
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                color: "rgba(var(--swatch-teal-rgb), 0.84)",
-              }}
-            />
-          )
-        ) : (
+      <div
+        className="flex h-full items-center justify-center rounded-[18px] border border-dashed"
+        style={{
+          borderColor: "rgba(var(--swatch-teal-rgb), 0.22)",
+        }}
+      >
+        <div className="text-center">
           <p
-            className={isNotes ? "min-h-[78px]" : ""}
+            className="text-[10px] uppercase tracking-[0.24em]"
             style={{
-              fontSize: "14px",
-              lineHeight: 1.5,
               fontFamily: "'Jost', sans-serif",
-              color: "rgba(var(--swatch-teal-rgb), 0.84)",
+              color: "rgba(var(--swatch-teal-rgb), 0.62)",
             }}
           >
-            {value || placeholder}
+            Snapshot
           </p>
-        )}
+          <p
+            className="mt-2 text-[9px] uppercase tracking-[0.18em]"
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
+            }}
+          >
+            Add photo
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -249,12 +280,11 @@ export default function MyProductCardBeverages({
   const howITakeIt = fields.find((field) => field.label === "How I take it");
   const avoid = fields.find((field) => field.label === "Avoid");
   const notes = fields.find((field) => field.label === "Notes");
-
   const cardTitle = entryName.trim() || "Beverage";
 
   return (
     <section
-      aria-label="Favorite Drink product card"
+      aria-label="Beverage product card"
       className={compact ? "relative z-20 w-full" : "absolute z-20"}
       style={{
         top: compact ? undefined : "14px",
@@ -266,53 +296,36 @@ export default function MyProductCardBeverages({
     >
       <div
         aria-hidden="true"
-        className="absolute inset-x-2 bottom-0 top-[8px] rounded-[34px]"
+        className="absolute inset-x-2 bottom-0 top-[10px] rounded-[34px]"
         style={{
-          background: "rgba(var(--swatch-cedar-grove-rgb), 0.08)",
-          filter: "blur(10px)",
+          background: "rgba(var(--swatch-cedar-grove-rgb), 0.07)",
+          filter: "blur(12px)",
         }}
       />
 
       <div
-        className="relative flex h-full flex-col overflow-hidden rounded-[36px] border"
-        style={{
-          background:
-            "linear-gradient(140deg, rgba(255,255,255,0.94) 0%, rgba(250,244,236,0.9) 42%, rgba(239,224,207,0.8) 100%)",
-          borderColor: "rgba(255,255,255,0.92)",
-          boxShadow:
-            "inset 0 1px 0 rgba(255,255,255,0.96), 0 22px 52px rgba(var(--swatch-cedar-grove-rgb), 0.12), 0 10px 28px rgba(var(--swatch-viridian-odyssey-rgb), 0.08), 0 2px 8px rgba(255,255,255,0.34)",
-        }}
+        className="card-design-sand relative flex h-full flex-col overflow-hidden rounded-[36px]"
+        style={{ borderRadius: 36 }}
       >
         <div
           aria-hidden="true"
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)",
+              "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.12), transparent 30%), linear-gradient(135deg, rgba(255,255,255,0.08), transparent 58%)",
           }}
         />
 
-        <div className="relative flex h-full flex-col px-7 pb-5 pt-8">
-          <div className="mb-5 flex items-start justify-between gap-5">
-            <div className="min-w-0 flex-1 pr-1">
-              <div
-                className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1"
-                style={{ fontFamily: "'Jost', sans-serif" }}
-              >
-                <span
-                  className="text-[10px] font-medium uppercase tracking-[0.22em]"
-                  style={{ color: "var(--swatch-cedar-grove)" }}
-                >
-                  My Go Two / Vault
-                </span>
-              </div>
-
+        <div className="relative flex h-full flex-col px-7 pb-5 pt-7">
+          <div className="flex items-start justify-between gap-5">
+            <div className="min-w-0 flex-1 max-w-[19rem]">
+              <SectionEyebrow>My Go Two / Vault</SectionEyebrow>
               {interactive ? (
                 <textarea
                   value={entryName}
                   onChange={(event) => setEntryName(event.target.value)}
                   rows={2}
-                  className="w-full resize-none bg-transparent text-[58px] leading-[0.86] tracking-[-0.05em] focus:outline-none"
+                  className="mt-3 w-full resize-none bg-transparent text-[58px] leading-[0.9] tracking-[-0.05em] focus:outline-none"
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
                     fontWeight: 700,
@@ -320,8 +333,8 @@ export default function MyProductCardBeverages({
                   }}
                 />
               ) : (
-                <p
-                  className="text-[58px] leading-[0.86] tracking-[-0.05em]"
+                <h2
+                  className="mt-3 text-[58px] leading-[0.9] tracking-[-0.05em]"
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
                     fontWeight: 700,
@@ -329,82 +342,54 @@ export default function MyProductCardBeverages({
                   }}
                 >
                   {cardTitle}
-                </p>
+                </h2>
               )}
-
             </div>
 
-            <div
-              className="relative mt-1 h-[138px] w-[118px] shrink-0 rounded-[24px] border p-3"
-              style={{
-                background: "rgba(255,255,255,0.24)",
-                borderColor: "rgba(var(--swatch-teal-rgb), 0.18)",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)",
-              }}
-            >
-              <div
-                className="absolute left-1/2 top-3 h-2.5 w-9 -translate-x-1/2 rounded-full"
-                style={{
-                  background: "rgba(var(--swatch-text-light-rgb, 138 158 164), 0.88)",
-                  boxShadow: "inset 0 1px 1px rgba(255,255,255,0.24)",
-                }}
-              />
-              <div
-                className="flex h-full items-center justify-center rounded-[14px] border border-dashed"
-                style={{
-                  borderColor: "rgba(var(--swatch-teal-rgb), 0.2)",
-                  color: "rgba(var(--swatch-teal-rgb), 0.58)",
-                  fontFamily: "'Jost', sans-serif",
-                }}
-              >
-                <div className="text-center">
-                  <span className="block text-[10px] uppercase tracking-[0.24em]">Snapshot</span>
-                  <span
-                    className="mt-2 block text-[9px] uppercase tracking-[0.18em]"
-                    style={{ color: "rgba(var(--swatch-antique-coin-rgb), 0.96)" }}
-                  >
-                    add photo
-                  </span>
-                </div>
-              </div>
-            </div>
+            <SnapshotSlot />
           </div>
 
           <div
-            className="mb-4 rounded-[20px] border px-4 py-3"
+            className="mt-6 rounded-[24px] px-5 py-4"
             style={{
-              background: "rgba(255,255,255,0.56)",
-              borderColor: "rgba(255,255,255,0.8)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.96)",
+              background: "rgba(255,255,255,0.22)",
+              border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.56)",
             }}
           >
             <p
-              className="mb-1 text-[9px] uppercase tracking-[0.24em]"
+              className="text-[9px] uppercase tracking-[0.22em]"
               style={{
-                color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
                 fontFamily: "'Jost', sans-serif",
+                color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
               }}
             >
               Indexed under
             </p>
             <p
-              className="text-[14px]"
+              className="mt-2 text-[15px] leading-[1.6]"
               style={{
                 fontFamily: "'Jost', sans-serif",
                 color: "rgba(var(--swatch-teal-rgb), 0.84)",
               }}
             >
-              Taste, ritual, spots, and hard no's.
+              Taste, ritual, spots, and hard no&apos;s.
             </p>
           </div>
 
-          <div className="flex flex-1 flex-col gap-3">
+          <div
+            className="mt-5 flex-1 rounded-[28px] px-5 py-2"
+            style={{
+              background: "rgba(255,255,255,0.18)",
+              border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
+            }}
+          >
             {goToOrder ? (
-              <BeverageField
+              <RecordField
                 field={goToOrder}
                 value={fieldValues[slugFieldLabel(goToOrder.label)] || ""}
                 interactive={interactive}
-                compact={compact}
                 onChange={(nextValue) =>
                   setFieldValues((current) => ({
                     ...current,
@@ -414,13 +399,18 @@ export default function MyProductCardBeverages({
               />
             ) : null}
 
-            <div className="grid grid-cols-2 gap-3">
+            <div
+              aria-hidden="true"
+              className="h-px"
+              style={{ background: "rgba(var(--swatch-teal-rgb), 0.12)" }}
+            />
+
+            <div className="grid grid-cols-2 gap-5">
               {favoritePlace ? (
-                <BeverageField
+                <RecordField
                   field={favoritePlace}
                   value={fieldValues[slugFieldLabel(favoritePlace.label)] || ""}
                   interactive={interactive}
-                  compact={compact}
                   onChange={(nextValue) =>
                     setFieldValues((current) => ({
                       ...current,
@@ -431,11 +421,10 @@ export default function MyProductCardBeverages({
               ) : null}
 
               {howITakeIt ? (
-                <BeverageField
+                <RecordField
                   field={howITakeIt}
                   value={fieldValues[slugFieldLabel(howITakeIt.label)] || ""}
                   interactive={interactive}
-                  compact={compact}
                   onChange={(nextValue) =>
                     setFieldValues((current) => ({
                       ...current,
@@ -446,12 +435,17 @@ export default function MyProductCardBeverages({
               ) : null}
             </div>
 
+            <div
+              aria-hidden="true"
+              className="h-px"
+              style={{ background: "rgba(var(--swatch-teal-rgb), 0.12)" }}
+            />
+
             {avoid ? (
-              <BeverageField
+              <RecordField
                 field={avoid}
                 value={fieldValues[slugFieldLabel(avoid.label)] || ""}
                 interactive={interactive}
-                compact={compact}
                 onChange={(nextValue) =>
                   setFieldValues((current) => ({
                     ...current,
@@ -460,31 +454,38 @@ export default function MyProductCardBeverages({
                 }
               />
             ) : null}
+          </div>
 
-            <div className="flex-1">
-              {notes ? (
-                <BeverageField
-                  field={notes}
-                  value={fieldValues[slugFieldLabel(notes.label)] || ""}
-                  interactive={interactive}
-                  compact={compact}
-                  onChange={(nextValue) =>
-                    setFieldValues((current) => ({
-                      ...current,
-                      [slugFieldLabel(notes.label)]: nextValue,
-                    }))
-                  }
-                />
-              ) : null}
-            </div>
+          <div
+            className="mt-4 rounded-[28px] px-5 py-2"
+            style={{
+              background: "rgba(255,255,255,0.16)",
+              border: "1px solid rgba(var(--swatch-teal-rgb), 0.1)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.46)",
+            }}
+          >
+            {notes ? (
+              <RecordField
+                field={notes}
+                value={fieldValues[slugFieldLabel(notes.label)] || ""}
+                interactive={interactive}
+                multiline
+                onChange={(nextValue) =>
+                  setFieldValues((current) => ({
+                    ...current,
+                    [slugFieldLabel(notes.label)]: nextValue,
+                  }))
+                }
+              />
+            ) : null}
           </div>
 
           <div className="mt-4 flex items-center justify-between gap-4">
             <div
-              className="rounded-full border px-4 py-2 text-[9px] uppercase tracking-[0.24em]"
+              className="rounded-full px-4 py-2 text-[10px] uppercase tracking-[0.18em]"
               style={{
-                borderColor: "rgba(var(--swatch-teal-rgb), 0.16)",
-                background: "rgba(255,255,255,0.38)",
+                background: "rgba(255,255,255,0.22)",
+                border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)",
                 color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
                 fontFamily: "'Jost', sans-serif",
               }}
@@ -497,10 +498,10 @@ export default function MyProductCardBeverages({
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="h-11 rounded-full px-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f4ead0] transition-opacity duration-200 disabled:cursor-not-allowed disabled:opacity-70"
+                className="h-11 rounded-full px-7 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f4ead0] transition-opacity duration-200 disabled:cursor-not-allowed disabled:opacity-70"
                 style={{
                   background: "linear-gradient(180deg, #617984 0%, #4f6770 100%)",
-                  boxShadow: "0 8px 18px rgba(37,32,27,0.22), inset 0 1px 0 rgba(255,255,255,0.18)",
+                  boxShadow: "0 8px 18px rgba(37,32,27,0.18), inset 0 1px 0 rgba(255,255,255,0.18)",
                   fontFamily: "'Jost', sans-serif",
                 }}
               >
@@ -508,7 +509,7 @@ export default function MyProductCardBeverages({
               </button>
             ) : (
               <div
-                className="flex h-11 items-center rounded-full px-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f4ead0]"
+                className="flex h-11 items-center rounded-full px-7 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f4ead0]"
                 style={{
                   background: "linear-gradient(180deg, #617984 0%, #4f6770 100%)",
                   fontFamily: "'Jost', sans-serif",
