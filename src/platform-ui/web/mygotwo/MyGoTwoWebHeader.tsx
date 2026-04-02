@@ -1,5 +1,5 @@
 import { ChevronDown, LogOut, Settings, Trash2, Upload } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import {
   DropdownMenu,
@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MYGOTWO_NAV_ITEMS, useMyGoTwoHeaderState } from "@/features/mygotwo/headerShared";
 
 export default function MyGoTwoWebHeader() {
+  const location = useLocation();
   const {
     user,
     unreadCount,
@@ -40,12 +41,18 @@ export default function MyGoTwoWebHeader() {
         </div>
 
         <nav className="flex min-w-0 items-start justify-center gap-1 sm:gap-1.5 lg:gap-3">
-          {MYGOTWO_NAV_ITEMS.map((item) => (
-            <NavLink
+          {MYGOTWO_NAV_ITEMS.map((item) => {
+            const isActive = item.end
+              ? location.pathname === item.url
+              : location.pathname === item.url || location.pathname.startsWith(`${item.url}/`);
+
+            return (
+            <button
               key={item.url}
-              to={item.url}
-              end={item.end}
+              type="button"
+              onClick={() => navigate(item.url)}
               aria-label={item.label}
+              aria-current={isActive ? "page" : undefined}
               className="flex w-[32px] flex-col items-center gap-1 text-center text-muted-foreground transition-all hover:text-foreground sm:w-[40px] md:w-[56px] lg:w-[66px]"
             >
               <span
@@ -53,6 +60,10 @@ export default function MyGoTwoWebHeader() {
                 style={{
                   width: "clamp(26px, 5vw, var(--header-icon-btn-size))",
                   height: "clamp(26px, 5vw, var(--header-icon-btn-size))",
+                  color: isActive ? "var(--swatch-teal)" : undefined,
+                  boxShadow: isActive
+                    ? "inset 0 1px 0 rgba(255,255,255,0.96), 0 10px 24px rgba(var(--swatch-viridian-odyssey-rgb), 0.12)"
+                    : undefined,
                 }}
               >
                 <item.icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
@@ -65,11 +76,17 @@ export default function MyGoTwoWebHeader() {
                   </span>
                 ) : null}
               </span>
-              <span className="hidden whitespace-nowrap text-[10px] font-medium leading-none lg:block" style={{ fontFamily: "'Jost', sans-serif" }}>
+              <span
+                className="hidden whitespace-nowrap text-[10px] font-medium leading-none lg:block"
+                style={{
+                  fontFamily: "'Jost', sans-serif",
+                  color: isActive ? "var(--swatch-teal)" : undefined,
+                }}
+              >
                 {item.label}
               </span>
-            </NavLink>
-          ))}
+            </button>
+          )})}
         </nav>
 
         <div className="flex shrink-0 items-center">

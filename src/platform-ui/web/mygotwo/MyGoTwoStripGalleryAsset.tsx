@@ -57,11 +57,22 @@ async function preloadImageUrls(urls: string[]) {
         new Promise<void>((resolve) => {
           const image = new window.Image();
           image.decoding = "async";
-          image.onload = () => resolve();
-          image.onerror = () => resolve();
-          image.src = url;
-          if (image.complete) {
+          let settled = false;
+
+          const complete = () => {
+            if (settled) return;
+            settled = true;
             resolve();
+          };
+
+          image.onload = complete;
+          image.onerror = complete;
+          image.src = url;
+
+          if (typeof image.decode === "function") {
+            image.decode().then(complete).catch(complete);
+          } else if (image.complete) {
+            complete();
           }
         }),
     ),
@@ -311,17 +322,12 @@ export default function MyGoTwoStripGalleryAsset() {
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [collapseImageIndex, setCollapseImageIndex] = useState(0);
-  const [panoramaBaseUrl, setPanoramaBaseUrl] = useState("");
+  const [panoramaBaseUrl, setPanoramaBaseUrl] = useState(MYGOTWO_COLLAPSE_IMAGES[0]?.image || "");
   const [panoramaNextUrl, setPanoramaNextUrl] = useState("");
   const [isPanoramaTransitioning, setIsPanoramaTransitioning] = useState(false);
   const [isInitialLoadPending, setIsInitialLoadPending] = useState(true);
-  const [stripImages, setStripImages] = useState(() =>
-    MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
-      ...strip,
-      image: "",
-    })),
-  );
-  const [collapseImages, setCollapseImages] = useState(() => [] as typeof MYGOTWO_COLLAPSE_IMAGES);
+  const [stripImages, setStripImages] = useState(() => MYGOTWO_STRIP_GALLERY_IMAGES);
+  const [collapseImages, setCollapseImages] = useState(() => MYGOTWO_COLLAPSE_IMAGES);
   const hoverTimerRef = useRef<number | null>(null);
   const collapseTimerRef = useRef<number | null>(null);
   const rotateTimerRef = useRef<number | null>(null);
@@ -355,7 +361,7 @@ export default function MyGoTwoStripGalleryAsset() {
     [],
   );
 
-  const loadAssignedImages = useCallback(async () => {
+  const loadAssignedImages = useCallback(async (preloadMode: "initial" | "full" = "full") => {
     try {
       const { data, error } = await supabase
         .from("category_images")
@@ -391,19 +397,25 @@ export default function MyGoTwoStripGalleryAsset() {
       })).filter((image) => Boolean(image.image));
 
       if (!hasLoadedOnceRef.current) {
-        await preloadImageUrls([
-          ...nextStripImages.map((strip) => strip.image),
-          ...assignedCollapseImages.map((image) => image.image),
-        ]);
+        const preloadTargets =
+          preloadMode === "initial"
+            ? [
+                ...nextStripImages.map((strip) => strip.image),
+                assignedCollapseImages[0]?.image || "",
+              ]
+            : [
+                ...nextStripImages.map((strip) => strip.image),
+                ...assignedCollapseImages.map((image) => image.image),
+              ];
+
+        await preloadImageUrls(preloadTargets);
       }
 
       commitAssignedImages(nextStripImages, assignedCollapseImages);
     } finally {
       if (!hasLoadedOnceRef.current) {
         hasLoadedOnceRef.current = true;
-        window.requestAnimationFrame(() => {
-          setIsInitialLoadPending(false);
-        });
+        setIsInitialLoadPending(false);
       }
     }
   }, [commitAssignedImages]);
@@ -455,21 +467,33 @@ export default function MyGoTwoStripGalleryAsset() {
   }, [collapseImages]);
 
   useEffect(() => {
+    void loadAssignedImages("initial");
+  }, [loadAssignedImages]);
+
+  useEffect(() => {
     if (hasCleanedLegacyRowsRef.current) {
       return;
     }
 
     hasCleanedLegacyRowsRef.current = true;
 
-    void loadAssignedImages();
+    const runCleanup = () => {
+      void cleanupLegacyBrokenImageRows()
+        .catch((error) => {
+          console.error("Legacy image cleanup failed:", error);
+        })
+        .finally(() => {
+          void loadAssignedImages("full");
+        });
+    };
 
-    void cleanupLegacyBrokenImageRows()
-      .catch((error) => {
-        console.error("Legacy image cleanup failed:", error);
-      })
-      .finally(() => {
-        void loadAssignedImages();
-      });
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(() => runCleanup(), { timeout: 2500 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timer = window.setTimeout(runCleanup, 1200);
+    return () => window.clearTimeout(timer);
   }, [loadAssignedImages]);
 
   useEffect(() => {
@@ -687,7 +711,14 @@ export default function MyGoTwoStripGalleryAsset() {
           borderRadius: "44px",
         }}
       >
-        <div className="relative h-full w-full overflow-hidden">
+        <div
+          className="relative h-full w-full overflow-hidden transition-[opacity,transform,filter] duration-700 ease-out"
+          style={{
+            opacity: isInitialLoadPending ? 0.38 : 1,
+            transform: isInitialLoadPending ? "scale(1.01)" : "scale(1)",
+            filter: isInitialLoadPending ? "blur(10px) saturate(0.82)" : "blur(0px)",
+          }}
+        >
           {activeCategory ? (
             <CategoryOverlay category={activeCategory} onBack={() => setActiveCategoryId(null)} />
           ) : (
@@ -721,18 +752,100 @@ export default function MyGoTwoStripGalleryAsset() {
           style={{
             opacity: isInitialLoadPending ? 1 : 0,
             background:
-              "linear-gradient(135deg, rgba(248,242,233,0.96) 0%, rgba(244,236,228,0.92) 40%, rgba(248,242,233,0.96) 100%)",
+              "linear-gradient(180deg, rgba(15,13,11,0.18) 0%, rgba(15,13,11,0.28) 100%), radial-gradient(circle at 50% 46%, rgba(248,242,233,0.22) 0%, rgba(248,242,233,0.08) 18%, rgba(248,242,233,0) 44%)",
           }}
         >
           <div
-            className="absolute inset-0 animate-pulse"
+            className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.32) 50%, rgba(255,255,255,0) 100%)",
+                "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 28%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.08) 72%, rgba(255,255,255,0) 100%)",
               transform: "translateX(-18%)",
+              animation: "mygotwo-loader-sheen 2.6s ease-in-out infinite",
             }}
           />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4 text-center">
+              <div
+                className="relative h-16 w-16 rounded-full"
+                style={{
+                  background: "rgba(255,255,255,0.46)",
+                  border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.72)",
+                }}
+              >
+                <div
+                  className="absolute inset-[9px] rounded-full border-t-2 border-r-2 animate-spin"
+                  style={{
+                    borderColor: "rgba(255,255,255,0.92)",
+                    borderBottomColor: "transparent",
+                    borderLeftColor: "transparent",
+                  }}
+                />
+              </div>
+              <div className="max-w-[22rem]">
+                <p
+                  className="text-[11px] uppercase tracking-[0.2em]"
+                  style={{
+                    fontFamily: "'Jost', sans-serif",
+                    color: "rgba(255,255,255,0.82)",
+                  }}
+                >
+                  My Go Two
+                </p>
+                <p
+                  className="mt-3 text-[36px] leading-[0.92]"
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontWeight: 700,
+                    color: "#ffffff",
+                    textShadow: "0 14px 34px rgba(0,0,0,0.22)",
+                  }}
+                >
+                  Opening your vault
+                </p>
+                <p
+                  className="mt-3 text-[14px] leading-[1.65]"
+                  style={{
+                    fontFamily: "'Jost', sans-serif",
+                    color: "rgba(255,255,255,0.86)",
+                    textShadow: "0 8px 18px rgba(0,0,0,0.22)",
+                  }}
+                >
+                  Pulling your saved categories, staged strip images, and your locked-in preference deck.
+                </p>
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+                  {["Clothes", "Personal", "Health", "Gifts", "Dining", "Beverages", "Travel"].map(
+                    (label, index) => (
+                      <span
+                        key={label}
+                        className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] animate-pulse"
+                        style={{
+                          animationDelay: `${index * 0.12}s`,
+                          animationDuration: "1.8s",
+                          fontFamily: "'Jost', sans-serif",
+                          color: "rgba(255,255,255,0.86)",
+                          background: "rgba(255,255,255,0.12)",
+                          border: "1px solid rgba(255,255,255,0.18)",
+                          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
+                        }}
+                      >
+                        {label}
+                      </span>
+                    ),
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+        <style>{`
+          @keyframes mygotwo-loader-sheen {
+            0% { transform: translateX(-32%); opacity: 0.18; }
+            50% { transform: translateX(0%); opacity: 0.34; }
+            100% { transform: translateX(32%); opacity: 0.18; }
+          }
+        `}</style>
       </div>
     </section>
   );
