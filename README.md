@@ -358,3 +358,59 @@ Tests:
 ```sh
 npm run test
 ```
+
+## Local Browser View Path
+
+Use this path for local browser inspection.
+
+Do not use the broken MCP browser route for this repo when it is throwing permission errors.
+
+Working local browser path:
+
+1. Start the local app:
+
+```sh
+npm run dev -- --host 127.0.0.1 --port 5180
+```
+
+2. Open the local app with direct Playwright CLI:
+
+```sh
+npx --yes --package @playwright/cli playwright-cli open http://127.0.0.1:5180/login --browser chrome --headed
+```
+
+3. Capture a snapshot:
+
+```sh
+npx --yes --package @playwright/cli playwright-cli snapshot
+```
+
+4. Fill the email field:
+
+```sh
+npx --yes --package @playwright/cli playwright-cli fill e20 "adam.bozman@gmail.com"
+```
+
+5. Snapshot again if the button changes:
+
+```sh
+npx --yes --package @playwright/cli playwright-cli snapshot
+```
+
+6. Click the dev login button:
+
+```sh
+npx --yes --package @playwright/cli playwright-cli click e34
+```
+
+7. Snapshot again to inspect the signed-in dashboard:
+
+```sh
+npx --yes --package @playwright/cli playwright-cli snapshot
+```
+
+Notes:
+
+- use the direct CLI path above
+- do not rely on stale refs; snapshot again after the UI changes
+- use this path for live local browser viewing and interaction when debugging route, loading, hover, and animation behavior

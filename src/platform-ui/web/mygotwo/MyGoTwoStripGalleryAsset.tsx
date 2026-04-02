@@ -15,6 +15,8 @@ import {
 const PREVIEW_COLLAPSE_DELAY_MS = 5000;
 const COLLAPSE_ROTATE_INTERVAL_MS = 10000;
 const PANORAMA_TRANSITION_MS = 950;
+const STRIP_TRANSITION_MS = 320;
+const HOVER_DELAY_MS = 36;
 
 type StripPresentation = {
   id: string;
@@ -51,32 +53,31 @@ type OverrideChangedDetail = {
 async function preloadImageUrls(urls: string[]) {
   const uniqueUrls = Array.from(new Set(urls.filter(Boolean)));
 
-  await Promise.all(
+  const results = await Promise.all(
     uniqueUrls.map(
       (url) =>
-        new Promise<void>((resolve) => {
+        new Promise<[string, boolean]>((resolve) => {
           const image = new window.Image();
-          image.decoding = "async";
           let settled = false;
 
-          const complete = () => {
+          const complete = (didLoad: boolean) => {
             if (settled) return;
             settled = true;
-            resolve();
+            resolve([url, didLoad]);
           };
 
-          image.onload = complete;
-          image.onerror = complete;
+          image.onload = () => complete(true);
+          image.onerror = () => complete(false);
           image.src = url;
 
-          if (typeof image.decode === "function") {
-            image.decode().then(complete).catch(complete);
-          } else if (image.complete) {
-            complete();
+          if (image.complete) {
+            complete(image.naturalWidth > 0);
           }
         }),
     ),
   );
+
+  return new Set(results.filter(([, didLoad]) => didLoad).map(([url]) => url));
 }
 
 type StripCellProps = {
@@ -144,6 +145,7 @@ const StripCell = memo(function StripCell({
                 : "clamp(12px, 2.4vw, 22px)",
         contain: "layout paint style",
         transform: isHoveredCategory ? "translateY(-2px)" : "translateY(0)",
+        transitionDuration: `${STRIP_TRANSITION_MS}ms`,
         opacity: collapseCategoryStrip ? 0 : 1,
         pointerEvents: collapseCategoryStrip ? "none" : "auto",
         cursor: strip.label ? "pointer" : "default",
@@ -190,11 +192,11 @@ const StripCell = memo(function StripCell({
           src={strip.image}
           decoding="async"
           loading="eager"
-          fetchPriority="high"
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{
             objectPosition: `${strip.align ?? "50%"} center`,
             transform: isHoveredCategory ? "scale(1.015)" : "scale(1)",
+            transitionDuration: `${STRIP_TRANSITION_MS}ms`,
           }}
         />
       ) : null}
@@ -205,6 +207,7 @@ const StripCell = memo(function StripCell({
           background:
             "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
           opacity: isHoveredCategory ? 0.48 : 0.7,
+          transitionDuration: `${STRIP_TRANSITION_MS}ms`,
         }}
       />
       {strip.label ? (
@@ -322,12 +325,12 @@ export default function MyGoTwoStripGalleryAsset() {
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [collapseImageIndex, setCollapseImageIndex] = useState(0);
-  const [panoramaBaseUrl, setPanoramaBaseUrl] = useState(MYGOTWO_COLLAPSE_IMAGES[0]?.image || "");
+  const [panoramaBaseUrl, setPanoramaBaseUrl] = useState("");
   const [panoramaNextUrl, setPanoramaNextUrl] = useState("");
   const [isPanoramaTransitioning, setIsPanoramaTransitioning] = useState(false);
   const [isInitialLoadPending, setIsInitialLoadPending] = useState(true);
-  const [stripImages, setStripImages] = useState(() => MYGOTWO_STRIP_GALLERY_IMAGES);
-  const [collapseImages, setCollapseImages] = useState(() => MYGOTWO_COLLAPSE_IMAGES);
+  const [stripImages, setStripImages] = useState(() => MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({ ...strip })));
+  const [collapseImages, setCollapseImages] = useState<typeof MYGOTWO_COLLAPSE_IMAGES>([]);
   const hoverTimerRef = useRef<number | null>(null);
   const collapseTimerRef = useRef<number | null>(null);
   const rotateTimerRef = useRef<number | null>(null);
@@ -361,7 +364,10 @@ export default function MyGoTwoStripGalleryAsset() {
     [],
   );
 
-  const loadAssignedImages = useCallback(async (preloadMode: "initial" | "full" = "full") => {
+  const loadAssignedImages = useCallback(async () => {
+    let nextStripImages = MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({ ...strip }));
+    let nextCollapseImages: typeof MYGOTWO_COLLAPSE_IMAGES = [];
+
     try {
       const { data, error } = await supabase
         .from("category_images")
@@ -386,35 +392,41 @@ export default function MyGoTwoStripGalleryAsset() {
         }
       });
 
-      const nextStripImages = MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
+      nextStripImages = MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
         ...strip,
         image: resolvedByKey.get(`mygotwo-strip-${strip.id}`) || "",
       }));
 
-      const assignedCollapseImages = MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
+      nextCollapseImages = MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
         ...image,
         image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || "",
       })).filter((image) => Boolean(image.image));
 
+      const loadedUrls = await preloadImageUrls([
+        ...nextStripImages.map((strip) => strip.image),
+        ...nextCollapseImages.map((image) => image.image),
+      ]);
+
+      nextStripImages = nextStripImages.map((strip) =>
+        strip.image && !loadedUrls.has(strip.image)
+          ? { ...strip, image: "" }
+          : strip,
+      );
+      nextCollapseImages = nextCollapseImages.filter((image) => loadedUrls.has(image.image));
+
+      commitAssignedImages(nextStripImages, nextCollapseImages);
+    } catch (error) {
+      console.error("Failed to load My Go Two strip images:", error);
       if (!hasLoadedOnceRef.current) {
-        const preloadTargets =
-          preloadMode === "initial"
-            ? [
-                ...nextStripImages.map((strip) => strip.image),
-                assignedCollapseImages[0]?.image || "",
-              ]
-            : [
-                ...nextStripImages.map((strip) => strip.image),
-                ...assignedCollapseImages.map((image) => image.image),
-              ];
-
-        await preloadImageUrls(preloadTargets);
+        commitAssignedImages(nextStripImages, nextCollapseImages);
       }
-
-      commitAssignedImages(nextStripImages, assignedCollapseImages);
     } finally {
       if (!hasLoadedOnceRef.current) {
         hasLoadedOnceRef.current = true;
+        setCollapseImageIndex(0);
+        setPanoramaBaseUrl(nextCollapseImages[0]?.image || "");
+        setPanoramaNextUrl("");
+        setIsPanoramaTransitioning(false);
         setIsInitialLoadPending(false);
       }
     }
@@ -467,7 +479,7 @@ export default function MyGoTwoStripGalleryAsset() {
   }, [collapseImages]);
 
   useEffect(() => {
-    void loadAssignedImages("initial");
+    void loadAssignedImages();
   }, [loadAssignedImages]);
 
   useEffect(() => {
@@ -483,7 +495,7 @@ export default function MyGoTwoStripGalleryAsset() {
           console.error("Legacy image cleanup failed:", error);
         })
         .finally(() => {
-          void loadAssignedImages("full");
+          void loadAssignedImages();
         });
     };
 
@@ -569,6 +581,11 @@ export default function MyGoTwoStripGalleryAsset() {
       collapseTimerRef.current = null;
     }
 
+    if (isInitialLoadPending || collapseImages.length === 0) {
+      setPreviewCollapsed(false);
+      return;
+    }
+
     if (activeCategoryId) {
       setPreviewCollapsed(false);
       return;
@@ -590,7 +607,7 @@ export default function MyGoTwoStripGalleryAsset() {
         collapseTimerRef.current = null;
       }
     };
-  }, [activeCategoryId, hoveredId]);
+  }, [activeCategoryId, collapseImages.length, hoveredId, isInitialLoadPending]);
 
   useEffect(() => {
     if (collapseImages.length === 0) {
@@ -641,7 +658,7 @@ export default function MyGoTwoStripGalleryAsset() {
   }, [activePanoramaUrl, panoramaBaseUrl]);
 
   useEffect(() => {
-    if (!previewCollapsed || collapseImages.length <= 1) {
+    if (isInitialLoadPending || !previewCollapsed || collapseImages.length <= 1) {
       if (rotateTimerRef.current !== null) {
         window.clearInterval(rotateTimerRef.current);
         rotateTimerRef.current = null;
@@ -659,10 +676,10 @@ export default function MyGoTwoStripGalleryAsset() {
         rotateTimerRef.current = null;
       }
     };
-  }, [collapseImages.length, previewCollapsed]);
+  }, [collapseImages.length, isInitialLoadPending, previewCollapsed]);
 
   useEffect(() => {
-    if (!previewCollapsed || collapseImages.length <= 1) {
+    if (isInitialLoadPending || !previewCollapsed || collapseImages.length <= 1) {
       return;
     }
 
@@ -674,9 +691,13 @@ export default function MyGoTwoStripGalleryAsset() {
     const preloader = new window.Image();
     preloader.decoding = "async";
     preloader.src = nextImage;
-  }, [collapseImageIndex, collapseImages, previewCollapsed]);
+  }, [collapseImageIndex, collapseImages, isInitialLoadPending, previewCollapsed]);
 
   const queueHoveredId = useCallback((nextId: string | null) => {
+    if (isInitialLoadPending) {
+      return;
+    }
+
     if (hoverTimerRef.current !== null) {
       window.clearTimeout(hoverTimerRef.current);
     }
@@ -684,18 +705,18 @@ export default function MyGoTwoStripGalleryAsset() {
     hoverTimerRef.current = window.setTimeout(() => {
       setHoveredId(nextId);
       hoverTimerRef.current = null;
-    }, 90);
-  }, []);
+    }, HOVER_DELAY_MS);
+  }, [isInitialLoadPending]);
 
   const handleStripClick = useCallback((strip: StripPresentation) => {
-    if (!strip.label) {
+    if (isInitialLoadPending || !strip.label) {
       return;
     }
 
     setPreviewCollapsed(false);
     setHoveredId(null);
     setActiveCategoryId((current) => (current === strip.id ? null : strip.id));
-  }, []);
+  }, [isInitialLoadPending]);
 
   return (
     <section
@@ -714,9 +735,10 @@ export default function MyGoTwoStripGalleryAsset() {
         <div
           className="relative h-full w-full overflow-hidden transition-[opacity,transform,filter] duration-700 ease-out"
           style={{
-            opacity: isInitialLoadPending ? 0.38 : 1,
-            transform: isInitialLoadPending ? "scale(1.01)" : "scale(1)",
-            filter: isInitialLoadPending ? "blur(10px) saturate(0.82)" : "blur(0px)",
+            opacity: isInitialLoadPending ? 0 : 1,
+            transform: isInitialLoadPending ? "scale(1.008)" : "scale(1)",
+            filter: isInitialLoadPending ? "blur(8px) saturate(0.9)" : "blur(0px)",
+            pointerEvents: isInitialLoadPending ? "none" : "auto",
           }}
         >
           {activeCategory ? (
@@ -752,14 +774,14 @@ export default function MyGoTwoStripGalleryAsset() {
           style={{
             opacity: isInitialLoadPending ? 1 : 0,
             background:
-              "linear-gradient(180deg, rgba(15,13,11,0.18) 0%, rgba(15,13,11,0.28) 100%), radial-gradient(circle at 50% 46%, rgba(248,242,233,0.22) 0%, rgba(248,242,233,0.08) 18%, rgba(248,242,233,0) 44%)",
+              "radial-gradient(circle at 50% 46%, rgba(248,242,233,0.42) 0%, rgba(248,242,233,0.18) 18%, rgba(248,242,233,0) 48%)",
           }}
         >
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 28%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.08) 72%, rgba(255,255,255,0) 100%)",
+                "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.04) 28%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.04) 72%, rgba(255,255,255,0) 100%)",
               transform: "translateX(-18%)",
               animation: "mygotwo-loader-sheen 2.6s ease-in-out infinite",
             }}
@@ -818,16 +840,16 @@ export default function MyGoTwoStripGalleryAsset() {
                   {["Clothes", "Personal", "Health", "Gifts", "Dining", "Beverages", "Travel"].map(
                     (label, index) => (
                       <span
-                        key={label}
+                    key={label}
                         className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] animate-pulse"
                         style={{
                           animationDelay: `${index * 0.12}s`,
                           animationDuration: "1.8s",
                           fontFamily: "'Jost', sans-serif",
-                          color: "rgba(255,255,255,0.86)",
-                          background: "rgba(255,255,255,0.12)",
-                          border: "1px solid rgba(255,255,255,0.18)",
-                          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
+                          color: "rgba(var(--swatch-teal-rgb), 0.7)",
+                          background: "rgba(255,255,255,0.56)",
+                          border: "1px solid rgba(255,255,255,0.74)",
+                          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
                         }}
                       >
                         {label}
