@@ -1,7 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import {
   resolveStorageUrl,
-  resolveStorageUrls,
   resolveStorageUrlsWithTransform,
 } from "@/lib/storageRefs";
 import {
@@ -18,74 +17,51 @@ export type MyGoTwoGalleryAssets = {
   collapseImages: MyGoTwoCollapseImage[];
 };
 
+type AssignedAssetRow = {
+  category_key: string | null;
+  image_url: string | null;
+};
+
 const SLOT_KEYS = [
   ...MYGOTWO_STRIP_SLOT_TARGETS.map((target) => target.key),
   ...MYGOTWO_COLLAPSE_SLOT_TARGETS.map((target) => target.key),
 ];
 
+const STRIP_PREVIEW_TRANSFORM = {
+  width: 72,
+  height: 1400,
+  resize: "cover" as const,
+  quality: 24,
+};
+
 const STRIP_IMAGE_TRANSFORM = {
-  width: 360,
+  width: 240,
   height: 1600,
   resize: "cover" as const,
-  quality: 68,
+  quality: 56,
 };
 
 const COLLAPSE_IMAGE_TRANSFORM = {
-  width: 1800,
+  width: 1280,
   height: 1100,
   resize: "cover" as const,
-  quality: 72,
+  quality: 62,
 };
-
-function shouldBypassTransform(imageUrl?: string | null) {
-  return /\.png$/i.test(imageUrl ?? "");
-}
 
 async function resolveGalleryRowUrls(
   rows: Array<{ image_url: string | null }>,
   transform: typeof STRIP_IMAGE_TRANSFORM,
 ) {
-  const resolved = new Array<string>(rows.length).fill("");
-  const transformedValues: string[] = [];
-  const transformedIndexes: number[] = [];
-  const originalValues: string[] = [];
-  const originalIndexes: number[] = [];
-
-  rows.forEach((row, index) => {
-    if (!row.image_url) {
-      return;
-    }
-
-    if (shouldBypassTransform(row.image_url)) {
-      originalValues.push(row.image_url);
-      originalIndexes.push(index);
-      return;
-    }
-
-    transformedValues.push(row.image_url);
-    transformedIndexes.push(index);
-  });
-
-  const [transformedUrls, originalUrls] = await Promise.all([
-    transformedValues.length
-      ? resolveStorageUrlsWithTransform(transformedValues, transform)
-      : Promise.resolve([]),
-    originalValues.length ? resolveStorageUrls(originalValues) : Promise.resolve([]),
-  ]);
-
-  transformedIndexes.forEach((rowIndex, resultIndex) => {
-    resolved[rowIndex] = transformedUrls[resultIndex] ?? "";
-  });
-
-  originalIndexes.forEach((rowIndex, resultIndex) => {
-    resolved[rowIndex] = originalUrls[resultIndex] ?? "";
-  });
-
-  return resolved;
+  return resolveStorageUrlsWithTransform(
+    rows.map((row) => row.image_url),
+    transform,
+  );
 }
 
 let cachedAssets: MyGoTwoGalleryAssets | null = null;
 let inflightAssetPromise: Promise<MyGoTwoGalleryAssets> | null = null;
+let cachedRows: AssignedAssetRow[] | null = null;
+let inflightRowsPromise: Promise<AssignedAssetRow[]> | null = null;
 
 export function createEmptyMyGoTwoGalleryAssets(): MyGoTwoGalleryAssets {
   return {
@@ -110,26 +86,56 @@ function setCachedAssets(nextAssets: MyGoTwoGalleryAssets) {
   };
 }
 
-async function fetchAssignedAssets() {
-  const { data, error } = await supabase
+function cloneRows(rows: AssignedAssetRow[]) {
+  return rows.map((row) => ({ ...row }));
+}
+
+async function fetchAssignedRows(options?: { force?: boolean }) {
+  if (!options?.force && cachedRows) {
+    return cloneRows(cachedRows);
+  }
+
+  if (inflightRowsPromise) {
+    return inflightRowsPromise.then(cloneRows);
+  }
+
+  inflightRowsPromise = supabase
     .from("category_images")
     .select("category_key, image_url")
     .eq("gender", "male")
-    .in("category_key", SLOT_KEYS);
+    .in("category_key", SLOT_KEYS)
+    .then(({ data, error }) => {
+      if (error) {
+        throw error;
+      }
 
-  if (error) {
-    throw error;
-  }
+      const rows = (data ?? []).filter((row) => Boolean(row.image_url));
+      cachedRows = cloneRows(rows);
+      return cloneRows(rows);
+    })
+    .finally(() => {
+      inflightRowsPromise = null;
+    });
 
-  const rows = data ?? [];
-  const rowsWithImages = rows.filter((row) => Boolean(row.image_url));
-  const stripRows = rowsWithImages.filter((row) => row.category_key?.startsWith("mygotwo-strip-"));
-  const collapseRows = rowsWithImages.filter((row) =>
+  return inflightRowsPromise.then(cloneRows);
+}
+
+async function buildAssignedAssets(
+  rows: AssignedAssetRow[],
+  options: {
+    stripTransform: typeof STRIP_IMAGE_TRANSFORM;
+    includeCollapse: boolean;
+  },
+) {
+  const stripRows = rows.filter((row) => row.category_key?.startsWith("mygotwo-strip-"));
+  const collapseRows = rows.filter((row) =>
     row.category_key?.startsWith("mygotwo-collapse-"),
   );
   const [stripUrls, collapseUrls] = await Promise.all([
-    resolveGalleryRowUrls(stripRows, STRIP_IMAGE_TRANSFORM),
-    resolveGalleryRowUrls(collapseRows, COLLAPSE_IMAGE_TRANSFORM),
+    resolveGalleryRowUrls(stripRows, options.stripTransform),
+    options.includeCollapse
+      ? resolveGalleryRowUrls(collapseRows, COLLAPSE_IMAGE_TRANSFORM)
+      : Promise.resolve([]),
   ]);
   const resolvedByKey = new Map<string, string>();
 
@@ -152,23 +158,44 @@ async function fetchAssignedAssets() {
       ...strip,
       image: resolvedByKey.get(`mygotwo-strip-${strip.id}`) || "",
     })),
-    collapseImages: MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
-      ...image,
-      image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || "",
-    })).filter((image) => Boolean(image.image)),
+    collapseImages: options.includeCollapse
+      ? MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
+          ...image,
+          image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || "",
+        })).filter((image) => Boolean(image.image))
+      : [],
   };
 }
 
-export async function loadMyGoTwoGalleryAssets(options?: { force?: boolean }) {
+export async function loadMyGoTwoGalleryAssets(options?: {
+  force?: boolean;
+  quality?: "preview" | "full";
+}) {
+  const quality = options?.quality ?? "full";
+
   if (!options?.force && cachedAssets) {
     return getCachedMyGoTwoGalleryAssets() ?? createEmptyMyGoTwoGalleryAssets();
+  }
+
+  if (quality === "preview") {
+    const rows = await fetchAssignedRows({ force: options?.force });
+    return buildAssignedAssets(rows, {
+      stripTransform: STRIP_PREVIEW_TRANSFORM,
+      includeCollapse: false,
+    });
   }
 
   if (inflightAssetPromise) {
     return inflightAssetPromise;
   }
 
-  inflightAssetPromise = fetchAssignedAssets()
+  inflightAssetPromise = fetchAssignedRows({ force: options?.force })
+    .then((rows) =>
+      buildAssignedAssets(rows, {
+        stripTransform: STRIP_IMAGE_TRANSFORM,
+        includeCollapse: true,
+      }),
+    )
     .then((nextAssets) => {
       setCachedAssets(nextAssets);
       return getCachedMyGoTwoGalleryAssets() ?? createEmptyMyGoTwoGalleryAssets();
@@ -196,12 +223,33 @@ export async function preloadImageUrls(urls: string[]) {
             resolve([url, didLoad]);
           };
 
-          image.onload = () => complete(true);
+          image.onload = () => {
+            if (typeof image.decode === "function") {
+              image.decode().catch(() => undefined).finally(() => {
+                complete(image.naturalWidth > 0);
+              });
+              return;
+            }
+
+            complete(image.naturalWidth > 0);
+          };
           image.onerror = () => complete(false);
           image.src = url;
 
           if (image.complete) {
-            complete(image.naturalWidth > 0);
+            if (image.naturalWidth <= 0) {
+              complete(false);
+              return;
+            }
+
+            if (typeof image.decode === "function") {
+              image.decode().catch(() => undefined).finally(() => {
+                complete(true);
+              });
+              return;
+            }
+
+            complete(true);
           }
         }),
     ),

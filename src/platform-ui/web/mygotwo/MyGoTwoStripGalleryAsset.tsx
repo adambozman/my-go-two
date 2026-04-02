@@ -25,11 +25,11 @@ import {
 const PREVIEW_COLLAPSE_DELAY_MS = 5000;
 const COLLAPSE_ROTATE_INTERVAL_MS = 10000;
 const PANORAMA_TRANSITION_MS = 700;
-const STRIP_TRANSITION_MS = 240;
-const HOVER_DELAY_MS = 18;
-const OVERLAY_TRANSITION_MS = 260;
-const LOADER_EXIT_MS = 320;
-const RETURN_SETTLE_MS = 900;
+const STRIP_TRANSITION_MS = 180;
+const HOVER_DELAY_MS = 0;
+const OVERLAY_TRANSITION_MS = 220;
+const LOADER_EXIT_MS = 220;
+const RETURN_SETTLE_MS = 700;
 
 const STRIP_WEIGHT_EXPANDED = {
   labeled: 0.76,
@@ -37,14 +37,14 @@ const STRIP_WEIGHT_EXPANDED = {
 };
 
 const STRIP_WEIGHT_HOVER = {
-  target: 2.65,
-  otherLabeled: 0.42,
-  panorama: 0.96,
+  target: 2.1,
+  otherLabeled: 0.54,
+  panorama: 0.92,
 };
 
 const STRIP_WEIGHT_COLLAPSED = {
   labeled: 0.0001,
-  panorama: 1.86,
+  panorama: 1.7,
 };
 
 type StripPresentation = {
@@ -240,6 +240,8 @@ const StripCell = memo(function StripCell({
         transitionDuration: `${STRIP_TRANSITION_MS}ms`,
         pointerEvents: collapseCategoryStrip ? "none" : "auto",
         cursor: strip.label ? "pointer" : "default",
+        willChange: "flex-grow, opacity, transform",
+        contain: "paint",
       }}
     >
       {strip.isPanoramaStrip ? (
@@ -287,6 +289,7 @@ const StripCell = memo(function StripCell({
             objectPosition: `${strip.align ?? "50%"} center`,
             transform: isHoveredCategory ? "scale(1.01)" : "scale(1)",
             transitionDuration: `${STRIP_TRANSITION_MS}ms`,
+            willChange: "transform",
           }}
         />
       ) : null}
@@ -355,6 +358,7 @@ export default function MyGoTwoStripGalleryAsset() {
   const rotateTimerRef = useRef<number | null>(null);
   const panoramaTransitionTimerRef = useRef<number | null>(null);
   const overlayTimerRef = useRef<number | null>(null);
+  const returnHoverTimerRef = useRef<number | null>(null);
   const loaderExitTimerRef = useRef<number | null>(null);
   const loadRunIdRef = useRef(0);
   const returnHoldUntilRef = useRef(0);
@@ -427,7 +431,25 @@ export default function MyGoTwoStripGalleryAsset() {
       }
 
       try {
-        const assets = await loadMyGoTwoGalleryAssets({ force });
+        if (showLoader) {
+          const previewAssets = await loadMyGoTwoGalleryAssets({
+            force,
+            quality: "preview",
+          });
+          if (runId !== loadRunIdRef.current) {
+            return;
+          }
+
+          commitAssets(
+            {
+              stripImages: previewAssets.stripImages,
+              collapseImages: currentAssetsRef.current.collapseImages,
+            },
+            false,
+          );
+        }
+
+        const assets = await loadMyGoTwoGalleryAssets({ force, quality: "full" });
         const loadedVisibleUrls = await preloadImageUrls(getVisibleStageStripUrls(assets));
         if (runId !== loadRunIdRef.current) {
           return;
@@ -504,12 +526,10 @@ export default function MyGoTwoStripGalleryAsset() {
 
     bootHydratedRef.current = true;
 
-    if (hasCachedStage) {
-      void hydrateGalleryAssets({ force: true, showLoader: false });
-      return;
-    }
-
-    void hydrateGalleryAssets({ force: true, showLoader: true });
+    void hydrateGalleryAssets({
+      force: !hasCachedStage,
+      showLoader: !hasCachedStage,
+    });
   }, [hasCachedStage, hydrateGalleryAssets]);
 
   useEffect(() => {
@@ -555,6 +575,7 @@ export default function MyGoTwoStripGalleryAsset() {
         window.clearTimeout(panoramaTransitionTimerRef.current);
       }
       if (overlayTimerRef.current !== null) window.clearTimeout(overlayTimerRef.current);
+      if (returnHoverTimerRef.current !== null) window.clearTimeout(returnHoverTimerRef.current);
       if (loaderExitTimerRef.current !== null) window.clearTimeout(loaderExitTimerRef.current);
     };
   }, []);
@@ -705,6 +726,11 @@ export default function MyGoTwoStripGalleryAsset() {
       window.clearTimeout(hoverTimerRef.current);
     }
 
+    if (HOVER_DELAY_MS <= 0) {
+      setHoveredId(nextId);
+      return;
+    }
+
     hoverTimerRef.current = window.setTimeout(() => {
       setHoveredId(nextId);
       hoverTimerRef.current = null;
@@ -736,11 +762,15 @@ export default function MyGoTwoStripGalleryAsset() {
       window.clearTimeout(overlayTimerRef.current);
       overlayTimerRef.current = null;
     }
+    if (returnHoverTimerRef.current !== null) {
+      window.clearTimeout(returnHoverTimerRef.current);
+      returnHoverTimerRef.current = null;
+    }
 
     const returningCategoryId = activeCategoryId;
     setActiveCategoryId(null);
     setClosingCategoryId(returningCategoryId);
-    setHoveredId(null);
+    setHoveredId(returningCategoryId);
     setPreviewCollapsed(false);
     returnHoldUntilRef.current = nowMs() + RETURN_SETTLE_MS;
     setReturnHoldVersion((current) => current + 1);
@@ -748,6 +778,10 @@ export default function MyGoTwoStripGalleryAsset() {
     overlayTimerRef.current = window.setTimeout(() => {
       setClosingCategoryId(null);
       overlayTimerRef.current = null;
+      returnHoverTimerRef.current = window.setTimeout(() => {
+        setHoveredId(null);
+        returnHoverTimerRef.current = null;
+      }, STRIP_TRANSITION_MS + 80);
     }, OVERLAY_TRANSITION_MS);
   }, [activeCategoryId]);
 
@@ -768,8 +802,8 @@ export default function MyGoTwoStripGalleryAsset() {
         <div
           className="relative h-full w-full overflow-hidden transition-[transform,filter] duration-500 ease-out"
           style={{
-            transform: showLoaderOverlay ? "scale(1.004)" : "scale(1)",
-            filter: showLoaderOverlay ? "saturate(0.92)" : "saturate(1)",
+            transform: showLoaderOverlay ? "scale(1.001)" : "scale(1)",
+            filter: showLoaderOverlay ? "saturate(0.98)" : "saturate(1)",
           }}
         >
           <div
@@ -819,21 +853,21 @@ export default function MyGoTwoStripGalleryAsset() {
             opacity: isInitialLoadPending ? 1 : isLoaderExiting ? 0 : 0,
             transitionDuration: `${LOADER_EXIT_MS}ms`,
             background:
-              "linear-gradient(180deg, rgba(248,242,233,0.28) 0%, rgba(248,242,233,0.2) 100%)",
+              "linear-gradient(180deg, rgba(18,15,12,0.18) 0%, rgba(18,15,12,0.1) 100%)",
           }}
         >
           <div
             className="absolute inset-0 backdrop-blur-[2px]"
             style={{
               background:
-                "radial-gradient(circle at 50% 46%, rgba(248,242,233,0.34) 0%, rgba(248,242,233,0.14) 24%, rgba(248,242,233,0) 48%)",
+                "radial-gradient(circle at 50% 46%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.06) 24%, rgba(255,255,255,0) 48%)",
             }}
           />
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.04) 28%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.04) 72%, rgba(255,255,255,0) 100%)",
+                "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.03) 28%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 72%, rgba(255,255,255,0) 100%)",
               transform: "translateX(-18%)",
               animation: "mygotwo-loader-sheen 2.6s ease-in-out infinite",
             }}
