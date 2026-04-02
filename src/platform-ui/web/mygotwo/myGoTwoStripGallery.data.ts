@@ -1,5 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
-import { resolveStorageUrl, resolveStorageUrlsWithTransform } from "@/lib/storageRefs";
+import {
+  resolveStorageUrl,
+  resolveStorageUrls,
+  resolveStorageUrlsWithTransform,
+} from "@/lib/storageRefs";
 import {
   MYGOTWO_COLLAPSE_IMAGES,
   MYGOTWO_COLLAPSE_SLOT_TARGETS,
@@ -32,6 +36,53 @@ const COLLAPSE_IMAGE_TRANSFORM = {
   resize: "cover" as const,
   quality: 72,
 };
+
+function shouldBypassTransform(imageUrl?: string | null) {
+  return /\.png$/i.test(imageUrl ?? "");
+}
+
+async function resolveGalleryRowUrls(
+  rows: Array<{ image_url: string | null }>,
+  transform: typeof STRIP_IMAGE_TRANSFORM,
+) {
+  const resolved = new Array<string>(rows.length).fill("");
+  const transformedValues: string[] = [];
+  const transformedIndexes: number[] = [];
+  const originalValues: string[] = [];
+  const originalIndexes: number[] = [];
+
+  rows.forEach((row, index) => {
+    if (!row.image_url) {
+      return;
+    }
+
+    if (shouldBypassTransform(row.image_url)) {
+      originalValues.push(row.image_url);
+      originalIndexes.push(index);
+      return;
+    }
+
+    transformedValues.push(row.image_url);
+    transformedIndexes.push(index);
+  });
+
+  const [transformedUrls, originalUrls] = await Promise.all([
+    transformedValues.length
+      ? resolveStorageUrlsWithTransform(transformedValues, transform)
+      : Promise.resolve([]),
+    originalValues.length ? resolveStorageUrls(originalValues) : Promise.resolve([]),
+  ]);
+
+  transformedIndexes.forEach((rowIndex, resultIndex) => {
+    resolved[rowIndex] = transformedUrls[resultIndex] ?? "";
+  });
+
+  originalIndexes.forEach((rowIndex, resultIndex) => {
+    resolved[rowIndex] = originalUrls[resultIndex] ?? "";
+  });
+
+  return resolved;
+}
 
 let cachedAssets: MyGoTwoGalleryAssets | null = null;
 let inflightAssetPromise: Promise<MyGoTwoGalleryAssets> | null = null;
@@ -77,14 +128,8 @@ async function fetchAssignedAssets() {
     row.category_key?.startsWith("mygotwo-collapse-"),
   );
   const [stripUrls, collapseUrls] = await Promise.all([
-    resolveStorageUrlsWithTransform(
-      stripRows.map((row) => row.image_url),
-      STRIP_IMAGE_TRANSFORM,
-    ),
-    resolveStorageUrlsWithTransform(
-      collapseRows.map((row) => row.image_url),
-      COLLAPSE_IMAGE_TRANSFORM,
-    ),
+    resolveGalleryRowUrls(stripRows, STRIP_IMAGE_TRANSFORM),
+    resolveGalleryRowUrls(collapseRows, COLLAPSE_IMAGE_TRANSFORM),
   ]);
   const resolvedByKey = new Map<string, string>();
 
