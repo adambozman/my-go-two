@@ -1,0 +1,1 @@
+async (page) => { return await page.evaluate(() => { const el = document.querySelector("[aria-label=\"Strip 09\"]"); if (!el) return { found: false }; el.dispatchEvent(new MouseEvent("click", { bubbles: true })); return { found: true }; }); }

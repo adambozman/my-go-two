@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { TransformOptions } from "@supabase/storage-js";
 
 const STORAGE_REF_PREFIX = "storage://";
 const signedUrlCache = new Map<string, { url: string; expiresAt: number }>();
@@ -68,6 +69,18 @@ export function toStorageRefIfPossible(value?: string | null) {
 
 function buildPublicStorageUrl(bucket: string, path: string) {
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl || "";
+}
+
+function buildTransformedPublicStorageUrl(
+  bucket: string,
+  path: string,
+  transform?: TransformOptions,
+) {
+  const { data } = supabase.storage.from(bucket).getPublicUrl(
+    path,
+    transform ? { transform } : undefined,
+  );
   return data.publicUrl || "";
 }
 
@@ -164,5 +177,88 @@ export async function resolveStorageUrls(values: Array<string | null | undefined
 
 export async function resolveStorageUrl(value?: string | null, expiresIn = 3600) {
   const [resolved] = await resolveStorageUrls([value], expiresIn);
+  return resolved ?? "";
+}
+
+export async function resolveStorageUrlsWithTransform(
+  values: Array<string | null | undefined>,
+  transform: TransformOptions,
+  expiresIn = 3600,
+) {
+  const results = new Array<string>(values.length).fill("");
+  const uniquePrivatePaths = new Map<string, { bucket: string; path: string }>();
+  const indexesByCacheKey = new Map<string, number[]>();
+  const now = Date.now();
+
+  values.forEach((value, index) => {
+    if (!value) {
+      results[index] = "";
+      return;
+    }
+
+    if (value.startsWith("data:") || value.startsWith("blob:")) {
+      results[index] = value;
+      return;
+    }
+
+    const directStorageRef = parseStorageRef(value);
+    const storageRef = directStorageRef ?? parseSupabaseStorageUrl(value);
+    if (!storageRef) {
+      results[index] = value;
+      return;
+    }
+
+    const { bucket, path } = storageRef;
+    if (!PRIVATE_BUCKETS.has(bucket)) {
+      results[index] = buildTransformedPublicStorageUrl(bucket, path, transform);
+      return;
+    }
+
+    const cacheKey = `${bucket}/${path}?transform=${JSON.stringify(transform)}`;
+    const cached = signedUrlCache.get(cacheKey);
+    if (cached && cached.expiresAt > now + 30_000) {
+      results[index] = cached.url;
+      return;
+    }
+
+    const existingIndexes = indexesByCacheKey.get(cacheKey);
+    if (existingIndexes) {
+      existingIndexes.push(index);
+      return;
+    }
+
+    indexesByCacheKey.set(cacheKey, [index]);
+    uniquePrivatePaths.set(cacheKey, { bucket, path });
+  });
+
+  await Promise.all(
+    Array.from(uniquePrivatePaths.entries()).map(async ([cacheKey, request]) => {
+      const { data, error } = await supabase.storage
+        .from(request.bucket)
+        .createSignedUrl(request.path, expiresIn, { transform });
+
+      const signedUrl = error ? "" : data?.signedUrl ?? "";
+      const indexes = indexesByCacheKey.get(cacheKey) ?? [];
+      indexes.forEach((resultIndex) => {
+        results[resultIndex] = signedUrl;
+      });
+      if (signedUrl) {
+        signedUrlCache.set(cacheKey, {
+          url: signedUrl,
+          expiresAt: now + expiresIn * 1000,
+        });
+      }
+    }),
+  );
+
+  return results;
+}
+
+export async function resolveStorageUrlWithTransform(
+  value: string | null | undefined,
+  transform: TransformOptions,
+  expiresIn = 3600,
+) {
+  const [resolved] = await resolveStorageUrlsWithTransform([value], transform, expiresIn);
   return resolved ?? "";
 }
