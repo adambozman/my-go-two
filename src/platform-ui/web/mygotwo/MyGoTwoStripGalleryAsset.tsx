@@ -18,7 +18,7 @@ import {
   loadMyGoTwoGalleryAssets,
   mergeOverrideIntoGalleryAssets,
   preloadImageUrls,
-  resolveOverrideImageUrl,
+  resolveMyGoTwoOverrideImageUrl,
   type MyGoTwoGalleryAssets,
 } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.data";
 
@@ -50,6 +50,7 @@ const STRIP_WEIGHT_COLLAPSED = {
 type StripPresentation = {
   id: string;
   image: string;
+  detailImage?: string;
   align?: string;
   label?: string;
   isPanoramaStrip: boolean;
@@ -127,9 +128,9 @@ function CategoryOverlay({
         pointerEvents: isVisible ? "auto" : "none",
       }}
     >
-      {category.image ? (
+      {(category.detailImage || category.image) ? (
         <img
-          src={category.image}
+          src={category.detailImage || category.image}
           alt={category.label}
           className="absolute inset-0 h-full w-full object-cover"
           style={{ objectPosition: `${category.align ?? "50%"} center` }}
@@ -287,7 +288,7 @@ const StripCell = memo(function StripCell({
           className="absolute inset-0 h-full w-full object-cover transition-transform ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{
             objectPosition: `${strip.align ?? "50%"} center`,
-            transform: isHoveredCategory ? "scale(1.01)" : "scale(1)",
+            transform: "scale(1)",
             transitionDuration: `${STRIP_TRANSITION_MS}ms`,
             willChange: "transform",
           }}
@@ -543,7 +544,9 @@ export default function MyGoTwoStripGalleryAsset() {
       }
 
       void (async () => {
-        const resolvedUrl = detail?.url ? await resolveOverrideImageUrl(detail.url) : "";
+        const resolvedUrl = detail?.url
+          ? await resolveMyGoTwoOverrideImageUrl(imageKey, detail.url)
+          : "";
         let nextResolvedUrl = resolvedUrl;
 
         if (resolvedUrl) {

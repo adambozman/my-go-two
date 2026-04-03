@@ -1,13 +1,17 @@
 import { supabase } from "@/integrations/supabase/client";
 import {
+  resolveStorageUrlWithTransform,
   resolveStorageUrl,
   resolveStorageUrlsWithTransform,
 } from "@/lib/storageRefs";
 import {
+  MYGOTWO_ASSIGNMENT_KEYS,
   MYGOTWO_COLLAPSE_IMAGES,
   MYGOTWO_COLLAPSE_SLOT_TARGETS,
   MYGOTWO_STRIP_GALLERY_IMAGES,
-  MYGOTWO_STRIP_SLOT_TARGETS,
+  getMyGoTwoCategoryTargetByCardKey,
+  getMyGoTwoCategoryTargetByStripId,
+  getMyGoTwoCategoryTargetByStripKey,
   type MyGoTwoCollapseImage,
   type MyGoTwoStripGalleryImage,
 } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.images";
@@ -22,10 +26,7 @@ type AssignedAssetRow = {
   image_url: string | null;
 };
 
-const SLOT_KEYS = [
-  ...MYGOTWO_STRIP_SLOT_TARGETS.map((target) => target.key),
-  ...MYGOTWO_COLLAPSE_SLOT_TARGETS.map((target) => target.key),
-];
+const SLOT_KEYS = MYGOTWO_ASSIGNMENT_KEYS;
 
 const STRIP_PREVIEW_TRANSFORM = {
   width: 72,
@@ -39,6 +40,13 @@ const STRIP_IMAGE_TRANSFORM = {
   height: 1600,
   resize: "cover" as const,
   quality: 56,
+};
+
+const STRIP_DETAIL_IMAGE_TRANSFORM = {
+  width: 1600,
+  height: 1200,
+  resize: "cover" as const,
+  quality: 72,
 };
 
 const COLLAPSE_IMAGE_TRANSFORM = {
@@ -127,41 +135,75 @@ async function buildAssignedAssets(
     includeCollapse: boolean;
   },
 ) {
-  const stripRows = rows.filter((row) => row.category_key?.startsWith("mygotwo-strip-"));
+  const stripRows = rows.filter((row) =>
+    row.category_key ? Boolean(getMyGoTwoCategoryTargetByStripKey(row.category_key)) : false,
+  );
+  const cardRows = rows.filter((row) =>
+    row.category_key ? Boolean(getMyGoTwoCategoryTargetByCardKey(row.category_key)) : false,
+  );
   const collapseRows = rows.filter((row) =>
     row.category_key?.startsWith("mygotwo-collapse-"),
   );
-  const [stripUrls, collapseUrls] = await Promise.all([
+  const [stripUrls, cardUrls, collapseUrls] = await Promise.all([
     resolveGalleryRowUrls(stripRows, options.stripTransform),
+    resolveGalleryRowUrls(cardRows, STRIP_DETAIL_IMAGE_TRANSFORM),
     options.includeCollapse
       ? resolveGalleryRowUrls(collapseRows, COLLAPSE_IMAGE_TRANSFORM)
       : Promise.resolve([]),
   ]);
-  const resolvedByKey = new Map<string, string>();
+  const stripResolvedByKey = new Map<string, string>();
+  const cardResolvedByKey = new Map<string, string>();
+  const collapseResolvedByKey = new Map<string, string>();
 
   stripRows.forEach((row, index) => {
-    const resolvedUrl = stripUrls[index] ?? "";
-    if (row.category_key && resolvedUrl) {
-      resolvedByKey.set(row.category_key, resolvedUrl);
+    const resolvedStripUrl = stripUrls[index] ?? "";
+    if (row.category_key) {
+      if (resolvedStripUrl) {
+        stripResolvedByKey.set(row.category_key, resolvedStripUrl);
+      }
+    }
+  });
+
+  cardRows.forEach((row, index) => {
+    const resolvedCardUrl = cardUrls[index] ?? "";
+    if (row.category_key && resolvedCardUrl) {
+      cardResolvedByKey.set(row.category_key, resolvedCardUrl);
     }
   });
 
   collapseRows.forEach((row, index) => {
     const resolvedUrl = collapseUrls[index] ?? "";
     if (row.category_key && resolvedUrl) {
-      resolvedByKey.set(row.category_key, resolvedUrl);
+      collapseResolvedByKey.set(row.category_key, resolvedUrl);
     }
   });
 
   return {
-    stripImages: MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => ({
-      ...strip,
-      image: resolvedByKey.get(`mygotwo-strip-${strip.id}`) || "",
-    })),
+    stripImages: MYGOTWO_STRIP_GALLERY_IMAGES.map((strip) => {
+      const categoryTarget = getMyGoTwoCategoryTargetByStripId(strip.id);
+
+      if (!categoryTarget) {
+        return {
+          ...strip,
+          image: "",
+          detailImage: "",
+        };
+      }
+
+      const stripImage = stripResolvedByKey.get(categoryTarget.stripKey) || "";
+      const detailImage =
+        cardResolvedByKey.get(categoryTarget.cardKey) || stripImage;
+
+      return {
+        ...strip,
+        image: stripImage,
+        detailImage,
+      };
+    }),
     collapseImages: options.includeCollapse
       ? MYGOTWO_COLLAPSE_IMAGES.map((image, index) => ({
           ...image,
-          image: resolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || "",
+          image: collapseResolvedByKey.get(`mygotwo-collapse-${String(index + 1).padStart(2, "0")}`) || "",
         })).filter((image) => Boolean(image.image))
       : [],
   };
@@ -269,7 +311,7 @@ export function applyLoadedUrlFilter(
   return {
     stripImages: assets.stripImages.map((strip) =>
       strip.image && !loadedUrls.has(strip.image)
-        ? { ...strip, image: "" }
+        ? { ...strip, image: "", detailImage: strip.detailImage || "" }
         : strip,
     ),
     collapseImages: assets.collapseImages.filter((image) => loadedUrls.has(image.image)),
@@ -280,17 +322,63 @@ export async function resolveOverrideImageUrl(value?: string | null) {
   return resolveStorageUrl(value, 3600);
 }
 
+export async function resolveMyGoTwoOverrideImageUrl(
+  imageKey: string,
+  value?: string | null,
+) {
+  if (!value) {
+    return "";
+  }
+
+  if (getMyGoTwoCategoryTargetByStripKey(imageKey)) {
+    return resolveStorageUrlWithTransform(value, STRIP_IMAGE_TRANSFORM, 3600);
+  }
+
+  if (getMyGoTwoCategoryTargetByCardKey(imageKey)) {
+    return resolveStorageUrlWithTransform(value, STRIP_DETAIL_IMAGE_TRANSFORM, 3600);
+  }
+
+  if (imageKey.startsWith("mygotwo-collapse-")) {
+    return resolveStorageUrlWithTransform(value, COLLAPSE_IMAGE_TRANSFORM, 3600);
+  }
+
+  return resolveStorageUrl(value, 3600);
+}
+
 export function mergeOverrideIntoGalleryAssets(
   currentAssets: MyGoTwoGalleryAssets,
   imageKey: string,
   resolvedUrl: string,
 ): MyGoTwoGalleryAssets {
-  if (imageKey.startsWith("mygotwo-strip-")) {
-    const stripId = imageKey.slice("mygotwo-strip-".length);
+  const stripTarget = getMyGoTwoCategoryTargetByStripKey(imageKey);
+  if (stripTarget) {
     const nextAssets = {
       ...currentAssets,
       stripImages: currentAssets.stripImages.map((strip) =>
-        strip.id === stripId ? { ...strip, image: resolvedUrl } : strip,
+        strip.id === stripTarget.id
+          ? {
+              ...strip,
+              image: resolvedUrl,
+              detailImage: strip.detailImage || resolvedUrl,
+            }
+          : strip,
+      ),
+    };
+    setCachedAssets(nextAssets);
+    return nextAssets;
+  }
+
+  const cardTarget = getMyGoTwoCategoryTargetByCardKey(imageKey);
+  if (cardTarget) {
+    const nextAssets = {
+      ...currentAssets,
+      stripImages: currentAssets.stripImages.map((strip) =>
+        strip.id === cardTarget.id
+          ? {
+              ...strip,
+              detailImage: resolvedUrl || strip.image,
+            }
+          : strip,
       ),
     };
     setCachedAssets(nextAssets);

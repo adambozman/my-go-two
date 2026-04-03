@@ -1,43 +1,39 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ImagePlus, Search, Trash2 } from "lucide-react";
+import { ArrowLeft, ImagePlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteImageUrl, setImageUrl } from "@/lib/imageOverrides";
+import { makeStorageRef, parseStorageRef, resolveStorageUrls } from "@/lib/storageRefs";
 import {
-  makeStorageRef,
-  parseStorageRef,
-  resolveStorageUrls,
-} from "@/lib/storageRefs";
-import {
+  MYGOTWO_CATEGORY_TARGETS,
   MYGOTWO_COLLAPSE_SLOT_TARGETS,
   MYGOTWO_SLOT_TARGETS,
-  MYGOTWO_STRIP_SLOT_TARGETS,
+  type MyGoTwoSlotTarget,
 } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.images";
 
-type PhotoBankFile = {
-  id: string;
-  name: string;
-  created_at: string | null;
-  updated_at: string | null;
-  path: string;
+type SlotAssignment = {
+  key: string;
   image_url: string;
   display_url: string;
+  created_at: string | null;
+  path: string;
+  name: string;
 };
 
-type AssignedSlot = {
-  key: string;
-  label: string;
-  kind: "strip" | "collapse";
+type ManualCleanupItem = {
   image_url: string;
-  display_url: string;
+  name: string;
+  path: string;
+  reason: string;
+  slots: string[];
 };
 
 function formatDate(value: string | null) {
   if (!value) return "";
+
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
 
@@ -48,7 +44,7 @@ function formatDate(value: string | null) {
   }).format(date);
 }
 
-function createPhotoPath(file: File) {
+function createPhotoPath(target: MyGoTwoSlotTarget, file: File) {
   const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const basename = file.name
     .replace(/\.[^.]+$/, "")
@@ -57,7 +53,67 @@ function createPhotoPath(file: File) {
     .replace(/^-+|-+$/g, "")
     .slice(0, 48) || "image";
 
-  return `bank/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${basename}.${extension}`;
+  return `${target.folder}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${basename}.${extension}`;
+}
+
+function SlotPreview({
+  title,
+  description,
+  assignment,
+  aspectClass,
+  deleting,
+  onDelete,
+}: {
+  title: string;
+  description: string;
+  assignment: SlotAssignment | null;
+  aspectClass: string;
+  deleting: boolean;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="rounded-3xl border border-border bg-card/65 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold">{title}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2 text-destructive"
+          onClick={onDelete}
+          disabled={!assignment || deleting}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+          {deleting ? "Deleting..." : "Delete"}
+        </Button>
+      </div>
+
+      <div className={`mt-4 overflow-hidden rounded-2xl border border-border bg-muted ${aspectClass}`}>
+        {assignment?.display_url ? (
+          <img
+            src={assignment.display_url}
+            alt={title}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center px-4 text-center text-sm text-muted-foreground">
+            No image uploaded
+          </div>
+        )}
+      </div>
+
+      <div className="mt-4 space-y-1">
+        <p className="truncate text-sm font-medium">
+          {assignment?.name ?? "Empty slot"}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {assignment ? `Uploaded ${formatDate(assignment.created_at)}` : "Upload directly into this slot."}
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export default function PhotoGallery() {
@@ -65,65 +121,30 @@ export default function PhotoGallery() {
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [loadingPhotos, setLoadingPhotos] = useState(true);
+  const pendingUploadTargetKeyRef = useRef<string | null>(null);
   const [loadingAssignments, setLoadingAssignments] = useState(true);
-  const [uploading, setUploading] = useState(false);
-  const [assigning, setAssigning] = useState(false);
-  const [clearing, setClearing] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [photos, setPhotos] = useState<PhotoBankFile[]>([]);
-  const [assignedSlots, setAssignedSlots] = useState<AssignedSlot[]>([]);
-  const [selectedTargetKey, setSelectedTargetKey] = useState(MYGOTWO_SLOT_TARGETS[0]?.key ?? "");
-  const [selectedPhotoRef, setSelectedPhotoRef] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null);
+  const [deletingKey, setDeletingKey] = useState<string | null>(null);
+  const [assignedSlots, setAssignedSlots] = useState<Record<string, SlotAssignment>>({});
+  const [manualCleanupItems, setManualCleanupItems] = useState<ManualCleanupItem[]>([]);
+  const [categoryUploadSelections, setCategoryUploadSelections] = useState<Record<string, string>>(
+    () =>
+      Object.fromEntries(
+        MYGOTWO_CATEGORY_TARGETS.map((target) => [target.slug, target.stripKey]),
+      ),
+  );
+  const [repeatUploadTargetKey, setRepeatUploadTargetKey] = useState(
+    MYGOTWO_COLLAPSE_SLOT_TARGETS[0]?.key ?? "",
+  );
 
-  const loadPhotos = useCallback(async () => {
-    if (!user) {
-      setPhotos([]);
-      setLoadingPhotos(false);
-      return;
-    }
-
-    setLoadingPhotos(true);
-
-    const { data, error } = await supabase.storage.from("photo-bank").list("bank", {
-      limit: 200,
-      offset: 0,
-      sortBy: { column: "created_at", order: "desc" },
-    });
-
-    if (error) {
-      toast({
-        title: "Failed to load photos",
-        description: error.message,
-        variant: "destructive",
-      });
-      setPhotos([]);
-      setLoadingPhotos(false);
-      return;
-    }
-
-    const files = (data ?? []).filter((item) => Boolean(item.name));
-    const refs = files.map((item) => makeStorageRef("photo-bank", `bank/${item.name}`));
-    const resolvedUrls = await resolveStorageUrls(refs);
-
-    setPhotos(
-      files.map((item, index) => ({
-        id: item.id || `photo-bank-${item.name}`,
-        name: item.name,
-        created_at: item.created_at ?? null,
-        updated_at: item.updated_at ?? null,
-        path: `bank/${item.name}`,
-        image_url: refs[index],
-        display_url: resolvedUrls[index] ?? "",
-      })),
-    );
-    setLoadingPhotos(false);
-  }, [toast, user]);
+  const slotTargetsByKey = useMemo(
+    () => new Map(MYGOTWO_SLOT_TARGETS.map((target) => [target.key, target])),
+    [],
+  );
 
   const loadAssignedSlots = useCallback(async () => {
     if (!user) {
-      setAssignedSlots([]);
+      setAssignedSlots({});
       setLoadingAssignments(false);
       return;
     }
@@ -133,7 +154,7 @@ export default function PhotoGallery() {
     const slotKeys = MYGOTWO_SLOT_TARGETS.map((target) => target.key);
     const { data, error } = await supabase
       .from("category_images")
-      .select("category_key, image_url")
+      .select("category_key, image_url, created_at")
       .eq("gender", "male")
       .in("category_key", slotKeys);
 
@@ -143,34 +164,29 @@ export default function PhotoGallery() {
         description: error.message,
         variant: "destructive",
       });
-      setAssignedSlots([]);
+      setAssignedSlots({});
       setLoadingAssignments(false);
       return;
     }
 
     const rows = data ?? [];
     const resolvedUrls = await resolveStorageUrls(rows.map((row) => row.image_url));
-    const assignedByKey = new Map<string, { image_url: string; display_url: string }>();
+    const nextAssignments: Record<string, SlotAssignment> = {};
 
     rows.forEach((row, index) => {
-      assignedByKey.set(row.category_key, {
+      const storageRef = parseStorageRef(row.image_url);
+      const path = storageRef?.path ?? "";
+      nextAssignments[row.category_key] = {
+        key: row.category_key,
         image_url: row.image_url,
         display_url: resolvedUrls[index] ?? "",
-      });
+        created_at: row.created_at ?? null,
+        path,
+        name: path.split("/").pop() ?? row.image_url,
+      };
     });
 
-    setAssignedSlots(
-      MYGOTWO_SLOT_TARGETS.map((target) => {
-        const assigned = assignedByKey.get(target.key);
-        return {
-          key: target.key,
-          label: target.label,
-          kind: target.kind,
-          image_url: assigned?.image_url ?? "",
-          display_url: assigned?.display_url ?? "",
-        };
-      }),
-    );
+    setAssignedSlots(nextAssignments);
     setLoadingAssignments(false);
   }, [toast, user]);
 
@@ -178,195 +194,203 @@ export default function PhotoGallery() {
     if (authLoading) return;
 
     if (!user) {
-      setPhotos([]);
-      setAssignedSlots([]);
-      setLoadingPhotos(false);
+      setAssignedSlots({});
       setLoadingAssignments(false);
       return;
     }
 
-    void loadPhotos();
     void loadAssignedSlots();
-  }, [authLoading, loadAssignedSlots, loadPhotos, user]);
+  }, [authLoading, loadAssignedSlots, user]);
 
-  const filteredPhotos = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) return photos;
+  const queueManualCleanup = useCallback(
+    (assignment: SlotAssignment, reason: string, slots: string[]) => {
+      setManualCleanupItems((current) => {
+        const nextItem: ManualCleanupItem = {
+          image_url: assignment.image_url,
+          name: assignment.name,
+          path: assignment.path,
+          reason,
+          slots,
+        };
 
-    return photos.filter((photo) => photo.name.toLowerCase().includes(normalized));
-  }, [photos, query]);
-
-  useEffect(() => {
-    if (!photos.length) {
-      setSelectedPhotoRef(null);
-      return;
-    }
-
-    if (selectedPhotoRef && photos.some((photo) => photo.image_url === selectedPhotoRef)) {
-      return;
-    }
-
-    setSelectedPhotoRef(photos[0].image_url);
-  }, [photos, selectedPhotoRef]);
-
-  const selectedTarget = useMemo(
-    () => MYGOTWO_SLOT_TARGETS.find((target) => target.key === selectedTargetKey) ?? null,
-    [selectedTargetKey],
-  );
-
-  const selectedAssignment = useMemo(
-    () => assignedSlots.find((slot) => slot.key === selectedTargetKey) ?? null,
-    [assignedSlots, selectedTargetKey],
-  );
-
-  const selectedPhoto = useMemo(
-    () => photos.find((photo) => photo.image_url === selectedPhotoRef) ?? null,
-    [photos, selectedPhotoRef],
-  );
-
-  const usageByImageUrl = useMemo(() => {
-    const usage = new Map<string, string[]>();
-
-    assignedSlots.forEach((slot) => {
-      if (!slot.image_url) return;
-      const current = usage.get(slot.image_url) ?? [];
-      current.push(slot.label);
-      usage.set(slot.image_url, current);
-    });
-
-    return usage;
-  }, [assignedSlots]);
-
-  const handleUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files ?? []);
-    if (!files.length || !user) return;
-
-    setUploading(true);
-
-    try {
-      for (const file of files) {
-        const path = createPhotoPath(file);
-        const { error } = await supabase.storage
-          .from("photo-bank")
-          .upload(path, file, { contentType: file.type, upsert: false });
-
-        if (error) {
-          throw error;
+        const existingIndex = current.findIndex((item) => item.image_url === assignment.image_url);
+        if (existingIndex < 0) {
+          return [...current, nextItem];
         }
+
+        const next = [...current];
+        next[existingIndex] = nextItem;
+        return next;
+      });
+    },
+    [],
+  );
+
+  const clearManualCleanupItem = useCallback((imageUrl: string) => {
+    setManualCleanupItems((current) => current.filter((item) => item.image_url !== imageUrl));
+  }, []);
+
+  const getOtherUsageLabels = useCallback(
+    (imageUrl: string, excludedKey: string) =>
+      MYGOTWO_SLOT_TARGETS.filter(
+        (target) =>
+          target.key !== excludedKey && assignedSlots[target.key]?.image_url === imageUrl,
+      ).map((target) => target.label),
+    [assignedSlots],
+  );
+
+  const removeStorageFileIfUnused = useCallback(
+    async (assignment: SlotAssignment, excludedKey: string) => {
+      const remainingUsage = getOtherUsageLabels(assignment.image_url, excludedKey);
+      if (remainingUsage.length > 0) {
+        return false;
       }
 
-      toast({
-        title: "Uploaded",
-        description: `${files.length} image${files.length === 1 ? "" : "s"} added to storage.`,
-      });
-      await loadPhotos();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Upload failed.";
-      toast({
-        title: "Upload failed",
-        description: message,
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  }, [loadPhotos, toast, user]);
-
-  const handleAssignSelected = useCallback(async () => {
-    if (!selectedTarget || !selectedPhoto) return;
-
-    setAssigning(true);
-
-    try {
-      await setImageUrl(selectedTarget.key, selectedPhoto.image_url);
-      await loadAssignedSlots();
-      toast({
-        title: "Slot updated",
-        description: `${selectedTarget.label} now uses ${selectedPhoto.name}.`,
-      });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Assign failed.";
-      toast({
-        title: "Assign failed",
-        description: message,
-        variant: "destructive",
-      });
-    } finally {
-      setAssigning(false);
-    }
-  }, [loadAssignedSlots, selectedPhoto, selectedTarget, toast]);
-
-  const handleClearSelectedTarget = useCallback(async () => {
-    if (!selectedTarget) return;
-
-    setClearing(true);
-
-    try {
-      await deleteImageUrl(selectedTarget.key);
-      await loadAssignedSlots();
-      toast({
-        title: "Slot cleared",
-        description: `${selectedTarget.label} was reset.`,
-      });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Clear failed.";
-      toast({
-        title: "Clear failed",
-        description: message,
-        variant: "destructive",
-      });
-    } finally {
-      setClearing(false);
-    }
-  }, [loadAssignedSlots, selectedTarget, toast]);
-
-  const handleDeleteSelectedPhoto = useCallback(async () => {
-    if (!selectedPhoto) return;
-
-    setDeleting(true);
-
-    try {
-      const linkedSlots = assignedSlots.filter((slot) => slot.image_url === selectedPhoto.image_url);
-
-      for (const slot of linkedSlots) {
-        await deleteImageUrl(slot.key);
-      }
-
-      const storageRef = parseStorageRef(selectedPhoto.image_url);
+      const storageRef = parseStorageRef(assignment.image_url);
       if (!storageRef) {
-        throw new Error("Stored photo reference is invalid.");
+        queueManualCleanup(assignment, "Stored photo reference is invalid.", remainingUsage);
+        return true;
       }
 
       const { error } = await supabase.storage.from(storageRef.bucket).remove([storageRef.path]);
       if (error) {
-        throw error;
+        queueManualCleanup(assignment, error.message, remainingUsage);
+        return true;
       }
 
-      toast({
-        title: "Photo deleted",
-        description: linkedSlots.length
-          ? "The image was removed from storage and cleared from any slots using it."
-          : "The image was removed from storage.",
-      });
+      clearManualCleanupItem(assignment.image_url);
+      return false;
+    },
+    [clearManualCleanupItem, getOtherUsageLabels, queueManualCleanup],
+  );
 
-      await Promise.all([loadPhotos(), loadAssignedSlots()]);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Delete failed.";
-      toast({
-        title: "Delete failed",
-        description: message,
-        variant: "destructive",
-      });
-    } finally {
-      setDeleting(false);
-    }
-  }, [assignedSlots, loadAssignedSlots, loadPhotos, selectedPhoto, toast]);
+  const triggerUpload = useCallback((targetKey: string) => {
+    pendingUploadTargetKeyRef.current = targetKey;
+    fileInputRef.current?.click();
+  }, []);
 
-  const pageLoading = authLoading || loadingPhotos || loadingAssignments;
-  const selectedPhotoUsage = selectedPhoto ? usageByImageUrl.get(selectedPhoto.image_url) ?? [] : [];
+  const uploadToTarget = useCallback(
+    async (targetKey: string, file: File) => {
+      if (!user) return;
+
+      const target = slotTargetsByKey.get(targetKey);
+      if (!target) return;
+
+      setUploadingKey(targetKey);
+
+      const currentAssignment = assignedSlots[targetKey] ?? null;
+
+      try {
+        const path = createPhotoPath(target, file);
+        const { error: uploadError } = await supabase.storage
+          .from("photo-bank")
+          .upload(path, file, { contentType: file.type, upsert: false });
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        const nextImageRef = makeStorageRef("photo-bank", path);
+        await setImageUrl(target.key, nextImageRef);
+
+        let cleanupQueued = false;
+        if (currentAssignment && currentAssignment.image_url !== nextImageRef) {
+          cleanupQueued = await removeStorageFileIfUnused(currentAssignment, targetKey);
+        }
+
+        toast({
+          title: "Image uploaded",
+          description: cleanupQueued
+            ? `${target.label} was updated. The replaced file was queued for manual cleanup.`
+            : `${target.label} now points directly to the new storage image.`,
+        });
+
+        await loadAssignedSlots();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Upload failed.";
+        toast({
+          title: "Upload failed",
+          description: message,
+          variant: "destructive",
+        });
+      } finally {
+        setUploadingKey(null);
+      }
+    },
+    [assignedSlots, loadAssignedSlots, removeStorageFileIfUnused, slotTargetsByKey, toast, user],
+  );
+
+  const handleUploadInputChange = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      const targetKey = pendingUploadTargetKeyRef.current;
+
+      pendingUploadTargetKeyRef.current = null;
+
+      if (!file || !targetKey) {
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+
+      await uploadToTarget(targetKey, file);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    },
+    [uploadToTarget],
+  );
+
+  const handleDeleteSlotImage = useCallback(
+    async (targetKey: string) => {
+      const target = slotTargetsByKey.get(targetKey);
+      const assignment = assignedSlots[targetKey];
+
+      if (!target || !assignment) return;
+
+      setDeletingKey(targetKey);
+
+      try {
+        await deleteImageUrl(target.key);
+        const cleanupQueued = await removeStorageFileIfUnused(assignment, targetKey);
+
+        toast({
+          title: "Image deleted",
+          description: cleanupQueued
+            ? `${target.label} was cleared. The storage file was queued for manual cleanup.`
+            : `${target.label} was cleared from storage and from the live slot.`,
+        });
+
+        await loadAssignedSlots();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Delete failed.";
+        toast({
+          title: "Delete failed",
+          description: message,
+          variant: "destructive",
+        });
+      } finally {
+        setDeletingKey(null);
+      }
+    },
+    [assignedSlots, loadAssignedSlots, removeStorageFileIfUnused, slotTargetsByKey, toast],
+  );
+
+  const pageLoading = authLoading || loadingAssignments;
+  const categoryGroups = MYGOTWO_CATEGORY_TARGETS.map((target) => ({
+    ...target,
+    stripTarget: slotTargetsByKey.get(target.stripKey) ?? null,
+    cardTarget: slotTargetsByKey.get(target.cardKey) ?? null,
+    stripAssignment: assignedSlots[target.stripKey] ?? null,
+    cardAssignment: assignedSlots[target.cardKey] ?? null,
+    uploadTargetKey: categoryUploadSelections[target.slug] ?? target.stripKey,
+  }));
+  const repeatAssignments = MYGOTWO_COLLAPSE_SLOT_TARGETS.map((target) => ({
+    target,
+    assignment: assignedSlots[target.key] ?? null,
+  }));
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -378,24 +402,15 @@ export default function PhotoGallery() {
           <div className="min-w-0">
             <h1 className="text-lg font-semibold">Photo Gallery</h1>
             <p className="text-xs text-muted-foreground">
-              Upload images, pick a slot, and wire the storage image straight into My Go Two.
+              Upload straight into the live My Go Two slots. No staging bank, no image wall.
             </p>
           </div>
-          <Button
-            className="ml-auto gap-2"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={!user || authLoading || uploading}
-          >
-            <ImagePlus className="h-4 w-4" />
-            {uploading ? "Uploading..." : "Upload Images"}
-          </Button>
           <input
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            multiple
             className="hidden"
-            onChange={handleUpload}
+            onChange={handleUploadInputChange}
           />
         </div>
       </div>
@@ -410,195 +425,139 @@ export default function PhotoGallery() {
             Loading photo gallery...
           </div>
         ) : (
-          <div className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-            <aside className="space-y-4">
-              <section className="rounded-3xl border border-border bg-card p-4 shadow-sm">
-                <p className="text-sm font-semibold">My Go Two slot</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Choose the exact strip or collapse slot you want to replace.
-                </p>
+          <div className="space-y-6">
+            <section className="rounded-3xl border border-border bg-card p-4 shadow-sm sm:p-5">
+              <p className="text-sm font-semibold">Category uploads</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Each category has two live images: a narrow strip image and a separate opened-card image.
+              </p>
 
-                <label className="mt-4 block text-sm font-medium" htmlFor="mygotwo-slot-target">
-                  Target slot
-                </label>
-                <select
-                  id="mygotwo-slot-target"
-                  value={selectedTargetKey}
-                  onChange={(event) => setSelectedTargetKey(event.target.value)}
-                  className="mt-2 h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
-                >
-                  <optgroup label="Strip slots">
-                    {MYGOTWO_STRIP_SLOT_TARGETS.map((target) => (
-                      <option key={target.key} value={target.key}>
-                        {target.label}
-                      </option>
-                    ))}
-                  </optgroup>
-                  <optgroup label="Collapse slots">
+              <div className="mt-5 grid gap-4 xl:grid-cols-2">
+                {categoryGroups.map((group) => (
+                  <section key={group.id} className="rounded-3xl border border-border bg-card/50 p-4">
+                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                      <div>
+                        <p className="text-sm font-semibold">{group.label}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Upload either the small strip image or the opened card image.
+                        </p>
+                      </div>
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <select
+                          value={group.uploadTargetKey}
+                          onChange={(event) =>
+                            setCategoryUploadSelections((current) => ({
+                              ...current,
+                              [group.slug]: event.target.value,
+                            }))
+                          }
+                          className="h-10 min-w-[180px] rounded-md border border-input bg-background px-3 text-sm"
+                        >
+                          <option value={group.stripKey}>{group.label} Small</option>
+                          <option value={group.cardKey}>{group.label} Card</option>
+                        </select>
+                        <Button
+                          className="gap-2"
+                          onClick={() => triggerUpload(group.uploadTargetKey)}
+                          disabled={Boolean(uploadingKey || deletingKey)}
+                        >
+                          <ImagePlus className="h-4 w-4" />
+                          {uploadingKey === group.uploadTargetKey ? "Uploading..." : "Upload"}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 grid gap-4 md:grid-cols-2">
+                      <SlotPreview
+                        title="Small"
+                        description="Used on the live strip."
+                        assignment={group.stripAssignment}
+                        aspectClass="aspect-[3/5]"
+                        deleting={deletingKey === group.stripKey}
+                        onDelete={() => void handleDeleteSlotImage(group.stripKey)}
+                      />
+                      <SlotPreview
+                        title="Card"
+                        description="Used when the category opens."
+                        assignment={group.cardAssignment}
+                        aspectClass="aspect-[4/5]"
+                        deleting={deletingKey === group.cardKey}
+                        onDelete={() => void handleDeleteSlotImage(group.cardKey)}
+                      />
+                    </div>
+                  </section>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-3xl border border-border bg-card p-4 shadow-sm sm:p-5">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <p className="text-sm font-semibold">Step 1 repeat photos</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    These five photos feed the repeating preview/collapse stage.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <select
+                    value={repeatUploadTargetKey}
+                    onChange={(event) => setRepeatUploadTargetKey(event.target.value)}
+                    className="h-10 min-w-[180px] rounded-md border border-input bg-background px-3 text-sm"
+                  >
                     {MYGOTWO_COLLAPSE_SLOT_TARGETS.map((target) => (
                       <option key={target.key} value={target.key}>
                         {target.label}
                       </option>
                     ))}
-                  </optgroup>
-                </select>
-              </section>
-
-              <section className="rounded-3xl border border-border bg-card p-4 shadow-sm">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold">{selectedTarget?.label ?? "No slot selected"}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {selectedTarget?.kind === "collapse"
-                        ? "Used in the rotating collapse state."
-                        : "Used in the strip layout."}
-                    </p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => void handleClearSelectedTarget()}
-                    disabled={!selectedAssignment?.image_url || clearing}
-                  >
-                    {clearing ? "Clearing..." : "Clear"}
-                  </Button>
-                </div>
-
-                <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-muted">
-                  {selectedAssignment?.display_url ? (
-                    <img
-                      src={selectedAssignment.display_url}
-                      alt={selectedAssignment.label}
-                      className="aspect-[16/10] w-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex aspect-[16/10] items-center justify-center text-sm text-muted-foreground">
-                      No image assigned
-                    </div>
-                  )}
-                </div>
-              </section>
-
-              <section className="rounded-3xl border border-border bg-card p-4 shadow-sm">
-                <p className="text-sm font-semibold">Selected image</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Pick an image from the grid, then assign it to the slot above.
-                </p>
-
-                <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-muted">
-                  {selectedPhoto?.display_url ? (
-                    <img
-                      src={selectedPhoto.display_url}
-                      alt={selectedPhoto.name}
-                      className="aspect-[4/5] w-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex aspect-[4/5] items-center justify-center text-sm text-muted-foreground">
-                      Select an image
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-4 space-y-2">
-                  <p className="truncate text-sm font-medium">
-                    {selectedPhoto?.name ?? "No image selected"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {selectedPhoto ? `Added ${formatDate(selectedPhoto.created_at || selectedPhoto.updated_at)}` : "Choose an image from storage."}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {selectedPhotoUsage.length
-                      ? `In use: ${selectedPhotoUsage.join(", ")}`
-                      : "Not assigned to any slot"}
-                  </p>
-                </div>
-
-                <div className="mt-4 flex flex-wrap gap-2">
+                  </select>
                   <Button
                     className="gap-2"
-                    onClick={() => void handleAssignSelected()}
-                    disabled={!selectedTarget || !selectedPhoto || assigning}
+                    onClick={() => triggerUpload(repeatUploadTargetKey)}
+                    disabled={!repeatUploadTargetKey || Boolean(uploadingKey || deletingKey)}
                   >
-                    {assigning ? "Assigning..." : `Use For ${selectedTarget?.label ?? "Slot"}`}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="gap-2 text-destructive"
-                    onClick={() => void handleDeleteSelectedPhoto()}
-                    disabled={!selectedPhoto || deleting}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    {deleting ? "Deleting..." : "Delete Image"}
+                    <ImagePlus className="h-4 w-4" />
+                    {uploadingKey === repeatUploadTargetKey ? "Uploading..." : "Upload"}
                   </Button>
                 </div>
-              </section>
-            </aside>
-
-            <section className="rounded-3xl border border-border bg-card p-4 shadow-sm">
-              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <div className="relative w-full max-w-md">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    placeholder="Search uploaded images"
-                    className="pl-9"
-                  />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {filteredPhotos.length} image{filteredPhotos.length === 1 ? "" : "s"}
-                </p>
               </div>
 
-              {filteredPhotos.length === 0 ? (
-                <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border bg-card/50 px-6 text-center">
-                  <ImagePlus className="h-10 w-10 text-muted-foreground" />
-                  <div>
-                    <h2 className="text-lg font-semibold">No uploaded images yet</h2>
-                    <p className="text-sm text-muted-foreground">
-                      Upload images here, then assign them directly into My Go Two slots.
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {filteredPhotos.map((photo) => {
-                    const isSelected = selectedPhotoRef === photo.image_url;
-                    const usage = usageByImageUrl.get(photo.image_url) ?? [];
+              <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+                {repeatAssignments.map(({ target, assignment }) => (
+                  <SlotPreview
+                    key={target.key}
+                    title={target.label}
+                    description="Rotates only while collapsed."
+                    assignment={assignment}
+                    aspectClass="aspect-[4/5]"
+                    deleting={deletingKey === target.key}
+                    onDelete={() => void handleDeleteSlotImage(target.key)}
+                  />
+                ))}
+              </div>
+            </section>
 
-                    return (
-                      <button
-                        key={photo.id}
-                        type="button"
-                        onClick={() => setSelectedPhotoRef(photo.image_url)}
-                        className={`overflow-hidden rounded-3xl border bg-card text-left shadow-sm transition ${
-                          isSelected
-                            ? "border-foreground ring-2 ring-foreground/10"
-                            : "border-border hover:border-foreground/30"
-                        }`}
-                      >
-                        <div className="aspect-[4/5] bg-muted">
-                          <img
-                            src={photo.display_url}
-                            alt={photo.name}
-                            className="h-full w-full object-cover"
-                            loading="lazy"
-                          />
-                        </div>
-                        <div className="space-y-2 p-4">
-                          <p className="truncate text-sm font-semibold">{photo.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {usage.length ? `Used in ${usage.join(", ")}` : "Not assigned"}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {formatDate(photo.created_at || photo.updated_at)}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+            <section className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+              <p className="text-sm font-semibold">Manual cleanup list</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Files that could not be deleted automatically. Hand this list back for manual cleanup.
+              </p>
+
+              <div className="mt-4 space-y-3">
+                {manualCleanupItems.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No manual cleanup items queued.</p>
+                ) : (
+                  manualCleanupItems.map((item) => (
+                    <div key={item.image_url} className="rounded-2xl border border-border px-3 py-3">
+                      <p className="truncate text-sm font-medium">{item.name}</p>
+                      <p className="mt-1 break-all text-xs text-muted-foreground">{item.image_url}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">Reason: {item.reason}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {item.slots.length ? `Slots: ${item.slots.join(", ")}` : "No linked slots"}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
             </section>
           </div>
         )}
