@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type SupabaseClient, type User } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   buildRecommendationFingerprint,
   getBankPersonalization,
@@ -14,6 +14,18 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
+
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
+const getRequiredEnv = (name: string): string => {
+  const value = Deno.env.get(name)?.trim();
+  if (!value) throw new Error(`${name} is not set`);
+  return value;
 };
 
 const cleanText = (value: unknown): string => {
@@ -130,7 +142,7 @@ function pickBestImage(
 }
 
 /** Pick best search result — prefer product detail pages over collections */
-function pickBestResult(results: Array<Record<string, any>>): Record<string, any> {
+function pickBestResult(results: Array<Record<string, unknown>>): Record<string, unknown> {
   // Score each result URL
   const scored = results.map((r, i) => {
     const url = (r?.url ?? "").toLowerCase();
@@ -278,32 +290,28 @@ serve(async (req) => {
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Not signed in", products: [] }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Not signed in", products: [] }, 401);
     }
 
-    // deno-lint-ignore no-explicit-any
-    let supabase: any;
-    let user: { id: string; email?: string } | null = null;
+    const supabaseUrl = getRequiredEnv("SUPABASE_URL");
+    const supabaseAnonKey = getRequiredEnv("SUPABASE_ANON_KEY");
+
+    let supabase: SupabaseClient;
+    let user: User | null = null;
     try {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
       supabase = createClient(supabaseUrl, supabaseAnonKey, {
         global: { headers: { Authorization: authHeader } },
       });
       const { data, error: authError } = await supabase.auth.getUser();
       if (authError || !data?.user) throw new Error(authError?.message ?? "No user");
       user = data.user;
-    } catch (authErr: any) {
-      console.warn("[ai-products] auth failed:", authErr?.message);
-      return new Response(JSON.stringify({ error: "Session expired", products: [] }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    } catch (authErr: unknown) {
+      console.warn("[ai-products] auth failed:", authErr instanceof Error ? authErr.message : authErr);
+      return jsonResponse({ error: "Session expired", products: [] }, 401);
     }
 
     const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
-    const forceRefresh = Boolean(body?.force_refresh);
+    const forceRefresh = Boolean(toObject(body).force_refresh);
     const now = new Date();
     const weekStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - ((now.getUTCDay() + 6) % 7)));
     const weekStartKey = weekStart.toISOString().slice(0, 10);
@@ -326,13 +334,11 @@ serve(async (req) => {
       );
 
       if (cachedProducts && cacheIsCurrent) {
-        return new Response(JSON.stringify({
+        return jsonResponse({
           products: cachedProducts,
           cached: true,
           generated_at: cachedRecommendations!.generated_at,
           week_start: weekStartKey,
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
     }
@@ -532,19 +538,16 @@ Use the provided tool.`;
       onConflict: "user_id,week_start",
     });
 
-    return new Response(JSON.stringify({
+    return jsonResponse({
       products: blendedProducts,
       cached: false,
       generated_at: new Date().toISOString(),
       week_start: weekStartKey,
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("ai-products error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    const message = e instanceof Error ? e.message : "Unknown error";
+    const status = /is not set/i.test(message) ? 503 : 500;
+    return jsonResponse({ error: message }, status);
   }
 });

@@ -1,42 +1,14 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect, useCallback, ReactNode } from "react";
+import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { type Gender, normalizeGender } from "@/lib/gender";
+import { PersonalizationContext, type Personalization } from "@/contexts/personalization-context";
 
 type ProfileAnswers = Record<string, string | string[]>;
 type JsonRecord = Record<string, unknown>;
 type ProfileGenderPayload = {
   gender?: string | null;
 };
-
-export interface Personalization {
-  recommended_brands: string[];
-  recommended_stores: string[];
-  image_themes: string[];
-  color_palette: string[];
-  gift_categories: string[];
-  price_tier: string;
-  style_keywords: string[];
-  persona_summary: string;
-}
-
-interface PersonalizationContextType {
-  personalization: Personalization | null;
-  profileAnswers: ProfileAnswers | null;
-  gender: Gender;
-  loading: boolean;
-  refetch: () => Promise<void>;
-}
-
-const PersonalizationContext = createContext<PersonalizationContextType>({
-  personalization: null,
-  profileAnswers: null,
-  gender: "non-binary",
-  loading: true,
-  refetch: async () => {},
-});
-
-export const usePersonalization = () => useContext(PersonalizationContext);
 
 export const PersonalizationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();

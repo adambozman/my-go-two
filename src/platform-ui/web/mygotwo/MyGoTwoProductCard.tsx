@@ -285,6 +285,6 @@ export default function MyGoTwoProductCard({
   );
 }
 
-export function slugMyGoTwoFieldLabel(label: string) {
+function slugMyGoTwoFieldLabel(label: string) {
   return slugFieldLabel(label);
 }

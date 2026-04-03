@@ -1,34 +1,9 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { cva, type VariantProps } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
 
+import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
-
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground surface-button-primary hover:-translate-y-0.5 hover:brightness-[1.03]",
-        destructive: "bg-destructive text-destructive-foreground shadow-[0_8px_24px_hsl(var(--destructive)/0.24)] hover:-translate-y-0.5 hover:brightness-[1.03]",
-        outline: "surface-button-secondary text-foreground hover:-translate-y-0.5 hover:bg-accent/60 hover:text-accent-foreground",
-        secondary: "surface-button-secondary text-secondary-foreground hover:-translate-y-0.5 hover:bg-secondary/80",
-        ghost: "text-foreground hover:bg-accent/45 hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-11 px-5 py-2",
-        sm: "h-9 px-4 text-xs",
-        lg: "h-12 px-8",
-        icon: "h-10 w-10 rounded-full",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  },
-);
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -44,4 +19,4 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = "Button";
 
-export { Button, buttonVariants };
+export { Button };

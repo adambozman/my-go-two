@@ -1,19 +1,6 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
-
-interface BackState {
-  label: string;
-  onBack: () => void;
-}
-
-interface TopBarContextValue {
-  backState: BackState | null;
-  setBackState: (state: BackState | null) => void;
-}
-
-const TopBarContext = createContext<TopBarContextValue>({
-  backState: null,
-  setBackState: () => {},
-});
+import { useState, useCallback, type ReactNode } from "react";
+import type { BackState } from "@/contexts/top-bar-context";
+import { TopBarContext } from "@/contexts/top-bar-context";
 
 export function TopBarProvider({ children }: { children: ReactNode }) {
   const [backState, setBackStateRaw] = useState<BackState | null>(null);
@@ -27,8 +14,4 @@ export function TopBarProvider({ children }: { children: ReactNode }) {
       {children}
     </TopBarContext.Provider>
   );
-}
-
-export function useTopBar() {
-  return useContext(TopBarContext);
 }

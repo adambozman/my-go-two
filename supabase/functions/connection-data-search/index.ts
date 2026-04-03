@@ -5,6 +5,18 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
+const getRequiredEnv = (name: string): string => {
+  const value = Deno.env.get(name)?.trim();
+  if (!value) throw new Error(`${name} is not set`);
+  return value;
+};
+
 type RpcClient = {
   rpc: (
     fn: string,
@@ -44,20 +56,19 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
+    const supabaseUrl = getRequiredEnv("SUPABASE_URL");
+    const serviceRoleKey = getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "No auth" }), { status: 401, headers: corsHeaders });
+      return jsonResponse({ error: "No auth" }, 401);
     }
 
     const token = authHeader.replace("Bearer ", "");
     const { data: authData, error: authError } = await supabase.auth.getUser(token);
     if (authError || !authData.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
+      return jsonResponse({ error: "Unauthorized" }, 401);
     }
 
     const userId = authData.user.id;
@@ -68,11 +79,11 @@ Deno.serve(async (req) => {
     const limit = Math.max(1, Math.min(Number(payload?.limit ?? 20), 50));
 
     if (action !== "home-search") {
-      return new Response(JSON.stringify({ error: "Unknown action" }), { status: 400, headers: corsHeaders });
+      return jsonResponse({ error: "Unknown action" }, 400);
     }
 
     if (!rawQuery) {
-      return new Response(JSON.stringify({ my_entries: [], circle_entries: [] }), { headers: corsHeaders });
+      return jsonResponse({ my_entries: [], circle_entries: [] });
     }
 
     const { data: couplesData, error: couplesError } = await supabase
@@ -82,7 +93,7 @@ Deno.serve(async (req) => {
       .eq("status", "accepted");
 
     if (couplesError) {
-      return new Response(JSON.stringify({ error: couplesError.message }), { status: 400, headers: corsHeaders });
+      return jsonResponse({ error: couplesError.message }, 400);
     }
 
     const liveConnections = ((couplesData || []) as ConnectionRow[])
@@ -115,7 +126,7 @@ Deno.serve(async (req) => {
         .limit(limit);
 
       if (myError) {
-        return new Response(JSON.stringify({ error: myError.message }), { status: 400, headers: corsHeaders });
+        return jsonResponse({ error: myError.message }, 400);
       }
       myEntries = (myData || []) as SearchEntryRow[];
     }
@@ -129,7 +140,7 @@ Deno.serve(async (req) => {
       });
 
       if (sharedError) {
-        return new Response(JSON.stringify({ error: sharedError.message }), { status: 400, headers: corsHeaders });
+        return jsonResponse({ error: sharedError.message }, 400);
       }
 
       const rows = ((Array.isArray(sharedData) ? sharedData : []) as SearchEntryRow[])
@@ -140,14 +151,13 @@ Deno.serve(async (req) => {
       circleEntries.push(...rows);
     }
 
-    return new Response(
-      JSON.stringify({
-        my_entries: myEntries,
-        circle_entries: circleEntries.slice(0, limit * Math.max(1, scopedConnections.length || 1)),
-      }),
-      { headers: corsHeaders },
-    );
+    return jsonResponse({
+      my_entries: myEntries,
+      circle_entries: circleEntries.slice(0, limit * Math.max(1, scopedConnections.length || 1)),
+    });
   } catch (e: unknown) {
-    return new Response(JSON.stringify({ error: getErrorMessage(e) }), { status: 500, headers: corsHeaders });
+    const message = getErrorMessage(e);
+    const status = /is not set/i.test(message) ? 503 : 500;
+    return jsonResponse({ error: message }, status);
   }
 });

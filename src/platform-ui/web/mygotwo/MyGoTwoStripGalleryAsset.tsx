@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import MyProductCardBeverages from "@/platform-ui/web/mygotwo/MyProductCardBeverages";
 import {

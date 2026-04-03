@@ -1,34 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
+import type { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, ExternalLink, BarChart3, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface SponsoredProduct {
-  id: string;
-  name: string;
-  brand: string;
-  description: string | null;
-  price: string | null;
-  category: string;
-  image_url: string | null;
-  affiliate_url: string | null;
-  utm_source: string | null;
-  utm_medium: string | null;
-  utm_campaign: string | null;
-  hook: string | null;
-  why: string | null;
-  target_gender: string[];
-  target_price_tiers: string[];
-  target_style_keywords: string[] | null;
-  placement: string;
-  priority: number;
-  is_active: boolean;
-  start_date: string | null;
-  end_date: string | null;
-  created_at: string;
-}
+type SponsoredProduct = Tables<"sponsored_products">;
 
 interface AdStats {
   product_id: string;
@@ -79,7 +57,7 @@ export default function SponsoredAdmin() {
       .from("sponsored_products")
       .select("*")
       .order("priority", { ascending: false });
-    setProducts((data as any[]) || []);
+    setProducts(data || []);
     setLoading(false);
   }, []);
 
@@ -109,6 +87,29 @@ export default function SponsoredAdmin() {
     }
   }, [isAdmin, fetchProducts, fetchStats]);
 
+  const buildProductPayload = (): TablesUpdate<"sponsored_products"> => ({
+    name: editing?.name || "",
+    brand: editing?.brand || "",
+    description: editing?.description || null,
+    price: editing?.price || null,
+    category: editing?.category || "clothes",
+    image_url: editing?.image_url || null,
+    affiliate_url: editing?.affiliate_url || null,
+    utm_source: editing?.utm_source || "gotwo",
+    utm_medium: editing?.utm_medium || "app",
+    utm_campaign: editing?.utm_campaign || null,
+    hook: editing?.hook || null,
+    why: editing?.why || null,
+    target_gender: editing?.target_gender || [],
+    target_price_tiers: editing?.target_price_tiers || [],
+    target_style_keywords: editing?.target_style_keywords || null,
+    placement: editing?.placement || "blended",
+    priority: editing?.priority || 0,
+    is_active: editing?.is_active ?? true,
+    start_date: editing?.start_date || null,
+    end_date: editing?.end_date || null,
+  });
+
   const handleSave = async () => {
     if (!editing?.name || !editing?.brand) {
       toast.error("Name and brand are required");
@@ -116,58 +117,20 @@ export default function SponsoredAdmin() {
     }
 
     if (editing.id) {
+      const payload: TablesUpdate<"sponsored_products"> = buildProductPayload();
       const { error } = await supabase
         .from("sponsored_products")
-        .update({
-          name: editing.name,
-          brand: editing.brand,
-          description: editing.description || null,
-          price: editing.price || null,
-          category: editing.category || "clothes",
-          image_url: editing.image_url || null,
-          affiliate_url: editing.affiliate_url || null,
-          utm_source: editing.utm_source || "gotwo",
-          utm_medium: editing.utm_medium || "app",
-          utm_campaign: editing.utm_campaign || null,
-          hook: editing.hook || null,
-          why: editing.why || null,
-          target_gender: editing.target_gender || [],
-          target_price_tiers: editing.target_price_tiers || [],
-          target_style_keywords: editing.target_style_keywords || null,
-          placement: editing.placement || "blended",
-          priority: editing.priority || 0,
-          is_active: editing.is_active ?? true,
-          start_date: editing.start_date || null,
-          end_date: editing.end_date || null,
-        } as any)
+        .update(payload)
         .eq("id", editing.id);
 
       if (error) { toast.error("Save failed"); return; }
       toast.success("Product updated");
     } else {
-      const { error } = await supabase.from("sponsored_products").insert({
-        name: editing.name,
-        brand: editing.brand,
-        description: editing.description || null,
-        price: editing.price || null,
-        category: editing.category || "clothes",
-        image_url: editing.image_url || null,
-        affiliate_url: editing.affiliate_url || null,
-        utm_source: editing.utm_source || "gotwo",
-        utm_medium: editing.utm_medium || "app",
-        utm_campaign: editing.utm_campaign || null,
-        hook: editing.hook || null,
-        why: editing.why || null,
-        target_gender: editing.target_gender || [],
-        target_price_tiers: editing.target_price_tiers || [],
-        target_style_keywords: editing.target_style_keywords || null,
-        placement: editing.placement || "blended",
-        priority: editing.priority || 0,
-        is_active: editing.is_active ?? true,
-        start_date: editing.start_date || null,
-        end_date: editing.end_date || null,
-        created_by: user?.id,
-      } as any);
+      const payload: TablesInsert<"sponsored_products"> = {
+        ...buildProductPayload(),
+        created_by: user?.id ?? null,
+      };
+      const { error } = await supabase.from("sponsored_products").insert(payload);
 
       if (error) { toast.error("Create failed"); return; }
       toast.success("Product created");
@@ -188,7 +151,7 @@ export default function SponsoredAdmin() {
   const toggleActive = async (product: SponsoredProduct) => {
     await supabase
       .from("sponsored_products")
-      .update({ is_active: !product.is_active } as any)
+      .update({ is_active: !product.is_active })
       .eq("id", product.id);
     fetchProducts();
   };

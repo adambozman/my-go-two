@@ -3,7 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Clock3, Search, Sparkles, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
 import { assignUniquePhotos } from "@/data/stockPhotos";
 import { initBlocklist } from "@/data/imageBlocklist";
 import { type Milestone } from "@/components/home/MilestoneCountdown";

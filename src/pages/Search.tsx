@@ -3,15 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { Search as SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
+import type { Tables } from "@/integrations/supabase/types";
 import { motion } from "framer-motion";
+
+type TemplateResult = Tables<"card_templates">;
+type EntryResult = Tables<"card_entries">;
 
 const Search = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [templateResults, setTemplateResults] = useState<any[]>([]);
-  const [entryResults, setEntryResults] = useState<any[]>([]);
+  const [templateResults, setTemplateResults] = useState<TemplateResult[]>([]);
+  const [entryResults, setEntryResults] = useState<EntryResult[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -33,11 +37,11 @@ const Search = () => {
               .eq("user_id", user.id)
               .or(`group_name.ilike.%${query}%,entry_name.ilike.%${query}%`)
               .limit(20)
-          : Promise.resolve({ data: [] }),
+          : Promise.resolve({ data: [] as EntryResult[] }),
       ]);
 
       setTemplateResults(templatesRes.data || []);
-      setEntryResults((entriesRes as any).data || []);
+      setEntryResults(entriesRes.data || []);
       setLoading(false);
     }, 300);
 
@@ -83,7 +87,7 @@ const Search = () => {
                 My Entries
               </h2>
               <div className="space-y-2">
-                {entryResults.map((e: any) => (
+                {entryResults.map((e) => (
                   <motion.button
                     key={e.id}
                     whileTap={{ scale: 0.98 }}

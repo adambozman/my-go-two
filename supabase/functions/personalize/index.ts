@@ -168,7 +168,9 @@ For image_themes, suggest Unsplash-style search terms that match their aesthetic
           if (jsonMatch) {
             personalization = JSON.parse(jsonMatch[0]);
           }
-        } catch {}
+        } catch {
+          // Ignore malformed fallback content and continue to defaults.
+        }
       }
       
       // If still no personalization, generate defaults based on answers

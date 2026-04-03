@@ -16,8 +16,9 @@ const AppleSignInButton = () => {
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
       }
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message ?? "Apple sign-in failed", variant: "destructive" });
+    } catch (err: unknown) {
+      const description = err instanceof Error ? err.message : "Apple sign-in failed";
+      toast({ title: "Error", description, variant: "destructive" });
     } finally {
       setLoading(false);
     }

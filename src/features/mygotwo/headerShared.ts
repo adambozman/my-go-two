@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell, ClipboardList, Heart, Home, Settings, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";

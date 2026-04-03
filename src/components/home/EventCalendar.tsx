@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Plus, CalendarDays, Gift, Heart, Bell, Sparkles, Trash2, X, Star } from "lucide-react";
 import type { Milestone } from "./MilestoneCountdown";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
 
 interface EventCalendarProps {

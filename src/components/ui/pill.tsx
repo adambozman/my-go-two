@@ -41,4 +41,4 @@ const Pill = React.forwardRef<HTMLDivElement, PillProps>(
 
 Pill.displayName = "Pill";
 
-export { Pill, pillVariants };
+export { Pill };

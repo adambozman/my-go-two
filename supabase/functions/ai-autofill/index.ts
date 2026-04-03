@@ -5,15 +5,57 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+type AutofillField = {
+  label: string;
+  type: string;
+  options?: string[];
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isStringArray = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every((item) => typeof item === "string");
+
+const isAutofillField = (value: unknown): value is AutofillField => {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.label === "string" &&
+    typeof value.type === "string" &&
+    (value.options === undefined || isStringArray(value.options))
+  );
+};
+
+const isAutofillPayload = (value: unknown): value is { cardTitle?: unknown; fields?: unknown } =>
+  isRecord(value) && ("cardTitle" in value || "fields" in value);
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { cardTitle, fields } = await req.json();
+    let payload: unknown;
+    try {
+      payload = await req.json();
+    } catch {
+      return new Response(JSON.stringify({ error: "Invalid JSON payload" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!isAutofillPayload(payload)) {
+      return new Response(JSON.stringify({ error: "Invalid payload shape" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const cardTitle = typeof payload.cardTitle === "string" ? payload.cardTitle : "";
+    const fields = Array.isArray(payload.fields) ? payload.fields.filter(isAutofillField) : [];
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const fieldDescriptions = fields.map((f: any) => {
+    const fieldDescriptions = fields.map((f) => {
       let desc = `- "${f.label}" (type: ${f.type})`;
       if (f.options && f.options.length > 0) {
         desc += ` [options: ${f.options.join(", ")}]`;

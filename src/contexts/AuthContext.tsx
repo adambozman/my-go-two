@@ -1,37 +1,12 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
+import { useEffect, useState, ReactNode, useCallback } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeGender } from "@/lib/gender";
+import { AuthContext } from "@/contexts/auth-context";
 
 // Dev account always treated as premium
 const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
 const DEV_EMAILS = ["adam.bozman@gmail.com"];
-
-export const SUBSCRIPTION_TIERS = {
-  premium: {
-    product_id: "prod_U7vTm1mY6aBgKf",
-    monthly_price_id: "price_1T9fcqQaPvMJyaGFK7svxopT",
-    yearly_price_id: "price_1T9fcpQaPvMJyaGFWPfn8xe7",
-  },
-} as const;
-
-interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  loading: boolean;
-  subscribed: boolean;
-  subscriptionLoading: boolean;
-  subscriptionEnd: string | null;
-  checkSubscription: () => Promise<void>;
-  signUp: (email: string, password: string, displayName: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
-
-export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -51,7 +26,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .update({ age, gender: normalizeGender(gender) })
         .eq("user_id", userId);
       localStorage.removeItem("gotwo_signup_data");
-    } catch {}
+    } catch {
+      // Ignore malformed cached signup data.
+    }
   };
 
   const checkSubscription = useCallback(async () => {

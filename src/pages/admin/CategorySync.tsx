@@ -15,7 +15,7 @@ const CategorySync = () => {
     try {
       const seed = CATEGORY_REGISTRY_SEED;
       // Strip image field — column may not exist in schema
-      const seedToInsert = (seed as any[]).map(({ image, ...rest }: any) => rest);
+      const seedToInsert = seed.map(({ image, ...rest }) => rest);
       setMessage(`Pushing ${seedToInsert.length} rows via backend function...`);
 
       const { data, error } = await supabase.functions.invoke("sync-category-registry", {
@@ -27,9 +27,9 @@ const CategorySync = () => {
 
       setStatus("done");
       setMessage(`✓ ${data?.count ?? seedToInsert.length} rows synced successfully.`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setStatus("error");
-      setMessage(err.message ?? "Something went wrong.");
+      setMessage(err instanceof Error ? err.message : "Something went wrong.");
     }
   };
 

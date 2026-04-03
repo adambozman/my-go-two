@@ -1,9 +1,18 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Content-Type": "application/json",
+};
+
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: corsHeaders });
+
+const getRequiredEnv = (name: string): string => {
+  const value = Deno.env.get(name)?.trim();
+  if (!value) throw new Error(`${name} is not set`);
+  return value;
 };
 
 type DemoProfile = {
@@ -61,8 +70,7 @@ type ShareTokenRow = {
 
 type InviteEventType = "share_clicked" | "invite_accepted";
 
-// deno-lint-ignore no-explicit-any
-type AppSupabaseClient = any;
+type AppSupabaseClient = SupabaseClient;
 
 type ProfileIdentityRow = {
   user_id: string;
@@ -548,7 +556,7 @@ async function sendInviteEmail(inviterName: string, inviteeEmail: string, invite
   `;
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseUrl = getRequiredEnv("SUPABASE_URL");
     const projectRef = supabaseUrl.replace("https://", "").replace(".supabase.co", "");
 
     const response = await fetch(`https://api.lovable.dev/api/v1/email/${projectRef}/send`, {
@@ -1385,36 +1393,40 @@ Deno.serve(async (req) => {
     const payload = await req.json().catch(() => ({}));
     const actionName = String(payload?.action ?? "search").trim().toLowerCase();
     const authHeader = req.headers.get("Authorization");
-    const adminClient = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
-
-    if (!authHeader && actionName === "seed-demo-profiles") {
-      await ensureDemoProfiles(adminClient);
-      return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
-    }
 
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "No auth" }), { status: 401, headers: corsHeaders });
+      if (actionName === "seed-demo-profiles") {
+        const supabaseUrl = getRequiredEnv("SUPABASE_URL");
+        const serviceRoleKey = getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
+        const adminClient = createClient(supabaseUrl, serviceRoleKey);
+        await ensureDemoProfiles(adminClient);
+        return jsonResponse({ success: true });
+      }
+
+      return jsonResponse({ error: "No auth" }, 401);
     }
 
-    const viewerClient = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } },
-    );
+    const supabaseUrl = getRequiredEnv("SUPABASE_URL");
+    const serviceRoleKey = getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
     const token = authHeader.replace("Bearer ", "");
     const { data: authData, error: authError } = await adminClient.auth.getUser(token);
     if (authError || !authData.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
+      return jsonResponse({ error: "Unauthorized" }, 401);
     }
 
     if (actionName === "seed-demo-profiles") {
       await ensureDemoProfiles(adminClient);
-      return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+      return jsonResponse({ success: true });
     }
+
+    const anonKey = getRequiredEnv("SUPABASE_ANON_KEY");
+    const viewerClient = createClient(
+      supabaseUrl,
+      anonKey,
+      { global: { headers: { Authorization: authHeader } } },
+    );
 
     if (actionName === "create-connection-request") {
       const targetUserId = String(payload?.target_user_id ?? "").trim();
@@ -1534,6 +1546,8 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({ users }), { headers: corsHeaders });
   } catch (error: unknown) {
-    return new Response(JSON.stringify({ error: getErrorMessage(error) }), { status: 500, headers: corsHeaders });
+    const message = getErrorMessage(error);
+    const status = /is not set/i.test(message) ? 503 : 500;
+    return jsonResponse({ error: message }, status);
   }
 });

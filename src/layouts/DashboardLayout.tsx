@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { DashboardTopBar } from "@/components/DashboardTopBar";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 

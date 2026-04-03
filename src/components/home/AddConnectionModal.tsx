@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, QrCode, Send, Copy, Check, UserPlus, Search, Loader2, AtSign, Phone, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
 
 interface AddConnectionModalProps {
@@ -40,6 +40,12 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const [loadingShareToken, setLoadingShareToken] = useState(false);
   const [shareTokenError, setShareTokenError] = useState("");
   const [seedingDemoProfiles, setSeedingDemoProfiles] = useState(false);
+  const getErrorMessage = (error: unknown, fallback: string) => (
+    error instanceof Error ? error.message : fallback
+  );
+  const isAbortError = (error: unknown) => (
+    error instanceof Error && error.name === "AbortError"
+  );
 
   const inviteLink = useMemo(
     () => (shareToken ? `${window.location.origin}/connect?token=${shareToken}` : ""),
@@ -147,8 +153,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
         shareMessage: (data?.share_message as string) || "",
         channel,
       };
-    } catch (error: any) {
-      const message = error?.message || "Could not create an invite link right now.";
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, "Could not create an invite link right now.");
       setShareTokenError(message);
       throw new Error(message);
     } finally {
@@ -227,8 +233,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       setEmail("");
       setInvitePhone("");
       setInviteUsername("");
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to send invite");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Failed to send invite"));
     } finally {
       setSending(false);
     }
@@ -252,8 +258,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       }
 
       setSearchResults(results);
-    } catch (error: any) {
-      const message = error?.message || "Search failed";
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, "Search failed");
       toast.error(
         /search_discoverable_users/i.test(message) || /schema cache/i.test(message)
           ? "Search backend is missing the latest DB function. Run the newest Supabase migration and reload schema cache."
@@ -296,8 +302,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
 
       onConnectionCreated?.();
       onClose();
-    } catch (error: any) {
-      toast.error(error?.message || "Could not send connection invite");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Could not send connection invite"));
     } finally {
       setConnectingUserId(null);
     }
@@ -311,8 +317,8 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       if (searchQuery.trim()) {
         await handleSearch();
       }
-    } catch (error: any) {
-      toast.error(error?.message || "Could not create demo profiles");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Could not create demo profiles"));
     } finally {
       setSeedingDemoProfiles(false);
     }
@@ -362,9 +368,9 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
         toast.success("Invite link copied. Send it anywhere.");
         setTimeout(() => setCopied(false), 2000);
       }
-    } catch (error: any) {
-      if (error?.name !== "AbortError") {
-        toast.error(error?.message || "Could not share invite");
+    } catch (error: unknown) {
+      if (!isAbortError(error)) {
+        toast.error(getErrorMessage(error, "Could not share invite"));
       }
     } finally {
       setSharingInvite(false);

@@ -3,7 +3,7 @@ import { ArrowLeft, Heart, Loader2, MapPin, Sparkles, ThumbsUp, UserPlus } from 
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
 
 const shellCardStyle = {
   boxShadow: "0 18px 44px rgba(30,74,82,0.08), inset 0 1px 0 rgba(255,255,255,0.58)",

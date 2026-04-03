@@ -1,13 +1,13 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Check, SkipForward, Sparkles, Shuffle, Send, Lock } from "lucide-react";
-import { usePersonalization } from "@/contexts/PersonalizationContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { usePersonalization } from "@/contexts/personalization-context";
+import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useTopBar } from "@/contexts/TopBarContext";
+import { useTopBar } from "@/contexts/top-bar-context";
 import { buildSprints, getThisOrThatBank, SECTIONS, THIS_OR_THAT, THIS_OR_THAT_CATEGORIES, type BrandBankQuestion, type QuizQuestion } from "@/data/knowMeQuestions";
 import type { Gender } from "@/lib/gender";
 

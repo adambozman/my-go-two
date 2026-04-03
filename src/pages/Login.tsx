@@ -3,9 +3,9 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, supabaseConfigError } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
@@ -57,20 +57,22 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      if (supabaseConfigError) {
+        throw new Error(supabaseConfigError);
+      }
+
       if (isDevEmail) {
         // Dev bypass: instant sign-in via server-generated session
-        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/dev-login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: email.toLowerCase().trim() }),
-        });
-        const result = await res.json();
-        if (!res.ok) throw new Error(result.error || "Dev login failed");
-        const { error } = await supabase.auth.setSession({
-          access_token: result.access_token,
-          refresh_token: result.refresh_token,
+        const { data, error } = await supabase.functions.invoke("dev-login", {
+          body: { email: email.toLowerCase().trim() },
         });
         if (error) throw error;
+        if (!data?.access_token || !data?.refresh_token) throw new Error("Dev login failed");
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+        });
+        if (sessionError) throw sessionError;
         await navigateAfterLogin();
       } else {
         await signIn(email, password);
@@ -158,6 +160,7 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    autoComplete="username"
                     placeholder="you@example.com"
                     className="rounded-xl h-12 border-0 text-sm"
                     style={{
@@ -184,7 +187,8 @@ const Login = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        placeholder="••••••••"
+                        autoComplete="current-password"
+                        placeholder="********"
                         className="rounded-xl h-12 border-0 text-sm"
                         style={{
                           background: "rgba(255,255,255,0.6)",

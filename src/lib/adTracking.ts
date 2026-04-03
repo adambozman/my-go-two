@@ -1,4 +1,36 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
+
+const normalizeJsonValue = (value: unknown): Json | undefined => {
+  if (value === null) return null;
+  if (value === undefined || typeof value === "function" || typeof value === "symbol" || typeof value === "bigint") {
+    return undefined;
+  }
+
+  switch (typeof value) {
+    case "string":
+    case "number":
+    case "boolean":
+      return value;
+    case "object":
+      if (typeof (value as { toJSON?: () => unknown }).toJSON === "function") {
+        return normalizeJsonValue((value as { toJSON: () => unknown }).toJSON());
+      }
+
+      if (Array.isArray(value)) {
+        return value.map((item) => normalizeJsonValue(item) ?? null);
+      }
+
+      return Object.fromEntries(
+        Object.entries(value).flatMap(([key, nestedValue]) => {
+          const normalized = normalizeJsonValue(nestedValue);
+          return normalized === undefined ? [] : [[key, normalized]];
+        }),
+      );
+    default:
+      return undefined;
+  }
+};
 
 export async function trackAdEvent(
   productId: string,
@@ -14,7 +46,7 @@ export async function trackAdEvent(
     user_id: user.id,
     event_type: eventType,
     placement,
-    metadata: (metadata || {}) as any,
+    metadata: normalizeJsonValue(metadata) ?? {},
   }]);
 }
 

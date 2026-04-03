@@ -65,10 +65,11 @@ Deno.serve(async (req) => {
       }),
       { status: 200, headers: corsHeaders },
     );
-  } catch (err: any) {
-    console.error("Dev login error:", err?.message ?? err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Dev login failed";
+    console.error("Dev login error:", message);
     return new Response(
-      JSON.stringify({ error: err?.message ?? "Dev login failed" }),
+      JSON.stringify({ error: message }),
       { status: 500, headers: corsHeaders },
     );
   }

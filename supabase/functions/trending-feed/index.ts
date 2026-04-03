@@ -19,22 +19,74 @@ const cleanText = (value: unknown): string => {
 
 const ALLOWED_FEED_CATEGORIES = new Set(["trending_style", "store_pick", "gift_idea", "lifestyle"]);
 
+type Personalization = {
+  style_keywords?: string[];
+  recommended_brands?: string[];
+  recommended_stores?: string[];
+  price_tier?: string;
+  gift_categories?: string[];
+  persona_summary?: string;
+};
+
+type ProfileAnswers = {
+  identity?: string[] | string;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isStringArray = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every((item) => typeof item === "string");
+
+const normalizePersonalization = (value: unknown): Personalization | null => {
+  if (!isRecord(value)) return null;
+
+  return {
+    style_keywords: isStringArray(value.style_keywords) ? value.style_keywords : undefined,
+    recommended_brands: isStringArray(value.recommended_brands) ? value.recommended_brands : undefined,
+    recommended_stores: isStringArray(value.recommended_stores) ? value.recommended_stores : undefined,
+    price_tier: typeof value.price_tier === "string" ? value.price_tier : undefined,
+    gift_categories: isStringArray(value.gift_categories) ? value.gift_categories : undefined,
+    persona_summary: typeof value.persona_summary === "string" ? value.persona_summary : undefined,
+  };
+};
+
+const normalizeProfileAnswers = (value: unknown): ProfileAnswers | null => {
+  if (!isRecord(value)) return null;
+
+  return {
+    identity: isStringArray(value.identity)
+      ? value.identity
+      : typeof value.identity === "string"
+        ? [value.identity]
+        : undefined,
+  };
+};
+
+type FeedItem = {
+  title: string;
+  description: string;
+  category: string;
+  image_query: string;
+  source_label: string;
+};
+
 const sanitizeFeed = (rawFeed: unknown) => {
   if (!Array.isArray(rawFeed)) return [];
 
   return rawFeed
     .map((item) => {
-      const f = item as Record<string, unknown>;
-      const category = cleanText(f.category).toLowerCase();
+      if (!isRecord(item)) return null;
+      const category = cleanText(item.category).toLowerCase();
       return {
-        title: cleanText(f.title),
-        description: cleanText(f.description),
+        title: cleanText(item.title),
+        description: cleanText(item.description),
         category: ALLOWED_FEED_CATEGORIES.has(category) ? category : "lifestyle",
-        image_query: cleanText(f.image_query),
-        source_label: cleanText(f.source_label),
+        image_query: cleanText(item.image_query),
+        source_label: cleanText(item.source_label),
       };
     })
-    .filter((f) => f.title && f.description && f.image_query && f.source_label);
+    .filter((f): f is FeedItem => Boolean(f && f.title && f.description && f.image_query && f.source_label));
 };
 
 serve(async (req) => {
@@ -60,8 +112,8 @@ serve(async (req) => {
       .eq("user_id", user.id)
       .single();
 
-    const personalization = prefs?.ai_personalization as any;
-    const profileAnswers = prefs?.profile_answers as any;
+    const personalization = normalizePersonalization(prefs?.ai_personalization);
+    const profileAnswers = normalizeProfileAnswers(prefs?.profile_answers);
 
     if (!personalization) {
       return new Response(JSON.stringify({ feed: [] }), {

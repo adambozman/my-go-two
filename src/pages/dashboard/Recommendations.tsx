@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import { usePersonalization } from "@/contexts/PersonalizationContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { usePersonalization } from "@/contexts/personalization-context";
+import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";

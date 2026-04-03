@@ -17,10 +17,11 @@ export function usePagination<T>({
 }: UsePaginationOptions<T>) {
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
   const [currentPage, setCurrentPage] = useState(() => clampPage(initialPage, totalPages));
+  const resetKeySignature = useMemo(() => JSON.stringify(resetKeys), [resetKeys]);
 
   useEffect(() => {
     setCurrentPage(clampPage(initialPage, totalPages));
-  }, [initialPage, totalPages, ...resetKeys]);
+  }, [initialPage, totalPages, resetKeySignature]);
 
   useEffect(() => {
     if (currentPage > totalPages) {

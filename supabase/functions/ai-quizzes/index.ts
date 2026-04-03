@@ -48,7 +48,7 @@ serve(async (req) => {
 
     if (existing) {
       const age = Date.now() - new Date(existing.generated_at).getTime();
-      const questions = existing.questions as any;
+      const questions = existing.questions;
       if (Array.isArray(questions) && questions.length > 0 && age < THIRTY_DAYS_MS) {
         return new Response(JSON.stringify({ categories: questions }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },

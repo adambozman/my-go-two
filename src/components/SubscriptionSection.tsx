@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useAuth, SUBSCRIPTION_TIERS } from "@/contexts/AuthContext";
+import { SUBSCRIPTION_TIERS, useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Check } from "lucide-react";
@@ -14,6 +14,9 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
   const { toast } = useToast();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
+  const getErrorMessage = (error: unknown, fallback: string) => (
+    error instanceof Error ? error.message : fallback
+  );
 
   const handleCheckout = async (priceId: string) => {
     if (!session?.access_token) return;
@@ -27,8 +30,12 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
       if (data?.url) {
         window.open(data.url, "_blank");
       }
-    } catch (err: any) {
-      toast({ title: "Checkout failed", description: err.message, variant: "destructive" });
+    } catch (err: unknown) {
+      toast({
+        title: "Checkout failed",
+        description: getErrorMessage(err, "Checkout failed"),
+        variant: "destructive",
+      });
     } finally {
       setCheckoutLoading(null);
     }
@@ -45,8 +52,12 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
       if (data?.url) {
         window.open(data.url, "_blank");
       }
-    } catch (err: any) {
-      toast({ title: "Could not open portal", description: err.message, variant: "destructive" });
+    } catch (err: unknown) {
+      toast({
+        title: "Could not open portal",
+        description: getErrorMessage(err, "Could not open portal"),
+        variant: "destructive",
+      });
     } finally {
       setPortalLoading(false);
     }
