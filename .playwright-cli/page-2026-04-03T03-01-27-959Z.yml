@@ -1,0 +1,15 @@
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - generic [ref=e5]:
+      - button [ref=e6] [cursor=pointer]:
+        - img
+      - generic [ref=e7]:
+        - heading "Photo Gallery" [level=1] [ref=e8]
+        - paragraph [ref=e9]: Upload images, pick a slot, and wire the storage image straight into My Go Two.
+      - button "Upload Images" [ref=e10] [cursor=pointer]:
+        - img
+        - text: Upload Images
+    - generic [ref=e12]: Loading photo gallery...

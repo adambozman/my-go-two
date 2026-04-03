@@ -1,19 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Copy, ImagePlus, RefreshCw, Search, Trash2 } from "lucide-react";
+import { ArrowLeft, ImagePlus, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteImageUrl, setImageUrl } from "@/lib/imageOverrides";
-import { cleanupLegacyBrokenImageRows } from "@/lib/legacyImageCleanup";
 import {
   makeStorageRef,
   parseStorageRef,
-  resolveStorageUrl,
   resolveStorageUrls,
-  toStorageRefIfPossible,
 } from "@/lib/storageRefs";
 import {
   MYGOTWO_COLLAPSE_SLOT_TARGETS,
@@ -21,15 +18,13 @@ import {
   MYGOTWO_STRIP_SLOT_TARGETS,
 } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.images";
 
-type BankPhoto = {
+type PhotoBankFile = {
   id: string;
+  name: string;
+  created_at: string | null;
+  updated_at: string | null;
+  path: string;
   image_url: string;
-  filename: string | null;
-  created_at: string;
-  category_key: string;
-};
-
-type ResolvedBankPhoto = BankPhoto & {
   display_url: string;
 };
 
@@ -53,55 +48,88 @@ function formatDate(value: string | null) {
   }).format(date);
 }
 
+function createPhotoPath(file: File) {
+  const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  const basename = file.name
+    .replace(/\.[^.]+$/, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48) || "image";
+
+  return `bank/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${basename}.${extension}`;
+}
+
 export default function PhotoGallery() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [loadingPhotos, setLoadingPhotos] = useState(true);
+  const [loadingAssignments, setLoadingAssignments] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [assigningId, setAssigningId] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [photos, setPhotos] = useState<ResolvedBankPhoto[]>([]);
+  const [assigning, setAssigning] = useState(false);
+  const [clearing, setClearing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [photos, setPhotos] = useState<PhotoBankFile[]>([]);
   const [assignedSlots, setAssignedSlots] = useState<AssignedSlot[]>([]);
   const [selectedTargetKey, setSelectedTargetKey] = useState(MYGOTWO_SLOT_TARGETS[0]?.key ?? "");
+  const [selectedPhotoRef, setSelectedPhotoRef] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-  const hasCleanedLegacyRowsRef = useRef(false);
 
   const loadPhotos = useCallback(async () => {
-    setLoading(true);
+    if (!user) {
+      setPhotos([]);
+      setLoadingPhotos(false);
+      return;
+    }
 
-    const { data, error } = await supabase
-      .from("category_bank_photos")
-      .select("id, image_url, filename, created_at, category_key")
-      .order("created_at", { ascending: false });
+    setLoadingPhotos(true);
+
+    const { data, error } = await supabase.storage.from("photo-bank").list("bank", {
+      limit: 200,
+      offset: 0,
+      sortBy: { column: "created_at", order: "desc" },
+    });
 
     if (error) {
       toast({
-        title: "Failed to load bank",
+        title: "Failed to load photos",
         description: error.message,
         variant: "destructive",
       });
       setPhotos([]);
-      setLoading(false);
-      setRefreshing(false);
+      setLoadingPhotos(false);
       return;
     }
 
-    const rows = (data ?? []) as BankPhoto[];
-    const resolvedUrls = await resolveStorageUrls(rows.map((photo) => photo.image_url));
-    const withUrls = rows.map((photo, index) => ({
-      ...photo,
-      display_url: resolvedUrls[index] ?? "",
-    }));
+    const files = (data ?? []).filter((item) => Boolean(item.name));
+    const refs = files.map((item) => makeStorageRef("photo-bank", `bank/${item.name}`));
+    const resolvedUrls = await resolveStorageUrls(refs);
 
-    setPhotos(withUrls);
-    setLoading(false);
-    setRefreshing(false);
-  }, [toast]);
+    setPhotos(
+      files.map((item, index) => ({
+        id: item.id || `photo-bank-${item.name}`,
+        name: item.name,
+        created_at: item.created_at ?? null,
+        updated_at: item.updated_at ?? null,
+        path: `bank/${item.name}`,
+        image_url: refs[index],
+        display_url: resolvedUrls[index] ?? "",
+      })),
+    );
+    setLoadingPhotos(false);
+  }, [toast, user]);
 
   const loadAssignedSlots = useCallback(async () => {
+    if (!user) {
+      setAssignedSlots([]);
+      setLoadingAssignments(false);
+      return;
+    }
+
+    setLoadingAssignments(true);
+
     const slotKeys = MYGOTWO_SLOT_TARGETS.map((target) => target.key);
     const { data, error } = await supabase
       .from("category_images")
@@ -116,15 +144,16 @@ export default function PhotoGallery() {
         variant: "destructive",
       });
       setAssignedSlots([]);
+      setLoadingAssignments(false);
       return;
     }
 
     const rows = data ?? [];
     const resolvedUrls = await resolveStorageUrls(rows.map((row) => row.image_url));
-    const byKey = new Map<string, { image_url: string; display_url: string }>();
+    const assignedByKey = new Map<string, { image_url: string; display_url: string }>();
 
     rows.forEach((row, index) => {
-      byKey.set(row.category_key, {
+      assignedByKey.set(row.category_key, {
         image_url: row.image_url,
         display_url: resolvedUrls[index] ?? "",
       });
@@ -132,7 +161,7 @@ export default function PhotoGallery() {
 
     setAssignedSlots(
       MYGOTWO_SLOT_TARGETS.map((target) => {
-        const assigned = byKey.get(target.key);
+        const assigned = assignedByKey.get(target.key);
         return {
           key: target.key,
           label: target.label,
@@ -142,51 +171,43 @@ export default function PhotoGallery() {
         };
       }),
     );
-  }, [toast]);
+    setLoadingAssignments(false);
+  }, [toast, user]);
 
   useEffect(() => {
     if (authLoading) return;
+
+    if (!user) {
+      setPhotos([]);
+      setAssignedSlots([]);
+      setLoadingPhotos(false);
+      setLoadingAssignments(false);
+      return;
+    }
+
     void loadPhotos();
     void loadAssignedSlots();
-  }, [authLoading, loadAssignedSlots, loadPhotos]);
-
-  useEffect(() => {
-    if (authLoading || !user || hasCleanedLegacyRowsRef.current) return;
-
-    hasCleanedLegacyRowsRef.current = true;
-
-    void (async () => {
-      try {
-        const result = await cleanupLegacyBrokenImageRows();
-        if (result.deletedBankRows || result.deletedAssignedRows) {
-          await Promise.all([loadPhotos(), loadAssignedSlots()]);
-          toast({
-            title: "Removed broken image rows",
-            description: `${result.deletedBankRows} bank rows and ${result.deletedAssignedRows} assigned rows were deleted.`,
-          });
-        }
-      } catch (error) {
-        console.error("Legacy image cleanup failed:", error);
-      }
-    })();
-  }, [authLoading, loadAssignedSlots, loadPhotos, toast, user]);
+  }, [authLoading, loadAssignedSlots, loadPhotos, user]);
 
   const filteredPhotos = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     if (!normalized) return photos;
 
-    return photos.filter((photo) => {
-      const haystack = [
-        photo.filename ?? "",
-        photo.category_key ?? "",
-        photo.image_url ?? "",
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      return haystack.includes(normalized);
-    });
+    return photos.filter((photo) => photo.name.toLowerCase().includes(normalized));
   }, [photos, query]);
+
+  useEffect(() => {
+    if (!photos.length) {
+      setSelectedPhotoRef(null);
+      return;
+    }
+
+    if (selectedPhotoRef && photos.some((photo) => photo.image_url === selectedPhotoRef)) {
+      return;
+    }
+
+    setSelectedPhotoRef(photos[0].image_url);
+  }, [photos, selectedPhotoRef]);
 
   const selectedTarget = useMemo(
     () => MYGOTWO_SLOT_TARGETS.find((target) => target.key === selectedTargetKey) ?? null,
@@ -196,6 +217,11 @@ export default function PhotoGallery() {
   const selectedAssignment = useMemo(
     () => assignedSlots.find((slot) => slot.key === selectedTargetKey) ?? null,
     [assignedSlots, selectedTargetKey],
+  );
+
+  const selectedPhoto = useMemo(
+    () => photos.find((photo) => photo.image_url === selectedPhotoRef) ?? null,
+    [photos, selectedPhotoRef],
   );
 
   const usageByImageUrl = useMemo(() => {
@@ -211,91 +237,80 @@ export default function PhotoGallery() {
     return usage;
   }, [assignedSlots]);
 
-  const handleUpload = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const files = event.target.files;
-      if (!files?.length) return;
+  const handleUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    if (!files.length || !user) return;
 
-      setUploading(true);
+    setUploading(true);
 
-      try {
-        for (const file of Array.from(files)) {
-          const ext = file.name.split(".").pop() || "jpg";
-          const filename = `dev-bank-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
-          const path = `bank/${filename}`;
+    try {
+      for (const file of files) {
+        const path = createPhotoPath(file);
+        const { error } = await supabase.storage
+          .from("photo-bank")
+          .upload(path, file, { contentType: file.type, upsert: false });
 
-          const { error: uploadError } = await supabase.storage
-            .from("photo-bank")
-            .upload(path, file, { contentType: file.type, upsert: false });
-
-          if (uploadError) throw uploadError;
-
-          const { error: insertError } = await supabase.from("category_bank_photos").insert({
-            category_key: "dev-bank",
-            image_url: makeStorageRef("photo-bank", path),
-            filename: file.name,
-          });
-
-          if (insertError) throw insertError;
+        if (error) {
+          throw error;
         }
-
-        toast({
-          title: "Uploaded",
-          description: `${files.length} image${files.length === 1 ? "" : "s"} added to the bank.`,
-        });
-        await loadPhotos();
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Upload failed.";
-        toast({
-          title: "Upload failed",
-          description: message,
-          variant: "destructive",
-        });
-      } finally {
-        setUploading(false);
-        if (fileInputRef.current) fileInputRef.current.value = "";
       }
-    },
-    [loadPhotos, toast],
-  );
 
-  const handleAssign = useCallback(
-    async (photo: BankPhoto) => {
-      if (!selectedTarget) return;
-
-      setAssigningId(photo.id);
-
-      try {
-        await setImageUrl(selectedTarget.key, photo.image_url);
-        toast({
-          title: "Slot updated",
-          description: `${selectedTarget.label} now uses ${photo.filename || "this image"}.`,
-        });
-        await loadAssignedSlots();
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Assign failed.";
-        toast({
-          title: "Assign failed",
-          description: message,
-          variant: "destructive",
-        });
-      } finally {
-        setAssigningId(null);
+      toast({
+        title: "Uploaded",
+        description: `${files.length} image${files.length === 1 ? "" : "s"} added to storage.`,
+      });
+      await loadPhotos();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Upload failed.";
+      toast({
+        title: "Upload failed",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
-    },
-    [loadAssignedSlots, selectedTarget, toast],
-  );
+    }
+  }, [loadPhotos, toast, user]);
+
+  const handleAssignSelected = useCallback(async () => {
+    if (!selectedTarget || !selectedPhoto) return;
+
+    setAssigning(true);
+
+    try {
+      await setImageUrl(selectedTarget.key, selectedPhoto.image_url);
+      await loadAssignedSlots();
+      toast({
+        title: "Slot updated",
+        description: `${selectedTarget.label} now uses ${selectedPhoto.name}.`,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Assign failed.";
+      toast({
+        title: "Assign failed",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setAssigning(false);
+    }
+  }, [loadAssignedSlots, selectedPhoto, selectedTarget, toast]);
 
   const handleClearSelectedTarget = useCallback(async () => {
     if (!selectedTarget) return;
 
+    setClearing(true);
+
     try {
       await deleteImageUrl(selectedTarget.key);
+      await loadAssignedSlots();
       toast({
         title: "Slot cleared",
         description: `${selectedTarget.label} was reset.`,
       });
-      await loadAssignedSlots();
     } catch (error) {
       const message = error instanceof Error ? error.message : "Clear failed.";
       toast({
@@ -303,108 +318,76 @@ export default function PhotoGallery() {
         description: message,
         variant: "destructive",
       });
+    } finally {
+      setClearing(false);
     }
   }, [loadAssignedSlots, selectedTarget, toast]);
 
-  const handleDelete = useCallback(
-    async (photo: BankPhoto) => {
-      setDeletingId(photo.id);
+  const handleDeleteSelectedPhoto = useCallback(async () => {
+    if (!selectedPhoto) return;
 
-      try {
-        const linkedSlots = assignedSlots.filter((slot) => slot.image_url === photo.image_url);
+    setDeleting(true);
 
-        for (const slot of linkedSlots) {
-          await deleteImageUrl(slot.key);
-        }
+    try {
+      const linkedSlots = assignedSlots.filter((slot) => slot.image_url === selectedPhoto.image_url);
 
-        const storageRef = parseStorageRef(toStorageRefIfPossible(photo.image_url));
-        const path = storageRef?.path ?? "";
-        const bucket = storageRef?.bucket ?? "";
-
-        const { error: deleteRowError } = await supabase
-          .from("category_bank_photos")
-          .delete()
-          .eq("id", photo.id);
-
-        if (deleteRowError) throw deleteRowError;
-
-        if (path && bucket) {
-          const { error: removeFileError } = await supabase.storage.from(bucket).remove([path]);
-          if (removeFileError) throw removeFileError;
-        }
-
-        setPhotos((current) => current.filter((item) => item.id !== photo.id));
-        await loadAssignedSlots();
-        toast({
-          title: "Deleted",
-          description: linkedSlots.length
-            ? "Image removed from the bank and cleared from any slots using it."
-            : "Image removed from the bank.",
-        });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Delete failed.";
-        toast({
-          title: "Delete failed",
-          description: message,
-          variant: "destructive",
-        });
-      } finally {
-        setDeletingId(null);
+      for (const slot of linkedSlots) {
+        await deleteImageUrl(slot.key);
       }
-    },
-    [assignedSlots, loadAssignedSlots, toast],
-  );
 
-  const copyText = useCallback(
-    async (value: string, label: string) => {
-      try {
-        await navigator.clipboard.writeText(value);
-        toast({ title: "Copied", description: `${label} copied.` });
-      } catch {
-        toast({
-          title: "Copy failed",
-          description: "Clipboard write was blocked.",
-          variant: "destructive",
-        });
+      const storageRef = parseStorageRef(selectedPhoto.image_url);
+      if (!storageRef) {
+        throw new Error("Stored photo reference is invalid.");
       }
-    },
-    [toast],
-  );
+
+      const { error } = await supabase.storage.from(storageRef.bucket).remove([storageRef.path]);
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Photo deleted",
+        description: linkedSlots.length
+          ? "The image was removed from storage and cleared from any slots using it."
+          : "The image was removed from storage.",
+      });
+
+      await Promise.all([loadPhotos(), loadAssignedSlots()]);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Delete failed.";
+      toast({
+        title: "Delete failed",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(false);
+    }
+  }, [assignedSlots, loadAssignedSlots, loadPhotos, selectedPhoto, toast]);
+
+  const pageLoading = authLoading || loadingPhotos || loadingAssignments;
+  const selectedPhotoUsage = selectedPhoto ? usageByImageUrl.get(selectedPhoto.image_url) ?? [] : [];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
+      <div className="border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="min-w-0">
-            <h1 className="text-lg font-semibold">Photo Editor</h1>
+            <h1 className="text-lg font-semibold">Photo Gallery</h1>
             <p className="text-xs text-muted-foreground">
-              Upload bank images, then assign them directly to strip or collapse slots.
+              Upload images, pick a slot, and wire the storage image straight into My Go Two.
             </p>
           </div>
           <Button
-            variant="outline"
             className="ml-auto gap-2"
-            onClick={() => {
-              setRefreshing(true);
-              void Promise.all([loadPhotos(), loadAssignedSlots()]).finally(() => {
-                setRefreshing(false);
-              });
-            }}
-            disabled={loading || refreshing}
-          >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-            Refresh
-          </Button>
-          <Button
-            className="gap-2"
             onClick={() => fileInputRef.current?.click()}
             disabled={!user || authLoading || uploading}
           >
             <ImagePlus className="h-4 w-4" />
-            {uploading ? "Uploading..." : "Upload"}
+            {uploading ? "Uploading..." : "Upload Images"}
           </Button>
           <input
             ref={fileInputRef}
@@ -420,94 +403,68 @@ export default function PhotoGallery() {
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
         {!user && !authLoading ? (
           <div className="rounded-2xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
-            Sign in to use the photo editor.
+            Sign in to use the photo gallery.
+          </div>
+        ) : pageLoading ? (
+          <div className="flex min-h-[40vh] items-center justify-center text-sm text-muted-foreground">
+            Loading photo gallery...
           </div>
         ) : (
-          <>
-            <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
-              <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
-                <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <div className="relative w-full max-w-md">
-                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      value={query}
-                      onChange={(event) => setQuery(event.target.value)}
-                      placeholder="Search filename or ref"
-                      className="pl-9"
-                    />
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {filteredPhotos.length} image{filteredPhotos.length === 1 ? "" : "s"}
-                  </p>
-                </div>
+          <div className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
+            <aside className="space-y-4">
+              <section className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+                <p className="text-sm font-semibold">My Go Two slot</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Choose the exact strip or collapse slot you want to replace.
+                </p>
 
-                <div className="mb-3 flex flex-col gap-2">
-                  <label className="text-sm font-medium" htmlFor="mygotwo-slot-target">
-                    Target slot
-                  </label>
-                  <select
-                    id="mygotwo-slot-target"
-                    value={selectedTargetKey}
-                    onChange={(event) => setSelectedTargetKey(event.target.value)}
-                    className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-                  >
-                    <optgroup label="Strip slots">
-                      {MYGOTWO_STRIP_SLOT_TARGETS.map((target) => (
-                        <option key={target.key} value={target.key}>
-                          {target.label}
-                        </option>
-                      ))}
-                    </optgroup>
-                    <optgroup label="Collapse slots">
-                      {MYGOTWO_COLLAPSE_SLOT_TARGETS.map((target) => (
-                        <option key={target.key} value={target.key}>
-                          {target.label}
-                        </option>
-                      ))}
-                    </optgroup>
-                  </select>
-                </div>
+                <label className="mt-4 block text-sm font-medium" htmlFor="mygotwo-slot-target">
+                  Target slot
+                </label>
+                <select
+                  id="mygotwo-slot-target"
+                  value={selectedTargetKey}
+                  onChange={(event) => setSelectedTargetKey(event.target.value)}
+                  className="mt-2 h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                >
+                  <optgroup label="Strip slots">
+                    {MYGOTWO_STRIP_SLOT_TARGETS.map((target) => (
+                      <option key={target.key} value={target.key}>
+                        {target.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Collapse slots">
+                    {MYGOTWO_COLLAPSE_SLOT_TARGETS.map((target) => (
+                      <option key={target.key} value={target.key}>
+                        {target.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+              </section>
 
-                <div className="flex flex-wrap gap-2">
-                  {assignedSlots.map((slot) => (
-                    <button
-                      key={slot.key}
-                      type="button"
-                      onClick={() => setSelectedTargetKey(slot.key)}
-                      className={`rounded-full border px-3 py-1.5 text-xs transition ${
-                        slot.key === selectedTargetKey
-                          ? "border-foreground bg-foreground text-background"
-                          : "border-border bg-background text-foreground"
-                      }`}
-                    >
-                      {slot.label}
-                      {slot.display_url ? " • set" : " • empty"}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
-                <div className="mb-3 flex items-start justify-between gap-3">
+              <section className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+                <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold">{selectedTarget?.label ?? "No slot selected"}</p>
                     <p className="text-xs text-muted-foreground">
                       {selectedTarget?.kind === "collapse"
                         ? "Used in the rotating collapse state."
-                        : "Used in the normal strip state."}
+                        : "Used in the strip layout."}
                     </p>
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => void handleClearSelectedTarget()}
-                    disabled={!selectedAssignment?.image_url}
+                    disabled={!selectedAssignment?.image_url || clearing}
                   >
-                    Clear Slot
+                    {clearing ? "Clearing..." : "Clear"}
                   </Button>
                 </div>
 
-                <div className="overflow-hidden rounded-2xl border border-border bg-muted">
+                <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-muted">
                   {selectedAssignment?.display_url ? (
                     <img
                       src={selectedAssignment.display_url}
@@ -520,99 +477,130 @@ export default function PhotoGallery() {
                     </div>
                   )}
                 </div>
-              </div>
-            </div>
+              </section>
 
-            {loading ? (
-              <div className="flex min-h-[40vh] items-center justify-center text-sm text-muted-foreground">
-                Loading bank...
-              </div>
-            ) : filteredPhotos.length === 0 ? (
-              <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border bg-card/50 px-6 text-center">
-                <ImagePlus className="h-10 w-10 text-muted-foreground" />
-                <div>
-                  <h2 className="text-lg font-semibold">No banked images yet</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Upload images here, then assign them straight into the strip slots above.
+              <section className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+                <p className="text-sm font-semibold">Selected image</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Pick an image from the grid, then assign it to the slot above.
+                </p>
+
+                <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-muted">
+                  {selectedPhoto?.display_url ? (
+                    <img
+                      src={selectedPhoto.display_url}
+                      alt={selectedPhoto.name}
+                      className="aspect-[4/5] w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex aspect-[4/5] items-center justify-center text-sm text-muted-foreground">
+                      Select an image
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  <p className="truncate text-sm font-medium">
+                    {selectedPhoto?.name ?? "No image selected"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedPhoto ? `Added ${formatDate(selectedPhoto.created_at || selectedPhoto.updated_at)}` : "Choose an image from storage."}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedPhotoUsage.length
+                      ? `In use: ${selectedPhotoUsage.join(", ")}`
+                      : "Not assigned to any slot"}
                   </p>
                 </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Button
+                    className="gap-2"
+                    onClick={() => void handleAssignSelected()}
+                    disabled={!selectedTarget || !selectedPhoto || assigning}
+                  >
+                    {assigning ? "Assigning..." : `Use For ${selectedTarget?.label ?? "Slot"}`}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="gap-2 text-destructive"
+                    onClick={() => void handleDeleteSelectedPhoto()}
+                    disabled={!selectedPhoto || deleting}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {deleting ? "Deleting..." : "Delete Image"}
+                  </Button>
+                </div>
+              </section>
+            </aside>
+
+            <section className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="relative w-full max-w-md">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder="Search uploaded images"
+                    className="pl-9"
+                  />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {filteredPhotos.length} image{filteredPhotos.length === 1 ? "" : "s"}
+                </p>
               </div>
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {filteredPhotos.map((photo) => {
-                  const usage = usageByImageUrl.get(photo.image_url) ?? [];
 
-                  return (
-                    <article
-                      key={photo.id}
-                      className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm"
-                    >
-                      <div className="aspect-[4/5] bg-muted">
-                        <img
-                          src={photo.display_url}
-                          alt={photo.filename ?? "Bank image"}
-                          className="h-full w-full object-cover"
-                          loading="lazy"
-                        />
-                      </div>
-                      <div className="space-y-3 p-4">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold">
-                            {photo.filename || "Untitled image"}
-                          </p>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {photo.category_key}
-                          </p>
+              {filteredPhotos.length === 0 ? (
+                <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border bg-card/50 px-6 text-center">
+                  <ImagePlus className="h-10 w-10 text-muted-foreground" />
+                  <div>
+                    <h2 className="text-lg font-semibold">No uploaded images yet</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Upload images here, then assign them directly into My Go Two slots.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filteredPhotos.map((photo) => {
+                    const isSelected = selectedPhotoRef === photo.image_url;
+                    const usage = usageByImageUrl.get(photo.image_url) ?? [];
+
+                    return (
+                      <button
+                        key={photo.id}
+                        type="button"
+                        onClick={() => setSelectedPhotoRef(photo.image_url)}
+                        className={`overflow-hidden rounded-3xl border bg-card text-left shadow-sm transition ${
+                          isSelected
+                            ? "border-foreground ring-2 ring-foreground/10"
+                            : "border-border hover:border-foreground/30"
+                        }`}
+                      >
+                        <div className="aspect-[4/5] bg-muted">
+                          <img
+                            src={photo.display_url}
+                            alt={photo.name}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                          />
                         </div>
-
-                        {usage.length ? (
+                        <div className="space-y-2 p-4">
+                          <p className="truncate text-sm font-semibold">{photo.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            In use: {usage.join(", ")}
+                            {usage.length ? `Used in ${usage.join(", ")}` : "Not assigned"}
                           </p>
-                        ) : (
-                          <p className="text-xs text-muted-foreground">Not assigned to any slot</p>
-                        )}
-
-                        <div className="flex flex-wrap gap-2">
-                          <Button
-                            size="sm"
-                            className="gap-2"
-                            onClick={() => void handleAssign(photo)}
-                            disabled={assigningId === photo.id || !selectedTarget}
-                          >
-                            {assigningId === photo.id ? "Saving..." : `Use For ${selectedTarget?.label ?? "Slot"}`}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-2"
-                            onClick={() => void copyText(photo.image_url, "Storage ref")}
-                          >
-                            <Copy className="h-3.5 w-3.5" />
-                            Copy Ref
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-2 text-destructive"
-                            onClick={() => void handleDelete(photo)}
-                            disabled={deletingId === photo.id}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                            {deletingId === photo.id ? "Deleting..." : "Delete"}
-                          </Button>
+                          <p className="text-xs text-muted-foreground">
+                            {formatDate(photo.created_at || photo.updated_at)}
+                          </p>
                         </div>
-
-                        <p className="text-xs text-muted-foreground">
-                          Added {formatDate(photo.created_at)}
-                        </p>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
-          </>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          </div>
         )}
       </div>
     </div>
