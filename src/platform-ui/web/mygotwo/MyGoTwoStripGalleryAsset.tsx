@@ -50,10 +50,6 @@ type StripPresentation = {
   id: string;
   image: string;
   detailImage?: string;
-  backdropImage?: string;
-  detailBackdropImage?: string;
-  imageFit?: "cover" | "contain";
-  detailImageFit?: "cover" | "contain";
   align?: string;
   label?: string;
   isPanoramaStrip: boolean;
@@ -132,31 +128,15 @@ function CategoryOverlay({
       }}
     >
       {(category.detailImage || category.image) ? (
-        <>
-          <div
-            aria-hidden="true"
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url("${category.detailBackdropImage || category.backdropImage || category.detailImage || category.image}")`,
-              backgroundPosition: `${category.align ?? "50%"} center`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
-              filter: "blur(18px)",
-              transform: "scale(1.06)",
-              opacity: 0.95,
-            }}
-          />
-          <img
-            src={category.detailImage || category.image}
-            alt={category.label}
-            className="absolute inset-0 h-full w-full"
-            style={{
-              objectFit: category.detailImageFit ?? "cover",
-              objectPosition: `${category.align ?? "50%"} center`,
-              padding: category.detailImageFit === "contain" ? "clamp(0.75rem, 2vw, 1.5rem)" : undefined,
-            }}
-          />
-        </>
+        <img
+          src={category.detailImage || category.image}
+          alt={category.label}
+          className="absolute inset-0 h-full w-full"
+          style={{
+            objectFit: "cover",
+            objectPosition: `${category.align ?? "50%"} center`,
+          }}
+        />
       ) : null}
       <div
         aria-hidden="true"
@@ -303,38 +283,22 @@ const StripCell = memo(function StripCell({
           ) : null}
         </>
       ) : strip.image ? (
-        <>
-          <div
-            aria-hidden="true"
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url("${strip.backdropImage || strip.image}")`,
-              backgroundPosition: `${strip.align ?? "50%"} center`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
-              filter: "blur(12px)",
-              transform: "scale(1.08)",
-              opacity: 0.92,
-            }}
-          />
-          <img
-            aria-hidden="true"
-            alt=""
-            src={strip.image}
-            decoding="async"
-            loading="eager"
-            className="absolute inset-0 h-full w-full transition-transform"
-            style={{
-              objectFit: strip.imageFit ?? "cover",
-              objectPosition: `${strip.align ?? "50%"} center`,
-              padding: strip.imageFit === "contain" ? "8px 4px" : undefined,
-              transform: "scale(1)",
-              transitionDuration: `${STRIP_TRANSITION_MS}ms`,
-              transitionTimingFunction: STRIP_TIMING_FUNCTION,
-              willChange: "transform",
-            }}
-          />
-        </>
+        <img
+          aria-hidden="true"
+          alt=""
+          src={strip.image}
+          decoding="async"
+          loading="eager"
+          className="absolute inset-0 h-full w-full transition-transform"
+          style={{
+            objectFit: "cover",
+            objectPosition: `${strip.align ?? "50%"} center`,
+            transform: "scale(1)",
+            transitionDuration: `${STRIP_TRANSITION_MS}ms`,
+            transitionTimingFunction: STRIP_TIMING_FUNCTION,
+            willChange: "transform",
+          }}
+        />
       ) : null}
       <div
         aria-hidden="true"

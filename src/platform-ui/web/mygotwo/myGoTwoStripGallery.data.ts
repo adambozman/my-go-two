@@ -19,6 +19,21 @@ export type MyGoTwoGalleryAssets = {
   collapseImages: MyGoTwoCollapseImage[];
 };
 
+export const MYGOTWO_STRIP_LIVE_IMAGE_SIZE = {
+  width: 240,
+  height: 1600,
+} as const;
+
+export const MYGOTWO_CARD_LIVE_IMAGE_SIZE = {
+  width: 1600,
+  height: 1200,
+} as const;
+
+export const MYGOTWO_COLLAPSE_LIVE_IMAGE_SIZE = {
+  width: 1280,
+  height: 1100,
+} as const;
+
 type AssignedAssetRow = {
   category_key: string | null;
   image_url: string | null;
@@ -29,41 +44,27 @@ const SLOT_KEYS = MYGOTWO_ASSIGNMENT_KEYS;
 const STRIP_PREVIEW_TRANSFORM = {
   width: 72,
   height: 1400,
-  resize: "contain" as const,
-  quality: 34,
+  resize: "cover" as const,
+  quality: 24,
 };
 
 const STRIP_IMAGE_TRANSFORM = {
-  width: 240,
-  height: 1600,
-  resize: "contain" as const,
-  quality: 66,
-};
-
-const STRIP_BACKDROP_TRANSFORM = {
-  width: 240,
-  height: 1600,
+  width: MYGOTWO_STRIP_LIVE_IMAGE_SIZE.width,
+  height: MYGOTWO_STRIP_LIVE_IMAGE_SIZE.height,
   resize: "cover" as const,
-  quality: 46,
+  quality: 56,
 };
 
 const STRIP_DETAIL_IMAGE_TRANSFORM = {
-  width: 1600,
-  height: 1200,
-  resize: "contain" as const,
-  quality: 80,
-};
-
-const STRIP_DETAIL_BACKDROP_TRANSFORM = {
-  width: 1600,
-  height: 1200,
+  width: MYGOTWO_CARD_LIVE_IMAGE_SIZE.width,
+  height: MYGOTWO_CARD_LIVE_IMAGE_SIZE.height,
   resize: "cover" as const,
-  quality: 68,
+  quality: 72,
 };
 
 const COLLAPSE_IMAGE_TRANSFORM = {
-  width: 1280,
-  height: 1100,
+  width: MYGOTWO_COLLAPSE_LIVE_IMAGE_SIZE.width,
+  height: MYGOTWO_COLLAPSE_LIVE_IMAGE_SIZE.height,
   resize: "cover" as const,
   quality: 62,
 };
@@ -165,14 +166,8 @@ async function buildAssignedAssets(
       ? resolveGalleryRowUrls(collapseRows, COLLAPSE_IMAGE_TRANSFORM)
       : Promise.resolve([]),
   ]);
-  const [stripBackdropUrls, cardBackdropUrls] = await Promise.all([
-    resolveGalleryRowUrls(stripRows, STRIP_BACKDROP_TRANSFORM),
-    resolveGalleryRowUrls(cardRows, STRIP_DETAIL_BACKDROP_TRANSFORM),
-  ]);
   const stripResolvedByKey = new Map<string, string>();
   const cardResolvedByKey = new Map<string, string>();
-  const stripBackdropResolvedByKey = new Map<string, string>();
-  const cardBackdropResolvedByKey = new Map<string, string>();
   const collapseResolvedByKey = new Map<string, string>();
 
   stripRows.forEach((row, index) => {
@@ -188,20 +183,6 @@ async function buildAssignedAssets(
     const resolvedCardUrl = cardUrls[index] ?? "";
     if (row.category_key && resolvedCardUrl) {
       cardResolvedByKey.set(row.category_key, resolvedCardUrl);
-    }
-  });
-
-  stripRows.forEach((row, index) => {
-    const resolvedStripUrl = stripBackdropUrls[index] ?? "";
-    if (row.category_key && resolvedStripUrl) {
-      stripBackdropResolvedByKey.set(row.category_key, resolvedStripUrl);
-    }
-  });
-
-  cardRows.forEach((row, index) => {
-    const resolvedCardUrl = cardBackdropUrls[index] ?? "";
-    if (row.category_key && resolvedCardUrl) {
-      cardBackdropResolvedByKey.set(row.category_key, resolvedCardUrl);
     }
   });
 
@@ -225,23 +206,13 @@ async function buildAssignedAssets(
       }
 
       const stripImage = stripResolvedByKey.get(categoryTarget.stripKey) || "";
-      const stripBackdropImage =
-        stripBackdropResolvedByKey.get(categoryTarget.stripKey) || stripImage;
       const detailImage =
         cardResolvedByKey.get(categoryTarget.cardKey) || stripImage;
-      const detailBackdropImage =
-        cardBackdropResolvedByKey.get(categoryTarget.cardKey) ||
-        stripBackdropImage ||
-        detailImage;
 
       return {
         ...strip,
         image: stripImage,
-        backdropImage: stripBackdropImage,
         detailImage,
-        detailBackdropImage,
-        imageFit: stripImage ? "contain" : "cover",
-        detailImageFit: detailImage ? "contain" : "cover",
       };
     }),
     collapseImages: options.includeCollapse
@@ -345,7 +316,7 @@ export async function preloadImageUrls(urls: string[]) {
 }
 
 export function getVisibleStageStripUrls(assets: MyGoTwoGalleryAssets) {
-  return assets.stripImages.flatMap((strip) => [strip.image, strip.backdropImage]).filter(Boolean);
+  return assets.stripImages.map((strip) => strip.image).filter(Boolean);
 }
 
 export function applyLoadedUrlFilter(
@@ -357,8 +328,6 @@ export function applyLoadedUrlFilter(
       ({
         ...strip,
         image: strip.image && loadedUrls.has(strip.image) ? strip.image : "",
-        backdropImage:
-          strip.backdropImage && loadedUrls.has(strip.backdropImage) ? strip.backdropImage : "",
       }),
     ),
     collapseImages: assets.collapseImages.filter((image) => loadedUrls.has(image.image)),

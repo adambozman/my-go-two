@@ -8,6 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { deleteImageUrl, setImageUrl } from "@/lib/imageOverrides";
 import { makeStorageRef, parseStorageRef, resolveStorageUrls } from "@/lib/storageRefs";
 import {
+  MYGOTWO_CARD_LIVE_IMAGE_SIZE,
+  MYGOTWO_COLLAPSE_LIVE_IMAGE_SIZE,
+  MYGOTWO_STRIP_LIVE_IMAGE_SIZE,
+} from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.data";
+import {
   MYGOTWO_CATEGORY_TARGETS,
   MYGOTWO_COLLAPSE_SLOT_TARGETS,
   MYGOTWO_SLOT_TARGETS,
@@ -29,6 +34,42 @@ type ManualCleanupItem = {
   path: string;
   reason: string;
   slots: string[];
+};
+
+type SlotPreviewSpec = {
+  width: number;
+  height: number;
+  cropLabel: string;
+  usageLabel: string;
+  previewSurfaceClassName: string;
+  previewFrameClassName: string;
+};
+
+const SLOT_PREVIEW_SPECS: Record<MyGoTwoSlotTarget["kind"], SlotPreviewSpec> = {
+  strip: {
+    width: MYGOTWO_STRIP_LIVE_IMAGE_SIZE.width,
+    height: MYGOTWO_STRIP_LIVE_IMAGE_SIZE.height,
+    cropLabel: "Narrow vertical live strip crop",
+    usageLabel: "Matches the live category strip on My Go Two.",
+    previewSurfaceClassName: "min-h-[23rem]",
+    previewFrameClassName: "mx-auto w-[72px] max-w-full overflow-hidden rounded-[1.4rem] border border-border/70 bg-black/5 shadow-sm",
+  },
+  card: {
+    width: MYGOTWO_CARD_LIVE_IMAGE_SIZE.width,
+    height: MYGOTWO_CARD_LIVE_IMAGE_SIZE.height,
+    cropLabel: "Opened category card crop",
+    usageLabel: "Matches the large category image after the strip opens.",
+    previewSurfaceClassName: "min-h-[17rem]",
+    previewFrameClassName: "w-full overflow-hidden rounded-[1.4rem] border border-border/70 bg-black/5 shadow-sm",
+  },
+  collapse: {
+    width: MYGOTWO_COLLAPSE_LIVE_IMAGE_SIZE.width,
+    height: MYGOTWO_COLLAPSE_LIVE_IMAGE_SIZE.height,
+    cropLabel: "Collapsed repeat-stage crop",
+    usageLabel: "Matches the repeat image used while the stage is collapsed.",
+    previewSurfaceClassName: "min-h-[15rem]",
+    previewFrameClassName: "w-full overflow-hidden rounded-[1.4rem] border border-border/70 bg-black/5 shadow-sm",
+  },
 };
 
 function formatDate(value: string | null) {
@@ -56,27 +97,37 @@ function createPhotoPath(target: MyGoTwoSlotTarget, file: File) {
   return `${target.folder}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${basename}.${extension}`;
 }
 
+function formatTargetSize(width: number, height: number) {
+  return `${width} x ${height} px`;
+}
+
 function SlotPreview({
   title,
   description,
+  target,
   assignment,
-  aspectClass,
   deleting,
   onDelete,
 }: {
   title: string;
   description: string;
+  target: MyGoTwoSlotTarget;
   assignment: SlotAssignment | null;
-  aspectClass: string;
   deleting: boolean;
   onDelete: () => void;
 }) {
+  const previewSpec = SLOT_PREVIEW_SPECS[target.kind];
+
   return (
     <div className="rounded-3xl border border-border bg-card/65 p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold">{title}</p>
           <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+          <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            Target size {formatTargetSize(previewSpec.width, previewSpec.height)}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{previewSpec.cropLabel}</p>
         </div>
         <Button
           variant="outline"
@@ -90,30 +141,55 @@ function SlotPreview({
         </Button>
       </div>
 
-      <div className={`mt-4 overflow-hidden rounded-2xl border border-border bg-muted ${aspectClass}`}>
-        {assignment?.display_url ? (
-          <img
-            src={assignment.display_url}
-            alt={title}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center px-4 text-center text-sm text-muted-foreground">
-            No image uploaded
-          </div>
-        )}
+      <div className={`mt-4 flex items-center justify-center rounded-2xl border border-dashed border-border/80 bg-muted/45 px-4 py-5 ${previewSpec.previewSurfaceClassName}`}>
+        <div
+          className={previewSpec.previewFrameClassName}
+          style={{ aspectRatio: `${previewSpec.width} / ${previewSpec.height}` }}
+        >
+          {assignment?.display_url ? (
+            <img
+              src={assignment.display_url}
+              alt={title}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center px-4 text-center text-sm text-muted-foreground">
+              No image uploaded
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mt-4 space-y-1">
+        <p className="text-xs text-muted-foreground">
+          {previewSpec.usageLabel}
+        </p>
         <p className="truncate text-sm font-medium">
           {assignment?.name ?? "Empty slot"}
         </p>
         <p className="text-xs text-muted-foreground">
-          {assignment ? `Uploaded ${formatDate(assignment.created_at)}` : "Upload directly into this slot."}
+          {assignment ? `Uploaded ${formatDate(assignment.created_at)}` : "Upload at or above the target size to keep the crop clean."}
         </p>
       </div>
     </div>
   );
+}
+
+function getCategoryUploadLabel(targetKey: string, categoryLabel: string) {
+  return targetKey.endsWith("-card")
+    ? `${categoryLabel} Card`
+    : `${categoryLabel} Small`;
+}
+
+function getSlotSelectionSummary(target: MyGoTwoSlotTarget | null, categoryLabel?: string) {
+  if (!target) {
+    return "Select a live slot to upload into.";
+  }
+
+  const previewSpec = SLOT_PREVIEW_SPECS[target.kind];
+  const slotLabel = categoryLabel ? getCategoryUploadLabel(target.key, categoryLabel) : target.label;
+
+  return `${slotLabel} uses ${formatTargetSize(previewSpec.width, previewSpec.height)} and previews with the live crop below.`;
 }
 
 export default function PhotoGallery() {
@@ -402,7 +478,7 @@ export default function PhotoGallery() {
           <div className="min-w-0">
             <h1 className="text-lg font-semibold">Photo Gallery</h1>
             <p className="text-xs text-muted-foreground">
-              Upload straight into the live My Go Two slots. No staging bank, no image wall.
+              Each upload box uses the live My Go Two crop ratio and shows the target image size.
             </p>
           </div>
           <input
@@ -439,7 +515,7 @@ export default function PhotoGallery() {
                       <div>
                         <p className="text-sm font-semibold">{group.label}</p>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          Upload either the small strip image or the opened card image.
+                          Pick the live slot first. The preview box below matches the live crop for that slot.
                         </p>
                       </div>
                       <div className="flex flex-col gap-2 sm:flex-row">
@@ -467,20 +543,38 @@ export default function PhotoGallery() {
                       </div>
                     </div>
 
+                    <p className="mt-3 text-xs text-muted-foreground">
+                      {getSlotSelectionSummary(slotTargetsByKey.get(group.uploadTargetKey) ?? null, group.label)}
+                    </p>
+
                     <div className="mt-4 grid gap-4 md:grid-cols-2">
                       <SlotPreview
                         title="Small"
                         description="Used on the live strip."
+                        target={group.stripTarget ?? {
+                          key: group.stripKey,
+                          id: group.id,
+                          label: `${group.label} Small`,
+                          kind: "strip",
+                          slug: group.slug,
+                          folder: group.stripFolder,
+                        }}
                         assignment={group.stripAssignment}
-                        aspectClass="aspect-[3/5]"
                         deleting={deletingKey === group.stripKey}
                         onDelete={() => void handleDeleteSlotImage(group.stripKey)}
                       />
                       <SlotPreview
                         title="Card"
                         description="Used when the category opens."
+                        target={group.cardTarget ?? {
+                          key: group.cardKey,
+                          id: group.id,
+                          label: `${group.label} Card`,
+                          kind: "card",
+                          slug: group.slug,
+                          folder: group.cardFolder,
+                        }}
                         assignment={group.cardAssignment}
-                        aspectClass="aspect-[4/5]"
                         deleting={deletingKey === group.cardKey}
                         onDelete={() => void handleDeleteSlotImage(group.cardKey)}
                       />
@@ -527,8 +621,8 @@ export default function PhotoGallery() {
                     key={target.key}
                     title={target.label}
                     description="Rotates only while collapsed."
+                    target={target}
                     assignment={assignment}
-                    aspectClass="aspect-[4/5]"
                     deleting={deletingKey === target.key}
                     onDelete={() => void handleDeleteSlotImage(target.key)}
                   />
@@ -565,3 +659,5 @@ export default function PhotoGallery() {
     </div>
   );
 }
+
+// Codebase classification: runtime Photo Gallery upload surface for live My Go Two slot images.

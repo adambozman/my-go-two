@@ -2,10 +2,6 @@ export type MyGoTwoStripGalleryImage = {
   id: string;
   image: string;
   detailImage?: string;
-  backdropImage?: string;
-  detailBackdropImage?: string;
-  imageFit?: "cover" | "contain";
-  detailImageFit?: "cover" | "contain";
   align?: string;
   label?: string;
   categorySlug?: string;
