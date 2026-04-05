@@ -151,35 +151,35 @@ export type Database = {
         }
         Relationships: []
       }
-      saved_product_cards: {
+      card_entries: {
         Row: {
-          product_card_key: string
+          card_key: string
           created_at: string
-          card_title: string
+          entry_name: string
           field_values: Json
-          subcategory_label: string
+          group_name: string
           id: string
           image_url: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
-          product_card_key: string
+          card_key: string
           created_at?: string
-          card_title: string
+          entry_name: string
           field_values?: Json
-          subcategory_label: string
+          group_name: string
           id?: string
           image_url?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
-          product_card_key?: string
+          card_key?: string
           created_at?: string
-          card_title?: string
+          entry_name?: string
           field_values?: Json
-          subcategory_label?: string
+          group_name?: string
           id?: string
           image_url?: string | null
           updated_at?: string
@@ -388,12 +388,12 @@ export type Database = {
         }
         Relationships: []
       }
-      connection_access_settings: {
+      connection_context_preferences: {
         Row: {
           access_tier: string
           connection_kind: string
           connection_user_id: string
-          user_connection_id: string
+          couple_id: string
           created_at: string
           feature_gates: Json
           feed_enabled: boolean
@@ -408,7 +408,7 @@ export type Database = {
           access_tier?: string
           connection_kind?: string
           connection_user_id: string
-          user_connection_id: string
+          couple_id: string
           created_at?: string
           feature_gates?: Json
           feed_enabled?: boolean
@@ -423,7 +423,7 @@ export type Database = {
           access_tier?: string
           connection_kind?: string
           connection_user_id?: string
-          user_connection_id?: string
+          couple_id?: string
           created_at?: string
           feature_gates?: Json
           feed_enabled?: boolean
@@ -436,10 +436,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "connection_access_settings_user_connection_id_fkey"
-            columns: ["user_connection_id"]
+            foreignKeyName: "connection_context_preferences_couple_id_fkey"
+            columns: ["couple_id"]
             isOneToOne: false
-            referencedRelation: "user_connections"
+            referencedRelation: "couples"
             referencedColumns: ["id"]
           },
         ]
@@ -448,7 +448,7 @@ export type Database = {
         Row: {
           access_tier: string
           connection_user_id: string
-          user_connection_id: string
+          couple_id: string
           created_at: string
           gate_key: string
           id: string
@@ -465,7 +465,7 @@ export type Database = {
         Insert: {
           access_tier?: string
           connection_user_id: string
-          user_connection_id: string
+          couple_id: string
           created_at?: string
           gate_key?: string
           id?: string
@@ -482,7 +482,7 @@ export type Database = {
         Update: {
           access_tier?: string
           connection_user_id?: string
-          user_connection_id?: string
+          couple_id?: string
           created_at?: string
           gate_key?: string
           id?: string
@@ -498,10 +498,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "connection_recommendations_user_connection_id_fkey"
-            columns: ["user_connection_id"]
+            foreignKeyName: "connection_recommendations_couple_id_fkey"
+            columns: ["couple_id"]
             isOneToOne: false
-            referencedRelation: "user_connections"
+            referencedRelation: "couples"
             referencedColumns: ["id"]
           },
         ]
@@ -542,7 +542,7 @@ export type Database = {
         }
         Relationships: []
       }
-      user_connections: {
+      couples: {
         Row: {
           created_at: string
           display_label: string | null
@@ -817,52 +817,52 @@ export type Database = {
         }
         Relationships: []
       }
-      shared_saved_product_cards: {
+      shared_card_entries: {
         Row: {
-          saved_product_card_id: string
+          card_entry_id: string
           connection_user_id: string
-          user_connection_id: string
+          couple_id: string
           created_at: string
           id: string
           owner_user_id: string
         }
         Insert: {
-          saved_product_card_id: string
+          card_entry_id: string
           connection_user_id: string
-          user_connection_id: string
+          couple_id: string
           created_at?: string
           id?: string
           owner_user_id: string
         }
         Update: {
-          saved_product_card_id?: string
+          card_entry_id?: string
           connection_user_id?: string
-          user_connection_id?: string
+          couple_id?: string
           created_at?: string
           id?: string
           owner_user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "shared_saved_product_cards_saved_product_card_id_fkey"
-            columns: ["saved_product_card_id"]
+            foreignKeyName: "shared_card_entries_card_entry_id_fkey"
+            columns: ["card_entry_id"]
             isOneToOne: false
-            referencedRelation: "saved_product_cards"
+            referencedRelation: "card_entries"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "shared_saved_product_cards_user_connection_id_fkey"
-            columns: ["user_connection_id"]
+            foreignKeyName: "shared_card_entries_couple_id_fkey"
+            columns: ["couple_id"]
             isOneToOne: false
-            referencedRelation: "user_connections"
+            referencedRelation: "couples"
             referencedColumns: ["id"]
           },
         ]
       }
-      shared_connection_derivations: {
+      shared_derived_features: {
         Row: {
           connection_user_id: string
-          user_connection_id: string
+          couple_id: string
           created_at: string
           feature_key: string
           id: string
@@ -872,7 +872,7 @@ export type Database = {
         }
         Insert: {
           connection_user_id: string
-          user_connection_id: string
+          couple_id: string
           created_at?: string
           feature_key: string
           id?: string
@@ -882,7 +882,7 @@ export type Database = {
         }
         Update: {
           connection_user_id?: string
-          user_connection_id?: string
+          couple_id?: string
           created_at?: string
           feature_key?: string
           id?: string
@@ -892,18 +892,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "shared_connection_derivations_user_connection_id_fkey"
-            columns: ["user_connection_id"]
+            foreignKeyName: "shared_derived_features_couple_id_fkey"
+            columns: ["couple_id"]
             isOneToOne: false
-            referencedRelation: "user_connections"
+            referencedRelation: "couples"
             referencedColumns: ["id"]
           },
         ]
       }
-      shared_connection_profile_fields: {
+      shared_profile_fields: {
         Row: {
           connection_user_id: string
-          user_connection_id: string
+          couple_id: string
           created_at: string
           field_key: string
           id: string
@@ -913,7 +913,7 @@ export type Database = {
         }
         Insert: {
           connection_user_id: string
-          user_connection_id: string
+          couple_id: string
           created_at?: string
           field_key: string
           id?: string
@@ -923,7 +923,7 @@ export type Database = {
         }
         Update: {
           connection_user_id?: string
-          user_connection_id?: string
+          couple_id?: string
           created_at?: string
           field_key?: string
           id?: string
@@ -933,10 +933,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "shared_connection_profile_fields_user_connection_id_fkey"
-            columns: ["user_connection_id"]
+            foreignKeyName: "shared_profile_fields_couple_id_fkey"
+            columns: ["couple_id"]
             isOneToOne: false
-            referencedRelation: "user_connections"
+            referencedRelation: "couples"
             referencedColumns: ["id"]
           },
         ]
@@ -944,7 +944,7 @@ export type Database = {
       sharing_permissions: {
         Row: {
           brands: boolean
-          user_connection_id: string
+          couple_id: string
           created_at: string
           food_preferences: boolean
           gift_ideas: boolean
@@ -962,7 +962,7 @@ export type Database = {
         }
         Insert: {
           brands?: boolean
-          user_connection_id: string
+          couple_id: string
           created_at?: string
           food_preferences?: boolean
           gift_ideas?: boolean
@@ -980,7 +980,7 @@ export type Database = {
         }
         Update: {
           brands?: boolean
-          user_connection_id?: string
+          couple_id?: string
           created_at?: string
           food_preferences?: boolean
           gift_ideas?: boolean
@@ -998,10 +998,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "sharing_permissions_user_connection_id_fkey"
-            columns: ["user_connection_id"]
+            foreignKeyName: "sharing_permissions_couple_id_fkey"
+            columns: ["couple_id"]
             isOneToOne: false
-            referencedRelation: "user_connections"
+            referencedRelation: "couples"
             referencedColumns: ["id"]
           },
         ]
@@ -1144,85 +1144,46 @@ export type Database = {
         }
         Relationships: []
       }
-      onboarding_responses: {
+      user_preferences: {
         Row: {
+          ai_personalization: Json | null
+          brands: Json | null
           created_at: string
+          dislikes: Json | null
+          favorites: Json | null
           id: string
-          question_key: string
-          response_value: Json
+          onboarding_complete: boolean | null
+          places: Json | null
+          profile_answers: Json | null
+          style_preferences: Json | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          ai_personalization?: Json | null
+          brands?: Json | null
           created_at?: string
+          dislikes?: Json | null
+          favorites?: Json | null
           id?: string
-          question_key: string
-          response_value?: Json
+          onboarding_complete?: boolean | null
+          places?: Json | null
+          profile_answers?: Json | null
+          style_preferences?: Json | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          ai_personalization?: Json | null
+          brands?: Json | null
           created_at?: string
+          dislikes?: Json | null
+          favorites?: Json | null
           id?: string
-          question_key?: string
-          response_value?: Json
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      know_me_responses: {
-        Row: {
-          created_at: string
-          id: string
-          question_key: string
-          response_value: Json
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          question_key: string
-          response_value?: Json
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          question_key?: string
-          response_value?: Json
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      knowledge_derivations: {
-        Row: {
-          created_at: string
-          derivation_key: string
-          derivation_payload: Json
-          id: string
-          source_snapshot: Json | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          derivation_key: string
-          derivation_payload?: Json
-          id?: string
-          source_snapshot?: Json | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          derivation_key?: string
-          derivation_payload?: Json
-          id?: string
-          source_snapshot?: Json | null
+          onboarding_complete?: boolean | null
+          places?: Json | null
+          profile_answers?: Json | null
+          style_preferences?: Json | null
           updated_at?: string
           user_id?: string
         }
@@ -1234,7 +1195,7 @@ export type Database = {
           email_digests: boolean
           gift_reminders: boolean
           id: string
-          connection_activity: boolean
+          partner_activity: boolean
           recommendations: boolean
           share_prefs: boolean
           share_wishlist: boolean
@@ -1247,7 +1208,7 @@ export type Database = {
           email_digests?: boolean
           gift_reminders?: boolean
           id?: string
-          connection_activity?: boolean
+          partner_activity?: boolean
           recommendations?: boolean
           share_prefs?: boolean
           share_wishlist?: boolean
@@ -1260,7 +1221,7 @@ export type Database = {
           email_digests?: boolean
           gift_reminders?: boolean
           id?: string
-          connection_activity?: boolean
+          partner_activity?: boolean
           recommendations?: boolean
           share_prefs?: boolean
           share_wishlist?: boolean
@@ -1337,45 +1298,11 @@ export type Database = {
       }
     }
     Views: {
-      user_knowledge_derivations: {
-        Row: {
-          created_at: string | null
-          derivation_key: string | null
-          derivation_payload: Json | null
-          id: string | null
-          source_snapshot: Json | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
-      user_knowledge_facts: {
-        Row: {
-          fact_key: string | null
-          fact_source: string | null
-          fact_value: Json | null
-          recorded_at: string | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
-      user_knowledge_snapshots: {
-        Row: {
-          know_me_responses: Json | null
-          onboarding_responses: Json | null
-          profile_core: Json | null
-          saved_product_cards: Json | null
-          snapshot_payload: Json | null
-          updated_at: string | null
-          user_connections: Json | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
-      connection_can_view_saved_product_card: {
-        Args: { p_saved_product_card_id: string; p_viewer_id: string }
+      connection_can_view_card_entry: {
+        Args: { p_card_entry_id: string; p_viewer_id: string }
         Returns: boolean
       }
       connection_can_view_derived_feature: {
@@ -1401,7 +1328,7 @@ export type Database = {
       create_connection_invite_from_token: {
         Args: { p_token: string }
         Returns: {
-          user_connection_id: string
+          couple_id: string
           invitee_id: string
           inviter_id: string
           result: string
@@ -1410,18 +1337,18 @@ export type Database = {
       create_connection_request: {
         Args: { p_target_user_id: string }
         Returns: {
-          user_connection_id: string
+          couple_id: string
           request_status: string
         }[]
       }
       get_connection_outgoing_sharing_state: {
-        Args: { p_connection_user_id: string; p_user_connection_id: string }
+        Args: { p_connection_user_id: string; p_couple_id: string }
         Returns: Json
       }
       get_connection_shared_profile: {
         Args: {
           p_connection_user_id: string
-          p_user_connection_id: string
+          p_couple_id: string
           p_owner_user_id: string
         }
         Returns: {
@@ -1434,7 +1361,7 @@ export type Database = {
       get_connection_shared_recommendations: {
         Args: {
           p_connection_user_id: string
-          p_user_connection_id: string
+          p_couple_id: string
           p_owner_user_id: string
         }
         Returns: {
@@ -1447,24 +1374,24 @@ export type Database = {
       get_connection_shared_vibe: {
         Args: {
           p_connection_user_id: string
-          p_user_connection_id: string
+          p_couple_id: string
           p_owner_user_id: string
         }
         Returns: {
           persona_summary: string
         }[]
       }
-      get_connection_visible_saved_product_cards: {
+      get_connection_visible_card_entries: {
         Args: {
           p_connection_user_id: string
-          p_user_connection_id: string
+          p_couple_id: string
           p_owner_user_id: string
         }
         Returns: {
-          product_card_key: string
-          card_title: string
+          card_key: string
+          entry_name: string
           field_values: Json
-          subcategory_label: string
+          group_name: string
           id: string
           image_url: string
           updated_at: string
@@ -1472,11 +1399,11 @@ export type Database = {
         }[]
       }
       get_shared_categories: {
-        Args: { p_user_connection_id: string; p_viewer_id: string }
+        Args: { p_couple_id: string; p_viewer_id: string }
         Returns: Json
       }
-      infer_saved_product_card_section: {
-        Args: { p_product_card_key: string; p_card_title: string; p_subcategory_label: string }
+      infer_card_entry_section: {
+        Args: { p_card_key: string; p_entry_name: string; p_group_name: string }
         Returns: string
       }
       issue_connection_share_token: {
@@ -1508,18 +1435,19 @@ export type Database = {
           user_id: string
         }[]
       }
-      share_saved_product_card_with_connection: {
+      set_connection_card_share: {
         Args: {
-          p_user_connection_id: string
+          p_card_entry_id: string
           p_connection_user_id: string
-          p_saved_product_card_id: string
+          p_couple_id: string
+          p_is_shared: boolean
         }
         Returns: undefined
       }
       set_connection_derived_feature_share: {
         Args: {
           p_connection_user_id: string
-          p_user_connection_id: string
+          p_couple_id: string
           p_feature_key: string
           p_is_shared: boolean
         }
@@ -1529,39 +1457,31 @@ export type Database = {
         Args: {
           p_connection_kind: string
           p_connection_user_id: string
-          p_user_connection_id: string
+          p_couple_id: string
         }
         Returns: undefined
       }
       set_connection_profile_field_share: {
         Args: {
           p_connection_user_id: string
-          p_user_connection_id: string
+          p_couple_id: string
           p_field_key: string
           p_is_shared: boolean
         }
         Returns: undefined
       }
-      share_all_saved_product_cards_with_connection: {
+      share_all_card_entries_with_connection: {
         Args: {
           p_connection_user_id: string
-          p_user_connection_id: string
+          p_couple_id: string
           p_owner_user_id: string
         }
         Returns: number
       }
-      unshare_saved_product_card_with_connection: {
-        Args: {
-          p_user_connection_id: string
-          p_connection_user_id: string
-          p_saved_product_card_id: string
-        }
-        Returns: undefined
-      }
-      unshare_all_saved_product_cards_with_connection: {
+      unshare_all_card_entries_with_connection: {
         Args: {
           p_connection_user_id: string
-          p_user_connection_id: string
+          p_couple_id: string
           p_owner_user_id: string
         }
         Returns: number
@@ -1579,7 +1499,6 @@ export type Database = {
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
-// Codebase classification: generated runtime Supabase types.
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
@@ -1699,4 +1618,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
