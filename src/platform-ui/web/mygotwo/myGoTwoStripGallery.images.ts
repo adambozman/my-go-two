@@ -2,6 +2,10 @@ export type MyGoTwoStripGalleryImage = {
   id: string;
   image: string;
   detailImage?: string;
+  backdropImage?: string;
+  detailBackdropImage?: string;
+  imageFit?: "cover" | "contain";
+  detailImageFit?: "cover" | "contain";
   align?: string;
   label?: string;
   categorySlug?: string;
@@ -149,3 +153,5 @@ export function getMyGoTwoCategoryTargetByStripKey(stripKey: string) {
 export function getMyGoTwoCategoryTargetByCardKey(cardKey: string) {
   return CATEGORY_TARGET_BY_CARD_KEY.get(cardKey) ?? null;
 }
+
+// Codebase classification: runtime My Go Two slot map for strip, card, and collapse image assignments.

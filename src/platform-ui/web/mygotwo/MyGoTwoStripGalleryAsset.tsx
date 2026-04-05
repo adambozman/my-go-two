@@ -16,9 +16,7 @@ import {
   getCachedMyGoTwoGalleryAssets,
   getVisibleStageStripUrls,
   loadMyGoTwoGalleryAssets,
-  mergeOverrideIntoGalleryAssets,
   preloadImageUrls,
-  resolveMyGoTwoOverrideImageUrl,
   type MyGoTwoGalleryAssets,
 } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.data";
 
@@ -52,6 +50,10 @@ type StripPresentation = {
   id: string;
   image: string;
   detailImage?: string;
+  backdropImage?: string;
+  detailBackdropImage?: string;
+  imageFit?: "cover" | "contain";
+  detailImageFit?: "cover" | "contain";
   align?: string;
   label?: string;
   isPanoramaStrip: boolean;
@@ -130,12 +132,31 @@ function CategoryOverlay({
       }}
     >
       {(category.detailImage || category.image) ? (
-        <img
-          src={category.detailImage || category.image}
-          alt={category.label}
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: `${category.align ?? "50%"} center` }}
-        />
+        <>
+          <div
+            aria-hidden="true"
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url("${category.detailBackdropImage || category.backdropImage || category.detailImage || category.image}")`,
+              backgroundPosition: `${category.align ?? "50%"} center`,
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+              filter: "blur(18px)",
+              transform: "scale(1.06)",
+              opacity: 0.95,
+            }}
+          />
+          <img
+            src={category.detailImage || category.image}
+            alt={category.label}
+            className="absolute inset-0 h-full w-full"
+            style={{
+              objectFit: category.detailImageFit ?? "cover",
+              objectPosition: `${category.align ?? "50%"} center`,
+              padding: category.detailImageFit === "contain" ? "clamp(0.75rem, 2vw, 1.5rem)" : undefined,
+            }}
+          />
+        </>
       ) : null}
       <div
         aria-hidden="true"
@@ -282,21 +303,38 @@ const StripCell = memo(function StripCell({
           ) : null}
         </>
       ) : strip.image ? (
-        <img
-          aria-hidden="true"
-          alt=""
-          src={strip.image}
-          decoding="async"
-          loading="eager"
-          className="absolute inset-0 h-full w-full object-cover transition-transform"
-          style={{
-            objectPosition: `${strip.align ?? "50%"} center`,
-            transform: "scale(1)",
-            transitionDuration: `${STRIP_TRANSITION_MS}ms`,
-            transitionTimingFunction: STRIP_TIMING_FUNCTION,
-            willChange: "transform",
-          }}
-        />
+        <>
+          <div
+            aria-hidden="true"
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url("${strip.backdropImage || strip.image}")`,
+              backgroundPosition: `${strip.align ?? "50%"} center`,
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+              filter: "blur(12px)",
+              transform: "scale(1.08)",
+              opacity: 0.92,
+            }}
+          />
+          <img
+            aria-hidden="true"
+            alt=""
+            src={strip.image}
+            decoding="async"
+            loading="eager"
+            className="absolute inset-0 h-full w-full transition-transform"
+            style={{
+              objectFit: strip.imageFit ?? "cover",
+              objectPosition: `${strip.align ?? "50%"} center`,
+              padding: strip.imageFit === "contain" ? "8px 4px" : undefined,
+              transform: "scale(1)",
+              transitionDuration: `${STRIP_TRANSITION_MS}ms`,
+              transitionTimingFunction: STRIP_TIMING_FUNCTION,
+              willChange: "transform",
+            }}
+          />
+        </>
       ) : null}
       <div
         aria-hidden="true"
@@ -548,31 +586,12 @@ export default function MyGoTwoStripGalleryAsset() {
         return;
       }
 
-      void (async () => {
-        const resolvedUrl = detail?.url
-          ? await resolveMyGoTwoOverrideImageUrl(imageKey, detail.url)
-          : "";
-        let nextResolvedUrl = resolvedUrl;
-
-        if (resolvedUrl) {
-          const loadedUrls = await preloadImageUrls([resolvedUrl]);
-          nextResolvedUrl = loadedUrls.has(resolvedUrl) ? resolvedUrl : "";
-        }
-
-        const nextAssets = mergeOverrideIntoGalleryAssets(
-          currentAssetsRef.current,
-          imageKey,
-          nextResolvedUrl,
-        );
-
-        commitAssets(nextAssets, true);
-        setPanoramaBaseUrl((current) => current || nextAssets.collapseImages[0]?.image || "");
-      })();
+      void hydrateGalleryAssets({ force: true, showLoader: false });
     };
 
     window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
     return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
-  }, [commitAssets, hydrateGalleryAssets]);
+  }, [hydrateGalleryAssets]);
 
   useEffect(() => {
     return () => {
