@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import GoTwoText from "@/components/GoTwoText";
 
 const riseIn = (delay: number) => ({
   initial: { opacity: 0, y: 18 },
@@ -59,252 +60,208 @@ const timelineSteps = [
   },
 ];
 
+export const archivedLandingValueStatement = {
+  eyebrow: "Everything that matters",
+  title: "One place for all of it",
+  body:
+    "Stop asking. Stop guessing. Stop the friction. Every preference, saved once - accessible to whoever you choose.",
+  visualTone: "centered coral eyebrow, serif headline, muted body copy",
+} as const;
+
 const Landing = () => {
   return (
     <div className="landing-page min-h-screen overflow-x-hidden">
       <div className="relative z-10">
         {/* HERO */}
         <section
-          style={{ padding: "64px 52px 72px" }}
-          className="relative flex flex-col items-center overflow-hidden text-center"
+          style={{
+            minHeight: "100svh",
+            boxSizing: "border-box",
+            padding: "clamp(36px, 4vw, 56px) clamp(20px, 4vw, 52px) clamp(32px, 4vw, 40px)",
+          }}
+          className="relative flex flex-col justify-center overflow-hidden text-center"
         >
-          <motion.div
-            {...riseIn(0)}
-            style={{ marginBottom: 36, display: "flex", alignItems: "baseline", gap: 3 }}
+          <div
+            className="mx-auto flex w-full max-w-[980px] flex-1 flex-col items-center justify-center"
+            style={{ gap: "clamp(24px, 3.8vh, 40px)" }}
           >
-            <span
-              style={{
-                fontFamily: "'Dancing Script', cursive",
-                fontWeight: 600,
-                fontSize: 56,
-                color: "var(--logo-go-color)",
-                lineHeight: 1,
-              }}
+            <motion.div
+              {...riseIn(0)}
+              className="flex items-center justify-center"
+              style={{ width: "100%" }}
             >
-              Go
-            </span>
-            <span
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontWeight: 600,
-                fontSize: 70,
-                color: "var(--logo-two-color)",
-                lineHeight: 1,
-                letterSpacing: "-0.5px",
-              }}
-            >
-              Two
-            </span>
-          </motion.div>
+              <GoTwoText
+                style={{ fontSize: "clamp(4rem, 8vw, 5.5rem)" }}
+              />
+            </motion.div>
 
-          <motion.div
-            {...riseIn(0.1)}
-            className="flex flex-col items-center"
-            style={{ gap: 4, marginBottom: 44 }}
-          >
-            <span
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 28,
-                fontWeight: 600,
-                color: "var(--logo-two-color)",
-                letterSpacing: "0.2px",
-              }}
+            <motion.div
+              {...riseIn(0.1)}
+              className="flex w-full max-w-[760px] flex-col items-center"
+              style={{ gap: 4 }}
             >
-              The Shortcut to Thoughtful.
-            </span>
-            <span
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 28,
-                fontWeight: 600,
-                fontStyle: "italic",
-                color: "#d4543a",
-              }}
-            >
-              Never forget again.
-            </span>
-            <p
-              style={{
-                marginTop: 10,
-                fontSize: 13.5,
-                fontWeight: 300,
-                color: "#4a6068",
-                letterSpacing: "0.2px",
-                lineHeight: 1.6,
-                maxWidth: 360,
-                textAlign: "center",
-              }}
-            >
-              One place for everything that matters to the people you love.
-            </p>
-          </motion.div>
+              <span
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(32px, 4vw, 42px)",
+                  fontWeight: 600,
+                  color: "var(--logo-two-color)",
+                  letterSpacing: "0.2px",
+                  lineHeight: 1.1,
+                }}
+              >
+                The Shortcut to Thoughtful.
+              </span>
+              <span
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(28px, 3.4vw, 36px)",
+                  fontWeight: 600,
+                  fontStyle: "italic",
+                  color: "var(--logo-go-color)",
+                  lineHeight: 1.08,
+                }}
+              >
+                Never forget again.
+              </span>
+              <p
+                style={{
+                  marginTop: 12,
+                  fontSize: "clamp(14px, 1.4vw, 16px)",
+                  fontWeight: 300,
+                  color: "#4a6068",
+                  letterSpacing: "0.2px",
+                  lineHeight: 1.6,
+                  maxWidth: 500,
+                  textAlign: "center",
+                }}
+              >
+                One place for everything that matters to the people you love.
+              </p>
+            </motion.div>
 
-          <motion.div
-            {...riseIn(0.24)}
-            style={{
-              width: "100%",
-              maxWidth: 560,
-              aspectRatio: "16/9",
-              marginBottom: 36,
-              position: "relative",
-              overflow: "hidden",
-              background: "rgba(255,255,255,0.70)",
-              border: "1px solid rgba(255,255,255,0.85)",
-              borderRadius: 16,
-              boxShadow:
-                "0 8px 48px rgba(45,104,112,0.1), inset 0 1px 0 rgba(255,255,255,0.9)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div
+            <motion.div
+              {...riseIn(0.24)}
               style={{
-                position: "absolute",
-                inset: 0,
-                background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%)",
-                pointerEvents: "none",
-              }}
-            />
-            <div
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: "50%",
-                background: "#d4543a",
+                width: "100%",
+                maxWidth: 760,
+                aspectRatio: "16/9",
+                position: "relative",
+                overflow: "hidden",
+                background: "rgba(255,255,255,0.70)",
+                border: "1px solid rgba(255,255,255,0.85)",
+                borderRadius: 18,
+                boxShadow:
+                  "0 12px 56px rgba(45,104,112,0.1), inset 0 1px 0 rgba(255,255,255,0.9)",
                 display: "flex",
+                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 24px rgba(212,84,58,0.38)",
-                cursor: "pointer",
-                transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                position: "relative",
-                zIndex: 1,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.07)";
-                e.currentTarget.style.boxShadow = "0 8px 32px rgba(212,84,58,0.5)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = "0 4px 24px rgba(212,84,58,0.38)";
               }}
             >
-              <svg viewBox="0 0 24 24" fill="none" style={{ width: 20, height: 20, marginLeft: 3, color: "#fff" }}>
-                <path
-                  d="M8 5.14v14.72a1 1 0 001.5.86l11-7.36a1 1 0 000-1.72l-11-7.36A1 1 0 008 5.14z"
-                  fill="currentColor"
-                />
-              </svg>
-            </div>
-            <span
-              style={{
-                fontSize: 11,
-                letterSpacing: 2.5,
-                textTransform: "uppercase",
-                color: "#8a9ea4",
-                fontWeight: 400,
-                position: "relative",
-                zIndex: 1,
-                marginTop: 14,
-              }}
-            >
-              See it in action
-            </span>
-          </motion.div>
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%)",
+                  pointerEvents: "none",
+                }}
+              />
+              <div
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: "50%",
+                  background: "var(--logo-go-color)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 6px 26px rgba(212,84,58,0.38)",
+                  cursor: "pointer",
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.07)";
+                  e.currentTarget.style.boxShadow = "0 10px 34px rgba(212,84,58,0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow = "0 6px 26px rgba(212,84,58,0.38)";
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" style={{ width: 22, height: 22, marginLeft: 3, color: "#fff" }}>
+                  <path
+                    d="M8 5.14v14.72a1 1 0 001.5.86l11-7.36a1 1 0 000-1.72l-11-7.36A1 1 0 008 5.14z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <span
+                style={{
+                  fontSize: 11,
+                  letterSpacing: 2.5,
+                  textTransform: "uppercase",
+                  color: "#8a9ea4",
+                  fontWeight: 400,
+                  position: "relative",
+                  zIndex: 1,
+                  marginTop: 14,
+                }}
+              >
+                See it in action
+              </span>
+            </motion.div>
 
-          <motion.div
-            {...riseIn(0.3)}
-            className="flex items-center"
-            style={{ gap: 14, marginBottom: 12 }}
-          >
-            <Link
-              to="/signup"
-              className="surface-button-primary inline-flex items-center justify-center rounded-full"
-              style={{
-                background: "var(--swatch-cedar-grove)",
-                color: "hsl(var(--destructive-foreground))",
-                border: "none",
-                padding: "14px 32px",
-                fontFamily: "'Jost', sans-serif",
-                fontSize: 13.5,
-                fontWeight: 500,
-                letterSpacing: "0.3px",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-              }}
+            <motion.div
+              {...riseIn(0.3)}
+              className="flex items-center"
+              style={{ gap: 14, flexWrap: "wrap", justifyContent: "center" }}
             >
-              Get Started Free &nbsp;-&gt;
-            </Link>
-            <a
-              href="#how-it-works"
-              className="surface-button-secondary inline-flex items-center justify-center rounded-full"
-              style={{
-                color: "var(--swatch-teal)",
-                border: "none",
-                padding: "13px 28px",
-                fontFamily: "'Jost', sans-serif",
-                fontSize: 13.5,
-                fontWeight: 400,
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-              }}
-            >
-              See How It Works
-            </a>
-          </motion.div>
+              <Link
+                to="/signup"
+                className="surface-button-primary inline-flex items-center justify-center rounded-full"
+                style={{
+                  background: "var(--swatch-cedar-grove)",
+                  color: "hsl(var(--destructive-foreground))",
+                  border: "none",
+                  padding: "14px 32px",
+                  fontFamily: "'Jost', sans-serif",
+                  fontSize: 13.5,
+                  fontWeight: 500,
+                  letterSpacing: "0.3px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                Get Started Free &nbsp;-&gt;
+              </Link>
+              <a
+                href="#how-it-works"
+                className="surface-button-secondary inline-flex items-center justify-center rounded-full"
+                style={{
+                  color: "var(--swatch-teal)",
+                  border: "none",
+                  padding: "13px 28px",
+                  fontFamily: "'Jost', sans-serif",
+                  fontSize: 13.5,
+                  fontWeight: 400,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                See How It Works
+              </a>
+            </motion.div>
 
-          <motion.p
-            {...riseIn(0.36)}
-            style={{ fontSize: 12, color: "#8a9ea4", fontWeight: 300, letterSpacing: "0.3px" }}
-          >
-            Free to start &nbsp;&middot;&nbsp; No credit card required
-          </motion.p>
-
-          <motion.div
-            {...riseIn(0.42)}
-            className="flex flex-col items-center text-center"
-            style={{ marginTop: 72 }}
-          >
-            <p
-              style={{
-                fontSize: 10.5,
-                letterSpacing: 3,
-                textTransform: "uppercase",
-                color: "#d4543a",
-                fontWeight: 500,
-                marginBottom: 10,
-              }}
+            <motion.p
+              {...riseIn(0.36)}
+              style={{ fontSize: 12, color: "#8a9ea4", fontWeight: 300, letterSpacing: "0.3px" }}
             >
-              Everything that matters
-            </p>
-            <h2
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 38,
-                fontWeight: 600,
-                color: "var(--logo-two-color)",
-                lineHeight: 1.15,
-                marginBottom: 14,
-              }}
-            >
-              One place for all of it
-            </h2>
-            <p
-              style={{
-                fontSize: 14,
-                fontWeight: 300,
-                color: "#4a6068",
-                maxWidth: 380,
-                lineHeight: 1.7,
-              }}
-            >
-              Stop asking. Stop guessing. Stop the friction. Every preference, saved once -
-              accessible to whoever you choose.
-            </p>
-          </motion.div>
+              Free to start &nbsp;&middot;&nbsp; No credit card required
+            </motion.p>
+          </div>
         </section>
 
         <div
