@@ -126,8 +126,11 @@ export default function SponsoredAdmin() {
       if (error) { toast.error("Save failed"); return; }
       toast.success("Product updated");
     } else {
+      const base = buildProductPayload();
       const payload: TablesInsert<"sponsored_products"> = {
-        ...buildProductPayload(),
+        ...base,
+        name: base.name || "",
+        brand: base.brand || "",
         created_by: user?.id ?? null,
       };
       const { error } = await supabase.from("sponsored_products").insert(payload);
