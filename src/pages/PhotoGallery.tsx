@@ -10,7 +10,7 @@ import { makeStorageRef, parseStorageRef, resolveStorageUrls } from "@/lib/stora
 import {
   MYGOTWO_CARD_LIVE_IMAGE_SIZE,
   MYGOTWO_COLLAPSE_LIVE_IMAGE_SIZE,
-  MYGOTWO_STRIP_LIVE_IMAGE_SIZE,
+  MYGOTWO_STRIP_SOURCE_IMAGE_SIZE,
 } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.data";
 import {
   MYGOTWO_CATEGORY_TARGETS,
@@ -39,36 +39,46 @@ type ManualCleanupItem = {
 type SlotPreviewSpec = {
   width: number;
   height: number;
+  ratioLabel: string;
   cropLabel: string;
   usageLabel: string;
+  sizeLabel: string;
   previewSurfaceClassName: string;
   previewFrameClassName: string;
+  showsLiveSliceGuide?: boolean;
 };
 
 const SLOT_PREVIEW_SPECS: Record<MyGoTwoSlotTarget["kind"], SlotPreviewSpec> = {
   strip: {
-    width: MYGOTWO_STRIP_LIVE_IMAGE_SIZE.width,
-    height: MYGOTWO_STRIP_LIVE_IMAGE_SIZE.height,
-    cropLabel: "Narrow vertical live strip crop",
-    usageLabel: "Matches the live category strip on My Go Two.",
-    previewSurfaceClassName: "min-h-[23rem]",
-    previewFrameClassName: "mx-auto w-[72px] max-w-full overflow-hidden rounded-[1.4rem] border border-border/70 bg-black/5 shadow-sm",
+    width: MYGOTWO_STRIP_SOURCE_IMAGE_SIZE.width,
+    height: MYGOTWO_STRIP_SOURCE_IMAGE_SIZE.height,
+    ratioLabel: "1:2",
+    cropLabel: "Portrait source. The center guide is the live strip crop.",
+    usageLabel: "Upload a portrait image here. My Go Two shows the center slice on the live strip.",
+    sizeLabel: "Recommended source",
+    previewSurfaceClassName: "min-h-[12rem]",
+    previewFrameClassName: "relative mx-auto w-[5.5rem] max-w-full overflow-hidden rounded-[1.4rem] border border-border/70 bg-black/5 shadow-sm",
+    showsLiveSliceGuide: true,
   },
   card: {
     width: MYGOTWO_CARD_LIVE_IMAGE_SIZE.width,
     height: MYGOTWO_CARD_LIVE_IMAGE_SIZE.height,
+    ratioLabel: "4:3",
     cropLabel: "Opened category card crop",
     usageLabel: "Matches the large category image after the strip opens.",
-    previewSurfaceClassName: "min-h-[17rem]",
-    previewFrameClassName: "w-full overflow-hidden rounded-[1.4rem] border border-border/70 bg-black/5 shadow-sm",
+    sizeLabel: "Recommended export",
+    previewSurfaceClassName: "min-h-[11rem]",
+    previewFrameClassName: "relative mx-auto w-[12rem] max-w-full overflow-hidden rounded-[1rem] border border-border/70 bg-black/5 shadow-sm",
   },
   collapse: {
     width: MYGOTWO_COLLAPSE_LIVE_IMAGE_SIZE.width,
     height: MYGOTWO_COLLAPSE_LIVE_IMAGE_SIZE.height,
+    ratioLabel: "64:55",
     cropLabel: "Collapsed repeat-stage crop",
     usageLabel: "Matches the repeat image used while the stage is collapsed.",
-    previewSurfaceClassName: "min-h-[15rem]",
-    previewFrameClassName: "w-full overflow-hidden rounded-[1.4rem] border border-border/70 bg-black/5 shadow-sm",
+    sizeLabel: "Recommended export",
+    previewSurfaceClassName: "min-h-[10rem]",
+    previewFrameClassName: "relative mx-auto w-[11rem] max-w-full overflow-hidden rounded-[1rem] border border-border/70 bg-black/5 shadow-sm",
   },
 };
 
@@ -125,9 +135,14 @@ function SlotPreview({
           <p className="text-sm font-semibold">{title}</p>
           <p className="mt-1 text-xs text-muted-foreground">{description}</p>
           <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            Target size {formatTargetSize(previewSpec.width, previewSpec.height)}
+            Aspect ratio {previewSpec.ratioLabel}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">{previewSpec.cropLabel}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {previewSpec.cropLabel}
+          </p>
+          <p className="mt-1 text-[11px] text-muted-foreground/90">
+            {previewSpec.sizeLabel} {formatTargetSize(previewSpec.width, previewSpec.height)}
+          </p>
         </div>
         <Button
           variant="outline"
@@ -141,7 +156,7 @@ function SlotPreview({
         </Button>
       </div>
 
-      <div className={`mt-4 flex items-center justify-center rounded-2xl border border-dashed border-border/80 bg-muted/45 px-4 py-5 ${previewSpec.previewSurfaceClassName}`}>
+      <div className={`mt-4 flex items-center justify-center rounded-2xl border border-dashed border-border/80 bg-muted/45 px-4 py-4 ${previewSpec.previewSurfaceClassName}`}>
         <div
           className={previewSpec.previewFrameClassName}
           style={{ aspectRatio: `${previewSpec.width} / ${previewSpec.height}` }}
@@ -157,6 +172,16 @@ function SlotPreview({
               No image uploaded
             </div>
           )}
+          {previewSpec.showsLiveSliceGuide ? (
+            <>
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-[35%] bg-[rgba(15,23,42,0.2)]" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-[35%] bg-[rgba(15,23,42,0.2)]" />
+              <div className="pointer-events-none absolute inset-y-3 left-1/2 w-[30%] -translate-x-1/2 rounded-[999px] border border-white/90 shadow-[0_0_0_1px_rgba(15,23,42,0.12)]" />
+              <div className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-[rgba(15,23,42,0.72)] px-2 py-1 text-[9px] font-medium uppercase tracking-[0.16em] text-white/90">
+                Live strip
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
 
@@ -189,7 +214,11 @@ function getSlotSelectionSummary(target: MyGoTwoSlotTarget | null, categoryLabel
   const previewSpec = SLOT_PREVIEW_SPECS[target.kind];
   const slotLabel = categoryLabel ? getCategoryUploadLabel(target.key, categoryLabel) : target.label;
 
-  return `${slotLabel} uses ${formatTargetSize(previewSpec.width, previewSpec.height)} and previews with the live crop below.`;
+  if (target.kind === "strip") {
+    return `${slotLabel} uses a 1:2 portrait source. The preview guide marks the center slice shown on the live strip. Recommended source ${formatTargetSize(previewSpec.width, previewSpec.height)}.`;
+  }
+
+  return `${slotLabel} previews at ${previewSpec.ratioLabel}. ${previewSpec.sizeLabel} ${formatTargetSize(previewSpec.width, previewSpec.height)}.`;
 }
 
 export default function PhotoGallery() {
@@ -478,7 +507,7 @@ export default function PhotoGallery() {
           <div className="min-w-0">
             <h1 className="text-lg font-semibold">Photo Gallery</h1>
             <p className="text-xs text-muted-foreground">
-              Each upload box uses the live My Go Two crop ratio and shows the target image size.
+              Each upload box shows the source aspect ratio. Strip slots also mark the center slice that shows live in My Go Two.
             </p>
           </div>
           <input
@@ -515,7 +544,7 @@ export default function PhotoGallery() {
                       <div>
                         <p className="text-sm font-semibold">{group.label}</p>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          Pick the live slot first. The preview box below matches the live crop for that slot.
+                          Pick the live slot first. Strip uploads use a portrait source and show the live center slice guide.
                         </p>
                       </div>
                       <div className="flex flex-col gap-2 sm:flex-row">

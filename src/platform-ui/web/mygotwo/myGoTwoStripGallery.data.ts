@@ -24,6 +24,11 @@ export const MYGOTWO_STRIP_LIVE_IMAGE_SIZE = {
   height: 1600,
 } as const;
 
+export const MYGOTWO_STRIP_SOURCE_IMAGE_SIZE = {
+  width: 800,
+  height: 1600,
+} as const;
+
 export const MYGOTWO_CARD_LIVE_IMAGE_SIZE = {
   width: 1600,
   height: 1200,
