@@ -145,7 +145,7 @@ function pickBestImage(
 function pickBestResult(results: Array<Record<string, unknown>>): Record<string, unknown> {
   // Score each result URL
   const scored = results.map((r, i) => {
-    const url = (r?.url ?? "").toLowerCase();
+    const url = cleanText(r.url).toLowerCase();
     let score = 0;
     // Prefer product detail pages
     if (/\/product[s]?\//.test(url)) score += 3;
@@ -197,7 +197,8 @@ async function scrapeProductWithFirecrawl(
     if (!results.length) return null;
 
     const bestResult = pickBestResult(results);
-    const productUrl = bestResult?.url ?? bestResult?.metadata?.sourceURL ?? null;
+    const bestResultMetadata = toObject(bestResult.metadata);
+    const productUrl = cleanText(bestResult.url) || cleanText(bestResultMetadata.sourceURL) || null;
 
     let imageUrl: string | null = null;
     let scrapedPrice: string | null = null;
@@ -252,9 +253,10 @@ async function scrapeProductWithFirecrawl(
     if (!imageUrl) {
       const candidates: string[] = [];
       for (const r of results) {
-        const m = r?.metadata ?? {};
-        if (m.ogImage) candidates.push(m.ogImage);
-        const md = r?.markdown ?? "";
+        const m = toObject(r.metadata);
+        const ogImage = cleanText(m.ogImage);
+        if (ogImage) candidates.push(ogImage);
+        const md = cleanText(r.markdown);
         const imgs = [...md.matchAll(/!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi)].map((x: RegExpMatchArray) => x[1]);
         candidates.push(...imgs);
       }
@@ -263,7 +265,7 @@ async function scrapeProductWithFirecrawl(
 
     if (!scrapedPrice) {
       for (const r of results) {
-        const md = r?.markdown ?? "";
+        const md = cleanText(r.markdown);
         const priceMatch = md.match(/\$[\d,]+\.?\d{0,2}/);
         if (priceMatch) { scrapedPrice = priceMatch[0]; break; }
       }

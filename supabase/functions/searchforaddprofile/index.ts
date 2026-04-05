@@ -863,7 +863,7 @@ async function searchDiscoverableUsersFallback(
     });
   };
 
-  const profileQueries: Array<Promise<{ data: ProfileIdentityRow[] | null; error: { message: string } | null }>> = [
+  const profileQueries: Array<PromiseLike<{ data: ProfileIdentityRow[] | null; error: { message: string } | null }>> = [
     adminClient
       .from("profiles")
       .select("user_id, display_name, avatar_url")
