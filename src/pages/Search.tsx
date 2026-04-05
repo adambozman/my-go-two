@@ -4,7 +4,7 @@ import { Search as SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth-context";
-import type { Tables } from "@/integrations/supabase/types";
+import type { Tables } from "@/integrations/supabase/runtime-types";
 import { motion } from "framer-motion";
 
 type TemplateResult = Tables<"card_templates">;

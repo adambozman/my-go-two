@@ -32,13 +32,13 @@ interface UserSettingsRow {
   email_digests: boolean;
 }
 
-interface DemoSeedUser {
+interface TestProfileSeedUser {
   display_name?: string;
   email?: string;
 }
 
-interface DemoSeedResult {
-  users?: DemoSeedUser[];
+interface TestProfileSeedResult {
+  users?: TestProfileSeedUser[];
 }
 
 const SettingsPage = () => {
@@ -65,7 +65,7 @@ const SettingsPage = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
-  const [seedingDemoProfiles, setSeedingDemoProfiles] = useState(false);
+  const [resettingTestProfiles, setResettingTestProfiles] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [shareToken, setShareToken] = useState("");
 
@@ -242,25 +242,25 @@ const SettingsPage = () => {
     }
   };
 
-  const handleSeedDemoProfiles = async () => {
-    setSeedingDemoProfiles(true);
+  const handleResetTestProfiles = async () => {
+    setResettingTestProfiles(true);
     try {
       const { data: result, error } = await supabase.functions.invoke("searchforaddprofile", {
-        body: { action: "seed-demo-profiles" },
+        body: { action: "reset-test-profiles" },
       });
       if (error) {
         throw error;
       }
-      const typedResult = result as DemoSeedResult | null;
+      const typedResult = result as TestProfileSeedResult | null;
       const summary = Array.isArray(typedResult?.users)
         ? typedResult.users.map((entry) => `${entry.display_name ?? "Unknown"} (${entry.email ?? "no-email"})`).join(", ")
-        : "Demo profiles created";
-      toast({ title: "Demo profiles ready", description: summary });
+        : "Test profiles reset";
+      toast({ title: "Test profiles ready", description: summary });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Try again.";
-      toast({ title: "Failed to create demo profiles", description: message, variant: "destructive" });
+      toast({ title: "Failed to reset test profiles", description: message, variant: "destructive" });
     } finally {
-      setSeedingDemoProfiles(false);
+      setResettingTestProfiles(false);
     }
   };
 
@@ -482,14 +482,14 @@ const SettingsPage = () => {
               <Button
                 variant="outline"
                 className="rounded-full w-full"
-                onClick={handleSeedDemoProfiles}
-                disabled={seedingDemoProfiles}
+                onClick={handleResetTestProfiles}
+                disabled={resettingTestProfiles}
               >
-                {seedingDemoProfiles ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                {seedingDemoProfiles ? "Creating demo profiles..." : "Create 2 Demo Profiles"}
+                {resettingTestProfiles ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                {resettingTestProfiles ? "Resetting test profiles..." : "Reset 2 Test Profiles"}
               </Button>
               <p className="mt-2 text-xs text-center" style={{ color: "var(--swatch-text-light)" }}>
-                Creates Abby and Jules with full seeded cards for visual testing.
+                Resets Harper and Rowan as full test profiles for connection, delete, and share QA.
               </p>
             </div>
 
@@ -802,4 +802,4 @@ const SettingsPage = () => {
 
 export default SettingsPage;
 
-// Codebase classification: runtime settings page with demo-seed controls.
+// Codebase classification: runtime settings page with test-profile reset controls.

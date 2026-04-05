@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth-context";
-import type { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
+import type { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/runtime-types";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, ExternalLink, BarChart3, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -555,3 +555,5 @@ export default function SponsoredAdmin() {
     </div>
   );
 }
+
+// Codebase classification: runtime sponsored-product admin page.

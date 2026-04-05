@@ -1,5 +1,5 @@
 import { normalizeGender, type Gender } from "@/lib/gender";
-import type { Json } from "@/integrations/supabase/types";
+import type { Json } from "@/integrations/supabase/runtime-types";
 
 type JsonObject = Record<string, unknown>;
 

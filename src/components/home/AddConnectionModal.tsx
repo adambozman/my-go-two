@@ -39,7 +39,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
   const [shareMessage, setShareMessage] = useState("");
   const [loadingShareToken, setLoadingShareToken] = useState(false);
   const [shareTokenError, setShareTokenError] = useState("");
-  const [seedingDemoProfiles, setSeedingDemoProfiles] = useState(false);
+  const [resettingTestProfiles, setResettingTestProfiles] = useState(false);
   const getErrorMessage = (error: unknown, fallback: string) => (
     error instanceof Error ? error.message : fallback
   );
@@ -83,9 +83,9 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     return Array.from(aggregateResults.values()).slice(0, 10);
   };
 
-  const seedDemoProfiles = async (showToast = true) => {
+  const resetTestProfiles = async (showToast = true) => {
     const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
-      body: { action: "seed-demo-profiles" },
+      body: { action: "reset-test-profiles" },
     });
 
     if (error) {
@@ -96,7 +96,12 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     }
 
     if (showToast) {
-      toast.success("Demo profiles created: Abby and Jules");
+      const summary = Array.isArray(data?.users)
+        ? data.users
+          .map((entry: { display_name?: string; email?: string }) => entry.display_name ?? entry.email ?? "Test profile")
+          .join(" and ")
+        : "Harper Test Profile and Rowan Test Profile";
+      toast.success(`Test profiles reset: ${summary}`);
     }
   };
 
@@ -248,12 +253,12 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       const rawQuery = searchQuery.trim();
       let results = await runSearchQuery(rawQuery);
 
-      // Auto-heal demo account setup in environments where seed data wasn't created yet.
+      // Auto-heal test profile setup in environments where seed data wasn't created yet.
       if (
         results.length === 0 &&
-        /(abby|jules|gotwo\.local)/i.test(rawQuery)
+        /(harper|rowan|test profile|gotwo\.local)/i.test(rawQuery)
       ) {
-        await seedDemoProfiles(false);
+        await resetTestProfiles(false);
         results = await runSearchQuery(rawQuery);
       }
 
@@ -309,18 +314,18 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     }
   };
 
-  const handleSeedDemoProfiles = async () => {
-    if (!user || seedingDemoProfiles) return;
-    setSeedingDemoProfiles(true);
+  const handleResetTestProfiles = async () => {
+    if (!user || resettingTestProfiles) return;
+    setResettingTestProfiles(true);
     try {
-      await seedDemoProfiles(true);
+      await resetTestProfiles(true);
       if (searchQuery.trim()) {
         await handleSearch();
       }
     } catch (error: unknown) {
-      toast.error(getErrorMessage(error, "Could not create demo profiles"));
+      toast.error(getErrorMessage(error, "Could not reset test profiles"));
     } finally {
-      setSeedingDemoProfiles(false);
+      setResettingTestProfiles(false);
     }
   };
 
@@ -465,13 +470,13 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
 
                   <button
                     type="button"
-                    onClick={handleSeedDemoProfiles}
-                    disabled={seedingDemoProfiles}
+                    onClick={handleResetTestProfiles}
+                    disabled={resettingTestProfiles}
                     className="surface-pill inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] disabled:opacity-50"
                     style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
                   >
-                    {seedingDemoProfiles ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5" />}
-                    {seedingDemoProfiles ? "Creating Demo Profiles..." : "Create Demo Profiles"}
+                    {resettingTestProfiles ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5" />}
+                    {resettingTestProfiles ? "Resetting Test Profiles..." : "Reset Test Profiles"}
                   </button>
 
                   <div>
@@ -614,7 +619,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                         <input
                           value={inviteUsername}
                           onChange={(e) => setInviteUsername(e.target.value)}
-                          placeholder="@abby"
+                          placeholder="@harper"
                           className="surface-field w-full rounded-2xl py-2.5 pr-3.5 pl-9 text-[14px] outline-none transition-all"
                           style={{
                             color: "var(--swatch-teal)",
@@ -734,3 +739,5 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     </AnimatePresence>
   );
 }
+
+// Codebase classification: runtime add-connection modal with test-profile reset control.

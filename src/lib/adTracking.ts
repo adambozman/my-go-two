@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Json } from "@/integrations/supabase/types";
+import type { Json } from "@/integrations/supabase/runtime-types";
 
 const normalizeJsonValue = (value: unknown): Json | undefined => {
   if (value === null) return null;
@@ -60,3 +60,5 @@ export function buildAffiliateUrl(
   const separator = baseUrl.includes("?") ? "&" : "?";
   return `${baseUrl}${separator}utm_source=${utmSource}&utm_medium=${utmMedium}&utm_campaign=${utmCampaign}`;
 }
+
+// Codebase classification: runtime ad tracking utilities.
