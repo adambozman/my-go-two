@@ -1,0 +1,79 @@
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e7]:
+        - img "GoTwo" [ref=e10]
+        - navigation [ref=e11]:
+          - button "Home" [ref=e12] [cursor=pointer]:
+            - img [ref=e14]
+            - generic [ref=e17]: Home
+          - button "My Go Two" [ref=e18] [cursor=pointer]:
+            - img [ref=e20]
+            - generic [ref=e22]: My Go Two
+          - button "For You" [ref=e23] [cursor=pointer]:
+            - img [ref=e25]
+            - generic [ref=e27]: For You
+          - button "Know Me" [ref=e28] [cursor=pointer]:
+            - img [ref=e30]
+            - generic [ref=e33]: Know Me
+          - button "Notifications" [ref=e34] [cursor=pointer]:
+            - img [ref=e36]
+            - generic [ref=e39]: Notifications
+        - button "A abby" [ref=e41] [cursor=pointer]:
+          - generic [ref=e43]: A
+          - paragraph [ref=e45]: abby
+          - img [ref=e46]
+    - main [ref=e49]:
+      - region "Strip gallery asset" [ref=e51]:
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - generic:
+              - generic:
+                - generic "Strip 01" [ref=e56] [cursor=pointer]:
+                  - img [ref=e58]
+                  - generic: Clothes
+                - generic "Strip 02" [ref=e62]
+                - generic "Strip 03" [ref=e67] [cursor=pointer]:
+                  - generic: Personal
+                - generic "Strip 04" [ref=e71]
+                - generic "Strip 05" [ref=e76] [cursor=pointer]:
+                  - generic: Health
+                - generic "Strip 06" [ref=e80]
+                - generic "Strip 07" [ref=e85] [cursor=pointer]:
+                  - generic: Gifts
+                - generic "Strip 08" [ref=e89]
+                - generic "Strip 09" [ref=e94] [cursor=pointer]:
+                  - generic: Dining
+                - generic "Strip 10" [ref=e98]
+                - generic "Strip 11" [ref=e103] [cursor=pointer]:
+                  - generic: Beverages
+                - generic "Strip 12" [ref=e107]
+                - generic "Strip 13" [ref=e112] [cursor=pointer]:
+                  - generic: Household
+                - generic "Strip 14" [ref=e116]
+                - generic "Strip 15" [ref=e121] [cursor=pointer]:
+                  - generic: Entertainment
+                - generic "Strip 16" [ref=e125]
+                - generic "Strip 17" [ref=e130] [cursor=pointer]:
+                  - generic: Travel
+            - generic [ref=e134]:
+              - img "Clothes" [ref=e136]
+              - button "Back" [ref=e138] [cursor=pointer]
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - paragraph: My Go Two
+                  - paragraph: Opening your vault
+                  - paragraph: Pulling your saved categories, staged strip images, and your locked-in preference deck.
+                  - generic:
+                    - generic: Clothes
+                    - generic: Personal
+                    - generic: Health
+                    - generic: Gifts
+                    - generic: Dining
+                    - generic: Beverages
+                    - generic: Travel

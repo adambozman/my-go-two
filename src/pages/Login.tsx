@@ -17,6 +17,34 @@ const DEV_EMAILS = ["adam.bozman@gmail.com"];
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Something went wrong";
 
+const resolvePostLoginDestination = async (userId: string) => {
+  const profileResult = await supabase
+    .from("profiles")
+    .select("onboarding_completed_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (!profileResult.error) {
+    return profileResult.data?.onboarding_completed_at ? "/dashboard" : "/onboarding";
+  }
+
+  const legacyResult = await supabase
+    .from("user_preferences")
+    .select("onboarding_complete")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (!legacyResult.error && legacyResult.data?.onboarding_complete) {
+    return "/dashboard";
+  }
+
+  console.warn("Falling back to onboarding because onboarding status could not be resolved.", {
+    profileError: profileResult.error,
+    legacyError: legacyResult.error,
+  });
+  return "/onboarding";
+};
+
 const Login = () => {
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
@@ -38,16 +66,7 @@ const Login = () => {
   const navigateAfterLogin = async () => {
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (currentUser) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarding_completed_at")
-        .eq("user_id", currentUser.id)
-        .maybeSingle();
-      if (!profile?.onboarding_completed_at) {
-        navigate("/onboarding");
-      } else {
-        navigate("/dashboard");
-      }
+      navigate(await resolvePostLoginDestination(currentUser.id));
     } else {
       navigate("/dashboard");
     }

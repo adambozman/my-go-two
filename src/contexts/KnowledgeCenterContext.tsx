@@ -7,6 +7,13 @@ import type { UserKnowledgeDerivation, UserKnowledgeSnapshot } from "@/lib/knowl
 type KnowledgeSnapshotRow = UserKnowledgeSnapshot | null;
 type KnowledgeDerivationRow = UserKnowledgeDerivation;
 
+const isMissingKnowledgeCenterSchema = (error: unknown) => {
+  if (!error || typeof error !== "object") return false;
+  const code = "code" in error ? String(error.code ?? "") : "";
+  const message = "message" in error ? String(error.message ?? "") : "";
+  return code === "PGRST205" || message.includes("schema cache") || message.includes("user_knowledge_");
+};
+
 const emptySnapshot = (userId: string): UserKnowledgeSnapshot => ({
   user_id: userId,
   profile_core: {},
@@ -25,6 +32,7 @@ export const KnowledgeCenterProvider = ({ children }: { children: ReactNode }) =
   const [loading, setLoading] = useState(true);
   const mountedRef = useRef(true);
   const latestRefreshRequestRef = useRef(0);
+  const schemaFallbackLoggedRef = useRef(false);
 
   const refreshKnowledge = useCallback(async () => {
     const activeUser = user;
@@ -65,7 +73,14 @@ export const KnowledgeCenterProvider = ({ children }: { children: ReactNode }) =
         ((derivationResult.data as KnowledgeDerivationRow[] | null) ?? []).filter(Boolean),
       );
     } catch (error) {
-      console.error("Failed to load knowledge center data:", error);
+      if (isMissingKnowledgeCenterSchema(error)) {
+        if (!schemaFallbackLoggedRef.current) {
+          console.warn("Knowledge Center schema is unavailable. Falling back to an empty snapshot.", error);
+          schemaFallbackLoggedRef.current = true;
+        }
+      } else {
+        console.error("Failed to load knowledge center data:", error);
+      }
       if (!mountedRef.current || latestRefreshRequestRef.current !== requestId) return;
       setKnowledgeSnapshot(emptySnapshot(activeUser.id));
       setKnowledgeDerivations([]);
