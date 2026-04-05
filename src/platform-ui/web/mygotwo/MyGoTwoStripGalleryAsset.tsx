@@ -30,6 +30,7 @@ const HOVER_DELAY_MS = 0;
 const OVERLAY_TRANSITION_MS = 220;
 const LOADER_EXIT_MS = 220;
 const RETURN_SETTLE_MS = 700;
+const STRIP_TIMING_FUNCTION = "cubic-bezier(0.22,1,0.36,1)";
 
 const STRIP_WEIGHT_EXPANDED = {
   labeled: 0.76,
@@ -231,7 +232,7 @@ const StripCell = memo(function StripCell({
       aria-label={`Strip ${strip.id}`}
       onMouseEnter={() => onHover(strip.id)}
       onClick={() => onClick(strip)}
-      className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,opacity,transform] ease-[cubic-bezier(0.22,1,0.36,1)]"
+      className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,opacity,transform]"
       style={{
         flexBasis: 0,
         flexGrow,
@@ -239,6 +240,7 @@ const StripCell = memo(function StripCell({
         opacity: collapseCategoryStrip ? 0 : 1,
         transform: isHoveredCategory ? "translateY(-1px)" : "translateY(0)",
         transitionDuration: `${STRIP_TRANSITION_MS}ms`,
+        transitionTimingFunction: STRIP_TIMING_FUNCTION,
         pointerEvents: collapseCategoryStrip ? "none" : "auto",
         cursor: strip.label ? "pointer" : "default",
         willChange: "flex-grow, opacity, transform",
@@ -263,7 +265,7 @@ const StripCell = memo(function StripCell({
           {panoramaNextUrl ? (
             <div
               aria-hidden="true"
-              className="absolute inset-0 transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]"
+              className="absolute inset-0 transition-opacity"
               style={{
                 backgroundImage: `url("${panoramaNextUrl}")`,
                 backgroundRepeat: "no-repeat",
@@ -274,6 +276,7 @@ const StripCell = memo(function StripCell({
                     : "50% center",
                 opacity: isPanoramaTransitioning ? 1 : 0,
                 transitionDuration: `${PANORAMA_TRANSITION_MS}ms`,
+                transitionTimingFunction: STRIP_TIMING_FUNCTION,
               }}
             />
           ) : null}
@@ -285,23 +288,25 @@ const StripCell = memo(function StripCell({
           src={strip.image}
           decoding="async"
           loading="eager"
-          className="absolute inset-0 h-full w-full object-cover transition-transform ease-[cubic-bezier(0.22,1,0.36,1)]"
+          className="absolute inset-0 h-full w-full object-cover transition-transform"
           style={{
             objectPosition: `${strip.align ?? "50%"} center`,
             transform: "scale(1)",
             transitionDuration: `${STRIP_TRANSITION_MS}ms`,
+            transitionTimingFunction: STRIP_TIMING_FUNCTION,
             willChange: "transform",
           }}
         />
       ) : null}
       <div
         aria-hidden="true"
-        className="absolute inset-0 transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]"
+        className="absolute inset-0 transition-opacity"
         style={{
           background:
             "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
           opacity: isHoveredCategory ? 0.48 : 0.68,
           transitionDuration: `${STRIP_TRANSITION_MS}ms`,
+          transitionTimingFunction: STRIP_TIMING_FUNCTION,
         }}
       />
       {strip.label ? (

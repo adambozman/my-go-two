@@ -60,7 +60,7 @@ const timelineSteps = [
   },
 ];
 
-export const archivedLandingValueStatement = {
+const archivedLandingValueStatement = {
   eyebrow: "Everything that matters",
   title: "One place for all of it",
   body:
