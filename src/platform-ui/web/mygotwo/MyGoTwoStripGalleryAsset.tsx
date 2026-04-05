@@ -31,14 +31,14 @@ const RETURN_SETTLE_MS = 700;
 const STRIP_TIMING_FUNCTION = "cubic-bezier(0.22,1,0.36,1)";
 
 const STRIP_WEIGHT_EXPANDED = {
-  labeled: 1.85,
-  panorama: 0.28,
+  labeled: 0.76,
+  panorama: 1.12,
 };
 
 const STRIP_WEIGHT_HOVER = {
-  target: 3.1,
-  otherLabeled: 0.34,
-  panorama: 0.18,
+  target: 2.1,
+  otherLabeled: 0.54,
+  panorama: 0.92,
 };
 
 const STRIP_WEIGHT_COLLAPSED = {
@@ -283,43 +283,22 @@ const StripCell = memo(function StripCell({
           ) : null}
         </>
       ) : strip.image ? (
-        <>
-          <img
-            aria-hidden="true"
-            alt=""
-            src={strip.image}
-            decoding="async"
-            loading="eager"
-            className="absolute inset-0 h-full w-full transition-transform"
-            style={{
-              objectFit: "cover",
-              objectPosition: `${strip.align ?? "50%"} center`,
-              transform: "scale(1.16)",
-              filter: "blur(18px)",
-              opacity: 0.92,
-              transitionDuration: `${STRIP_TRANSITION_MS}ms`,
-              transitionTimingFunction: STRIP_TIMING_FUNCTION,
-              willChange: "transform",
-            }}
-          />
-          <div
-            aria-hidden="true"
-            className="absolute left-1/2 top-[43%] w-[calc(100%-14px)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[18px] border border-white/35 shadow-[0_12px_24px_rgba(0,0,0,0.2)]"
-            style={{
-              background: "rgba(255,255,255,0.1)",
-              boxShadow: "0 12px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.28)",
-            }}
-          >
-            <img
-              aria-hidden="true"
-              alt=""
-              src={strip.image}
-              decoding="async"
-              loading="eager"
-              className="block h-auto w-full"
-            />
-          </div>
-        </>
+        <img
+          aria-hidden="true"
+          alt=""
+          src={strip.image}
+          decoding="async"
+          loading="eager"
+          className="absolute inset-0 h-full w-full transition-transform"
+          style={{
+            objectFit: "cover",
+            objectPosition: `${strip.align ?? "50%"} center`,
+            transform: "scale(1)",
+            transitionDuration: `${STRIP_TRANSITION_MS}ms`,
+            transitionTimingFunction: STRIP_TIMING_FUNCTION,
+            willChange: "transform",
+          }}
+        />
       ) : null}
       <div
         aria-hidden="true"

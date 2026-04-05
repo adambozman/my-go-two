@@ -52,8 +52,8 @@ const SLOT_PREVIEW_SPECS: Record<MyGoTwoSlotTarget["kind"], SlotPreviewSpec> = {
     width: MYGOTWO_STRIP_SOURCE_IMAGE_SIZE.width,
     height: MYGOTWO_STRIP_SOURCE_IMAGE_SIZE.height,
     ratioLabel: "1:2",
-    cropLabel: "Portrait source. The live strip keeps the full image framed inside the slot.",
-    usageLabel: "Matches the live strip framing so you can see whether the image still reads clearly.",
+    cropLabel: "Portrait source. The live strip keeps the full image without extra zoom.",
+    usageLabel: "Matches the live strip fit so you can see how the full image will read.",
     sizeLabel: "Recommended source",
     previewSurfaceClassName: "min-h-[12rem]",
     previewFrameClassName: "relative mx-auto w-[5.5rem] max-w-full overflow-hidden rounded-[1.4rem] border border-border/70 bg-black/5 shadow-sm",
@@ -161,25 +161,13 @@ function SlotPreview({
         >
           {assignment?.display_url ? (
             target.kind === "strip" ? (
-              <>
+              <div className="absolute inset-x-[4px] top-[8px] bottom-[8px] flex items-start justify-center overflow-hidden">
                 <img
                   src={assignment.display_url}
                   alt={title}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  style={{
-                    filter: "blur(12px)",
-                    transform: "scale(1.14)",
-                    opacity: 0.92,
-                  }}
+                  className="block h-auto max-h-full w-full rounded-[0.9rem]"
                 />
-                <div className="absolute left-1/2 top-[43%] w-[calc(100%-10px)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[0.85rem] border border-white/45 shadow-[0_10px_18px_rgba(0,0,0,0.16)]">
-                  <img
-                    src={assignment.display_url}
-                    alt={title}
-                    className="block h-auto w-full"
-                  />
-                </div>
-              </>
+              </div>
             ) : (
               <img
                 src={assignment.display_url}
@@ -225,7 +213,7 @@ function getSlotSelectionSummary(target: MyGoTwoSlotTarget | null, categoryLabel
   const slotLabel = categoryLabel ? getCategoryUploadLabel(target.key, categoryLabel) : target.label;
 
   if (target.kind === "strip") {
-    return `${slotLabel} uses a 1:2 portrait source. The preview matches the framed look used on the live strip. Recommended source ${formatTargetSize(previewSpec.width, previewSpec.height)}.`;
+    return `${slotLabel} uses a 1:2 portrait source. The preview matches the live strip fit without extra zoom. Recommended source ${formatTargetSize(previewSpec.width, previewSpec.height)}.`;
   }
 
   return `${slotLabel} previews at ${previewSpec.ratioLabel}. ${previewSpec.sizeLabel} ${formatTargetSize(previewSpec.width, previewSpec.height)}.`;

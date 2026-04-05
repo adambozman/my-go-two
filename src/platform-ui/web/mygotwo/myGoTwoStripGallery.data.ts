@@ -216,6 +216,7 @@ async function buildAssignedAssets(
 
       return {
         ...strip,
+        align: stripImage ? "50%" : strip.align,
         image: stripImage,
         detailImage,
       };
