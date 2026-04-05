@@ -45,7 +45,6 @@ type SlotPreviewSpec = {
   sizeLabel: string;
   previewSurfaceClassName: string;
   previewFrameClassName: string;
-  showsLiveSliceGuide?: boolean;
 };
 
 const SLOT_PREVIEW_SPECS: Record<MyGoTwoSlotTarget["kind"], SlotPreviewSpec> = {
@@ -53,12 +52,11 @@ const SLOT_PREVIEW_SPECS: Record<MyGoTwoSlotTarget["kind"], SlotPreviewSpec> = {
     width: MYGOTWO_STRIP_SOURCE_IMAGE_SIZE.width,
     height: MYGOTWO_STRIP_SOURCE_IMAGE_SIZE.height,
     ratioLabel: "1:2",
-    cropLabel: "Portrait source. The center guide is the live strip crop.",
-    usageLabel: "Upload a portrait image here. My Go Two shows the center slice on the live strip.",
+    cropLabel: "Portrait source. The live strip keeps the full image framed inside the slot.",
+    usageLabel: "Matches the live strip framing so you can see whether the image still reads clearly.",
     sizeLabel: "Recommended source",
     previewSurfaceClassName: "min-h-[12rem]",
     previewFrameClassName: "relative mx-auto w-[5.5rem] max-w-full overflow-hidden rounded-[1.4rem] border border-border/70 bg-black/5 shadow-sm",
-    showsLiveSliceGuide: true,
   },
   card: {
     width: MYGOTWO_CARD_LIVE_IMAGE_SIZE.width,
@@ -162,26 +160,38 @@ function SlotPreview({
           style={{ aspectRatio: `${previewSpec.width} / ${previewSpec.height}` }}
         >
           {assignment?.display_url ? (
-            <img
-              src={assignment.display_url}
-              alt={title}
-              className="h-full w-full object-cover"
-            />
+            target.kind === "strip" ? (
+              <>
+                <img
+                  src={assignment.display_url}
+                  alt={title}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  style={{
+                    filter: "blur(12px)",
+                    transform: "scale(1.14)",
+                    opacity: 0.92,
+                  }}
+                />
+                <div className="absolute left-1/2 top-[43%] w-[calc(100%-10px)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[0.85rem] border border-white/45 shadow-[0_10px_18px_rgba(0,0,0,0.16)]">
+                  <img
+                    src={assignment.display_url}
+                    alt={title}
+                    className="block h-auto w-full"
+                  />
+                </div>
+              </>
+            ) : (
+              <img
+                src={assignment.display_url}
+                alt={title}
+                className="h-full w-full object-cover"
+              />
+            )
           ) : (
             <div className="flex h-full items-center justify-center px-4 text-center text-sm text-muted-foreground">
               No image uploaded
             </div>
           )}
-          {previewSpec.showsLiveSliceGuide ? (
-            <>
-              <div className="pointer-events-none absolute inset-y-0 left-0 w-[35%] bg-[rgba(15,23,42,0.2)]" />
-              <div className="pointer-events-none absolute inset-y-0 right-0 w-[35%] bg-[rgba(15,23,42,0.2)]" />
-              <div className="pointer-events-none absolute inset-y-3 left-1/2 w-[30%] -translate-x-1/2 rounded-[999px] border border-white/90 shadow-[0_0_0_1px_rgba(15,23,42,0.12)]" />
-              <div className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-[rgba(15,23,42,0.72)] px-2 py-1 text-[9px] font-medium uppercase tracking-[0.16em] text-white/90">
-                Live strip
-              </div>
-            </>
-          ) : null}
         </div>
       </div>
 
@@ -215,7 +225,7 @@ function getSlotSelectionSummary(target: MyGoTwoSlotTarget | null, categoryLabel
   const slotLabel = categoryLabel ? getCategoryUploadLabel(target.key, categoryLabel) : target.label;
 
   if (target.kind === "strip") {
-    return `${slotLabel} uses a 1:2 portrait source. The preview guide marks the center slice shown on the live strip. Recommended source ${formatTargetSize(previewSpec.width, previewSpec.height)}.`;
+    return `${slotLabel} uses a 1:2 portrait source. The preview matches the framed look used on the live strip. Recommended source ${formatTargetSize(previewSpec.width, previewSpec.height)}.`;
   }
 
   return `${slotLabel} previews at ${previewSpec.ratioLabel}. ${previewSpec.sizeLabel} ${formatTargetSize(previewSpec.width, previewSpec.height)}.`;

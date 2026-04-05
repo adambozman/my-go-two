@@ -47,17 +47,17 @@ type AssignedAssetRow = {
 const SLOT_KEYS = MYGOTWO_ASSIGNMENT_KEYS;
 
 const STRIP_PREVIEW_TRANSFORM = {
-  width: 72,
-  height: 1400,
+  width: 360,
+  height: 720,
   resize: "cover" as const,
   quality: 24,
 };
 
 const STRIP_IMAGE_TRANSFORM = {
-  width: MYGOTWO_STRIP_LIVE_IMAGE_SIZE.width,
-  height: MYGOTWO_STRIP_LIVE_IMAGE_SIZE.height,
+  width: MYGOTWO_STRIP_SOURCE_IMAGE_SIZE.width,
+  height: MYGOTWO_STRIP_SOURCE_IMAGE_SIZE.height,
   resize: "cover" as const,
-  quality: 56,
+  quality: 64,
 };
 
 const STRIP_DETAIL_IMAGE_TRANSFORM = {
