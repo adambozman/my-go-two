@@ -25,10 +25,10 @@ type DemoProfile = {
   phone_raw: string;
 };
 
-type DemoCardEntrySeed = {
-  card_key: string;
-  group_name: string;
-  entry_name: string;
+type DemoSavedProductCardSeed = {
+  product_card_key: string;
+  subcategory_label: string;
+  card_title: string;
   field_values: Record<string, string>;
   image_url?: string | null;
 };
@@ -39,10 +39,10 @@ type DemoContentSeed = {
   dislikes: Record<string, unknown>;
   brands: Record<string, unknown>;
   style_preferences: Record<string, unknown>;
-  profile_answers: Record<string, string | string[]>;
-  ai_personalization: Record<string, unknown>;
+  know_me_responses: Record<string, string | string[]>;
+  knowledge_derivations: Record<string, unknown>;
   weekly_recommendations: Array<Record<string, unknown>>;
-  card_entries: DemoCardEntrySeed[];
+  saved_product_cards: DemoSavedProductCardSeed[];
 };
 
 type SearchResult = {
@@ -150,7 +150,7 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
       palette: ["ivory", "navy", "camel", "soft black"],
       silhouettes: ["tailored trousers", "silk tank", "cropped cardigan", "structured coat"],
     },
-    profile_answers: {
+    know_me_responses: {
       "sf-01": ["classic", "minimalist", "trendy"],
       "sf-02": "navy",
       "sf-04": "tailored",
@@ -186,7 +186,7 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
       "tot-83": "Small Gathering",
       "tot-89": "Quality Time",
     },
-    ai_personalization: {
+    knowledge_derivations: {
       persona_summary:
         "A polished, feminine dresser who leans classic and clean with soft luxury touches. Abby gravitates toward elevated basics, gold jewelry, fresh beauty staples, romantic dinners, and gifts that feel thoughtful rather than loud.",
       recommended_brands: ["Aritzia", "Reformation", "Sezane", "Mejuri", "Veja", "Jenni Kayne"],
@@ -239,11 +239,11 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
         source_version: "demo-abby-v1",
       },
     ],
-    card_entries: [
+    saved_product_cards: [
       {
-        card_key: "clothing-tops",
-        group_name: "Favorite tops",
-        entry_name: "Silk tanks and fitted knits",
+        product_card_key: "clothing-tops",
+        subcategory_label: "Favorite tops",
+        card_title: "Silk tanks and fitted knits",
         field_values: {
           "Favorite silhouettes": "Silk shell, ribbed knit, slim cardigan",
           Colors: "Ivory, navy, camel",
@@ -251,9 +251,9 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
         },
       },
       {
-        card_key: "shoe-sneakers",
-        group_name: "Sneakers",
-        entry_name: "Clean white everyday sneakers",
+        product_card_key: "shoe-sneakers",
+        subcategory_label: "Sneakers",
+        card_title: "Clean white everyday sneakers",
         field_values: {
           Brand: "Veja, New Balance",
           Material: "Smooth leather or suede accents",
@@ -261,9 +261,9 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
         },
       },
       {
-        card_key: "jewelry-necklaces",
-        group_name: "Jewelry",
-        entry_name: "Delicate gold layers",
+        product_card_key: "jewelry-necklaces",
+        subcategory_label: "Jewelry",
+        card_title: "Delicate gold layers",
         field_values: {
           Metal: "Yellow gold",
           Style: "Fine layered chains",
@@ -271,9 +271,9 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
         },
       },
       {
-        card_key: "coffee-order",
-        group_name: "Coffee order",
-        entry_name: "Vanilla iced oat latte",
+        product_card_key: "coffee-order",
+        subcategory_label: "Coffee order",
+        card_title: "Vanilla iced oat latte",
         field_values: {
           Size: "Medium",
           Sweetness: "Lightly sweet",
@@ -281,9 +281,9 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
         },
       },
       {
-        card_key: "favorite-restaurants",
-        group_name: "Restaurants",
-        entry_name: "Sushi nights and cozy Italian",
+        product_card_key: "favorite-restaurants",
+        subcategory_label: "Restaurants",
+        card_title: "Sushi nights and cozy Italian",
         field_values: {
           "Favorite cuisine": "Japanese, Italian",
           "Go-to order": "Spicy tuna crispy rice, cacio e pepe",
@@ -291,9 +291,9 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
         },
       },
       {
-        card_key: "birthday-preferences",
-        group_name: "Birthday gifts",
-        entry_name: "Thoughtful over flashy",
+        product_card_key: "birthday-preferences",
+        subcategory_label: "Birthday gifts",
+        card_title: "Thoughtful over flashy",
         field_values: {
           "Best gift energy": "Thoughtful, polished, useful",
           "Avoid": "Gag gifts, anything cluttered",
@@ -301,9 +301,9 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
         },
       },
       {
-        card_key: "wish-list",
-        group_name: "Wish list",
-        entry_name: "Weekend bag and silk pajamas",
+        product_card_key: "wish-list",
+        subcategory_label: "Wish list",
+        card_title: "Weekend bag and silk pajamas",
         field_values: {
           "Most wanted": "Structured weekend bag, silk sleep set",
           "Price comfort": "$100-$350",
@@ -311,9 +311,9 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
         },
       },
       {
-        card_key: "scent-perfume",
-        group_name: "Fragrance",
-        entry_name: "Fresh skin scent",
+        product_card_key: "scent-perfume",
+        subcategory_label: "Fragrance",
+        card_title: "Fresh skin scent",
         field_values: {
           Notes: "Musk, bergamot, soft floral",
           Intensity: "Clean and close to skin",
@@ -343,7 +343,7 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
       palette: ["black", "olive", "stone", "ink"],
       silhouettes: ["overshirts", "wide trousers", "performance outerwear"],
     },
-    profile_answers: {
+    know_me_responses: {
       "sf-01": ["minimalist", "sporty"],
       "sf-02": "black",
       "sf-04": "relaxed",
@@ -359,7 +359,7 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
       "tot-74": "Flight",
       "tot-83": "Small Gathering",
     },
-    ai_personalization: {
+    knowledge_derivations: {
       persona_summary:
         "A clean modern minimalist with a practical streak. Jules likes well-designed gear, subtle style, strong coffee shops, and gifts that feel useful, calm, and beautifully made.",
       recommended_brands: ["Uniqlo", "Muji", "Patagonia", "Apple", "COS"],
@@ -390,29 +390,29 @@ const demoContentByEmail: Record<string, DemoContentSeed> = {
         source_version: "demo-jules-v1",
       },
     ],
-    card_entries: [
+    saved_product_cards: [
       {
-        card_key: "brand-preferences-nb",
-        group_name: "Favorite brands",
-        entry_name: "Minimal modern staples",
+        product_card_key: "brand-preferences-nb",
+        subcategory_label: "Favorite brands",
+        card_title: "Minimal modern staples",
         field_values: {
           Brands: "Uniqlo, Muji, COS, Patagonia",
           Notes: "Practical, clean lines, durable fabrics",
         },
       },
       {
-        card_key: "tech-phone",
-        group_name: "Tech",
-        entry_name: "Apple ecosystem all the way",
+        product_card_key: "tech-phone",
+        subcategory_label: "Tech",
+        card_title: "Apple ecosystem all the way",
         field_values: {
           Devices: "iPhone, AirPods, MacBook",
           Notes: "Loves clean design and interoperability",
         },
       },
       {
-        card_key: "coffee-tea",
-        group_name: "Drink order",
-        entry_name: "Matcha and pour-over",
+        product_card_key: "coffee-tea",
+        subcategory_label: "Drink order",
+        card_title: "Matcha and pour-over",
         field_values: {
           Favorites: "Ceremonial matcha, bright pour-over coffee",
           Notes: "No super sugary drinks",
@@ -587,7 +587,7 @@ async function createNotification(
   userId: string,
   title: string,
   body: string,
-  type = "partner",
+  type = "connection",
 ) {
   await supabase.from("notifications").insert({
     user_id: userId,
@@ -698,7 +698,7 @@ async function resolveConnectionIdentity(
     if (avatarUrl) updatePayload.photo_url = avatarUrl;
     if (Object.keys(updatePayload).length > 0) {
       await adminClient
-        .from("couples")
+        .from("user_connections")
         .update(updatePayload)
         .eq("id", coupleId);
     }
@@ -731,25 +731,58 @@ async function seedDemoProfileContent(
 ) {
   const seed = demoContentByEmail[demo.email];
   if (!seed) return;
+  const seededAt = new Date().toISOString();
 
-  const { error: preferenceError } = await supabase.from("user_preferences").upsert({
+  const onboardingSeed = [
+    { question_key: "identity", response_value: demo.gender },
+    { question_key: "birthday", response_value: demo.birthday },
+    ...(seed.anniversary ? [{ question_key: "anniversary", response_value: seed.anniversary }] : []),
+  ];
+
+  const { error: onboardingSeedError } = await supabase.from("onboarding_responses").upsert(
+    onboardingSeed.map((response) => ({
+      user_id: demoUserId,
+      question_key: response.question_key,
+      response_value: response.response_value,
+      updated_at: seededAt,
+    })),
+    { onConflict: "user_id,question_key" },
+  );
+  if (onboardingSeedError) {
+    throw new Error(`Failed onboarding seed for ${demo.email}: ${onboardingSeedError.message}`);
+  }
+
+  const { error: knowMeSeedError } = await supabase.from("know_me_responses").upsert(
+    Object.entries(seed.know_me_responses).map(([question_key, response_value]) => ({
+      user_id: demoUserId,
+      question_key,
+      response_value,
+      updated_at: seededAt,
+    })),
+    { onConflict: "user_id,question_key" },
+  );
+  if (knowMeSeedError) {
+    throw new Error(`Failed Know Me seed for ${demo.email}: ${knowMeSeedError.message}`);
+  }
+
+  const { error: derivationSeedError } = await supabase.from("knowledge_derivations").upsert({
     user_id: demoUserId,
-    favorites: seed.favorites,
-    dislikes: seed.dislikes,
-    brands: seed.brands,
-    style_preferences: seed.style_preferences,
-    profile_answers: seed.profile_answers,
-    ai_personalization: seed.ai_personalization,
-    onboarding_complete: true,
-  }, { onConflict: "user_id" });
-  if (preferenceError) {
-    throw new Error(`Failed preference upsert for ${demo.email}: ${preferenceError.message}`);
+    derivation_key: "your_vibe",
+    derivation_payload: seed.knowledge_derivations,
+    source_snapshot: {
+      source_kind: "demo-seed",
+      seeded_at: seededAt,
+    },
+    updated_at: seededAt,
+  }, { onConflict: "user_id,derivation_key" });
+  if (derivationSeedError) {
+    throw new Error(`Failed knowledge derivation seed for ${demo.email}: ${derivationSeedError.message}`);
   }
 
   if (seed.anniversary) {
     const { error: anniversaryError } = await supabase
       .from("profiles")
-      .update({ anniversary: seed.anniversary })
+      .update({ anniversary: seed.anniversary, onboarding_completed_at: seededAt })
       .eq("user_id", demoUserId);
     if (anniversaryError) {
       throw new Error(`Failed anniversary seed for ${demo.email}: ${anniversaryError.message}`);
@@ -757,26 +790,26 @@ async function seedDemoProfileContent(
   }
 
   const { error: deleteCardsError } = await supabase
-    .from("card_entries")
+    .from("saved_product_cards")
     .delete()
     .eq("user_id", demoUserId);
   if (deleteCardsError) {
-    throw new Error(`Failed clearing card entries for ${demo.email}: ${deleteCardsError.message}`);
+    throw new Error(`Failed clearing saved product cards for ${demo.email}: ${deleteCardsError.message}`);
   }
 
-  if (seed.card_entries.length > 0) {
-    const { error: cardInsertError } = await supabase.from("card_entries").insert(
-      seed.card_entries.map((entry) => ({
+  if (seed.saved_product_cards.length > 0) {
+    const { error: cardInsertError } = await supabase.from("saved_product_cards").insert(
+      seed.saved_product_cards.map((entry) => ({
         user_id: demoUserId,
-        card_key: entry.card_key,
-        group_name: entry.group_name,
-        entry_name: entry.entry_name,
+        product_card_key: entry.product_card_key,
+        subcategory_label: entry.subcategory_label,
+        card_title: entry.card_title,
         field_values: entry.field_values,
         image_url: entry.image_url ?? null,
       })),
     );
     if (cardInsertError) {
-      throw new Error(`Failed card entry seed for ${demo.email}: ${cardInsertError.message}`);
+      throw new Error(`Failed saved product card seed for ${demo.email}: ${cardInsertError.message}`);
     }
   }
 
@@ -813,6 +846,7 @@ async function ensureDemoProfiles(supabase: AppSupabaseClient) {
       gender: demo.gender,
       age: demo.age,
       birthday: demo.birthday,
+      onboarding_completed_at: new Date().toISOString(),
     }, { onConflict: "user_id" });
     if (profileError) throw new Error(`Failed profile upsert for ${demo.email}: ${profileError.message}`);
 
@@ -1068,7 +1102,7 @@ async function createConnectionRequest(
     const safeDisplayLabel = (connectionDisplayName ?? "").trim();
     const safePhotoUrl = (connectionAvatarUrl ?? "").trim();
 
-    // Keep couples.display_label/photo_url populated so pending connections still render
+    // Keep user_connections.display_label/photo_url populated so pending connections still render
     // the selected person's identity without relying on private profile reads.
     if (safeDisplayLabel || safePhotoUrl) {
       const updatePayload: Record<string, string> = {};
@@ -1076,7 +1110,7 @@ async function createConnectionRequest(
       if (safePhotoUrl) updatePayload.photo_url = safePhotoUrl;
 
       await adminClient
-        .from("couples")
+        .from("user_connections")
         .update(updatePayload)
         .eq("id", coupleId)
         .eq("inviter_id", requesterId);
@@ -1172,7 +1206,7 @@ async function sendConnectionInvite(
         inviteeUser.id,
         "New Connection Invite",
         `${inviterName} wants to connect with you on GoTwo!`,
-        "partner",
+        "connection",
       );
     }
 
@@ -1210,7 +1244,7 @@ async function getPendingInvites(
   email: string | null,
 ) {
   const { data, error } = await supabase
-    .from("couples")
+    .from("user_connections")
     .select("*")
     .eq("status", "pending")
     .or(`invitee_id.eq.${userId},and(invitee_email.eq.${email},invitee_id.is.null)`);
@@ -1225,14 +1259,14 @@ async function acceptInvite(
   inviteId: string,
 ) {
   const { data: couple } = await supabase
-    .from("couples")
+    .from("user_connections")
     .select("*")
     .eq("id", inviteId)
     .eq("status", "pending")
     .maybeSingle();
 
   const { error } = await supabase
-    .from("couples")
+    .from("user_connections")
     .update({ invitee_id: userId, status: "accepted" })
     .eq("id", inviteId)
     .eq("status", "pending");
@@ -1246,7 +1280,7 @@ async function acceptInvite(
       couple.inviter_id,
       "Connection Accepted!",
       `${accepterName} accepted your invitation and is now connected with you.`,
-      "partner",
+      "connection",
     );
   }
 
@@ -1261,7 +1295,7 @@ async function acceptInvitesByEmail(
   if (!email) throw new Error("Missing email");
 
   const { data: pending, error: pendingError } = await supabase
-    .from("couples")
+    .from("user_connections")
     .select("*")
     .eq("invitee_email", email)
     .eq("status", "pending")
@@ -1273,7 +1307,7 @@ async function acceptInvitesByEmail(
   }
 
   const { error } = await supabase
-    .from("couples")
+    .from("user_connections")
     .update({ invitee_id: userId, status: "accepted" })
     .eq("invitee_email", email)
     .eq("status", "pending");
@@ -1287,7 +1321,7 @@ async function acceptInvitesByEmail(
       couple.inviter_id,
       "Connection Accepted!",
       `${accepterName} accepted your invitation and is now connected with you.`,
-      "partner",
+      "connection",
     );
   }
 
@@ -1304,7 +1338,7 @@ async function linkByInviter(
   if (inviterId === userId) throw new Error("Cannot link to yourself");
 
   const { data: existing } = await supabase
-    .from("couples")
+    .from("user_connections")
     .select("id")
     .or(`and(inviter_id.eq.${inviterId},invitee_id.eq.${userId}),and(inviter_id.eq.${userId},invitee_id.eq.${inviterId})`)
     .eq("status", "accepted");
@@ -1313,7 +1347,7 @@ async function linkByInviter(
     return { success: true, status: "already_connected" };
   }
 
-  const { error } = await supabase.from("couples").insert({
+  const { error } = await supabase.from("user_connections").insert({
     inviter_id: inviterId,
     invitee_id: userId,
     invitee_email: email,
@@ -1330,7 +1364,7 @@ async function linkByInviter(
     inviterId,
     "New Connection!",
     `${connectorName} connected with you via your invite link.`,
-    "partner",
+    "connection",
   );
 
   await createNotification(
@@ -1338,7 +1372,7 @@ async function linkByInviter(
     userId,
     "Connected!",
     `You're now connected with ${inviterName}.`,
-    "partner",
+    "connection",
   );
 
   return { success: true, status: "connected" };
@@ -1551,3 +1585,5 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: message }, status);
   }
 });
+// Codebase classification: runtime connection search/invite flow with demo-seed utilities.
+

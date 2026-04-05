@@ -8,20 +8,20 @@ import type { Tables } from "@/integrations/supabase/types";
 import { motion } from "framer-motion";
 
 type TemplateResult = Tables<"card_templates">;
-type EntryResult = Tables<"card_entries">;
+type SavedProductCardResult = Tables<"saved_product_cards">;
 
 const Search = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [templateResults, setTemplateResults] = useState<TemplateResult[]>([]);
-  const [entryResults, setEntryResults] = useState<EntryResult[]>([]);
+  const [savedProductCardResults, setSavedProductCardResults] = useState<SavedProductCardResult[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!query.trim()) {
       setTemplateResults([]);
-      setEntryResults([]);
+      setSavedProductCardResults([]);
       return;
     }
 
@@ -32,16 +32,16 @@ const Search = () => {
         supabase.from("card_templates").select("*").ilike("name", `%${query}%`).limit(10),
         user
           ? supabase
-              .from("card_entries")
+              .from("saved_product_cards")
               .select("*")
               .eq("user_id", user.id)
-              .or(`group_name.ilike.%${query}%,entry_name.ilike.%${query}%`)
+              .or(`subcategory_label.ilike.%${query}%,card_title.ilike.%${query}%`)
               .limit(20)
-          : Promise.resolve({ data: [] as EntryResult[] }),
+          : Promise.resolve({ data: [] as SavedProductCardResult[] }),
       ]);
 
       setTemplateResults(templatesRes.data || []);
-      setEntryResults(entriesRes.data || []);
+      setSavedProductCardResults(entriesRes.data || []);
       setLoading(false);
     }, 300);
 
@@ -63,7 +63,7 @@ const Search = () => {
       <div className="relative mb-8">
         <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search templates and entries..."
+          placeholder="Search templates and saved product cards..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="pl-10"
@@ -75,7 +75,7 @@ const Search = () => {
 
       {!loading && query.trim() && (
         <div className="space-y-8">
-          {entryResults.length > 0 && (
+          {savedProductCardResults.length > 0 && (
             <section>
               <h2
                 className="mb-3 text-lg font-semibold"
@@ -84,21 +84,21 @@ const Search = () => {
                   color: "var(--swatch-teal)",
                 }}
               >
-                My Entries
+                My Saved Product Cards
               </h2>
               <div className="space-y-2">
-                {entryResults.map((e) => (
+                {savedProductCardResults.map((savedProductCard) => (
                   <motion.button
-                    key={e.id}
+                    key={savedProductCard.id}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => navigate("/dashboard/my-go-two")}
                     className="w-full rounded-xl px-4 py-3 text-left transition-colors hover:bg-accent/50"
                   >
                     <p className="font-medium" style={{ color: "var(--swatch-teal)" }}>
-                      {e.entry_name}
+                      {savedProductCard.card_title}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {e.group_name} &middot; {e.card_key?.split("__").pop()}
+                      {savedProductCard.subcategory_label} &middot; {savedProductCard.product_card_key?.split("__").pop()}
                     </p>
                   </motion.button>
                 ))}
@@ -135,7 +135,7 @@ const Search = () => {
             </section>
           )}
 
-          {templateResults.length === 0 && entryResults.length === 0 && (
+          {templateResults.length === 0 && savedProductCardResults.length === 0 && (
             <p className="py-8 text-center text-muted-foreground">
               No results found for &quot;{query}&quot;
             </p>
@@ -147,3 +147,4 @@ const Search = () => {
 };
 
 export default Search;
+// Codebase classification: runtime search page.

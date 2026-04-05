@@ -8,12 +8,12 @@ export interface CoverFlowState {
   categoryId: string;
 }
 
-export interface CardEntry {
+export interface SavedProductCard {
   id: string;
   user_id: string;
-  card_key: string;
-  group_name: string;
-  entry_name: string;
+  product_card_key: string;
+  subcategory_label: string;
+  card_title: string;
   field_values: Record<string, string>;
   image_url?: string | null;
   created_at: string;
@@ -35,11 +35,13 @@ export type MyGoTwoFlowItemKind =
   | "category"
   | "subcategory"
   | "product"
-  | "entry"
-  | "create-entry";
+  | "saved-product-card"
+  | "create-saved-product-card";
 
 export interface MyGoTwoFlowItem extends MyGoTwoRootItem {
   level: MyGoTwoFlowLevel;
   kind: MyGoTwoFlowItemKind;
   parentId?: string;
 }
+
+// Codebase classification: runtime My Go Two type contracts.

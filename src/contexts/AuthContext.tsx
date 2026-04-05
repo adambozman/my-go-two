@@ -1,7 +1,6 @@
 import { useEffect, useState, ReactNode, useCallback } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { normalizeGender } from "@/lib/gender";
 import { AuthContext } from "@/contexts/auth-context";
 
 // Dev account always treated as premium
@@ -20,10 +19,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const raw = localStorage.getItem("gotwo_signup_data");
     if (!raw) return;
     try {
-      const { age, gender } = JSON.parse(raw);
+      const { age } = JSON.parse(raw);
       await supabase
         .from("profiles")
-        .update({ age, gender: normalizeGender(gender) })
+        .update({ age })
         .eq("user_id", userId);
       localStorage.removeItem("gotwo_signup_data");
     } catch {
@@ -126,3 +125,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     </AuthContext.Provider>
   );
 };
+// Codebase classification: runtime auth provider.

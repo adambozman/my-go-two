@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
 
-interface Couple {
+interface UserConnection {
   id: string;
   inviter_id: string;
   invitee_id: string | null;
@@ -27,7 +27,7 @@ interface Couple {
 interface UserSettingsRow {
   user_id: string;
   gift_reminders: boolean;
-  partner_activity: boolean;
+  connection_activity: boolean;
   recommendations: boolean;
   email_digests: boolean;
 }
@@ -56,9 +56,9 @@ const SettingsPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
 
-  // Connections state
-  const [couples, setCouples] = useState<Couple[]>([]);
-  const [pendingForMe, setPendingForMe] = useState<Couple[]>([]);
+  // Connection state
+  const [userConnections, setUserConnections] = useState<UserConnection[]>([]);
+  const [pendingConnections, setPendingConnections] = useState<UserConnection[]>([]);
   const [connectionsLoading, setConnectionsLoading] = useState(true);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
@@ -70,9 +70,9 @@ const SettingsPage = () => {
   const [shareToken, setShareToken] = useState("");
 
   // User settings state
-  type SettingsKeys = 'gift_reminders' | 'partner_activity' | 'recommendations' | 'email_digests';
+  type SettingsKeys = 'gift_reminders' | 'connection_activity' | 'recommendations' | 'email_digests';
   const [settings, setSettings] = useState<Record<SettingsKeys, boolean>>({
-    gift_reminders: true, partner_activity: true, recommendations: true, email_digests: true,
+    gift_reminders: true, connection_activity: true, recommendations: true, email_digests: true,
   });
   const [settingsLoaded, setSettingsLoaded] = useState(false);
 
@@ -82,7 +82,7 @@ const SettingsPage = () => {
     const row = data as UserSettingsRow | null;
     if (row) {
       setSettings({
-        gift_reminders: row.gift_reminders, partner_activity: row.partner_activity,
+        gift_reminders: row.gift_reminders, connection_activity: row.connection_activity,
         recommendations: row.recommendations, email_digests: row.email_digests,
       });
     }
@@ -158,13 +158,13 @@ const SettingsPage = () => {
     if (!user) { setConnectionsLoading(false); return; }
     try {
       const { data: myData } = await supabase
-        .from("couples")
+        .from("user_connections")
         .select("*")
         .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`)
         .order("created_at", { ascending: false });
-      setCouples(myData ?? []);
+      setUserConnections(myData ?? []);
       const result = await callEdgeFunction("get-pending");
-      setPendingForMe(result?.pending ?? []);
+      setPendingConnections(result?.pending ?? []);
     } catch (error) {
       console.error("Failed to fetch connections", error);
     }
@@ -174,14 +174,14 @@ const SettingsPage = () => {
   useEffect(() => { fetchConnections(); }, [fetchConnections]);
 
   // Fetch user's lists for sharing toggles
-  const handleDeleteConnection = async (coupleId: string) => {
+  const handleDeleteConnection = async (userConnectionId: string) => {
     if (!user) return;
-    const { error } = await supabase.from("couples").delete().eq("id", coupleId);
+    const { error } = await supabase.from("user_connections").delete().eq("id", userConnectionId);
     if (error) {
       toast({ title: "Failed to delete", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Connection removed" });
-      setCouples(prev => prev.filter(c => c.id !== coupleId));
+      setUserConnections(prev => prev.filter((connection) => connection.id !== userConnectionId));
       setDeleteConfirmId(null);
     }
   };
@@ -222,9 +222,9 @@ const SettingsPage = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleAccept = async (coupleId: string) => {
+  const handleAccept = async (userConnectionId: string) => {
     try {
-      await callEdgeFunction("accept-invite", { invite_id: coupleId });
+      await callEdgeFunction("accept-invite", { invite_id: userConnectionId });
       toast({ title: "Collaboration accepted!" });
       fetchConnections();
     } catch {
@@ -301,7 +301,7 @@ const SettingsPage = () => {
 
   const settingsItems = [
     { key: "profile", icon: User, title: "Profile", description: "Name, gender, and account details" },
-    { key: "connections", icon: Users, title: "Connections", description: "Connect your partner and manage access" },
+    { key: "connections", icon: Users, title: "Connections", description: "Connect someone and manage access" },
     { key: "notifications", icon: Bell, title: "Notifications", description: "Push and email preferences" },
     { key: "privacy", icon: Shield, title: "Sharing & Privacy", description: "Default sharing rules and privacy controls" },
     { key: "subscription", icon: CreditCard, title: "Subscription", description: "Your plan and billing details" },
@@ -494,22 +494,22 @@ const SettingsPage = () => {
             </div>
 
             {/* Pending Invites */}
-            {pendingForMe.length > 0 && (
+            {pendingConnections.length > 0 && (
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold" style={{ color: 'var(--swatch-teal)' }}>Pending Invitations</h3>
-                  {pendingForMe.length > 1 && (
+                  {pendingConnections.length > 1 && (
                     <Button size="sm" variant="outline" className="rounded-full" onClick={handleAcceptAll}>Accept All</Button>
                   )}
                 </div>
                 <div className="space-y-3">
-                  {pendingForMe.map((c) => (
-                    <div key={c.id} className="card-design-neumorph flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  {pendingConnections.map((connection) => (
+                    <div key={connection.id} className="card-design-neumorph flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex items-center gap-3">
                         <Clock className="w-5 h-5" style={{ color: 'var(--swatch-sonoma-chardonnay)' }} />
                         <span className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>Someone invited you to connect</span>
                       </div>
-                      <Button size="sm" className="rounded-full" onClick={() => handleAccept(c.id)}>Accept</Button>
+                      <Button size="sm" className="rounded-full" onClick={() => handleAccept(connection.id)}>Accept</Button>
                     </div>
                   ))}
                 </div>
@@ -521,14 +521,14 @@ const SettingsPage = () => {
               <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--swatch-teal)' }}>Your Connections</h3>
               {connectionsLoading ? (
                 <p style={{ color: 'var(--swatch-text-light)' }} className="text-sm">Loading...</p>
-              ) : couples.length === 0 && pendingForMe.length === 0 ? (
+              ) : userConnections.length === 0 && pendingConnections.length === 0 ? (
                 <div className="card-design-neumorph p-8 text-center">
                   <Users className="w-10 h-10 mx-auto mb-3" style={{ color: 'var(--swatch-text-light)' }} />
                   <p className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>No connections yet. Invite someone above!</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {couples.map((c) => {
+                  {userConnections.map((c) => {
                     const displayName = c.display_label || c.invitee_email || "Connection";
                     return (
                       <div key={c.id} className="card-design-neumorph flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -587,8 +587,8 @@ const SettingsPage = () => {
             <div className="space-y-5">
               {([
                 { label: "Gift reminders", desc: "Get notified before birthdays and anniversaries", key: "gift_reminders" as SettingsKeys },
-                { label: "Partner activity", desc: "When your partner updates their preferences", key: "partner_activity" as SettingsKeys },
-                { label: "New recommendations", desc: "AI-powered suggestions for your partner", key: "recommendations" as SettingsKeys },
+                { label: "Connection activity", desc: "When a connection updates their preferences", key: "connection_activity" as SettingsKeys },
+                { label: "New recommendations", desc: "AI-powered suggestions for your connections", key: "recommendations" as SettingsKeys },
                 { label: "Email digests", desc: "Weekly summary of updates and ideas", key: "email_digests" as SettingsKeys },
               ]).map((item) => (
                 <div key={item.key} className="flex items-center justify-between py-2">
@@ -630,17 +630,17 @@ const SettingsPage = () => {
                   Sharing is now managed connection by connection. Open any connection to choose exactly which profile fields, derived features, and product cards they can see.
                 </p>
                 <div className="mt-4 space-y-2">
-                  {couples.filter((c) => c.status === "accepted").length === 0 ? (
+                  {userConnections.filter((connection) => connection.status === "accepted").length === 0 ? (
                     <p className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>No accepted connections yet.</p>
                   ) : (
-                    couples
-                      .filter((c) => c.status === "accepted")
-                      .map((c) => {
-                        const displayName = c.display_label || c.invitee_email || "Connection";
+                    userConnections
+                      .filter((connection) => connection.status === "accepted")
+                      .map((connection) => {
+                        const displayName = connection.display_label || connection.invitee_email || "Connection";
                         return (
                           <button
-                            key={`privacy-${c.id}`}
-                            onClick={() => navigate(`/dashboard/connections/${c.id}`)}
+                            key={`privacy-${connection.id}`}
+                            onClick={() => navigate(`/dashboard/connections/${connection.id}`)}
                             className="flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition-colors hover:bg-secondary/30"
                             style={{ border: '1px solid rgba(var(--swatch-teal-rgb), 0.08)' }}
                           >
@@ -731,7 +731,7 @@ const SettingsPage = () => {
               ))}
               <div className="border-t pt-4" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }}>
                 <p className="text-xs text-center" style={{ color: 'var(--swatch-text-light)' }}>
-                  Made with ♥ for couples who actually pay attention.
+                  Made with care for people who actually pay attention.
                 </p>
               </div>
             </div>
@@ -756,7 +756,7 @@ const SettingsPage = () => {
               />
             </div>
             <p className="text-sm text-muted-foreground text-center">
-              Have your partner scan this code to link your accounts
+              Have your connection scan this code to link your accounts
             </p>
             <div className="flex items-center gap-2 w-full">
               <Input value={inviteLink} readOnly className="rounded-xl text-xs" />
@@ -776,12 +776,12 @@ const SettingsPage = () => {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label>Partner's Email</Label>
+              <Label>Connection Email</Label>
               <Input
                 type="email"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
-                placeholder="partner@example.com"
+                placeholder="connection@example.com"
                 className="rounded-xl"
               />
             </div>
@@ -801,3 +801,5 @@ const SettingsPage = () => {
 };
 
 export default SettingsPage;
+
+// Codebase classification: runtime settings page with demo-seed controls.

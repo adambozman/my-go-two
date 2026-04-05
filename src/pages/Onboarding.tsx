@@ -6,13 +6,13 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Check, ChevronLeft, ChevronRight, ClipboardList, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
-import { usePersonalization } from "@/contexts/personalization-context";
-import { normalizeGender } from "@/lib/gender";
+import { useKnowledgeCenter } from "@/contexts/knowledge-center-context";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
 import { profileQuestions } from "@/data/profileQuestions";
 import { getCategoryImage, getStyleImage } from "@/lib/imageResolver";
+import { getYourVibeDerivation } from "@/lib/knowledgeCenter";
 
 type Phase = "intro" | "profile" | "personalizing" | "complete";
 
@@ -26,14 +26,7 @@ const INTRO_IMAGES = [
   { id: "style", label: "Taste" },
 ];
 
-const useSelectedGender = (answers: Record<string, string | string[]>) => {
-  const identity = answers.identity;
-  if (!identity) return undefined;
-  const value = Array.isArray(identity) ? identity[0] : identity;
-  return normalizeGender(value);
-};
-
-const getGenderAccent = (_gender?: string) => ({
+const getProfileAccent = () => ({
   solid: "hsl(196 40% 31%)",
   ring: "hsl(196 40% 31%)",
   bg: "rgba(45, 104, 112, 0.16)",
@@ -54,7 +47,7 @@ const Onboarding = () => {
   const [searchParams] = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
   const { user } = useAuth();
-  const { personalization, refetch: refetchPersonalization } = usePersonalization();
+  const { knowledgeDerivations, refreshKnowledge } = useKnowledgeCenter();
   const { toast } = useToast();
 
   const [phase, setPhase] = useState<Phase>(isEditMode ? "profile" : "intro");
@@ -62,8 +55,7 @@ const Onboarding = () => {
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [slideDir, setSlideDir] = useState<1 | -1>(1);
   const [introCenter, setIntroCenter] = useState(3);
-  const selectedGender = useSelectedGender(answers);
-  const accent = getGenderAccent(selectedGender);
+  const accent = getProfileAccent();
 
   useEffect(() => {
     if (phase !== "intro") return;
@@ -112,26 +104,28 @@ const Onboarding = () => {
       : "";
 
   const completionSummary = useMemo(() => {
-    if (personalization?.persona_summary?.trim()) return personalization.persona_summary.trim();
+    const yourVibe = getYourVibeDerivation(knowledgeDerivations);
+    if (yourVibe?.persona_summary?.trim()) return yourVibe.persona_summary.trim();
     return "You now have a saved profile read, and everything that gets more personal from here can build from it instead of living in disconnected onboarding data.";
-  }, [personalization]);
+  }, [knowledgeDerivations]);
 
-  const persistProfileAnswers = async (profileAnswerData: Record<string, string | string[]>) => {
+  const persistOnboardingResponses = async (profileAnswerData: Record<string, string | string[]>) => {
     if (!user) return;
 
-    const cleaned: Record<string, string | string[]> = {};
-    for (const [key, value] of Object.entries(profileAnswerData)) {
-      cleaned[key] = Array.isArray(value) && value.length === 1 ? value[0] : value;
-    }
-
-    const payload = {
+    const updatedAt = new Date().toISOString();
+    const payload = Object.entries(profileAnswerData).map(([questionKey, responseValue]) => ({
       user_id: user.id,
-      profile_answers: cleaned,
-      onboarding_complete: true,
-      updated_at: new Date().toISOString(),
-    };
+      question_key: questionKey,
+      response_value:
+        Array.isArray(responseValue) && responseValue.length === 1
+          ? responseValue[0]
+          : responseValue,
+      updated_at: updatedAt,
+    }));
 
-    const { error } = await supabase.from("user_preferences").upsert(payload);
+    const { error } = await supabase
+      .from("onboarding_responses")
+      .upsert(payload, { onConflict: "user_id,question_key" });
     if (error) throw error;
   };
 
@@ -142,11 +136,10 @@ const Onboarding = () => {
     }
 
     try {
-      await supabase.from("user_preferences").upsert({
-        user_id: user.id,
-        onboarding_complete: true,
-        updated_at: new Date().toISOString(),
-      });
+      await supabase
+        .from("profiles")
+        .update({ onboarding_completed_at: new Date().toISOString() })
+        .eq("user_id", user.id);
     } catch (error) {
       console.error("Onboarding skip save failed:", error);
     }
@@ -154,7 +147,7 @@ const Onboarding = () => {
     navigate("/dashboard");
   };
 
-  const runPersonalization = async () => {
+  const runKnowledgeRefresh = async () => {
     setPhase("personalizing");
 
     const profileAnswerData: Record<string, string | string[]> = {};
@@ -167,50 +160,57 @@ const Onboarding = () => {
     try {
       if (user) {
         const identityAnswer = profileAnswerData.identity;
-        const rawGender = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
-        const gender = normalizeGender(rawGender);
+        const rawIdentity = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
         const birthday = normalizeOptionalDate(profileAnswerData.birthday);
         const anniversary = normalizeOptionalDate(profileAnswerData.anniversary);
 
-        await supabase.from("profiles").update({
-          gender,
-          birthday,
-          anniversary,
-        }).eq("user_id", user.id);
-        await persistProfileAnswers(profileAnswerData);
+        await supabase
+          .from("profiles")
+          .update({
+            gender: typeof rawIdentity === "string" && rawIdentity !== "prefer-not" ? rawIdentity : null,
+            birthday,
+            anniversary,
+            onboarding_completed_at: new Date().toISOString(),
+          })
+          .eq("user_id", user.id);
+        await persistOnboardingResponses(profileAnswerData);
       }
 
       const timeoutPromise = new Promise<void>((resolve) => setTimeout(resolve, 30000));
-      const personalizationPromise = (async () => {
+      const knowledgeRefreshPromise = (async () => {
         try {
-          const { data, error } = await supabase.functions.invoke("personalize", {
-            body: { profile_answers: profileAnswerData },
+          const { data, error } = await supabase.functions.invoke("knowledge-center-refresh", {
+            body: {
+              onboardingResponses: profileAnswerData,
+            },
           });
 
           if (error) {
-            console.error("Personalization error:", error);
+            console.error("Knowledge center refresh error:", error);
             toast({
               title: "Profile saved",
-              description: "Your answers are safely stored. We will sharpen the personalization shortly.",
+              description: "Your onboarding is safely stored. Knowledge Center derivations will catch up shortly.",
             });
           } else {
-            await refetchPersonalization();
+            await refreshKnowledge();
             toast({
-              title: "Profile analyzed",
-              description: data?.personalization?.persona_summary || "Your experience is now personalized.",
+              title: "Knowledge Center refreshed",
+              description:
+                data?.knowledgeDerivation?.persona_summary ||
+                "Your first Knowledge Center read is ready.",
             });
           }
         } catch (error) {
-          console.error("Personalization failed:", error);
+          console.error("Knowledge center refresh failed:", error);
           toast({
             title: "Profile saved",
-            description: "Your answers are safely stored. Personalization can catch up in the background.",
+            description: "Your answers are safely stored. Knowledge Center derivations can catch up in the background.",
           });
         }
       })();
 
-      await Promise.race([personalizationPromise, timeoutPromise]);
-      await refetchPersonalization();
+      await Promise.race([knowledgeRefreshPromise, timeoutPromise]);
+      await refreshKnowledge();
       setPhase("complete");
     } catch (error: unknown) {
       console.error("Onboarding save error:", error);
@@ -243,7 +243,7 @@ const Onboarding = () => {
       return;
     }
 
-    runPersonalization();
+    runKnowledgeRefresh();
   };
 
   const goBack = () => {
@@ -304,7 +304,7 @@ const Onboarding = () => {
                       style={{ borderRadius: "1.4rem" }}
                     >
                       <img
-                        src={getCategoryImage(image.id, selectedGender)}
+                        src={getCategoryImage(image.id)}
                         alt={image.label}
                         className="h-full w-full object-cover"
                       />
@@ -415,7 +415,7 @@ const Onboarding = () => {
               color: "var(--swatch-teal)",
             }}
           >
-            Then we build your first personalized read from the same source of truth.
+            Then we build your first Knowledge Center read from the same source of truth.
           </p>
         </motion.div>
       </div>
@@ -467,7 +467,7 @@ const Onboarding = () => {
                   Go to Dashboard
                 </Link>
                 <Link
-                  to="/dashboard/questionnaires"
+                  to="/dashboard/know-me"
                   className="surface-button-soft-glow inline-flex items-center gap-2 rounded-full px-6 py-3.5"
                 >
                   <ClipboardList className="h-4 w-4" style={{ color: "var(--logo-two-color)" }} />
@@ -587,7 +587,7 @@ const Onboarding = () => {
                         >
                           <div className="relative aspect-[4/5] overflow-hidden">
                             <img
-                              src={getStyleImage(option.id, selectedGender)}
+                              src={getStyleImage(option.id)}
                               alt={option.label}
                               className={`h-full w-full object-cover transition-transform duration-300 ${
                                 isSelected ? "scale-105" : "group-hover:scale-105"
@@ -621,7 +621,7 @@ const Onboarding = () => {
                 <div className="mx-auto flex max-w-md flex-1 w-full flex-col gap-3 overflow-y-auto pb-4">
                   {currentQuestion.options.map((option, index) => {
                     const isSelected = selectedForQuestion.includes(option.id);
-                    const optionAccent = currentQuestion.id === "identity" ? getGenderAccent(option.id) : accent;
+                    const optionAccent = accent;
 
                     return (
                       <motion.button
@@ -741,3 +741,4 @@ const Onboarding = () => {
 };
 
 export default Onboarding;
+// Codebase classification: runtime onboarding flow.

@@ -16,17 +16,17 @@ interface ConnectionRecord {
   image: string;
   email: string;
   status: string;
-  partnerId: string | null;
+  connectionUserId: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
-interface EntryRecord {
+interface SavedProductCardRecord {
   id: string;
   user_id?: string;
-  entry_name: string;
-  group_name: string;
-  card_key: string;
+  card_title: string;
+  subcategory_label: string;
+  product_card_key: string;
   field_values: Record<string, string> | null;
   image_url: string | null;
   updated_at: string;
@@ -73,9 +73,9 @@ interface SharedProfileFieldRow {
   is_shared: boolean;
 }
 
-interface SharedCardEntryRow {
+interface SharedSavedProductCardRow {
   id: string;
-  card_entry_id: string;
+  saved_product_card_id: string;
 }
 
 type DerivedFeatureKey = "your_vibe" | "for_you_recommendations" | "ai_conversation_access";
@@ -108,7 +108,7 @@ interface SharedRecommendationsRecord {
 interface OutgoingSharingStateRecord {
   profile_fields?: Partial<Record<ProfileFieldKey, boolean>> | null;
   derived_features?: Partial<Record<DerivedFeatureKey, boolean>> | null;
-  shared_card_entry_ids?: string[] | null;
+  shared_saved_product_card_ids?: string[] | null;
   connection_kind?: ConnectionKind | null;
 }
 
@@ -297,12 +297,12 @@ export default function ConnectionPage() {
   const [connection, setConnection] = useState<ConnectionRecord | null>(null);
   const [connectionFeedRows, setConnectionFeedRows] = useState<ConnectionFeedRow[]>([]);
   const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null; birthday: string | null; anniversary: string | null } | null>(null);
-  const [myEntries, setMyEntries] = useState<EntryRecord[]>([]);
+  const [savedProductCards, setSavedProductCards] = useState<SavedProductCardRecord[]>([]);
   const [outgoingProfileFields, setOutgoingProfileFields] = useState<ProfileFieldState>(emptyProfileFieldState);
   const [incomingProfileFields, setIncomingProfileFields] = useState<ProfileFieldState>(emptyProfileFieldState);
   const [outgoingDerivedFeatures, setOutgoingDerivedFeatures] = useState<DerivedFeatureState>(emptyDerivedFeatureState);
   const [incomingDerivedFeatures, setIncomingDerivedFeatures] = useState<DerivedFeatureState>(emptyDerivedFeatureState);
-  const [sharedCardEntryIds, setSharedCardEntryIds] = useState<string[]>([]);
+  const [sharedSavedProductCardIds, setSharedSavedProductCardIds] = useState<string[]>([]);
   const [sharedVibe, setSharedVibe] = useState<string | null>(null);
   const [sharedRecommendations, setSharedRecommendations] = useState<SharedRecommendationsRecord | null>(null);
   const [resolvedConnectionImage, setResolvedConnectionImage] = useState("");
@@ -314,22 +314,22 @@ export default function ConnectionPage() {
 
     setLoading(true);
 
-    const { data: couple, error: coupleError } = await supabase
-      .from("couples")
+    const { data: userConnection, error: userConnectionError } = await supabase
+      .from("user_connections")
       .select("*")
       .eq("id", connectionId)
       .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`)
       .maybeSingle();
 
-    if (coupleError || !couple) {
+    if (userConnectionError || !userConnection) {
       setConnection(null);
       setLoading(false);
       return;
     }
 
-    const isInviter = couple.inviter_id === user.id;
-    const partnerId = isInviter ? couple.invitee_id : couple.inviter_id;
-    const fallbackName = couple.invitee_email ? couple.invitee_email.split("@")[0] : "Connection";
+    const isInviter = userConnection.inviter_id === user.id;
+    const connectionUserId = isInviter ? userConnection.invitee_id : userConnection.inviter_id;
+    const fallbackName = userConnection.invitee_email ? userConnection.invitee_email.split("@")[0] : "Connection";
 
     const [
       { data: profileRows },
@@ -344,101 +344,101 @@ export default function ConnectionPage() {
       { data: ownEntryRows },
       { data: connectionFeedRowsData },
       { data: connectionPreferenceRow },
-      { data: partnerProfileRow },
+      { data: connectionProfileRow },
     ] = await Promise.all([
-      partnerId
+      connectionUserId
         ? (supabase.rpc as any)("get_connection_shared_profile", {
-            p_couple_id: couple.id,
-            p_owner_user_id: partnerId,
+            p_user_connection_id: userConnection.id,
+            p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
           })
         : Promise.resolve({ data: null }),
-      partnerId
+      connectionUserId
         ? (supabase as any)
-            .from("shared_profile_fields")
+            .from("shared_connection_profile_fields")
             .select("id, field_key, is_shared")
-            .eq("couple_id", couple.id)
-            .eq("owner_user_id", partnerId)
+            .eq("user_connection_id", userConnection.id)
+            .eq("owner_user_id", connectionUserId)
             .eq("connection_user_id", user.id)
         : Promise.resolve({ data: [] }),
-      partnerId
+      connectionUserId
         ? (supabase.rpc as any)("get_connection_outgoing_sharing_state", {
-            p_couple_id: couple.id,
-            p_connection_user_id: partnerId,
+            p_user_connection_id: userConnection.id,
+            p_connection_user_id: connectionUserId,
           })
         : Promise.resolve({ data: null, error: null }),
-      partnerId
+      connectionUserId
         ? (supabase as any)
-            .from("shared_profile_fields")
+            .from("shared_connection_profile_fields")
             .select("id, field_key, is_shared")
-            .eq("couple_id", couple.id)
+            .eq("user_connection_id", userConnection.id)
             .eq("owner_user_id", user.id)
-            .eq("connection_user_id", partnerId)
+            .eq("connection_user_id", connectionUserId)
         : Promise.resolve({ data: [] }),
-      partnerId
+      connectionUserId
         ? (supabase as any)
-            .from("shared_derived_features")
+            .from("shared_connection_derivations")
             .select("id, feature_key, is_shared")
-            .eq("couple_id", couple.id)
-            .eq("owner_user_id", partnerId)
+            .eq("user_connection_id", userConnection.id)
+            .eq("owner_user_id", connectionUserId)
             .eq("connection_user_id", user.id)
         : Promise.resolve({ data: [] }),
-      partnerId
+      connectionUserId
         ? (supabase as any)
-            .from("shared_derived_features")
+            .from("shared_connection_derivations")
             .select("id, feature_key, is_shared")
-            .eq("couple_id", couple.id)
+            .eq("user_connection_id", userConnection.id)
             .eq("owner_user_id", user.id)
-            .eq("connection_user_id", partnerId)
+            .eq("connection_user_id", connectionUserId)
         : Promise.resolve({ data: [] }),
-      partnerId
+      connectionUserId
         ? (supabase.rpc as any)("get_connection_shared_vibe", {
-            p_couple_id: couple.id,
-            p_owner_user_id: partnerId,
+            p_user_connection_id: userConnection.id,
+            p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
           })
         : Promise.resolve({ data: [] }),
-      partnerId
+      connectionUserId
         ? (supabase.rpc as any)("get_connection_shared_recommendations", {
-            p_couple_id: couple.id,
-            p_owner_user_id: partnerId,
+            p_user_connection_id: userConnection.id,
+            p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
           })
         : Promise.resolve({ data: [] }),
-      partnerId
+      connectionUserId
         ? (supabase as any)
-            .from("shared_card_entries")
-            .select("id, card_entry_id")
-            .eq("couple_id", couple.id)
+            .from("shared_saved_product_cards")
+            .select("id, saved_product_card_id")
+            .eq("user_connection_id", userConnection.id)
             .eq("owner_user_id", user.id)
-            .eq("connection_user_id", partnerId)
+            .eq("connection_user_id", connectionUserId)
         : Promise.resolve({ data: [] }),
       supabase
-        .from("card_entries")
-        .select("id, user_id, entry_name, group_name, card_key, field_values, image_url, updated_at")
+        .from("saved_product_cards")
+        .select("id, user_id, card_title, subcategory_label, product_card_key, field_values, image_url, updated_at")
         .eq("user_id", user.id)
         .order("updated_at", { ascending: false })
         .limit(200),
-      partnerId
+      connectionUserId
         ? (supabase.rpc as any)("get_connection_feed", {
             p_limit: 80,
-            p_couple_id: couple.id,
+            p_user_connection_id: userConnection.id,
           })
         : Promise.resolve({ data: [] }),
-      partnerId
+      connectionUserId
         ? (supabase as any)
-            .from("connection_context_preferences")
+            .from("connection_access_settings")
             .select("connection_kind")
-            .eq("couple_id", couple.id)
+            .eq("user_connection_id", userConnection.id)
             .eq("owner_user_id", user.id)
-            .eq("connection_user_id", partnerId)
+            .eq("connection_user_id", connectionUserId)
             .maybeSingle()
         : Promise.resolve({ data: null }),
-      partnerId
+      connectionUserId
         ? (supabase as any)
             .from("profiles")
             .select("display_name, avatar_url")
-            .eq("user_id", partnerId)
+            .eq("user_id", connectionUserId)
             .maybeSingle()
         : Promise.resolve({ data: null }),
     ]);
@@ -451,27 +451,29 @@ export default function ConnectionPage() {
     const outgoingFeatureRows = (outgoingDerivedRows || []) as SharedDerivedFeatureRow[];
     const vibeData = Array.isArray(sharedVibeRows) ? (sharedVibeRows[0] as SharedVibeRecord | undefined) ?? null : null;
     const recommendationData = Array.isArray(sharedRecommendationRows) ? (sharedRecommendationRows[0] as SharedRecommendationsRecord | undefined) ?? null : null;
-    const cardRows = (incomingSharedCardRows || []) as SharedCardEntryRow[];
-    const ownEntries = Array.isArray(ownEntryRows) ? (ownEntryRows as EntryRecord[]) : [];
+    const cardRows = (incomingSharedCardRows || []) as SharedSavedProductCardRow[];
+    const ownSavedProductCards = Array.isArray(ownEntryRows) ? (ownEntryRows as SavedProductCardRecord[]) : [];
     const outgoingSharingState = (outgoingSharingStateResult?.data as OutgoingSharingStateRecord | null) || null;
     const outgoingProfileFieldState = outgoingSharingState?.profile_fields;
     const outgoingDerivedFeatureState = outgoingSharingState?.derived_features;
-    const outgoingSharedCardEntryIds = Array.isArray(outgoingSharingState?.shared_card_entry_ids)
-      ? outgoingSharingState?.shared_card_entry_ids
+    const outgoingSharedSavedProductCardIds = Array.isArray(
+      outgoingSharingState?.shared_saved_product_card_ids,
+    )
+      ? outgoingSharingState.shared_saved_product_card_ids
       : null;
 
-    const partnerProfile = (partnerProfileRow as SharedProfileRecord | null) || null;
-    const resolvedName = partnerProfile?.display_name || profileData?.display_name || couple.display_label || fallbackName;
+    const connectionProfile = (connectionProfileRow as SharedProfileRecord | null) || null;
+    const resolvedName = connectionProfile?.display_name || profileData?.display_name || userConnection.display_label || fallbackName;
 
     const initialConnection: ConnectionRecord = {
-      id: couple.id,
+      id: userConnection.id,
       name: resolvedName,
-      image: partnerProfile?.avatar_url || profileData?.avatar_url || couple.photo_url || "",
-      email: couple.invitee_email || "",
-      status: couple.status,
-      partnerId,
-      createdAt: couple.created_at,
-      updatedAt: couple.updated_at,
+      image: connectionProfile?.avatar_url || profileData?.avatar_url || userConnection.photo_url || "",
+      email: userConnection.invitee_email || "",
+      status: userConnection.status,
+      connectionUserId,
+      createdAt: userConnection.created_at,
+      updatedAt: userConnection.updated_at,
     };
     setConnection(initialConnection);
     setProfile(profileData || null);
@@ -513,21 +515,23 @@ export default function ConnectionPage() {
     });
     setSharedVibe(vibeData?.persona_summary || null);
     setSharedRecommendations(recommendationData || null);
-    setSharedCardEntryIds(outgoingSharedCardEntryIds || cardRows.map((row) => row.card_entry_id));
-    setMyEntries(ownEntries);
+    setSharedSavedProductCardIds(
+      outgoingSharedSavedProductCardIds || cardRows.map((row) => row.saved_product_card_id),
+    );
+    setSavedProductCards(ownSavedProductCards);
     setConnectionFeedRows(feedRows);
     setConnectionKind((outgoingSharingState?.connection_kind || (connectionPreferenceRow as { connection_kind?: ConnectionKind } | null)?.connection_kind || "custom") as ConnectionKind);
 
     const needsIdentityBackfill =
-      !!partnerId &&
+      !!connectionUserId &&
       (!initialConnection.name || initialConnection.name.trim().toLowerCase() === "connection" || !initialConnection.image);
     if (needsIdentityBackfill) {
       try {
         const { data: identityData, error: identityError } = await supabase.functions.invoke("searchforaddprofile", {
           body: {
             action: "resolve-connection-identity",
-            target_user_id: partnerId,
-            couple_id: couple.id,
+            target_user_id: connectionUserId,
+            user_connection_id: userConnection.id,
           },
         });
         if (!identityError && identityData?.identity) {
@@ -629,45 +633,45 @@ export default function ConnectionPage() {
   const incomingDerivedEnabled = useMemo(() => editableDerivedFeatures.filter((feature) => incomingDerivedFeatures[feature.key]), [incomingDerivedFeatures]);
   const outgoingDerivedEnabled = useMemo(() => editableDerivedFeatures.filter((feature) => outgoingDerivedFeatures[feature.key]), [outgoingDerivedFeatures]);
 
-  const filteredMyEntries = useMemo(() => {
+  const filteredSavedProductCards = useMemo(() => {
     const needle = cardSearch.trim().toLowerCase();
-    if (!needle) return myEntries;
-    return myEntries.filter((entry) => {
-      const haystack = `${entry.entry_name} ${entry.group_name} ${entry.card_key}`.toLowerCase();
+    if (!needle) return savedProductCards;
+    return savedProductCards.filter((savedProductCard) => {
+      const haystack = `${savedProductCard.card_title} ${savedProductCard.subcategory_label} ${savedProductCard.product_card_key}`.toLowerCase();
       return haystack.includes(needle);
     });
-  }, [cardSearch, myEntries]);
+  }, [cardSearch, savedProductCards]);
 
   const aiSuggestions = useMemo(
     () => buildAiSuggestions(connection?.name || "They", visibleFeedItems, profile),
     [connection?.name, profile, visibleFeedItems],
   );
-  const canConfigureOutgoing = Boolean(connection?.partnerId);
+  const canConfigureOutgoing = Boolean(connection?.connectionUserId);
 
   const handleToggleOutgoingProfileField = useCallback(async (key: ProfileFieldKey, nextValue: boolean) => {
-    if (!user || !connection || !connection.partnerId) return;
+    if (!user || !connection || !connection.connectionUserId) return;
 
     setOutgoingProfileFields((current) => ({ ...current, [key]: nextValue }));
 
     let { error } = await (supabase.rpc as any)("set_connection_profile_field_share", {
-      p_couple_id: connection.id,
-      p_connection_user_id: connection.partnerId,
+      p_user_connection_id: connection.id,
+      p_connection_user_id: connection.connectionUserId,
       p_field_key: key,
       p_is_shared: nextValue,
     });
 
     if (error && isRpcMissingError(error)) {
       ({ error } = await (supabase as any)
-        .from("shared_profile_fields")
+        .from("shared_connection_profile_fields")
         .upsert(
           {
-            couple_id: connection.id,
+            user_connection_id: connection.id,
             owner_user_id: user.id,
-            connection_user_id: connection.partnerId,
+            connection_user_id: connection.connectionUserId,
             field_key: key,
             is_shared: nextValue,
           },
-          { onConflict: "couple_id,owner_user_id,connection_user_id,field_key" },
+          { onConflict: "user_connection_id,owner_user_id,connection_user_id,field_key" },
         ));
     }
 
@@ -680,90 +684,95 @@ export default function ConnectionPage() {
     toast({ title: nextValue ? "Field shared" : "Field hidden", description: `${connection?.name || "They"} will ${nextValue ? "now" : "no longer"} see ${editableProfileFields.find((field) => field.key === key)?.label.toLowerCase()}.` });
   }, [connection, toast, user]);
 
-  const handleToggleCardShare = useCallback(async (entry: EntryRecord, nextValue: boolean) => {
-    if (!user || !connection || !connection.partnerId) return;
+  const handleToggleCardShare = useCallback(async (savedProductCard: SavedProductCardRecord, nextValue: boolean) => {
+    if (!user || !connection || !connection.connectionUserId) return;
 
-    setSharedCardEntryIds((current) => nextValue ? Array.from(new Set([...current, entry.id])) : current.filter((id) => id !== entry.id));
+    setSharedSavedProductCardIds((current) =>
+      nextValue
+        ? Array.from(new Set([...current, savedProductCard.id]))
+        : current.filter((id) => id !== savedProductCard.id),
+    );
 
     if (nextValue) {
-      let { error } = await (supabase.rpc as any)("set_connection_card_share", {
-        p_couple_id: connection.id,
-        p_connection_user_id: connection.partnerId,
-        p_card_entry_id: entry.id,
-        p_is_shared: true,
+      let { error } = await (supabase.rpc as any)("share_saved_product_card_with_connection", {
+        p_user_connection_id: connection.id,
+        p_connection_user_id: connection.connectionUserId,
+        p_saved_product_card_id: savedProductCard.id,
       });
 
       if (error && isRpcMissingError(error)) {
         ({ error } = await (supabase as any)
-          .from("shared_card_entries")
+          .from("shared_saved_product_cards")
           .upsert(
             {
-              couple_id: connection.id,
+              user_connection_id: connection.id,
               owner_user_id: user.id,
-              connection_user_id: connection.partnerId,
-              card_entry_id: entry.id,
+              connection_user_id: connection.connectionUserId,
+              saved_product_card_id: savedProductCard.id,
             },
-            { onConflict: "couple_id,owner_user_id,connection_user_id,card_entry_id" },
+            { onConflict: "user_connection_id,owner_user_id,connection_user_id,saved_product_card_id" },
           ));
       }
 
       if (error) {
-        setSharedCardEntryIds((current) => current.filter((id) => id !== entry.id));
+        setSharedSavedProductCardIds((current) => current.filter((id) => id !== savedProductCard.id));
         toast({ title: "Could not share card", description: error.message, variant: "destructive" });
         return;
       }
     } else {
-      let { error } = await (supabase.rpc as any)("set_connection_card_share", {
-        p_couple_id: connection.id,
-        p_connection_user_id: connection.partnerId,
-        p_card_entry_id: entry.id,
-        p_is_shared: false,
+      let { error } = await (supabase.rpc as any)("unshare_saved_product_card_with_connection", {
+        p_user_connection_id: connection.id,
+        p_connection_user_id: connection.connectionUserId,
+        p_saved_product_card_id: savedProductCard.id,
       });
 
       if (error && isRpcMissingError(error)) {
         ({ error } = await (supabase as any)
-          .from("shared_card_entries")
+          .from("shared_saved_product_cards")
           .delete()
-          .eq("couple_id", connection.id)
+          .eq("user_connection_id", connection.id)
           .eq("owner_user_id", user.id)
-          .eq("connection_user_id", connection.partnerId)
-          .eq("card_entry_id", entry.id));
+          .eq("connection_user_id", connection.connectionUserId)
+          .eq("saved_product_card_id", savedProductCard.id));
       }
 
       if (error) {
-        setSharedCardEntryIds((current) => Array.from(new Set([...current, entry.id])));
+        setSharedSavedProductCardIds((current) => Array.from(new Set([...current, savedProductCard.id])));
         toast({ title: "Could not unshare card", description: error.message, variant: "destructive" });
         return;
       }
     }
 
-    toast({ title: nextValue ? "Card shared" : "Card hidden", description: `${entry.entry_name} is ${nextValue ? "now" : "no longer"} shared with ${connection?.name || "them"}.` });
+    toast({
+      title: nextValue ? "Card shared" : "Card hidden",
+      description: `${savedProductCard.card_title} is ${nextValue ? "now" : "no longer"} shared with ${connection?.name || "them"}.`,
+    });
   }, [connection, toast, user]);
 
   const handleToggleDerivedFeature = useCallback(async (key: DerivedFeatureKey, nextValue: boolean) => {
-    if (!user || !connection || !connection.partnerId) return;
+    if (!user || !connection || !connection.connectionUserId) return;
 
     setOutgoingDerivedFeatures((current) => ({ ...current, [key]: nextValue }));
 
     let { error } = await (supabase.rpc as any)("set_connection_derived_feature_share", {
-      p_couple_id: connection.id,
-      p_connection_user_id: connection.partnerId,
+      p_user_connection_id: connection.id,
+      p_connection_user_id: connection.connectionUserId,
       p_feature_key: key,
       p_is_shared: nextValue,
     });
 
     if (error && isRpcMissingError(error)) {
       ({ error } = await (supabase as any)
-        .from("shared_derived_features")
+        .from("shared_connection_derivations")
         .upsert(
           {
-            couple_id: connection.id,
+            user_connection_id: connection.id,
             owner_user_id: user.id,
-            connection_user_id: connection.partnerId,
+            connection_user_id: connection.connectionUserId,
             feature_key: key,
             is_shared: nextValue,
           },
-          { onConflict: "couple_id,owner_user_id,connection_user_id,feature_key" },
+          { onConflict: "user_connection_id,owner_user_id,connection_user_id,feature_key" },
         ));
     }
 
@@ -780,14 +789,14 @@ export default function ConnectionPage() {
   }, [connection, toast, user]);
 
   const handleBulkShare = useCallback(async (mode: "share" | "unshare") => {
-    if (!user || !connection || !connection.partnerId) return;
+    if (!user || !connection || !connection.connectionUserId) return;
 
     setSharingBusy(true);
-    const rpcName = mode === "share" ? "share_all_card_entries_with_connection" : "unshare_all_card_entries_with_connection";
+    const rpcName = mode === "share" ? "share_all_saved_product_cards_with_connection" : "unshare_all_saved_product_cards_with_connection";
     const { data, error } = await (supabase.rpc as any)(rpcName, {
-      p_couple_id: connection.id,
+      p_user_connection_id: connection.id,
       p_owner_user_id: user.id,
-      p_connection_user_id: connection.partnerId,
+      p_connection_user_id: connection.connectionUserId,
     });
     setSharingBusy(false);
 
@@ -797,19 +806,19 @@ export default function ConnectionPage() {
     }
 
     if (mode === "share") {
-      setSharedCardEntryIds(myEntries.map((entry) => entry.id));
+      setSharedSavedProductCardIds(savedProductCards.map((savedProductCard) => savedProductCard.id));
     } else {
-      setSharedCardEntryIds([]);
+      setSharedSavedProductCardIds([]);
     }
 
     toast({
       title: mode === "share" ? "All cards shared" : "All cards hidden",
       description: `${connection.name} ${mode === "share" ? "can now see" : "can no longer see"} your product cards. ${typeof data === "number" ? `(${data} changed)` : ""}`.trim(),
     });
-  }, [connection, myEntries, toast, user]);
+  }, [connection, savedProductCards, toast, user]);
 
   const handleConnectionKindChange = useCallback(async (nextKind: ConnectionKind) => {
-    if (!user || !connection || !connection.partnerId || nextKind === connectionKind) return;
+    if (!user || !connection || !connection.connectionUserId || nextKind === connectionKind) return;
     const requiresAcceptance = acceptanceRequiredKinds.has(nextKind);
     if (connection.status !== "accepted" && requiresAcceptance) {
       toast({
@@ -825,22 +834,22 @@ export default function ConnectionPage() {
     setSavingConnectionKind(true);
 
     let { error } = await (supabase.rpc as any)("set_connection_kind_preference", {
-      p_couple_id: connection.id,
-      p_connection_user_id: connection.partnerId,
+      p_user_connection_id: connection.id,
+      p_connection_user_id: connection.connectionUserId,
       p_connection_kind: nextKind,
     });
 
     if (error && isRpcMissingError(error)) {
       ({ error } = await (supabase as any)
-        .from("connection_context_preferences")
+        .from("connection_access_settings")
         .upsert(
           {
-            couple_id: connection.id,
+            user_connection_id: connection.id,
             owner_user_id: user.id,
-            connection_user_id: connection.partnerId,
+            connection_user_id: connection.connectionUserId,
             connection_kind: nextKind,
           },
-          { onConflict: "couple_id,owner_user_id,connection_user_id" },
+          { onConflict: "user_connection_id,owner_user_id,connection_user_id" },
         ));
     }
 
@@ -848,7 +857,7 @@ export default function ConnectionPage() {
 
     if (error) {
       const isSchemaMissing =
-        /connection_context_preferences/i.test(error.message || "") ||
+        /connection_access_settings/i.test(error.message || "") ||
         /schema cache/i.test(error.message || "");
       if (isSchemaMissing) {
         if (connection.status !== "accepted" && !acceptanceRequiredKinds.has(nextKind)) {
@@ -1052,14 +1061,14 @@ export default function ConnectionPage() {
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleBulkShare("share")}
-                                disabled={!canConfigureOutgoing || sharingBusy || myEntries.length === 0}
+                                disabled={!canConfigureOutgoing || sharingBusy || savedProductCards.length === 0}
                                 className="surface-button-primary inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
                               >
                                 Share all
                               </button>
                               <button
                                 onClick={() => handleBulkShare("unshare")}
-                                disabled={!canConfigureOutgoing || sharingBusy || sharedCardEntryIds.length === 0}
+                                disabled={!canConfigureOutgoing || sharingBusy || sharedSavedProductCardIds.length === 0}
                                 className="surface-button-secondary inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
                               >
                                 Hide all
@@ -1078,25 +1087,25 @@ export default function ConnectionPage() {
                           </label>
 
                           <div className="mt-4 max-h-[170px] space-y-3 overflow-y-auto pr-1">
-                            {filteredMyEntries.map((entry) => {
-                              const isShared = sharedCardEntryIds.includes(entry.id);
+                            {filteredSavedProductCards.map((savedProductCard) => {
+                              const isShared = sharedSavedProductCardIds.includes(savedProductCard.id);
                               return (
-                                <div key={entry.id} className="surface-inset-panel flex items-start justify-between gap-4 rounded-[18px] px-4 py-3">
+                                <div key={savedProductCard.id} className="surface-inset-panel flex items-start justify-between gap-4 rounded-[18px] px-4 py-3">
                                   <div className="min-w-0">
-                                    <p className="surface-action-text text-sm font-medium">{entry.entry_name}</p>
+                                    <p className="surface-action-text text-sm font-medium">{savedProductCard.card_title}</p>
                                     <p className="surface-meta mt-1">
-                                      {entry.group_name} | {entry.card_key?.split("__").pop() || "Product card"}
+                                      {savedProductCard.subcategory_label} | {savedProductCard.product_card_key?.split("__").pop() || "Product card"}
                                     </p>
                                   </div>
                                   <Switch
                                     checked={isShared}
-                                    onCheckedChange={(checked) => handleToggleCardShare(entry, checked)}
+                                    onCheckedChange={(checked) => handleToggleCardShare(savedProductCard, checked)}
                                     disabled={!canConfigureOutgoing}
                                   />
                                 </div>
                               );
                             })}
-                            {filteredMyEntries.length === 0 && (
+                            {filteredSavedProductCards.length === 0 && (
                               <p className="surface-body text-sm leading-relaxed">
                                 No product cards match this search yet.
                               </p>
@@ -1236,3 +1245,6 @@ export default function ConnectionPage() {
     </div>
   );
 }
+
+// Codebase classification: runtime connection page.
+

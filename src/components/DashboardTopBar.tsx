@@ -18,7 +18,7 @@ const navItems: { icon: typeof Home; url: string; end?: boolean; label: string }
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
   { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
   { icon: Sparkles, url: "/dashboard/recommendations", label: "For You" },
-  { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Know Me" },
+  { icon: ClipboardList, url: "/dashboard/know-me", label: "Know Me" },
   { icon: Bell, url: "/dashboard/notifications", label: "Notifications" },
 ];
 
@@ -313,4 +313,6 @@ export function DashboardTopBar() {
     </header>
   );
 }
+
+// Codebase classification: runtime dashboard navigation.
 

@@ -107,9 +107,9 @@ const CATEGORY_KEYWORDS: Record<RecommendationIntent["category"], string[]> = {
 
 const inferCategoryFromSharedCard = (card: Record<string, unknown>): RecommendationIntent["category"] | null => {
   const haystack = [
-    cleanText(card.card_key),
-    cleanText(card.group_name),
-    cleanText(card.entry_name),
+    cleanText(card.product_card_key),
+    cleanText(card.subcategory_label),
+    cleanText(card.card_title),
   ].join(" ").toLowerCase();
 
   for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS) as Array<[RecommendationIntent["category"], string[]]>) {
@@ -123,7 +123,7 @@ const inferCategoryFromSharedCard = (card: Record<string, unknown>): Recommendat
 
 const getAllowedCategories = (context: Record<string, unknown>): Set<RecommendationIntent["category"]> => {
   const allowed = new Set<RecommendationIntent["category"]>();
-  const sharedCards = toArray<Record<string, unknown>>(context.shared_card_entries);
+  const sharedCards = toArray<Record<string, unknown>>(context.shared_saved_product_cards);
 
   for (const card of sharedCards) {
     const category = inferCategoryFromSharedCard(card);
@@ -140,7 +140,7 @@ const toArray = <T = unknown>(value: unknown): T[] => (Array.isArray(value) ? va
 
 const buildGeneratorContext = (context: Record<string, unknown>) => {
   const allowedCategories = getAllowedCategories(context);
-  const sharedCards = toArray<Record<string, unknown>>(context.shared_card_entries).filter((card) => {
+  const sharedCards = toArray<Record<string, unknown>>(context.shared_saved_product_cards).filter((card) => {
     const category = inferCategoryFromSharedCard(card);
     return category ? allowedCategories.has(category) : false;
   });
@@ -150,7 +150,7 @@ const buildGeneratorContext = (context: Record<string, unknown>) => {
     allowedCategories,
     context: {
       ...context,
-      shared_card_entries: sharedCards,
+      shared_saved_product_cards: sharedCards,
       derived: {
         your_vibe: cleanText(derived.your_vibe) || null,
       },
@@ -163,14 +163,14 @@ const buildStoredSourceSnapshot = (
   allowedCategories: Set<RecommendationIntent["category"]>,
   selectedOccasion: Record<string, unknown> | null,
 ) => {
-  const sharedCards = toArray<Record<string, unknown>>(generatorContext.shared_card_entries);
+  const sharedCards = toArray<Record<string, unknown>>(generatorContext.shared_saved_product_cards);
   const derived = toObject(generatorContext.derived);
 
   return {
     connection_kind: cleanText(generatorContext.connection_kind || "custom") || "custom",
     connection_label: cleanText(generatorContext.connection_label || "Connection") || "Connection",
     allowed_categories: Array.from(allowedCategories),
-    shared_card_count: sharedCards.length,
+    shared_saved_product_card_count: sharedCards.length,
     has_shared_vibe: Boolean(cleanText(derived.your_vibe)),
     occasion: selectedOccasion
       ? {
@@ -210,7 +210,7 @@ const fallbackFromSharedRecommendations = (context: Record<string, unknown>, sel
         why: selectedOccasionLabel
           ? `${baseWhy} Prioritized for ${selectedOccasionLabel.toLowerCase()}.`
           : baseWhy,
-        is_partner_pick: true,
+        is_connection_pick: true,
         is_sponsored: false,
         affiliate_url: cleanText(product.affiliate_url) || null,
         search_url: cleanText(product.search_url) || null,
@@ -340,7 +340,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (LOVABLE_API_KEY) {
       const profile = toObject(generatorContext.profile);
-      const sharedCards = toArray<Record<string, unknown>>(generatorContext.shared_card_entries);
+      const sharedCards = toArray<Record<string, unknown>>(generatorContext.shared_saved_product_cards);
       const derived = toObject(generatorContext.derived);
       const connectionKind = cleanText(generatorContext.connection_kind || "custom");
       const connectionLabel = cleanText(generatorContext.connection_label || "Connection");
@@ -355,10 +355,10 @@ serve(async (req) => {
       const cardSnapshot = sharedCards
         .slice(0, 18)
         .map((card) => {
-          const entryName = cleanText(card.entry_name);
-          const groupName = cleanText(card.group_name);
-          const cardKey = cleanText(card.card_key);
-          return `- ${entryName} (${groupName || "ungrouped"} / ${cardKey})`;
+          const cardTitle = cleanText(card.card_title);
+          const subcategoryLabel = cleanText(card.subcategory_label);
+          const productCardKey = cleanText(card.product_card_key);
+          return `- ${cardTitle} (${subcategoryLabel || "uncategorized"} / ${productCardKey})`;
         })
         .join("\n");
 
@@ -501,7 +501,7 @@ Use the provided tool.`;
               category: intent.category,
               hook: intent.hook,
               why: intent.why,
-              is_partner_pick: true,
+              is_connection_pick: true,
               is_sponsored: false,
               affiliate_url: resolved.link_kind === "product" ? resolved.link_url : null,
               search_url: resolved.link_kind === "search" ? resolved.link_url : null,
@@ -550,3 +550,4 @@ Use the provided tool.`;
     );
   }
 });
+// Codebase classification: runtime connection recommendations edge function.

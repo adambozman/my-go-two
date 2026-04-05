@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import { usePersonalization } from "@/contexts/personalization-context";
+import { useKnowledgeCenter } from "@/contexts/knowledge-center-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink } from "lucide-react";
@@ -10,6 +10,7 @@ import { usePagination } from "@/hooks/usePagination";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/pill";
+import { getYourVibeDerivation } from "@/lib/knowledgeCenter";
 // ── Clothes bank (8 diverse images) ──
 import clothingJacketImage from "@/assets/templates/clothing-jacket.jpg";
 import dressShirtImage from "@/assets/templates/clothing-dress-shirt.jpg";
@@ -57,7 +58,7 @@ interface Product {
   category: string;
   hook: string;
   why: string;
-  is_partner_pick: boolean;
+  is_connection_pick?: boolean;
   affiliate_url?: string | null;
   search_url?: string | null;
   product_query?: string | null;
@@ -121,8 +122,9 @@ function getProductImage(product: Product) {
 const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
 
 const Recommendations = () => {
-  const { personalization, loading: personalizationLoading } = usePersonalization();
+  const { knowledgeDerivations, loading: knowledgeLoading } = useKnowledgeCenter();
   const { subscribed, user } = useAuth();
+  const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
   const isDev = user && DEV_USER_IDS.includes(user.id);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -186,10 +188,10 @@ const Recommendations = () => {
   }, [setCurrentPage]);
 
   useEffect(() => {
-    if (!personalizationLoading && personalization && !hasLoaded) {
+    if (!knowledgeLoading && !hasLoaded) {
       fetchProducts();
     }
-  }, [fetchProducts, personalizationLoading, personalization, hasLoaded]);
+  }, [fetchProducts, knowledgeLoading, hasLoaded]);
 
   const toggleSave = (id: string) => {
     setSavedItems((prev) => {
@@ -201,14 +203,14 @@ const Recommendations = () => {
   };
 
   const handleShare = (product: Product) => {
-    toast.success(`Ready to share ${product.name} with your partner`);
+    toast.success(`Ready to share ${product.name} with your connection`);
   };
 
   const generatedLabel = generatedAt
     ? new Date(generatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })
     : null;
 
-  if (personalizationLoading) {
+  if (knowledgeLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-6 w-6 animate-spin" />
@@ -254,9 +256,9 @@ const Recommendations = () => {
                 <h1 className="surface-heading-lg mb-3">
                   Curated Just For You
                 </h1>
-                {personalization?.persona_summary && (
+                {yourVibe?.persona_summary && (
                   <p className="surface-heading-md max-w-[32ch] leading-[1.4]">
-                    {personalization.persona_summary}
+                    {yourVibe.persona_summary}
                   </p>
                 )}
                 {generatedLabel && (
@@ -418,7 +420,7 @@ function ProductCard({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {product.is_partner_pick && (
+                      {product.is_connection_pick && (
               <p className="surface-meta">
                 {product.source_kind === "specific-product" ? "Exact Match" : "Search Match"}
               </p>
@@ -457,3 +459,6 @@ function ProductCard({
 }
 
 export default Recommendations;
+
+// Codebase classification: runtime recommendations page.
+// Codebase classification: runtime recommendations page.

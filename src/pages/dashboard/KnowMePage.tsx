@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Check, SkipForward, Sparkles, Shuffle, Send, Lock } from "lucide-react";
-import { usePersonalization } from "@/contexts/personalization-context";
+import { useKnowledgeCenter } from "@/contexts/knowledge-center-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -10,14 +10,20 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useTopBar } from "@/contexts/top-bar-context";
 import { buildSprints, getThisOrThatBank, SECTIONS, THIS_OR_THAT, THIS_OR_THAT_CATEGORIES, type BrandBankQuestion, type QuizQuestion } from "@/data/knowMeQuestions";
 import type { Gender } from "@/lib/gender";
+import {
+  buildKnowledgeAiAdapter,
+  getCombinedKnowledgeResponses,
+  toKnowledgeResponseRecord,
+  getYourVibeDerivation,
+} from "@/lib/knowledgeCenter";
 
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
 };
 
-type ProfileAnswerValue = string | string[] | undefined;
-type ProfileAnswersMap = Record<string, ProfileAnswerValue> | null | undefined;
+type KnowledgeResponseValue = string | string[] | undefined;
+type KnowledgeResponseMap = Record<string, KnowledgeResponseValue> | null | undefined;
 type SectionDefinition = (typeof SECTIONS)[number];
 type ThisOrThatCategoryDefinition = (typeof THIS_OR_THAT_CATEGORIES)[number];
 
@@ -49,7 +55,7 @@ const FREE_THIS_OR_THAT_LIMIT = 8;
 
 const AI_FEEDBACK = [
   "Got it! This helps me understand your style better.",
-  "Noted — your partner will thank you for this one.",
+  "Noted — your connection will thank you for this one.",
   "Great choice. Building your vibe…",
   "Perfect. This is super helpful for recommendations.",
   "Love it. I'm starting to see the full picture.",
@@ -89,11 +95,6 @@ const CATEGORY_COPY: Record<string, { title: string; description: string }> = {
   },
 };
 
-const normalizeBankGender = (value?: string) => {
-  if (value === "male" || value === "female") return value;
-  return "non-binary";
-};
-
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "I couldn't reach the style chat right now.";
 
@@ -101,7 +102,7 @@ const getStyleChatIntro = (personaSummary?: string | null) =>
   personaSummary ||
   "Ask me what your style looks like so far, why I'm asking certain questions, or what kinds of recommendations I'm building toward.";
 
-const getAnswerValues = (value: ProfileAnswerValue): string[] => {
+const getAnswerValues = (value: KnowledgeResponseValue): string[] => {
   if (Array.isArray(value)) {
     return value.filter((item): item is string => typeof item === "string");
   }
@@ -112,14 +113,14 @@ const getAnswerValues = (value: ProfileAnswerValue): string[] => {
 const buildCategoryState = (
   section: SectionDefinition,
   allQuestions: QuizQuestion[],
-  profileAnswers: ProfileAnswersMap,
+  knowMeResponses: KnowledgeResponseMap,
   subscribed: boolean,
 ): CategoryState => {
   const questions = allQuestions.filter((question) => question.section === section.id);
-  const answered = questions.filter((question) => getAnswerValues(profileAnswers?.[question.id]).length > 0).length;
+  const answered = questions.filter((question) => getAnswerValues(knowMeResponses?.[question.id]).length > 0).length;
   const visibleTotal = subscribed ? questions.length : Math.min(questions.length, FREE_CATEGORY_LIMIT);
   const visibleAnswered = subscribed ? answered : Math.min(answered, visibleTotal);
-  const firstUnanswered = questions.findIndex((question) => getAnswerValues(profileAnswers?.[question.id]).length === 0);
+  const firstUnanswered = questions.findIndex((question) => getAnswerValues(knowMeResponses?.[question.id]).length === 0);
   const nextQuestionIndex = firstUnanswered === -1 ? Math.max(questions.length - 1, 0) : firstUnanswered;
   const isLocked = !subscribed && answered >= FREE_CATEGORY_LIMIT;
 
@@ -140,15 +141,15 @@ const buildCategoryState = (
 const buildThisOrThatCategoryState = (
   category: ThisOrThatCategoryDefinition,
   bankGender: Gender,
-  profileAnswers: ProfileAnswersMap,
+  knowMeResponses: KnowledgeResponseMap,
   subscribed: boolean,
 ): ThisOrThatCategoryState => {
   const bank = getThisOrThatBank(category.id, bankGender);
   const questions = bank?.questions ?? [];
-  const answered = questions.filter((question) => getAnswerValues(profileAnswers?.[question.id]).length > 0).length;
+  const answered = questions.filter((question) => getAnswerValues(knowMeResponses?.[question.id]).length > 0).length;
   const visibleTotal = subscribed ? questions.length : Math.min(questions.length, FREE_THIS_OR_THAT_LIMIT);
   const visibleAnswered = subscribed ? answered : Math.min(answered, visibleTotal);
-  const firstUnanswered = questions.findIndex((question) => getAnswerValues(profileAnswers?.[question.id]).length === 0);
+  const firstUnanswered = questions.findIndex((question) => getAnswerValues(knowMeResponses?.[question.id]).length === 0);
   const nextQuestionIndex = firstUnanswered === -1 ? Math.max(questions.length - 1, 0) : firstUnanswered;
   const isLocked = !subscribed && answered >= FREE_THIS_OR_THAT_LIMIT;
   const isLive = category.status === "live" && questions.length > 0;
@@ -166,17 +167,27 @@ const buildThisOrThatCategoryState = (
   };
 };
 
-const Questionnaires = () => {
+const KnowMePage = () => {
   const { subscribed } = useAuth();
-  const { personalization, profileAnswers, gender, loading: contextLoading, refetch } = usePersonalization();
+  const { knowledgeSnapshot, knowledgeDerivations, loading: contextLoading, refreshKnowledge } =
+    useKnowledgeCenter();
   const { setBackState } = useTopBar();
+  const neutralBankGender: Gender = "non-binary";
+  const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
+  const knowMeResponses = useMemo(
+    () => toKnowledgeResponseRecord(knowledgeSnapshot?.know_me_responses),
+    [knowledgeSnapshot],
+  );
 
-  const allQuestions = useMemo(() => buildSprints(gender).flatMap((sprint) => sprint.questions), [gender]);
-  const bankGender = useMemo(() => normalizeBankGender(gender), [gender]);
+  const allQuestions = useMemo(
+    () => buildSprints(neutralBankGender).flatMap((sprint) => sprint.questions),
+    [],
+  );
+  const bankGender = neutralBankGender;
 
   const categories = useMemo(() => {
-    return SECTIONS.map((section) => buildCategoryState(section, allQuestions, profileAnswers, subscribed));
-  }, [allQuestions, profileAnswers, subscribed]);
+    return SECTIONS.map((section) => buildCategoryState(section, allQuestions, knowMeResponses, subscribed));
+  }, [allQuestions, knowMeResponses, subscribed]);
 
   const totalAnswered = categories.reduce((sum, category) => sum + category.answered, 0);
   const totalQuestions = allQuestions.length;
@@ -204,21 +215,21 @@ const Questionnaires = () => {
   const [styleChatMessages, setStyleChatMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      content: getStyleChatIntro(personalization?.persona_summary),
+      content: getStyleChatIntro(yourVibe?.persona_summary),
     },
   ]);
 
   const activeCategory = categories.find((category) => category.id === activeCategoryId) ?? categories[0];
   const currentQuestion: QuizQuestion | undefined = activeCategory?.questions[quizQuestionIdx];
   const currentSelected = currentQuestion
-    ? selections[currentQuestion.id] || getAnswerValues(profileAnswers?.[currentQuestion.id])
+    ? selections[currentQuestion.id] || getAnswerValues(knowMeResponses?.[currentQuestion.id])
     : [];
 
   const thisOrThatCategories = useMemo(() => {
     return THIS_OR_THAT_CATEGORIES.map((category) =>
-      buildThisOrThatCategoryState(category, bankGender, profileAnswers, subscribed),
+      buildThisOrThatCategoryState(category, bankGender, knowMeResponses, subscribed),
     );
-  }, [bankGender, profileAnswers, subscribed]);
+  }, [bankGender, knowMeResponses, subscribed]);
 
   const activeTotCategory = thisOrThatCategories.find((category) => category.id === activeTotCategoryId) ?? null;
   const activeTotQuestion = activeTotCategory?.questions[quizQuestionIdx] ?? null;
@@ -237,7 +248,7 @@ const Questionnaires = () => {
     setStyleChatMessages([
       {
         role: "assistant",
-        content: getStyleChatIntro(personalization?.persona_summary),
+        content: getStyleChatIntro(yourVibe?.persona_summary),
       },
     ]);
     setStylePrompt("");
@@ -257,8 +268,9 @@ const Questionnaires = () => {
       const { data, error } = await supabase.functions.invoke("style-chat", {
         body: {
           message,
-          profile_answers: profileAnswers || {},
-          ai_personalization: personalization || null,
+          knowledgeSnapshot: knowledgeSnapshot?.snapshot_payload || {},
+          knowledgeDerivations,
+          aiAdapter: buildKnowledgeAiAdapter(knowledgeSnapshot, knowledgeDerivations),
         },
       });
 
@@ -284,20 +296,24 @@ const Questionnaires = () => {
     }
   };
 
-  const persistProfileAnswers = async (patch: Record<string, string | string[]>) => {
+  const persistKnowMeResponses = async (patch: Record<string, string | string[]>) => {
     const userId = (await supabase.auth.getUser()).data.user?.id;
     if (!userId) throw new Error("No user");
 
-    const updated = { ...(profileAnswers || {}), ...patch };
-    const cleaned: Record<string, string | string[]> = {};
-    for (const [key, value] of Object.entries(updated)) {
-      cleaned[key] = Array.isArray(value) && value.length === 1 ? value[0] : value;
-    }
+    const updatedAt = new Date().toISOString();
+    const payload = Object.entries(patch).map(([questionKey, responseValue]) => ({
+      user_id: userId,
+      question_key: questionKey,
+      response_value:
+        Array.isArray(responseValue) && responseValue.length === 1
+          ? responseValue[0]
+          : responseValue,
+      updated_at: updatedAt,
+    }));
 
     const { error } = await supabase
-      .from("user_preferences")
-      .update({ profile_answers: cleaned, updated_at: new Date().toISOString() })
-      .eq("user_id", userId);
+      .from("know_me_responses")
+      .upsert(payload, { onConflict: "user_id,question_key" });
 
     if (error) throw error;
   };
@@ -308,14 +324,14 @@ const Questionnaires = () => {
     const nextIndex = quizQuestionIdx + 1;
     const freeLockReached = !subscribed && nextIndex >= FREE_CATEGORY_LIMIT;
     if (freeLockReached) {
-      await refetch();
+      await refreshKnowledge();
       setView("dashboard");
       toast("Premium unlocks more than 4 questions in each category");
       return;
     }
 
     if (nextIndex >= activeCategory.questions.length) {
-      await refetch();
+      await refreshKnowledge();
       setView("dashboard");
       toast.success("Category saved");
       return;
@@ -331,9 +347,9 @@ const Questionnaires = () => {
     updateSelections(questionId, values);
 
     try {
-      await persistProfileAnswers({ [questionId]: currentQuestion.multiSelect ? values : values[0] });
+      await persistKnowMeResponses({ [questionId]: currentQuestion.multiSelect ? values : values[0] });
       setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
-      await refetch();
+      await refreshKnowledge();
       await goToNextQuestion();
     } catch {
       toast.error("Failed to save answer");
@@ -385,8 +401,8 @@ const Questionnaires = () => {
     const value = choice === "A" ? question.categoryA : question.categoryB;
 
     try {
-      await persistProfileAnswers({ [question.id]: value });
-      await refetch();
+      await persistKnowMeResponses({ [question.id]: value });
+      await refreshKnowledge();
     } catch {
       toast.error("Failed to save answer");
       setTotSwipeDir(null);
@@ -731,7 +747,7 @@ const Questionnaires = () => {
   if (view === "thisorthat" && activeTotCategory && activeTotQuestion) {
     const questionNumber = quizQuestionIdx + 1;
     const visibleCategoryTotal = subscribed ? activeTotCategory.questions.length : Math.min(activeTotCategory.questions.length, FREE_THIS_OR_THAT_LIMIT);
-    const savedValue = profileAnswers?.[activeTotQuestion.id];
+    const savedValue = knowMeResponses?.[activeTotQuestion.id];
     const selectedSide = savedValue === activeTotQuestion.categoryA ? "A" : savedValue === activeTotQuestion.categoryB ? "B" : null;
 
     return (
@@ -942,7 +958,7 @@ const Questionnaires = () => {
                 <div className="grid md:grid-cols-[minmax(0,1fr)_260px] gap-4 items-end">
                   <div>
                     <p className="text-[18px] leading-snug mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                      {personalization?.persona_summary || "You're still early, but the AI is already building a point of view on whether your style leans cleaner, louder, softer, practical, elevated, or more trend-driven."}
+                      {yourVibe?.persona_summary || "You're still early, but the AI is already building a point of view on whether your style leans cleaner, louder, softer, practical, elevated, or more trend-driven."}
                     </p>
                     {subscribed && (
                       <p className="text-[14px] leading-relaxed max-w-[62ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
@@ -1075,7 +1091,7 @@ const Questionnaires = () => {
                     It learns from patterns, not one answer.
                   </p>
                   <p className="text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    The AI combines your long-form profile answers and your future fixed This or That category answers to read patterns across your style, gifting, lifestyle, and preferences. It does not invent those category questions — it interprets what your answers reveal.
+                    The AI combines your onboarding and Know Me answers with your future fixed This or That category answers to read patterns across your style, gifting, lifestyle, and preferences. It does not invent those category questions — it interprets what your answers reveal.
                   </p>
                 </div>
                 <div className="rounded-[24px] p-4 backdrop-blur-md md:min-w-[320px]" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
@@ -1165,4 +1181,7 @@ const Questionnaires = () => {
   );
 };
 
-export default Questionnaires;
+export default KnowMePage;
+
+// Codebase classification: runtime Know Me page.
+

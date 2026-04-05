@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { createMyGoTwoEntry, updateMyGoTwoEntry } from "@/features/mygotwo/myGoTwoData";
-import type { CardEntry } from "@/features/mygotwo/types";
+import { createSavedProductCard, updateSavedProductCard } from "@/features/mygotwo/myGoTwoData";
+import type { SavedProductCard } from "@/features/mygotwo/types";
 import type { SubcategoryGroup, SubtypeItem } from "@/data/templateSubtypes";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,8 +12,8 @@ type MyGoTwoProductCardProps = {
   categoryLabel: string;
   subcategory: SubcategoryGroup;
   product: SubtypeItem;
-  activeEntry: CardEntry | null;
-  onSaved: (entryId?: string) => Promise<void> | void;
+  activeSavedProductCard: SavedProductCard | null;
+  onSaved: (savedProductCardId?: string) => Promise<void> | void;
   compact?: boolean;
   interactive?: boolean;
 };
@@ -22,10 +22,10 @@ function slugFieldLabel(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
 }
 
-function buildInitialFieldValues(fields: ProductField[], activeEntry: CardEntry | null) {
+function buildInitialFieldValues(fields: ProductField[], activeSavedProductCard: SavedProductCard | null) {
   return fields.reduce<Record<string, string>>((acc, field) => {
     const key = slugFieldLabel(field.label);
-    const storedValue = activeEntry?.field_values?.[key];
+    const storedValue = activeSavedProductCard?.field_values?.[key];
 
     if (typeof storedValue === "string") {
       acc[key] = storedValue;
@@ -99,23 +99,23 @@ export default function MyGoTwoProductCard({
   categoryLabel,
   subcategory,
   product,
-  activeEntry,
+  activeSavedProductCard,
   onSaved,
   compact = false,
   interactive = true,
 }: MyGoTwoProductCardProps) {
   const { toast } = useToast();
   const fields = useMemo(() => product.fields ?? [], [product.fields]);
-  const [entryName, setEntryName] = useState(activeEntry?.entry_name || product.name);
+  const [cardTitle, setCardTitle] = useState(activeSavedProductCard?.card_title || product.name);
   const [fieldValues, setFieldValues] = useState<Record<string, string>>(
-    buildInitialFieldValues(fields, activeEntry),
+    buildInitialFieldValues(fields, activeSavedProductCard),
   );
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setEntryName(activeEntry?.entry_name || product.name);
-    setFieldValues(buildInitialFieldValues(fields, activeEntry));
-  }, [activeEntry, fields, product.name]);
+    setCardTitle(activeSavedProductCard?.card_title || product.name);
+    setFieldValues(buildInitialFieldValues(fields, activeSavedProductCard));
+  }, [activeSavedProductCard, fields, product.name]);
 
   const cardEyebrow = useMemo(
     () => `${categoryLabel.toUpperCase()} \u00b7 ${subcategory.name.toUpperCase()}`,
@@ -126,29 +126,31 @@ export default function MyGoTwoProductCard({
     setSaving(true);
 
     try {
-      let savedEntryId = activeEntry?.id;
+      let savedProductCardId = activeSavedProductCard?.id;
 
-      if (activeEntry) {
-        await updateMyGoTwoEntry({
-          entryId: activeEntry.id,
-          entryName,
+      if (activeSavedProductCard) {
+        await updateSavedProductCard({
+          savedProductCardId: activeSavedProductCard.id,
+          cardTitle,
           fieldValues,
         });
       } else {
-        const createdEntry = await createMyGoTwoEntry({
+        const createdSavedProductCard = await createSavedProductCard({
           userId,
-          cardKey: product.id,
-          groupName: subcategory.name,
-          entryName,
+          productCardKey: product.id,
+          subcategoryLabel: subcategory.name,
+          cardTitle,
           fieldValues,
         });
-        savedEntryId = createdEntry.id;
+        savedProductCardId = createdSavedProductCard.id;
       }
 
-      await onSaved(savedEntryId);
+      await onSaved(savedProductCardId);
       toast({
-        title: activeEntry ? "Card updated" : "Card saved",
-        description: activeEntry ? "Your changes were saved." : "The new card was added to the coverflow.",
+        title: activeSavedProductCard ? "Saved product card updated" : "Saved product card created",
+        description: activeSavedProductCard
+          ? "Your changes were saved."
+          : "The new saved product card was added to the coverflow.",
       });
     } catch (error) {
       const description =
@@ -185,13 +187,13 @@ export default function MyGoTwoProductCard({
           </p>
           {interactive ? (
             <input
-              value={entryName}
-              onChange={(event) => setEntryName(event.target.value)}
+              value={cardTitle}
+              onChange={(event) => setCardTitle(event.target.value)}
               className={compact ? "w-full bg-transparent font-serif text-[27px] leading-[0.92] tracking-[-0.05em] text-[#1b1a18] focus:outline-none" : "w-full bg-transparent font-serif text-[64px] leading-[0.92] tracking-[-0.04em] text-[#1b1a18] focus:outline-none"}
             />
           ) : (
             <p className={compact ? "pr-1 font-serif text-[27px] leading-[0.92] tracking-[-0.05em] text-[#1b1a18]" : "font-serif text-[64px] leading-[0.92] tracking-[-0.04em] text-[#1b1a18]"}>
-              {entryName}
+              {cardTitle}
             </p>
           )}
         </div>
@@ -288,3 +290,5 @@ export default function MyGoTwoProductCard({
 function slugMyGoTwoFieldLabel(label: string) {
   return slugFieldLabel(label);
 }
+
+// Codebase classification: runtime My Go Two saved product card editor.

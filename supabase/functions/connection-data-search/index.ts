@@ -28,12 +28,12 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
 }
 
-type SearchEntryRow = {
+type SearchSavedProductCardRow = {
   id: string;
   user_id: string;
-  entry_name: string;
-  group_name: string;
-  card_key: string;
+  card_title: string;
+  subcategory_label: string;
+  product_card_key: string;
 };
 
 type ConnectionRow = {
@@ -44,11 +44,11 @@ type ConnectionRow = {
   status: string;
 };
 
-function matchesQuery(row: SearchEntryRow, query: string) {
+function matchesQuery(row: SearchSavedProductCardRow, query: string) {
   const needle = query.toLowerCase();
   return (
-    (row.group_name || "").toLowerCase().includes(needle) ||
-    (row.entry_name || "").toLowerCase().includes(needle)
+    (row.subcategory_label || "").toLowerCase().includes(needle) ||
+    (row.card_title || "").toLowerCase().includes(needle)
   );
 }
 
@@ -83,30 +83,30 @@ Deno.serve(async (req) => {
     }
 
     if (!rawQuery) {
-      return jsonResponse({ my_entries: [], circle_entries: [] });
+      return jsonResponse({ my_saved_product_cards: [], connection_saved_product_cards: [] });
     }
 
-    const { data: couplesData, error: couplesError } = await supabase
-      .from("couples")
+    const { data: userConnectionsData, error: userConnectionsError } = await supabase
+      .from("user_connections")
       .select("id, inviter_id, invitee_id, display_label, status")
       .or(`inviter_id.eq.${userId},invitee_id.eq.${userId}`)
       .eq("status", "accepted");
 
-    if (couplesError) {
-      return jsonResponse({ error: couplesError.message }, 400);
+    if (userConnectionsError) {
+      return jsonResponse({ error: userConnectionsError.message }, 400);
     }
 
-    const liveConnections = ((couplesData || []) as ConnectionRow[])
+    const liveConnections = ((userConnectionsData || []) as ConnectionRow[])
       .map((row) => {
-        const partnerId = row.inviter_id === userId ? row.invitee_id : row.inviter_id;
-        if (!partnerId) return null;
+        const connectionUserId = row.inviter_id === userId ? row.invitee_id : row.inviter_id;
+        if (!connectionUserId) return null;
         return {
-          couple_id: row.id,
-          partner_id: partnerId,
+          user_connection_id: row.id,
+          connection_user_id: connectionUserId,
           owner_label: row.display_label || "Connection",
         };
       })
-      .filter((value): value is { couple_id: string; partner_id: string; owner_label: string } => Boolean(value));
+      .filter((value): value is { user_connection_id: string; connection_user_id: string; owner_label: string } => Boolean(value));
 
     const includeSelf = scope === "everyone" || scope === "self";
     const scopedConnections =
@@ -114,28 +114,28 @@ Deno.serve(async (req) => {
         ? liveConnections
         : scope === "self"
           ? []
-          : liveConnections.filter((connection) => connection.partner_id === scope);
+          : liveConnections.filter((connection) => connection.connection_user_id === scope);
 
-    let myEntries: SearchEntryRow[] = [];
+    let mySavedProductCards: SearchSavedProductCardRow[] = [];
     if (includeSelf) {
       const { data: myData, error: myError } = await supabase
-        .from("card_entries")
-        .select("id, user_id, entry_name, group_name, card_key")
+        .from("saved_product_cards")
+        .select("id, user_id, card_title, subcategory_label, product_card_key")
         .eq("user_id", userId)
-        .or(`group_name.ilike.%${rawQuery}%,entry_name.ilike.%${rawQuery}%`)
+        .or(`subcategory_label.ilike.%${rawQuery}%,card_title.ilike.%${rawQuery}%`)
         .limit(limit);
 
       if (myError) {
         return jsonResponse({ error: myError.message }, 400);
       }
-      myEntries = (myData || []) as SearchEntryRow[];
+      mySavedProductCards = (myData || []) as SearchSavedProductCardRow[];
     }
 
-    const circleEntries: Array<SearchEntryRow & { owner_label: string }> = [];
+    const connectionSavedProductCards: Array<SearchSavedProductCardRow & { owner_label: string }> = [];
     for (const connection of scopedConnections) {
-      const { data: sharedData, error: sharedError } = await (supabase as unknown as RpcClient).rpc("get_connection_visible_card_entries", {
-        p_couple_id: connection.couple_id,
-        p_owner_user_id: connection.partner_id,
+      const { data: sharedData, error: sharedError } = await (supabase as unknown as RpcClient).rpc("get_connection_visible_saved_product_cards", {
+        p_user_connection_id: connection.user_connection_id,
+        p_owner_user_id: connection.connection_user_id,
         p_connection_user_id: userId,
       });
 
@@ -143,17 +143,17 @@ Deno.serve(async (req) => {
         return jsonResponse({ error: sharedError.message }, 400);
       }
 
-      const rows = ((Array.isArray(sharedData) ? sharedData : []) as SearchEntryRow[])
+      const rows = ((Array.isArray(sharedData) ? sharedData : []) as SearchSavedProductCardRow[])
         .filter((row) => matchesQuery(row, rawQuery))
         .slice(0, limit)
         .map((row) => ({ ...row, owner_label: connection.owner_label }));
 
-      circleEntries.push(...rows);
+      connectionSavedProductCards.push(...rows);
     }
 
     return jsonResponse({
-      my_entries: myEntries,
-      circle_entries: circleEntries.slice(0, limit * Math.max(1, scopedConnections.length || 1)),
+      my_saved_product_cards: mySavedProductCards,
+      connection_saved_product_cards: connectionSavedProductCards.slice(0, limit * Math.max(1, scopedConnections.length || 1)),
     });
   } catch (e: unknown) {
     const message = getErrorMessage(e);
@@ -161,3 +161,5 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: message }, status);
   }
 });
+
+// Codebase classification: runtime connection search edge function.

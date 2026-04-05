@@ -2,13 +2,14 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient, type SupabaseClient, type User } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   buildRecommendationFingerprint,
-  getBankPersonalization,
+  getBankKnowledgeDerivation,
   getCatalogRecommendations,
   getCatalogVersion,
   getSeedCatalogBrands,
   resolveIntentToCatalogEntry,
   type RecommendationIntent,
 } from "../_shared/knowMeCatalog.ts";
+import { buildCatalogAiAdapter, fetchKnowledgeCenterState } from "../_shared/knowledgeCenter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -345,27 +346,24 @@ serve(async (req) => {
       }
     }
 
-    const { data: prefsData } = await supabase
-      .from("user_preferences")
-      .select("profile_answers, ai_personalization")
-      .eq("user_id", user.id)
-      .single();
-    const profileAnswers = toObject(prefsData?.profile_answers);
-    const personalization = toObject(prefsData?.ai_personalization);
-    const bankPersonalization = getBankPersonalization(profileAnswers, personalization);
-    const fallbackRecommendations = getCatalogRecommendations(profileAnswers, personalization);
+    const knowledgeState = await fetchKnowledgeCenterState(supabase, user.id);
+    const aiAdapter = buildCatalogAiAdapter(knowledgeState.snapshot, knowledgeState.derivations);
+    const combinedResponses = toObject(aiAdapter.combinedResponses);
+    const yourVibe = toObject(aiAdapter.yourVibe);
+    const bankKnowledgeDerivation = getBankKnowledgeDerivation(combinedResponses, yourVibe);
+    const fallbackRecommendations = getCatalogRecommendations(combinedResponses, yourVibe);
 
     let blendedProducts = [...fallbackRecommendations.products];
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (LOVABLE_API_KEY) {
       const allowedBrands = Array.from(new Set([
-        ...bankPersonalization.recommended_brands,
-        ...bankPersonalization.recommended_stores,
+        ...bankKnowledgeDerivation.recommended_brands,
+        ...bankKnowledgeDerivation.recommended_stores,
         ...getSeedCatalogBrands(),
       ])).slice(0, 28);
 
-      const profileSnapshot = Object.entries(profileAnswers)
+      const profileSnapshot = Object.entries(combinedResponses)
         .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(", ") : value}`)
         .slice(0, 20)
         .join("\n");
@@ -512,7 +510,7 @@ Use the provided tool.`;
               category: intent.category,
               hook: intent.hook,
               why: intent.why,
-              is_partner_pick: intent.recommendation_kind === "specific",
+              is_connection_pick: intent.recommendation_kind === "specific",
               is_sponsored: false,
               affiliate_url: finalProductUrl,
               search_url: !finalProductUrl && resolved.link_kind === "search" ? resolved.link_url : null,
@@ -553,3 +551,4 @@ Use the provided tool.`;
     return jsonResponse({ error: message }, status);
   }
 });
+

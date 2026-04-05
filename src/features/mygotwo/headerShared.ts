@@ -17,7 +17,7 @@ export const MYGOTWO_NAV_ITEMS: MyGoTwoNavItem[] = [
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
   { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
   { icon: Sparkles, url: "/dashboard/recommendations", label: "For You" },
-  { icon: ClipboardList, url: "/dashboard/questionnaires", label: "Know Me" },
+  { icon: ClipboardList, url: "/dashboard/know-me", label: "Know Me" },
   { icon: Bell, url: "/dashboard/notifications", label: "Notifications" },
 ];
 
@@ -162,3 +162,5 @@ export function useMyGoTwoHeaderState(channelName: string) {
     navigate,
   };
 }
+
+// Codebase classification: runtime My Go Two header state.

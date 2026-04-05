@@ -1,4 +1,4 @@
-export type Gender = "male" | "female" | "non-binary";
+export type CatalogBankKey = "universal";
 export type RecommendationCategory = "clothes" | "food" | "tech" | "home";
 export type PriceTier = "budget" | "mid-range" | "premium" | "luxury";
 export type RecommendationKind = "specific" | "generic" | "catalog";
@@ -12,7 +12,7 @@ export interface CatalogProduct {
   bankTags: string[];
   answerTags: string[];
   priceTier: PriceTier;
-  isPartnerPick?: boolean;
+  isConnectionPick?: boolean;
   productUrl?: string;
   searchUrl?: string;
   imageUrl?: string;
@@ -45,8 +45,8 @@ export interface ResolvedCatalogEntry {
   resolver_source: string;
 }
 
-type ProfileAnswers = Record<string, unknown>;
-type Personalization = Record<string, unknown>;
+type KnowledgeResponses = Record<string, unknown>;
+type KnowledgeDerivation = Record<string, unknown>;
 
 const CATALOG_VERSION = "know-me-catalog-v3";
 
@@ -80,8 +80,8 @@ const BRAND_SEARCH_TEMPLATES: Record<string, (query: string) => string> = {
   "apple": (query) => `https://www.apple.com/us/search/${encodeURIComponent(query)}`,
 };
 
-const BRAND_BANK = {
-  male: [
+const BRAND_BANK: Record<CatalogBankKey, Array<{ brand: string; tags: string[] }>> = {
+  universal: [
     { brand: "Uniqlo", tags: ["essentials", "basics", "affordable", "minimal", "casual"] },
     { brand: "Buck Mason", tags: ["american-basics", "rugged", "tailored", "casual"] },
     { brand: "Everlane", tags: ["sustainable", "basics", "transparent", "minimal"] },
@@ -107,8 +107,8 @@ const BRAND_BANK = {
   ],
 } as const;
 
-const STORE_BANK = {
-  male: [
+const STORE_BANK: Record<CatalogBankKey, Array<{ brand: string; tags: string[] }>> = {
+  universal: [
     { brand: "Mr Porter", tags: ["luxury", "designer", "refined", "elegant"] },
     { brand: "Ssense", tags: ["street", "edgy", "fashion", "luxury"] },
     { brand: "Huckberry", tags: ["outdoors", "rugged", "traveling", "casual"] },
@@ -280,7 +280,7 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["morning-ritual", "coffee-led", "counterpiece"],
     answerTags: ["staying-in", "dining", "practical", "quality"],
     priceTier: "premium",
-    isPartnerPick: true,
+    isConnectionPick: true,
     productUrl: "https://www.nespresso.com/us/en/search?text=Vertuo%20Pop",
     recommendationKind: "specific",
   },
@@ -336,7 +336,7 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
     bankTags: ["noise-canceling-headphones", "travel", "focus"],
     answerTags: ["traveling", "events", "fitness", "luxurious"],
     priceTier: "luxury",
-    isPartnerPick: true,
+    isConnectionPick: true,
     productUrl: "https://electronics.sony.com/search?query=WH-1000XM5",
     recommendationKind: "specific",
   },
@@ -416,23 +416,13 @@ const pushUnique = (list: string[], value: string) => {
   if (value && !list.includes(value)) list.push(value);
 };
 
-const resolveGender = (profileAnswers: ProfileAnswers): Gender => {
-  const identity = profileAnswers.identity;
-  const raw = Array.isArray(identity) ? identity[0] : identity;
-  return raw === "male" || raw === "female" ? raw : "non-binary";
-};
-
-const resolveBankGender = (gender: Gender): keyof typeof BRAND_BANK => {
-  return gender === "male" ? "male" : "male";
-};
-
-const mapSpendingMindsetToTier = (profileAnswers: ProfileAnswers, personalization?: Personalization): PriceTier => {
-  const explicitTier = normalizeText(personalization?.price_tier);
+const mapSpendingMindsetToTier = (knowledgeResponses: KnowledgeResponses, knowledgeDerivation?: KnowledgeDerivation): PriceTier => {
+  const explicitTier = normalizeText(knowledgeDerivation?.price_tier);
   if (explicitTier === "budget" || explicitTier === "mid-range" || explicitTier === "premium" || explicitTier === "luxury") {
     return explicitTier;
   }
 
-  const mindset = toArray(profileAnswers["spending-mindset"])[0];
+  const mindset = toArray(knowledgeResponses["spending-mindset"])[0];
   if (mindset === "budget") return "budget";
   if (mindset === "balanced") return "mid-range";
   if (mindset === "quality") return "premium";
@@ -440,7 +430,7 @@ const mapSpendingMindsetToTier = (profileAnswers: ProfileAnswers, personalizatio
   return "mid-range";
 };
 
-const collectSignals = (profileAnswers: ProfileAnswers, personalization?: Personalization): string[] => {
+const collectSignals = (knowledgeResponses: KnowledgeResponses, knowledgeDerivation?: KnowledgeDerivation): string[] => {
   const signals: string[] = [];
   const keys = [
     "style-personality",
@@ -453,10 +443,10 @@ const collectSignals = (profileAnswers: ProfileAnswers, personalization?: Person
   ];
 
   for (const key of keys) {
-    for (const value of toArray(profileAnswers[key])) pushUnique(signals, value);
+    for (const value of toArray(knowledgeResponses[key])) pushUnique(signals, value);
   }
 
-  for (const value of toArray(personalization?.style_keywords)) pushUnique(signals, value);
+  for (const value of toArray(knowledgeDerivation?.style_keywords)) pushUnique(signals, value);
   return signals;
 };
 
@@ -511,15 +501,14 @@ export const resolveIntentToCatalogEntry = (intent: RecommendationIntent): Resol
   };
 };
 
-export const getBankPersonalization = (
-  profileAnswers: ProfileAnswers,
-  personalization?: Personalization,
+export const getBankKnowledgeDerivation = (
+  knowledgeResponses: KnowledgeResponses,
+  knowledgeDerivation?: KnowledgeDerivation,
 ) => {
-  const gender = resolveGender(profileAnswers);
-  const bankGender = resolveBankGender(gender);
-  const signals = collectSignals(profileAnswers, personalization);
+  const bankKey: CatalogBankKey = "universal";
+  const signals = collectSignals(knowledgeResponses, knowledgeDerivation);
 
-  const recommended_brands = [...BRAND_BANK[bankGender]]
+  const recommended_brands = [...BRAND_BANK[bankKey]]
     .map((entry) => ({
       brand: entry.brand,
       score: scoreTags(entry.tags.map((tag) => tag.toLowerCase()), signals),
@@ -528,7 +517,7 @@ export const getBankPersonalization = (
     .slice(0, 10)
     .map((entry) => entry.brand);
 
-  const recommended_stores = [...STORE_BANK[bankGender]]
+  const recommended_stores = [...STORE_BANK[bankKey]]
     .map((entry) => ({
       brand: entry.brand,
       score: scoreTags(entry.tags.map((tag) => tag.toLowerCase()), signals),
@@ -540,10 +529,10 @@ export const getBankPersonalization = (
   return { recommended_brands, recommended_stores };
 };
 
-const getCategorySignals = (category: RecommendationCategory, profileAnswers: ProfileAnswers, allSignals: string[]) => {
+const getCategorySignals = (category: RecommendationCategory, knowledgeResponses: KnowledgeResponses, allSignals: string[]) => {
   const categorySignals = [...allSignals];
   for (const key of CATEGORY_TARGETS[category]) {
-    for (const value of toArray(profileAnswers[key])) pushUnique(categorySignals, value);
+    for (const value of toArray(knowledgeResponses[key])) pushUnique(categorySignals, value);
   }
   return categorySignals;
 };
@@ -570,16 +559,16 @@ const withinTier = (candidate: PriceTier, target: PriceTier) => {
 };
 
 export const getCatalogRecommendations = (
-  profileAnswers: ProfileAnswers,
-  personalization?: Personalization,
+  knowledgeResponses: KnowledgeResponses,
+  knowledgeDerivation?: KnowledgeDerivation,
 ) => {
-  const allSignals = collectSignals(profileAnswers, personalization);
-  const targetTier = mapSpendingMindsetToTier(profileAnswers, personalization);
-  const bankPersonalization = getBankPersonalization(profileAnswers, personalization);
-  const preferredBrands = new Set(bankPersonalization.recommended_brands.map((brand) => brand.toLowerCase()));
+  const allSignals = collectSignals(knowledgeResponses, knowledgeDerivation);
+  const targetTier = mapSpendingMindsetToTier(knowledgeResponses, knowledgeDerivation);
+  const bankKnowledgeDerivation = getBankKnowledgeDerivation(knowledgeResponses, knowledgeDerivation);
+  const preferredBrands = new Set(bankKnowledgeDerivation.recommended_brands.map((brand) => brand.toLowerCase()));
 
   const byCategory = (["clothes", "food", "tech", "home"] as RecommendationCategory[]).flatMap((category) => {
-    const categorySignals = getCategorySignals(category, profileAnswers, allSignals);
+    const categorySignals = getCategorySignals(category, knowledgeResponses, allSignals);
     const picks = PRODUCT_CATALOG
       .filter((product) => product.category === category)
       .map((product) => {
@@ -591,7 +580,7 @@ export const getCatalogRecommendations = (
         if (preferredBrands.has(product.brand.toLowerCase())) score += 6;
         if (withinTier(product.priceTier, targetTier)) score += 3;
         else score -= 4;
-        if (product.isPartnerPick) score += 1;
+        if (product.isConnectionPick) score += 1;
         return {
           ...product,
           score,
@@ -607,7 +596,7 @@ export const getCatalogRecommendations = (
         category: product.category,
         hook: buildHook(product, product.matchedSignals),
         why: buildWhy(product, product.matchedSignals),
-        is_partner_pick: Boolean(product.isPartnerPick || index === 0),
+        is_connection_pick: Boolean(product.isConnectionPick || index === 0),
         is_sponsored: false,
         affiliate_url: product.productUrl ?? null,
         search_url: product.productUrl ? null as string | null : (product.searchUrl ?? null as string | null),
@@ -624,6 +613,8 @@ export const getCatalogRecommendations = (
   return {
     products: byCategory,
     priceTier: targetTier,
-    bankPersonalization,
+    bankKnowledgeDerivation,
   };
 };
+// Codebase classification: runtime Know Me catalog and recommendation bank.
+

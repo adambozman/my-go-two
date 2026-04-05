@@ -38,12 +38,12 @@ const Login = () => {
   const navigateAfterLogin = async () => {
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (currentUser) {
-      const { data: prefs } = await supabase
-        .from("user_preferences")
-        .select("onboarding_complete")
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_completed_at")
         .eq("user_id", currentUser.id)
         .maybeSingle();
-      if (!prefs?.onboarding_complete) {
+      if (!profile?.onboarding_completed_at) {
         navigate("/onboarding");
       } else {
         navigate("/dashboard");
@@ -258,3 +258,4 @@ const Login = () => {
 };
 
 export default Login;
+// Codebase classification: runtime authentication page with dev-only login bypass.

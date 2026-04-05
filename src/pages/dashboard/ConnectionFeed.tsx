@@ -6,7 +6,7 @@ import { resolveStorageUrl } from "@/lib/storageRefs";
 
 interface ConnectionFeedRow {
   feed_item_id: string;
-  couple_id: string;
+  user_connection_id: string;
   connection_label: string | null;
   item_kind: string | null;
   title: string | null;
@@ -56,27 +56,27 @@ const sectionLabelMap: Record<string, string> = {
 export default function ConnectionFeed() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialCoupleId = searchParams.get("coupleId");
+  const initialUserConnectionId = searchParams.get("userConnectionId");
   const [rows, setRows] = useState<ConnectionFeedRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCoupleId, setSelectedCoupleId] = useState<string>(initialCoupleId || "all");
+  const [selectedUserConnectionId, setSelectedUserConnectionId] = useState<string>(initialUserConnectionId || "all");
   const [resolvedImages, setResolvedImages] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const coupleIdFromQuery = searchParams.get("coupleId");
-    setSelectedCoupleId(coupleIdFromQuery || "all");
+    const userConnectionIdFromQuery = searchParams.get("userConnectionId");
+    setSelectedUserConnectionId(userConnectionIdFromQuery || "all");
   }, [searchParams]);
 
   const loadFeed = useCallback(async () => {
     setLoading(true);
     const { data } = await rpc<ConnectionFeedRow[]>("get_connection_feed", {
       p_limit: 120,
-      p_couple_id: selectedCoupleId === "all" ? null : selectedCoupleId,
+      p_user_connection_id: selectedUserConnectionId === "all" ? null : selectedUserConnectionId,
     });
 
     setRows(Array.isArray(data) ? (data as ConnectionFeedRow[]) : []);
     setLoading(false);
-  }, [selectedCoupleId]);
+  }, [selectedUserConnectionId]);
 
   useEffect(() => {
     loadFeed();
@@ -111,7 +111,7 @@ export default function ConnectionFeed() {
   const connectionFilters = useMemo(() => {
     const map = new Map<string, string>();
     rows.forEach((row) => {
-      map.set(row.couple_id, row.connection_label || "Connection");
+      map.set(row.user_connection_id, row.connection_label || "Connection");
     });
     return Array.from(map.entries()).map(([id, label]) => ({ id, label }));
   }, [rows]);
@@ -138,22 +138,22 @@ export default function ConnectionFeed() {
 
           <div className="flex items-center gap-2">
             <select
-              value={selectedCoupleId}
+              value={selectedUserConnectionId}
               onChange={(event) => {
                 const nextValue = event.target.value;
-                setSelectedCoupleId(nextValue);
+                setSelectedUserConnectionId(nextValue);
                 if (nextValue === "all") {
                   setSearchParams({});
                 } else {
-                  setSearchParams({ coupleId: nextValue });
+                  setSearchParams({ userConnectionId: nextValue });
                 }
               }}
               className="rounded-full border px-4 py-2 text-xs uppercase tracking-[0.12em] outline-none"
               style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.74)", borderColor: "rgba(255,255,255,0.88)" }}
             >
               <option value="all">All Connections</option>
-              {selectedCoupleId !== "all" && !connectionFilters.find((filter) => filter.id === selectedCoupleId) ? (
-                <option value={selectedCoupleId}>Selected Connection</option>
+              {selectedUserConnectionId !== "all" && !connectionFilters.find((filter) => filter.id === selectedUserConnectionId) ? (
+                <option value={selectedUserConnectionId}>Selected Connection</option>
               ) : null}
               {connectionFilters.map((filter) => (
                 <option key={filter.id} value={filter.id}>
@@ -254,3 +254,5 @@ export default function ConnectionFeed() {
     </div>
   );
 }
+
+// Codebase classification: runtime connection feed page.

@@ -18,6 +18,7 @@ interface Notification {
 }
 
 const typeIcon: Record<string, typeof Bell> = {
+  connection: Heart,
   partner: Heart,
   reminder: Gift,
   recommendation: Sparkles,
@@ -184,6 +185,7 @@ export default function Notifications() {
     </div>
   );
 }
+// Codebase classification: runtime notifications page.
 
 function NotificationList({ notifications, markOneRead, deleteOne, formatDate }: {
   notifications: Notification[];

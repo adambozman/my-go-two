@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildCatalogAiAdapter, fetchKnowledgeCenterState, toRecord } from "../_shared/knowledgeCenter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,7 +29,7 @@ serve(async (req) => {
 
     if (authError || !user) throw new Error("Unauthorized");
 
-    const { message, profile_answers, ai_personalization } = await req.json();
+    const { message, aiAdapter } = await req.json();
 
     if (!message || typeof message !== "string") {
       throw new Error("message is required");
@@ -37,15 +38,27 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const answersText = profile_answers && typeof profile_answers === "object"
-      ? Object.entries(profile_answers)
+    const knowledgeState =
+      aiAdapter && typeof aiAdapter === "object"
+        ? null
+        : await fetchKnowledgeCenterState(supabase, user.id);
+    const derivedAdapter =
+      aiAdapter && typeof aiAdapter === "object"
+        ? aiAdapter as Record<string, unknown>
+        : buildCatalogAiAdapter(knowledgeState?.snapshot ?? null, knowledgeState?.derivations ?? []);
+
+    const combinedResponses = toRecord(derivedAdapter.combinedResponses);
+    const yourVibe = toRecord(derivedAdapter.yourVibe);
+
+    const answersText = Object.keys(combinedResponses).length > 0
+      ? Object.entries(combinedResponses)
           .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(", ") : String(value)}`)
           .join("\n")
-      : "No profile answers yet.";
+      : "No Knowledge Center responses yet.";
 
-    const personalizationText = ai_personalization && typeof ai_personalization === "object"
-      ? JSON.stringify(ai_personalization, null, 2)
-      : "No AI personalization summary yet.";
+    const knowledgeDerivationText = Object.keys(yourVibe).length > 0
+      ? JSON.stringify(yourVibe, null, 2)
+      : "No Knowledge Center derivation summary yet.";
 
     const systemPrompt = `You are GoTwo's style AI.
 You help the user understand their taste, explain why certain questions matter, and give concise, thoughtful style guidance.
@@ -53,7 +66,7 @@ You help the user understand their taste, explain why certain questions matter, 
 Rules:
 - Speak in a warm, editorial, confident tone.
 - Be specific and practical, not generic.
-- Use the user's saved answers and AI personalization when available.
+- Use the user's saved Knowledge Center responses and derivations when available.
 - If the profile is still sparse, say what you know so far and suggest the next best questions to answer.
 - Keep responses under 180 words unless the user explicitly asks for more.
 - Do not invent facts that are not supported by the profile.
@@ -71,7 +84,7 @@ Rules:
           { role: "system", content: systemPrompt },
           {
             role: "user",
-            content: `Saved profile answers:\n${answersText}\n\nCurrent AI personalization:\n${personalizationText}\n\nUser question: ${message}`,
+            content: `Saved Knowledge Center responses:\n${answersText}\n\nCurrent Knowledge Center derivations:\n${knowledgeDerivationText}\n\nUser question: ${message}`,
           },
         ],
       }),
@@ -111,3 +124,5 @@ Rules:
     });
   }
 });
+
+// Codebase classification: runtime style-chat edge function.

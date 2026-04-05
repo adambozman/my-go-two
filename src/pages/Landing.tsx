@@ -47,7 +47,7 @@ const timelineSteps = [
     step: "05",
     title: "Control Who Sees What",
     description:
-      "You control the access. Your partner sees one thing. Your mom sees another.",
+      "You control the access. One connection sees one thing. Family sees another.",
     accent: "coral" as const,
   },
   {
@@ -570,7 +570,7 @@ const Landing = () => {
                   letterSpacing: "0.2px",
                 }}
               >
-                Join couples who never have to guess again.
+                Join people who never have to guess again.
               </p>
               <Link
                 to="/signup"
@@ -624,3 +624,5 @@ const Landing = () => {
 };
 
 export default Landing;
+
+// Codebase classification: runtime marketing landing page.

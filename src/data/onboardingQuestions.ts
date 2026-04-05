@@ -442,15 +442,7 @@ export const onboardingQuestions: OnboardingQuestion[] = [
   },
 ];
 
-export const getQuestionsForGender = (gender: string): OnboardingQuestion[] => {
-  const normalizedGender = gender.toLowerCase() as "male" | "female" | "non-binary";
-  return onboardingQuestions
-    .filter((q) => !q.gender || q.gender.includes(normalizedGender))
-    .map((q) => {
-      if (!q.options) return q;
-      const filteredOptions = q.options.filter(
-        (opt) => !opt.gender || opt.gender.includes(normalizedGender)
-      );
-      return { ...q, options: filteredOptions };
-    });
-};
+export const getOnboardingQuestions = (): OnboardingQuestion[] => onboardingQuestions;
+
+export const getQuestionsForGender = (_gender: string): OnboardingQuestion[] => getOnboardingQuestions();
+// Codebase classification: runtime onboarding question catalog with retired gender gating metadata.

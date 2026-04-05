@@ -28,7 +28,7 @@ interface ConnectionCard {
   email: string;
   status: string;
   isNew?: boolean;
-  partnerId?: string;
+  connectionUserId?: string;
   updatedAt?: string;
 }
 
@@ -49,7 +49,7 @@ function formatRelativeDateLabel(value?: string | Date | null) {
 
 interface HomeSearchResult {
   id: string;
-  kind: "entry";
+  kind: "saved-product-card";
   ownerId: string;
   ownerLabel: string;
   title: string;
@@ -59,7 +59,7 @@ interface HomeSearchResult {
 
 interface ActivityFeedItem {
   id: string;
-  coupleId: string;
+  userConnectionId: string;
   title: string;
   detail: string;
   meta: string;
@@ -68,7 +68,7 @@ interface ActivityFeedItem {
 
 interface ConnectionFeedRow {
   feed_item_id: string;
-  couple_id: string;
+  user_connection_id: string;
   connection_label: string | null;
   item_kind: string | null;
   title: string | null;
@@ -77,20 +77,20 @@ interface ConnectionFeedRow {
   event_at: string | null;
 }
 
-interface SearchableEntryRow {
+interface SearchableSavedProductCardRow {
   id: string;
   user_id: string;
-  entry_name: string;
-  group_name: string;
-  card_key: string;
+  card_title: string;
+  subcategory_label: string;
+  product_card_key: string;
 }
 
 interface HomeSearchEdgePayload {
-  my_entries?: SearchableEntryRow[];
-  circle_entries?: Array<SearchableEntryRow & { owner_label?: string }>;
+  my_saved_product_cards?: SearchableSavedProductCardRow[];
+  connection_saved_product_cards?: Array<SearchableSavedProductCardRow & { owner_label?: string }>;
 }
 
-interface CoupleRow {
+interface UserConnectionRow {
   id: string;
   inviter_id: string;
   invitee_id: string | null;
@@ -109,7 +109,7 @@ interface RelevantOccasionRow {
 
 interface PartnerOccasionSet {
   user_id: string;
-  couple: CoupleRow;
+  userConnection: UserConnectionRow;
   occasions: RelevantOccasionRow[];
 }
 
@@ -158,16 +158,16 @@ const DashboardHome = () => {
     await initBlocklist();
 
     const { data, error } = await supabase
-      .from("couples")
+      .from("user_connections")
       .select("*")
       .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`);
 
     if (error || !data) return;
 
-    const rows = (data || []) as CoupleRow[];
+    const rows = (data || []) as UserConnectionRow[];
     const cards: ConnectionCard[] = rows.map((row) => {
       const isInviter = row.inviter_id === user.id;
-      const partnerId = isInviter ? row.invitee_id : row.inviter_id;
+      const connectionUserId = isInviter ? row.invitee_id : row.inviter_id;
       const label = row.display_label || (isInviter && row.invitee_email ? row.invitee_email.split("@")[0] : "Connection");
 
       return {
@@ -176,7 +176,7 @@ const DashboardHome = () => {
         image: row.photo_url || "",
         email: row.invitee_email || "",
         status: row.status,
-        partnerId,
+        connectionUserId,
         updatedAt: row.updated_at,
       };
     });
@@ -187,13 +187,13 @@ const DashboardHome = () => {
   const loadMilestones = useCallback(async () => {
     if (!user) return;
 
-    const { data: couples } = await supabase
-      .from("couples")
+    const { data: userConnections } = await supabase
+      .from("user_connections")
       .select("inviter_id, invitee_id, display_label, status")
       .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`)
       .eq("status", "accepted");
 
-    if (!couples?.length) {
+    if (!userConnections?.length) {
       const now = new Date();
       setMilestones([
         {
@@ -229,18 +229,18 @@ const DashboardHome = () => {
         .eq("user_id", user.id)
         .maybeSingle(),
       Promise.all(
-        ((couples || []) as CoupleRow[]).map(async (couple) => {
-          const partnerId = couple.inviter_id === user.id ? couple.invitee_id : couple.inviter_id;
-          if (!partnerId) return null;
+        ((userConnections || []) as UserConnectionRow[]).map(async (userConnection) => {
+          const connectionUserId = userConnection.inviter_id === user.id ? userConnection.invitee_id : userConnection.inviter_id;
+          if (!connectionUserId) return null;
 
           const { data } = await rpc<RelevantOccasionRow[]>("get_connection_relevant_occasions", {
-            p_connection_user_id: partnerId,
+            p_connection_user_id: connectionUserId,
             p_days_ahead: 365,
           });
 
           return {
-            user_id: partnerId,
-            couple,
+            user_id: connectionUserId,
+            userConnection,
             occasions: Array.isArray(data) ? data : [],
           };
         })
@@ -286,7 +286,7 @@ const DashboardHome = () => {
     }
 
     for (const p of partnerOccasionSets.filter(Boolean) as PartnerOccasionSet[]) {
-      const name = p.couple?.display_label || "Connection";
+      const name = p.userConnection?.display_label || "Connection";
 
       for (const occasion of p.occasions) {
         if (occasion.occasion_type === "birthday") {
@@ -346,15 +346,15 @@ const DashboardHome = () => {
   const realConnections = connections.length;
   const canAddAnotherConnection = subscribed || realConnections < 1;
   const calendarConnections = connections
-    .filter((c) => c.partnerId)
-    .map((c) => ({ id: c.partnerId!, name: c.name }));
+    .filter((c) => c.connectionUserId)
+    .map((c) => ({ id: c.connectionUserId!, name: c.name }));
   const visibleConnectionEntries = directoryEntries.slice(0, 5);
-  const liveConnections = connections.filter((connection) => connection.partnerId);
+  const liveConnections = connections.filter((connection) => connection.connectionUserId);
   const searchScopeLabel = searchScope === "everyone"
     ? "Everyone"
     : searchScope === "self"
       ? "You"
-      : liveConnections.find((connection) => connection.partnerId === searchScope)?.name || "Connection";
+      : liveConnections.find((connection) => connection.connectionUserId === searchScope)?.name || "Connection";
 
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
@@ -401,14 +401,14 @@ const DashboardHome = () => {
     };
   }, [user]);
 
-  const buildEntryResult = useCallback((row: SearchableEntryRow, ownerLabel: string): HomeSearchResult => ({
+  const buildSavedProductCardResult = useCallback((row: SearchableSavedProductCardRow, ownerLabel: string): HomeSearchResult => ({
     id: row.id,
-    kind: "entry",
+    kind: "saved-product-card",
     ownerId: row.user_id,
     ownerLabel,
-    title: row.entry_name,
-    subtitle: row.group_name,
-    meta: row.card_key?.split("__").pop() || "Entry",
+    title: row.card_title,
+    subtitle: row.subcategory_label,
+    meta: row.product_card_key?.split("__").pop() || "Saved product card",
   }), []);
 
   const runHomeSearch = useCallback(async () => {
@@ -432,9 +432,11 @@ const DashboardHome = () => {
       }
 
       const payload = (data || {}) as HomeSearchEdgePayload;
-      const nextMine: HomeSearchResult[] = (payload.my_entries || []).map((row) => buildEntryResult(row, "You"));
-      const nextCircle: HomeSearchResult[] = (payload.circle_entries || []).map((row) =>
-        buildEntryResult(row, row.owner_label || "Connection")
+      const nextMine: HomeSearchResult[] = (payload.my_saved_product_cards || []).map((row) =>
+        buildSavedProductCardResult(row, "You"),
+      );
+      const nextCircle: HomeSearchResult[] = (payload.connection_saved_product_cards || []).map((row) =>
+        buildSavedProductCardResult(row, row.owner_label || "Connection")
       );
 
       setMySearchResults(nextMine);
@@ -445,7 +447,7 @@ const DashboardHome = () => {
     } finally {
       setSearchLoading(false);
     }
-  }, [buildEntryResult, homeSearch, searchScope, user]);
+  }, [buildSavedProductCardResult, homeSearch, searchScope, user]);
 
   return (
     <div className="relative h-full min-h-0 overflow-x-hidden overflow-y-auto">
@@ -569,7 +571,7 @@ const DashboardHome = () => {
                     <SelectItem value="everyone">Everyone</SelectItem>
                     <SelectItem value="self">You</SelectItem>
                     {liveConnections.map((connection) => (
-                      <SelectItem key={connection.id} value={connection.partnerId!}>
+                      <SelectItem key={connection.id} value={connection.connectionUserId!}>
                         {connection.name}
                       </SelectItem>
                     ))}
@@ -665,7 +667,7 @@ const DashboardHome = () => {
                 recentActivityItems.map((item) => (
                   <button
                     key={item.id}
-                    onClick={() => navigate(`/dashboard/connection-feed?coupleId=${item.coupleId}`)}
+                    onClick={() => navigate(`/dashboard/connection-feed?userConnectionId=${item.userConnectionId}`)}
                     className="card-inset-white rounded-[22px] px-4 py-4"
                     style={{ width: "100%", textAlign: "left" }}
                   >
@@ -801,3 +803,5 @@ const DashboardHome = () => {
 };
 
 export default DashboardHome;
+
+// Codebase classification: runtime dashboard home page.

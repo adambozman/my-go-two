@@ -27,23 +27,14 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await authClient.auth.getUser();
     if (authError || !user?.id) throw new Error("Unauthorized");
 
-    // Get user's gender
-    const { data: profile } = await authClient
-      .from("profiles")
-      .select("gender")
-      .eq("user_id", user.id)
-      .single();
+    const quizSetKey = "universal";
 
-    // Normalize gender to one of: male, female, neutral
-    const rawGender = profile?.gender || "neutral";
-    const gender = rawGender === "male" ? "male" : rawGender === "female" ? "female" : "neutral";
-
-    // Check if we already have a question set for this gender
+    // Check if we already have the shared universal question set.
     const admin = createClient(supabaseUrl, supabaseServiceKey);
     const { data: existing } = await admin
       .from("quiz_question_sets")
       .select("questions, generated_at")
-      .eq("gender", gender)
+      .eq("gender", quizSetKey)
       .single();
 
     if (existing) {
@@ -56,14 +47,12 @@ serve(async (req) => {
       }
     }
 
-    // Generate question set for this gender
+    // Generate the universal question set.
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const genderLabel = gender === "male" ? "men" : gender === "female" ? "women" : "all people (gender-neutral)";
-
-    const prompt = `You are a lifestyle AI for GoTwo, a couples' preference-sharing app.
-Generate a UNIVERSAL set of questions for ${genderLabel}. These same questions go to EVERY ${genderLabel === "all people (gender-neutral)" ? "non-binary user" : genderLabel.slice(0, -1)}. The AI learns about each person from HOW they answer, not from what questions they see.
+const prompt = `You are a lifestyle AI for GoTwo, a connection-centered preference-sharing app.
+Generate one UNIVERSAL set of questions for every user. The AI learns about each person from HOW they answer, not from what questions they see.
 
 Generate exactly 5 SECTIONS with exactly 4 CATEGORIES per section, and exactly 5 QUESTIONS per category = 100 questions total.
 
@@ -113,7 +102,7 @@ RULES:
 - Subtitles: one short engaging sentence.
 - Option labels: 1-4 words, plain English only.
 - Each question ID must be globally unique kebab-case.
-- Make questions ${gender === "male" ? "appropriate for men" : gender === "female" ? "appropriate for women" : "gender-neutral"}.
+- Make every question broadly usable for any adult user.
 - Each category needs an image_prompt for a lifestyle cover photo.
 
 Use the provided tool.`;
@@ -210,9 +199,9 @@ Use the provided tool.`;
 
     const { categories } = JSON.parse(toolCall.function.arguments);
 
-    // Store globally by gender (not per-user)
+    // Store one universal question set, not per-user and not per-gender.
     await admin.from("quiz_question_sets").upsert(
-      { gender, questions: categories, generated_at: new Date().toISOString() },
+      { gender: quizSetKey, questions: categories, generated_at: new Date().toISOString() },
       { onConflict: "gender" }
     );
 
@@ -227,3 +216,5 @@ Use the provided tool.`;
     );
   }
 });
+
+// Codebase classification: runtime Know Me question generation edge function.

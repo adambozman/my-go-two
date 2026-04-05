@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { PersonalizationProvider } from "@/contexts/PersonalizationContext";
+import { KnowledgeCenterProvider } from "@/contexts/KnowledgeCenterContext";
 import { TopBarProvider } from "@/contexts/TopBarContext";
 import Landing from "./pages/Landing";
 const Login = lazy(() => import("./pages/Login"));
@@ -16,7 +16,7 @@ const DashboardLayout = lazy(() => import("./layouts/DashboardLayout"));
 const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
 const MyGoTwo = lazy(() => import("./pages/dashboard/MyGoTwo"));
 const Recommendations = lazy(() => import("./pages/dashboard/Recommendations"));
-const Questionnaires = lazy(() => import("./pages/dashboard/Questionnaires"));
+const KnowMePage = lazy(() => import("./pages/dashboard/KnowMePage"));
 const Notifications = lazy(() => import("./pages/dashboard/Notifications"));
 const SettingsPage = lazy(() => import("./pages/dashboard/SettingsPage"));
 const PublicFeed = lazy(() => import("./pages/dashboard/PublicFeed"));
@@ -43,7 +43,7 @@ const App = () => {
   return (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <PersonalizationProvider>
+      <KnowledgeCenterProvider>
         <TopBarProvider>
         <TooltipProvider>
           <Toaster />
@@ -63,7 +63,7 @@ const App = () => {
                   <Route index element={<DashboardHome />} />
                   <Route path="my-go-two" element={<MyGoTwo />} />
                   <Route path="recommendations" element={<Recommendations />} />
-                  <Route path="questionnaires" element={<Questionnaires />} />
+                  <Route path="know-me" element={<KnowMePage />} />
                   <Route path="settings" element={<SettingsPage />} />
                   <Route path="notifications" element={<Notifications />} />
                   <Route path="search" element={<Search />} />
@@ -79,10 +79,11 @@ const App = () => {
           </BrowserRouter>
         </TooltipProvider>
         </TopBarProvider>
-      </PersonalizationProvider>
+      </KnowledgeCenterProvider>
     </AuthProvider>
   </QueryClientProvider>
   );
 };
 
 export default App;
+// Codebase classification: runtime application routing.

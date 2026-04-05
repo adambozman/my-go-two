@@ -22,7 +22,7 @@ const DashboardLayout = () => {
     }).then(({ error }) => {
       localStorage.removeItem("gotwo_invite");
       if (!error) {
-        toast({ title: "Connected!", description: "You're now linked with your partner." });
+        toast({ title: "Connected!", description: "You're now linked with your connection." });
       }
     });
   }, [toast, user]);
@@ -50,3 +50,4 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
+// Codebase classification: runtime dashboard shell.

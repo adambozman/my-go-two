@@ -61,7 +61,7 @@ const Connect = () => {
               setError(msg);
             }
           } else {
-            toast({ title: "Connected!", description: "You're now linked with your partner." });
+            toast({ title: "Connected!", description: "You're now linked with your connection." });
           }
           navigate("/dashboard/settings");
         });
@@ -179,3 +179,4 @@ const Connect = () => {
 };
 
 export default Connect;
+// Codebase classification: runtime connection invite page.

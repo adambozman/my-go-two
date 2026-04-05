@@ -25,18 +25,11 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await userClient.auth.getUser();
     if (authError || !user) throw new Error("Unauthorized");
 
-    const { prompt, gender } = await req.json();
+    const { prompt } = await req.json();
     if (!prompt || typeof prompt !== "string") throw new Error("Prompt is required");
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
-
-    // Build gender-specific prompt modifiers
-    const genderContext = gender === "male"
-      ? "masculine, men's lifestyle, rugged yet refined, warm amber and earth tones, male-oriented products"
-      : gender === "female"
-      ? "feminine, women's lifestyle, soft and elegant, warm rose and golden tones, female-oriented products"
-      : "gender-neutral, modern product-focused, warm earth tones, inclusive lifestyle";
 
     // Generate image using AI
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -50,7 +43,7 @@ serve(async (req) => {
         messages: [
           {
             role: "user",
-            content: `Generate a beautiful, high-quality lifestyle photograph for a personal preferences card titled "${prompt}". The image should be ${genderContext}. Style: warm golden-hour editorial lifestyle photography with soft natural lighting, intimate and inviting. Absolutely no text, labels, or words in the image.`,
+            content: `Generate a beautiful, high-quality lifestyle photograph for a saved product card titled "${prompt}". Keep it broadly useful, product-forward, and inclusive. Style: warm golden-hour editorial lifestyle photography with soft natural lighting, intimate and inviting. Absolutely no text, labels, or words in the image.`,
           },
         ],
         modalities: ["image", "text"],
@@ -109,3 +102,4 @@ serve(async (req) => {
     );
   }
 });
+// Codebase classification: runtime saved-product-card image generation edge function.

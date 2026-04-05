@@ -184,7 +184,7 @@ function CategoryOverlay({
           <div className="absolute inset-0">
             <MyProductCardBeverages
               userId={user?.id ?? ""}
-              activeEntry={null}
+              activeSavedProductCard={null}
               onSaved={() => undefined}
             />
           </div>
@@ -967,3 +967,5 @@ export default function MyGoTwoStripGalleryAsset() {
     </section>
   );
 }
+
+// Codebase classification: runtime My Go Two gallery surface.

@@ -1,7 +1,7 @@
 /**
- * Template subtypes — utility types and gender filtering functions.
+ * Template subtypes — utility types and legacy compatibility helpers.
  * All category data now lives in the category_registry table.
- * This file only exports types and filter utilities.
+ * Runtime gender gating has been retired, so the helpers now return the full input.
  */
 
 export interface SubtypeItem {
@@ -20,18 +20,19 @@ export interface SubcategoryGroup {
   gender?: string[];
 }
 
-/** Filter subtypes by gender — removes items gated to other genders */
+/** Runtime gender gating is retired; preserve the full subtype list. */
 export function filterSubtypesByGender(
   items: SubtypeItem[],
-  gender: string,
+  _gender: string,
 ): SubtypeItem[] {
-  return items.filter((item) => !item.gender || item.gender.includes(gender));
+  return items;
 }
 
-/** Filter subcategory groups by gender */
+/** Runtime gender gating is retired; preserve the full subcategory list. */
 export function filterSubcategoriesByGender(
   groups: SubcategoryGroup[],
-  gender: string,
+  _gender: string,
 ): SubcategoryGroup[] {
-  return groups.filter((g) => !g.gender || g.gender.includes(gender));
+  return groups;
 }
+// Codebase classification: runtime legacy compatibility utilities for template metadata.

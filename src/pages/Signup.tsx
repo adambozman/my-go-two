@@ -3,9 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/auth-context";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -23,7 +21,6 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -31,16 +28,11 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!gender) {
-      toast({ title: "Please select your gender", variant: "destructive" });
-      return;
-    }
     setLoading(true);
     try {
       await signUp(email, password, displayName);
       localStorage.setItem("gotwo_signup_data", JSON.stringify({
         age: parseInt(age) || null,
-        gender,
       }));
       if (inviteId) {
         localStorage.setItem("gotwo_invite", inviteId);
@@ -160,56 +152,29 @@ const Signup = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="age"
-                      className="text-sm font-semibold"
-                      style={{ color: "var(--swatch-teal)" }}
-                    >
-                      Age
-                    </Label>
-                    <Input
-                      id="age"
-                      type="number"
-                      value={age}
-                      onChange={(e) => setAge(e.target.value)}
-                      placeholder="25"
-                      min="13"
-                      max="120"
-                      className="rounded-xl h-12 border-0 text-sm"
-                      style={{
-                        background: "rgba(255,255,255,0.6)",
-                        boxShadow: "inset 2px 2px 6px rgba(0,0,0,0.04), inset -2px -2px 6px rgba(255,255,255,0.6)",
-                        color: "var(--swatch-antique-coin)",
-                      }}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      className="text-sm font-semibold"
-                      style={{ color: "var(--swatch-teal)" }}
-                    >
-                      I am...
-                    </Label>
-                    <Select value={gender} onValueChange={setGender}>
-                      <SelectTrigger
-                        className="rounded-xl h-12 border-0 text-sm"
-                        style={{
-                          background: "rgba(255,255,255,0.6)",
-                          boxShadow: "inset 2px 2px 6px rgba(0,0,0,0.04), inset -2px -2px 6px rgba(255,255,255,0.6)",
-                          color: "var(--swatch-antique-coin)",
-                        }}
-                      >
-                        <SelectValue placeholder="Select..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="non-binary">Non-Binary</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="age"
+                    className="text-sm font-semibold"
+                    style={{ color: "var(--swatch-teal)" }}
+                  >
+                    Age
+                  </Label>
+                  <Input
+                    id="age"
+                    type="number"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                    placeholder="25"
+                    min="13"
+                    max="120"
+                    className="rounded-xl h-12 border-0 text-sm"
+                    style={{
+                      background: "rgba(255,255,255,0.6)",
+                      boxShadow: "inset 2px 2px 6px rgba(0,0,0,0.04), inset -2px -2px 6px rgba(255,255,255,0.6)",
+                      color: "var(--swatch-antique-coin)",
+                    }}
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -285,3 +250,4 @@ const Signup = () => {
 };
 
 export default Signup;
+// Codebase classification: runtime signup page.

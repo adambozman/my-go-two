@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildCatalogAiAdapter, fetchKnowledgeCenterState } from "../_shared/knowledgeCenter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -19,7 +20,7 @@ const cleanText = (value: unknown): string => {
 
 const ALLOWED_FEED_CATEGORIES = new Set(["trending_style", "store_pick", "gift_idea", "lifestyle"]);
 
-type Personalization = {
+type KnowledgeProfile = {
   style_keywords?: string[];
   recommended_brands?: string[];
   recommended_stores?: string[];
@@ -28,7 +29,7 @@ type Personalization = {
   persona_summary?: string;
 };
 
-type ProfileAnswers = {
+type KnowledgeResponses = {
   identity?: string[] | string;
 };
 
@@ -38,7 +39,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((item) => typeof item === "string");
 
-const normalizePersonalization = (value: unknown): Personalization | null => {
+const normalizeKnowledgeProfile = (value: unknown): KnowledgeProfile | null => {
   if (!isRecord(value)) return null;
 
   return {
@@ -51,7 +52,7 @@ const normalizePersonalization = (value: unknown): Personalization | null => {
   };
 };
 
-const normalizeProfileAnswers = (value: unknown): ProfileAnswers | null => {
+const normalizeKnowledgeResponses = (value: unknown): KnowledgeResponses | null => {
   if (!isRecord(value)) return null;
 
   return {
@@ -105,17 +106,12 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error("Unauthorized");
 
-    // Get user's personalization data
-    const { data: prefs } = await supabase
-      .from("user_preferences")
-      .select("ai_personalization, profile_answers")
-      .eq("user_id", user.id)
-      .single();
+    const knowledgeState = await fetchKnowledgeCenterState(supabase, user.id);
+    const aiAdapter = buildCatalogAiAdapter(knowledgeState.snapshot, knowledgeState.derivations);
+    const knowledgeProfile = normalizeKnowledgeProfile(aiAdapter.yourVibe);
+    const knowledgeResponses = normalizeKnowledgeResponses(aiAdapter.combinedResponses);
 
-    const personalization = normalizePersonalization(prefs?.ai_personalization);
-    const profileAnswers = normalizeProfileAnswers(prefs?.profile_answers);
-
-    if (!personalization) {
+    if (!knowledgeProfile) {
       return new Response(JSON.stringify({ feed: [] }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -124,23 +120,23 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const gender = profileAnswers?.identity?.[0] || "unspecified";
-    const styles = personalization.style_keywords?.join(", ") || "";
-    const brands = personalization.recommended_brands?.join(", ") || "";
-    const stores = personalization.recommended_stores?.join(", ") || "";
-    const priceTier = personalization.price_tier || "mid-range";
-    const giftCats = personalization.gift_categories?.join(", ") || "";
+    const identity = knowledgeResponses?.identity?.[0] || "unspecified";
+    const styles = knowledgeProfile.style_keywords?.join(", ") || "";
+    const brands = knowledgeProfile.recommended_brands?.join(", ") || "";
+    const stores = knowledgeProfile.recommended_stores?.join(", ") || "";
+    const priceTier = knowledgeProfile.price_tier || "mid-range";
+    const giftCats = knowledgeProfile.gift_categories?.join(", ") || "";
 
-    const prompt = `You are a lifestyle content curator for GoTwo, a couples' preference-sharing app.
+    const prompt = `You are a lifestyle content curator for GoTwo, a connection-centered preference-sharing app.
 
-Generate a personalized dashboard feed for this user:
-- Gender: ${gender}
+Generate a curated dashboard feed for this user:
+- Identity: ${identity}
 - Style: ${styles}
 - Favorite brands: ${brands}
 - Preferred stores: ${stores}
 - Price tier: ${priceTier}
 - Gift interests: ${giftCats}
-- Persona: ${personalization.persona_summary || ""}
+- Persona: ${knowledgeProfile.persona_summary || ""}
 
 Generate exactly 8 feed cards in these categories (2 each):
 1. "trending_style" - Trending fashion/style articles relevant to their aesthetic
@@ -168,7 +164,7 @@ Use the provided tool to return the feed.`;
             type: "function",
             function: {
               name: "generate_feed",
-              description: "Generate personalized dashboard feed cards",
+              description: "Generate curated dashboard feed cards",
               parameters: {
                 type: "object",
                 properties: {
@@ -221,3 +217,5 @@ Use the provided tool to return the feed.`;
     );
   }
 });
+
+// Codebase classification: runtime trending-feed edge function.

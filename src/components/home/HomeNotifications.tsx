@@ -16,7 +16,7 @@ interface HomeNotificationsProps {
 }
 
 const typeIcon = {
-  partner_activity: Heart,
+  connection_activity: Heart,
   gift_reminder: Gift,
   recommendation: Sparkles,
   app: Bell,
@@ -33,6 +33,8 @@ function formatTime(dateString: string) {
   if (diffDays < 7) return `${diffDays}d ago`;
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
+
+// Codebase classification: runtime home notifications component.
 
 export function HomeNotifications({ notifications, onOpenAll }: HomeNotificationsProps) {
   return (

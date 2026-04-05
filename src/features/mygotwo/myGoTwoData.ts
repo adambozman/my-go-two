@@ -1,57 +1,65 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { CardEntry } from "@/features/mygotwo/types";
+import type { SavedProductCard } from "@/features/mygotwo/types";
 
-export async function fetchMyGoTwoEntries(userId: string, cardKey: string): Promise<CardEntry[]> {
+export async function fetchMyGoTwoSavedProductCards(
+  userId: string,
+  productCardKey: string,
+): Promise<SavedProductCard[]> {
   const { data } = await supabase
-    .from("card_entries")
+    .from("saved_product_cards")
     .select("*")
     .eq("user_id", userId)
-    .eq("card_key", cardKey)
+    .eq("product_card_key", productCardKey)
     .order("created_at", { ascending: true });
 
-  return (data as CardEntry[]) || [];
+  return (data as SavedProductCard[]) || [];
 }
 
-export async function createMyGoTwoEntry(input: {
+export async function createSavedProductCard(input: {
   userId: string;
-  cardKey: string;
-  groupName: string;
-  entryName: string;
+  productCardKey: string;
+  subcategoryLabel: string;
+  cardTitle: string;
   fieldValues: Record<string, string>;
-}): Promise<CardEntry> {
+}): Promise<SavedProductCard> {
   const { data, error } = await supabase
-    .from("card_entries")
+    .from("saved_product_cards")
     .insert({
       user_id: input.userId,
-      card_key: input.cardKey,
-      group_name: input.groupName,
-      entry_name: input.entryName,
+      product_card_key: input.productCardKey,
+      subcategory_label: input.subcategoryLabel,
+      card_title: input.cardTitle,
       field_values: input.fieldValues,
     })
     .select("*")
     .single();
 
   if (error) throw error;
-  return data as CardEntry;
+  return data as SavedProductCard;
 }
 
-export async function updateMyGoTwoEntry(input: {
-  entryId: string;
-  entryName: string;
+export async function updateSavedProductCard(input: {
+  savedProductCardId: string;
+  cardTitle: string;
   fieldValues: Record<string, string>;
 }) {
   const { error } = await supabase
-    .from("card_entries")
+    .from("saved_product_cards")
     .update({
-      entry_name: input.entryName,
+      card_title: input.cardTitle,
       field_values: input.fieldValues,
     })
-    .eq("id", input.entryId);
+    .eq("id", input.savedProductCardId);
 
   if (error) throw error;
 }
 
-export async function deleteMyGoTwoEntry(entryId: string) {
-  const { error } = await supabase.from("card_entries").delete().eq("id", entryId);
+export async function deleteSavedProductCard(savedProductCardId: string) {
+  const { error } = await supabase
+    .from("saved_product_cards")
+    .delete()
+    .eq("id", savedProductCardId);
   if (error) throw error;
 }
+
+// Codebase classification: runtime My Go Two data access.

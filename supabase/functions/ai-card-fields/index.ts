@@ -16,7 +16,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const prompt = `You are building a PRODUCT-SPECIFIC preferences card for a couples app called GoTwo. The user wants to create a card titled "${title}" in the "${category}" category.
+const prompt = `You are building a PRODUCT-SPECIFIC preferences card for a connection-centered app called GoTwo. The user wants to create a card titled "${title}" in the "${category}" category.
 
 This card represents ONE specific product or item. Generate 5-8 product-centric fields. Every card MUST include these standard fields:
 - "Brand" (text)
