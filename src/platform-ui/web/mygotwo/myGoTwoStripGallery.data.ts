@@ -107,11 +107,13 @@ async function fetchAssignedRows(options?: { force?: boolean }) {
     return inflightRowsPromise.then(cloneRows);
   }
 
-  inflightRowsPromise = supabase
-    .from("category_images")
-    .select("category_key, image_url")
-    .eq("gender", "male")
-    .in("category_key", SLOT_KEYS)
+  inflightRowsPromise = Promise.resolve(
+    supabase
+      .from("category_images")
+      .select("category_key, image_url")
+      .eq("gender", "male")
+      .in("category_key", SLOT_KEYS)
+  )
     .then(({ data, error }) => {
       if (error) {
         throw error;
