@@ -5,11 +5,12 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  clearScreen: false,
   server: {
     host: "::",
     port: 8080,
     hmr: {
-      overlay: false,
+      overlay: true,
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
@@ -36,3 +37,4 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
+// Codebase classification: development Vite configuration.

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { KnowledgeCenterContext } from "@/contexts/knowledge-center-context";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,8 +23,11 @@ export const KnowledgeCenterProvider = ({ children }: { children: ReactNode }) =
   const [knowledgeSnapshot, setKnowledgeSnapshot] = useState<UserKnowledgeSnapshot | null>(null);
   const [knowledgeDerivations, setKnowledgeDerivations] = useState<UserKnowledgeDerivation[]>([]);
   const [loading, setLoading] = useState(true);
+  const mountedRef = useRef(true);
+  const latestRefreshRequestRef = useRef(0);
 
   const refreshKnowledge = useCallback(async () => {
+    const activeUser = user;
     if (!user) {
       setKnowledgeSnapshot(null);
       setKnowledgeDerivations([]);
@@ -32,16 +35,18 @@ export const KnowledgeCenterProvider = ({ children }: { children: ReactNode }) =
       return;
     }
 
+    const requestId = latestRefreshRequestRef.current + 1;
+    latestRefreshRequestRef.current = requestId;
     setLoading(true);
 
     try {
       const [snapshotResult, derivationResult] = await Promise.all([
-        (supabase as any)
+        supabase
           .from("user_knowledge_snapshots")
           .select("*")
           .eq("user_id", user.id)
           .maybeSingle(),
-        (supabase as any)
+        supabase
           .from("user_knowledge_derivations")
           .select("*")
           .eq("user_id", user.id)
@@ -51,23 +56,33 @@ export const KnowledgeCenterProvider = ({ children }: { children: ReactNode }) =
       if (snapshotResult.error) throw snapshotResult.error;
       if (derivationResult.error) throw derivationResult.error;
 
+      if (!mountedRef.current || latestRefreshRequestRef.current !== requestId) return;
+
       setKnowledgeSnapshot(
-        (snapshotResult.data as KnowledgeSnapshotRow | null) ?? emptySnapshot(user.id),
+        (snapshotResult.data as KnowledgeSnapshotRow | null) ?? emptySnapshot(activeUser.id),
       );
       setKnowledgeDerivations(
         ((derivationResult.data as KnowledgeDerivationRow[] | null) ?? []).filter(Boolean),
       );
     } catch (error) {
       console.error("Failed to load knowledge center data:", error);
-      setKnowledgeSnapshot(emptySnapshot(user.id));
+      if (!mountedRef.current || latestRefreshRequestRef.current !== requestId) return;
+      setKnowledgeSnapshot(emptySnapshot(activeUser.id));
       setKnowledgeDerivations([]);
     } finally {
-      setLoading(false);
+      if (mountedRef.current && latestRefreshRequestRef.current === requestId) {
+        setLoading(false);
+      }
     }
   }, [user]);
 
   useEffect(() => {
-    refreshKnowledge();
+    mountedRef.current = true;
+    void refreshKnowledge();
+    return () => {
+      mountedRef.current = false;
+      latestRefreshRequestRef.current += 1;
+    };
   }, [refreshKnowledge]);
 
   useEffect(() => {
@@ -97,7 +112,7 @@ export const KnowledgeCenterProvider = ({ children }: { children: ReactNode }) =
       )
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "knowledge_derivations", filter: `user_id=eq.${user.id}` },
+        { event: "*", schema: "public", table: "user_knowledge_derivations", filter: `user_id=eq.${user.id}` },
         () => void refreshKnowledge(),
       )
       .subscribe();

@@ -3,10 +3,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { KnowledgeCenterProvider } from "@/contexts/KnowledgeCenterContext";
 import { TopBarProvider } from "@/contexts/TopBarContext";
+import { AppRuntimeBoundary } from "@/components/AppRuntimeBoundary";
+import { DevRuntimeDiagnostics } from "@/components/DevRuntimeDiagnostics";
 import Landing from "./pages/Landing";
 const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
@@ -41,47 +43,50 @@ function RouteFallback() {
 
 const App = () => {
   return (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <KnowledgeCenterProvider>
-        <TopBarProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Suspense fallback={<RouteFallback />}>
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ForgotPassword />} />
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/connect" element={<Connect />} />
-                <Route path="/photo-gallery" element={<PhotoGallery />} />
-                <Route path="/dashboard" element={<DashboardLayout />}>
-                  <Route index element={<DashboardHome />} />
-                  <Route path="my-go-two" element={<MyGoTwo />} />
-                  <Route path="recommendations" element={<Recommendations />} />
-                  <Route path="know-me" element={<KnowMePage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                  <Route path="notifications" element={<Notifications />} />
-                  <Route path="search" element={<Search />} />
-                  <Route path="public-feed" element={<PublicFeed />} />
-                  <Route path="connection-feed" element={<ConnectionFeed />} />
-                  <Route path="connections/:connectionId" element={<ConnectionPage />} />
-                  <Route path="sponsored" element={<SponsoredAdmin />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
-                <Route path="/carousel-test" element={<CarouselTest />} />
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </TooltipProvider>
-        </TopBarProvider>
-      </KnowledgeCenterProvider>
-    </AuthProvider>
-  </QueryClientProvider>
+    <AppRuntimeBoundary>
+      <DevRuntimeDiagnostics />
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <KnowledgeCenterProvider>
+            <TopBarProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <Suspense fallback={<RouteFallback />}>
+                    <Routes>
+                      <Route path="/" element={<Landing />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/signup" element={<Signup />} />
+                      <Route path="/forgot-password" element={<ForgotPassword />} />
+                      <Route path="/reset-password" element={<ForgotPassword />} />
+                      <Route path="/onboarding" element={<Onboarding />} />
+                      <Route path="/connect" element={<Connect />} />
+                      <Route path="/photo-gallery" element={<PhotoGallery />} />
+                      <Route path="/dashboard" element={<DashboardLayout />}>
+                        <Route index element={<DashboardHome />} />
+                        <Route path="my-go-two" element={<MyGoTwo />} />
+                        <Route path="recommendations" element={<Recommendations />} />
+                        <Route path="know-me" element={<KnowMePage />} />
+                        <Route path="settings" element={<SettingsPage />} />
+                        <Route path="notifications" element={<Notifications />} />
+                        <Route path="search" element={<Search />} />
+                        <Route path="public-feed" element={<PublicFeed />} />
+                        <Route path="connection-feed" element={<ConnectionFeed />} />
+                        <Route path="connections/:connectionId" element={<ConnectionPage />} />
+                        <Route path="sponsored" element={<SponsoredAdmin />} />
+                      </Route>
+                      <Route path="*" element={<NotFound />} />
+                      <Route path="/carousel-test" element={<CarouselTest />} />
+                    </Routes>
+                  </Suspense>
+                </BrowserRouter>
+              </TooltipProvider>
+            </TopBarProvider>
+          </KnowledgeCenterProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </AppRuntimeBoundary>
   );
 };
 
