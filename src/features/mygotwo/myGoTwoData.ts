@@ -21,6 +21,7 @@ export async function createSavedProductCard(input: {
   subcategoryLabel: string;
   cardTitle: string;
   fieldValues: Record<string, string>;
+  imageUrl?: string | null;
 }): Promise<SavedProductCard> {
   const { data, error } = await supabase
     .from("saved_product_cards")
@@ -30,6 +31,7 @@ export async function createSavedProductCard(input: {
       subcategory_label: input.subcategoryLabel,
       card_title: input.cardTitle,
       field_values: input.fieldValues,
+      image_url: input.imageUrl ?? null,
     })
     .select("*")
     .single();
@@ -42,12 +44,14 @@ export async function updateSavedProductCard(input: {
   savedProductCardId: string;
   cardTitle: string;
   fieldValues: Record<string, string>;
+  imageUrl?: string | null;
 }) {
   const { error } = await supabase
     .from("saved_product_cards")
     .update({
       card_title: input.cardTitle,
       field_values: input.fieldValues,
+      ...(input.imageUrl !== undefined ? { image_url: input.imageUrl } : {}),
     })
     .eq("id", input.savedProductCardId);
 

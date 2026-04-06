@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { Camera, ChevronDown, ImagePlus, Loader2 } from "lucide-react";
 
 import { createSavedProductCard, updateSavedProductCard } from "@/features/mygotwo/myGoTwoData";
 import type { SavedProductCard } from "@/features/mygotwo/types";
 import type { SubcategoryGroup, SubtypeItem } from "@/data/templateSubtypes";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
 
 type MyProductCardBeveragesProps = {
   userId: string;
@@ -13,49 +16,82 @@ type MyProductCardBeveragesProps = {
   interactive?: boolean;
 };
 
-type ProductField = SubtypeItem["fields"][number];
-type FieldKey = "go_to_order" | "favorite_place" | "how_i_take_it" | "avoid" | "notes";
-type FieldPresentation = "searchable" | "freeform";
+type FieldKey =
+  | "go_to_order"
+  | "drink_type"
+  | "temperature"
+  | "size"
+  | "favorite_place"
+  | "occasion"
+  | "avoid"
+  | "keywords";
 
 type BeverageFieldConfig = {
   key: FieldKey;
   label: string;
   placeholder: string;
-  presentation: FieldPresentation;
-  multiline?: boolean;
+  options?: readonly string[];
 };
+
+const FIELD_CONFIGS: BeverageFieldConfig[] = [
+  {
+    key: "go_to_order",
+    label: "Go-To Order",
+    placeholder: "Iced matcha, oat milk, light ice",
+  },
+  {
+    key: "drink_type",
+    label: "Drink Type",
+    placeholder: "Add drink type",
+    options: ["Coffee", "Espresso", "Tea", "Matcha", "Smoothie", "Juice", "Soda", "Cocktail", "Mocktail", "Fresco", "Water"],
+  },
+  {
+    key: "temperature",
+    label: "Temperature",
+    placeholder: "Add temperature",
+    options: ["Iced", "Hot", "Warm", "Frozen", "Room Temp"],
+  },
+  {
+    key: "size",
+    label: "Size",
+    placeholder: "Add size",
+    options: ["Short", "Small", "Medium", "Large", "Extra Large"],
+  },
+  {
+    key: "favorite_place",
+    label: "Favorite Place",
+    placeholder: "Add place",
+    options: ["Home", "Local Cafe", "Office", "Starbucks", "Dunkin", "Dutch Bros", "Juice Bar", "Tea Shop"],
+  },
+  {
+    key: "occasion",
+    label: "Occasion",
+    placeholder: "Add occasion",
+    options: ["Morning", "Afternoon", "Evening", "Workday", "Weekend", "Road Trip", "Treat", "Celebration"],
+  },
+  {
+    key: "avoid",
+    label: "Avoid",
+    placeholder: "Add avoid",
+    options: ["Too Sweet", "Dairy", "Ice", "Foam", "Pulp", "Artificial Sweetener", "Caffeine Late", "Alcohol"],
+  },
+  {
+    key: "keywords",
+    label: "Keywords",
+    placeholder: "Add keyword",
+    options: ["Morning", "Favorite", "Treat", "Patio", "Drive-Thru", "Brunch", "Daily", "Comfort", "Weekend"],
+  },
+];
 
 const BEVERAGES_PRODUCT: SubtypeItem = {
   id: "beverages-featured-product-card",
   name: "Beverage",
   image: "",
-  fields: [
-    {
-      label: "Go-to order",
-      type: "text",
-      value: "",
-    },
-    {
-      label: "Favorite place",
-      type: "text",
-      value: "",
-    },
-    {
-      label: "How I take it",
-      type: "text",
-      value: "",
-    },
-    {
-      label: "Avoid",
-      type: "text",
-      value: "",
-    },
-    {
-      label: "Notes",
-      type: "text",
-      value: "",
-    },
-  ],
+  fields: FIELD_CONFIGS.map((config) => ({
+    label: config.label,
+    type: "text",
+    value: "",
+  })),
 };
 
 const BEVERAGES_SUBCATEGORY: SubcategoryGroup = {
@@ -65,71 +101,12 @@ const BEVERAGES_SUBCATEGORY: SubcategoryGroup = {
   products: [BEVERAGES_PRODUCT],
 };
 
-const FIELD_CONFIGS: BeverageFieldConfig[] = [
-  {
-    key: "go_to_order",
-    label: "Go-to order",
-    placeholder: "Iced matcha, half sweet, oat milk",
-    presentation: "searchable",
-  },
-  {
-    key: "favorite_place",
-    label: "Favorite place",
-    placeholder: "Cafe, bar, or spot",
-    presentation: "searchable",
-  },
-  {
-    key: "how_i_take_it",
-    label: "How I take it",
-    placeholder: "Extra cold, strong, no foam",
-    presentation: "searchable",
-  },
-  {
-    key: "avoid",
-    label: "Avoid",
-    placeholder: "Too sweet, watery, no pulp",
-    presentation: "searchable",
-  },
-  {
-    key: "notes",
-    label: "Notes",
-    placeholder: "Add a note...",
-    presentation: "freeform",
-    multiline: true,
-  },
-];
-
-function slugFieldLabel(label: string) {
-  return label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
-}
-
-function buildInitialFieldValues(fields: ProductField[], activeSavedProductCard: SavedProductCard | null) {
-  return fields.reduce<Record<string, string>>((acc, field) => {
-    const key = slugFieldLabel(field.label);
-    const storedValue = activeSavedProductCard?.field_values?.[key];
-
-    if (typeof storedValue === "string") {
-      acc[key] = storedValue;
-    } else if (typeof field.value === "string") {
-      acc[key] = field.value;
-    } else {
-      acc[key] = "";
-    }
-
+function buildInitialFieldValues(activeSavedProductCard: SavedProductCard | null) {
+  return FIELD_CONFIGS.reduce<Record<FieldKey, string>>((acc, config) => {
+    const storedValue = activeSavedProductCard?.field_values?.[config.key];
+    acc[config.key] = typeof storedValue === "string" ? storedValue : "";
     return acc;
-  }, {});
-}
-
-function getFieldConfig(field: ProductField): BeverageFieldConfig {
-  const key = slugFieldLabel(field.label) as FieldKey;
-  return (
-    FIELD_CONFIGS.find((config) => config.key === key) ?? {
-      key,
-      label: field.label,
-      placeholder: "+ add",
-      presentation: "freeform",
-    }
-  );
+  }, {} as Record<FieldKey, string>);
 }
 
 function SectionEyebrow({ children }: { children: string }) {
@@ -146,147 +123,392 @@ function SectionEyebrow({ children }: { children: string }) {
   );
 }
 
-function RecordField({
-  field,
-  value,
+function FieldLabel({ children }: { children: string }) {
+  return (
+    <p
+      className="text-[10px] uppercase tracking-[0.22em]"
+      style={{
+        fontFamily: "'Jost', sans-serif",
+        color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
+      }}
+    >
+      {children}
+    </p>
+  );
+}
+
+function normalizeKeyword(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function parseKeywordValue(value: string) {
+  return value
+    .split("|")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function serializeKeywordValue(values: string[]) {
+  return values.join(" | ");
+}
+
+function SnapshotUploader({
+  compact,
   interactive,
-  emphasis = false,
-  multilineMinHeight,
-  onChange,
+  uploading,
+  resolvedImageUrl,
+  onAddPhoto,
+  onTakePhoto,
 }: {
-  field: ProductField;
-  value: string;
+  compact: boolean;
   interactive: boolean;
-  emphasis?: boolean;
-  multilineMinHeight?: number;
-  onChange: (value: string) => void;
+  uploading: boolean;
+  resolvedImageUrl: string;
+  onAddPhoto: () => void;
+  onTakePhoto: () => void;
 }) {
-  const config = getFieldConfig(field);
-  const placeholder = config.placeholder;
-  const multiline = Boolean(config.multiline);
-  const minHeight = multilineMinHeight ?? 120;
+  const frameHeight = compact ? 160 : 224;
 
   return (
-    <div className="py-4">
-      <div className="mb-2.5 flex items-center justify-between gap-3">
-        <p
-          className="text-[9px] uppercase tracking-[0.22em]"
-          style={{
-            fontFamily: "'Jost', sans-serif",
-            color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
-          }}
-        >
-          {field.label}
-        </p>
-        {config.presentation === "searchable" ? (
-          <span
-            className="rounded-full px-2.5 py-1 text-[8px] uppercase tracking-[0.18em]"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              color: "rgba(var(--swatch-teal-rgb), 0.76)",
-              background: "rgba(255,255,255,0.34)",
-              border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
-            }}
-          >
-            Search
-          </span>
-        ) : null}
-      </div>
-      {interactive ? (
-        multiline ? (
-          <textarea
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-            placeholder={placeholder}
-            className="w-full resize-none bg-transparent focus:outline-none"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              color: "rgba(var(--swatch-teal-rgb), 0.84)",
-              minHeight,
-              fontSize: emphasis ? "16px" : "15px",
-              lineHeight: emphasis ? 1.75 : 1.7,
-            }}
+    <div className={compact ? "w-[138px] shrink-0" : "w-[188px] shrink-0"}>
+      <FieldLabel>Snapshot</FieldLabel>
+      <button
+        type="button"
+        onClick={interactive ? onAddPhoto : undefined}
+        disabled={!interactive || uploading}
+        className="mt-3 flex w-full flex-col overflow-hidden rounded-[28px] border text-left transition-opacity disabled:cursor-default disabled:opacity-100"
+        style={{
+          minHeight: frameHeight,
+          background: resolvedImageUrl
+            ? "rgba(255,255,255,0.22)"
+            : "linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0.14))",
+          borderColor: "rgba(var(--swatch-teal-rgb), 0.16)",
+          boxShadow:
+            "inset 0 1px 0 rgba(255,255,255,0.56), 0 10px 24px rgba(var(--swatch-viridian-odyssey-rgb), 0.05)",
+        }}
+      >
+        {resolvedImageUrl ? (
+          <img
+            src={resolvedImageUrl}
+            alt="Beverage snapshot"
+            className="h-full w-full object-cover"
+            style={{ minHeight: frameHeight }}
           />
         ) : (
-          <input
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-            placeholder={placeholder}
-            className="w-full bg-transparent focus:outline-none"
+          <div className="flex h-full min-h-[inherit] flex-col items-center justify-center gap-3 px-5 py-6 text-center">
+            {uploading ? (
+              <Loader2
+                className="h-6 w-6 animate-spin"
+                style={{ color: "rgba(var(--swatch-teal-rgb), 0.72)" }}
+              />
+            ) : (
+              <ImagePlus
+                className="h-7 w-7"
+                style={{ color: "rgba(var(--swatch-teal-rgb), 0.72)" }}
+              />
+            )}
+            <div>
+              <p
+                className="text-[12px] uppercase tracking-[0.18em]"
+                style={{
+                  fontFamily: "'Jost', sans-serif",
+                  color: "rgba(var(--swatch-teal-rgb), 0.72)",
+                }}
+              >
+                {uploading ? "Uploading" : "Add Snapshot"}
+              </p>
+              <p
+                className="mt-2 text-[13px] leading-[1.55]"
+                style={{
+                  fontFamily: "'Jost', sans-serif",
+                  color: "rgba(var(--swatch-antique-coin-rgb), 0.94)",
+                }}
+              >
+                Add a drink photo or a quick snapshot.
+              </p>
+            </div>
+          </div>
+        )}
+      </button>
+
+      {interactive ? (
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={onAddPhoto}
+            disabled={uploading}
+            className="rounded-full px-3 py-2 text-[10px] uppercase tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-70"
             style={{
               fontFamily: "'Jost', sans-serif",
-              color: "rgba(var(--swatch-teal-rgb), 0.84)",
-              fontSize: emphasis ? "24px" : "16px",
-              lineHeight: emphasis ? 1.2 : 1.65,
-              fontWeight: emphasis ? 500 : 400,
+              color: "rgba(var(--swatch-teal-rgb), 0.82)",
+              background: "rgba(255,255,255,0.36)",
+              border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)",
             }}
-          />
-        )
+          >
+            Add Photo
+          </button>
+          <button
+            type="button"
+            onClick={onTakePhoto}
+            disabled={uploading}
+            className="rounded-full px-3 py-2 text-[10px] uppercase tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-70"
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              color: "rgba(var(--swatch-teal-rgb), 0.82)",
+              background: "rgba(255,255,255,0.36)",
+              border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)",
+            }}
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <Camera className="h-3.5 w-3.5" />
+              Take Photo
+            </span>
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function GoToOrderField({
+  compact,
+  interactive,
+  value,
+  onChange,
+}: {
+  compact: boolean;
+  interactive: boolean;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div>
+      <FieldLabel>Go-To Order</FieldLabel>
+      {interactive ? (
+        <textarea
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder="Type the exact order"
+          className="mt-2 w-full resize-none rounded-[24px] border bg-[rgba(255,255,255,0.22)] px-4 py-4 focus:outline-none"
+          style={{
+            minHeight: compact ? 72 : 84,
+            borderColor: "rgba(var(--swatch-teal-rgb), 0.11)",
+            fontFamily: "'Jost', sans-serif",
+            color: "rgba(var(--swatch-teal-rgb), 0.86)",
+            fontSize: compact ? "14px" : "16px",
+            lineHeight: compact ? 1.55 : 1.65,
+          }}
+        />
       ) : (
         <p
-          className={multiline ? "" : ""}
+          className="mt-2 rounded-[24px] border px-4 py-4"
           style={{
-            fontSize: multiline ? (emphasis ? "16px" : "15px") : emphasis ? "24px" : "16px",
-            lineHeight: multiline ? (emphasis ? 1.75 : 1.7) : emphasis ? 1.2 : 1.65,
+            minHeight: compact ? 72 : 84,
+            background: "rgba(255,255,255,0.22)",
+            borderColor: "rgba(var(--swatch-teal-rgb), 0.11)",
             fontFamily: "'Jost', sans-serif",
-            color: "rgba(var(--swatch-teal-rgb), 0.84)",
-            fontWeight: multiline ? 400 : emphasis ? 500 : 400,
-            minHeight: multiline ? minHeight : undefined,
+            color: "rgba(var(--swatch-teal-rgb), 0.86)",
+            fontSize: compact ? "14px" : "16px",
+            lineHeight: compact ? 1.55 : 1.65,
           }}
         >
-          {value || placeholder}
+          {value || "Type the exact order"}
         </p>
       )}
     </div>
   );
 }
 
-function SnapshotSlot() {
+function KeywordField({
+  compact,
+  config,
+  interactive,
+  value,
+  onChange,
+}: {
+  compact: boolean;
+  config: BeverageFieldConfig;
+  interactive: boolean;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const fieldRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [draft, setDraft] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const keywords = useMemo(() => parseKeywordValue(value), [value]);
+  const filteredOptions = (config.options || []).filter((option) => {
+    const normalizedOption = normalizeKeyword(option);
+    const alreadyAdded = keywords.some((keyword) => normalizeKeyword(keyword) === normalizedOption);
+    if (alreadyAdded) return false;
+    if (!draft.trim()) return true;
+    return normalizedOption.includes(normalizeKeyword(draft));
+  });
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function handlePointerDown(event: MouseEvent) {
+      if (!fieldRef.current?.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [menuOpen]);
+
+  function commitKeyword(rawValue: string) {
+    const trimmed = rawValue.trim();
+    if (!trimmed) return;
+
+    const normalizedNext = normalizeKeyword(trimmed);
+    const nextKeywords = keywords.filter(Boolean);
+    if (nextKeywords.some((keyword) => normalizeKeyword(keyword) === normalizedNext)) {
+      setDraft("");
+      setMenuOpen(false);
+      return;
+    }
+
+    onChange(serializeKeywordValue([...nextKeywords, trimmed]));
+    setDraft("");
+    setMenuOpen(false);
+  }
+
+  function removeKeyword(keywordToRemove: string) {
+    onChange(
+      serializeKeywordValue(
+        keywords.filter((keyword) => normalizeKeyword(keyword) !== normalizeKeyword(keywordToRemove)),
+      ),
+    );
+  }
+
   return (
-    <div
-      className="relative h-[128px] w-[106px] shrink-0 overflow-hidden rounded-[26px] border p-3"
-      style={{
-        background: "linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0.14))",
-        borderColor: "rgba(var(--swatch-teal-rgb), 0.16)",
-        boxShadow:
-          "inset 0 1px 0 rgba(255,255,255,0.56), 0 10px 24px rgba(var(--swatch-viridian-odyssey-rgb), 0.05)",
-      }}
-    >
-      <div
-        aria-hidden="true"
-        className="absolute left-1/2 top-3 h-2.5 w-9 -translate-x-1/2 rounded-full"
-        style={{
-          background: "rgba(var(--swatch-text-light-rgb, 138 158 164), 0.7)",
-        }}
-      />
-      <div
-        className="flex h-full items-center justify-center rounded-[18px] border"
-        style={{
-          borderColor: "rgba(var(--swatch-teal-rgb), 0.14)",
-          background: "rgba(255,255,255,0.18)",
-        }}
-      >
-        <div className="text-center">
-          <p
-            className="text-[10px] uppercase tracking-[0.24em]"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              color: "rgba(var(--swatch-teal-rgb), 0.62)",
-            }}
+    <div ref={fieldRef}>
+      <FieldLabel>{config.label}</FieldLabel>
+      {interactive ? (
+        <div className="mt-2">
+          <div
+            className="flex items-center rounded-full border bg-[rgba(255,255,255,0.42)] pl-4 pr-2"
+            style={{ borderColor: "rgba(var(--swatch-teal-rgb), 0.12)" }}
           >
-            Snapshot
-          </p>
-          <p
-            className="mt-2 text-[9px] uppercase tracking-[0.16em]"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
-            }}
-          >
-            Add photo
-          </p>
+            <input
+              ref={inputRef}
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+              placeholder={config.placeholder}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  commitKeyword(draft);
+                }
+
+                if (event.key === "Backspace" && !draft.trim() && keywords.length > 0) {
+                  removeKeyword(keywords[keywords.length - 1]);
+                }
+              }}
+              className="min-w-0 flex-1 bg-transparent py-2.5 focus:outline-none"
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                color: "rgba(var(--swatch-teal-rgb), 0.86)",
+                fontSize: compact ? "12px" : "13px",
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setMenuOpen((current) => !current)}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+              aria-label={`Open ${config.label} options`}
+              style={{ color: "rgba(var(--swatch-teal-rgb), 0.74)" }}
+            >
+              <ChevronDown
+                className="h-4 w-4 transition-transform"
+                style={{ transform: menuOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+              />
+            </button>
+          </div>
+          {keywords.length > 0 ? (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {keywords.map((keyword) => (
+                <button
+                  key={`${config.key}-${keyword}`}
+                  type="button"
+                  onClick={() => removeKeyword(keyword)}
+                  className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.14em]"
+                  style={{
+                    fontFamily: "'Jost', sans-serif",
+                    color: "rgba(var(--swatch-teal-rgb), 0.84)",
+                    background: "rgba(255,255,255,0.3)",
+                    border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
+                  }}
+                >
+                  {keyword}
+                </button>
+              ))}
+            </div>
+          ) : null}
+          {menuOpen && filteredOptions.length > 0 ? (
+            <div
+              className="mt-2 rounded-[22px] border px-2 py-2"
+              style={{
+                background: "rgba(255,255,255,0.8)",
+                borderColor: "rgba(var(--swatch-teal-rgb), 0.12)",
+                boxShadow: "0 18px 30px rgba(var(--swatch-viridian-odyssey-rgb), 0.08)",
+              }}
+            >
+              <div className="flex flex-wrap gap-2">
+                {filteredOptions.slice(0, 10).map((option) => (
+                  <button
+                    key={`${config.key}-option-${option}`}
+                    type="button"
+                    onClick={() => commitKeyword(option)}
+                    className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.14em]"
+                    style={{
+                      fontFamily: "'Jost', sans-serif",
+                      color: "rgba(var(--swatch-teal-rgb), 0.84)",
+                      background: "rgba(255,255,255,0.42)",
+                      border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
+                    }}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
-      </div>
+      ) : (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {keywords.length > 0 ? (
+            keywords.map((keyword) => (
+              <span
+                key={`${config.key}-${keyword}`}
+                className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.14em]"
+                style={{
+                  fontFamily: "'Jost', sans-serif",
+                  color: "rgba(var(--swatch-teal-rgb), 0.84)",
+                  background: "rgba(255,255,255,0.3)",
+                  border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
+                }}
+              >
+                {keyword}
+              </span>
+            ))
+          ) : (
+            <span
+              className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.14em]"
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                color: "rgba(var(--swatch-antique-coin-rgb), 0.84)",
+                background: "rgba(255,255,255,0.22)",
+                border: "1px solid rgba(var(--swatch-teal-rgb), 0.1)",
+              }}
+            >
+              {config.placeholder}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -299,19 +521,99 @@ export default function MyProductCardBeverages({
   interactive = true,
 }: MyProductCardBeveragesProps) {
   const { toast } = useToast();
-  const fields = useMemo(() => BEVERAGES_PRODUCT.fields ?? [], []);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [cardTitle, setCardTitle] = useState(
     activeSavedProductCard?.card_title || BEVERAGES_PRODUCT.name,
   );
-  const [fieldValues, setFieldValues] = useState<Record<string, string>>(
-    buildInitialFieldValues(fields, activeSavedProductCard),
+  const [fieldValues, setFieldValues] = useState<Record<FieldKey, string>>(
+    buildInitialFieldValues(activeSavedProductCard),
   );
+  const [snapshotValue, setSnapshotValue] = useState<string | null>(
+    activeSavedProductCard?.image_url ?? null,
+  );
+  const [resolvedSnapshotUrl, setResolvedSnapshotUrl] = useState("");
   const [saving, setSaving] = useState(false);
+  const [uploadingSnapshot, setUploadingSnapshot] = useState(false);
 
   useEffect(() => {
     setCardTitle(activeSavedProductCard?.card_title || BEVERAGES_PRODUCT.name);
-    setFieldValues(buildInitialFieldValues(fields, activeSavedProductCard));
-  }, [activeSavedProductCard, fields]);
+    setFieldValues(buildInitialFieldValues(activeSavedProductCard));
+    setSnapshotValue(activeSavedProductCard?.image_url ?? null);
+  }, [activeSavedProductCard]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadSnapshot = async () => {
+      const resolved = await resolveStorageUrl(snapshotValue);
+      if (!cancelled) {
+        setResolvedSnapshotUrl(resolved || "");
+      }
+    };
+
+    loadSnapshot();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [snapshotValue]);
+
+  async function handleSnapshotUpload(event: ChangeEvent<HTMLInputElement>) {
+    const input = event.target;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Upload failed",
+        description: "Choose an image file for the snapshot.",
+        variant: "destructive",
+      });
+      input.value = "";
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      toast({
+        title: "Upload failed",
+        description: "Snapshot images need to stay under 8MB.",
+        variant: "destructive",
+      });
+      input.value = "";
+      return;
+    }
+
+    setUploadingSnapshot(true);
+
+    try {
+      const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const cardSegment = activeSavedProductCard?.id || "draft";
+      const filePath = `${userId}/saved-product-cards/beverage/${cardSegment}/${Date.now()}-${crypto.randomUUID()}.${fileExt}`;
+
+      const { error } = await supabase.storage
+        .from("card-images")
+        .upload(filePath, file, { upsert: true });
+
+      if (error) throw error;
+
+      setSnapshotValue(makeStorageRef("card-images", filePath));
+      toast({
+        title: "Snapshot added",
+        description: "Save the card to keep this beverage photo on the product card.",
+      });
+    } catch (error) {
+      const description = error instanceof Error ? error.message : "The snapshot could not be uploaded.";
+      toast({
+        title: "Upload failed",
+        description,
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingSnapshot(false);
+      input.value = "";
+    }
+  }
 
   async function handleSave() {
     setSaving(true);
@@ -324,6 +626,7 @@ export default function MyProductCardBeverages({
           savedProductCardId: activeSavedProductCard.id,
           cardTitle,
           fieldValues,
+          imageUrl: snapshotValue,
         });
       } else {
         const createdSavedProductCard = await createSavedProductCard({
@@ -332,6 +635,7 @@ export default function MyProductCardBeverages({
           subcategoryLabel: BEVERAGES_SUBCATEGORY.name,
           cardTitle,
           fieldValues,
+          imageUrl: snapshotValue,
         });
         savedProductCardId = createdSavedProductCard.id;
       }
@@ -340,8 +644,8 @@ export default function MyProductCardBeverages({
       toast({
         title: activeSavedProductCard ? "Saved product card updated" : "Saved product card created",
         description: activeSavedProductCard
-          ? "Your changes were saved."
-          : "The new saved product card was added to the coverflow.",
+          ? "Your beverage card changes were saved."
+          : "The new beverage card was added to My Go Two.",
       });
     } catch (error) {
       const description =
@@ -357,13 +661,8 @@ export default function MyProductCardBeverages({
     }
   }
 
-  const fieldsByKey = useMemo(() => {
-    return fields.reduce<Partial<Record<FieldKey, ProductField>>>((acc, field) => {
-      acc[slugFieldLabel(field.label) as FieldKey] = field;
-      return acc;
-    }, {});
-  }, [fields]);
   const resolvedCardTitle = cardTitle.trim() || "Beverage";
+  const detailFields = FIELD_CONFIGS.filter((config) => config.key !== "go_to_order");
 
   return (
     <section
@@ -399,16 +698,15 @@ export default function MyProductCardBeverages({
           }}
         />
 
-        <div className="relative flex h-full flex-col px-7 pb-5 pt-7">
+        <div className={compact ? "relative flex h-full flex-col px-5 pb-4 pt-5" : "relative flex h-full flex-col px-7 pb-5 pt-7"}>
           <div className="flex items-start justify-between gap-6">
-            <div className="min-w-0 max-w-[17rem] flex-1">
-              <SectionEyebrow>My Go Two / Vault</SectionEyebrow>
+            <div className="min-w-0 flex-1">
+              <SectionEyebrow>My Go Two / Saved Product Card</SectionEyebrow>
               {interactive ? (
-                <textarea
+                <input
                   value={cardTitle}
                   onChange={(event) => setCardTitle(event.target.value)}
-                  rows={2}
-                  className="mt-3 w-full resize-none bg-transparent text-[56px] leading-[0.9] tracking-[-0.05em] focus:outline-none"
+                  className={compact ? "mt-3 w-full bg-transparent text-[30px] leading-[0.94] tracking-[-0.04em] focus:outline-none" : "mt-3 w-full bg-transparent text-[42px] leading-[0.94] tracking-[-0.04em] focus:outline-none"}
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
                     fontWeight: 700,
@@ -417,7 +715,7 @@ export default function MyProductCardBeverages({
                 />
               ) : (
                 <h2
-                  className="mt-3 text-[56px] leading-[0.9] tracking-[-0.05em]"
+                  className={compact ? "mt-3 text-[30px] leading-[0.94] tracking-[-0.04em]" : "mt-3 text-[42px] leading-[0.94] tracking-[-0.04em]"}
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
                     fontWeight: 700,
@@ -428,146 +726,56 @@ export default function MyProductCardBeverages({
                 </h2>
               )}
               <p
-                className="mt-4 max-w-[16rem] text-[13px] leading-[1.6]"
+                className={compact ? "mt-3 max-w-[18rem] text-[12px] leading-[1.55]" : "mt-4 max-w-[18rem] text-[13px] leading-[1.6]"}
                 style={{
                   fontFamily: "'Jost', sans-serif",
                   color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
                 }}
               >
-                Save the exact drink, the exact spot, and the way you always get it. Built to be searched, saved, and shared.
+                Save the exact drink, the exact build, and the place tied to it. Keep it quick to scan and easy to edit.
               </p>
             </div>
 
-            <SnapshotSlot />
+            <SnapshotUploader
+              compact={compact}
+              interactive={interactive}
+              uploading={uploadingSnapshot}
+              resolvedImageUrl={resolvedSnapshotUrl}
+              onAddPhoto={() => uploadInputRef.current?.click()}
+              onTakePhoto={() => cameraInputRef.current?.click()}
+            />
           </div>
 
-          <div className="mt-6 flex items-baseline gap-3">
-            <p
-              className="text-[9px] uppercase tracking-[0.22em]"
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
-              }}
-            >
-              Indexed under
-            </p>
-            <p
-              className="text-[14px] leading-[1.6]"
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                color: "rgba(var(--swatch-teal-rgb), 0.78)",
-              }}
-            >
-              Taste, ritual, spots, and hard no&apos;s.
-            </p>
+          <div className="mt-6">
+            <GoToOrderField
+              compact={compact}
+              interactive={interactive}
+              value={fieldValues.go_to_order}
+              onChange={(nextValue) =>
+                setFieldValues((current) => ({
+                  ...current,
+                  go_to_order: nextValue,
+                }))
+              }
+            />
           </div>
 
-          <div
-            className="mt-5 flex-1 rounded-[30px] px-5 py-4"
-            style={{
-              background: "rgba(255,255,255,0.16)",
-              border: "1px solid rgba(var(--swatch-teal-rgb), 0.09)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.48)",
-            }}
-          >
-            {fieldsByKey.go_to_order ? (
-              <RecordField
-                field={fieldsByKey.go_to_order}
-                value={fieldValues.go_to_order || ""}
+          <div className={compact ? "mt-4 grid grid-cols-1 gap-x-3 gap-y-4" : "mt-4 grid grid-cols-2 gap-x-4 gap-y-4"}>
+            {detailFields.map((config) => (
+              <KeywordField
+                key={config.key}
+                compact={compact}
+                config={config}
                 interactive={interactive}
-                emphasis
+                value={fieldValues[config.key]}
                 onChange={(nextValue) =>
                   setFieldValues((current) => ({
                     ...current,
-                    go_to_order: nextValue,
+                    [config.key]: nextValue,
                   }))
                 }
               />
-            ) : null}
-
-            <div
-              aria-hidden="true"
-              className="h-px"
-              style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)" }}
-            />
-
-            <div className="grid grid-cols-2 gap-0">
-              <div className="pr-5">
-                {fieldsByKey.favorite_place ? (
-                  <RecordField
-                    field={fieldsByKey.favorite_place}
-                    value={fieldValues.favorite_place || ""}
-                    interactive={interactive}
-                    onChange={(nextValue) =>
-                      setFieldValues((current) => ({
-                        ...current,
-                        favorite_place: nextValue,
-                      }))
-                    }
-                  />
-                ) : null}
-              </div>
-
-              <div
-                className="pl-5"
-                style={{ borderLeft: "1px solid rgba(var(--swatch-teal-rgb), 0.1)" }}
-              >
-                {fieldsByKey.how_i_take_it ? (
-                  <RecordField
-                    field={fieldsByKey.how_i_take_it}
-                    value={fieldValues.how_i_take_it || ""}
-                    interactive={interactive}
-                    onChange={(nextValue) =>
-                      setFieldValues((current) => ({
-                        ...current,
-                        how_i_take_it: nextValue,
-                      }))
-                    }
-                  />
-                ) : null}
-              </div>
-            </div>
-
-            <div
-              aria-hidden="true"
-              className="h-px"
-              style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)" }}
-            />
-
-            {fieldsByKey.avoid ? (
-              <RecordField
-                field={fieldsByKey.avoid}
-                value={fieldValues.avoid || ""}
-                interactive={interactive}
-                onChange={(nextValue) =>
-                  setFieldValues((current) => ({
-                    ...current,
-                    avoid: nextValue,
-                  }))
-                }
-              />
-            ) : null}
-
-            <div
-              aria-hidden="true"
-              className="h-px"
-              style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)" }}
-            />
-
-            {fieldsByKey.notes ? (
-              <RecordField
-                field={fieldsByKey.notes}
-                value={fieldValues.notes || ""}
-                interactive={interactive}
-                multilineMinHeight={130}
-                onChange={(nextValue) =>
-                  setFieldValues((current) => ({
-                    ...current,
-                    notes: nextValue,
-                  }))
-                }
-              />
-            ) : null}
+            ))}
           </div>
 
           <div
@@ -583,14 +791,14 @@ export default function MyProductCardBeverages({
                 fontFamily: "'Jost', sans-serif",
               }}
             >
-              Vault card
+              Saved Product Card
             </div>
 
             {interactive ? (
               <button
                 type="button"
                 onClick={handleSave}
-                disabled={saving}
+                disabled={saving || uploadingSnapshot}
                 className="h-11 rounded-full px-7 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f4ead0] transition-opacity duration-200 disabled:cursor-not-allowed disabled:opacity-70"
                 style={{
                   background: "linear-gradient(180deg, #617984 0%, #506973 100%)",
@@ -613,6 +821,22 @@ export default function MyProductCardBeverages({
               </div>
             )}
           </div>
+
+          <input
+            ref={uploadInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleSnapshotUpload}
+          />
+          <input
+            ref={cameraInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={handleSnapshotUpload}
+          />
         </div>
       </div>
     </section>
