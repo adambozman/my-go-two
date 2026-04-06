@@ -1,5 +1,5 @@
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
-import { Camera, ChevronDown, ImagePlus, Loader2 } from "lucide-react";
+import { ChevronDown, ImagePlus, Loader2 } from "lucide-react";
 
 import { createSavedProductCard, updateSavedProductCard } from "@/features/mygotwo/myGoTwoData";
 import type { SavedProductCard } from "@/features/mygotwo/types";
@@ -17,13 +17,7 @@ type MyProductCardBeveragesProps = {
 };
 
 type FieldKey =
-  | "go_to_order"
-  | "drink_type"
-  | "temperature"
-  | "size"
-  | "favorite_place"
-  | "occasion"
-  | "avoid"
+  | "go_two_order"
   | "keywords";
 
 type BeverageFieldConfig = {
@@ -35,51 +29,30 @@ type BeverageFieldConfig = {
 
 const FIELD_CONFIGS: BeverageFieldConfig[] = [
   {
-    key: "go_to_order",
-    label: "Go-To Order",
+    key: "go_two_order",
+    label: "Go Two Order",
     placeholder: "Iced matcha, oat milk, light ice",
-  },
-  {
-    key: "drink_type",
-    label: "Drink Type",
-    placeholder: "Add drink type",
-    options: ["Coffee", "Espresso", "Tea", "Matcha", "Smoothie", "Juice", "Soda", "Cocktail", "Mocktail", "Fresco", "Water"],
-  },
-  {
-    key: "temperature",
-    label: "Temperature",
-    placeholder: "Add temperature",
-    options: ["Iced", "Hot", "Warm", "Frozen", "Room Temp"],
-  },
-  {
-    key: "size",
-    label: "Size",
-    placeholder: "Add size",
-    options: ["Short", "Small", "Medium", "Large", "Extra Large"],
-  },
-  {
-    key: "favorite_place",
-    label: "Favorite Place",
-    placeholder: "Add place",
-    options: ["Home", "Local Cafe", "Office", "Starbucks", "Dunkin", "Dutch Bros", "Juice Bar", "Tea Shop"],
-  },
-  {
-    key: "occasion",
-    label: "Occasion",
-    placeholder: "Add occasion",
-    options: ["Morning", "Afternoon", "Evening", "Workday", "Weekend", "Road Trip", "Treat", "Celebration"],
-  },
-  {
-    key: "avoid",
-    label: "Avoid",
-    placeholder: "Add avoid",
-    options: ["Too Sweet", "Dairy", "Ice", "Foam", "Pulp", "Artificial Sweetener", "Caffeine Late", "Alcohol"],
   },
   {
     key: "keywords",
     label: "Keywords",
     placeholder: "Add keyword",
-    options: ["Morning", "Favorite", "Treat", "Patio", "Drive-Thru", "Brunch", "Daily", "Comfort", "Weekend"],
+    options: [
+      "Coffee",
+      "Tea",
+      "Matcha",
+      "Iced",
+      "Hot",
+      "Morning",
+      "Favorite",
+      "Daily",
+      "Patio",
+      "Drive-Thru",
+      "Brunch",
+      "Cafe",
+      "Treat",
+      "Weekend",
+    ],
   },
 ];
 
@@ -110,31 +83,11 @@ function buildInitialFieldValues(activeSavedProductCard: SavedProductCard | null
 }
 
 function SectionEyebrow({ children }: { children: string }) {
-  return (
-    <p
-      className="text-[10px] uppercase tracking-[0.2em]"
-      style={{
-        fontFamily: "'Jost', sans-serif",
-        color: "var(--swatch-cedar-grove)",
-      }}
-    >
-      {children}
-    </p>
-  );
+  return <p className="surface-eyebrow-coral">{children}</p>;
 }
 
 function FieldLabel({ children }: { children: string }) {
-  return (
-    <p
-      className="text-[10px] uppercase tracking-[0.22em]"
-      style={{
-        fontFamily: "'Jost', sans-serif",
-        color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
-      }}
-    >
-      {children}
-    </p>
-  );
+  return <p className="surface-eyebrow-teal">{children}</p>;
 }
 
 function normalizeKeyword(value: string) {
@@ -154,38 +107,26 @@ function serializeKeywordValue(values: string[]) {
 
 function SnapshotUploader({
   compact,
-  interactive,
   uploading,
   resolvedImageUrl,
   onAddPhoto,
-  onTakePhoto,
 }: {
   compact: boolean;
-  interactive: boolean;
   uploading: boolean;
   resolvedImageUrl: string;
   onAddPhoto: () => void;
-  onTakePhoto: () => void;
 }) {
   const frameHeight = compact ? 160 : 224;
 
   return (
-    <div className={compact ? "w-[138px] shrink-0" : "w-[188px] shrink-0"}>
+    <div className={compact ? "w-[148px] shrink-0" : "w-[204px] shrink-0"}>
       <FieldLabel>Snapshot</FieldLabel>
       <button
         type="button"
         onClick={interactive ? onAddPhoto : undefined}
         disabled={!interactive || uploading}
-        className="mt-3 flex w-full flex-col overflow-hidden rounded-[28px] border text-left transition-opacity disabled:cursor-default disabled:opacity-100"
-        style={{
-          minHeight: frameHeight,
-          background: resolvedImageUrl
-            ? "rgba(255,255,255,0.22)"
-            : "linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0.14))",
-          borderColor: "rgba(var(--swatch-teal-rgb), 0.16)",
-          boxShadow:
-            "inset 0 1px 0 rgba(255,255,255,0.56), 0 10px 24px rgba(var(--swatch-viridian-odyssey-rgb), 0.05)",
-        }}
+        className="surface-field mt-3 flex w-full flex-col overflow-hidden rounded-[28px] text-left transition-opacity disabled:cursor-default disabled:opacity-100"
+        style={{ minHeight: frameHeight }}
       >
         {resolvedImageUrl ? (
           <img
@@ -197,32 +138,15 @@ function SnapshotUploader({
         ) : (
           <div className="flex h-full min-h-[inherit] flex-col items-center justify-center gap-3 px-5 py-6 text-center">
             {uploading ? (
-              <Loader2
-                className="h-6 w-6 animate-spin"
-                style={{ color: "rgba(var(--swatch-teal-rgb), 0.72)" }}
-              />
+              <Loader2 className="h-6 w-6 animate-spin text-[var(--logo-two-color)]" />
             ) : (
-              <ImagePlus
-                className="h-7 w-7"
-                style={{ color: "rgba(var(--swatch-teal-rgb), 0.72)" }}
-              />
+              <ImagePlus className="h-7 w-7 text-[var(--logo-two-color)]" />
             )}
             <div>
+              <p className="surface-eyebrow-teal">{uploading ? "Uploading" : "Add Snapshot"}</p>
               <p
-                className="text-[12px] uppercase tracking-[0.18em]"
-                style={{
-                  fontFamily: "'Jost', sans-serif",
-                  color: "rgba(var(--swatch-teal-rgb), 0.72)",
-                }}
-              >
-                {uploading ? "Uploading" : "Add Snapshot"}
-              </p>
-              <p
-                className="mt-2 text-[13px] leading-[1.55]"
-                style={{
-                  fontFamily: "'Jost', sans-serif",
-                  color: "rgba(var(--swatch-antique-coin-rgb), 0.94)",
-                }}
+                className="mt-2 text-[13px] leading-[1.55] text-[rgba(var(--swatch-antique-coin-rgb),0.94)]"
+                style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 Add a drink photo or a quick snapshot.
               </p>
@@ -230,42 +154,6 @@ function SnapshotUploader({
           </div>
         )}
       </button>
-
-      {interactive ? (
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={onAddPhoto}
-            disabled={uploading}
-            className="rounded-full px-3 py-2 text-[10px] uppercase tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-70"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              color: "rgba(var(--swatch-teal-rgb), 0.82)",
-              background: "rgba(255,255,255,0.36)",
-              border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)",
-            }}
-          >
-            Add Photo
-          </button>
-          <button
-            type="button"
-            onClick={onTakePhoto}
-            disabled={uploading}
-            className="rounded-full px-3 py-2 text-[10px] uppercase tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-70"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              color: "rgba(var(--swatch-teal-rgb), 0.82)",
-              background: "rgba(255,255,255,0.36)",
-              border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)",
-            }}
-          >
-            <span className="inline-flex items-center gap-1.5">
-              <Camera className="h-3.5 w-3.5" />
-              Take Photo
-            </span>
-          </button>
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -283,31 +171,28 @@ function GoToOrderField({
 }) {
   return (
     <div>
-      <FieldLabel>Go-To Order</FieldLabel>
+      <FieldLabel>Go Two Order</FieldLabel>
       {interactive ? (
         <textarea
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder="Type the exact order"
-          className="mt-2 w-full resize-none rounded-[24px] border bg-[rgba(255,255,255,0.22)] px-4 py-4 focus:outline-none"
+          className="surface-field mt-2 w-full resize-none rounded-[28px] px-4 py-4 focus:outline-none"
           style={{
             minHeight: compact ? 72 : 84,
-            borderColor: "rgba(var(--swatch-teal-rgb), 0.11)",
             fontFamily: "'Jost', sans-serif",
-            color: "rgba(var(--swatch-teal-rgb), 0.86)",
+            color: "var(--logo-two-color)",
             fontSize: compact ? "14px" : "16px",
             lineHeight: compact ? 1.55 : 1.65,
           }}
         />
       ) : (
         <p
-          className="mt-2 rounded-[24px] border px-4 py-4"
+          className="surface-field mt-2 rounded-[28px] px-4 py-4"
           style={{
             minHeight: compact ? 72 : 84,
-            background: "rgba(255,255,255,0.22)",
-            borderColor: "rgba(var(--swatch-teal-rgb), 0.11)",
             fontFamily: "'Jost', sans-serif",
-            color: "rgba(var(--swatch-teal-rgb), 0.86)",
+            color: "var(--logo-two-color)",
             fontSize: compact ? "14px" : "16px",
             lineHeight: compact ? 1.55 : 1.65,
           }}
@@ -388,10 +273,7 @@ function KeywordField({
       <FieldLabel>{config.label}</FieldLabel>
       {interactive ? (
         <div className="mt-2">
-          <div
-            className="flex items-center rounded-full border bg-[rgba(255,255,255,0.42)] pl-4 pr-2"
-            style={{ borderColor: "rgba(var(--swatch-teal-rgb), 0.12)" }}
-          >
+          <div className="surface-field flex items-center rounded-full pl-4 pr-2">
             <input
               ref={inputRef}
               value={draft}
@@ -407,22 +289,21 @@ function KeywordField({
                   removeKeyword(keywords[keywords.length - 1]);
                 }
               }}
-              className="min-w-0 flex-1 bg-transparent py-2.5 focus:outline-none"
+              className="min-w-0 flex-1 bg-transparent py-2.5 placeholder:text-[rgba(var(--swatch-antique-coin-rgb),0.72)] focus:outline-none"
               style={{
                 fontFamily: "'Jost', sans-serif",
-                color: "rgba(var(--swatch-teal-rgb), 0.86)",
+                color: "var(--logo-two-color)",
                 fontSize: compact ? "12px" : "13px",
               }}
             />
             <button
               type="button"
               onClick={() => setMenuOpen((current) => !current)}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+              className="surface-button-secondary flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
               aria-label={`Open ${config.label} options`}
-              style={{ color: "rgba(var(--swatch-teal-rgb), 0.74)" }}
             >
               <ChevronDown
-                className="h-4 w-4 transition-transform"
+                className="h-4 w-4 text-[var(--logo-two-color)] transition-transform"
                 style={{ transform: menuOpen ? "rotate(180deg)" : "rotate(0deg)" }}
               />
             </button>
@@ -434,13 +315,8 @@ function KeywordField({
                   key={`${config.key}-${keyword}`}
                   type="button"
                   onClick={() => removeKeyword(keyword)}
-                  className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.14em]"
-                  style={{
-                    fontFamily: "'Jost', sans-serif",
-                    color: "rgba(var(--swatch-teal-rgb), 0.84)",
-                    background: "rgba(255,255,255,0.3)",
-                    border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
-                  }}
+                  className="surface-pill pill-asset-ivory rounded-full px-3 py-1.5 text-[12px] leading-none"
+                  style={{ fontFamily: "'Jost', sans-serif" }}
                 >
                   {keyword}
                 </button>
@@ -448,27 +324,15 @@ function KeywordField({
             </div>
           ) : null}
           {menuOpen && filteredOptions.length > 0 ? (
-            <div
-              className="mt-2 rounded-[22px] border px-2 py-2"
-              style={{
-                background: "rgba(255,255,255,0.8)",
-                borderColor: "rgba(var(--swatch-teal-rgb), 0.12)",
-                boxShadow: "0 18px 30px rgba(var(--swatch-viridian-odyssey-rgb), 0.08)",
-              }}
-            >
+            <div className="surface-pill mt-2 rounded-[22px] border border-white/80 bg-[rgba(255,255,255,0.86)] px-2 py-2 shadow-[0_16px_30px_rgba(var(--swatch-cedar-grove-rgb),0.08)]">
               <div className="flex flex-wrap gap-2">
                 {filteredOptions.slice(0, 10).map((option) => (
                   <button
                     key={`${config.key}-option-${option}`}
                     type="button"
                     onClick={() => commitKeyword(option)}
-                    className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.14em]"
-                    style={{
-                      fontFamily: "'Jost', sans-serif",
-                      color: "rgba(var(--swatch-teal-rgb), 0.84)",
-                      background: "rgba(255,255,255,0.42)",
-                      border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
-                    }}
+                    className="surface-pill pill-asset-ivory rounded-full px-3 py-1.5 text-[12px] leading-none"
+                    style={{ fontFamily: "'Jost', sans-serif" }}
                   >
                     {option}
                   </button>
@@ -483,25 +347,17 @@ function KeywordField({
             keywords.map((keyword) => (
               <span
                 key={`${config.key}-${keyword}`}
-                className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.14em]"
-                style={{
-                  fontFamily: "'Jost', sans-serif",
-                  color: "rgba(var(--swatch-teal-rgb), 0.84)",
-                  background: "rgba(255,255,255,0.3)",
-                  border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
-                }}
+                className="surface-pill pill-asset-ivory rounded-full px-3 py-1.5 text-[12px] leading-none"
+                style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 {keyword}
               </span>
             ))
           ) : (
             <span
-              className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.14em]"
+              className="surface-pill pill-asset-ivory rounded-full px-3 py-1.5 text-[12px] leading-none opacity-70"
               style={{
                 fontFamily: "'Jost', sans-serif",
-                color: "rgba(var(--swatch-antique-coin-rgb), 0.84)",
-                background: "rgba(255,255,255,0.22)",
-                border: "1px solid rgba(var(--swatch-teal-rgb), 0.1)",
               }}
             >
               {config.placeholder}
@@ -522,7 +378,6 @@ export default function MyProductCardBeverages({
 }: MyProductCardBeveragesProps) {
   const { toast } = useToast();
   const uploadInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [cardTitle, setCardTitle] = useState(
     activeSavedProductCard?.card_title || BEVERAGES_PRODUCT.name,
   );
@@ -662,7 +517,7 @@ export default function MyProductCardBeverages({
   }
 
   const resolvedCardTitle = cardTitle.trim() || "Beverage";
-  const detailFields = FIELD_CONFIGS.filter((config) => config.key !== "go_to_order");
+  const keywordsConfig = FIELD_CONFIGS.find((config) => config.key === "keywords");
 
   return (
     <section
@@ -701,7 +556,7 @@ export default function MyProductCardBeverages({
         <div className={compact ? "relative flex h-full flex-col px-5 pb-4 pt-5" : "relative flex h-full flex-col px-7 pb-5 pt-7"}>
           <div className="flex items-start justify-between gap-6">
             <div className="min-w-0 flex-1">
-              <SectionEyebrow>My Go Two / Saved Product Card</SectionEyebrow>
+              <SectionEyebrow>My Go Two / Vault</SectionEyebrow>
               {interactive ? (
                 <input
                   value={cardTitle}
@@ -732,17 +587,15 @@ export default function MyProductCardBeverages({
                   color: "rgba(var(--swatch-antique-coin-rgb), 0.96)",
                 }}
               >
-                Save the exact drink, the exact build, and the place tied to it. Keep it quick to scan and easy to edit.
+                Your drink, your way, down to the last detail. The exact order, the exact place, the way you always take it. Tagged and searchable so nothing gets lost and nobody has to guess.
               </p>
             </div>
 
             <SnapshotUploader
               compact={compact}
-              interactive={interactive}
               uploading={uploadingSnapshot}
               resolvedImageUrl={resolvedSnapshotUrl}
               onAddPhoto={() => uploadInputRef.current?.click()}
-              onTakePhoto={() => cameraInputRef.current?.click()}
             />
           </div>
 
@@ -750,46 +603,40 @@ export default function MyProductCardBeverages({
             <GoToOrderField
               compact={compact}
               interactive={interactive}
-              value={fieldValues.go_to_order}
+              value={fieldValues.go_two_order}
               onChange={(nextValue) =>
                 setFieldValues((current) => ({
                   ...current,
-                  go_to_order: nextValue,
+                  go_two_order: nextValue,
                 }))
               }
             />
           </div>
 
-          <div className={compact ? "mt-4 grid grid-cols-1 gap-x-3 gap-y-4" : "mt-4 grid grid-cols-2 gap-x-4 gap-y-4"}>
-            {detailFields.map((config) => (
+          {keywordsConfig ? (
+            <div className="mt-4">
               <KeywordField
-                key={config.key}
                 compact={compact}
-                config={config}
+                config={keywordsConfig}
                 interactive={interactive}
-                value={fieldValues[config.key]}
+                value={fieldValues.keywords}
                 onChange={(nextValue) =>
                   setFieldValues((current) => ({
                     ...current,
-                    [config.key]: nextValue,
+                    keywords: nextValue,
                   }))
                 }
               />
-            ))}
-          </div>
+            </div>
+          ) : null}
 
           <div
             className="mt-4 flex items-center justify-between gap-4 border-t pt-4"
             style={{ borderColor: "rgba(var(--swatch-teal-rgb), 0.08)" }}
           >
             <div
-              className="rounded-full px-4 py-2 text-[10px] uppercase tracking-[0.18em]"
-              style={{
-                background: "rgba(255,255,255,0.2)",
-                border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)",
-                color: "rgba(var(--swatch-antique-coin-rgb), 0.92)",
-                fontFamily: "'Jost', sans-serif",
-              }}
+              className="surface-pill pill-asset-ivory rounded-full px-4 py-2 text-[12px] leading-none"
+              style={{ fontFamily: "'Jost', sans-serif" }}
             >
               Saved Product Card
             </div>
@@ -799,23 +646,15 @@ export default function MyProductCardBeverages({
                 type="button"
                 onClick={handleSave}
                 disabled={saving || uploadingSnapshot}
-                className="h-11 rounded-full px-7 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f4ead0] transition-opacity duration-200 disabled:cursor-not-allowed disabled:opacity-70"
-                style={{
-                  background: "linear-gradient(180deg, #617984 0%, #506973 100%)",
-                  boxShadow:
-                    "0 12px 28px rgba(var(--swatch-viridian-odyssey-rgb), 0.18), inset 0 1px 0 rgba(255,255,255,0.18)",
-                  fontFamily: "'Jost', sans-serif",
-                }}
+                className="surface-button-primary h-11 rounded-full px-7 text-[11px] font-semibold uppercase tracking-[0.22em] transition-opacity duration-200 disabled:cursor-not-allowed disabled:opacity-70"
+                style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 {saving ? "Saving..." : "Save Card"}
               </button>
             ) : (
               <div
-                className="flex h-11 items-center rounded-full px-7 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f4ead0]"
-                style={{
-                  background: "linear-gradient(180deg, #617984 0%, #4f6770 100%)",
-                  fontFamily: "'Jost', sans-serif",
-                }}
+                className="surface-button-primary flex h-11 items-center rounded-full px-7 text-[11px] font-semibold uppercase tracking-[0.22em]"
+                style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 Save Card
               </div>
@@ -826,14 +665,6 @@ export default function MyProductCardBeverages({
             ref={uploadInputRef}
             type="file"
             accept="image/*"
-            className="hidden"
-            onChange={handleSnapshotUpload}
-          />
-          <input
-            ref={cameraInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
             className="hidden"
             onChange={handleSnapshotUpload}
           />

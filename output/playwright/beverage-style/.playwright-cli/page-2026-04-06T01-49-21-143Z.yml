@@ -1,0 +1,76 @@
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e4]:
+    - generic [ref=e6]:
+      - img "GoTwo" [ref=e9]
+      - generic [ref=e10]:
+        - generic [ref=e11]: The Shortcut to Thoughtful.
+        - generic [ref=e12]: Never forget again.
+        - paragraph [ref=e13]: One place for everything that matters to the people you love.
+      - generic [ref=e14]:
+        - img [ref=e16] [cursor=pointer]
+        - generic [ref=e18]: See it in action
+      - generic [ref=e19]:
+        - link "Get Started Free ->" [ref=e20] [cursor=pointer]:
+          - /url: /signup
+        - link "See How It Works" [ref=e21] [cursor=pointer]:
+          - /url: "#how-it-works"
+      - paragraph [ref=e22]: Free to start · No credit card required
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - paragraph [ref=e26]: Your journey
+        - heading "How It Works" [level=2] [ref=e27]
+      - generic [ref=e30]:
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - heading "Sign Up & Tell Us About You" [level=3] [ref=e34]
+            - paragraph [ref=e35]: Quick signup, then tell us who you are. Your taste, your style, your non-negotiables.
+          - generic [ref=e37]: "01"
+        - generic [ref=e39]:
+          - generic [ref=e41]: "02"
+          - generic [ref=e42]:
+            - generic [ref=e43]:
+              - img [ref=e44]
+              - text: AI-Powered
+            - heading "AI Builds Your Profile" [level=3] [ref=e46]
+            - paragraph [ref=e47]: Our AI reads between the lines - building a taste profile that actually knows you.
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - heading "Create Your GoTwo Lists" [level=3] [ref=e51]
+            - paragraph [ref=e52]: Coffee order. Ring size. Favorite shampoo. Add it once, it's there forever.
+          - generic [ref=e54]: "03"
+        - generic [ref=e56]:
+          - generic [ref=e58]: "04"
+          - generic [ref=e59]:
+            - heading "Invite Your People" [level=3] [ref=e60]
+            - paragraph [ref=e61]: Send a link. They connect instantly. Now everyone who matters actually knows you.
+        - generic [ref=e63]:
+          - generic [ref=e64]:
+            - heading "Control Who Sees What" [level=3] [ref=e65]
+            - paragraph [ref=e66]: You control the access. One connection sees one thing. Family sees another.
+          - generic [ref=e68]: "05"
+        - generic [ref=e70]:
+          - generic [ref=e72]: "06"
+          - generic [ref=e73]:
+            - generic [ref=e74]:
+              - img [ref=e75]
+              - text: AI-Powered
+            - heading "AI Powers Every Decision" [level=3] [ref=e77]
+            - paragraph [ref=e78]: Gift ideas, date night picks, favorite stores - served up for whoever's shopping for you.
+    - generic [ref=e81]:
+      - generic [ref=e82]:
+        - generic [ref=e83]: Go
+        - generic [ref=e84]: Two
+      - heading "Ready to get it right, every single time?" [level=2] [ref=e85]:
+        - text: Ready to get it right,
+        - text: every single time?
+      - paragraph [ref=e86]: Join people who never have to guess again.
+      - link "Create Your First Card ->" [ref=e87] [cursor=pointer]:
+        - /url: /signup
+    - contentinfo [ref=e88]:
+      - generic [ref=e89]:
+        - generic [ref=e90]: Go
+        - generic [ref=e91]: Two
+      - paragraph [ref=e92]: © 2026 GoTwo. Made with love.
