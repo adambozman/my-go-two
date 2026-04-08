@@ -47,6 +47,10 @@ type RecommendationFavorite = {
   product_query: string | null;
   display_price: string;
   match_label: string;
+  source_kind: string | null;
+  resolver_source: string | null;
+  exact_match_confirmed: boolean;
+  match_confidence: number | null;
   saved_at: string;
 };
 
@@ -64,6 +68,10 @@ type RecommendationShareRecord = {
   product_query: string | null;
   display_price: string;
   match_label: string;
+  source_kind: string | null;
+  resolver_source: string | null;
+  exact_match_confirmed: boolean;
+  match_confidence: number | null;
   shared_at: string;
   share_count: number;
   last_share_method: "native" | "clipboard";
@@ -117,7 +125,7 @@ function getProductMatchLabel(product: Product) {
 
 function getProductDisplayPrice(product: Product) {
   if (product.source_kind === "brand-search") return "Price varies";
-  return product.price;
+  return product.price?.trim() || "Price varies";
 }
 
 function getProductDestination(product: Product) {
@@ -128,11 +136,21 @@ function getProductActionLabel(product: Product) {
   if (product.source_kind === "specific-product" && product.affiliate_url) return "View Product";
   if (product.source_kind === "catalog-product" && product.affiliate_url) return "View Catalog";
   if (product.search_url) return "Search Brand";
-  return "No Link";
+  return null;
 }
 
 function getProductId(product: Product) {
-  return `${product.category}:${product.brand}:${product.name}`.toLowerCase();
+  const destination = getProductDestination(product);
+  return [
+    product.category,
+    product.source_kind ?? "unknown",
+    product.brand,
+    product.name,
+    destination ?? product.product_query ?? product.hook,
+  ]
+    .filter(Boolean)
+    .join(":")
+    .toLowerCase();
 }
 
 function toRecommendationFavorite(product: Product): RecommendationFavorite {
@@ -150,6 +168,10 @@ function toRecommendationFavorite(product: Product): RecommendationFavorite {
     product_query: product.product_query ?? null,
     display_price: getProductDisplayPrice(product),
     match_label: getProductMatchLabel(product),
+    source_kind: product.source_kind ?? null,
+    resolver_source: product.resolver_source ?? null,
+    exact_match_confirmed: Boolean(product.exact_match_confirmed),
+    match_confidence: product.match_confidence ?? null,
     saved_at: new Date().toISOString(),
   };
 }
@@ -173,6 +195,10 @@ function toRecommendationShareRecord(
     product_query: product.product_query ?? null,
     display_price: getProductDisplayPrice(product),
     match_label: getProductMatchLabel(product),
+    source_kind: product.source_kind ?? null,
+    resolver_source: product.resolver_source ?? null,
+    exact_match_confirmed: Boolean(product.exact_match_confirmed),
+    match_confidence: product.match_confidence ?? null,
     shared_at: new Date().toISOString(),
     share_count: (previous?.share_count ?? 0) + 1,
     last_share_method: method,
@@ -429,10 +455,9 @@ const Recommendations = () => {
     const productUrl = product.affiliate_url || product.search_url || null;
     const matchLabel = getProductMatchLabel(product);
     const displayPrice = getProductDisplayPrice(product);
+    const shareSummary = `${product.brand} ${product.name}\n${matchLabel}\n${displayPrice}`;
     const shareText = [
-      `${product.brand} ${product.name}`,
-      matchLabel,
-      displayPrice,
+      shareSummary,
       product.hook,
       product.why,
       productUrl,
@@ -446,7 +471,7 @@ const Recommendations = () => {
       if (typeof navigator.share === "function") {
         await navigator.share({
           title: `${product.brand} ${product.name}`,
-          text: `${product.hook}\n\n${product.why}`,
+          text: `${shareSummary}\n\n${product.hook}\n\n${product.why}`,
           url: productUrl ?? undefined,
         });
         await persistShareActivity(product, "native");
@@ -475,6 +500,7 @@ const Recommendations = () => {
   const generatedLabel = generatedAt
     ? new Date(generatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })
     : null;
+  const isGuestPreview = !subscribed && filtered.length > PAGE_SIZE;
 
   if (knowledgeLoading || subscriptionLoading) {
     return (
@@ -537,6 +563,11 @@ const Recommendations = () => {
                     Powered by the rebuilt recommendation engine
                   </p>
                 )}
+                {isGuestPreview && (
+                  <p className="surface-meta mt-1">
+                    Showing 4 preview picks from this week&apos;s set
+                  </p>
+                )}
                 {isDev && (
                   <Button
                     size="sm"
@@ -594,7 +625,7 @@ const Recommendations = () => {
                   const isSharing = sharingItems.has(itemId);
                   return (
                     <ProductCard
-                      key={itemId + i}
+                      key={itemId}
                       product={product}
                       index={i}
                       isSaved={isSaved}
@@ -617,15 +648,6 @@ const Recommendations = () => {
               />
             )}
           </>
-        ) : !subscribed ? (
-          <Card variant="sand" className="p-8 text-center">
-            <p className="surface-heading-md mb-2">
-              Your curated picks load here.
-            </p>
-            <p className="surface-body">
-              Upgrade to unlock the full weekly set and saving.
-            </p>
-          </Card>
         ) : loadErrorMessage ? (
           <Card variant="sand" className="p-8 text-center">
             <p className="surface-heading-md mb-2">
@@ -646,6 +668,15 @@ const Recommendations = () => {
                 Try Again
               </Button>
             </div>
+          </Card>
+        ) : !subscribed ? (
+          <Card variant="sand" className="p-8 text-center">
+            <p className="surface-heading-md mb-2">
+              Your curated picks load here.
+            </p>
+            <p className="surface-body">
+              Upgrade to unlock the full weekly set and saving.
+            </p>
           </Card>
         ) : hasLoaded ? (
           <Card variant="sand" className="p-8 text-center">
@@ -741,19 +772,19 @@ function ProductCard({
           </p>
 
           <div className="mt-auto pt-1 flex items-center gap-2">
-            <Button
-              onClick={() => {
-                if (!productDestination) return;
-                window.open(productDestination, "_blank", "noopener,noreferrer");
-              }}
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              disabled={!productDestination}
-            >
-              <ExternalLink className="h-3 w-3" />
-              {productActionLabel}
-            </Button>
+            {productDestination && productActionLabel ? (
+              <Button
+                onClick={() => {
+                  window.open(productDestination, "_blank", "noopener,noreferrer");
+                }}
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+              >
+                <ExternalLink className="h-3 w-3" />
+                {productActionLabel}
+              </Button>
+            ) : null}
 
             <Button onClick={onToggleSave} variant="outline" size="sm" className="gap-1.5" disabled={saveLoading}>
               {saveLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Bookmark className="h-3 w-3" />}
@@ -778,6 +809,3 @@ function ProductCard({
 }
 
 export default Recommendations;
-
-// Codebase classification: runtime recommendations page.
-// Codebase classification: runtime recommendations page.
