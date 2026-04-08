@@ -125,6 +125,7 @@ The audits consistently point here as the likely source of login bounce and rout
 - Done: `/login` and `/signup` now redirect already-authenticated users back into the real post-auth flow instead of leaving them stranded on an auth-entry page, using a shared destination resolver.
 - Done: frontend dev-login and dev-subscription override checks now use one shared allowlist helper so those protected operator paths do not drift between `Login.tsx` and `AuthContext.tsx`.
 - Done: auth completion, invite completion, and sign-out redirects now replace browser history entries so back-navigation does not bounce users into stale `/login` or `/connect` pages after session state changes.
+- Done: the notifications page now waits for subscription resolution before showing the Premium lock state, so subscribed users do not get a false locked screen during auth/subscription settle.
 - Remaining: wider auth/subscription lifecycle separation and visual pass across login/refresh transitions.
 
 ### Files
