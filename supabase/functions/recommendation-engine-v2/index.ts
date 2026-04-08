@@ -168,8 +168,8 @@ const findBestProductBankMatch = async (
 const toResponseProduct = (intent: RecommendationIntent, bankRow: ProductBankRow | null) => {
   if (bankRow) {
     return {
-      name: intent.name,
-      brand: intent.brand,
+      name: bankRow.product_title,
+      brand: bankRow.brand,
       price: bankRow.product_price_text,
       category: intent.category,
       hook: intent.hook,
@@ -177,7 +177,7 @@ const toResponseProduct = (intent: RecommendationIntent, bankRow: ProductBankRow
       is_connection_pick: false,
       affiliate_url: bankRow.product_url,
       search_url: null,
-      product_query: bankRow.search_query ?? `${intent.brand} ${intent.name}`.trim(),
+      product_query: bankRow.search_query ?? `${bankRow.brand} ${bankRow.product_title}`.trim(),
       sponsored_id: null,
       image_url: bankRow.product_image_url,
       source_kind: "specific-product",

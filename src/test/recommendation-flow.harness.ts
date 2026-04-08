@@ -100,8 +100,8 @@ const toProductCard = (
 ): RecommendationCard => {
   const productUrl = resolved.link_kind === "product" ? resolved.link_url : null;
   return {
-    name: intent.name,
-    brand: intent.brand,
+    name: resolved.product_name,
+    brand: resolved.brand,
     price: resolved.price ?? intent.price,
     category: intent.category,
     hook: intent.hook,
@@ -110,7 +110,7 @@ const toProductCard = (
     is_sponsored: false,
     affiliate_url: productUrl,
     search_url: productUrl ? null : resolved.link_url,
-    product_query: resolved.search_query ?? `${intent.brand} ${intent.name}`.trim(),
+    product_query: resolved.search_query ?? `${resolved.brand} ${resolved.product_name}`.trim(),
     sponsored_id: null,
     image_url: productUrl ? resolved.image_url : null,
     source_kind: productUrl ? "specific-product" : "brand-search",

@@ -165,6 +165,49 @@ describe("agent 2: second weekly user journey", () => {
   });
 });
 
+describe("exact bank identity reuse", () => {
+  it("renders the exact saved product identity when a bank hit is reused", async () => {
+    const harness = new RecommendationFlowHarness({
+      generateIntents: (context) =>
+        context.userId === "seed-user"
+          ? [harperWeeklyFixture.weeklyIntents[1]]
+          : [
+              {
+                ...harperWeeklyFixture.weeklyIntents[1],
+                name: "Minimal Gold Ring",
+                search_query: "Mejuri minimal gold ring",
+                keywords: ["mejuri", "gold", "minimal"],
+              },
+            ],
+      scrapeProduct: (intent: RecommendationIntent) =>
+        SCRAPE_FIXTURES[`${intent.brand} ${intent.name}`] ?? null,
+    });
+
+    await harness.runWeekly({
+      userId: "seed-user",
+      weekStartKey: "2026-04-06",
+      knowledgeResponses: harperWeeklyFixture.knowledgeResponses,
+      sharedCards: harperWeeklyFixture.sharedCards,
+      yourVibe: harperWeeklyFixture.yourVibe,
+    });
+
+    const reused = await harness.runWeekly({
+      userId: "reuse-user",
+      weekStartKey: "2026-04-13",
+      knowledgeResponses: harperWeeklyFixture.knowledgeResponses,
+      sharedCards: harperWeeklyFixture.sharedCards,
+      yourVibe: harperWeeklyFixture.yourVibe,
+    });
+
+    expect(reused.bankHits).toBe(1);
+    expect(reused.products[0]?.name).toBe("Thin Dome Ring");
+    expect(reused.products[0]?.brand).toBe("Mejuri");
+    expect(reused.products[0]?.affiliate_url).toBe("https://mejuri.com/us/en/products/thin-dome-ring");
+    expect(reused.products[0]?.image_url).toBe("https://cdn.mejuri.com/pdp/thin-dome-ring.jpg");
+    expect(reused.products[0]?.price).toBe("$78");
+  });
+});
+
 describe("exact product confidence", () => {
   it("keeps search fallback when scrape confidence is not exact", async () => {
     const harness = new RecommendationFlowHarness({
