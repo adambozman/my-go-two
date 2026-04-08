@@ -16,6 +16,10 @@ import {
   buildRecommendationSignalSummary,
   type NormalizedRecommendationState,
 } from "../_shared/recommendationSignals.ts";
+import {
+  completeRecommendationIntentSet,
+  generateFallbackRecommendationIntents,
+} from "../_shared/recommendationIntentPlanner.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -202,38 +206,9 @@ const toResponseProduct = (intent: RecommendationIntent, bankRow: ProductBankRow
   };
 };
 
-const generateFallbackIntents = (state: NormalizedRecommendationState): RecommendationIntent[] => {
-  const intents: RecommendationIntent[] = [];
-  const seen = new Set<string>();
-
-  for (const row of state.productCardKeywords) {
-    if (!row.primary_keyword || !row.category) continue;
-    const key = `${row.category}:${row.primary_keyword}:${row.brand_keywords[0] ?? ""}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-
-    const brand = row.brand_keywords[0] || state.recommendedBrands[0] || "Curated Pick";
-    intents.push({
-      brand,
-      name: `${cleanText(row.primary_keyword)} pick`,
-      price: "",
-      category: row.category as RecommendationIntent["category"],
-      hook: `Built from your saved ${cleanText(row.primary_keyword)} preferences.`,
-      why: `This comes from your saved product cards, preference signals, and profile details.`,
-      recommendation_kind: "generic",
-      search_query: `${brand} ${row.primary_keyword} ${row.descriptor_keywords.slice(0, 2).join(" ")}`.trim(),
-      primary_keyword: row.primary_keyword,
-      keywords: row.descriptor_keywords.slice(0, 6),
-    });
-    if (intents.length >= 12) break;
-  }
-
-  return intents;
-};
-
 const generateAiIntents = async (state: NormalizedRecommendationState) => {
   const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-  if (!lovableApiKey) return generateFallbackIntents(state);
+  if (!lovableApiKey) return generateFallbackRecommendationIntents(state);
 
   const profileSnapshot = Object.entries(state.combinedResponses)
     .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(", ") : String(value ?? "")}`)
@@ -339,12 +314,12 @@ Use the provided tool.`;
     }),
   });
 
-  if (!response.ok) return generateFallbackIntents(state);
+  if (!response.ok) return generateFallbackRecommendationIntents(state);
   const result = await response.json();
   const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
   const parsed = toolCall?.function?.arguments ? JSON.parse(toolCall.function.arguments) : null;
   const intents = sanitizeIntents(parsed?.intents);
-  return intents.length ? intents : generateFallbackIntents(state);
+  return completeRecommendationIntentSet(state, intents);
 };
 
 const persistNormalizedState = async (admin: SupabaseClient, userId: string, state: NormalizedRecommendationState) => {
