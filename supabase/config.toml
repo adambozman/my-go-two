@@ -6,6 +6,9 @@ verify_jwt = false
 [functions.ai-products]
 verify_jwt = true
 
+[functions.recommendation-engine-v2]
+verify_jwt = true
+
 [functions.trending-feed]
 verify_jwt = false
 
