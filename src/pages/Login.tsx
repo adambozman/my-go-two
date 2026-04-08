@@ -11,6 +11,7 @@ import { ArrowRight } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AppleSignInButton from "@/components/AppleSignInButton";
 import GoTwoText from "@/components/GoTwoText";
+import { resolvePostAuthDestination } from "@/lib/authEntryRedirect";
 
 // DEV-ONLY bypass accounts. These are not normal customer login paths.
 const DEV_EMAILS = ["adam.bozman@gmail.com"];
@@ -32,71 +33,12 @@ const logAuthDiagnostic = (event: string, details?: Record<string, unknown>) => 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Something went wrong";
 
-const hasPendingInviteHandoff = () => {
-  try {
-    return Boolean(
-      localStorage.getItem("gotwo_invite")?.trim() || localStorage.getItem("gotwo_invite_token")?.trim(),
-    );
-  } catch {
-    return false;
-  }
-};
-
-const resolvePostLoginDestination = async (userId: string, options?: { pendingInvite?: boolean }) => {
-  if (options?.pendingInvite) {
-    logAuthDiagnostic("login:resolved-destination:pending-invite", {
-      userId,
-      destination: "/dashboard/settings",
-    });
-    return "/dashboard/settings";
-  }
-
-  const profileResult = await supabase
-    .from("profiles")
-    .select("onboarding_completed_at")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (!profileResult.error) {
-    const destination = profileResult.data?.onboarding_completed_at ? "/dashboard" : "/onboarding";
-    logAuthDiagnostic("login:resolved-destination:profile", {
-      userId,
-      destination,
-    });
-    return destination;
-  }
-
-  const legacyResult = await supabase
-    .from("user_preferences")
-    .select("onboarding_complete")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (!legacyResult.error && legacyResult.data?.onboarding_complete) {
-    logAuthDiagnostic("login:resolved-destination:legacy", {
-      userId,
-      destination: "/dashboard",
-    });
-    return "/dashboard";
-  }
-
-  console.warn("Falling back to onboarding because onboarding status could not be resolved.", {
-    profileError: profileResult.error,
-    legacyError: legacyResult.error,
-  });
-  logAuthDiagnostic("login:resolved-destination:fallback", {
-    userId,
-    destination: "/onboarding",
-  });
-  return "/onboarding";
-};
-
 const Login = () => {
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -115,12 +57,22 @@ const Login = () => {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    if (authLoading || !user) return;
+
+    void resolvePostAuthDestination(user.id).then((destination) => {
+      logAuthDiagnostic("login:redirect-existing-user", {
+        userId: user.id,
+        destination,
+      });
+      navigate(destination, { replace: true });
+    });
+  }, [authLoading, navigate, user]);
+
   const navigateAfterLogin = async () => {
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (currentUser) {
-      const destination = await resolvePostLoginDestination(currentUser.id, {
-        pendingInvite: hasPendingInviteHandoff(),
-      });
+      const destination = await resolvePostAuthDestination(currentUser.id);
       logAuthDiagnostic("login:navigate-after-login", {
         userId: currentUser.id,
         destination,
