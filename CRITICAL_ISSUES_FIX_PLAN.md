@@ -314,6 +314,11 @@ Recommendations are user-facing and currently have "demo-feeling" gaps.
 3. `resolved_recommendation_catalog` is too writable
 4. product image behavior is mixed between resolved URLs and local banks
 
+### Progress
+
+- Done: recommendation saves now persist in `user_preferences.favorites.recommendations`, load back on refresh, and rollback cleanly on failed writes instead of behaving like local-only demo state.
+- Remaining: share still does not create a durable share artifact or tracked send path, and the catalog ownership boundary plus mixed image sourcing still need cleanup.
+
 ### Fixes required
 
 1. Decide what save/share really means and persist it.

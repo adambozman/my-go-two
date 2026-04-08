@@ -67,6 +67,26 @@ interface Product {
   source_version?: string;
 }
 
+type RecommendationFavorite = {
+  id: string;
+  name: string;
+  brand: string;
+  category: string;
+  price: string;
+  hook: string;
+  why: string;
+  image_url: string | null;
+  affiliate_url: string | null;
+  search_url: string | null;
+  product_query: string | null;
+  saved_at: string;
+};
+
+type FavoritesPayload = {
+  recommendations?: Record<string, RecommendationFavorite>;
+  [key: string]: unknown;
+};
+
 type RpcError = { message?: string; status?: number } | null;
 
 const getRpcStatus = (error: unknown) =>
@@ -119,6 +139,31 @@ function getProductImage(product: Product) {
   return getFallbackImage(product);
 }
 
+function getProductId(product: Product) {
+  return `${product.category}:${product.brand}:${product.name}`.toLowerCase();
+}
+
+function toRecommendationFavorite(product: Product): RecommendationFavorite {
+  return {
+    id: getProductId(product),
+    name: product.name,
+    brand: product.brand,
+    category: product.category,
+    price: product.price,
+    hook: product.hook,
+    why: product.why,
+    image_url: product.image_url ?? null,
+    affiliate_url: product.affiliate_url ?? null,
+    search_url: product.search_url ?? null,
+    product_query: product.product_query ?? null,
+    saved_at: new Date().toISOString(),
+  };
+}
+
+function isFavoritesPayload(value: unknown): value is FavoritesPayload {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
 
 const Recommendations = () => {
@@ -131,6 +176,7 @@ const Recommendations = () => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [activePillar, setActivePillar] = useState<string>("all");
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
+  const [savingItems, setSavingItems] = useState<Set<string>>(new Set());
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [isCached, setIsCached] = useState(false);
 
@@ -193,14 +239,115 @@ const Recommendations = () => {
     }
   }, [fetchProducts, knowledgeLoading, hasLoaded]);
 
-  const toggleSave = (id: string) => {
+  useEffect(() => {
+    if (!user) {
+      setSavedItems(new Set());
+      setSavingItems(new Set());
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadSavedRecommendations = async () => {
+      const { data, error } = await supabase
+        .from("user_preferences")
+        .select("favorites")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (cancelled) return;
+
+      if (error) {
+        console.error("Failed to load saved recommendations:", error);
+        return;
+      }
+
+      const favorites = isFavoritesPayload(data?.favorites) ? data.favorites : null;
+      const recommendations = favorites?.recommendations;
+
+      if (!recommendations || typeof recommendations !== "object") {
+        setSavedItems(new Set());
+        return;
+      }
+
+      setSavedItems(new Set(Object.keys(recommendations)));
+    };
+
+    void loadSavedRecommendations();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const toggleSave = useCallback(async (product: Product) => {
+    if (!user) return;
+
+    const id = getProductId(product);
+    const wasSaved = savedItems.has(id);
+
     setSavedItems((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); toast("Removed from profile"); }
-      else { next.add(id); toast.success("Saved to your profile"); }
+      if (wasSaved) next.delete(id);
+      else next.add(id);
       return next;
     });
-  };
+    setSavingItems((prev) => new Set(prev).add(id));
+
+    try {
+      const { data: existingRow, error: loadError } = await supabase
+        .from("user_preferences")
+        .select("favorites")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (loadError) throw loadError;
+
+      const favorites = isFavoritesPayload(existingRow?.favorites) ? { ...existingRow.favorites } : {};
+      const recommendations = isFavoritesPayload(favorites.recommendations)
+        ? { ...(favorites.recommendations as Record<string, RecommendationFavorite>) }
+        : {};
+
+      if (wasSaved) {
+        delete recommendations[id];
+      } else {
+        recommendations[id] = toRecommendationFavorite(product);
+      }
+
+      favorites.recommendations = recommendations;
+
+      const { error: saveError } = await supabase.from("user_preferences").upsert(
+        {
+          user_id: user.id,
+          favorites,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" },
+      );
+
+      if (saveError) throw saveError;
+
+      if (wasSaved) {
+        toast("Removed from saved picks");
+      } else {
+        toast.success("Saved to your profile");
+      }
+    } catch (error: unknown) {
+      setSavedItems((prev) => {
+        const next = new Set(prev);
+        if (wasSaved) next.add(id);
+        else next.delete(id);
+        return next;
+      });
+      toast.error(getErrorMessage(error));
+    } finally {
+      setSavingItems((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  }, [savedItems, user]);
 
   const handleShare = (product: Product) => {
     toast.success(`Ready to share ${product.name} with your connection`);
@@ -317,15 +464,17 @@ const Recommendations = () => {
                 className="grid gap-4 lg:grid-cols-2"
               >
                 {displayProducts.map((product, i) => {
-                  const itemId = `${product.brand}-${product.name}`;
+                  const itemId = getProductId(product);
                   const isSaved = savedItems.has(itemId);
+                  const isSaving = savingItems.has(itemId);
                   return (
                     <ProductCard
                       key={itemId + i}
                       product={product}
                       index={i}
                       isSaved={isSaved}
-                      onToggleSave={() => subscribed ? toggleSave(itemId) : toast("Upgrade to save picks")}
+                      saveLoading={isSaving}
+                      onToggleSave={() => subscribed ? void toggleSave(product) : toast("Upgrade to save picks")}
                       onShare={() => (product.affiliate_url || product.search_url) ? undefined : handleShare(product)}
                     />
                   );
@@ -370,12 +519,14 @@ function ProductCard({
   product,
   index,
   isSaved,
+  saveLoading,
   onToggleSave,
   onShare,
 }: {
   product: Product;
   index: number;
   isSaved: boolean;
+  saveLoading: boolean;
   onToggleSave: () => void;
   onShare: () => void;
 }) {
@@ -437,8 +588,8 @@ function ProductCard({
           </p>
 
           <div className="mt-auto pt-1 flex items-center gap-2">
-            <Button onClick={onToggleSave} variant="outline" size="sm" className="gap-1.5">
-              <Bookmark className="h-3 w-3" />
+            <Button onClick={onToggleSave} variant="outline" size="sm" className="gap-1.5" disabled={saveLoading}>
+              {saveLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Bookmark className="h-3 w-3" />}
               {isSaved ? "Saved" : "Save"}
             </Button>
 
