@@ -12,9 +12,8 @@ import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AppleSignInButton from "@/components/AppleSignInButton";
 import GoTwoText from "@/components/GoTwoText";
 import { resolvePostAuthDestination } from "@/lib/authEntryRedirect";
+import { isDevAuthEmail, normalizeAuthEmail } from "@/lib/devAuth";
 
-// DEV-ONLY bypass accounts. These are not normal customer login paths.
-const DEV_EMAILS = ["adam.bozman@gmail.com"];
 const AUTH_DIAGNOSTIC_FLAG = "gotwo_debug_auth";
 
 const authDiagnosticsEnabled = () => {
@@ -42,7 +41,8 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const isDevEmail = DEV_EMAILS.includes(email.toLowerCase().trim());
+  const normalizedEmail = normalizeAuthEmail(email);
+  const isDevEmail = isDevAuthEmail(email);
 
   useEffect(() => {
     const inviteId = searchParams.get("invite");
@@ -95,14 +95,14 @@ const Login = () => {
       }
 
       logAuthDiagnostic("login:submit", {
-        email: email.toLowerCase().trim(),
+        email: normalizedEmail,
         isDevEmail,
       });
 
       if (isDevEmail) {
         // DEV-ONLY bypass: instant sign-in via server-generated session.
         const { data, error } = await supabase.functions.invoke("dev-login", {
-          body: { email: email.toLowerCase().trim() },
+          body: { email: normalizedEmail },
         });
         if (error) throw error;
         if (!data?.access_token || !data?.refresh_token) throw new Error("Dev login failed");
@@ -112,19 +112,19 @@ const Login = () => {
         });
         if (sessionError) throw sessionError;
         logAuthDiagnostic("login:dev-session-set", {
-          email: email.toLowerCase().trim(),
+          email: normalizedEmail,
         });
         await navigateAfterLogin();
       } else {
         await signIn(email, password);
         logAuthDiagnostic("login:password-sign-in-success", {
-          email: email.toLowerCase().trim(),
+          email: normalizedEmail,
         });
         await navigateAfterLogin();
       }
     } catch (error: unknown) {
       logAuthDiagnostic("login:submit-failed", {
-        email: email.toLowerCase().trim(),
+        email: normalizedEmail,
         message: getErrorMessage(error),
       });
       toast({ title: "Error", description: getErrorMessage(error), variant: "destructive" });

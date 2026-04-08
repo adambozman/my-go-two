@@ -2,10 +2,8 @@ import { useEffect, useState, ReactNode, useCallback, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContext } from "@/contexts/auth-context";
+import { isDevAuthEmail, isDevAuthUserId } from "@/lib/devAuth";
 
-// DEV-ONLY override accounts. These are not real subscription checks.
-const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
-const DEV_EMAILS = ["adam.bozman@gmail.com"];
 const SUBSCRIPTION_CACHE_KEY = "gotwo_subscription_cache_v1";
 const SUBSCRIPTION_CACHE_TTL_MS = 5 * 60 * 1000;
 const SUBSCRIPTION_TIMEOUT_MS = 8000;
@@ -123,7 +121,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Dev override — skip Stripe check
     // DEV-ONLY override: skip Stripe subscription checks for known test accounts.
-    if (DEV_USER_IDS.includes(activeUser.id) || DEV_EMAILS.includes(activeUser.email ?? "")) {
+    if (isDevAuthUserId(activeUser.id) || isDevAuthEmail(activeUser.email)) {
       setSubscribed(true);
       setSubscriptionEnd(null);
       setSubscriptionLoading(false);
