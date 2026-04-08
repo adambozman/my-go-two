@@ -10,6 +10,20 @@ const SUBSCRIPTION_CACHE_KEY = "gotwo_subscription_cache_v1";
 const SUBSCRIPTION_CACHE_TTL_MS = 5 * 60 * 1000;
 const SUBSCRIPTION_TIMEOUT_MS = 8000;
 const FOREGROUND_REFRESH_DEBOUNCE_MS = 1500;
+const AUTH_DIAGNOSTIC_FLAG = "gotwo_debug_auth";
+
+const authDiagnosticsEnabled = () => {
+  try {
+    return localStorage.getItem(AUTH_DIAGNOSTIC_FLAG) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const logAuthDiagnostic = (event: string, details?: Record<string, unknown>) => {
+  if (!authDiagnosticsEnabled()) return;
+  console.info(`[auth] ${event}`, details ?? {});
+};
 
 type SubscriptionCacheRecord = {
   userId: string;
@@ -101,12 +115,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const silent = options?.silent ?? false;
     if (!accessToken || !activeUser) return;
 
+    logAuthDiagnostic("subscription-check:start", {
+      userId: activeUser.id,
+      forceRefresh,
+      silent,
+    });
+
     // Dev override — skip Stripe check
     // DEV-ONLY override: skip Stripe subscription checks for known test accounts.
     if (DEV_USER_IDS.includes(activeUser.id) || DEV_EMAILS.includes(activeUser.email ?? "")) {
       setSubscribed(true);
       setSubscriptionEnd(null);
       setSubscriptionLoading(false);
+      logAuthDiagnostic("subscription-check:dev-override", {
+        userId: activeUser.id,
+        email: activeUser.email ?? null,
+      });
       writeSubscriptionCache({
         userId: activeUser.id,
         checkedAt: Date.now(),
@@ -121,6 +145,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSubscribed(cached.subscribed);
       setSubscriptionEnd(cached.subscriptionEnd);
       setSubscriptionLoading(false);
+      logAuthDiagnostic("subscription-check:cache-hit", {
+        userId: activeUser.id,
+        subscribed: cached.subscribed,
+        subscriptionEnd: cached.subscriptionEnd,
+      });
       return;
     }
 
@@ -150,6 +179,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setSubscribed(nextSubscribed);
       setSubscriptionEnd(nextSubscriptionEnd);
+      logAuthDiagnostic("subscription-check:success", {
+        userId: activeUser.id,
+        subscribed: nextSubscribed,
+        subscriptionEnd: nextSubscriptionEnd,
+      });
       writeSubscriptionCache({
         userId: activeUser.id,
         checkedAt: Date.now(),
@@ -158,6 +192,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
     } catch (error) {
       console.warn("Subscription check failed:", error);
+      logAuthDiagnostic("subscription-check:failed", {
+        userId: activeUser.id,
+        message: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       if (mountedRef.current && latestSubscriptionRequestRef.current === requestId) {
         setSubscriptionLoading(false);
@@ -173,6 +211,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     mountedRef.current = true;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      logAuthDiagnostic("auth-state-change", {
+        event: _event,
+        userId: session?.user?.id ?? null,
+      });
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -187,12 +229,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     void supabase.auth.getSession()
       .then(({ data: { session } }) => {
         if (!mountedRef.current) return;
+        logAuthDiagnostic("session-restore:success", {
+          userId: session?.user?.id ?? null,
+        });
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
       })
       .catch((error) => {
         console.error("Failed to restore auth session:", error);
+        logAuthDiagnostic("session-restore:failed", {
+          message: error instanceof Error ? error.message : String(error),
+        });
         if (!mountedRef.current) return;
         setSession(null);
         setUser(null);

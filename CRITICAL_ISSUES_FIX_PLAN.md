@@ -117,7 +117,8 @@ The audits consistently point here as the likely source of login bounce and rout
 - Done: removed the redundant `My Go Two` leaf guard so the dashboard shell owns that route.
 - Done: stabilized subscription state for cache-hit/dev-override/sign-out paths so stale `subscriptionLoading` does not linger across session changes.
 - Done: replaced the 60-second global subscription poll with explicit refresh plus foreground revalidation when the app becomes active again.
-- Remaining: wider auth/subscription lifecycle separation, temporary diagnostics, and visual pass across login/refresh transitions.
+- Done: added opt-in auth diagnostics in `AuthContext` behind `localStorage.gotwo_debug_auth = "1"` so login/session/subscription churn can be traced without changing live behavior by default.
+- Remaining: wider auth/subscription lifecycle separation and visual pass across login/refresh transitions.
 
 ### Files
 
