@@ -131,7 +131,7 @@ describe("recommendation signal normalization", () => {
       state.thisOrThatSignalRows.some(
         (row) =>
           row.signal_type === "descriptor_keyword" &&
-          row.descriptor_keywords.includes("heritage") &&
+          row.descriptor_keywords.includes("outdoor") &&
           row.signal_polarity === "negative",
       ),
     ).toBe(true);
@@ -139,7 +139,7 @@ describe("recommendation signal normalization", () => {
     expect(state.likes.some((row) => row.like_type === "this_or_that_v2" && row.category === "clothes")).toBe(true);
     expect(state.likes.some((row) => row.like_type === "this_or_that_choice" && row.descriptor_keywords.includes("neutrals"))).toBe(true);
     expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_brand" && row.brand === "h m")).toBe(true);
-    expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_v2" && row.descriptor_keywords.includes("heritage"))).toBe(true);
+    expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_v2" && row.descriptor_keywords.includes("outdoor"))).toBe(true);
     expect(state.keywordBankRows.some((row) => row.category === "food")).toBe(true);
     expect(state.brandBankRows.some((row) => row.brand === "aritzia")).toBe(true);
     expect(state.brandLocationRows.some((row) => row.location_key === "chicago")).toBe(true);

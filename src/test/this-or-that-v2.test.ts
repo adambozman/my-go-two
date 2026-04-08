@@ -18,23 +18,23 @@ describe("This or That v2 answer contract", () => {
     expect(record.category_id).toBe("brands-shopping");
     expect(record.my_go_two_category_slug).toBe("clothes");
     expect(record.recommendation_category).toBe("clothes");
-    expect(record.selected_label).toBe("Essentials & Basics");
+    expect(record.selected_label).toBe("Classic Quality Basics");
     expect(record.selected_payload.entity_kind).toBe("brand-cluster");
     expect(record.selected_payload.primary_keyword).toBe("brand preference");
     expect(record.selected_payload.descriptor_keywords).toEqual(
-      expect.arrayContaining(["basics", "minimal", "essentials"]),
+      expect.arrayContaining(["basics", "quality", "minimal"]),
     );
     expect(record.selected_payload.brand_keywords).toEqual(
-      expect.arrayContaining(["uniqlo", "buck mason", "everlane"]),
+      expect.arrayContaining(["buck mason", "everlane", "uniqlo"]),
     );
     expect(record.rejected_payload.descriptor_keywords).toEqual(
-      expect.arrayContaining(["heritage", "rugged", "workwear"]),
+      expect.arrayContaining(["outdoor", "performance", "technical"]),
     );
   });
 
   it("builds an opposite-side avoid payload for legacy style questions", () => {
     const bank = getThisOrThatBank("style-aesthetic", "male");
-    const question = bank?.questions[1];
+    const question = bank?.questions[0];
 
     expect(question).toBeTruthy();
 
@@ -42,12 +42,18 @@ describe("This or That v2 answer contract", () => {
 
     expect(record.selected_payload.entity_kind).toBe("aesthetic");
     expect(record.selected_payload.primary_keyword).toBe("style");
-    expect(record.selected_payload.descriptor_keywords).toEqual(expect.arrayContaining(["neutrals"]));
-    expect(record.selected_payload.avoid_keywords).toEqual(expect.arrayContaining(["colors"]));
-    expect(record.rejected_payload.descriptor_keywords).toEqual(expect.arrayContaining(["colors"]));
+    expect(record.selected_payload.descriptor_keywords).toEqual(expect.arrayContaining(["tailored", "minimal"]));
+    expect(record.selected_payload.avoid_keywords).toEqual(
+      expect.arrayContaining(["relaxed streetwear", "streetwear", "oversized"]),
+    );
+    expect(record.rejected_payload.descriptor_keywords).toEqual(
+      expect.arrayContaining(["relaxed", "streetwear", "oversized"]),
+    );
   });
 
   it("tracks dataset coverage by gender instead of flattening everyone into one authored bank", () => {
+    expect(getThisOrThatBank("brands-shopping", "female")?.questions.length).toBeGreaterThan(0);
+    expect(getThisOrThatBank("brands-shopping", "non-binary")?.questions.length).toBeGreaterThan(0);
     expect(
       THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD.every((question) => question.dataset_gender === "male"),
     ).toBe(true);

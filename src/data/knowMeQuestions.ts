@@ -5,6 +5,10 @@
  */
 
 import type { Gender } from "@/lib/gender";
+import {
+  getThisOrThatV2AuthoredBank,
+  type ThisOrThatV2AuthoredCategoryId,
+} from "./thisOrThatV2Authored";
 
 
 export interface QuizOption {
@@ -1008,6 +1012,14 @@ export const THIS_OR_THAT_CATEGORIES: ThisOrThatCategory[] = [
 ];
 
 export const getThisOrThatBank = (categoryId: string, gender: Gender): GenderedBrandBank | null => {
+  const authoredBank = getThisOrThatV2AuthoredBank(
+    gender,
+    categoryId as ThisOrThatV2AuthoredCategoryId,
+  );
+  if (authoredBank) {
+    return authoredBank;
+  }
+
   if (categoryId === "style-aesthetic") {
     return {
       categories: [

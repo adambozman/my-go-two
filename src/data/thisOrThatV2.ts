@@ -537,6 +537,9 @@ const buildQuestionScaffoldFromAuthoredSeed = (
   const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(category.id);
   if (!blueprint) return null;
 
+  const optionA = seed.options[0];
+  const optionB = seed.options[1];
+
   return {
     question_id: seed.question_id,
     source_category_id: category.id,
@@ -551,34 +554,44 @@ const buildQuestionScaffoldFromAuthoredSeed = (
     options: [
       {
         option_key: "A",
-        label: seed.options[0].label,
+        label: optionA.label,
         metadata: {
           category_slug: blueprint.category_slug,
           subcategory_slug: blueprint.subcategory_slug,
           entity_kind: blueprint.entity_kind,
-          entity_slug: slugify(seed.options[0].label),
-          primary_keyword: normalizeKeyword(seed.options[0].primary_keyword),
-          descriptor_keywords: unique(seed.options[0].descriptor_keywords.map(normalizeKeyword)),
-          avoid_keywords: unique(seed.options[0].avoid_keywords?.map(normalizeKeyword) ?? []),
-          brand_keywords: unique(seed.options[0].brand_keywords?.map(normalizeKeyword) ?? []),
-          location_keywords: unique(seed.options[0].location_keywords?.map(normalizeKeyword) ?? []),
-          weight: seed.options[0].weight ?? blueprint.weight,
+          entity_slug: slugify(optionA.label),
+          primary_keyword: normalizeKeyword(optionA.primary_keyword),
+          descriptor_keywords: unique(optionA.descriptor_keywords.map(normalizeKeyword)),
+          avoid_keywords: unique(
+            (optionA.avoid_keywords?.length
+              ? optionA.avoid_keywords
+              : [optionB.label, ...optionB.descriptor_keywords]
+            ).map(normalizeKeyword),
+          ),
+          brand_keywords: unique(optionA.brand_keywords?.map(normalizeKeyword) ?? []),
+          location_keywords: unique(optionA.location_keywords?.map(normalizeKeyword) ?? []),
+          weight: optionA.weight ?? blueprint.weight,
         },
       },
       {
         option_key: "B",
-        label: seed.options[1].label,
+        label: optionB.label,
         metadata: {
           category_slug: blueprint.category_slug,
           subcategory_slug: blueprint.subcategory_slug,
           entity_kind: blueprint.entity_kind,
-          entity_slug: slugify(seed.options[1].label),
-          primary_keyword: normalizeKeyword(seed.options[1].primary_keyword),
-          descriptor_keywords: unique(seed.options[1].descriptor_keywords.map(normalizeKeyword)),
-          avoid_keywords: unique(seed.options[1].avoid_keywords?.map(normalizeKeyword) ?? []),
-          brand_keywords: unique(seed.options[1].brand_keywords?.map(normalizeKeyword) ?? []),
-          location_keywords: unique(seed.options[1].location_keywords?.map(normalizeKeyword) ?? []),
-          weight: seed.options[1].weight ?? blueprint.weight,
+          entity_slug: slugify(optionB.label),
+          primary_keyword: normalizeKeyword(optionB.primary_keyword),
+          descriptor_keywords: unique(optionB.descriptor_keywords.map(normalizeKeyword)),
+          avoid_keywords: unique(
+            (optionB.avoid_keywords?.length
+              ? optionB.avoid_keywords
+              : [optionA.label, ...optionA.descriptor_keywords]
+            ).map(normalizeKeyword),
+          ),
+          brand_keywords: unique(optionB.brand_keywords?.map(normalizeKeyword) ?? []),
+          location_keywords: unique(optionB.location_keywords?.map(normalizeKeyword) ?? []),
+          weight: optionB.weight ?? blueprint.weight,
         },
       },
     ],

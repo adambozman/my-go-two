@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useTopBar } from "@/contexts/top-bar-context";
 import { buildSprints, getThisOrThatBank, SECTIONS, THIS_OR_THAT, THIS_OR_THAT_CATEGORIES, type BrandBankQuestion, type QuizQuestion } from "@/data/knowMeQuestions";
 import { buildThisOrThatAnswerRecord } from "@/data/thisOrThatV2";
-import type { Gender } from "@/lib/gender";
+import { normalizeGender, type Gender } from "@/lib/gender";
 import {
   buildKnowledgeAiAdapter,
   getCombinedKnowledgeResponses,
@@ -173,18 +173,20 @@ const KnowMePage = () => {
   const { knowledgeSnapshot, knowledgeDerivations, loading: contextLoading, refreshKnowledge } =
     useKnowledgeCenter();
   const { setBackState } = useTopBar();
-  const neutralBankGender: Gender = "non-binary";
   const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
   const knowMeResponses = useMemo(
     () => toKnowledgeResponseRecord(knowledgeSnapshot?.know_me_responses),
     [knowledgeSnapshot],
   );
+  const bankGender = useMemo(
+    () => normalizeGender(knowledgeSnapshot?.profile_core?.gender),
+    [knowledgeSnapshot],
+  );
 
   const allQuestions = useMemo(
-    () => buildSprints(neutralBankGender).flatMap((sprint) => sprint.questions),
-    [],
+    () => buildSprints(bankGender).flatMap((sprint) => sprint.questions),
+    [bankGender],
   );
-  const bankGender = neutralBankGender;
 
   const categories = useMemo(() => {
     return SECTIONS.map((section) => buildCategoryState(section, allQuestions, knowMeResponses, subscribed));
@@ -344,7 +346,7 @@ const KnowMePage = () => {
       question_key: answerRecord.question_id,
       selected_option_key: answerRecord.selected_option_key,
       rejected_option_key: answerRecord.rejected_option_key,
-      category_key: answerRecord.selected_payload.my_go_two_category_slug,
+      category_key: answerRecord.my_go_two_category_slug,
       subgroup_key: answerRecord.selected_payload.subcategory_slug,
       recommendation_category: recommendationCategory,
       primary_keyword: answerRecord.selected_payload.primary_keyword,
