@@ -434,3 +434,97 @@ describe("primary keyword bucket descriptor separation", () => {
     expect(bankSnapshot.some((entry) => entry.brand === "American Eagle" && entry.product_name === "Straight Blue Jeans")).toBe(true);
   });
 });
+
+describe("shared exact product bank lifecycle", () => {
+  it("reuses the exact saved product for a qualifying user and creates a second row for a near-match variant", async () => {
+    const harness = new RecommendationFlowHarness({
+      generateIntents: (context) => {
+        if (context.userId === "seed-lifecycle-user") {
+          return [harperWeeklyFixture.weeklyIntents[0]];
+        }
+
+        if (context.userId === "reuse-lifecycle-user") {
+          return [
+            {
+              ...harperWeeklyFixture.weeklyIntents[0],
+              name: "Dark Wash Skinny Jeans",
+              search_query: "American Eagle dark wash skinny jeans",
+              keywords: ["american eagle", "skinny", "blue jeans", "denim", "clothes"],
+            },
+          ];
+        }
+
+        return [
+          {
+            ...harperWeeklyFixture.weeklyIntents[0],
+            name: "Straight Blue Jeans",
+            search_query: "American Eagle straight blue jeans",
+            keywords: ["american eagle", "straight", "blue jeans", "denim", "clothes"],
+          },
+        ];
+      },
+      scrapeProduct: (intent: RecommendationIntent) =>
+        SCRAPE_FIXTURES[`${intent.brand} ${intent.name}`] ?? null,
+    });
+
+    const seeded = await harness.runWeekly({
+      userId: "seed-lifecycle-user",
+      weekStartKey: "2026-04-06",
+      knowledgeResponses: harperWeeklyFixture.knowledgeResponses,
+      sharedCards: harperWeeklyFixture.sharedCards,
+      yourVibe: harperWeeklyFixture.yourVibe,
+    });
+
+    expect(seeded.bankHits).toBe(0);
+    expect(seeded.bankMisses).toBe(1);
+    expect(seeded.products[0]?.affiliate_url).toBe("https://www.ae.com/us/en/p/skinny-blue-jeans");
+
+    const reused = await harness.runWeekly({
+      userId: "reuse-lifecycle-user",
+      weekStartKey: "2026-04-13",
+      knowledgeResponses: harperWeeklyFixture.knowledgeResponses,
+      sharedCards: harperWeeklyFixture.sharedCards,
+      yourVibe: harperWeeklyFixture.yourVibe,
+    });
+
+    expect(reused.bankHits).toBe(1);
+    expect(reused.bankMisses).toBe(0);
+    expect(reused.products[0]?.name).toBe("Skinny Blue Jeans");
+    expect(reused.products[0]?.affiliate_url).toBe("https://www.ae.com/us/en/p/skinny-blue-jeans");
+    expect(reused.products[0]?.image_url).toBe("https://cdn.ae.com/pdp/skinny-blue-jeans.jpg");
+
+    const variant = await harness.runWeekly({
+      userId: "variant-lifecycle-user",
+      weekStartKey: "2026-04-20",
+      knowledgeResponses: harperWeeklyFixture.knowledgeResponses,
+      sharedCards: harperWeeklyFixture.sharedCards,
+      yourVibe: harperWeeklyFixture.yourVibe,
+    });
+
+    expect(variant.bankHits).toBe(0);
+    expect(variant.bankMisses).toBe(1);
+    expect(variant.products[0]?.name).toBe("Straight Blue Jeans");
+    expect(variant.products[0]?.affiliate_url).toBe("https://www.ae.com/us/en/p/straight-blue-jeans");
+
+    const jeansBank = harness.snapshotBank().filter((entry) => entry.primary_keyword === "jeans");
+    const distinctJeansProducts = Array.from(
+      new Map(jeansBank.map((entry) => [entry.link_url, entry])).values(),
+    );
+    expect(distinctJeansProducts).toHaveLength(2);
+
+    const skinnyJeans = distinctJeansProducts.find((entry) => entry.product_name === "Skinny Blue Jeans");
+    const straightJeans = distinctJeansProducts.find((entry) => entry.product_name === "Straight Blue Jeans");
+
+    expect(skinnyJeans?.usage_count).toBe(1);
+    expect(skinnyJeans?.link_url).toBe("https://www.ae.com/us/en/p/skinny-blue-jeans");
+    expect(skinnyJeans?.image_url).toBe("https://cdn.ae.com/pdp/skinny-blue-jeans.jpg");
+    expect(skinnyJeans?.price).toBe("$59.95");
+    expect(skinnyJeans?.exact_match_confirmed).toBe(true);
+
+    expect(straightJeans?.usage_count).toBe(0);
+    expect(straightJeans?.link_url).toBe("https://www.ae.com/us/en/p/straight-blue-jeans");
+    expect(straightJeans?.image_url).toBe("https://cdn.ae.com/pdp/straight-blue-jeans.jpg");
+    expect(straightJeans?.price).toBe("$64.95");
+    expect(straightJeans?.exact_match_confirmed).toBe(true);
+  });
+});
