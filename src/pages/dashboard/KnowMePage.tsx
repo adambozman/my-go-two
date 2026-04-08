@@ -168,7 +168,7 @@ const buildThisOrThatCategoryState = (
 };
 
 const KnowMePage = () => {
-  const { subscribed } = useAuth();
+  const { subscribed, subscriptionLoading } = useAuth();
   const { knowledgeSnapshot, knowledgeDerivations, loading: contextLoading, refreshKnowledge } =
     useKnowledgeCenter();
   const { setBackState } = useTopBar();
@@ -442,7 +442,7 @@ const KnowMePage = () => {
     setBackState(null);
   }, [setBackState, view]);
 
-  if (contextLoading) {
+  if (contextLoading || subscriptionLoading) {
     return (
       <div className="h-full flex items-center justify-center">
         <div
