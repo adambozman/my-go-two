@@ -6,7 +6,7 @@ import {
   normalizeRecommendationKeywords,
 } from "./knowMeCatalog.ts";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "./knowledgeCenter.ts";
-import { getCombinedKnowledgeResponses, getKnowledgeDerivationPayload, toRecord, toRecordArray } from "./knowledgeCenter.ts";
+import { getCombinedKnowledgeResponses, getKnowledgeDerivationPayload, toRecord, toRecordArray, toStringArray } from "./knowledgeCenter.ts";
 
 type JsonObject = Record<string, unknown>;
 
@@ -196,7 +196,7 @@ const extractPositivePreferenceKeywords = (responses: JsonObject) => {
   const positives = new Set<string>();
 
   for (const [key, value] of Object.entries(responses)) {
-    if (/(favorite|favourite|love|likes|preferred|best|go-to|go to)/i.test(key)) {
+    if (/(favorite|favourite|love|likes|preferred|best|go-to|go to|preference)/i.test(key)) {
       for (const phrase of splitPhrases(value)) {
         positives.add(phrase.toLowerCase());
         for (const token of keywordTokens(phrase)) positives.add(token);
@@ -319,7 +319,12 @@ const toProductCardKeywordRows = (userId: string, snapshot: KnowledgeSnapshotRow
         .filter(([key]) => /(avoid|dislike|hate|allerg|sensitive|no go)/i.test(key))
         .flatMap(([, value]) => splitPhrases(value)),
     );
-    const brandKeywords = extractBrandKeywords(subcategoryLabel, cardTitle, ...Object.values(fieldValues));
+    const explicitBrandValues = Object.entries(fieldValues)
+      .filter(([key]) => /(brand|brands|store|stores|retailer|retailers|shop|shops)/i.test(key))
+      .flatMap(([, value]) => splitPhrases(value));
+    const brandKeywords = explicitBrandValues.length > 0
+      ? mergeRecommendationKeywords(explicitBrandValues)
+      : extractBrandKeywords(subcategoryLabel, cardTitle);
 
     rows.push({
       user_id: userId,
@@ -512,11 +517,15 @@ export const buildNormalizedRecommendationState = (
   const yourVibe = getKnowledgeDerivationPayload(derivations, "your_vibe");
   const bankKnowledge = getBankKnowledgeDerivation(combinedResponses, yourVibe);
   const recommendedBrands = mergeRecommendationKeywords([
+    ...toStringArray(yourVibe.recommended_brands),
     ...bankKnowledge.recommended_brands,
     ...bankKnowledge.recommended_stores,
     ...getSeedCatalogBrands(),
   ]);
-  const recommendedStores = mergeRecommendationKeywords(bankKnowledge.recommended_stores);
+  const recommendedStores = mergeRecommendationKeywords([
+    ...toStringArray(yourVibe.recommended_stores),
+    ...bankKnowledge.recommended_stores,
+  ]);
   const locationKeys = extractLocationKeys(profileCore);
   const signals = toSignalRows(userId, snapshot, derivations, combinedResponses);
   const productCardKeywords = toProductCardKeywordRows(userId, snapshot);
@@ -544,14 +553,23 @@ export const buildNormalizedRecommendationState = (
   };
 };
 
-export const buildRecommendationSignalSummary = (state: NormalizedRecommendationState) => ({
-  signal_count: state.signals.length,
-  product_card_keyword_count: state.productCardKeywords.length,
-  like_count: state.likes.length,
-  dislike_count: state.dislikes.length,
-  keyword_bank_seed_count: state.keywordBankRows.length,
-  brand_bank_seed_count: state.brandBankRows.length,
-  location_bank_seed_count: state.brandLocationRows.length,
-  recommended_brands: state.recommendedBrands.slice(0, 12),
-  location_keys: state.locationKeys,
-});
+export const buildRecommendationSignalSummary = (state: NormalizedRecommendationState) => {
+  const prioritizedBrands = Array.from(new Set(
+    state.brandBankRows
+      .slice()
+      .sort((a, b) => b.weight - a.weight)
+      .map((row) => row.brand),
+  ));
+
+  return {
+    signal_count: state.signals.length,
+    product_card_keyword_count: state.productCardKeywords.length,
+    like_count: state.likes.length,
+    dislike_count: state.dislikes.length,
+    keyword_bank_seed_count: state.keywordBankRows.length,
+    brand_bank_seed_count: state.brandBankRows.length,
+    location_bank_seed_count: state.brandLocationRows.length,
+    recommended_brands: prioritizedBrands.slice(0, 12),
+    location_keys: state.locationKeys,
+  };
+};
