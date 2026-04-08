@@ -374,7 +374,7 @@ These names are proposed implementation targets. Adjust only if there is a stron
 ### Core input and signal tables
 
 1. `user_preference_signals`
-2. `user_this_or_that_answers`
+2. `this_or_that_v2_answers`
 3. `user_product_card_keywords`
 4. `user_like_signals`
 5. `user_dislike_signals`

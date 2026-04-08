@@ -19,6 +19,7 @@ import {
   buildNormalizedRecommendationState,
   buildRecommendationSignalSummary,
   type NormalizedRecommendationState,
+  type UserThisOrThatAnswerRow,
 } from "../_shared/recommendationSignals.ts";
 import {
   completeRecommendationIntentSet,
@@ -253,6 +254,24 @@ ${profileSnapshot || "No profile answers yet"}
 SAVED PRODUCT CARD KEYWORDS:
 ${savedCardSnapshot || "No structured product-card keywords yet"}
 
+THIS OR THAT V2 SIGNALS:
+${state.thisOrThatAnswers
+  .slice(0, 20)
+  .map((answer) => {
+    const selected = toObject(answer.selected_payload);
+    const primaryKeyword = cleanText(selected.primary_keyword);
+    const descriptors = Array.isArray(selected.descriptor_keywords) ? selected.descriptor_keywords.join(", ") : "";
+    const brands = Array.isArray(selected.brand_keywords) ? selected.brand_keywords.join(", ") : "";
+    return [
+      `${answer.category_id}`,
+      `selected=${answer.selected_label}`,
+      primaryKeyword ? `primary=${primaryKeyword}` : "",
+      descriptors ? `descriptors=${descriptors}` : "",
+      brands ? `brands=${brands}` : "",
+    ].filter(Boolean).join(" | ");
+  })
+  .join("\n") || "No structured This or That answers yet"}
+
 RECOMMENDED BRANDS / STORES:
 ${state.recommendedBrands.slice(0, 24).join(", ") || "None"}
 
@@ -345,12 +364,14 @@ const persistNormalizedState = async (admin: SupabaseClient, userId: string, sta
     admin.from("user_product_card_keywords").delete().eq("user_id", userId),
     admin.from("user_like_signals").delete().eq("user_id", userId),
     admin.from("user_dislike_signals").delete().eq("user_id", userId),
+    admin.from("this_or_that_v2_answer_signals").delete().eq("user_id", userId),
   ]);
 
   if (state.signals.length) await admin.from("user_preference_signals").insert(state.signals);
   if (state.productCardKeywords.length) await admin.from("user_product_card_keywords").insert(state.productCardKeywords);
   if (state.likes.length) await admin.from("user_like_signals").insert(state.likes);
   if (state.dislikes.length) await admin.from("user_dislike_signals").insert(state.dislikes);
+  if (state.thisOrThatSignalRows.length) await admin.from("this_or_that_v2_answer_signals").insert(state.thisOrThatSignalRows);
 
   if (state.keywordBankRows.length) {
     await admin.from("recommendation_keyword_bank").upsert(state.keywordBankRows, {
@@ -422,7 +443,17 @@ serve(async (req) => {
     }
 
     const knowledgeState = await fetchKnowledgeCenterState(supabase, user.id);
-    const state = buildNormalizedRecommendationState(user.id, knowledgeState.snapshot, knowledgeState.derivations);
+    const { data: thisOrThatAnswerRows } = await admin
+      .from("this_or_that_v2_answers")
+      .select("id, user_id, question_id, question_key, category_key, subgroup_key, recommendation_category, primary_keyword, descriptor_keywords, brand, location_keys, answer_payload, source_version")
+      .eq("user_id", user.id)
+      .order("updated_at", { ascending: false });
+    const state = buildNormalizedRecommendationState(
+      user.id,
+      knowledgeState.snapshot,
+      knowledgeState.derivations,
+      Array.isArray(thisOrThatAnswerRows) ? (thisOrThatAnswerRows as UserThisOrThatAnswerRow[]) : [],
+    );
     await persistNormalizedState(admin, user.id, state);
 
     const aiAdapter = buildCatalogAiAdapter(knowledgeState.snapshot, knowledgeState.derivations);

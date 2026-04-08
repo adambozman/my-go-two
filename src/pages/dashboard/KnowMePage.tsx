@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTopBar } from "@/contexts/top-bar-context";
 import { buildSprints, getThisOrThatBank, SECTIONS, THIS_OR_THAT, THIS_OR_THAT_CATEGORIES, type BrandBankQuestion, type QuizQuestion } from "@/data/knowMeQuestions";
+import { buildThisOrThatAnswerRecord } from "@/data/thisOrThatV2";
 import type { Gender } from "@/lib/gender";
 import {
   buildKnowledgeAiAdapter,
@@ -318,6 +319,76 @@ const KnowMePage = () => {
     if (error) throw error;
   };
 
+  const persistThisOrThatAnswerRecord = async (
+    categoryId: string,
+    question: BrandBankQuestion,
+    choice: "A" | "B",
+  ) => {
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    if (!userId) throw new Error("No user");
+
+    const answerRecord = buildThisOrThatAnswerRecord(categoryId, bankGender, question, choice);
+    const updatedAt = new Date().toISOString();
+    const recommendationCategory =
+      answerRecord.selected_payload.category_slug === "clothes"
+        ? "clothes"
+        : answerRecord.selected_payload.category_slug === "household"
+          ? "home"
+          : answerRecord.selected_payload.category_slug === "dining" ||
+              answerRecord.selected_payload.category_slug === "beverages"
+            ? "food"
+            : null;
+
+    const { error } = await supabase.from("this_or_that_v2_answers").upsert({
+      user_id: userId,
+      question_key: answerRecord.question_id,
+      selected_option_key: answerRecord.selected_option_key,
+      rejected_option_key: answerRecord.rejected_option_key,
+      category_key: answerRecord.selected_payload.my_go_two_category_slug,
+      subgroup_key: answerRecord.selected_payload.subcategory_slug,
+      recommendation_category: recommendationCategory,
+      primary_keyword: answerRecord.selected_payload.primary_keyword,
+      descriptor_keywords: answerRecord.selected_payload.descriptor_keywords,
+      brand: answerRecord.selected_payload.brand_keywords[0] ?? null,
+      location_keys: answerRecord.selected_payload.location_keywords,
+      answer_payload: {
+        question_prompt: answerRecord.question_prompt,
+        bank_gender: answerRecord.bank_gender,
+        selected_label: answerRecord.selected_label,
+        rejected_label: answerRecord.rejected_label,
+        selected_payload: answerRecord.selected_payload,
+        rejected_payload: answerRecord.rejected_payload,
+        response_payload: answerRecord.response_payload,
+      },
+      response_source: "this_or_that_v2",
+      source_version: answerRecord.source_version,
+      answered_at: updatedAt,
+      updated_at: updatedAt,
+    }, {
+      onConflict: "user_id,question_key",
+    });
+
+    if (error) {
+      console.warn("This or That v2 answer save skipped:", error);
+    }
+  };
+
+  const runKnowledgeRefresh = async (patch: Record<string, string | string[]>) => {
+    try {
+      const { error } = await supabase.functions.invoke("knowledge-center-refresh", {
+        body: {
+          knowMeResponses: patch,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error("Know Me refresh failed:", error);
+    } finally {
+      await refreshKnowledge();
+    }
+  };
+
   const goToNextQuestion = async () => {
     if (!activeCategory) return;
 
@@ -349,7 +420,7 @@ const KnowMePage = () => {
     try {
       await persistKnowMeResponses({ [questionId]: currentQuestion.multiSelect ? values : values[0] });
       setAiFeedback(AI_FEEDBACK[quizQuestionIdx % AI_FEEDBACK.length]);
-      await refreshKnowledge();
+      await runKnowledgeRefresh({ [questionId]: currentQuestion.multiSelect ? values : values[0] });
       await goToNextQuestion();
     } catch {
       toast.error("Failed to save answer");
@@ -402,7 +473,8 @@ const KnowMePage = () => {
 
     try {
       await persistKnowMeResponses({ [question.id]: value });
-      await refreshKnowledge();
+      await persistThisOrThatAnswerRecord(activeTotCategory.id, question, choice);
+      await runKnowledgeRefresh({ [question.id]: value });
     } catch {
       toast.error("Failed to save answer");
       setTotSwipeDir(null);

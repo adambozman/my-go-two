@@ -7,6 +7,7 @@ import {
 } from "./recommendationCatalog.ts";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "./knowledgeCenter.ts";
 import { getCombinedKnowledgeResponses, getKnowledgeDerivationPayload, toRecord, toRecordArray, toStringArray } from "./knowledgeCenter.ts";
+import { extractStructuredThisOrThatAnswerSignals, type StructuredThisOrThatSignal } from "./thisOrThatV2.ts";
 import { THIS_OR_THAT } from "../../../src/data/knowMeQuestions.ts";
 
 type JsonObject = Record<string, unknown>;
@@ -86,6 +87,54 @@ export interface RecommendationBrandLocationBankRow {
   source_version: string;
 }
 
+export interface UserThisOrThatAnswerRow {
+  id?: string;
+  user_id: string;
+  category_id?: string;
+  category_key?: string | null;
+  question_id?: string;
+  question_key?: string;
+  question_prompt?: string;
+  bank_gender?: string;
+  my_go_two_category_slug?: string;
+  recommendation_category?: string | null;
+  selected_option_key?: string;
+  selected_label?: string;
+  selected_payload?: JsonObject;
+  rejected_option_key?: string;
+  rejected_label?: string;
+  rejected_payload?: JsonObject;
+  response_payload?: JsonObject;
+  answer_payload?: JsonObject;
+  subgroup_key?: string | null;
+  primary_keyword?: string | null;
+  descriptor_keywords?: string[] | null;
+  brand?: string | null;
+  location_keys?: string[] | null;
+  source_version: string;
+}
+
+export interface UserThisOrThatSignalRow {
+  answer_id: string;
+  user_id: string;
+  question_key: string;
+  signal_polarity: string;
+  signal_type: string;
+  category_key: string | null;
+  subgroup_key: string | null;
+  recommendation_category: string | null;
+  entity_type: string | null;
+  entity_key: string | null;
+  entity_label: string | null;
+  primary_keyword: string | null;
+  descriptor_keywords: string[];
+  brand: string | null;
+  location_keys: string[];
+  tags: string[];
+  notes: string | null;
+  source_version: string;
+}
+
 export interface NormalizedRecommendationState {
   combinedResponses: JsonObject;
   profileCore: JsonObject;
@@ -96,6 +145,8 @@ export interface NormalizedRecommendationState {
   recommendedStores: string[];
   locationKeys: string[];
   signals: UserPreferenceSignalRow[];
+  thisOrThatAnswers: UserThisOrThatAnswerRow[];
+  thisOrThatSignalRows: UserThisOrThatSignalRow[];
   productCardKeywords: UserProductCardKeywordRow[];
   likes: UserLikeSignalRow[];
   dislikes: UserDislikeSignalRow[];
@@ -127,6 +178,16 @@ const cleanText = (value: unknown): string => {
   if (typeof value !== "string") return "";
   return value.replace(/[^\x20-\x7E]/g, " ").replace(/\s+/g, " ").trim();
 };
+
+const toObject = (value: unknown): JsonObject =>
+  value && typeof value === "object" && !Array.isArray(value) ? (value as JsonObject) : {};
+
+const toTextArray = (value: unknown) =>
+  Array.isArray(value)
+    ? value.map((entry) => cleanText(entry)).filter(Boolean)
+    : typeof value === "string"
+      ? [cleanText(value)].filter(Boolean)
+      : [];
 
 const splitPhrases = (value: unknown) => {
   if (Array.isArray(value)) {
@@ -278,13 +339,192 @@ type ThisOrThatPreferenceSummary = {
   }>;
 };
 
-const extractThisOrThatPreferences = (responses: JsonObject): ThisOrThatPreferenceSummary => {
+const buildStructuredThisOrThatSummary = (
+  structuredSignals: StructuredThisOrThatSignal[],
+): ThisOrThatPreferenceSummary => {
   const positiveKeywords = new Set<string>();
   const negativeKeywords = new Set<string>();
   const positiveBrands = new Set<string>();
   const negativeBrands = new Set<string>();
   const likes: ThisOrThatPreferenceSummary["likes"] = [];
   const dislikes: ThisOrThatPreferenceSummary["dislikes"] = [];
+
+  for (const signal of structuredSignals) {
+    const targetKeywords = signal.polarity === "negative" ? negativeKeywords : positiveKeywords;
+    const keywordBundle = mergeRecommendationKeywords([
+      signal.primaryKeyword,
+      ...signal.descriptorKeywords,
+      ...signal.tags,
+      signal.entityType === "brand" ? null : signal.entityKey,
+    ]);
+
+    for (const keyword of keywordBundle) targetKeywords.add(keyword);
+
+    if (signal.brand) {
+      if (signal.polarity === "negative") negativeBrands.add(signal.brand);
+      else positiveBrands.add(signal.brand);
+      targetKeywords.add(signal.brand);
+    }
+
+    const row = {
+      primary_keyword: signal.primaryKeyword,
+      descriptor_keywords: mergeRecommendationKeywords([
+        ...signal.descriptorKeywords,
+        ...signal.tags,
+        signal.entityType === "brand" ? null : signal.entityKey,
+      ]).filter((keyword) => keyword !== signal.primaryKeyword),
+      brand: signal.brand,
+      category: signal.recommendationCategory,
+      notes: signal.notes ?? signal.questionKey ?? signal.questionId ?? signal.signalKey,
+    };
+
+    if (signal.polarity === "negative") {
+      dislikes.push({
+        dislike_type: "this_or_that_v2_structured",
+        primary_keyword: row.primary_keyword,
+        descriptor_keywords: row.descriptor_keywords,
+        brand: row.brand,
+        category: row.category,
+        notes: row.notes,
+      });
+    } else {
+      likes.push({
+        like_type: "this_or_that_v2_structured",
+        primary_keyword: row.primary_keyword,
+        descriptor_keywords: row.descriptor_keywords,
+        brand: row.brand,
+        category: row.category,
+        notes: row.notes,
+      });
+    }
+  }
+
+  return {
+    positiveKeywords: normalizeRecommendationKeywords(Array.from(positiveKeywords)),
+    negativeKeywords: normalizeRecommendationKeywords(Array.from(negativeKeywords)),
+    positiveBrands: normalizeRecommendationKeywords(Array.from(positiveBrands)),
+    negativeBrands: normalizeRecommendationKeywords(Array.from(negativeBrands)),
+    likes,
+    dislikes,
+  };
+};
+
+const mergeThisOrThatSummaries = (
+  base: ThisOrThatPreferenceSummary,
+  addition: ThisOrThatPreferenceSummary,
+): ThisOrThatPreferenceSummary => ({
+  positiveKeywords: normalizeRecommendationKeywords([
+    ...base.positiveKeywords,
+    ...addition.positiveKeywords,
+  ]),
+  negativeKeywords: normalizeRecommendationKeywords([
+    ...base.negativeKeywords,
+    ...addition.negativeKeywords,
+  ]),
+  positiveBrands: normalizeRecommendationKeywords([
+    ...base.positiveBrands,
+    ...addition.positiveBrands,
+  ]),
+  negativeBrands: normalizeRecommendationKeywords([
+    ...base.negativeBrands,
+    ...addition.negativeBrands,
+  ]),
+  likes: [...base.likes, ...addition.likes],
+  dislikes: [...base.dislikes, ...addition.dislikes],
+});
+
+const extractThisOrThatV2Preferences = (
+  answers: UserThisOrThatAnswerRow[],
+): ThisOrThatPreferenceSummary => {
+  const positiveKeywords = new Set<string>();
+  const negativeKeywords = new Set<string>();
+  const positiveBrands = new Set<string>();
+  const negativeBrands = new Set<string>();
+  const likes: ThisOrThatPreferenceSummary["likes"] = [];
+  const dislikes: ThisOrThatPreferenceSummary["dislikes"] = [];
+
+  for (const answer of answers) {
+    const answerPayload = toObject(answer.answer_payload);
+    const selectedPayload = toObject(answer.selected_payload ?? answerPayload.selected_payload);
+    const rejectedPayload = toObject(answer.rejected_payload ?? answerPayload.rejected_payload);
+    const category = cleanText(answer.recommendation_category) || null;
+    const selectedPrimaryKeyword = cleanText(selectedPayload.primary_keyword) || null;
+    const rejectedPrimaryKeyword = cleanText(rejectedPayload.primary_keyword) || null;
+    const selectedDescriptors = normalizeRecommendationKeywords(
+      toTextArray(selectedPayload.descriptor_keywords ?? answer.descriptor_keywords),
+    );
+    const rejectedDescriptors = normalizeRecommendationKeywords(toTextArray(rejectedPayload.descriptor_keywords));
+    const selectedBrands = normalizeRecommendationKeywords(
+      toTextArray(selectedPayload.brand_keywords ?? answer.brand),
+    );
+    const rejectedBrands = normalizeRecommendationKeywords(toTextArray(rejectedPayload.brand_keywords));
+    const selectedAvoids = normalizeRecommendationKeywords(toTextArray(selectedPayload.avoid_keywords));
+
+    const positiveBundle = mergeRecommendationKeywords([
+      selectedPrimaryKeyword,
+      ...selectedDescriptors,
+      ...selectedBrands,
+    ]);
+    const negativeBundle = mergeRecommendationKeywords([
+      rejectedPrimaryKeyword,
+      ...rejectedDescriptors,
+      ...rejectedBrands,
+      ...selectedAvoids,
+    ]);
+
+    for (const keyword of positiveBundle) positiveKeywords.add(keyword);
+    for (const keyword of negativeBundle) negativeKeywords.add(keyword);
+    for (const brand of selectedBrands) positiveBrands.add(brand);
+    for (const brand of rejectedBrands) negativeBrands.add(brand);
+
+    likes.push({
+      like_type: "this_or_that_v2",
+      primary_keyword: selectedPrimaryKeyword,
+      descriptor_keywords: selectedDescriptors,
+      brand: selectedBrands[0] ?? null,
+      category,
+      notes: cleanText(answer.question_id ?? answer.question_key),
+    });
+
+    dislikes.push({
+      dislike_type: "this_or_that_v2",
+      primary_keyword: rejectedPrimaryKeyword,
+      descriptor_keywords: mergeRecommendationKeywords([...rejectedDescriptors, ...selectedAvoids]),
+      brand: rejectedBrands[0] ?? null,
+      category,
+      notes: cleanText(answer.question_id ?? answer.question_key),
+    });
+  }
+
+  return {
+    positiveKeywords: normalizeRecommendationKeywords(Array.from(positiveKeywords)),
+    negativeKeywords: normalizeRecommendationKeywords(Array.from(negativeKeywords)),
+    positiveBrands: normalizeRecommendationKeywords(Array.from(positiveBrands)),
+    negativeBrands: normalizeRecommendationKeywords(Array.from(negativeBrands)),
+    likes,
+    dislikes,
+  };
+};
+
+const extractThisOrThatPreferences = (
+  responses: JsonObject,
+  thisOrThatAnswers: UserThisOrThatAnswerRow[] = [],
+  snapshotPayload: JsonObject = {},
+): ThisOrThatPreferenceSummary => {
+  const positiveKeywords = new Set<string>();
+  const negativeKeywords = new Set<string>();
+  const positiveBrands = new Set<string>();
+  const negativeBrands = new Set<string>();
+  const likes: ThisOrThatPreferenceSummary["likes"] = [];
+  const dislikes: ThisOrThatPreferenceSummary["dislikes"] = [];
+
+  const v2Preferences = extractThisOrThatV2Preferences(thisOrThatAnswers);
+  for (const keyword of v2Preferences.positiveKeywords) positiveKeywords.add(keyword);
+  for (const keyword of v2Preferences.negativeKeywords) negativeKeywords.add(keyword);
+  for (const brand of v2Preferences.positiveBrands) positiveBrands.add(brand);
+  for (const brand of v2Preferences.negativeBrands) negativeBrands.add(brand);
+  likes.push(...v2Preferences.likes);
+  dislikes.push(...v2Preferences.dislikes);
 
   for (const [key, answer] of Object.entries(responses)) {
     if (!key.startsWith("tot-")) continue;
@@ -367,7 +607,7 @@ const extractThisOrThatPreferences = (responses: JsonObject): ThisOrThatPreferen
     });
   }
 
-  return {
+  const baseSummary: ThisOrThatPreferenceSummary = {
     positiveKeywords: normalizeRecommendationKeywords(Array.from(positiveKeywords)),
     negativeKeywords: normalizeRecommendationKeywords(Array.from(negativeKeywords)),
     positiveBrands: normalizeRecommendationKeywords(Array.from(positiveBrands)),
@@ -375,11 +615,20 @@ const extractThisOrThatPreferences = (responses: JsonObject): ThisOrThatPreferen
     likes,
     dislikes,
   };
+
+  const structuredSignals = extractStructuredThisOrThatAnswerSignals(responses, snapshotPayload);
+  if (structuredSignals.length === 0) return baseSummary;
+
+  return mergeThisOrThatSummaries(baseSummary, buildStructuredThisOrThatSummary(structuredSignals));
 };
 
-const extractNegativePreferenceKeywords = (responses: JsonObject) => {
+const extractNegativePreferenceKeywords = (
+  responses: JsonObject,
+  thisOrThatAnswers: UserThisOrThatAnswerRow[] = [],
+  snapshotPayload: JsonObject = {},
+) => {
   const negatives = new Set<string>();
-  const thisOrThatPreferences = extractThisOrThatPreferences(responses);
+  const thisOrThatPreferences = extractThisOrThatPreferences(responses, thisOrThatAnswers, snapshotPayload);
 
   for (const [key, value] of Object.entries(responses)) {
     if (!/(avoid|dislike|hate|turnoff|turn off|pet[-\s]?peeve|no go|allerg|sensitive)/i.test(key)) continue;
@@ -395,9 +644,13 @@ const extractNegativePreferenceKeywords = (responses: JsonObject) => {
   return normalizeRecommendationKeywords(Array.from(negatives));
 };
 
-const extractPositivePreferenceKeywords = (responses: JsonObject) => {
+const extractPositivePreferenceKeywords = (
+  responses: JsonObject,
+  thisOrThatAnswers: UserThisOrThatAnswerRow[] = [],
+  snapshotPayload: JsonObject = {},
+) => {
   const positives = new Set<string>();
-  const thisOrThatPreferences = extractThisOrThatPreferences(responses);
+  const thisOrThatPreferences = extractThisOrThatPreferences(responses, thisOrThatAnswers, snapshotPayload);
 
   for (const [key, value] of Object.entries(responses)) {
     if (/(favorite|favourite|love|likes|preferred|best|go-to|go to|preference)/i.test(key)) {
@@ -430,6 +683,8 @@ const toSignalRows = (
   snapshot: KnowledgeSnapshotRow | null,
   derivations: KnowledgeDerivationRow[],
   combinedResponses: JsonObject,
+  thisOrThatAnswers: UserThisOrThatAnswerRow[],
+  snapshotPayload: JsonObject,
 ) => {
   const now = new Date().toISOString();
   const signals: UserPreferenceSignalRow[] = [];
@@ -475,6 +730,47 @@ const toSignalRows = (
     });
   }
 
+  for (const answer of thisOrThatAnswers) {
+    signals.push({
+      user_id: userId,
+      signal_type: "this_or_that_v2_answer",
+      signal_key: cleanText(answer.question_id ?? answer.question_key),
+      signal_value: toObject(answer.response_payload ?? answer.answer_payload),
+      signal_source: "this_or_that_v2_answers",
+      signal_strength: 85,
+      is_negative: false,
+      recorded_at: now,
+    });
+  }
+
+  for (const signal of extractStructuredThisOrThatAnswerSignals(combinedResponses, snapshotPayload)) {
+    signals.push({
+      user_id: userId,
+      signal_type: "this_or_that_v2_structured",
+      signal_key: signal.questionKey ?? signal.questionId ?? signal.signalKey,
+      signal_value: {
+        question_key: signal.questionKey,
+        question_id: signal.questionId,
+        category_key: signal.categoryKey,
+        subgroup_key: signal.subgroupKey,
+        recommendation_category: signal.recommendationCategory,
+        entity_type: signal.entityType,
+        entity_key: signal.entityKey,
+        entity_label: signal.entityLabel,
+        primary_keyword: signal.primaryKeyword,
+        descriptor_keywords: signal.descriptorKeywords,
+        brand: signal.brand,
+        location_keys: signal.locationKeys,
+        tags: signal.tags,
+        polarity: signal.polarity,
+      },
+      signal_source: "this_or_that_v2_answers",
+      signal_strength: signal.polarity === "negative" ? 82 : 80,
+      is_negative: signal.polarity === "negative",
+      recorded_at: now,
+    });
+  }
+
   for (const derivation of derivations) {
     signals.push({
       user_id: userId,
@@ -488,7 +784,7 @@ const toSignalRows = (
     });
   }
 
-  for (const keyword of extractNegativePreferenceKeywords(combinedResponses)) {
+  for (const keyword of extractNegativePreferenceKeywords(combinedResponses, thisOrThatAnswers, snapshotPayload)) {
     signals.push({
       user_id: userId,
       signal_type: "negative_keyword",
@@ -502,6 +798,171 @@ const toSignalRows = (
   }
 
   return signals;
+};
+
+const toThisOrThatSignalRows = (
+  userId: string,
+  answers: UserThisOrThatAnswerRow[],
+  combinedResponses: JsonObject,
+  snapshotPayload: JsonObject,
+): UserThisOrThatSignalRow[] => {
+  const rows = new Map<string, UserThisOrThatSignalRow>();
+
+  const addRow = (
+    answerId: string,
+    questionId: string,
+    categoryId: string,
+    signalKind: string,
+    signalKey: string,
+    signalValue: JsonObject,
+    weight: number,
+    isNegative: boolean,
+  ) => {
+    const normalizedKey = cleanText(signalKey).toLowerCase();
+    if (!normalizedKey) return;
+    const rowKey = `${questionId}::${signalKind}::${normalizedKey}::${isNegative ? "neg" : "pos"}`;
+    const recommendationCategory =
+      cleanText(signalValue.recommendation_category || signalValue.category_slug) || null;
+    const subgroupKey =
+      cleanText(signalValue.subcategory_slug || signalValue.subgroup_key) || null;
+    const entityType =
+      cleanText(signalValue.entity_kind || signalValue.entity_type) || null;
+    const entityKey =
+      cleanText(signalValue.entity_slug || signalValue.entity_key) || null;
+    const entityLabel = cleanText(signalValue.entity_label || signalValue.label) || null;
+    const primaryKeyword = cleanText(signalValue.primary_keyword) || null;
+    const descriptorKeywords = normalizeRecommendationKeywords(
+      toTextArray(signalValue.descriptor_keywords),
+    );
+    const tags = normalizeRecommendationKeywords([
+      ...toTextArray(signalValue.tags),
+      ...toTextArray(signalValue.avoid_keywords),
+    ]);
+    const normalizedBrands = normalizeRecommendationKeywords(
+      toTextArray(signalValue.brand_keywords ?? signalValue.brand),
+    );
+    const brand =
+      signalKind === "brand_keyword"
+        ? normalizedKey
+        : normalizedBrands[0] ?? null;
+    const locationKeys = normalizeRecommendationKeywords(
+      toTextArray(signalValue.location_keywords ?? signalValue.location_keys),
+    );
+    rows.set(rowKey, {
+      answer_id: answerId,
+      user_id: userId,
+      question_key: questionId,
+      signal_polarity: isNegative ? "negative" : "positive",
+      signal_type: signalKind,
+      category_key: categoryId || cleanText(signalValue.category_key || signalValue.my_go_two_category_slug) || null,
+      subgroup_key: subgroupKey,
+      recommendation_category: recommendationCategory,
+      entity_type: entityType,
+      entity_key: entityKey,
+      entity_label: entityLabel,
+      primary_keyword: primaryKeyword,
+      descriptor_keywords: descriptorKeywords,
+      brand,
+      location_keys: locationKeys,
+      tags,
+      notes: `${signalKind}:${normalizedKey}:weight=${weight}`,
+      source_version: SOURCE_VERSION,
+    });
+  };
+
+  for (const [index, answer] of answers.entries()) {
+    const answerPayload = toObject(answer.answer_payload);
+    const selectedPayload = toObject(answer.selected_payload ?? answerPayload.selected_payload);
+    const rejectedPayload = toObject(answer.rejected_payload ?? answerPayload.rejected_payload);
+    const questionKey = cleanText(answer.question_id ?? answer.question_key);
+    const answerId = cleanText(answer.id) || `${userId}:${questionKey || `this-or-that-${index}`}`;
+    const categoryKey = cleanText(answer.category_id ?? answer.category_key);
+    const selectedPrimaryKeyword = cleanText(selectedPayload.primary_keyword);
+    const rejectedPrimaryKeyword = cleanText(rejectedPayload.primary_keyword);
+    const selectedDescriptors = normalizeRecommendationKeywords(
+      toTextArray(selectedPayload.descriptor_keywords ?? answer.descriptor_keywords),
+    );
+    const rejectedDescriptors = normalizeRecommendationKeywords(toTextArray(rejectedPayload.descriptor_keywords));
+    const selectedBrands = normalizeRecommendationKeywords(
+      toTextArray(selectedPayload.brand_keywords ?? answer.brand),
+    );
+    const rejectedBrands = normalizeRecommendationKeywords(toTextArray(rejectedPayload.brand_keywords));
+    const selectedAvoids = normalizeRecommendationKeywords(toTextArray(selectedPayload.avoid_keywords));
+    const selectedCategory =
+      cleanText(selectedPayload.subcategory_slug || answer.subgroup_key) || categoryKey;
+    const selectedEntity = cleanText(selectedPayload.entity_slug);
+    const selectedMyGoTwo =
+      cleanText(selectedPayload.my_go_two_category_slug) ||
+      cleanText(answer.my_go_two_category_slug) ||
+      categoryKey;
+    const selectedWeight = Number(selectedPayload.weight ?? 1) || 1;
+
+    if (selectedPrimaryKeyword) {
+      addRow(answerId, questionKey, categoryKey, "primary_keyword", selectedPrimaryKeyword, selectedPayload, selectedWeight, false);
+    }
+    for (const descriptor of selectedDescriptors) {
+      addRow(answerId, questionKey, categoryKey, "descriptor_keyword", descriptor, selectedPayload, selectedWeight, false);
+    }
+    for (const brand of selectedBrands) {
+      addRow(answerId, questionKey, categoryKey, "brand_keyword", brand, selectedPayload, selectedWeight, false);
+    }
+    if (selectedCategory) {
+      addRow(answerId, questionKey, categoryKey, "subcategory", selectedCategory, selectedPayload, selectedWeight, false);
+    }
+    if (selectedEntity) {
+      addRow(answerId, questionKey, categoryKey, "entity", selectedEntity, selectedPayload, selectedWeight, false);
+    }
+    if (selectedMyGoTwo) {
+      addRow(answerId, questionKey, categoryKey, "my_go_two_category", selectedMyGoTwo, selectedPayload, selectedWeight, false);
+    }
+
+    if (rejectedPrimaryKeyword) {
+      addRow(answerId, questionKey, categoryKey, "primary_keyword", rejectedPrimaryKeyword, rejectedPayload, selectedWeight, true);
+    }
+    for (const descriptor of mergeRecommendationKeywords([...rejectedDescriptors, ...selectedAvoids])) {
+      addRow(answerId, questionKey, categoryKey, "descriptor_keyword", descriptor, rejectedPayload, selectedWeight, true);
+    }
+    for (const brand of rejectedBrands) {
+      addRow(answerId, questionKey, categoryKey, "brand_keyword", brand, rejectedPayload, selectedWeight, true);
+    }
+  }
+
+  for (const signal of extractStructuredThisOrThatAnswerSignals(combinedResponses, snapshotPayload)) {
+    const signalPayload: JsonObject = {
+      question_key: signal.questionKey,
+      question_id: signal.questionId,
+      category_key: signal.categoryKey,
+      subgroup_key: signal.subgroupKey,
+      entity_type: signal.entityType,
+      entity_key: signal.entityKey,
+      entity_label: signal.entityLabel,
+      primary_keyword: signal.primaryKeyword,
+      descriptor_keywords: signal.descriptorKeywords,
+      brand: signal.brand,
+      tags: signal.tags,
+      location_keys: signal.locationKeys,
+    };
+    const questionId = signal.questionId ?? signal.questionKey ?? signal.signalKey;
+    const categoryId = signal.categoryKey ?? "this_or_that_v2";
+
+    if (signal.primaryKeyword) {
+      addRow(`structured-${questionId}`, questionId, categoryId, "primary_keyword", signal.primaryKeyword, signalPayload, 1, signal.polarity === "negative");
+    }
+    for (const descriptor of signal.descriptorKeywords) {
+      addRow(`structured-${questionId}`, questionId, categoryId, "descriptor_keyword", descriptor, signalPayload, 0.9, signal.polarity === "negative");
+    }
+    for (const tag of signal.tags) {
+      addRow(`structured-${questionId}`, questionId, categoryId, "tag_keyword", tag, signalPayload, 0.75, signal.polarity === "negative");
+    }
+    if (signal.brand) {
+      addRow(`structured-${questionId}`, questionId, categoryId, "brand_keyword", signal.brand, signalPayload, 1, signal.polarity === "negative");
+    }
+    if (signal.entityKey && signal.entityType !== "brand") {
+      addRow(`structured-${questionId}`, questionId, categoryId, "entity", signal.entityKey, signalPayload, 0.85, signal.polarity === "negative");
+    }
+  }
+
+  return Array.from(rows.values());
 };
 
 const toProductCardKeywordRows = (userId: string, snapshot: KnowledgeSnapshotRow | null) => {
@@ -555,12 +1016,14 @@ const toLikeAndDislikeRows = (
   userId: string,
   combinedResponses: JsonObject,
   productCardKeywords: UserProductCardKeywordRow[],
+  thisOrThatAnswers: UserThisOrThatAnswerRow[],
+  snapshotPayload: JsonObject,
 ) => {
   const likes: UserLikeSignalRow[] = [];
   const dislikes: UserDislikeSignalRow[] = [];
-  const thisOrThatPreferences = extractThisOrThatPreferences(combinedResponses);
+  const thisOrThatPreferences = extractThisOrThatPreferences(combinedResponses, thisOrThatAnswers, snapshotPayload);
 
-  for (const keyword of extractPositivePreferenceKeywords(combinedResponses)) {
+  for (const keyword of extractPositivePreferenceKeywords(combinedResponses, thisOrThatAnswers, snapshotPayload)) {
     likes.push({
       user_id: userId,
       like_type: "normalized_response",
@@ -572,7 +1035,7 @@ const toLikeAndDislikeRows = (
     });
   }
 
-  for (const keyword of extractNegativePreferenceKeywords(combinedResponses)) {
+  for (const keyword of extractNegativePreferenceKeywords(combinedResponses, thisOrThatAnswers, snapshotPayload)) {
     dislikes.push({
       user_id: userId,
       dislike_type: "normalized_response",
@@ -744,12 +1207,14 @@ export const buildNormalizedRecommendationState = (
   userId: string,
   snapshot: KnowledgeSnapshotRow | null,
   derivations: KnowledgeDerivationRow[],
+  thisOrThatAnswers: UserThisOrThatAnswerRow[] = [],
 ): NormalizedRecommendationState => {
   const combinedResponses = getCombinedKnowledgeResponses(snapshot);
+  const snapshotPayload = toRecord(snapshot?.snapshot_payload);
   const profileCore = toRecord(snapshot?.profile_core);
   const yourVibe = getKnowledgeDerivationPayload(derivations, "your_vibe");
   const bankKnowledge = getBankKnowledgeDerivation(combinedResponses, yourVibe);
-  const thisOrThatPreferences = extractThisOrThatPreferences(combinedResponses);
+  const thisOrThatPreferences = extractThisOrThatPreferences(combinedResponses, thisOrThatAnswers, snapshotPayload);
   const recommendedBrands = mergeRecommendationKeywords([
     ...toStringArray(yourVibe.recommended_brands),
     ...bankKnowledge.recommended_brands,
@@ -762,9 +1227,10 @@ export const buildNormalizedRecommendationState = (
     ...bankKnowledge.recommended_stores,
   ]);
   const locationKeys = extractLocationKeys(profileCore);
-  const signals = toSignalRows(userId, snapshot, derivations, combinedResponses);
+  const signals = toSignalRows(userId, snapshot, derivations, combinedResponses, thisOrThatAnswers, snapshotPayload);
+  const thisOrThatSignalRows = toThisOrThatSignalRows(userId, thisOrThatAnswers, combinedResponses, snapshotPayload);
   const productCardKeywords = toProductCardKeywordRows(userId, snapshot);
-  const { likes, dislikes } = toLikeAndDislikeRows(userId, combinedResponses, productCardKeywords);
+  const { likes, dislikes } = toLikeAndDislikeRows(userId, combinedResponses, productCardKeywords, thisOrThatAnswers, snapshotPayload);
   const keywordBankRows = toKeywordBankRows(productCardKeywords, likes);
   const brandBankRows = toBrandBankRows(productCardKeywords, recommendedBrands);
   const brandLocationRows = toBrandLocationRows(locationKeys, brandBankRows);
@@ -773,12 +1239,14 @@ export const buildNormalizedRecommendationState = (
     combinedResponses,
     profileCore,
     yourVibe,
-    negativeKeywords: extractNegativePreferenceKeywords(combinedResponses),
-    positiveKeywords: extractPositivePreferenceKeywords(combinedResponses),
+    negativeKeywords: extractNegativePreferenceKeywords(combinedResponses, thisOrThatAnswers, snapshotPayload),
+    positiveKeywords: extractPositivePreferenceKeywords(combinedResponses, thisOrThatAnswers, snapshotPayload),
     recommendedBrands,
     recommendedStores,
     locationKeys,
     signals,
+    thisOrThatAnswers,
+    thisOrThatSignalRows,
     productCardKeywords,
     likes,
     dislikes,
@@ -798,6 +1266,8 @@ export const buildRecommendationSignalSummary = (state: NormalizedRecommendation
 
   return {
     signal_count: state.signals.length,
+    this_or_that_answer_count: state.thisOrThatAnswers.length,
+    this_or_that_signal_count: state.thisOrThatSignalRows.length,
     product_card_keyword_count: state.productCardKeywords.length,
     like_count: state.likes.length,
     dislike_count: state.dislikes.length,

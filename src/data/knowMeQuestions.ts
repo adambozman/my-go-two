@@ -864,6 +864,10 @@ export interface ThisOrThatItem {
   optionB: string;
 }
 
+// This file remains the live This or That v1 runtime source.
+// The authored v2 content contract and metadata scaffolding now live in:
+// src/data/thisOrThatV2.ts
+
 export interface ThisOrThatCategory {
   id: string;
   title: string;
