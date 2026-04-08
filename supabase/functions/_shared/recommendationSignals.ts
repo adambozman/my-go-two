@@ -107,6 +107,21 @@ export interface NormalizedRecommendationState {
 const SOURCE_VERSION = "recommendation-v2";
 const THIS_OR_THAT_LOOKUP = new Map(THIS_OR_THAT.map((item) => [item.id, item]));
 const QUESTION_WORDS = new Set(["would", "do", "are", "team"]);
+const PRODUCT_CARD_DESCRIPTOR_STOP_WORDS = new Set([
+  "and",
+  "brand",
+  "brands",
+  "color",
+  "colors",
+  "detail",
+  "details",
+  "favorite",
+  "favourite",
+  "favorites",
+  "favourites",
+  "field",
+  "notes",
+]);
 
 const cleanText = (value: unknown): string => {
   if (typeof value !== "string") return "";
@@ -131,10 +146,39 @@ const keywordTokens = (value: unknown) =>
       const tokens = entry
         .split(/\s+/)
         .map((token) => cleanText(token).toLowerCase())
-        .filter((token) => token.length >= 3);
+        .filter((token) => token.length >= 3 && !PRODUCT_CARD_DESCRIPTOR_STOP_WORDS.has(token));
       return [entry.toLowerCase(), ...tokens];
     }),
   );
+
+const extractProductCardDescriptorKeywords = (...values: Array<unknown>) => {
+  const descriptors = new Set<string>();
+
+  for (const value of values) {
+    for (const phrase of splitPhrases(value)) {
+      const normalizedPhrase = cleanText(phrase).toLowerCase();
+      const phraseTokens = normalizedPhrase
+        .split(/\s+/)
+        .map((token) => token.trim())
+        .filter(Boolean);
+
+      const meaningfulTokens = phraseTokens.filter((token) =>
+        token.length >= 3 && !PRODUCT_CARD_DESCRIPTOR_STOP_WORDS.has(token)
+      );
+
+      if (
+        meaningfulTokens.length >= 2 &&
+        phraseTokens.every((token) => !PRODUCT_CARD_DESCRIPTOR_STOP_WORDS.has(token))
+      ) {
+        descriptors.add(normalizedPhrase);
+      }
+
+      for (const token of meaningfulTokens) descriptors.add(token);
+    }
+  }
+
+  return normalizeRecommendationKeywords(Array.from(descriptors));
+};
 
 const inferCategoryFromText = (...values: Array<unknown>): RecommendationCategory | null => {
   const haystack = values.map((value) => cleanText(value).toLowerCase()).join(" ");
@@ -200,7 +244,14 @@ const normalizeAnswerChoice = (answer: unknown, option: string) => {
 const extractPromptBrands = (prompt: string) => {
   const matches = cleanText(prompt).match(/\b[A-Z][A-Za-z&']+(?:\s+[A-Z][A-Za-z&']+)*\b/g) ?? [];
   return normalizeRecommendationKeywords(
-    matches.filter((match) => !QUESTION_WORDS.has(match.toLowerCase())),
+    matches
+      .map((match) =>
+        match
+          .split(/\s+/)
+          .filter((part) => !QUESTION_WORDS.has(part.toLowerCase()))
+          .join(" "),
+      )
+      .filter(Boolean),
   );
 };
 
@@ -246,8 +297,9 @@ const extractThisOrThatPreferences = (responses: JsonObject): ThisOrThatPreferen
     const optionB = cleanText(question.optionB);
     const yesNoPrompt = optionA.toLowerCase() === "yes" && optionB.toLowerCase() === "no";
 
-    if (yesNoPrompt && question.category === "Clothing Brands") {
-      const brands = extractPromptBrands(prompt);
+    const brands = extractPromptBrands(prompt);
+
+    if (yesNoPrompt && brands.length > 0) {
       if (normalizeAnswerChoice(answer, optionA)) {
         for (const brand of brands) {
           positiveBrands.add(brand);
@@ -463,12 +515,13 @@ const toProductCardKeywordRows = (userId: string, snapshot: KnowledgeSnapshotRow
     const subcategoryLabel = cleanText(card.subcategory_label);
     const category = inferCategoryFromText(productCardKey, cardTitle, subcategoryLabel);
     const primaryKeyword = inferPrimaryKeywordFromCard(productCardKey, cardTitle, subcategoryLabel, fieldValues);
-    const descriptorKeywords = mergeRecommendationKeywords([
+    const descriptorKeywords = extractProductCardDescriptorKeywords(
       subcategoryLabel,
       cardTitle,
-      ...Object.keys(fieldValues),
-      ...Object.values(fieldValues).flatMap((value) => splitPhrases(value)),
-    ]).filter((keyword) => keyword !== primaryKeyword);
+      ...Object.values(fieldValues),
+    ).filter((keyword) =>
+      keyword !== primaryKeyword && !PRODUCT_CARD_DESCRIPTOR_STOP_WORDS.has(keyword)
+    );
     const negativeKeywords = mergeRecommendationKeywords(
       Object.entries(fieldValues)
         .filter(([key]) => /(avoid|dislike|hate|allerg|sensitive|no go)/i.test(key))

@@ -18,6 +18,8 @@ const snapshot: KnowledgeSnapshotRow = {
     "avoid-brands": ["Shein"],
   },
   know_me_responses: {
+    "tot-21": "Yes",
+    "tot-54": "Neutrals",
     "pet-peeves": "skinny jeans, neon",
   },
   saved_product_cards: [
@@ -80,6 +82,10 @@ describe("recommendation intent planner", () => {
     expect(counts.home).toBe(3);
     expect(intents.some((intent) => intent.primary_keyword === "jeans")).toBe(false);
     expect(intents.some((intent) => intent.keywords?.includes("skinny"))).toBe(false);
+    expect(intents.some((intent) => intent.category === "tech" && intent.brand === "apple")).toBe(true);
+    expect(intents.some((intent) => intent.category === "clothes" && intent.keywords?.includes("camel"))).toBe(true);
+    expect(intents.some((intent) => intent.category === "clothes" && intent.keywords?.includes("brand"))).toBe(false);
+    expect(intents.some((intent) => intent.category === "clothes" && intent.keywords?.includes("and"))).toBe(false);
   });
 
   it("fills an under-complete ai response back to a balanced 12-intent set without violating dislikes", () => {
@@ -139,4 +145,3 @@ describe("recommendation intent planner", () => {
     expect(counts.home).toBe(3);
   });
 });
-

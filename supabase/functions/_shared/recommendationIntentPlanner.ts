@@ -65,6 +65,49 @@ const buildNegativeKeywordSet = (state: NormalizedRecommendationState) =>
     ]),
   ]));
 
+const buildPositiveKeywordSet = (state: NormalizedRecommendationState) =>
+  new Set(mergeRecommendationKeywords([
+    ...state.positiveKeywords,
+    ...state.likes.flatMap((row) => [
+      row.primary_keyword,
+      ...(row.descriptor_keywords ?? []),
+      row.brand,
+      row.notes,
+    ]),
+  ]));
+
+const getCategoryLikeBrands = (state: NormalizedRecommendationState, category: RecommendationCategory) =>
+  Array.from(new Set(
+    state.likes
+      .filter((row) => row.category === category && row.brand)
+      .map((row) => cleanText(row.brand).toLowerCase())
+      .filter(Boolean),
+  ));
+
+const getCategoryPositiveDescriptors = (state: NormalizedRecommendationState, category: RecommendationCategory) =>
+  mergeRecommendationKeywords([
+    ...state.likes
+      .filter((row) => row.category === category)
+      .flatMap((row) => row.descriptor_keywords ?? []),
+    ...state.productCardKeywords
+      .filter((row) => row.category === category)
+      .flatMap((row) => row.descriptor_keywords.slice(0, 3)),
+  ]);
+
+const mergePrioritizedDescriptors = (
+  primaryKeyword: string | null,
+  preferred: string[],
+  seed: string[],
+  brand: string,
+) => {
+  const normalizedPrimary = normalizePrimaryKeyword(primaryKeyword);
+  const preferredSet = new Set(mergeRecommendationKeywords(preferred));
+  const merged = mergeDescriptorKeywords(normalizedPrimary, preferred, seed, [brand]);
+  const preferredDescriptors = merged.filter((descriptor) => preferredSet.has(descriptor));
+  const otherDescriptors = merged.filter((descriptor) => !preferredSet.has(descriptor));
+  return [...preferredDescriptors, ...otherDescriptors].slice(0, 5);
+};
+
 const intentConflictsWithNegatives = (intent: RecommendationIntent, negativeKeywords: Set<string>) => {
   const primaryKeyword = normalizePrimaryKeyword(intent.primary_keyword ?? intent.name);
   const descriptors = mergeDescriptorKeywords(primaryKeyword, intent.keywords ?? [], [intent.brand, intent.name]);
@@ -77,12 +120,14 @@ const toCardDrivenIntent = (
   category: RecommendationCategory,
   row: NormalizedRecommendationState["productCardKeywords"][number],
 ): RecommendationIntent => {
-  const brand = row.brand_keywords[0] || state.recommendedBrands[0] || CATEGORY_DEFAULTS[category][0]?.brand || "Madewell";
-  const descriptors = mergeDescriptorKeywords(
+  const categoryLikeBrand = getCategoryLikeBrands(state, category)[0];
+  const brand = categoryLikeBrand || row.brand_keywords[0] || state.recommendedBrands[0] || CATEGORY_DEFAULTS[category][0]?.brand || "Madewell";
+  const descriptors = mergePrioritizedDescriptors(
     row.primary_keyword,
-    row.descriptor_keywords.slice(0, 5),
-    [brand],
-  ).slice(0, 5);
+    getCategoryPositiveDescriptors(state, category),
+    row.descriptor_keywords,
+    brand,
+  );
   return {
     brand,
     name: `${row.primary_keyword} pick`,
@@ -98,11 +143,29 @@ const toCardDrivenIntent = (
 };
 
 const getFallbackBrandForCategory = (state: NormalizedRecommendationState, category: RecommendationCategory) => {
+  const likedBrand = getCategoryLikeBrands(state, category)[0];
+  if (likedBrand) return likedBrand;
   const categoryBrand = state.brandBankRows
     .filter((row) => row.category === category)
     .sort((a, b) => b.weight - a.weight)[0]?.brand;
   if (categoryBrand) return categoryBrand;
-  return CATEGORY_DEFAULTS[category][0]?.brand || state.recommendedBrands[0] || "Madewell";
+  return state.recommendedBrands[0] || CATEGORY_DEFAULTS[category][0]?.brand || "Madewell";
+};
+
+const scoreDefaultSeed = (
+  state: NormalizedRecommendationState,
+  category: RecommendationCategory,
+  seed: { primary: string; brand: string; descriptors: string[] },
+) => {
+  const positiveKeywords = buildPositiveKeywordSet(state);
+  const haystack = mergeRecommendationKeywords([seed.primary, seed.brand, ...seed.descriptors]);
+  let score = 0;
+  for (const keyword of haystack) {
+    if (positiveKeywords.has(keyword)) score += 10;
+  }
+  if (getCategoryLikeBrands(state, category).includes(cleanText(seed.brand).toLowerCase())) score += 20;
+  if (state.recommendedBrands.includes(cleanText(seed.brand).toLowerCase())) score += 5;
+  return score;
 };
 
 const createDefaultIntent = (
@@ -111,7 +174,12 @@ const createDefaultIntent = (
   seed: { primary: string; brand: string; descriptors: string[] },
 ): RecommendationIntent => {
   const brand = getFallbackBrandForCategory(state, category) || seed.brand;
-  const descriptors = mergeDescriptorKeywords(seed.primary, seed.descriptors, [brand]).slice(0, 5);
+  const descriptors = mergePrioritizedDescriptors(
+    seed.primary,
+    getCategoryPositiveDescriptors(state, category),
+    seed.descriptors,
+    brand,
+  );
   return {
     brand,
     name: `${seed.primary} recommendation`,
@@ -144,7 +212,11 @@ export const generateFallbackRecommendationIntents = (state: NormalizedRecommend
 
     if (results.filter((entry) => entry.category === category).length >= CATEGORY_TARGET) continue;
 
-    for (const seed of CATEGORY_DEFAULTS[category]) {
+    const rankedSeeds = CATEGORY_DEFAULTS[category]
+      .slice()
+      .sort((a, b) => scoreDefaultSeed(state, category, b) - scoreDefaultSeed(state, category, a));
+
+    for (const seed of rankedSeeds) {
       const intent = createDefaultIntent(state, category, seed);
       const key = buildIntentKey(intent);
       if (seen.has(key) || intentConflictsWithNegatives(intent, negativeKeywords)) continue;
@@ -195,4 +267,3 @@ export const completeRecommendationIntentSet = (
 
   return results.slice(0, TOTAL_TARGET);
 };
-
