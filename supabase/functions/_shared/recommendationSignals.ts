@@ -7,6 +7,7 @@ import {
 } from "./knowMeCatalog.ts";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "./knowledgeCenter.ts";
 import { getCombinedKnowledgeResponses, getKnowledgeDerivationPayload, toRecord, toRecordArray, toStringArray } from "./knowledgeCenter.ts";
+import { THIS_OR_THAT } from "../../../src/data/knowMeQuestions.ts";
 
 type JsonObject = Record<string, unknown>;
 
@@ -104,6 +105,8 @@ export interface NormalizedRecommendationState {
 }
 
 const SOURCE_VERSION = "recommendation-v2";
+const THIS_OR_THAT_LOOKUP = new Map(THIS_OR_THAT.map((item) => [item.id, item]));
+const QUESTION_WORDS = new Set(["would", "do", "are", "team"]);
 
 const cleanText = (value: unknown): string => {
   if (typeof value !== "string") return "";
@@ -178,8 +181,153 @@ const extractBrandKeywords = (...values: Array<unknown>) => {
   return normalizeRecommendationKeywords(matches);
 };
 
+const mapThisOrThatCategory = (value: string): RecommendationCategory | null => {
+  const category = cleanText(value).toLowerCase();
+  if (category === "clothing brands" || category === "style") return "clothes";
+  if (category === "food") return "food";
+  if (category === "electronics") return "tech";
+  if (category === "home") return "home";
+  return null;
+};
+
+const normalizeAnswerChoice = (answer: unknown, option: string) => {
+  const normalizedAnswer = cleanText(answer).toLowerCase();
+  const normalizedOption = cleanText(option).toLowerCase();
+  if (!normalizedAnswer || !normalizedOption) return false;
+  return normalizedAnswer === normalizedOption;
+};
+
+const extractPromptBrands = (prompt: string) => {
+  const matches = cleanText(prompt).match(/\b[A-Z][A-Za-z&']+(?:\s+[A-Z][A-Za-z&']+)*\b/g) ?? [];
+  return normalizeRecommendationKeywords(
+    matches.filter((match) => !QUESTION_WORDS.has(match.toLowerCase())),
+  );
+};
+
+type ThisOrThatPreferenceSummary = {
+  positiveKeywords: string[];
+  negativeKeywords: string[];
+  positiveBrands: string[];
+  negativeBrands: string[];
+  likes: Array<{
+    like_type: string;
+    primary_keyword: string | null;
+    descriptor_keywords: string[];
+    brand: string | null;
+    category: string | null;
+    notes: string | null;
+  }>;
+  dislikes: Array<{
+    dislike_type: string;
+    primary_keyword: string | null;
+    descriptor_keywords: string[];
+    brand: string | null;
+    category: string | null;
+    notes: string | null;
+  }>;
+};
+
+const extractThisOrThatPreferences = (responses: JsonObject): ThisOrThatPreferenceSummary => {
+  const positiveKeywords = new Set<string>();
+  const negativeKeywords = new Set<string>();
+  const positiveBrands = new Set<string>();
+  const negativeBrands = new Set<string>();
+  const likes: ThisOrThatPreferenceSummary["likes"] = [];
+  const dislikes: ThisOrThatPreferenceSummary["dislikes"] = [];
+
+  for (const [key, answer] of Object.entries(responses)) {
+    if (!key.startsWith("tot-")) continue;
+    const question = THIS_OR_THAT_LOOKUP.get(key);
+    if (!question) continue;
+
+    const category = mapThisOrThatCategory(question.category);
+    const prompt = cleanText(question.prompt);
+    const optionA = cleanText(question.optionA);
+    const optionB = cleanText(question.optionB);
+    const yesNoPrompt = optionA.toLowerCase() === "yes" && optionB.toLowerCase() === "no";
+
+    if (yesNoPrompt && question.category === "Clothing Brands") {
+      const brands = extractPromptBrands(prompt);
+      if (normalizeAnswerChoice(answer, optionA)) {
+        for (const brand of brands) {
+          positiveBrands.add(brand);
+          positiveKeywords.add(brand);
+          likes.push({
+            like_type: "this_or_that_brand",
+            primary_keyword: null,
+            descriptor_keywords: [],
+            brand,
+            category,
+            notes: key,
+          });
+        }
+      }
+
+      if (normalizeAnswerChoice(answer, optionB)) {
+        for (const brand of brands) {
+          negativeBrands.add(brand);
+          negativeKeywords.add(brand);
+          dislikes.push({
+            dislike_type: "this_or_that_brand",
+            primary_keyword: null,
+            descriptor_keywords: [],
+            brand,
+            category,
+            notes: key,
+          });
+        }
+      }
+
+      continue;
+    }
+
+    const preferMatch = yesNoPrompt
+      ? prompt.match(/prefer\s+(.+?)\s+over\s+(.+?)(?:\?|$)/i)
+      : null;
+
+    const chosenOption = preferMatch
+      ? normalizeAnswerChoice(answer, optionA)
+        ? preferMatch[1]
+        : normalizeAnswerChoice(answer, optionB)
+          ? preferMatch[2]
+          : null
+      : normalizeAnswerChoice(answer, optionA)
+        ? optionA
+        : normalizeAnswerChoice(answer, optionB)
+          ? optionB
+          : null;
+
+    if (!chosenOption) continue;
+
+    const normalizedChoice = cleanText(chosenOption).toLowerCase();
+    if (!normalizedChoice) continue;
+
+    positiveKeywords.add(normalizedChoice);
+    for (const token of keywordTokens(normalizedChoice)) positiveKeywords.add(token);
+
+    likes.push({
+      like_type: "this_or_that_choice",
+      primary_keyword: null,
+      descriptor_keywords: mergeRecommendationKeywords([normalizedChoice]),
+      brand: null,
+      category,
+      notes: key,
+    });
+  }
+
+  return {
+    positiveKeywords: normalizeRecommendationKeywords(Array.from(positiveKeywords)),
+    negativeKeywords: normalizeRecommendationKeywords(Array.from(negativeKeywords)),
+    positiveBrands: normalizeRecommendationKeywords(Array.from(positiveBrands)),
+    negativeBrands: normalizeRecommendationKeywords(Array.from(negativeBrands)),
+    likes,
+    dislikes,
+  };
+};
+
 const extractNegativePreferenceKeywords = (responses: JsonObject) => {
   const negatives = new Set<string>();
+  const thisOrThatPreferences = extractThisOrThatPreferences(responses);
 
   for (const [key, value] of Object.entries(responses)) {
     if (!/(avoid|dislike|hate|turnoff|turn off|pet[-\s]?peeve|no go|allerg|sensitive)/i.test(key)) continue;
@@ -189,11 +337,15 @@ const extractNegativePreferenceKeywords = (responses: JsonObject) => {
     }
   }
 
+  for (const keyword of thisOrThatPreferences.negativeKeywords) negatives.add(keyword);
+  for (const brand of thisOrThatPreferences.negativeBrands) negatives.add(brand);
+
   return normalizeRecommendationKeywords(Array.from(negatives));
 };
 
 const extractPositivePreferenceKeywords = (responses: JsonObject) => {
   const positives = new Set<string>();
+  const thisOrThatPreferences = extractThisOrThatPreferences(responses);
 
   for (const [key, value] of Object.entries(responses)) {
     if (/(favorite|favourite|love|likes|preferred|best|go-to|go to|preference)/i.test(key)) {
@@ -203,6 +355,9 @@ const extractPositivePreferenceKeywords = (responses: JsonObject) => {
       }
     }
   }
+
+  for (const keyword of thisOrThatPreferences.positiveKeywords) positives.add(keyword);
+  for (const brand of thisOrThatPreferences.positiveBrands) positives.add(brand);
 
   return normalizeRecommendationKeywords(Array.from(positives));
 };
@@ -350,6 +505,7 @@ const toLikeAndDislikeRows = (
 ) => {
   const likes: UserLikeSignalRow[] = [];
   const dislikes: UserDislikeSignalRow[] = [];
+  const thisOrThatPreferences = extractThisOrThatPreferences(combinedResponses);
 
   for (const keyword of extractPositivePreferenceKeywords(combinedResponses)) {
     likes.push({
@@ -372,6 +528,30 @@ const toLikeAndDislikeRows = (
       brand: null,
       category: null,
       notes: keyword,
+    });
+  }
+
+  for (const like of thisOrThatPreferences.likes) {
+    likes.push({
+      user_id: userId,
+      like_type: like.like_type,
+      primary_keyword: like.primary_keyword,
+      descriptor_keywords: like.descriptor_keywords,
+      brand: like.brand,
+      category: like.category,
+      notes: like.notes,
+    });
+  }
+
+  for (const dislike of thisOrThatPreferences.dislikes) {
+    dislikes.push({
+      user_id: userId,
+      dislike_type: dislike.dislike_type,
+      primary_keyword: dislike.primary_keyword,
+      descriptor_keywords: dislike.descriptor_keywords,
+      brand: dislike.brand,
+      category: dislike.category,
+      notes: dislike.notes,
     });
   }
 
@@ -516,10 +696,12 @@ export const buildNormalizedRecommendationState = (
   const profileCore = toRecord(snapshot?.profile_core);
   const yourVibe = getKnowledgeDerivationPayload(derivations, "your_vibe");
   const bankKnowledge = getBankKnowledgeDerivation(combinedResponses, yourVibe);
+  const thisOrThatPreferences = extractThisOrThatPreferences(combinedResponses);
   const recommendedBrands = mergeRecommendationKeywords([
     ...toStringArray(yourVibe.recommended_brands),
     ...bankKnowledge.recommended_brands,
     ...bankKnowledge.recommended_stores,
+    ...thisOrThatPreferences.positiveBrands,
     ...getSeedCatalogBrands(),
   ]);
   const recommendedStores = mergeRecommendationKeywords([

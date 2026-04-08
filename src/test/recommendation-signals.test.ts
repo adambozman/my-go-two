@@ -19,6 +19,8 @@ const snapshot: KnowledgeSnapshotRow = {
   know_me_responses: {
     "tot-03": "Yes",
     "tot-07": "No",
+    "tot-54": "Neutrals",
+    "tot-48": "Sushi",
     "pet-peeves": "skinny jeans, tight denim",
     "sf-10": ["luxury", "sustainable", "high-street"],
   },
@@ -80,15 +82,15 @@ describe("recommendation signal normalization", () => {
     expect(state.signals.length).toBeGreaterThan(6);
     expect(state.locationKeys).toEqual(expect.arrayContaining(["chicago", "illinois"]));
     expect(state.recommendedBrands).toEqual(
-      expect.arrayContaining(["aritzia", "sezane", "mejuri"]),
+      expect.arrayContaining(["aritzia", "sezane", "mejuri", "lululemon"]),
     );
 
     expect(state.negativeKeywords).toEqual(
-      expect.arrayContaining(["skinny jeans", "skinny", "tight denim", "neon"]),
+      expect.arrayContaining(["skinny jeans", "skinny", "tight denim", "neon", "h m"]),
     );
 
     expect(state.positiveKeywords).toEqual(
-      expect.arrayContaining(["thoughtful"]),
+      expect.arrayContaining(["thoughtful", "lululemon", "neutrals", "sushi"]),
     );
 
     expect(state.productCardKeywords).toHaveLength(2);
@@ -108,6 +110,9 @@ describe("recommendation signal normalization", () => {
 
     expect(state.likes.length).toBeGreaterThan(0);
     expect(state.dislikes.length).toBeGreaterThan(0);
+    expect(state.likes.some((row) => row.like_type === "this_or_that_brand" && row.brand === "lululemon")).toBe(true);
+    expect(state.likes.some((row) => row.like_type === "this_or_that_choice" && row.descriptor_keywords.includes("neutrals"))).toBe(true);
+    expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_brand" && row.brand === "h m")).toBe(true);
     expect(state.keywordBankRows.some((row) => row.category === "food")).toBe(true);
     expect(state.brandBankRows.some((row) => row.brand === "aritzia")).toBe(true);
     expect(state.brandLocationRows.some((row) => row.location_key === "chicago")).toBe(true);
