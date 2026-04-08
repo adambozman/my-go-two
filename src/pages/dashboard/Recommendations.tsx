@@ -188,6 +188,8 @@ const Recommendations = () => {
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [isCached, setIsCached] = useState(false);
   const [generationVersion, setGenerationVersion] = useState<string | null>(null);
+  const isUsingRebuiltEngine = generationVersion === RECOMMENDATION_V2_VERSION;
+  const isUsingLegacyEngine = Boolean(generationVersion && !isUsingRebuiltEngine);
 
   const activePillarConfig = useMemo(
     () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
@@ -513,9 +515,14 @@ const Recommendations = () => {
                     {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
                   </p>
                 )}
-                {generationVersion === RECOMMENDATION_V2_VERSION && (
+                {isUsingRebuiltEngine && (
                   <p className="surface-meta mt-1">
                     Powered by the rebuilt recommendation engine
+                  </p>
+                )}
+                {isUsingLegacyEngine && (
+                  <p className="surface-meta mt-1">
+                    Using the legacy recommendation engine while the rebuilt flow falls back
                   </p>
                 )}
                 {isDev && (
