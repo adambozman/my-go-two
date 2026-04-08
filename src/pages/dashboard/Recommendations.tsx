@@ -2,7 +2,7 @@
 import { useKnowledgeCenter } from "@/contexts/knowledge-center-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
-import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink } from "lucide-react";
+import { RefreshCw, Loader2, Bookmark, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PaginationControls } from "@/components/ui/pagination-controls";
@@ -177,6 +177,7 @@ const Recommendations = () => {
   const [activePillar, setActivePillar] = useState<string>("all");
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
   const [savingItems, setSavingItems] = useState<Set<string>>(new Set());
+  const [sharingItems, setSharingItems] = useState<Set<string>>(new Set());
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [isCached, setIsCached] = useState(false);
 
@@ -243,6 +244,7 @@ const Recommendations = () => {
     if (!user) {
       setSavedItems(new Set());
       setSavingItems(new Set());
+      setSharingItems(new Set());
       return;
     }
 
@@ -349,9 +351,47 @@ const Recommendations = () => {
     }
   }, [savedItems, user]);
 
-  const handleShare = (product: Product) => {
-    toast.success(`Ready to share ${product.name} with your connection`);
-  };
+  const handleShare = useCallback(async (product: Product) => {
+    const id = getProductId(product);
+    const productUrl = product.affiliate_url || product.search_url || null;
+    const shareText = [
+      `${product.brand} ${product.name}`,
+      product.hook,
+      product.why,
+      productUrl,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    setSharingItems((prev) => new Set(prev).add(id));
+
+    try {
+      if (typeof navigator.share === "function") {
+        await navigator.share({
+          title: `${product.brand} ${product.name}`,
+          text: `${product.hook}\n\n${product.why}`,
+          url: productUrl ?? undefined,
+        });
+        toast.success("Shared from your share sheet");
+        return;
+      }
+
+      await navigator.clipboard.writeText(shareText);
+      toast.success(productUrl ? "Share details copied to clipboard" : "Recommendation copied to clipboard");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Could not share recommendation";
+      if (message.toLowerCase().includes("abort")) {
+        return;
+      }
+      toast.error(message);
+    } finally {
+      setSharingItems((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  }, []);
 
   const generatedLabel = generatedAt
     ? new Date(generatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })
@@ -467,6 +507,7 @@ const Recommendations = () => {
                   const itemId = getProductId(product);
                   const isSaved = savedItems.has(itemId);
                   const isSaving = savingItems.has(itemId);
+                  const isSharing = sharingItems.has(itemId);
                   return (
                     <ProductCard
                       key={itemId + i}
@@ -474,8 +515,9 @@ const Recommendations = () => {
                       index={i}
                       isSaved={isSaved}
                       saveLoading={isSaving}
+                      shareLoading={isSharing}
                       onToggleSave={() => subscribed ? void toggleSave(product) : toast("Upgrade to save picks")}
-                      onShare={() => (product.affiliate_url || product.search_url) ? undefined : handleShare(product)}
+                      onShare={() => void handleShare(product)}
                     />
                   );
                 })}
@@ -520,6 +562,7 @@ function ProductCard({
   index,
   isSaved,
   saveLoading,
+  shareLoading,
   onToggleSave,
   onShare,
 }: {
@@ -527,20 +570,11 @@ function ProductCard({
   index: number;
   isSaved: boolean;
   saveLoading: boolean;
+  shareLoading: boolean;
   onToggleSave: () => void;
   onShare: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-
-  const handleAction = () => {
-    if (product.affiliate_url) {
-      window.open(product.affiliate_url, "_blank", "noopener");
-      return;
-    }
-    if (product.search_url) {
-      window.open(product.search_url, "_blank", "noopener");
-    }
-  };
 
   return (
     <motion.div
@@ -594,13 +628,14 @@ function ProductCard({
             </Button>
 
             <Button
-              onClick={product.affiliate_url || product.search_url ? handleAction : onShare}
-              variant={product.affiliate_url || product.search_url ? "default" : "outline"}
+              onClick={onShare}
+              variant="outline"
               size="sm"
               className="gap-1.5"
+              disabled={shareLoading}
             >
-              {product.affiliate_url || product.search_url ? <ExternalLink className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
-              {product.affiliate_url ? "View Product" : product.search_url ? "Search Brand" : "Share"}
+              {shareLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Share2 className="h-3 w-3" />}
+              Share
             </Button>
           </div>
         </div>

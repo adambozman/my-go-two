@@ -317,6 +317,7 @@ Recommendations are user-facing and currently have "demo-feeling" gaps.
 ### Progress
 
 - Done: recommendation saves now persist in `user_preferences.favorites.recommendations`, load back on refresh, and rollback cleanly on failed writes instead of behaving like local-only demo state.
+- Done: recommendation share now uses the native share sheet when available and falls back to copying a real share message to the clipboard, so it no longer acts like a toast-only placeholder.
 - Remaining: share still does not create a durable share artifact or tracked send path, and the catalog ownership boundary plus mixed image sourcing still need cleanup.
 
 ### Fixes required
