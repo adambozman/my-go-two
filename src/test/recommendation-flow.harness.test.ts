@@ -5,7 +5,7 @@ import {
   RecommendationFlowHarness,
   type ScrapedProduct,
 } from "./recommendation-flow.harness";
-import type { RecommendationIntent } from "../../supabase/functions/_shared/knowMeCatalog.ts";
+import type { RecommendationIntent } from "../../supabase/functions/_shared/recommendationCatalog.ts";
 
 const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
   "American Eagle Skinny Blue Jeans": {

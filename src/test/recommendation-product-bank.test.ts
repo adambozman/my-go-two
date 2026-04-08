@@ -5,7 +5,7 @@ import {
   isBankableExactProductScrape,
   scoreProductBankReuseCandidate,
 } from "../../supabase/functions/_shared/recommendationProductBank.ts";
-import type { RecommendationIntent } from "../../supabase/functions/_shared/knowMeCatalog.ts";
+import type { RecommendationIntent } from "../../supabase/functions/_shared/recommendationCatalog.ts";
 
 const jeansIntent: RecommendationIntent = {
   brand: "American Eagle",

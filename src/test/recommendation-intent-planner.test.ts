@@ -5,7 +5,7 @@ import {
   generateFallbackRecommendationIntents,
 } from "../../supabase/functions/_shared/recommendationIntentPlanner";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "../../supabase/functions/_shared/knowledgeCenter";
-import type { RecommendationIntent } from "../../supabase/functions/_shared/knowMeCatalog";
+import type { RecommendationIntent } from "../../supabase/functions/_shared/recommendationCatalog";
 
 const snapshot: KnowledgeSnapshotRow = {
   user_id: "planner-user-1",

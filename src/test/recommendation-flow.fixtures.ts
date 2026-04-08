@@ -1,4 +1,4 @@
-import type { RecommendationIntent } from "../../supabase/functions/_shared/knowMeCatalog.ts";
+import type { RecommendationIntent } from "../../supabase/functions/_shared/recommendationCatalog.ts";
 
 export type RecommendationFlowFixture = {
   userId: string;

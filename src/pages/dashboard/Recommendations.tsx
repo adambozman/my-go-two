@@ -125,8 +125,9 @@ function getProductDestination(product: Product) {
 }
 
 function getProductActionLabel(product: Product) {
-  if (product.affiliate_url) return "View Product";
-  if (product.search_url) return "Search";
+  if (product.source_kind === "specific-product" && product.affiliate_url) return "View Product";
+  if (product.source_kind === "catalog-product" && product.affiliate_url) return "View Catalog";
+  if (product.search_url) return "Search Brand";
   return "No Link";
 }
 
