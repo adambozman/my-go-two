@@ -8,6 +8,10 @@ import {
   useState,
 } from "react";
 import { useAuth } from "@/contexts/auth-context";
+import {
+  MYGOTWO_STAGE_DIAGNOSTIC_EVENT,
+  type MyGoTwoStageDiagnosticDetail,
+} from "@/lib/devRuntimeEvents";
 import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
 import MyProductCardBeverages from "@/platform-ui/web/mygotwo/MyProductCardBeverages";
 import {
@@ -481,11 +485,23 @@ export default function MyGoTwoStripGalleryAsset() {
         });
 
         if (failedVisibleStrips.length > 0) {
-          console.warn("My Go Two full strip image load fallback engaged:", failedVisibleStrips.map((strip) => ({
-            id: strip.id,
-            label: strip.label ?? null,
-            image: strip.image,
-          })));
+          const diagnosticDetail: MyGoTwoStageDiagnosticDetail = {
+            kind: "mygotwo-stage-fallback",
+            failedStrips: failedVisibleStrips.map((strip) => ({
+              id: strip.id,
+              label: strip.label ?? null,
+              image: strip.image,
+            })),
+          };
+
+          console.warn("My Go Two full strip image load fallback engaged:", diagnosticDetail.failedStrips);
+
+          if (import.meta.env.DEV) {
+            window.dispatchEvent(new CustomEvent<MyGoTwoStageDiagnosticDetail>(
+              MYGOTWO_STAGE_DIAGNOSTIC_EVENT,
+              { detail: diagnosticDetail },
+            ));
+          }
         }
 
         commitAssets(
