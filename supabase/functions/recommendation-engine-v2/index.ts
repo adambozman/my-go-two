@@ -193,6 +193,9 @@ const toResponseProduct = (intent: RecommendationIntent, bankRow: ProductBankRow
       image_url: bankRow.product_image_url,
       source_kind: "specific-product",
       source_version: GENERATION_VERSION,
+      exact_match_confirmed: true,
+      match_confidence: bankRow.match_confidence,
+      resolver_source: bankRow.resolver_source,
     };
   }
 
@@ -214,6 +217,9 @@ const toResponseProduct = (intent: RecommendationIntent, bankRow: ProductBankRow
     image_url: productUrl ? fallback.image_url ?? null : null,
     source_kind: productUrl ? "catalog-product" : "brand-search",
     source_version: GENERATION_VERSION,
+    exact_match_confirmed: false,
+    match_confidence: productUrl ? 0 : null,
+    resolver_source: fallback.resolver_source,
   };
 };
 

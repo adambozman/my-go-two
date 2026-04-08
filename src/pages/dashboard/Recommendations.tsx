@@ -26,6 +26,9 @@ interface Product {
   image_url?: string | null;
   source_kind?: string;
   source_version?: string;
+  exact_match_confirmed?: boolean | null;
+  match_confidence?: number | null;
+  resolver_source?: string | null;
 }
 
 const RECOMMENDATION_V2_VERSION = "recommendation-engine-v2";
@@ -42,6 +45,8 @@ type RecommendationFavorite = {
   affiliate_url: string | null;
   search_url: string | null;
   product_query: string | null;
+  display_price: string;
+  match_label: string;
   saved_at: string;
 };
 
@@ -57,6 +62,8 @@ type RecommendationShareRecord = {
   affiliate_url: string | null;
   search_url: string | null;
   product_query: string | null;
+  display_price: string;
+  match_label: string;
   shared_at: string;
   share_count: number;
   last_share_method: "native" | "clipboard";
@@ -140,6 +147,8 @@ function toRecommendationFavorite(product: Product): RecommendationFavorite {
     affiliate_url: product.affiliate_url ?? null,
     search_url: product.search_url ?? null,
     product_query: product.product_query ?? null,
+    display_price: getProductDisplayPrice(product),
+    match_label: getProductMatchLabel(product),
     saved_at: new Date().toISOString(),
   };
 }
@@ -161,6 +170,8 @@ function toRecommendationShareRecord(
     affiliate_url: product.affiliate_url ?? null,
     search_url: product.search_url ?? null,
     product_query: product.product_query ?? null,
+    display_price: getProductDisplayPrice(product),
+    match_label: getProductMatchLabel(product),
     shared_at: new Date().toISOString(),
     share_count: (previous?.share_count ?? 0) + 1,
     last_share_method: method,
@@ -415,8 +426,12 @@ const Recommendations = () => {
   const handleShare = useCallback(async (product: Product) => {
     const id = getProductId(product);
     const productUrl = product.affiliate_url || product.search_url || null;
+    const matchLabel = getProductMatchLabel(product);
+    const displayPrice = getProductDisplayPrice(product);
     const shareText = [
       `${product.brand} ${product.name}`,
+      matchLabel,
+      displayPrice,
       product.hook,
       product.why,
       productUrl,
@@ -440,7 +455,7 @@ const Recommendations = () => {
 
       await navigator.clipboard.writeText(shareText);
       await persistShareActivity(product, "clipboard");
-      toast.success(productUrl ? "Share details copied to clipboard" : "Recommendation copied to clipboard");
+        toast.success(productUrl ? "Share details copied to clipboard" : "Recommendation copied to clipboard");
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Could not share recommendation";
       if (message.toLowerCase().includes("abort")) {
@@ -601,6 +616,15 @@ const Recommendations = () => {
               />
             )}
           </>
+        ) : !subscribed ? (
+          <Card variant="sand" className="p-8 text-center">
+            <p className="surface-heading-md mb-2">
+              Your curated picks load here.
+            </p>
+            <p className="surface-body">
+              Upgrade to unlock the full weekly set and saving.
+            </p>
+          </Card>
         ) : loadErrorMessage ? (
           <Card variant="sand" className="p-8 text-center">
             <p className="surface-heading-md mb-2">
@@ -629,15 +653,6 @@ const Recommendations = () => {
             </p>
             <p className="surface-body">
               Try refreshing or answer more Know Me questions to sharpen the read.
-            </p>
-          </Card>
-        ) : !subscribed ? (
-          <Card variant="sand" className="p-8 text-center">
-            <p className="surface-heading-md mb-2">
-              Your curated picks load here.
-            </p>
-            <p className="surface-body">
-              Upgrade to unlock the full weekly set and saving.
             </p>
           </Card>
         ) : null}

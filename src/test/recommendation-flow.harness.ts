@@ -9,7 +9,7 @@ import {
   resolveIntentToCatalogEntry,
   scoreKeywordBankCandidate,
   type RecommendationIntent,
-} from "../../supabase/functions/_shared/knowMeCatalog.ts";
+} from "../../supabase/functions/_shared/recommendationCatalog.ts";
 import {
   buildProductBankInsertFromExactScrape,
   scoreProductBankReuseCandidate,
@@ -122,6 +122,9 @@ const toProductCard = (
     image_url: productUrl ? resolved.image_url : null,
     source_kind: sourceKind,
     source_version: resolved.source_version,
+    exact_match_confirmed: Boolean(resolved.exact_match_confirmed),
+    match_confidence: resolved.product_match_confidence,
+    resolver_source: resolved.resolver_source,
   };
 };
 
