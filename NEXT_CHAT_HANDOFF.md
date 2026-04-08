@@ -287,6 +287,7 @@ The correct direction is:
 3. Done: verified that `spare`, `styles`, `templates`, and `previews` are active asset buckets and should not be bulk-deleted.
 4. Review those active asset buckets file by file to find truly unused individual assets.
 5. Done: deleted `output\diagnostics\rg-copy.exe` after verifying it had no runtime references and was just generated tooling output.
+6. Done: ignored local dev-run log artifacts such as `vite-dev*.log` and `output/*.log` so local browser/server checks do not keep polluting repo status.
 
 ### Photo Gallery
 
