@@ -324,6 +324,8 @@ The correct direction is:
 7. Review the remaining active asset buckets file by file to find truly unused individual assets.
 8. Done: deleted `output\diagnostics\rg-copy.exe` after verifying it had no runtime references and was just generated tooling output.
 9. Done: ignored local dev-run log artifacts such as `vite-dev*.log` and `output/*.log` so local browser/server checks do not keep polluting repo status.
+10. Done: deleted orphaned dead-code files `src\data\publicFeed.ts`, `src\lib\adTracking.ts`, and `src\lib\imagePositions.ts` after confirming they had zero references anywhere in `src`.
+11. New caution: some additional zero-reference files still need manual review before deletion because they are mentioned in the `My Go Two` handoff path or may be intentional future-use utilities.
 
 ### Photo Gallery
 
