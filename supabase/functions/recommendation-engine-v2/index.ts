@@ -121,6 +121,27 @@ const hashDescriptorOverlap = (needles: string[], haystack: string[]) => {
   return matches;
 };
 
+const hasExactKeywordSignature = (
+  category: RecommendationIntent["category"],
+  primaryKeyword: string,
+  descriptorKeywords: string[],
+  row: ProductBankRow,
+) => {
+  const requestedSignature = buildKeywordSignature(category, primaryKeyword, descriptorKeywords);
+  return Boolean(requestedSignature && row.keyword_signature === requestedSignature);
+};
+
+const scoreBrandFit = (requestedBrand: string, candidateBrand: string) => {
+  const requested = normalizeRecommendationKeywords([requestedBrand]);
+  const candidate = normalizeRecommendationKeywords([candidateBrand]);
+  if (!requested.length || !candidate.length) return 0;
+  const requestedJoined = requested.join(" ");
+  const candidateJoined = candidate.join(" ");
+  if (requestedJoined === candidateJoined) return 25;
+  const overlap = hashDescriptorOverlap(requested, candidate);
+  return overlap > 0 ? 10 + overlap * 5 : 0;
+};
+
 const hasDislikeConflict = (intentKeywords: string[], negativeKeywords: string[], row: ProductBankRow) => {
   const negatives = new Set(normalizeRecommendationKeywords(negativeKeywords));
   const haystack = new Set(mergeRecommendationKeywords([
@@ -142,6 +163,7 @@ const findBestProductBankMatch = async (
   primaryKeyword: string,
   descriptorKeywords: string[],
   negativeKeywords: string[],
+  requestedBrand: string,
 ) => {
   const { data } = await admin
     .from("recommendation_product_bank")
@@ -156,10 +178,15 @@ const findBestProductBankMatch = async (
     .filter((row) => !hasDislikeConflict(descriptorKeywords, negativeKeywords, row))
     .map((row) => {
       const overlap = hashDescriptorOverlap(descriptorKeywords, row.descriptor_keywords ?? []);
-      const score = overlap * 20 + Math.min(Number(row.match_confidence) || 0, 100);
-      return { row, score };
+      const exactSignature = hasExactKeywordSignature(category, primaryKeyword, descriptorKeywords, row);
+      const brandFit = scoreBrandFit(requestedBrand, row.brand);
+      const confidence = Math.min(Number(row.match_confidence) || 0, 100);
+      const score = (exactSignature ? 1000 : 0) + (overlap * 30) + brandFit + Math.round(confidence * 0.2);
+      return { row, score, overlap, brandFit, exactSignature };
     })
-    .filter((entry) => entry.score >= 85)
+    .filter((entry) =>
+      entry.brandFit > 0 && (entry.exactSignature || entry.overlap >= 2 || (entry.overlap >= 1 && entry.brandFit >= 25))
+    )
     .sort((a, b) => b.score - a.score)[0];
 
   return ranked?.row ?? null;
@@ -421,6 +448,7 @@ serve(async (req) => {
         primaryKeyword,
         descriptorKeywords,
         state.negativeKeywords,
+        intent.brand,
       );
 
       if (bankRow) {

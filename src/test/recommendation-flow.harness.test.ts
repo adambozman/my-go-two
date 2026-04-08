@@ -58,6 +58,16 @@ const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
     product_match_confidence: 100,
     exact_match_confirmed: true,
   },
+  "H&M Skinny Blue Jeans": {
+    image_url: "https://image.hm.com/pdp/skinny-blue-jeans.jpg",
+    product_url: "https://www2.hm.com/en_us/productpage.skinny-blue-jeans.html",
+    price: "$39.99",
+    scraped_description:
+      "Skinny blue jeans with stretch denim, a close fit, and a clean H&M everyday wash.",
+    scraped_product_title: "H&M Skinny Blue Jeans",
+    product_match_confidence: 100,
+    exact_match_confirmed: true,
+  },
 };
 
 const createHarness = () =>
@@ -326,5 +336,53 @@ describe("dislike-aware jeans routing", () => {
     expect(straightBank?.primary_keyword).toBe("jeans");
     expect(straightBank?.descriptor_keywords).toEqual(expect.arrayContaining(["american eagle", "straight", "blue jeans"]));
     expect(straightBank?.intent_keywords).toEqual(expect.arrayContaining(["jeans", "american eagle", "blue jeans"]));
+  });
+});
+
+describe("primary keyword bucket brand separation", () => {
+  it("does not reuse a saved jeans product across different brands when descriptor overlap is otherwise similar", async () => {
+    const harness = new RecommendationFlowHarness({
+      generateIntents: (context) =>
+        context.userId === "seed-brand-user"
+          ? [harperWeeklyFixture.weeklyIntents[0]]
+          : [
+              {
+                ...harperWeeklyFixture.weeklyIntents[0],
+                brand: "H&M",
+                name: "Skinny Blue Jeans",
+                search_query: "H&M skinny blue jeans",
+                keywords: ["h&m", "skinny", "blue jeans", "denim", "clothes"],
+              },
+            ],
+      scrapeProduct: (intent: RecommendationIntent) =>
+        SCRAPE_FIXTURES[`${intent.brand} ${intent.name}`] ?? null,
+    });
+
+    await harness.runWeekly({
+      userId: "seed-brand-user",
+      weekStartKey: "2026-04-06",
+      knowledgeResponses: harperWeeklyFixture.knowledgeResponses,
+      sharedCards: harperWeeklyFixture.sharedCards,
+      yourVibe: harperWeeklyFixture.yourVibe,
+    });
+
+    const secondRun = await harness.runWeekly({
+      userId: "hm-user",
+      weekStartKey: "2026-04-13",
+      knowledgeResponses: harperWeeklyFixture.knowledgeResponses,
+      sharedCards: harperWeeklyFixture.sharedCards,
+      yourVibe: harperWeeklyFixture.yourVibe,
+    });
+
+    expect(secondRun.bankHits).toBe(0);
+    expect(secondRun.bankMisses).toBe(1);
+    expect(secondRun.firecrawlCalls).toBe(2);
+    expect(secondRun.products[0]?.brand).toBe("H&M");
+    expect(secondRun.products[0]?.affiliate_url).toBe("https://www2.hm.com/en_us/productpage.skinny-blue-jeans.html");
+    expect(secondRun.products[0]?.image_url).toBe("https://image.hm.com/pdp/skinny-blue-jeans.jpg");
+
+    const bankSnapshot = harness.snapshotBank();
+    expect(bankSnapshot.some((entry) => entry.brand === "American Eagle" && entry.product_name === "Skinny Blue Jeans")).toBe(true);
+    expect(bankSnapshot.some((entry) => entry.brand === "H&M" && entry.product_name === "Skinny Blue Jeans")).toBe(true);
   });
 });

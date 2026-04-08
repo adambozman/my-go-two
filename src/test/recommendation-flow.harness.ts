@@ -132,6 +132,15 @@ const tokenizeKeywords = (values: string[]) =>
     ),
   );
 
+const scoreBrandFit = (requestedBrand: string, candidateBrand: string) => {
+  const requested = tokenizeKeywords(ensureStringArray([requestedBrand]));
+  const candidate = tokenizeKeywords(ensureStringArray([candidateBrand]));
+  if (!requested.length || !candidate.length) return 0;
+  if (requested.join(" ") === candidate.join(" ")) return 25;
+  const overlap = requested.filter((keyword) => candidate.includes(keyword)).length;
+  return overlap > 0 ? 10 + overlap * 5 : 0;
+};
+
 const extractHarnessNegativePreferenceKeywords = (knowledgeResponses: Record<string, unknown>) => {
   const negatives = new Set(extractNegativePreferenceKeywords(knowledgeResponses));
 
@@ -292,17 +301,24 @@ export class RecommendationFlowHarness {
       const exactKeywordMatch = keywordSignature ? this.sharedBankBySignature.get(keywordSignature) ?? null : null;
       const exactFingerprintMatch = this.sharedBankByFingerprint.get(fingerprint) ?? null;
       const bestSimilarityMatch = Array.from(this.sharedBankByFingerprint.values())
-        .map((candidate) => ({
-          candidate,
-          score: scoreKeywordBankCandidate(
+        .map((candidate) => {
+          const overlap = descriptorKeywords.filter((keyword) => (candidate.descriptor_keywords ?? []).includes(keyword)).length;
+          const brandFit = scoreBrandFit(intent.brand, candidate.brand);
+          const score = scoreKeywordBankCandidate(
             intent.category,
             descriptorKeywords,
             primaryKeyword,
-              negativeKeywords,
-              candidate,
-            ),
-          }))
-        .filter((entry) => entry.score >= 70 && !hasNegativeKeywordConflict(entry.candidate))
+            negativeKeywords,
+            candidate,
+          );
+          return { candidate, score, overlap, brandFit };
+        })
+        .filter((entry) =>
+          entry.score >= 0 &&
+          entry.brandFit > 0 &&
+          !hasNegativeKeywordConflict(entry.candidate) &&
+          (entry.overlap >= 2 || (entry.overlap >= 1 && entry.brandFit >= 25))
+        )
         .sort((a, b) => b.score - a.score)[0]?.candidate ?? null;
 
       const existing = [exactKeywordMatch, exactFingerprintMatch, bestSimilarityMatch].find(
