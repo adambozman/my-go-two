@@ -156,7 +156,8 @@ function getFallbackImage(product: Product) {
 
 function hasResolvedProductImage(product: Product) {
   return Boolean(
-    product.source_kind === "specific-product" &&
+    product.source_kind &&
+    product.source_kind !== "brand-search" &&
     product.affiliate_url &&
     product.image_url &&
     /^https?:\/\//i.test(product.image_url),
@@ -174,7 +175,9 @@ function getProductImage(product: Product) {
 }
 
 function getProductMatchLabel(product: Product) {
-  return product.source_kind === "specific-product" ? "Exact Match" : "Search Match";
+  if (product.source_kind === "specific-product") return "Exact Match";
+  if (product.source_kind === "catalog-product") return "Catalog Match";
+  return "Search Match";
 }
 
 function getProductDestination(product: Product) {

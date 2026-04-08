@@ -103,6 +103,9 @@ const toProductCard = (
   resolved: SharedBankRecord,
 ): RecommendationCard => {
   const productUrl = resolved.link_kind === "product" ? resolved.link_url : null;
+  const sourceKind = productUrl
+    ? (resolved.exact_match_confirmed ? "specific-product" : "catalog-product")
+    : "brand-search";
   return {
     name: resolved.product_name,
     brand: resolved.brand,
@@ -117,7 +120,7 @@ const toProductCard = (
     product_query: resolved.search_query ?? `${resolved.brand} ${resolved.product_name}`.trim(),
     sponsored_id: null,
     image_url: productUrl ? resolved.image_url : null,
-    source_kind: productUrl ? "specific-product" : "brand-search",
+    source_kind: sourceKind,
     source_version: resolved.source_version,
   };
 };

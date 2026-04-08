@@ -212,7 +212,7 @@ const toResponseProduct = (intent: RecommendationIntent, bankRow: ProductBankRow
     product_query: fallback.search_query ?? intent.search_query ?? `${intent.brand} ${intent.name}`.trim(),
     sponsored_id: null,
     image_url: productUrl ? fallback.image_url ?? null : null,
-    source_kind: productUrl ? "specific-product" : "brand-search",
+    source_kind: productUrl ? "catalog-product" : "brand-search",
     source_version: GENERATION_VERSION,
   };
 };
