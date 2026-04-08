@@ -48,19 +48,19 @@ export default function Notifications() {
 
   useEffect(() => {
     fetchNotifications();
-    if (!subscribed) return;
+    if (!subscribed || !user) return;
 
     const channel = supabase
-      .channel("user-notifications")
+      .channel(`user-notifications:${user.id}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "notifications" },
+        { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
         () => fetchNotifications()
       )
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [fetchNotifications, subscribed]);
+  }, [fetchNotifications, subscribed, user]);
 
   const markAllRead = async () => {
     if (!user) return;

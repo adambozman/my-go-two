@@ -9,22 +9,49 @@ const DashboardLayout = () => {
   const { user, loading } = useAuth();
   const { toast } = useToast();
 
-  // Process stored invite link (from QR code signup flow)
+  // Process stored invite/token handoff after auth settles.
   useEffect(() => {
     if (!user) return;
-    const inviteId = localStorage.getItem("gotwo_invite");
-    if (!inviteId || inviteId === user.id) {
+
+    const storedToken = localStorage.getItem("gotwo_invite_token")?.trim() ?? "";
+    const storedInviteId = localStorage.getItem("gotwo_invite")?.trim() ?? "";
+
+    if (!storedToken && (!storedInviteId || storedInviteId === user.id)) {
+      localStorage.removeItem("gotwo_invite_token");
       localStorage.removeItem("gotwo_invite");
       return;
     }
-    supabase.functions.invoke("searchforaddprofile", {
-      body: { action: "link-by-inviter", inviter_id: inviteId },
-    }).then(({ error }) => {
+
+    let cancelled = false;
+
+    const actionBody = storedToken
+      ? { action: "link-by-token", token: storedToken }
+      : { action: "link-by-inviter", inviter_id: storedInviteId };
+
+    supabase.functions.invoke("searchforaddprofile", { body: actionBody }).then(({ data, error }) => {
+      localStorage.removeItem("gotwo_invite_token");
       localStorage.removeItem("gotwo_invite");
-      if (!error) {
-        toast({ title: "Connected!", description: "You're now linked with your connection." });
+
+      if (cancelled || error || data?.error) {
+        return;
       }
+
+      if (data?.status === "already_connected") {
+        toast({ title: "Already Connected", description: "You're already linked with this person." });
+        return;
+      }
+
+      if (data?.status === "pending_exists") {
+        toast({ title: "Invite Pending", description: "A connection invite is already pending." });
+        return;
+      }
+
+      toast({ title: "Connected!", description: "You're now linked with your connection." });
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, [toast, user]);
 
   if (loading) {
