@@ -32,6 +32,7 @@ interface Product {
 }
 
 const RECOMMENDATION_V2_VERSION = "recommendation-engine-v2";
+const LEGACY_RECOMMENDATION_VERSION = "ai-products";
 
 type RecommendationFavorite = {
   id: string;
@@ -92,6 +93,13 @@ const getRpcStatus = (error: unknown) =>
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Failed to load recommendations";
+
+const shouldFallbackToLegacyEngine = (error: unknown) => {
+  const status = getRpcStatus(error);
+  if (status === 404) return true;
+  const message = getErrorMessage(error).toLowerCase();
+  return message.includes("failed to send a request to the edge function");
+};
 
 const PILLARS = [
   { key: "all", label: "For You", matches: ["food", "clothes", "tech", "home"] },
@@ -228,6 +236,7 @@ const Recommendations = () => {
   const [generationVersion, setGenerationVersion] = useState<string | null>(null);
   const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
   const isUsingRebuiltEngine = generationVersion === RECOMMENDATION_V2_VERSION;
+  const isUsingLegacyEngine = generationVersion === LEGACY_RECOMMENDATION_VERSION;
 
   const activePillarConfig = useMemo(
     () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
@@ -250,7 +259,7 @@ const Recommendations = () => {
     setLoading(true);
     setLoadErrorMessage(null);
     try {
-      const activeFunction = RECOMMENDATION_V2_VERSION;
+      let activeFunction = RECOMMENDATION_V2_VERSION;
       let { data, error } = await supabase.functions.invoke(activeFunction, {
         body: forceRefresh ? { force_refresh: true } : {},
       });
@@ -263,6 +272,24 @@ const Recommendations = () => {
         });
         data = retry.data;
         error = retry.error;
+      }
+
+      if (error && shouldFallbackToLegacyEngine(error)) {
+        activeFunction = LEGACY_RECOMMENDATION_VERSION;
+        const fallback = await supabase.functions.invoke(activeFunction, {
+          body: forceRefresh ? { force_refresh: true } : {},
+        });
+        data = fallback.data;
+        error = fallback.error;
+
+        if (error && getRpcStatus(error) === 401) {
+          await supabase.auth.refreshSession();
+          const retryFallback = await supabase.functions.invoke(activeFunction, {
+            body: forceRefresh ? { force_refresh: true } : {},
+          });
+          data = retryFallback.data;
+          error = retryFallback.error;
+        }
       }
 
       if (error) throw error;
@@ -561,6 +588,11 @@ const Recommendations = () => {
                 {isUsingRebuiltEngine && (
                   <p className="surface-meta mt-1">
                     Powered by the rebuilt recommendation engine
+                  </p>
+                )}
+                {isUsingLegacyEngine && (
+                  <p className="surface-meta mt-1">
+                    Using the current live recommendation engine while the rebuilt engine is not yet deployed
                   </p>
                 )}
                 {isGuestPreview && (
