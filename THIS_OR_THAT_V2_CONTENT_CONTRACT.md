@@ -24,6 +24,7 @@ Current live runtime source:
 v2 content scaffold source:
 
 - `src/data/thisOrThatV2.ts`
+- `src/data/thisOrThatV2Authored.ts`
 
 ## Top-Level Alignment
 
@@ -107,6 +108,7 @@ The v2 scaffold keeps both sources visible through:
 
 - `source_kind = 'legacy-flat'`
 - `source_kind = 'bank-v1'`
+- `source_kind = 'authored-v2'`
 
 ## Scaffolding Exports
 

@@ -52,13 +52,28 @@ describe("This or That v2 answer contract", () => {
       THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD.every((question) => question.dataset_gender === "male"),
     ).toBe(true);
     expect(
-      THIS_OR_THAT_V2_DATASET_COVERAGE.male.some((row) => row.source_category_id === "brands-shopping" && row.question_count > 0),
+      THIS_OR_THAT_V2_DATASET_COVERAGE.male.some(
+        (row) =>
+          row.source_category_id === "brands-shopping" &&
+          row.question_count > 0 &&
+          row.source_kind === "authored-v2",
+      ),
     ).toBe(true);
     expect(
-      THIS_OR_THAT_V2_DATASET_COVERAGE.female.some((row) => row.source_category_id === "brands-shopping" && row.question_count === 0),
+      THIS_OR_THAT_V2_DATASET_COVERAGE.female.some(
+        (row) =>
+          row.source_category_id === "brands-shopping" &&
+          row.question_count > 0 &&
+          row.source_kind === "authored-v2",
+      ),
     ).toBe(true);
     expect(
-      THIS_OR_THAT_V2_DATASET_COVERAGE["non-binary"].some((row) => row.source_category_id === "brands-shopping" && row.question_count === 0),
+      THIS_OR_THAT_V2_DATASET_COVERAGE["non-binary"].some(
+        (row) =>
+          row.source_category_id === "brands-shopping" &&
+          row.question_count > 0 &&
+          row.source_kind === "authored-v2",
+      ),
     ).toBe(true);
   });
 });

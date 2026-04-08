@@ -6,6 +6,11 @@ import {
   type BrandBankQuestion,
   type ThisOrThatCategory,
 } from "./knowMeQuestions";
+import {
+  getThisOrThatV2AuthoredQuestions,
+  type ThisOrThatV2AuthoredCategoryId,
+  type ThisOrThatV2AuthoredQuestionSeed,
+} from "./thisOrThatV2Authored";
 
 export type ThisOrThatV2TopLevelCategorySlug =
   | "clothes"
@@ -31,7 +36,7 @@ export type ThisOrThatV2EntityKind =
   | "gift-preference"
   | "order-preference";
 
-export type ThisOrThatV2SourceKind = "legacy-flat" | "bank-v1";
+export type ThisOrThatV2SourceKind = "legacy-flat" | "bank-v1" | "authored-v2";
 
 export interface ThisOrThatV2TopLevelCategoryBlueprint {
   slug: ThisOrThatV2TopLevelCategorySlug;
@@ -92,6 +97,7 @@ export interface ThisOrThatV2DatasetCoverageRow {
   question_count: number;
   status: "live" | "coming-soon";
   top_level_category: ThisOrThatV2TopLevelCategorySlug | null;
+  source_kind: ThisOrThatV2SourceKind | "none";
 }
 
 export interface ThisOrThatV2AnswerRecord {
@@ -524,10 +530,77 @@ const buildQuestionScaffold = (
   };
 };
 
+const buildQuestionScaffoldFromAuthoredSeed = (
+  category: ThisOrThatCategory,
+  seed: ThisOrThatV2AuthoredQuestionSeed,
+): ThisOrThatV2QuestionScaffold | null => {
+  const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(category.id);
+  if (!blueprint) return null;
+
+  return {
+    question_id: seed.question_id,
+    source_category_id: category.id,
+    source_category_title: category.title,
+    source_kind: "authored-v2",
+    dataset_gender: seed.supported_genders[0] ?? "non-binary",
+    category_slug: blueprint.category_slug,
+    subcategory_slug: blueprint.subcategory_slug,
+    prompt: seed.prompt,
+    supported_genders: seed.supported_genders,
+    weight: blueprint.weight,
+    options: [
+      {
+        option_key: "A",
+        label: seed.options[0].label,
+        metadata: {
+          category_slug: blueprint.category_slug,
+          subcategory_slug: blueprint.subcategory_slug,
+          entity_kind: blueprint.entity_kind,
+          entity_slug: slugify(seed.options[0].label),
+          primary_keyword: normalizeKeyword(seed.options[0].primary_keyword),
+          descriptor_keywords: unique(seed.options[0].descriptor_keywords.map(normalizeKeyword)),
+          avoid_keywords: unique(seed.options[0].avoid_keywords?.map(normalizeKeyword) ?? []),
+          brand_keywords: unique(seed.options[0].brand_keywords?.map(normalizeKeyword) ?? []),
+          location_keywords: unique(seed.options[0].location_keywords?.map(normalizeKeyword) ?? []),
+          weight: seed.options[0].weight ?? blueprint.weight,
+        },
+      },
+      {
+        option_key: "B",
+        label: seed.options[1].label,
+        metadata: {
+          category_slug: blueprint.category_slug,
+          subcategory_slug: blueprint.subcategory_slug,
+          entity_kind: blueprint.entity_kind,
+          entity_slug: slugify(seed.options[1].label),
+          primary_keyword: normalizeKeyword(seed.options[1].primary_keyword),
+          descriptor_keywords: unique(seed.options[1].descriptor_keywords.map(normalizeKeyword)),
+          avoid_keywords: unique(seed.options[1].avoid_keywords?.map(normalizeKeyword) ?? []),
+          brand_keywords: unique(seed.options[1].brand_keywords?.map(normalizeKeyword) ?? []),
+          location_keywords: unique(seed.options[1].location_keywords?.map(normalizeKeyword) ?? []),
+          weight: seed.options[1].weight ?? blueprint.weight,
+        },
+      },
+    ],
+  };
+};
+
 export const buildThisOrThatV2QuestionScaffolds = (
   gender: Gender,
 ): ThisOrThatV2QuestionScaffold[] =>
   THIS_OR_THAT_CATEGORIES.flatMap((category) => {
+    const authoredQuestions = getThisOrThatV2AuthoredQuestions(
+      gender,
+      category.id as ThisOrThatV2AuthoredCategoryId,
+    );
+    if (authoredQuestions.length > 0) {
+      return authoredQuestions
+        .map((question) => buildQuestionScaffoldFromAuthoredSeed(category, question))
+        .filter(
+          (question): question is ThisOrThatV2QuestionScaffold => Boolean(question),
+        );
+    }
+
     const bank = getThisOrThatBank(category.id, gender);
     const linkedCategoriesByTitle = new Map(
       (bank?.categories ?? []).map((entry) => [entry.title, entry]),
@@ -546,16 +619,28 @@ export const buildThisOrThatV2DatasetCoverage = (
   gender: Gender,
 ): ThisOrThatV2DatasetCoverageRow[] =>
   THIS_OR_THAT_CATEGORIES.map((category) => {
+    const authoredQuestions = getThisOrThatV2AuthoredQuestions(
+      gender,
+      category.id as ThisOrThatV2AuthoredCategoryId,
+    );
     const bank = getThisOrThatBank(category.id, gender);
     const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(category.id);
+    const questionCount = authoredQuestions.length > 0 ? authoredQuestions.length : bank?.questions.length ?? 0;
+    const sourceKind: ThisOrThatV2DatasetCoverageRow["source_kind"] =
+      authoredQuestions.length > 0
+        ? "authored-v2"
+        : bank?.questions.length
+          ? blueprint?.source_kind ?? "bank-v1"
+          : "none";
 
     return {
       gender,
       source_category_id: category.id,
       source_category_title: category.title,
-      question_count: bank?.questions.length ?? 0,
+      question_count: questionCount,
       status: category.status,
       top_level_category: blueprint?.category_slug ?? null,
+      source_kind: sourceKind,
     };
   });
 
@@ -577,6 +662,7 @@ export const THIS_OR_THAT_V2_DATASET_COVERAGE = {
 export const THIS_OR_THAT_V2_CONTENT_SOURCES = {
   runtimeV1File: "src/data/knowMeQuestions.ts",
   contentContractFile: "src/data/thisOrThatV2.ts",
+  authoredDatasetFile: "src/data/thisOrThatV2Authored.ts",
   topLevelMyGoTwoSlugs: THIS_OR_THAT_V2_TOP_LEVEL_CATEGORIES.map(
     (category) => category.slug,
   ),
