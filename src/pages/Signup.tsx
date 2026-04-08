@@ -17,6 +17,7 @@ const getErrorMessage = (error: unknown) =>
 const Signup = () => {
   const [searchParams] = useSearchParams();
   const inviteId = searchParams.get("invite");
+  const inviteToken = searchParams.get("token");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -36,6 +37,9 @@ const Signup = () => {
       }));
       if (inviteId) {
         localStorage.setItem("gotwo_invite", inviteId);
+      }
+      if (inviteToken) {
+        localStorage.setItem("gotwo_invite_token", inviteToken);
       }
       toast({ title: "Check your email", description: "We sent you a confirmation link." });
       navigate("/login");

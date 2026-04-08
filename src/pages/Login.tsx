@@ -86,9 +86,14 @@ const Login = () => {
 
   useEffect(() => {
     const inviteId = searchParams.get("invite");
+    const inviteToken = searchParams.get("token");
     if (inviteId) {
       localStorage.setItem("gotwo_invite", inviteId);
       logAuthDiagnostic("login:stored-invite-id", { inviteId });
+    }
+    if (inviteToken) {
+      localStorage.setItem("gotwo_invite_token", inviteToken);
+      logAuthDiagnostic("login:stored-invite-token", { hasToken: true });
     }
   }, [searchParams]);
 
