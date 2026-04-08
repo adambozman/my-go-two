@@ -220,6 +220,9 @@ What is true right now:
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\dashboard\quick-saved-items.jpg`
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\dashboard\quick-their-brands.jpg`
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\dashboard\quick-their-sizes.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\previews\bg-bold-shapes.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\previews\bg-geometric.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\previews\bg-grain-spots.jpg`
 
 ### Deleted dev-only / screenshot artifacts
 
@@ -285,9 +288,10 @@ The correct direction is:
 1. Done: deleted stale logo files and stale dashboard quick-action images after verifying zero live references.
 2. Done: deleted repo-root screenshot/reference artifacts and Playwright capture folders after verifying they were not runtime assets.
 3. Done: verified that `spare`, `styles`, `templates`, and `previews` are active asset buckets and should not be bulk-deleted.
-4. Review those active asset buckets file by file to find truly unused individual assets.
-5. Done: deleted `output\diagnostics\rg-copy.exe` after verifying it had no runtime references and was just generated tooling output.
-6. Done: ignored local dev-run log artifacts such as `vite-dev*.log` and `output/*.log` so local browser/server checks do not keep polluting repo status.
+4. Done: deleted the three unreferenced extra preview backgrounds after confirming only `bg-clean-linen.jpg` is used in repo code.
+5. Review the remaining active asset buckets file by file to find truly unused individual assets.
+6. Done: deleted `output\diagnostics\rg-copy.exe` after verifying it had no runtime references and was just generated tooling output.
+7. Done: ignored local dev-run log artifacts such as `vite-dev*.log` and `output/*.log` so local browser/server checks do not keep polluting repo status.
 
 ### Photo Gallery
 
