@@ -195,6 +195,7 @@ const DashboardHome = () => {
 
     if (!userConnections?.length) {
       const now = new Date();
+      // TEST/DEMO fallback content so the calendar card is not empty in isolated environments.
       setMilestones([
         {
           id: "demo-1",

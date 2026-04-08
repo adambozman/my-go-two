@@ -3,7 +3,7 @@ import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContext } from "@/contexts/auth-context";
 
-// Dev account always treated as premium
+// DEV-ONLY override accounts. These are not real subscription checks.
 const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
 const DEV_EMAILS = ["adam.bozman@gmail.com"];
 const SUBSCRIPTION_CACHE_KEY = "gotwo_subscription_cache_v1";
@@ -88,6 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!accessToken || !activeUser) return;
 
     // Dev override — skip Stripe check
+    // DEV-ONLY override: skip Stripe subscription checks for known test accounts.
     if (DEV_USER_IDS.includes(activeUser.id) || DEV_EMAILS.includes(activeUser.email ?? "")) {
       setSubscribed(true);
       setSubscriptionEnd(null);

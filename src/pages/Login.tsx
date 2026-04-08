@@ -12,6 +12,7 @@ import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AppleSignInButton from "@/components/AppleSignInButton";
 import GoTwoText from "@/components/GoTwoText";
 
+// DEV-ONLY bypass accounts. These are not normal customer login paths.
 const DEV_EMAILS = ["adam.bozman@gmail.com"];
 
 const getErrorMessage = (error: unknown) =>
@@ -81,7 +82,7 @@ const Login = () => {
       }
 
       if (isDevEmail) {
-        // Dev bypass: instant sign-in via server-generated session
+        // DEV-ONLY bypass: instant sign-in via server-generated session.
         const { data, error } = await supabase.functions.invoke("dev-login", {
           body: { email: email.toLowerCase().trim() },
         });

@@ -32,6 +32,7 @@ interface UserSettingsRow {
   email_digests: boolean;
 }
 
+// TEST-ONLY response shape for reseeding fake connection accounts.
 interface TestProfileSeedUser {
   display_name?: string;
   email?: string;
@@ -489,7 +490,7 @@ const SettingsPage = () => {
                 {resettingTestProfiles ? "Resetting test profiles..." : "Reset 2 Test Profiles"}
               </Button>
               <p className="mt-2 text-xs text-center" style={{ color: "var(--swatch-text-light)" }}>
-                Resets Harper and Rowan as full test profiles for connection, delete, and share QA.
+                TEST-ONLY: resets Harper and Rowan as fake profiles for connection, delete, and share QA.
               </p>
             </div>
 
