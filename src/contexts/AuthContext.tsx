@@ -9,6 +9,7 @@ const DEV_EMAILS = ["adam.bozman@gmail.com"];
 const SUBSCRIPTION_CACHE_KEY = "gotwo_subscription_cache_v1";
 const SUBSCRIPTION_CACHE_TTL_MS = 5 * 60 * 1000;
 const SUBSCRIPTION_TIMEOUT_MS = 8000;
+const FOREGROUND_REFRESH_DEBOUNCE_MS = 1500;
 
 type SubscriptionCacheRecord = {
   userId: string;
@@ -67,6 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const mountedRef = useRef(true);
   const latestSubscriptionRequestRef = useRef(0);
   const signupDataAppliedForUserRef = useRef<string | null>(null);
+  const lastForegroundRefreshAtRef = useRef(0);
 
   const applySignupData = async (userId: string) => {
     if (signupDataAppliedForUserRef.current === userId) return;
@@ -90,9 +92,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const checkSubscription = useCallback(async () => {
+  const runSubscriptionCheck = useCallback(async (
+    options?: { forceRefresh?: boolean; silent?: boolean }
+  ) => {
     const accessToken = session?.access_token ?? null;
     const activeUser = session?.user ?? user;
+    const forceRefresh = options?.forceRefresh ?? false;
+    const silent = options?.silent ?? false;
     if (!accessToken || !activeUser) return;
 
     // Dev override — skip Stripe check
@@ -110,7 +116,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    const cached = readSubscriptionCache(activeUser.id);
+    const cached = forceRefresh ? null : readSubscriptionCache(activeUser.id);
     if (cached) {
       setSubscribed(cached.subscribed);
       setSubscriptionEnd(cached.subscriptionEnd);
@@ -120,7 +126,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const requestId = latestSubscriptionRequestRef.current + 1;
     latestSubscriptionRequestRef.current = requestId;
-    setSubscriptionLoading(true);
+    if (!silent) {
+      setSubscriptionLoading(true);
+    }
 
     try {
       const result = await Promise.race([
@@ -156,6 +164,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     }
   }, [session, user]);
+
+  const checkSubscription = useCallback(async () => {
+    await runSubscriptionCheck({ forceRefresh: true });
+  }, [runSubscriptionCheck]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -197,22 +209,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Check subscription when session changes
   useEffect(() => {
     if (session?.access_token) {
-      void checkSubscription();
+      void runSubscriptionCheck();
     } else {
       setSubscribed(false);
       setSubscriptionEnd(null);
       setSubscriptionLoading(false);
     }
-  }, [session?.access_token, checkSubscription]);
+  }, [session?.access_token, runSubscriptionCheck]);
 
-  // Auto-refresh subscription every 60s
   useEffect(() => {
     if (!session?.access_token) return;
-    const interval = window.setInterval(() => {
-      void checkSubscription();
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [session?.access_token, checkSubscription]);
+
+    const refreshOnForeground = () => {
+      if (document.visibilityState === "hidden") return;
+
+      const now = Date.now();
+      if (now - lastForegroundRefreshAtRef.current < FOREGROUND_REFRESH_DEBOUNCE_MS) {
+        return;
+      }
+
+      lastForegroundRefreshAtRef.current = now;
+      void runSubscriptionCheck({ forceRefresh: true, silent: true });
+    };
+
+    window.addEventListener("focus", refreshOnForeground);
+    document.addEventListener("visibilitychange", refreshOnForeground);
+
+    return () => {
+      window.removeEventListener("focus", refreshOnForeground);
+      document.removeEventListener("visibilitychange", refreshOnForeground);
+    };
+  }, [session?.access_token, runSubscriptionCheck]);
 
   const signUp = async (email: string, password: string, displayName: string) => {
     const { error } = await supabase.auth.signUp({

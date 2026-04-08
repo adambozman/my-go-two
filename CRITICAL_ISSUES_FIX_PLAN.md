@@ -116,6 +116,7 @@ The audits consistently point here as the likely source of login bounce and rout
 
 - Done: removed the redundant `My Go Two` leaf guard so the dashboard shell owns that route.
 - Done: stabilized subscription state for cache-hit/dev-override/sign-out paths so stale `subscriptionLoading` does not linger across session changes.
+- Done: replaced the 60-second global subscription poll with explicit refresh plus foreground revalidation when the app becomes active again.
 - Remaining: wider auth/subscription lifecycle separation, temporary diagnostics, and visual pass across login/refresh transitions.
 
 ### Files
@@ -156,6 +157,7 @@ This is a core product loop and is currently incomplete for token-based logged-o
 
 - Done: `DashboardLayout` now consumes both `gotwo_invite` and `gotwo_invite_token`, prefers token handoff first, and clears invite keys intentionally after processing.
 - Done: post-login token handoff now shows the correct pending-invite messaging and surfaces invalid/expired token errors instead of silently swallowing them.
+- Done: Settings now exposes the native invite share sheet alongside QR/email so the existing link flow can be sent through text/phone/WhatsApp on supported devices.
 - Remaining: full visual retest across all inviter/token logged-in/logged-out entry combinations.
 
 ### Files
