@@ -235,8 +235,12 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
+    });
+    const admin = createClient(supabaseUrl, supabaseServiceRoleKey, {
+      auth: { persistSession: false },
     });
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -472,7 +476,7 @@ Use the provided tool.`;
               intent.recommendation_kind,
             );
 
-            const { data: existing } = await supabase
+            const { data: existing } = await admin
               .from("resolved_recommendation_catalog")
               .select("fingerprint, brand, product_name, category, recommendation_kind, link_kind, link_url, search_query, price, image_url, source_version, resolver_source, usage_count")
               .eq("fingerprint", fingerprint)
@@ -481,14 +485,14 @@ Use the provided tool.`;
             const resolved = existing ?? resolveIntentToCatalogEntry(intent);
 
             if (!existing) {
-              await supabase.from("resolved_recommendation_catalog").upsert(resolved, {
+              await admin.from("resolved_recommendation_catalog").upsert(resolved, {
                 onConflict: "fingerprint",
               });
             } else {
               const usageCount = typeof (existing as Record<string, unknown>).usage_count === "number"
                 ? (existing as Record<string, unknown>).usage_count as number
                 : 0;
-              await supabase
+              await admin
                 .from("resolved_recommendation_catalog")
                 .update({ usage_count: usageCount + 1 })
                 .eq("fingerprint", fingerprint);

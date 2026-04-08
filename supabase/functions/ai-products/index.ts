@@ -298,12 +298,17 @@ serve(async (req) => {
 
     const supabaseUrl = getRequiredEnv("SUPABASE_URL");
     const supabaseAnonKey = getRequiredEnv("SUPABASE_ANON_KEY");
+    const supabaseServiceRoleKey = getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
 
     let supabase: SupabaseClient;
+    let admin: SupabaseClient;
     let user: User | null = null;
     try {
       supabase = createClient(supabaseUrl, supabaseAnonKey, {
         global: { headers: { Authorization: authHeader } },
+      });
+      admin = createClient(supabaseUrl, supabaseServiceRoleKey, {
+        auth: { persistSession: false },
       });
       const { data, error: authError } = await supabase.auth.getUser();
       if (authError || !data?.user) throw new Error(authError?.message ?? "No user");
@@ -466,7 +471,7 @@ Use the provided tool.`;
               intent.recommendation_kind,
             );
 
-            const { data: existing } = await supabase
+            const { data: existing } = await admin
               .from("resolved_recommendation_catalog")
               .select("fingerprint, brand, product_name, category, recommendation_kind, link_kind, link_url, search_query, price, image_url, source_version, resolver_source, usage_count")
               .eq("fingerprint", fingerprint)
@@ -488,11 +493,11 @@ Use the provided tool.`;
                 link_kind: finalProductUrl ? "product" : resolved.link_kind,
                 resolver_source: scraped?.product_url ? "firecrawl" : resolved.resolver_source,
               };
-              await supabase.from("resolved_recommendation_catalog").upsert(enrichedResolved, {
+              await admin.from("resolved_recommendation_catalog").upsert(enrichedResolved, {
                 onConflict: "fingerprint",
               });
             } else {
-              await supabase
+              await admin
                 .from("resolved_recommendation_catalog")
                 .update({
                   usage_count: getUsageCount(existing) + 1,
