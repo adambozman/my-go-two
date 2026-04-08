@@ -10,6 +10,7 @@ Source material consolidated into this handoff:
 
 - `.lovable/plan.md`
 - `CRITICAL_ISSUES_FIX_PLAN.md`
+- `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md`
 - `MY_GO_TWO_OVERHAUL_PLAN.md`
 - `LINT_AUDIT.md`
 - `audit/agent-reports/Atlas/INDEX.md`
@@ -307,6 +308,10 @@ When making changes:
 ## What Still Needs To Be Done
 
 See `CRITICAL_ISSUES_FIX_PLAN.md` for the consolidated fix plan.
+
+For the recommendation rebuild specifically, use:
+
+- `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md`
 
 The shortest version is:
 

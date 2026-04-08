@@ -306,44 +306,94 @@ The audits repeatedly flagged drift between bucket privacy in migrations and fro
 - `src/lib/storageRefs.ts`
 - storage-related migrations in `supabase/migrations`
 
-## P1: Recommendations Trust And Persistence
+## P1: Recommendation System Replacement
 
 ### Why this matters
 
-Recommendations are user-facing and currently have "demo-feeling" gaps.
+The current recommendation stack is functional enough to keep the live product running, but it is not the long-term architecture.
 
-### Current documented gaps
+It currently mixes:
 
-1. `save` is local-only
-2. `share` is toast-only
-3. `resolved_recommendation_catalog` is too writable
-4. product image behavior is mixed between resolved URLs and local banks
+- user preference inputs
+- keyword and brand guidance
+- curated fallback catalog logic
+- exact product resolution
+- shared reusable product memory
+- weekly user caches
+- connection-specific reuse rules
+- frontend display fallback behavior
+
+That makes it too easy to keep patching a system that should instead be replaced cleanly.
+
+### Source of truth
+
+Use `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md` as the architecture and sequencing guide for this work.
+
+Treat the current recommendation stack as a bridge system until the replacement is built and verified.
+
+### Replacement goals
+
+1. Use all meaningful user input:
+   - This or That answers
+   - Know Me answers
+   - product cards
+   - birthday / anniversary / location
+   - explicit likes
+   - explicit dislikes
+   - future category cards
+2. Remove frontend image-bank behavior from the final recommendation product flow.
+3. Separate keyword intelligence from exact reusable product records.
+4. Keep user-specific weekly output separate from the shared product bank.
+5. Store only exact confirmed product rows in the shared reusable bank.
+
+### Replacement layers
+
+1. user preference signals
+2. recommendation keyword bank
+3. recommendation product bank
+4. user weekly recommendation output
 
 ### Progress
 
+- Done: full top-to-bottom recommendation-path research across frontend, edge functions, helpers, migrations, Knowledge Center inputs, connection context, Firecrawl resolver, and shared/global table roles.
 - Done: recommendation saves now persist in `user_preferences.favorites.recommendations`, load back on refresh, and rollback cleanly on failed writes instead of behaving like local-only demo state.
 - Done: recommendation share now uses the native share sheet when available and falls back to copying a real share message to the clipboard, so it no longer acts like a toast-only placeholder.
 - Done: successful recommendation shares now also persist lightweight share history in `user_preferences.favorites.shared_recommendations`, so the action leaves a durable user-owned artifact instead of disappearing after the device handoff.
 - Done: `resolved_recommendation_catalog` writes now run through service-role edge-function clients, and authenticated-user insert/update policies are removed so the shared catalog is no longer directly writable from the client.
-- Done: recommendation cards now only use resolved remote product photos for true exact-product matches; broader search-style matches consistently fall back to the curated local image banks instead of mixing in unstable scraped imagery.
-- Done: `ai-products` now requires AI-generated recommendation keywords, checks the shared website-level product bank by keyword signature before scraping, and only runs Firecrawl for bank misses.
-- Done: shared recommendation catalog records now store product-only keyword bank fields (`intent_keywords`, `keyword_signature`, `scraped_description`) so reusable product data can be found without storing any user information.
-- Done: `ai-connection-products` now also requires AI-generated recommendation keywords, checks the shared product bank by keyword signature before scraping, and only uses Firecrawl on misses so connection gifting can reuse existing website-level product data too.
-- Done: both recommendation pipelines now only promote Firecrawl results into exact product records when title, link, image, and price confidence all pass; exact-confirmed bank rows store the verified link, image, price, scraped description, scraped title, keywords, and match confidence, while weak scrapes stay search fallbacks instead of poisoning the shared bank.
-- Remaining: there is still no explicit sent-to-recipient tracking path for recommendation sharing beyond the user's own share history.
+- Done: created `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md` as the replacement architecture plan.
+- Remaining: schema design, input-system contracts, replacement engine implementation, staged cutover, and post-cutover deletion of legacy recommendation code.
 
 ### Fixes required
 
-1. Decide what save/share really means and persist it.
-2. Tighten the global catalog ownership boundary.
-3. Keep weekly caching, but make the trust boundary real.
-4. Normalize how recommendation images are sourced.
+1. Finish the architecture/spec work.
+2. Normalize the unfinished input systems:
+   - This or That v2
+   - Product Cards v2
+   - Likes / Dislikes
+   - future Category Cards support
+3. Build the new keyword-bank and exact-product-bank schema.
+4. Build the new recommendation engine beside the current one.
+5. Run parallel verification.
+6. Cut the frontend over only after the new engine is verified.
+7. Delete legacy recommendation code only after cutover.
+
+### Important constraints
+
+1. Do not keep broadening the current recommender with more permanent logic if that same work belongs in the replacement system.
+2. Do not delete the live recommender before the replacement exists.
+3. Do not treat the current keyword/brand guidance banks as the final exact-product bank.
+4. Do not treat `weekly_recommendations` as the shared reusable product bank.
 
 ### Files
 
 - `src/pages/dashboard/Recommendations.tsx`
 - `supabase/functions/ai-products/index.ts`
+- `supabase/functions/ai-connection-products/index.ts`
+- `supabase/functions/_shared/knowledgeCenter.ts`
+- `supabase/functions/_shared/knowMeCatalog.ts`
+- `supabase/functions/_shared/exactProductScraper.ts`
 - recommendation-related migrations
+- `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md`
 
 ## P1: Large Overloaded Product Surfaces
 
