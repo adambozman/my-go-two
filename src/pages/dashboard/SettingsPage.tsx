@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+﻿import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { normalizeGender } from "@/lib/gender";
 import { QRCodeSVG } from "qrcode.react";

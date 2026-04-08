@@ -362,6 +362,11 @@ These are not always "security critical", but they hurt product trust and should
 3. corrupted unicode copy in user-facing text
 4. premium gating that can hide notifications based on unstable subscription state
 
+### Progress
+
+- Done: fixed corrupted user-facing copy on the live Settings, Signup, Forgot Password, Recommendations, and Know Me category-card surfaces so broken placeholder bullets, back-nav labels, timestamp separators, recommendation meta text, and category accents no longer render as mojibake.
+- Remaining: internal/admin mojibake still exists in `SponsoredAdmin.tsx` and should be cleaned separately without changing runtime behavior.
+
 ## P2: Docs And Status File Cleanup
 
 ### Problems

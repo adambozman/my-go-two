@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useKnowledgeCenter } from "@/contexts/knowledge-center-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
