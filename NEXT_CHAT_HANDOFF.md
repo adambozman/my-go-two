@@ -237,6 +237,22 @@ What is true right now:
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\flowers-roses.jpg`
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\flowers-sunflowers.jpg`
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\flowers-tulips.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\date-ideas.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\date-indoor.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\date-outdoor.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\date-romantic.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\event-comedy.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\event-concerts.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\event-gallery.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\event-movies.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\event-museum.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\event-nightlife.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\event-sports.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\event-theater-live.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\event-theater.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\nightlife-bar.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\nightlife-club.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\nightlife-karaoke.jpg`
 
 ### Deleted dev-only / screenshot artifacts
 
@@ -304,9 +320,10 @@ The correct direction is:
 3. Done: verified that `spare`, `styles`, `templates`, and `previews` are active asset buckets and should not be bulk-deleted.
 4. Done: deleted the three unreferenced extra preview backgrounds after confirming only `bg-clean-linen.jpg` is used in repo code.
 5. Done: deleted the unreferenced `accessory-*` and `flowers*` template JPGs after confirming they had zero code imports.
-6. Review the remaining active asset buckets file by file to find truly unused individual assets.
-7. Done: deleted `output\diagnostics\rg-copy.exe` after verifying it had no runtime references and was just generated tooling output.
-8. Done: ignored local dev-run log artifacts such as `vite-dev*.log` and `output/*.log` so local browser/server checks do not keep polluting repo status.
+6. Done: deleted the unreferenced `date-*`, `event-*`, and `nightlife-*` template JPGs after confirming they had zero code imports and did not feed the live recommendations route.
+7. Review the remaining active asset buckets file by file to find truly unused individual assets.
+8. Done: deleted `output\diagnostics\rg-copy.exe` after verifying it had no runtime references and was just generated tooling output.
+9. Done: ignored local dev-run log artifacts such as `vite-dev*.log` and `output/*.log` so local browser/server checks do not keep polluting repo status.
 
 ### Photo Gallery
 
