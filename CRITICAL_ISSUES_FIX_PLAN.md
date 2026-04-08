@@ -75,6 +75,7 @@ This is the most protected surface in the repo and the handoff repeatedly treats
 - Done: changed the stage hydrator to keep already-loaded preview strips visible when a full transformed strip image misses.
 - Done: added strip-level diagnostics when a full transformed image falls back instead of silently blanking.
 - Done: added a dev-only runtime notice for `My Go Two` strip fallback events so local verification exposes transform failures without changing the production stage behavior.
+- Done: centralized the active `My Go Two` gender key so the stage loader and the live slot editor query the same source instead of duplicating `"male"` in separate files.
 - Remaining: category-by-category visual validation and any further loader tuning that shows up during real browser review.
 
 ### Files
