@@ -67,6 +67,8 @@ interface Product {
   source_version?: string;
 }
 
+const RECOMMENDATION_V2_VERSION = "recommendation-engine-v2";
+
 type RecommendationFavorite = {
   id: string;
   name: string;
@@ -161,8 +163,13 @@ function hasResolvedProductImage(product: Product) {
   );
 }
 
+function shouldUseLegacyImageBank(product: Product) {
+  return product.source_version !== RECOMMENDATION_V2_VERSION;
+}
+
 function getProductImage(product: Product) {
   if (hasResolvedProductImage(product)) return product.image_url!;
+  if (!shouldUseLegacyImageBank(product)) return null;
   return getFallbackImage(product);
 }
 
@@ -230,6 +237,7 @@ const Recommendations = () => {
   const [sharingItems, setSharingItems] = useState<Set<string>>(new Set());
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [isCached, setIsCached] = useState(false);
+  const [generationVersion, setGenerationVersion] = useState<string | null>(null);
 
   const activePillarConfig = useMemo(
     () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
@@ -251,18 +259,28 @@ const Recommendations = () => {
     async (forceRefresh = false) => {
     setLoading(true);
     try {
-      let { data, error } = await supabase.functions.invoke("ai-products", {
+      let activeFunction = "recommendation-engine-v2";
+      let { data, error } = await supabase.functions.invoke(activeFunction, {
         body: forceRefresh ? { force_refresh: true } : {},
       });
 
       // If session expired, refresh and retry once
       if (error && getRpcStatus(error) === 401) {
         await supabase.auth.refreshSession();
-        const retry = await supabase.functions.invoke("ai-products", {
+        const retry = await supabase.functions.invoke(activeFunction, {
           body: forceRefresh ? { force_refresh: true } : {},
         });
         data = retry.data;
         error = retry.error;
+      }
+
+      if (error && getRpcStatus(error) !== 401) {
+        activeFunction = "ai-products";
+        const fallback = await supabase.functions.invoke(activeFunction, {
+          body: forceRefresh ? { force_refresh: true } : {},
+        });
+        data = fallback.data;
+        error = fallback.error;
       }
 
       if (error) throw error;
@@ -270,6 +288,7 @@ const Recommendations = () => {
         setProducts(data.products);
         setGeneratedAt(data.generated_at ?? null);
         setIsCached(Boolean(data.cached));
+        setGenerationVersion(typeof data.generation_version === "string" ? data.generation_version : activeFunction);
         setCurrentPage(1);
       }
     } catch (error: unknown) {
@@ -544,6 +563,11 @@ const Recommendations = () => {
                     {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
                   </p>
                 )}
+                {generationVersion === RECOMMENDATION_V2_VERSION && (
+                  <p className="surface-meta mt-1">
+                    Powered by the rebuilt recommendation engine
+                  </p>
+                )}
                 {isDev && (
                   <Button
                     size="sm"
@@ -666,6 +690,8 @@ function ProductCard({
   onShare: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const productImage = getProductImage(product);
+  const showLegacyFallback = shouldUseLegacyImageBank(product);
 
   return (
     <motion.div
@@ -677,17 +703,30 @@ function ProductCard({
     >
       <Card variant="sand" className="relative flex h-full flex-col overflow-hidden">
         <div className="relative h-[200px] overflow-hidden sm:h-[220px]">
-          <img
-            src={getProductImage(product)}
-            alt={product.name}
-            className="h-full w-full object-cover"
-            onError={(e) => {
-              const fallback = getFallbackImage(product);
-              if ((e.target as HTMLImageElement).src !== fallback) {
-                (e.target as HTMLImageElement).src = fallback;
-              }
-            }}
-          />
+          {productImage ? (
+            <img
+              src={productImage}
+              alt={product.name}
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                if (!showLegacyFallback) return;
+                const fallback = getFallbackImage(product);
+                if ((e.target as HTMLImageElement).src !== fallback) {
+                  (e.target as HTMLImageElement).src = fallback;
+                }
+              }}
+            />
+          ) : (
+            <div className="flex h-full w-full items-end bg-[linear-gradient(135deg,#f3ecdf_0%,#ece3d1_100%)] p-4">
+              <div className="max-w-[80%] rounded-2xl bg-white/70 px-3 py-2 backdrop-blur-sm">
+                <p className="surface-meta">{product.brand}</p>
+                <p className="surface-heading-md mt-1">{product.name}</p>
+                <p className="surface-meta mt-2">
+                  {product.source_kind === "specific-product" ? "Exact Match" : "Search Match"}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="p-5 pt-4 flex flex-col gap-3">
