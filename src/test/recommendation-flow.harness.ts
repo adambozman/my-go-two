@@ -10,7 +10,10 @@ import {
   scoreKeywordBankCandidate,
   type RecommendationIntent,
 } from "../../supabase/functions/_shared/knowMeCatalog.ts";
-import { buildProductBankInsertFromExactScrape } from "../../supabase/functions/_shared/recommendationProductBank.ts";
+import {
+  buildProductBankInsertFromExactScrape,
+  scoreProductBankReuseCandidate,
+} from "../../supabase/functions/_shared/recommendationProductBank.ts";
 
 export type ScrapedProduct = {
   image_url: string | null;
@@ -132,15 +135,6 @@ const tokenizeKeywords = (values: string[]) =>
       ),
     ),
   );
-
-const scoreBrandFit = (requestedBrand: string, candidateBrand: string) => {
-  const requested = tokenizeKeywords(ensureStringArray([requestedBrand]));
-  const candidate = tokenizeKeywords(ensureStringArray([candidateBrand]));
-  if (!requested.length || !candidate.length) return 0;
-  if (requested.join(" ") === candidate.join(" ")) return 25;
-  const overlap = requested.filter((keyword) => candidate.includes(keyword)).length;
-  return overlap > 0 ? 10 + overlap * 5 : 0;
-};
 
 const extractHarnessNegativePreferenceKeywords = (knowledgeResponses: Record<string, unknown>) => {
   const negatives = new Set(extractNegativePreferenceKeywords(knowledgeResponses));
@@ -303,22 +297,27 @@ export class RecommendationFlowHarness {
       const exactFingerprintMatch = this.sharedBankByFingerprint.get(fingerprint) ?? null;
       const bestSimilarityMatch = Array.from(this.sharedBankByFingerprint.values())
         .map((candidate) => {
-          const overlap = descriptorKeywords.filter((keyword) => (candidate.descriptor_keywords ?? []).includes(keyword)).length;
-          const brandFit = scoreBrandFit(intent.brand, candidate.brand);
-          const score = scoreKeywordBankCandidate(
+          const reuse = scoreProductBankReuseCandidate({
+            category: intent.category,
+            primaryKeyword,
+            descriptorKeywords,
+            requestedBrand: intent.brand,
+            row: candidate,
+          });
+          const legacyScore = scoreKeywordBankCandidate(
             intent.category,
             descriptorKeywords,
             primaryKeyword,
             negativeKeywords,
             candidate,
           );
-          return { candidate, score, overlap, brandFit };
+          return { candidate, score: reuse.score, legacyScore, ...reuse };
         })
         .filter((entry) =>
-          entry.score >= 0 &&
-          entry.brandFit > 0 &&
+          entry.legacyScore >= 0 &&
+          entry.eligible &&
           !hasNegativeKeywordConflict(entry.candidate) &&
-          (entry.overlap >= 2 || (entry.overlap >= 1 && entry.brandFit >= 25))
+          !entry.descriptorConflict
         )
         .sort((a, b) => b.score - a.score)[0]?.candidate ?? null;
 

@@ -11,7 +11,10 @@ import {
 } from "../_shared/knowMeCatalog.ts";
 import { scrapeExactProductWithFirecrawl } from "../_shared/exactProductScraper.ts";
 import { buildCatalogAiAdapter, fetchKnowledgeCenterState } from "../_shared/knowledgeCenter.ts";
-import { buildProductBankInsertFromExactScrape } from "../_shared/recommendationProductBank.ts";
+import {
+  buildProductBankInsertFromExactScrape,
+  scoreProductBankReuseCandidate,
+} from "../_shared/recommendationProductBank.ts";
 import {
   buildNormalizedRecommendationState,
   buildRecommendationSignalSummary,
@@ -112,16 +115,6 @@ const getWeekStartKey = (value = new Date()) => {
   return weekStart.toISOString().slice(0, 10);
 };
 
-const hashDescriptorOverlap = (needles: string[], haystack: string[]) => {
-  const needleSet = new Set(needles);
-  const haystackSet = new Set(haystack);
-  let matches = 0;
-  for (const keyword of needleSet) {
-    if (haystackSet.has(keyword)) matches += 1;
-  }
-  return matches;
-};
-
 const hasExactKeywordSignature = (
   category: RecommendationIntent["category"],
   primaryKeyword: string,
@@ -130,17 +123,6 @@ const hasExactKeywordSignature = (
 ) => {
   const requestedSignature = buildKeywordSignature(category, primaryKeyword, descriptorKeywords);
   return Boolean(requestedSignature && row.keyword_signature === requestedSignature);
-};
-
-const scoreBrandFit = (requestedBrand: string, candidateBrand: string) => {
-  const requested = normalizeRecommendationKeywords([requestedBrand]);
-  const candidate = normalizeRecommendationKeywords([candidateBrand]);
-  if (!requested.length || !candidate.length) return 0;
-  const requestedJoined = requested.join(" ");
-  const candidateJoined = candidate.join(" ");
-  if (requestedJoined === candidateJoined) return 25;
-  const overlap = hashDescriptorOverlap(requested, candidate);
-  return overlap > 0 ? 10 + overlap * 5 : 0;
 };
 
 const hasDislikeConflict = (intentKeywords: string[], negativeKeywords: string[], row: ProductBankRow) => {
@@ -174,20 +156,21 @@ const findBestProductBankMatch = async (
     .eq("exact_match_confirmed", true)
     .limit(50);
 
-  const rows = Array.isArray(data) ? (data as ProductBankRow[]) : [];
+    const rows = Array.isArray(data) ? (data as ProductBankRow[]) : [];
   const ranked = rows
     .filter((row) => !hasDislikeConflict(descriptorKeywords, negativeKeywords, row))
     .map((row) => {
-      const overlap = hashDescriptorOverlap(descriptorKeywords, row.descriptor_keywords ?? []);
+      const reuse = scoreProductBankReuseCandidate({
+        category,
+        primaryKeyword,
+        descriptorKeywords,
+        requestedBrand,
+        row,
+      });
       const exactSignature = hasExactKeywordSignature(category, primaryKeyword, descriptorKeywords, row);
-      const brandFit = scoreBrandFit(requestedBrand, row.brand);
-      const confidence = Math.min(Number(row.match_confidence) || 0, 100);
-      const score = (exactSignature ? 1000 : 0) + (overlap * 30) + brandFit + Math.round(confidence * 0.2);
-      return { row, score, overlap, brandFit, exactSignature };
+      return { row, ...reuse, exactSignature };
     })
-    .filter((entry) =>
-      entry.brandFit > 0 && (entry.exactSignature || entry.overlap >= 2 || (entry.overlap >= 1 && entry.brandFit >= 25))
-    )
+    .filter((entry) => entry.eligible)
     .sort((a, b) => b.score - a.score)[0];
 
   return ranked?.row ?? null;

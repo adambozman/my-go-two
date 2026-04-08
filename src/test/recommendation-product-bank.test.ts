@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildProductBankInsertFromExactScrape, isBankableExactProductScrape } from "../../supabase/functions/_shared/recommendationProductBank.ts";
+import {
+  buildProductBankInsertFromExactScrape,
+  hasExclusiveDescriptorConflict,
+  isBankableExactProductScrape,
+  scoreProductBankReuseCandidate,
+} from "../../supabase/functions/_shared/recommendationProductBank.ts";
 import type { RecommendationIntent } from "../../supabase/functions/_shared/knowMeCatalog.ts";
 
 const jeansIntent: RecommendationIntent = {
@@ -97,5 +102,33 @@ describe("recommendation product bank admission", () => {
         sourceVersion: "recommendation-engine-v2",
       }),
     ).toBeNull();
+  });
+
+  it("blocks reuse when same-bucket descriptors conflict on exact product variants", () => {
+    expect(
+      hasExclusiveDescriptorConflict(
+        ["american eagle", "skinny", "blue jeans"],
+        ["american eagle", "straight", "blue jeans"],
+      ),
+    ).toBe(true);
+
+    const reuse = scoreProductBankReuseCandidate({
+      category: "clothes",
+      primaryKeyword: "jeans",
+      descriptorKeywords: ["american eagle", "skinny", "blue jeans"],
+      requestedBrand: "American Eagle",
+      row: {
+        primary_keyword: "jeans",
+        descriptor_keywords: ["american eagle", "straight", "blue jeans"],
+        keyword_signature: "clothes::jeans::american eagle::straight::blue jeans",
+        category: "clothes",
+        brand: "American Eagle",
+        product_title: "American Eagle Straight Blue Jeans",
+        match_confidence: 100,
+      },
+    });
+
+    expect(reuse.descriptorConflict).toBe(true);
+    expect(reuse.eligible).toBe(false);
   });
 });

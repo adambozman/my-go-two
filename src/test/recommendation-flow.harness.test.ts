@@ -386,3 +386,51 @@ describe("primary keyword bucket brand separation", () => {
     expect(bankSnapshot.some((entry) => entry.brand === "H&M" && entry.product_name === "Skinny Blue Jeans")).toBe(true);
   });
 });
+
+describe("primary keyword bucket descriptor separation", () => {
+  it("does not reuse a same-brand jeans product when fit descriptors conflict", async () => {
+    const harness = new RecommendationFlowHarness({
+      generateIntents: (context) =>
+        context.userId === "seed-fit-user"
+          ? [harperWeeklyFixture.weeklyIntents[0]]
+          : [
+              {
+                ...harperWeeklyFixture.weeklyIntents[0],
+                brand: "American Eagle",
+                name: "Straight Blue Jeans",
+                search_query: "American Eagle straight blue jeans",
+                keywords: ["american eagle", "straight", "blue jeans", "denim", "clothes"],
+              },
+            ],
+      scrapeProduct: (intent: RecommendationIntent) =>
+        SCRAPE_FIXTURES[`${intent.brand} ${intent.name}`] ?? null,
+    });
+
+    await harness.runWeekly({
+      userId: "seed-fit-user",
+      weekStartKey: "2026-04-06",
+      knowledgeResponses: harperWeeklyFixture.knowledgeResponses,
+      sharedCards: harperWeeklyFixture.sharedCards,
+      yourVibe: harperWeeklyFixture.yourVibe,
+    });
+
+    const secondRun = await harness.runWeekly({
+      userId: "straight-fit-user",
+      weekStartKey: "2026-04-13",
+      knowledgeResponses: harperWeeklyFixture.knowledgeResponses,
+      sharedCards: harperWeeklyFixture.sharedCards,
+      yourVibe: harperWeeklyFixture.yourVibe,
+    });
+
+    expect(secondRun.bankHits).toBe(0);
+    expect(secondRun.bankMisses).toBe(1);
+    expect(secondRun.firecrawlCalls).toBe(2);
+    expect(secondRun.products[0]?.brand).toBe("American Eagle");
+    expect(secondRun.products[0]?.name).toBe("Straight Blue Jeans");
+    expect(secondRun.products[0]?.affiliate_url).toBe("https://www.ae.com/us/en/p/straight-blue-jeans");
+
+    const bankSnapshot = harness.snapshotBank();
+    expect(bankSnapshot.some((entry) => entry.brand === "American Eagle" && entry.product_name === "Skinny Blue Jeans")).toBe(true);
+    expect(bankSnapshot.some((entry) => entry.brand === "American Eagle" && entry.product_name === "Straight Blue Jeans")).toBe(true);
+  });
+});
