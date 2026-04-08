@@ -134,8 +134,17 @@ function getFallbackImage(product: Product) {
   return bank[hash % bank.length];
 }
 
+function hasResolvedProductImage(product: Product) {
+  return Boolean(
+    product.source_kind === "specific-product" &&
+    product.affiliate_url &&
+    product.image_url &&
+    /^https?:\/\//i.test(product.image_url),
+  );
+}
+
 function getProductImage(product: Product) {
-  if (product.image_url) return product.image_url;
+  if (hasResolvedProductImage(product)) return product.image_url!;
   return getFallbackImage(product);
 }
 
@@ -590,7 +599,12 @@ function ProductCard({
             src={getProductImage(product)}
             alt={product.name}
             className="h-full w-full object-cover"
-            onError={(e) => { (e.target as HTMLImageElement).src = getFallbackImage(product); }}
+            onError={(e) => {
+              const fallback = getFallbackImage(product);
+              if ((e.target as HTMLImageElement).src !== fallback) {
+                (e.target as HTMLImageElement).src = fallback;
+              }
+            }}
           />
         </div>
 

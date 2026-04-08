@@ -483,6 +483,7 @@ Use the provided tool.`;
             const finalImageUrl = scraped?.image_url || intent.product_image_url || resolved.image_url;
             const finalProductUrl = scraped?.product_url || (resolved.link_kind === "product" ? resolved.link_url : null);
             const finalPrice = scraped?.price || intent.price;
+            const responseImageUrl = finalProductUrl ? finalImageUrl : null;
 
             if (!existing) {
               // Store with scraped data
@@ -521,7 +522,7 @@ Use the provided tool.`;
               search_url: !finalProductUrl && resolved.link_kind === "search" ? resolved.link_url : null,
               product_query: resolved.search_query,
               sponsored_id: null,
-              image_url: finalImageUrl,
+              image_url: responseImageUrl,
               source_kind: finalProductUrl ? "specific-product" : "brand-search",
               source_version: resolved.source_version,
             });
