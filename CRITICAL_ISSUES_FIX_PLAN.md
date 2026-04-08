@@ -115,6 +115,7 @@ The audits consistently point here as the likely source of login bounce and rout
 ### Progress
 
 - Done: removed the redundant `My Go Two` leaf guard so the dashboard shell owns that route.
+- Done: stabilized subscription state for cache-hit/dev-override/sign-out paths so stale `subscriptionLoading` does not linger across session changes.
 - Remaining: wider auth/subscription lifecycle separation, temporary diagnostics, and visual pass across login/refresh transitions.
 
 ### Files

@@ -49,6 +49,14 @@ const writeSubscriptionCache = (record: SubscriptionCacheRecord) => {
   }
 };
 
+const clearSubscriptionCache = () => {
+  try {
+    sessionStorage.removeItem(SUBSCRIPTION_CACHE_KEY);
+  } catch {
+    // Ignore cache removal failures.
+  }
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -92,6 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (DEV_USER_IDS.includes(activeUser.id) || DEV_EMAILS.includes(activeUser.email ?? "")) {
       setSubscribed(true);
       setSubscriptionEnd(null);
+      setSubscriptionLoading(false);
       writeSubscriptionCache({
         userId: activeUser.id,
         checkedAt: Date.now(),
@@ -105,6 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (cached) {
       setSubscribed(cached.subscribed);
       setSubscriptionEnd(cached.subscriptionEnd);
+      setSubscriptionLoading(false);
       return;
     }
 
@@ -154,6 +164,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      if (!session) {
+        signupDataAppliedForUserRef.current = null;
+      }
       if (_event === "SIGNED_IN" && session?.user) {
         void applySignupData(session.user.id);
       }
@@ -221,6 +234,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    clearSubscriptionCache();
+    setSubscribed(false);
+    setSubscriptionEnd(null);
+    setSubscriptionLoading(false);
   };
 
   const resetPassword = async (email: string) => {
