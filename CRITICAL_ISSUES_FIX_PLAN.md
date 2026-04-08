@@ -318,9 +318,10 @@ Recommendations are user-facing and currently have "demo-feeling" gaps.
 
 - Done: recommendation saves now persist in `user_preferences.favorites.recommendations`, load back on refresh, and rollback cleanly on failed writes instead of behaving like local-only demo state.
 - Done: recommendation share now uses the native share sheet when available and falls back to copying a real share message to the clipboard, so it no longer acts like a toast-only placeholder.
+- Done: successful recommendation shares now also persist lightweight share history in `user_preferences.favorites.shared_recommendations`, so the action leaves a durable user-owned artifact instead of disappearing after the device handoff.
 - Done: `resolved_recommendation_catalog` writes now run through service-role edge-function clients, and authenticated-user insert/update policies are removed so the shared catalog is no longer directly writable from the client.
 - Done: recommendation cards now only use resolved remote product photos for true exact-product matches; broader search-style matches consistently fall back to the curated local image banks instead of mixing in unstable scraped imagery.
-- Remaining: share still does not create a durable share artifact or tracked send path.
+- Remaining: there is still no explicit sent-to-recipient tracking path for recommendation sharing beyond the user's own share history.
 
 ### Fixes required
 

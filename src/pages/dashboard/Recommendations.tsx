@@ -82,8 +82,26 @@ type RecommendationFavorite = {
   saved_at: string;
 };
 
+type RecommendationShareRecord = {
+  id: string;
+  name: string;
+  brand: string;
+  category: string;
+  price: string;
+  hook: string;
+  why: string;
+  image_url: string | null;
+  affiliate_url: string | null;
+  search_url: string | null;
+  product_query: string | null;
+  shared_at: string;
+  share_count: number;
+  last_share_method: "native" | "clipboard";
+};
+
 type FavoritesPayload = {
   recommendations?: Record<string, RecommendationFavorite>;
+  shared_recommendations?: Record<string, RecommendationShareRecord>;
   [key: string]: unknown;
 };
 
@@ -166,6 +184,29 @@ function toRecommendationFavorite(product: Product): RecommendationFavorite {
     search_url: product.search_url ?? null,
     product_query: product.product_query ?? null,
     saved_at: new Date().toISOString(),
+  };
+}
+
+function toRecommendationShareRecord(
+  product: Product,
+  method: "native" | "clipboard",
+  previous?: RecommendationShareRecord,
+): RecommendationShareRecord {
+  return {
+    id: getProductId(product),
+    name: product.name,
+    brand: product.brand,
+    category: product.category,
+    price: product.price,
+    hook: product.hook,
+    why: product.why,
+    image_url: product.image_url ?? null,
+    affiliate_url: product.affiliate_url ?? null,
+    search_url: product.search_url ?? null,
+    product_query: product.product_query ?? null,
+    shared_at: new Date().toISOString(),
+    share_count: (previous?.share_count ?? 0) + 1,
+    last_share_method: method,
   };
 }
 
@@ -360,6 +401,45 @@ const Recommendations = () => {
     }
   }, [savedItems, user]);
 
+  const persistShareActivity = useCallback(async (
+    product: Product,
+    method: "native" | "clipboard",
+  ) => {
+    if (!user) return;
+
+    const id = getProductId(product);
+    const { data: existingRow, error: loadError } = await supabase
+      .from("user_preferences")
+      .select("favorites")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (loadError) throw loadError;
+
+    const favorites = isFavoritesPayload(existingRow?.favorites) ? { ...existingRow.favorites } : {};
+    const sharedRecommendations = isFavoritesPayload(favorites.shared_recommendations)
+      ? { ...(favorites.shared_recommendations as Record<string, RecommendationShareRecord>) }
+      : {};
+
+    sharedRecommendations[id] = toRecommendationShareRecord(
+      product,
+      method,
+      sharedRecommendations[id],
+    );
+    favorites.shared_recommendations = sharedRecommendations;
+
+    const { error: saveError } = await supabase.from("user_preferences").upsert(
+      {
+        user_id: user.id,
+        favorites,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
+
+    if (saveError) throw saveError;
+  }, [user]);
+
   const handleShare = useCallback(async (product: Product) => {
     const id = getProductId(product);
     const productUrl = product.affiliate_url || product.search_url || null;
@@ -381,11 +461,13 @@ const Recommendations = () => {
           text: `${product.hook}\n\n${product.why}`,
           url: productUrl ?? undefined,
         });
+        await persistShareActivity(product, "native");
         toast.success("Shared from your share sheet");
         return;
       }
 
       await navigator.clipboard.writeText(shareText);
+      await persistShareActivity(product, "clipboard");
       toast.success(productUrl ? "Share details copied to clipboard" : "Recommendation copied to clipboard");
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Could not share recommendation";
@@ -400,7 +482,7 @@ const Recommendations = () => {
         return next;
       });
     }
-  }, []);
+  }, [persistShareActivity]);
 
   const generatedLabel = generatedAt
     ? new Date(generatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })
