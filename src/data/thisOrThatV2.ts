@@ -76,12 +76,22 @@ export interface ThisOrThatV2QuestionScaffold {
   source_category_id: string;
   source_category_title: string;
   source_kind: ThisOrThatV2SourceKind;
+  dataset_gender: Gender;
   category_slug: ThisOrThatV2TopLevelCategorySlug;
   subcategory_slug: string;
   prompt: string;
   supported_genders: Gender[];
   weight: number;
   options: [ThisOrThatV2QuestionOptionScaffold, ThisOrThatV2QuestionOptionScaffold];
+}
+
+export interface ThisOrThatV2DatasetCoverageRow {
+  gender: Gender;
+  source_category_id: string;
+  source_category_title: string;
+  question_count: number;
+  status: "live" | "coming-soon";
+  top_level_category: ThisOrThatV2TopLevelCategorySlug | null;
 }
 
 export interface ThisOrThatV2AnswerRecord {
@@ -466,6 +476,7 @@ const buildQuestionScaffold = (
   category: ThisOrThatCategory,
   question: BrandBankQuestion,
   linkedCategoriesByTitle: Map<string, BrandBankCategory>,
+  gender: Gender,
 ): ThisOrThatV2QuestionScaffold | null => {
   const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(category.id);
   if (!blueprint) return null;
@@ -478,6 +489,7 @@ const buildQuestionScaffold = (
     source_category_id: category.id,
     source_category_title: category.title,
     source_kind: blueprint.source_kind,
+    dataset_gender: gender,
     category_slug: blueprint.category_slug,
     subcategory_slug: blueprint.subcategory_slug,
     prompt: question.prompt,
@@ -523,11 +535,28 @@ export const buildThisOrThatV2QuestionScaffolds = (
 
     return (bank?.questions ?? [])
       .map((question) =>
-        buildQuestionScaffold(category, question, linkedCategoriesByTitle),
+        buildQuestionScaffold(category, question, linkedCategoriesByTitle, gender),
       )
       .filter(
         (question): question is ThisOrThatV2QuestionScaffold => Boolean(question),
       );
+  });
+
+export const buildThisOrThatV2DatasetCoverage = (
+  gender: Gender,
+): ThisOrThatV2DatasetCoverageRow[] =>
+  THIS_OR_THAT_CATEGORIES.map((category) => {
+    const bank = getThisOrThatBank(category.id, gender);
+    const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(category.id);
+
+    return {
+      gender,
+      source_category_id: category.id,
+      source_category_title: category.title,
+      question_count: bank?.questions.length ?? 0,
+      status: category.status,
+      top_level_category: blueprint?.category_slug ?? null,
+    };
   });
 
 export const THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD =
@@ -539,12 +568,19 @@ export const THIS_OR_THAT_V2_LIVE_FEMALE_QUESTION_SCAFFOLD =
 export const THIS_OR_THAT_V2_LIVE_NON_BINARY_QUESTION_SCAFFOLD =
   buildThisOrThatV2QuestionScaffolds("non-binary");
 
+export const THIS_OR_THAT_V2_DATASET_COVERAGE = {
+  male: buildThisOrThatV2DatasetCoverage("male"),
+  female: buildThisOrThatV2DatasetCoverage("female"),
+  "non-binary": buildThisOrThatV2DatasetCoverage("non-binary"),
+} as const;
+
 export const THIS_OR_THAT_V2_CONTENT_SOURCES = {
   runtimeV1File: "src/data/knowMeQuestions.ts",
   contentContractFile: "src/data/thisOrThatV2.ts",
   topLevelMyGoTwoSlugs: THIS_OR_THAT_V2_TOP_LEVEL_CATEGORIES.map(
     (category) => category.slug,
   ),
+  datasetCoverage: THIS_OR_THAT_V2_DATASET_COVERAGE,
 } as const;
 
 export const buildThisOrThatAnswerRecord = (
@@ -559,7 +595,7 @@ export const buildThisOrThatAnswerRecord = (
     (bank?.categories ?? []).map((entry) => [entry.title, entry]),
   );
   const scaffold =
-    (category && buildQuestionScaffold(category, question, linkedCategoriesByTitle)) || null;
+    (category && buildQuestionScaffold(category, question, linkedCategoriesByTitle, gender)) || null;
   const fallbackBlueprint =
     CATEGORY_BLUEPRINT_BY_ID.get(categoryId) ?? THIS_OR_THAT_V2_CATEGORY_BLUEPRINTS[0];
 

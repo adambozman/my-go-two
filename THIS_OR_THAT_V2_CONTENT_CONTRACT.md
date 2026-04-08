@@ -77,6 +77,11 @@ Every option scaffold in v2 should carry:
 - `location_keywords`
 - `weight`
 
+Every question scaffold in v2 should also carry:
+
+- `dataset_gender`
+- `supported_genders`
+
 The contract is exported from:
 
 - `src/data/thisOrThatV2.ts`
@@ -88,6 +93,8 @@ The contract is exported from:
 3. Carry linked bank brand lists into `brand_keywords` when a This or That option represents a bank category rather than a single brand.
 4. Carry destination and place cues into `location_keywords` when the linked bank content includes them.
 5. Keep `weight` on the content blueprint so future persistence and recommendation code can use the same authored value.
+6. Treat gender as a first-class authored dataset dimension. `male`, `female`, and `non-binary` should not silently reuse the same brand, place, style, or clothing option metadata unless that reuse is intentional.
+7. Track coverage honestly. Missing female or non-binary authored banks should remain visible in v2 coverage output instead of being hidden behind the male dataset.
 
 ## Live vs Legacy
 
@@ -111,6 +118,7 @@ The v2 scaffold keeps both sources visible through:
 - `THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD`
 - `THIS_OR_THAT_V2_LIVE_FEMALE_QUESTION_SCAFFOLD`
 - `THIS_OR_THAT_V2_LIVE_NON_BINARY_QUESTION_SCAFFOLD`
+- `THIS_OR_THAT_V2_DATASET_COVERAGE`
 - `THIS_OR_THAT_V2_CONTENT_SOURCES`
 
 This is scaffolding only. It does not change runtime behavior.

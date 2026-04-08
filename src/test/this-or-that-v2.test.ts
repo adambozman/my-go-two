@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { getThisOrThatBank } from "../data/knowMeQuestions";
-import { buildThisOrThatAnswerRecord } from "../data/thisOrThatV2";
+import {
+  buildThisOrThatAnswerRecord,
+  THIS_OR_THAT_V2_DATASET_COVERAGE,
+  THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD,
+} from "../data/thisOrThatV2";
 
 describe("This or That v2 answer contract", () => {
   it("builds a structured answer record for bank-backed category questions", () => {
@@ -41,5 +45,20 @@ describe("This or That v2 answer contract", () => {
     expect(record.selected_payload.descriptor_keywords).toEqual(expect.arrayContaining(["neutrals"]));
     expect(record.selected_payload.avoid_keywords).toEqual(expect.arrayContaining(["colors"]));
     expect(record.rejected_payload.descriptor_keywords).toEqual(expect.arrayContaining(["colors"]));
+  });
+
+  it("tracks dataset coverage by gender instead of flattening everyone into one authored bank", () => {
+    expect(
+      THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD.every((question) => question.dataset_gender === "male"),
+    ).toBe(true);
+    expect(
+      THIS_OR_THAT_V2_DATASET_COVERAGE.male.some((row) => row.source_category_id === "brands-shopping" && row.question_count > 0),
+    ).toBe(true);
+    expect(
+      THIS_OR_THAT_V2_DATASET_COVERAGE.female.some((row) => row.source_category_id === "brands-shopping" && row.question_count === 0),
+    ).toBe(true);
+    expect(
+      THIS_OR_THAT_V2_DATASET_COVERAGE["non-binary"].some((row) => row.source_category_id === "brands-shopping" && row.question_count === 0),
+    ).toBe(true);
   });
 });
