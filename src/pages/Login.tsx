@@ -77,12 +77,12 @@ const Login = () => {
         userId: currentUser.id,
         destination,
       });
-      navigate(destination);
+      navigate(destination, { replace: true });
     } else {
       logAuthDiagnostic("login:navigate-after-login:no-user", {
         destination: "/dashboard",
       });
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     }
   };
 

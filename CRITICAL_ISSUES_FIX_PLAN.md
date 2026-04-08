@@ -122,6 +122,7 @@ The audits consistently point here as the likely source of login bounce and rout
 - Done: Google and Apple OAuth now return to the current auth entry URL instead of always dropping users at the site root, which preserves invite/deep-link context through the external auth round-trip.
 - Done: `/login` and `/signup` now redirect already-authenticated users back into the real post-auth flow instead of leaving them stranded on an auth-entry page, using a shared destination resolver.
 - Done: frontend dev-login and dev-subscription override checks now use one shared allowlist helper so those protected operator paths do not drift between `Login.tsx` and `AuthContext.tsx`.
+- Done: auth completion, invite completion, and sign-out redirects now replace browser history entries so back-navigation does not bounce users into stale `/login` or `/connect` pages after session state changes.
 - Remaining: wider auth/subscription lifecycle separation and visual pass across login/refresh transitions.
 
 ### Files

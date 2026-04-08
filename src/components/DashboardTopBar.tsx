@@ -145,7 +145,7 @@ export function DashboardTopBar() {
   const handleSignOut = async () => {
     try {
       await signOut();
-      navigate("/login");
+      navigate("/login", { replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to sign out right now.";
       toast({ title: "Sign out failed", description: message, variant: "destructive" });

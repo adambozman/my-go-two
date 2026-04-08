@@ -46,7 +46,7 @@ const Connect = () => {
           } else {
             toast({ title: "Invite Sent", description: "Your connection invite has been sent." });
           }
-          navigate("/dashboard/settings");
+          navigate("/dashboard/settings", { replace: true });
         });
       return;
     }
@@ -69,7 +69,7 @@ const Connect = () => {
           } else {
             toast({ title: "Connected!", description: "You're now linked with your connection." });
           }
-          navigate("/dashboard/settings");
+          navigate("/dashboard/settings", { replace: true });
         });
     }
   }, [user, inviteId, token, authLoading, navigate, toast]);
