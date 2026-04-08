@@ -76,7 +76,7 @@ const extractPrice = (input: string) => {
   return match?.[0] ?? null;
 };
 
-const scoreImageUrl = (url: string, productName: string, brand: string): number => {
+export const scoreImageUrl = (url: string, productName: string, brand: string): number => {
   const lower = url.toLowerCase();
   for (const word of IMAGE_REJECT_WORDS) {
     if (lower.includes(word)) return -1;
@@ -105,7 +105,7 @@ const scoreImageUrl = (url: string, productName: string, brand: string): number 
   return score;
 };
 
-const pickBestImage = (urls: string[], productName: string, brand: string) => {
+export const pickBestImage = (urls: string[], productName: string, brand: string) => {
   const best = urls
     .map((url) => ({ url, score: scoreImageUrl(url, productName, brand) }))
     .filter((entry) => entry.score >= 0)
@@ -120,7 +120,7 @@ const pickBestImage = (urls: string[], productName: string, brand: string) => {
 const extractMarkdownImageUrls = (markdown: string) =>
   [...markdown.matchAll(/!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi)].map((match) => match[1]);
 
-const scoreTitleAndUrlMatch = (
+export const scoreTitleAndUrlMatch = (
   brand: string,
   productName: string,
   title: string | null,
@@ -143,7 +143,7 @@ const scoreTitleAndUrlMatch = (
   };
 };
 
-const scoreExactProductMatch = ({
+export const scoreExactProductMatch = ({
   brand,
   productName,
   title,
@@ -174,7 +174,7 @@ const scoreExactProductMatch = ({
   };
 };
 
-const pickBestSearchResult = (results: SearchResult[], brand: string, productName: string) => {
+export const pickBestSearchResult = (results: SearchResult[], brand: string, productName: string) => {
   const ranked = results
     .map((result, index) => {
       const metadata = toObject(result.metadata);
