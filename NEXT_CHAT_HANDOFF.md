@@ -223,6 +223,20 @@ What is true right now:
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\previews\bg-bold-shapes.jpg`
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\previews\bg-geometric.jpg`
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\previews\bg-grain-spots.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\accessory-backpack.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\accessory-bag.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\accessory-belt.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\accessory-hat.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\accessory-sunglasses.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\accessory-wallet.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\accessory-watches.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\flowers.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\flowers-lilies.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\flowers-orchid.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\flowers-plants.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\flowers-roses.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\flowers-sunflowers.jpg`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates\flowers-tulips.jpg`
 
 ### Deleted dev-only / screenshot artifacts
 
@@ -289,9 +303,10 @@ The correct direction is:
 2. Done: deleted repo-root screenshot/reference artifacts and Playwright capture folders after verifying they were not runtime assets.
 3. Done: verified that `spare`, `styles`, `templates`, and `previews` are active asset buckets and should not be bulk-deleted.
 4. Done: deleted the three unreferenced extra preview backgrounds after confirming only `bg-clean-linen.jpg` is used in repo code.
-5. Review the remaining active asset buckets file by file to find truly unused individual assets.
-6. Done: deleted `output\diagnostics\rg-copy.exe` after verifying it had no runtime references and was just generated tooling output.
-7. Done: ignored local dev-run log artifacts such as `vite-dev*.log` and `output/*.log` so local browser/server checks do not keep polluting repo status.
+5. Done: deleted the unreferenced `accessory-*` and `flowers*` template JPGs after confirming they had zero code imports.
+6. Review the remaining active asset buckets file by file to find truly unused individual assets.
+7. Done: deleted `output\diagnostics\rg-copy.exe` after verifying it had no runtime references and was just generated tooling output.
+8. Done: ignored local dev-run log artifacts such as `vite-dev*.log` and `output/*.log` so local browser/server checks do not keep polluting repo status.
 
 ### Photo Gallery
 
