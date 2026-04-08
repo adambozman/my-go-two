@@ -11,45 +11,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/pill";
 import { getYourVibeDerivation } from "@/lib/knowledgeCenter";
-// ── Clothes bank (8 diverse images) ──
-import clothingJacketImage from "@/assets/templates/clothing-jacket.jpg";
-import dressShirtImage from "@/assets/templates/clothing-dress-shirt.jpg";
-import clothingSweaterImage from "@/assets/templates/clothing-sweater.jpg";
-import clothingPoloImage from "@/assets/templates/clothing-polo.jpg";
-import clothingBlazerImage from "@/assets/templates/clothing-blazer.jpg";
-import clothingTshirtImage from "@/assets/templates/clothing-tshirt.jpg";
-import clothingCoatImage from "@/assets/templates/clothing-coat.jpg";
-import clothingHoodieImage from "@/assets/templates/clothing-hoodie.jpg";
-
-// ── Food bank (8 diverse images) ──
-import espressoImage from "@/assets/templates/coffee-espresso.jpg";
-import coffeeHotImage from "@/assets/templates/coffee-hot.jpg";
-import foodItalianImage from "@/assets/templates/food-italian.jpg";
-import foodSushiImage from "@/assets/templates/food-sushi.jpg";
-import foodMexicanImage from "@/assets/templates/food-mexican.jpg";
-import groceryProduceImage from "@/assets/templates/grocery-produce.jpg";
-import favoriteMealsImage from "@/assets/templates/favorite-meals.jpg";
-import diningImage from "@/assets/styles/dining.jpg";
-
-// ── Home bank (8 diverse images) ──
-import homeDecorImage from "@/assets/templates/home-decor.jpg";
-import homeBeddingImage from "@/assets/templates/home-bedding.jpg";
-import homeLightingImage from "@/assets/templates/home-lighting.jpg";
-import homeFurnitureImage from "@/assets/templates/home-furniture.jpg";
-import homeArtImage from "@/assets/templates/home-art.jpg";
-import kitchenCookwareImage from "@/assets/templates/kitchen-cookware.jpg";
-import homeRugImage from "@/assets/templates/home-rug.jpg";
-import homeSofaImage from "@/assets/templates/home-sofa.jpg";
-
-// ── Tech bank (8 diverse images) ──
-import cameraImage from "@/assets/templates/tech-camera.jpg";
-import headphonesImage from "@/assets/templates/tech-headphones.jpg";
-import gamingConsoleImage from "@/assets/templates/gaming-console.jpg";
-import gamingPcImage from "@/assets/templates/gaming-pc.jpg";
-import booksImage from "@/assets/templates/books-reading.jpg";
-import fitnessImage from "@/assets/styles/fitness.jpg";
-import qualityImage from "@/assets/styles/quality.jpg";
-import practicalGiftImage from "@/assets/styles/practical-gift.jpg";
 
 interface Product {
   name: string;
@@ -127,33 +88,6 @@ const PILLARS = [
 
 const PAGE_SIZE = 4;
 
-const PRODUCT_IMAGE_BANK: Record<Product["category"], string[]> = {
-  clothes: [
-    clothingJacketImage, dressShirtImage, clothingSweaterImage, clothingPoloImage,
-    clothingBlazerImage, clothingTshirtImage, clothingCoatImage, clothingHoodieImage,
-  ],
-  food: [
-    espressoImage, coffeeHotImage, foodItalianImage, foodSushiImage,
-    foodMexicanImage, groceryProduceImage, favoriteMealsImage, diningImage,
-  ],
-  home: [
-    homeDecorImage, homeBeddingImage, homeLightingImage, homeFurnitureImage,
-    homeArtImage, kitchenCookwareImage, homeRugImage, homeSofaImage,
-  ],
-  tech: [
-    cameraImage, headphonesImage, gamingConsoleImage, gamingPcImage,
-    booksImage, fitnessImage, qualityImage, practicalGiftImage,
-  ],
-};
-
-function getFallbackImage(product: Product) {
-  const bank = PRODUCT_IMAGE_BANK[product.category] || PRODUCT_IMAGE_BANK.clothes;
-  const seed = `${product.brand}-${product.name}`;
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-  return bank[hash % bank.length];
-}
-
 function hasResolvedProductImage(product: Product) {
   return Boolean(
     product.source_kind &&
@@ -164,20 +98,19 @@ function hasResolvedProductImage(product: Product) {
   );
 }
 
-function shouldUseLegacyImageBank(product: Product) {
-  return product.source_version !== RECOMMENDATION_V2_VERSION;
-}
-
 function getProductImage(product: Product) {
-  if (hasResolvedProductImage(product)) return product.image_url!;
-  if (!shouldUseLegacyImageBank(product)) return null;
-  return getFallbackImage(product);
+  return hasResolvedProductImage(product) ? product.image_url! : null;
 }
 
 function getProductMatchLabel(product: Product) {
   if (product.source_kind === "specific-product") return "Exact Match";
   if (product.source_kind === "catalog-product") return "Catalog Match";
   return "Search Match";
+}
+
+function getProductDisplayPrice(product: Product) {
+  if (product.source_kind === "brand-search") return "Price varies";
+  return product.price;
 }
 
 function getProductDestination(product: Product) {
@@ -708,10 +641,10 @@ function ProductCard({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const productImage = getProductImage(product);
-  const showLegacyFallback = shouldUseLegacyImageBank(product);
   const productDestination = getProductDestination(product);
   const productMatchLabel = getProductMatchLabel(product);
   const productActionLabel = getProductActionLabel(product);
+  const productDisplayPrice = getProductDisplayPrice(product);
 
   return (
     <motion.div
@@ -728,17 +661,10 @@ function ProductCard({
               src={productImage}
               alt={product.name}
               className="h-full w-full object-cover"
-              onError={(e) => {
-                if (!showLegacyFallback) return;
-                const fallback = getFallbackImage(product);
-                if ((e.target as HTMLImageElement).src !== fallback) {
-                  (e.target as HTMLImageElement).src = fallback;
-                }
-              }}
             />
           ) : (
             <div className="flex h-full w-full items-end bg-[linear-gradient(135deg,#f3ecdf_0%,#ece3d1_100%)] p-4">
-                <div className="max-w-[80%] rounded-2xl bg-white/70 px-3 py-2 backdrop-blur-sm">
+              <div className="max-w-[80%] rounded-2xl bg-white/70 px-3 py-2 backdrop-blur-sm">
                 <p className="surface-meta">{product.brand}</p>
                 <p className="surface-heading-md mt-1">{product.name}</p>
                 <p className="surface-meta mt-2">
@@ -763,7 +689,7 @@ function ProductCard({
             <p className="surface-meta">
               {productMatchLabel}
             </p>
-            <p className="surface-meta">{product.price}</p>
+            <p className="surface-meta">{productDisplayPrice}</p>
           </div>
 
           <p className="surface-heading-md leading-[1.18]">
