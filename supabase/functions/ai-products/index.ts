@@ -2,9 +2,11 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient, type SupabaseClient, type User } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   buildRecommendationFingerprint,
+  buildKeywordSignature,
   getBankKnowledgeDerivation,
   getCatalogRecommendations,
   getCatalogVersion,
+  normalizeRecommendationKeywords,
   getSeedCatalogBrands,
   resolveIntentToCatalogEntry,
   type RecommendationIntent,
@@ -37,6 +39,13 @@ const cleanText = (value: unknown): string => {
 const ALLOWED_CATEGORIES = new Set(["food", "clothes", "tech", "home"]);
 const ALLOWED_KINDS = new Set(["specific", "generic", "catalog"]);
 
+const sanitizeKeywordList = (rawKeywords: unknown): string[] => {
+  if (!Array.isArray(rawKeywords)) return [];
+  return normalizeRecommendationKeywords(
+    rawKeywords.map((keyword) => cleanText(keyword)),
+  );
+};
+
 const sanitizeIntents = (rawIntents: unknown): (RecommendationIntent & { product_image_url?: string })[] => {
   if (!Array.isArray(rawIntents)) return [];
   return rawIntents
@@ -55,6 +64,7 @@ const sanitizeIntents = (rawIntents: unknown): (RecommendationIntent & { product
         why: cleanText(intent.why),
         recommendation_kind: (ALLOWED_KINDS.has(recommendationKind) ? recommendationKind : "catalog") as RecommendationIntent["recommendation_kind"],
         search_query: cleanText(intent.search_query) || null,
+        keywords: sanitizeKeywordList(intent.keywords),
         product_image_url: imageUrl,
       };
     })
@@ -75,7 +85,30 @@ interface ScrapedProduct {
   image_url: string | null;
   product_url: string | null;
   price: string | null;
+  scraped_description: string | null;
 }
+
+type ResolvedRecommendationCatalogRow = {
+  fingerprint: string;
+  brand: string;
+  product_name: string;
+  category: RecommendationIntent["category"];
+  recommendation_kind: RecommendationIntent["recommendation_kind"];
+  link_kind: "product" | "search";
+  link_url: string;
+  search_query: string | null;
+  price: string | null;
+  image_url: string | null;
+  intent_keywords: string[] | null;
+  keyword_signature: string | null;
+  scraped_description: string | null;
+  source_version: string;
+  resolver_source: string;
+  usage_count: number;
+};
+
+const RESOLVED_RECOMMENDATION_SELECT =
+  "fingerprint, brand, product_name, category, recommendation_kind, link_kind, link_url, search_query, price, image_url, intent_keywords, keyword_signature, scraped_description, source_version, resolver_source, usage_count";
 
 /** Words in image URLs that signal non-product images */
 const IMAGE_REJECT_WORDS = [
@@ -203,6 +236,7 @@ async function scrapeProductWithFirecrawl(
 
     let imageUrl: string | null = null;
     let scrapedPrice: string | null = null;
+    let scrapedDescription: string | null = null;
 
     if (productUrl) {
       try {
@@ -244,6 +278,12 @@ async function scrapeProductWithFirecrawl(
           // Extract price
           const priceMatch = md.match(/\$[\d,]+\.?\d{0,2}/);
           if (priceMatch) scrapedPrice = priceMatch[0];
+
+          const paragraphs = md
+            .split(/\n{2,}/)
+            .map((part: string) => cleanText(part.replace(/^#+\s*/, "")))
+            .filter((part: string) => part.length >= 60);
+          scrapedDescription = paragraphs[0] ?? null;
         }
       } catch (scrapeErr) {
         console.error("[firecrawl] scrape failed:", scrapeErr);
@@ -278,6 +318,7 @@ async function scrapeProductWithFirecrawl(
       image_url: imageUrl,
       product_url: productUrl,
       price: scrapedPrice,
+      scraped_description: scrapedDescription,
     };
   } catch (err) {
     console.error("[firecrawl] error:", err);
@@ -394,7 +435,8 @@ RULES:
 5. Use real brands only.
 6. Never output a URL.
 7. search_query MUST be present — a web search query to find this product on the brand website or a retailer. Be specific, e.g. "Nike Air Max 90 white mens" not just "Nike shoes".
-8. Keep hook and why concise and profile-specific.
+8. keywords MUST be present — 3 to 6 lowercase recommendation keywords that describe the product intent, style, and product type. Do not include URLs.
+9. Keep hook and why concise and profile-specific.
 
 Use the provided tool.`;
 
@@ -429,8 +471,15 @@ Use the provided tool.`;
                           why: { type: "string" },
                           recommendation_kind: { type: "string", enum: ["specific", "generic", "catalog"] },
                           search_query: { type: "string", description: "Specific web search query to find this exact product, e.g. 'Nike Air Max 90 white mens size 10'" },
+                          keywords: {
+                            type: "array",
+                            items: { type: "string" },
+                            minItems: 3,
+                            maxItems: 6,
+                            description: "Lowercase recommendation keywords like brand, product type, fit, color, vibe, or use case",
+                          },
                         },
-                        required: ["brand", "name", "price", "category", "hook", "why", "recommendation_kind", "search_query"],
+                        required: ["brand", "name", "price", "category", "hook", "why", "recommendation_kind", "search_query", "keywords"],
                         additionalProperties: false,
                       },
                     },
@@ -452,44 +501,61 @@ Use the provided tool.`;
         const intents = sanitizeIntents(parsed?.intents);
 
         if (intents.length > 0) {
-          // Scrape all products in parallel via Firecrawl
-          const scrapePromises = intents.map((intent) =>
-            scrapeProductWithFirecrawl(intent.brand, intent.name, intent.search_query ?? null)
-          );
-          const scrapeResults = await Promise.all(scrapePromises);
-
           const resolvedProducts = [];
 
-          for (let i = 0; i < intents.length; i++) {
-            const intent = intents[i];
-            const scraped = scrapeResults[i];
-
+          for (const intent of intents) {
             const fingerprint = buildRecommendationFingerprint(
               intent.category,
               intent.brand,
               intent.name,
               intent.recommendation_kind,
             );
+            const normalizedKeywords = normalizeRecommendationKeywords([
+              ...(intent.keywords ?? []),
+              intent.brand,
+              intent.name,
+              intent.category,
+            ]);
+            const keywordSignature = buildKeywordSignature(intent.category, normalizedKeywords);
 
-            const { data: existing } = await admin
-              .from("resolved_recommendation_catalog")
-              .select("fingerprint, brand, product_name, category, recommendation_kind, link_kind, link_url, search_query, price, image_url, source_version, resolver_source, usage_count")
-              .eq("fingerprint", fingerprint)
-              .maybeSingle();
+            let existing: ResolvedRecommendationCatalogRow | null = null;
+            if (keywordSignature) {
+              const { data: byKeywords } = await admin
+                .from("resolved_recommendation_catalog")
+                .select(RESOLVED_RECOMMENDATION_SELECT)
+                .eq("keyword_signature", keywordSignature)
+                .maybeSingle();
+              existing = byKeywords as ResolvedRecommendationCatalogRow | null;
+            }
+            if (!existing) {
+              const { data: byFingerprint } = await admin
+                .from("resolved_recommendation_catalog")
+                .select(RESOLVED_RECOMMENDATION_SELECT)
+                .eq("fingerprint", fingerprint)
+                .maybeSingle();
+              existing = byFingerprint as ResolvedRecommendationCatalogRow | null;
+            }
 
             const resolved = existing ?? resolveIntentToCatalogEntry(intent);
+            const scraped = existing
+              ? null
+              : await scrapeProductWithFirecrawl(intent.brand, intent.name, intent.search_query ?? null);
 
-            // Prefer Firecrawl-scraped data over everything else
-            const finalImageUrl = scraped?.image_url || intent.product_image_url || resolved.image_url;
+            const finalImageUrl = scraped?.image_url || intent.product_image_url || resolved.image_url || null;
             const finalProductUrl = scraped?.product_url || (resolved.link_kind === "product" ? resolved.link_url : null);
-            const finalPrice = scraped?.price || intent.price;
+            const finalPrice = scraped?.price || resolved.price || intent.price;
+            const finalDescription = scraped?.scraped_description || resolved.scraped_description || null;
+            const finalSearchUrl = !finalProductUrl && resolved.link_kind === "search" ? resolved.link_url : null;
+            const finalProductQuery = resolved.search_query || intent.search_query || `${intent.brand} ${intent.name}`;
             const responseImageUrl = finalProductUrl ? finalImageUrl : null;
 
             if (!existing) {
-              // Store with scraped data
               const enrichedResolved = {
                 ...resolved,
                 image_url: finalImageUrl,
+                intent_keywords: normalizedKeywords,
+                keyword_signature: keywordSignature,
+                scraped_description: finalDescription,
                 link_url: finalProductUrl || resolved.link_url,
                 link_kind: finalProductUrl ? "product" : resolved.link_kind,
                 resolver_source: scraped?.product_url ? "firecrawl" : resolved.resolver_source,
@@ -502,11 +568,13 @@ Use the provided tool.`;
                 .from("resolved_recommendation_catalog")
                 .update({
                   usage_count: getUsageCount(existing) + 1,
-                  // Update image if we got a better one from Firecrawl
+                  intent_keywords: normalizedKeywords,
+                  keyword_signature: keywordSignature,
                   ...(scraped?.image_url ? { image_url: scraped.image_url } : {}),
+                  ...(scraped?.scraped_description ? { scraped_description: scraped.scraped_description } : {}),
                   ...(scraped?.product_url ? { link_url: scraped.product_url, link_kind: "product", resolver_source: "firecrawl" } : {}),
                 })
-                .eq("fingerprint", fingerprint);
+                .eq("fingerprint", existing.fingerprint);
             }
 
             resolvedProducts.push({
@@ -519,8 +587,8 @@ Use the provided tool.`;
               is_connection_pick: intent.recommendation_kind === "specific",
               is_sponsored: false,
               affiliate_url: finalProductUrl,
-              search_url: !finalProductUrl && resolved.link_kind === "search" ? resolved.link_url : null,
-              product_query: resolved.search_query,
+              search_url: finalSearchUrl,
+              product_query: finalProductQuery,
               sponsored_id: null,
               image_url: responseImageUrl,
               source_kind: finalProductUrl ? "specific-product" : "brand-search",

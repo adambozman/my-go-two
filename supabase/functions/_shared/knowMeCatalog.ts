@@ -28,6 +28,7 @@ export interface RecommendationIntent {
   why: string;
   recommendation_kind: RecommendationKind;
   search_query?: string | null;
+  keywords?: string[] | null;
 }
 
 export interface ResolvedCatalogEntry {
@@ -41,6 +42,9 @@ export interface ResolvedCatalogEntry {
   search_query: string | null;
   price: string;
   image_url: string | null;
+  intent_keywords: string[] | null;
+  keyword_signature: string | null;
+  scraped_description: string | null;
   source_version: string;
   resolver_source: string;
 }
@@ -462,6 +466,26 @@ export const buildRecommendationFingerprint = (
   recommendationKind: RecommendationKind,
 ) => [category, normalizeLoose(brand), normalizeLoose(name), recommendationKind].join("::");
 
+export const normalizeRecommendationKeywords = (
+  keywords: Array<string | null | undefined>,
+): string[] =>
+  Array.from(
+    new Set(
+      keywords
+        .map((keyword) => normalizeLoose(keyword ?? ""))
+        .filter((keyword) => keyword.length >= 2),
+    ),
+  ).sort();
+
+export const buildKeywordSignature = (
+  category: RecommendationCategory,
+  keywords: Array<string | null | undefined>,
+) => {
+  const normalized = normalizeRecommendationKeywords(keywords);
+  if (normalized.length === 0) return null;
+  return [category, ...normalized].join("::");
+};
+
 export const getSeedCatalogBrands = () =>
   Array.from(new Set(PRODUCT_CATALOG.map((product) => product.brand)));
 
@@ -482,6 +506,12 @@ export const resolveIntentToCatalogEntry = (intent: RecommendationIntent): Resol
   const seedProduct = findSeedCatalogProduct(intent.brand, intent.name);
   const recommendationKind = intent.recommendation_kind;
   const searchQuery = intent.search_query?.trim() || `${intent.brand} ${intent.name}`.trim();
+  const normalizedKeywords = normalizeRecommendationKeywords([
+    ...(intent.keywords ?? []),
+    intent.brand,
+    intent.name,
+    intent.category,
+  ]);
   const linkUrl = seedProduct?.productUrl || seedProduct?.searchUrl || buildFallbackSearchUrl(intent.brand, searchQuery);
   const linkKind: ResolverLinkKind = seedProduct?.productUrl ? "product" : "search";
 
@@ -496,6 +526,9 @@ export const resolveIntentToCatalogEntry = (intent: RecommendationIntent): Resol
     search_query: linkKind === "search" ? searchQuery : null,
     price: intent.price,
     image_url: seedProduct?.imageUrl ?? null,
+    intent_keywords: normalizedKeywords,
+    keyword_signature: buildKeywordSignature(intent.category, normalizedKeywords),
+    scraped_description: null,
     source_version: CATALOG_VERSION,
     resolver_source: seedProduct ? "seed-catalog" : "brand-search-template",
   };

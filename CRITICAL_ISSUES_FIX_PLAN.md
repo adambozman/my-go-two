@@ -326,6 +326,9 @@ Recommendations are user-facing and currently have "demo-feeling" gaps.
 - Done: successful recommendation shares now also persist lightweight share history in `user_preferences.favorites.shared_recommendations`, so the action leaves a durable user-owned artifact instead of disappearing after the device handoff.
 - Done: `resolved_recommendation_catalog` writes now run through service-role edge-function clients, and authenticated-user insert/update policies are removed so the shared catalog is no longer directly writable from the client.
 - Done: recommendation cards now only use resolved remote product photos for true exact-product matches; broader search-style matches consistently fall back to the curated local image banks instead of mixing in unstable scraped imagery.
+- Done: `ai-products` now requires AI-generated recommendation keywords, checks the shared website-level product bank by keyword signature before scraping, and only runs Firecrawl for bank misses.
+- Done: shared recommendation catalog records now store product-only keyword bank fields (`intent_keywords`, `keyword_signature`, `scraped_description`) so reusable product data can be found without storing any user information.
+- Remaining: `ai-connection-products` still does not use the same keyword-bank-first + scrape-on-miss flow as the primary recommendations pipeline.
 - Remaining: there is still no explicit sent-to-recipient tracking path for recommendation sharing beyond the user's own share history.
 
 ### Fixes required
