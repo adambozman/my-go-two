@@ -1,4 +1,4 @@
-import { looksLikeProductPageUrl, normalizeLoose } from "./knowMeCatalog.ts";
+import { looksLikeProductPageUrl, normalizeLoose } from "./recommendationCatalog.ts";
 
 export interface ExactProductScrapeResult {
   image_url: string | null;

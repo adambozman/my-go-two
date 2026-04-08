@@ -69,7 +69,7 @@ export interface KeywordBankCandidate {
 type KnowledgeResponses = Record<string, unknown>;
 type KnowledgeDerivation = Record<string, unknown>;
 
-const CATALOG_VERSION = "know-me-catalog-v3";
+const CATALOG_VERSION = "recommendation-catalog-v1";
 
 const siteSearch = (baseUrl: string, query: string) =>
   `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}${new URLSearchParams({ q: query }).toString()}`;

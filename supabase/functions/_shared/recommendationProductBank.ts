@@ -3,7 +3,7 @@ import {
   mergeDescriptorKeywords,
   normalizePrimaryKeyword,
   type RecommendationIntent,
-} from "./knowMeCatalog.ts";
+} from "./recommendationCatalog.ts";
 import type { ExactProductScrapeResult } from "./exactProductScraper.ts";
 
 export const MIN_EXACT_PRODUCT_BANK_CONFIDENCE = 85;

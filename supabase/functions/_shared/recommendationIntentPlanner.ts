@@ -3,7 +3,7 @@ import {
   mergeRecommendationKeywords,
   normalizePrimaryKeyword,
   type RecommendationIntent,
-} from "./knowMeCatalog.ts";
+} from "./recommendationCatalog.ts";
 import type { NormalizedRecommendationState, RecommendationCategory } from "./recommendationSignals.ts";
 
 const CATEGORY_ORDER: RecommendationCategory[] = ["clothes", "food", "tech", "home"];

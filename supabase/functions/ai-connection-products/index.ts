@@ -12,7 +12,7 @@ import {
   scoreKeywordBankCandidate,
   resolveIntentToCatalogEntry,
   type RecommendationIntent,
-} from "../_shared/knowMeCatalog.ts";
+} from "../_shared/recommendationCatalog.ts";
 import {
   scrapeExactProductWithFirecrawl,
   type ExactProductScrapeResult,

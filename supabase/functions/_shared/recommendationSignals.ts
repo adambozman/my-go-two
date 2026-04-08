@@ -4,7 +4,7 @@ import {
   mergeRecommendationKeywords,
   normalizePrimaryKeyword,
   normalizeRecommendationKeywords,
-} from "./knowMeCatalog.ts";
+} from "./recommendationCatalog.ts";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "./knowledgeCenter.ts";
 import { getCombinedKnowledgeResponses, getKnowledgeDerivationPayload, toRecord, toRecordArray, toStringArray } from "./knowledgeCenter.ts";
 import { THIS_OR_THAT } from "../../../src/data/knowMeQuestions.ts";

@@ -188,8 +188,8 @@ const Recommendations = () => {
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [isCached, setIsCached] = useState(false);
   const [generationVersion, setGenerationVersion] = useState<string | null>(null);
+  const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
   const isUsingRebuiltEngine = generationVersion === RECOMMENDATION_V2_VERSION;
-  const isUsingLegacyEngine = Boolean(generationVersion && !isUsingRebuiltEngine);
 
   const activePillarConfig = useMemo(
     () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
@@ -210,8 +210,9 @@ const Recommendations = () => {
   const fetchProducts = useCallback(
     async (forceRefresh = false) => {
     setLoading(true);
+    setLoadErrorMessage(null);
     try {
-      let activeFunction = "recommendation-engine-v2";
+      const activeFunction = RECOMMENDATION_V2_VERSION;
       let { data, error } = await supabase.functions.invoke(activeFunction, {
         body: forceRefresh ? { force_refresh: true } : {},
       });
@@ -226,15 +227,6 @@ const Recommendations = () => {
         error = retry.error;
       }
 
-      if (error && getRpcStatus(error) !== 401) {
-        activeFunction = "ai-products";
-        const fallback = await supabase.functions.invoke(activeFunction, {
-          body: forceRefresh ? { force_refresh: true } : {},
-        });
-        data = fallback.data;
-        error = fallback.error;
-      }
-
       if (error) throw error;
       if (data?.products) {
         setProducts(data.products);
@@ -245,10 +237,19 @@ const Recommendations = () => {
       }
     } catch (error: unknown) {
       console.error("Products error:", error);
+      setProducts([]);
+      setGeneratedAt(null);
+      setIsCached(false);
+      setGenerationVersion(null);
       const status = getRpcStatus(error);
-      if (status === 429) toast.error("Rate limit reached. Try again shortly.");
-      else if (status === 402) toast.error("AI credits exhausted.");
-      else toast.error(getErrorMessage(error));
+      const message =
+        status === 429
+          ? "Recommendation refresh is rate-limited right now. Try again shortly."
+          : status === 402
+            ? "Recommendation generation is unavailable right now."
+            : getErrorMessage(error);
+      setLoadErrorMessage(message);
+      toast.error(message);
     } finally {
       setLoading(false);
       setHasLoaded(true);
@@ -520,11 +521,6 @@ const Recommendations = () => {
                     Powered by the rebuilt recommendation engine
                   </p>
                 )}
-                {isUsingLegacyEngine && (
-                  <p className="surface-meta mt-1">
-                    Using the legacy recommendation engine while the rebuilt flow falls back
-                  </p>
-                )}
                 {isDev && (
                   <Button
                     size="sm"
@@ -605,6 +601,27 @@ const Recommendations = () => {
               />
             )}
           </>
+        ) : loadErrorMessage ? (
+          <Card variant="sand" className="p-8 text-center">
+            <p className="surface-heading-md mb-2">
+              Recommendations are temporarily unavailable.
+            </p>
+            <p className="surface-body">
+              {loadErrorMessage}
+            </p>
+            <div className="mt-4 flex justify-center">
+              <Button
+                onClick={() => fetchProducts(true)}
+                disabled={loading}
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+              >
+                {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                Try Again
+              </Button>
+            </div>
+          </Card>
         ) : hasLoaded ? (
           <Card variant="sand" className="p-8 text-center">
             <p className="surface-heading-md mb-2">

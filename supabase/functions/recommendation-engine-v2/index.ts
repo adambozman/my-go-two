@@ -8,7 +8,7 @@ import {
   normalizeRecommendationKeywords,
   resolveIntentToCatalogEntry,
   type RecommendationIntent,
-} from "../_shared/knowMeCatalog.ts";
+} from "../_shared/recommendationCatalog.ts";
 import { scrapeExactProductWithFirecrawl } from "../_shared/exactProductScraper.ts";
 import { buildCatalogAiAdapter, fetchKnowledgeCenterState } from "../_shared/knowledgeCenter.ts";
 import {

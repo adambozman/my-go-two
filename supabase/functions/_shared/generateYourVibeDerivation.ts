@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { getBankKnowledgeDerivation } from "./knowMeCatalog.ts";
+import { getBankKnowledgeDerivation } from "./recommendationCatalog.ts";
 
 type ResponseMap = Record<string, unknown>;
 
