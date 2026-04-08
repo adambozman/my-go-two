@@ -329,6 +329,8 @@ That makes it too easy to keep patching a system that should instead be replaced
 
 Use `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md` as the architecture and sequencing guide for this work.
 
+Use `RECOMMENDATION_SYSTEM_BUILD_SPEC.md` as the concrete schema, contract, and build-order spec for implementation.
+
 Treat the current recommendation stack as a bridge system until the replacement is built and verified.
 
 ### Replacement goals
@@ -361,6 +363,7 @@ Treat the current recommendation stack as a bridge system until the replacement 
 - Done: successful recommendation shares now also persist lightweight share history in `user_preferences.favorites.shared_recommendations`, so the action leaves a durable user-owned artifact instead of disappearing after the device handoff.
 - Done: `resolved_recommendation_catalog` writes now run through service-role edge-function clients, and authenticated-user insert/update policies are removed so the shared catalog is no longer directly writable from the client.
 - Done: created `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md` as the replacement architecture plan.
+- Done: created `RECOMMENDATION_SYSTEM_BUILD_SPEC.md` as the concrete schema and implementation contract for the replacement system.
 - Remaining: schema design, input-system contracts, replacement engine implementation, staged cutover, and post-cutover deletion of legacy recommendation code.
 
 ### Fixes required
@@ -394,6 +397,7 @@ Treat the current recommendation stack as a bridge system until the replacement 
 - `supabase/functions/_shared/exactProductScraper.ts`
 - recommendation-related migrations
 - `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md`
+- `RECOMMENDATION_SYSTEM_BUILD_SPEC.md`
 
 ## P1: Large Overloaded Product Surfaces
 
