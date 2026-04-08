@@ -14,6 +14,20 @@ import GoTwoText from "@/components/GoTwoText";
 
 // DEV-ONLY bypass accounts. These are not normal customer login paths.
 const DEV_EMAILS = ["adam.bozman@gmail.com"];
+const AUTH_DIAGNOSTIC_FLAG = "gotwo_debug_auth";
+
+const authDiagnosticsEnabled = () => {
+  try {
+    return localStorage.getItem(AUTH_DIAGNOSTIC_FLAG) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const logAuthDiagnostic = (event: string, details?: Record<string, unknown>) => {
+  if (!authDiagnosticsEnabled()) return;
+  console.info(`[auth] ${event}`, details ?? {});
+};
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Something went wrong";
@@ -26,7 +40,12 @@ const resolvePostLoginDestination = async (userId: string) => {
     .maybeSingle();
 
   if (!profileResult.error) {
-    return profileResult.data?.onboarding_completed_at ? "/dashboard" : "/onboarding";
+    const destination = profileResult.data?.onboarding_completed_at ? "/dashboard" : "/onboarding";
+    logAuthDiagnostic("login:resolved-destination:profile", {
+      userId,
+      destination,
+    });
+    return destination;
   }
 
   const legacyResult = await supabase
@@ -36,12 +55,20 @@ const resolvePostLoginDestination = async (userId: string) => {
     .maybeSingle();
 
   if (!legacyResult.error && legacyResult.data?.onboarding_complete) {
+    logAuthDiagnostic("login:resolved-destination:legacy", {
+      userId,
+      destination: "/dashboard",
+    });
     return "/dashboard";
   }
 
   console.warn("Falling back to onboarding because onboarding status could not be resolved.", {
     profileError: profileResult.error,
     legacyError: legacyResult.error,
+  });
+  logAuthDiagnostic("login:resolved-destination:fallback", {
+    userId,
+    destination: "/onboarding",
   });
   return "/onboarding";
 };
@@ -61,14 +88,23 @@ const Login = () => {
     const inviteId = searchParams.get("invite");
     if (inviteId) {
       localStorage.setItem("gotwo_invite", inviteId);
+      logAuthDiagnostic("login:stored-invite-id", { inviteId });
     }
   }, [searchParams]);
 
   const navigateAfterLogin = async () => {
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (currentUser) {
-      navigate(await resolvePostLoginDestination(currentUser.id));
+      const destination = await resolvePostLoginDestination(currentUser.id);
+      logAuthDiagnostic("login:navigate-after-login", {
+        userId: currentUser.id,
+        destination,
+      });
+      navigate(destination);
     } else {
+      logAuthDiagnostic("login:navigate-after-login:no-user", {
+        destination: "/dashboard",
+      });
       navigate("/dashboard");
     }
   };
@@ -80,6 +116,11 @@ const Login = () => {
       if (supabaseConfigError) {
         throw new Error(supabaseConfigError);
       }
+
+      logAuthDiagnostic("login:submit", {
+        email: email.toLowerCase().trim(),
+        isDevEmail,
+      });
 
       if (isDevEmail) {
         // DEV-ONLY bypass: instant sign-in via server-generated session.
@@ -93,12 +134,22 @@ const Login = () => {
           refresh_token: data.refresh_token,
         });
         if (sessionError) throw sessionError;
+        logAuthDiagnostic("login:dev-session-set", {
+          email: email.toLowerCase().trim(),
+        });
         await navigateAfterLogin();
       } else {
         await signIn(email, password);
+        logAuthDiagnostic("login:password-sign-in-success", {
+          email: email.toLowerCase().trim(),
+        });
         await navigateAfterLogin();
       }
     } catch (error: unknown) {
+      logAuthDiagnostic("login:submit-failed", {
+        email: email.toLowerCase().trim(),
+        message: getErrorMessage(error),
+      });
       toast({ title: "Error", description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setLoading(false);
