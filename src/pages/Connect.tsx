@@ -32,6 +32,12 @@ const Connect = () => {
             const msg = data?.error || error?.message || "Failed to connect";
             if (msg === "Already connected" || data?.status === "already_connected") {
               toast({ title: "Already Connected", description: "You're already linked with this person." });
+            } else if (msg === "Invalid or expired connection token") {
+              toast({
+                title: "Invite Link Problem",
+                description: "This invite link is no longer valid. Ask for a fresh invite.",
+                variant: "destructive",
+              });
             } else {
               setError(msg);
             }
@@ -55,7 +61,7 @@ const Connect = () => {
           setLinking(false);
           if (error || data?.error) {
             const msg = data?.error || error?.message || "Failed to connect";
-            if (msg === "Already connected") {
+            if (msg === "Already connected" || data?.status === "already_connected") {
               toast({ title: "Already Connected", description: "You're already linked with this person." });
             } else {
               setError(msg);
