@@ -128,6 +128,7 @@ The audits consistently point here as the likely source of login bounce and rout
 - Done: the notifications page now waits for subscription resolution before showing the Premium lock state, so subscribed users do not get a false locked screen during auth/subscription settle.
 - Done: the recommendations page now waits for subscription resolution before choosing between guest and Premium behavior, preventing a brief false downgraded state for subscribed users.
 - Done: the `Know Me` page now holds its existing loading state until subscription resolution finishes, so paid users do not briefly fall into free-tier question limits during auth settle.
+- Done: dashboard-home connection gating now waits for subscription resolution before showing the multi-connection Premium lock or opening the add flow, preventing both false locks and false temporary access while auth settles.
 - Remaining: wider auth/subscription lifecycle separation and visual pass across login/refresh transitions.
 
 ### Files

@@ -124,7 +124,7 @@ const rpc = supabase.rpc as unknown as <T>(
 ) => Promise<RpcResult<T>>;
 
 const DashboardHome = () => {
-  const { user, subscribed } = useAuth();
+  const { user, subscribed, subscriptionLoading } = useAuth();
   const navigate = useNavigate();
   const [connections, setConnections] = useState<ConnectionCard[]>([]);
   const [resolvedConnectionImages, setResolvedConnectionImages] = useState<Record<string, string>>({});
@@ -360,6 +360,9 @@ const DashboardHome = () => {
   const handleOpenConnectionFromAvatar = useCallback(
     (entry: DirectoryEntry) => {
       if (entry.isPlaceholder) {
+        if (subscriptionLoading) {
+          return;
+        }
         if (!canAddAnotherConnection) {
           setShowConnectionsPaywall(true);
           return;
@@ -373,16 +376,19 @@ const DashboardHome = () => {
 
       navigate(`/dashboard/connections/${card.id}`);
     },
-    [canAddAnotherConnection, connections, navigate]
+    [canAddAnotherConnection, connections, navigate, subscriptionLoading]
   );
 
   const handleAddConnection = useCallback(() => {
+    if (subscriptionLoading) {
+      return;
+    }
     if (!canAddAnotherConnection) {
       setShowConnectionsPaywall(true);
       return;
     }
     setShowAddModal(true);
-  }, [canAddAnotherConnection]);
+  }, [canAddAnotherConnection, subscriptionLoading]);
 
   useEffect(() => {
     let cancelled = false;
@@ -500,6 +506,7 @@ const DashboardHome = () => {
                 <button
                   onClick={handleAddConnection}
                   className="flex shrink-0 flex-col items-center gap-2"
+                  disabled={subscriptionLoading}
                 >
                   <div
                     className="flex h-[68px] w-[68px] items-center justify-center rounded-full"
@@ -511,7 +518,7 @@ const DashboardHome = () => {
                     <span className="text-[30px] leading-none" style={{ color: "var(--swatch-teal)" }}>+</span>
                   </div>
                   <span className="text-[11px]" style={{ color: "var(--swatch-text-light)", fontFamily: "'Jost', sans-serif" }}>
-                    Add
+                    {subscriptionLoading ? "Checking" : "Add"}
                   </span>
                 </button>
 
@@ -608,7 +615,7 @@ const DashboardHome = () => {
               <EventCalendar milestones={milestones} connections={calendarConnections} />
             </section>
 
-            {showConnectionsPaywall && !canAddAnotherConnection && (
+            {showConnectionsPaywall && !subscriptionLoading && !canAddAnotherConnection && (
               <div className="mt-5">
                 <PremiumLockCard
                   title="More than one connection is Premium"
