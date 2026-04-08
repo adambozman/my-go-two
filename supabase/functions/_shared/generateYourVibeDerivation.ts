@@ -14,6 +14,17 @@ type YourVibeDerivation = {
   persona_summary: string;
 };
 
+type UpsertableTable = {
+  upsert: (
+    values: Record<string, unknown>,
+    options: { onConflict: string },
+  ) => Promise<{ error: unknown }>;
+};
+
+type UpsertCapableClient = {
+  from: (table: string) => UpsertableTable;
+};
+
 const toStringArray = (value: unknown): string[] =>
   Array.isArray(value)
     ? value.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
@@ -148,7 +159,7 @@ export const upsertYourVibeDerivation = async (
   derivationPayload: YourVibeDerivation,
   sourceSnapshot: unknown,
 ) => {
-  const { error } = await (supabase as unknown as { from: (table: string) => any })
+  const { error } = await (supabase as unknown as UpsertCapableClient)
     .from("knowledge_derivations")
     .upsert(
       {

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { User, Bell, Shield, Users, ChevronRight, Save, KeyRound, Mail, QrCode, Copy, Check, Clock, UserCheck, UserX, CreditCard, HelpCircle, Info, Trash2, Database, Loader2 } from "lucide-react";
+import { User, Bell, Shield, Users, ChevronRight, Save, KeyRound, Mail, QrCode, Copy, Check, Clock, UserCheck, UserX, CreditCard, HelpCircle, Info, Trash2, Loader2 } from "lucide-react";
 import SubscriptionSection from "@/components/SubscriptionSection";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth-context";
@@ -308,7 +308,6 @@ const SettingsPage = () => {
     { key: "subscription", icon: CreditCard, title: "Subscription", description: "Your plan and billing details" },
     { key: "help", icon: HelpCircle, title: "Help & Support", description: "Get help, contact us, FAQs" },
     { key: "about", icon: Info, title: "About GoTwo", description: "Version, terms, and privacy policy" },
-    { key: "data-sync", icon: Database, title: "Data Sync", description: "Sync category registry to Supabase" },
   ];
 
   return (
@@ -323,7 +322,7 @@ const SettingsPage = () => {
               {settingsItems.map((item) => (
                 <button
                   key={item.key}
-                  onClick={() => item.key === "data-sync" ? navigate("/dashboard/data-sync") : setActiveSection(item.key)}
+                  onClick={() => setActiveSection(item.key)}
                   className="flex items-center gap-4 px-4 py-4 rounded-2xl transition-colors text-left group w-full hover:bg-secondary/30"
                 >
                   <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>

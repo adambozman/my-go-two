@@ -197,9 +197,7 @@ The next chat must not assume cleanup happened just because it was discussed ear
 What is true right now:
 
 - `GoTwoTransparentNew.png` is still the live logo asset in use
-- `GoTwoTransparent.png` is stale
-- `gotwo-script-lockup.svg` is stale
-- the four `dashboard/quick-*` JPGs are stale leftovers
+- `GoTwoTransparent.png`, `gotwo-script-lockup.svg`, and the four `dashboard/quick-*` JPGs were verified unused and deleted on April 8, 2026
 - there are many additional repo-root screenshots/reference images and broad-glob asset folders that need explicit review and cleanup
 
 ## Asset Findings From This Chat
@@ -214,7 +212,7 @@ What is true right now:
 - relationship stock photos used by `stockPhotos.ts`
 - specific template images directly imported by `Recommendations.tsx`
 
-### Clearly stale leftovers
+### Deleted stale leftovers
 
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\GoTwoTransparent.png`
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\logos\gotwo-script-lockup.svg`
@@ -223,27 +221,35 @@ What is true right now:
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\dashboard\quick-their-brands.jpg`
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\dashboard\quick-their-sizes.jpg`
 
-### Dev-only / screenshot artifacts
+### Deleted dev-only / screenshot artifacts
 
-There are many repo-root and tool-output screenshots that are not app assets, including files like:
+These non-app screenshots and generated capture folders were deleted on April 8, 2026 after verifying they were not imported by runtime code:
 
-- `desktop-mygotwo*.png`
-- `mygotwo-coverflow-*.png`
-- `output-mygotwo-*.png`
-- `playwright-mygotwo-home.png`
-- `tmp-mygotwo-*.png`
-- files under `.playwright-cli`
-- files under `output\playwright`
+- repo-root `desktop-mygotwo*.png`
+- repo-root `mygotwo-coverflow-*.png`
+- repo-root `output-mygotwo-*.png`
+- repo-root `playwright-mygotwo-home.png`
+- repo-root `tmp-mygotwo-*.png`
+- `.playwright-cli`
+- `output\playwright`
 
 ### Manual-review folders
 
-These buckets need explicit cleanup review because they are not clearly direct live assets:
+These buckets were reviewed again. They are active asset buckets in the current app, so they should not be bulk-deleted:
 
 - `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\spare`
-- much of `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates`
-- much of `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\styles\female`
-- much of `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\styles\male`
-- extra preview images under `src\assets\previews` other than `bg-clean-linen.jpg`
+  is included in the active `imageBlocklist` build-time glob
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates`
+  is included in the active `imageBlocklist` build-time glob and specific files are imported directly by `Recommendations.tsx`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\styles`
+  is included in the active `imageBlocklist` build-time glob and root style images are imported directly by `profileQuestions.ts`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\previews`
+  is included in the active `imageBlocklist` build-time glob and `bg-clean-linen.jpg` is imported by `src\index.css`
+
+Safe cleanup direction:
+
+- review these buckets file by file, not folder by folder
+- verify direct imports and `imageBlocklist` coverage before deleting any individual asset
 
 ## Photo Gallery Findings
 
@@ -276,9 +282,11 @@ The correct direction is:
 
 ### Assets
 
-1. Delete stale logo files and stale dashboard quick-action images.
-2. Audit the repo-root screenshot/reference files and remove what should not live in the repo.
-3. Review `spare`, `styles`, `templates`, and non-core preview folders and decide what is truly live versus leftover.
+1. Done: deleted stale logo files and stale dashboard quick-action images after verifying zero live references.
+2. Done: deleted repo-root screenshot/reference artifacts and Playwright capture folders after verifying they were not runtime assets.
+3. Done: verified that `spare`, `styles`, `templates`, and `previews` are active asset buckets and should not be bulk-deleted.
+4. Review those active asset buckets file by file to find truly unused individual assets.
+5. Done: deleted `output\diagnostics\rg-copy.exe` after verifying it had no runtime references and was just generated tooling output.
 
 ### Photo Gallery
 
