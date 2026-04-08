@@ -14,6 +14,9 @@ const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
     price: "$59.95",
     scraped_description:
       "Slim blue denim jeans with stretch fabric, a classic five-pocket build, and a clean daily fit.",
+    scraped_product_title: "American Eagle Skinny Blue Jeans",
+    product_match_confidence: 100,
+    exact_match_confirmed: true,
   },
   "Mejuri Thin Dome Ring": {
     image_url: "https://cdn.mejuri.com/pdp/thin-dome-ring.jpg",
@@ -21,6 +24,9 @@ const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
     price: "$78",
     scraped_description:
       "Minimal gold dome ring with a polished profile designed for stacking and everyday wear.",
+    scraped_product_title: "Mejuri Thin Dome Ring",
+    product_match_confidence: 100,
+    exact_match_confirmed: true,
   },
   "Lunya Washable Silk Tee Set": {
     image_url: "https://cdn.lunya.co/pdp/washable-silk-tee-set.jpg",
@@ -28,6 +34,9 @@ const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
     price: "$198",
     scraped_description:
       "Washable silk sleep set with a relaxed tee silhouette and soft, elevated finish.",
+    scraped_product_title: "Lunya Washable Silk Tee Set",
+    product_match_confidence: 100,
+    exact_match_confirmed: true,
   },
   "Bellroy Lite Daypack": {
     image_url: "https://cdn.bellroy.com/pdp/lite-daypack.jpg",
@@ -35,6 +44,9 @@ const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
     price: "$129",
     scraped_description:
       "Lightweight daypack with clean organization, travel-friendly carry, and a minimal shell.",
+    scraped_product_title: "Bellroy Lite Daypack",
+    product_match_confidence: 100,
+    exact_match_confirmed: true,
   },
 };
 
@@ -129,6 +141,37 @@ describe("agent 2: connection recommendation flow", () => {
     const bankSnapshot = harness.snapshotBank();
     expect(bankSnapshot).toHaveLength(harperWeeklyFixture.weeklyIntents.length + 1);
     expect(bankSnapshot.some((entry) => entry.brand === "American Eagle" && entry.usage_count >= 1)).toBe(true);
-    expect(bankSnapshot.some((entry) => entry.brand === "Bellroy" && entry.resolver_source === "firecrawl")).toBe(true);
+    expect(bankSnapshot.some((entry) => entry.brand === "Bellroy" && entry.resolver_source === "firecrawl-exact")).toBe(true);
+  });
+});
+
+describe("exact product confidence", () => {
+  it("keeps search fallback when scrape confidence is not exact", async () => {
+    const harness = new RecommendationFlowHarness({
+      generateIntents: () => [harperWeeklyFixture.weeklyIntents[0]],
+      scrapeProduct: () => ({
+        image_url: null,
+        product_url: null,
+        price: null,
+        scraped_description: null,
+        scraped_product_title: "American Eagle Denim Collection",
+        product_match_confidence: 54,
+        exact_match_confirmed: false,
+      }),
+    });
+
+    const run = await harness.runWeekly({
+      userId: harperWeeklyFixture.userId,
+      weekStartKey: "2026-04-13",
+      knowledgeResponses: harperWeeklyFixture.knowledgeResponses,
+      sharedCards: harperWeeklyFixture.sharedCards,
+      yourVibe: harperWeeklyFixture.yourVibe,
+    });
+
+    expect(run.products[0]?.affiliate_url).toBeNull();
+    expect(run.products[0]?.image_url).toBeNull();
+    expect(run.products[0]?.source_kind).toBe("brand-search");
+    expect(harness.snapshotBank()[0]?.exact_match_confirmed).toBe(false);
+    expect(harness.snapshotBank()[0]?.product_match_confidence).toBe(54);
   });
 });

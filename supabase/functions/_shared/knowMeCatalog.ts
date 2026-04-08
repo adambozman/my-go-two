@@ -46,6 +46,9 @@ export interface ResolvedCatalogEntry {
   intent_keywords: string[] | null;
   keyword_signature: string | null;
   scraped_description: string | null;
+  scraped_product_title: string | null;
+  product_match_confidence: number;
+  exact_match_confirmed: boolean;
   source_version: string;
   resolver_source: string;
 }
@@ -417,8 +420,35 @@ const CATEGORY_TARGETS: Record<RecommendationCategory, string[]> = {
 const normalizeText = (value: unknown): string =>
   typeof value === "string" ? value.trim().toLowerCase() : "";
 
-const normalizeLoose = (value: string) =>
+export const normalizeLoose = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
+const PRODUCT_URL_POSITIVE_PATTERNS = [
+  /\/product(?:s)?\//i,
+  /\/p\//i,
+  /\/dp\//i,
+  /\/item\//i,
+  /\/sku\//i,
+  /\/buy\//i,
+];
+
+const PRODUCT_URL_NEGATIVE_PATTERNS = [
+  /\/search(?:\/|$|\?)/i,
+  /\/search-results(?:\/|$|\?)/i,
+  /\/collections?(?:\/|$)/i,
+  /\/categories?(?:\/|$)/i,
+  /\/category(?:\/|$)/i,
+  /\/browse(?:\/|$)/i,
+  /\/shop(?:\/|$)\?/i,
+  /[?&](?:q|query|keyword|search|text|Ntt)=/i,
+];
+
+export const looksLikeProductPageUrl = (url: string | null | undefined) => {
+  const value = (url ?? "").trim();
+  if (!value) return false;
+  if (PRODUCT_URL_NEGATIVE_PATTERNS.some((pattern) => pattern.test(value))) return false;
+  return PRODUCT_URL_POSITIVE_PATTERNS.some((pattern) => pattern.test(value));
+};
 
 const NEGATIVE_SIGNAL_KEY_PATTERN = /(avoid|dislike|hate|turnoff|turn off|pet peeve|no go)/i;
 
@@ -599,8 +629,12 @@ export const resolveIntentToCatalogEntry = (intent: RecommendationIntent): Resol
     intent.name,
     intent.category,
   ]);
-  const linkUrl = seedProduct?.productUrl || seedProduct?.searchUrl || buildFallbackSearchUrl(intent.brand, searchQuery);
-  const linkKind: ResolverLinkKind = seedProduct?.productUrl ? "product" : "search";
+  const seedProductUrl = seedProduct?.productUrl ?? null;
+  const seedProductIsExact = looksLikeProductPageUrl(seedProductUrl);
+  const linkUrl = seedProductIsExact
+    ? seedProductUrl!
+    : seedProduct?.searchUrl || seedProductUrl || buildFallbackSearchUrl(intent.brand, searchQuery);
+  const linkKind: ResolverLinkKind = seedProductIsExact ? "product" : "search";
 
   return {
     fingerprint: buildRecommendationFingerprint(intent.category, intent.brand, intent.name, recommendationKind),
@@ -616,6 +650,9 @@ export const resolveIntentToCatalogEntry = (intent: RecommendationIntent): Resol
     intent_keywords: normalizedKeywords,
     keyword_signature: buildKeywordSignature(intent.category, normalizedKeywords),
     scraped_description: null,
+    scraped_product_title: seedProductIsExact ? intent.name : null,
+    product_match_confidence: seedProductIsExact ? 100 : 0,
+    exact_match_confirmed: seedProductIsExact,
     source_version: CATALOG_VERSION,
     resolver_source: seedProduct ? "seed-catalog" : "brand-search-template",
   };

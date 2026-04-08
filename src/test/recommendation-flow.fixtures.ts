@@ -147,6 +147,7 @@ const weeklyIntents: RecommendationIntent[] = [
     why: "The profile leans polished but still wants versatile denim that can be dressed up or down.",
     recommendation_kind: "specific",
     search_query: "American Eagle skinny blue jeans",
+    primary_keyword: "jeans",
     keywords: ["american eagle", "skinny blue jeans", "blue jeans", "denim", "clothes"],
   },
   {
@@ -158,6 +159,7 @@ const weeklyIntents: RecommendationIntent[] = [
     why: "This keeps the recommendation aligned with polished, minimal jewelry signals.",
     recommendation_kind: "specific",
     search_query: "Mejuri thin dome ring gold",
+    primary_keyword: "ring",
     keywords: ["mejuri", "thin dome ring", "gold ring", "jewelry", "minimal"],
   },
   {
@@ -169,6 +171,7 @@ const weeklyIntents: RecommendationIntent[] = [
     why: "The profile likes luxury sleepwear and practical items with a premium finish.",
     recommendation_kind: "specific",
     search_query: "Lunya washable silk tee set",
+    primary_keyword: "sleep set",
     keywords: ["lunya", "silk tee set", "sleepwear", "luxury", "home"],
   },
 ];
@@ -183,6 +186,7 @@ const connectionIntents: RecommendationIntent[] = [
     why: "The connection context surfaces denim and casual staples as a reliable shared fit.",
     recommendation_kind: "specific",
     search_query: "American Eagle skinny blue jeans",
+    primary_keyword: "jeans",
     keywords: ["blue jeans", "denim", "skinny blue jeans", "american eagle", "clothes"],
   },
   {
@@ -194,6 +198,7 @@ const connectionIntents: RecommendationIntent[] = [
     why: "This is a functional connection pick that fits the outdoors, travel, and gear signals.",
     recommendation_kind: "generic",
     search_query: "Bellroy Lite Daypack",
+    primary_keyword: "daypack",
     keywords: ["bellroy", "daypack", "travel bag", "practical", "tech"],
   },
 ];

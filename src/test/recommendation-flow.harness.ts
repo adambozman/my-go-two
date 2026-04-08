@@ -12,6 +12,9 @@ export type ScrapedProduct = {
   product_url: string | null;
   price: string | null;
   scraped_description: string | null;
+  scraped_product_title: string | null;
+  product_match_confidence: number;
+  exact_match_confirmed: boolean;
 };
 
 export type RecommendationCard = {
@@ -46,6 +49,9 @@ export type SharedBankRecord = {
   intent_keywords: string[] | null;
   keyword_signature: string | null;
   scraped_description: string | null;
+  scraped_product_title: string | null;
+  product_match_confidence: number;
+  exact_match_confirmed: boolean;
   source_version: string;
   resolver_source: string;
   usage_count: number;
@@ -200,6 +206,7 @@ export class RecommendationFlowHarness {
 
     for (const intent of intents) {
       const normalizedKeywords = ensureStringArray([
+        intent.primary_keyword,
         ...(intent.keywords ?? []),
         intent.brand,
         intent.name,
@@ -216,9 +223,10 @@ export class RecommendationFlowHarness {
       const existing = (keywordSignature && this.sharedBankBySignature.get(keywordSignature)) ||
         this.sharedBankByFingerprint.get(fingerprint) ||
         null;
+      const hasExactProductRecord = Boolean(existing?.link_kind === "product" && existing?.exact_match_confirmed);
 
       let resolved: SharedBankRecord;
-      if (existing) {
+      if (existing && hasExactProductRecord) {
         bankHits += 1;
         resolved = {
           ...existing,
@@ -233,7 +241,11 @@ export class RecommendationFlowHarness {
         const scraped = this.deps.scrapeProduct(intent, context);
         this.firecrawlCalls.push({ intent, context });
         const fallback = resolveIntentToCatalogEntry(intent);
-        const productUrl = scraped?.product_url || (fallback.link_kind === "product" ? fallback.link_url : null);
+        const productUrl = scraped?.exact_match_confirmed
+          ? scraped.product_url
+          : fallback.exact_match_confirmed && fallback.link_kind === "product"
+            ? fallback.link_url
+            : null;
         const linkKind = productUrl ? "product" : fallback.link_kind;
         resolved = {
           fingerprint,
@@ -244,13 +256,16 @@ export class RecommendationFlowHarness {
           link_kind: linkKind,
           link_url: productUrl || fallback.link_url,
           search_query: fallback.search_query ?? intent.search_query ?? null,
-          price: scraped?.price ?? fallback.price ?? intent.price,
-          image_url: scraped?.image_url ?? fallback.image_url ?? null,
+          price: productUrl ? (scraped?.price ?? fallback.price ?? intent.price) : fallback.price ?? intent.price,
+          image_url: productUrl ? (scraped?.image_url ?? fallback.image_url ?? null) : null,
           intent_keywords: normalizedKeywords,
           keyword_signature: keywordSignature,
-          scraped_description: scraped?.scraped_description ?? null,
+          scraped_description: scraped?.exact_match_confirmed ? scraped.scraped_description : fallback.scraped_description,
+          scraped_product_title: scraped?.scraped_product_title ?? fallback.scraped_product_title,
+          product_match_confidence: scraped?.product_match_confidence ?? fallback.product_match_confidence,
+          exact_match_confirmed: scraped?.exact_match_confirmed ?? fallback.exact_match_confirmed,
           source_version: getCatalogVersion(),
-          resolver_source: scraped?.product_url ? "firecrawl" : fallback.resolver_source,
+          resolver_source: scraped?.exact_match_confirmed ? "firecrawl-exact" : fallback.resolver_source,
           usage_count: 0,
         };
 
@@ -272,6 +287,7 @@ export const isProductOnlyBankRecord = (entry: SharedBankRecord) => {
   return keys.join(",") === [
     "brand",
     "category",
+    "exact_match_confirmed",
     "fingerprint",
     "image_url",
     "intent_keywords",
@@ -279,10 +295,12 @@ export const isProductOnlyBankRecord = (entry: SharedBankRecord) => {
     "link_kind",
     "link_url",
     "price",
+    "product_match_confidence",
     "product_name",
     "recommendation_kind",
     "resolver_source",
     "scraped_description",
+    "scraped_product_title",
     "search_query",
     "source_version",
     "usage_count",

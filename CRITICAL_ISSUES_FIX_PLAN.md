@@ -329,6 +329,7 @@ Recommendations are user-facing and currently have "demo-feeling" gaps.
 - Done: `ai-products` now requires AI-generated recommendation keywords, checks the shared website-level product bank by keyword signature before scraping, and only runs Firecrawl for bank misses.
 - Done: shared recommendation catalog records now store product-only keyword bank fields (`intent_keywords`, `keyword_signature`, `scraped_description`) so reusable product data can be found without storing any user information.
 - Done: `ai-connection-products` now also requires AI-generated recommendation keywords, checks the shared product bank by keyword signature before scraping, and only uses Firecrawl on misses so connection gifting can reuse existing website-level product data too.
+- Done: both recommendation pipelines now only promote Firecrawl results into exact product records when title, link, image, and price confidence all pass; exact-confirmed bank rows store the verified link, image, price, scraped description, scraped title, keywords, and match confidence, while weak scrapes stay search fallbacks instead of poisoning the shared bank.
 - Remaining: there is still no explicit sent-to-recipient tracking path for recommendation sharing beyond the user's own share history.
 
 ### Fixes required

@@ -11,6 +11,10 @@ import {
   resolveIntentToCatalogEntry,
   type RecommendationIntent,
 } from "../_shared/knowMeCatalog.ts";
+import {
+  scrapeExactProductWithFirecrawl,
+  type ExactProductScrapeResult,
+} from "../_shared/exactProductScraper.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -70,13 +74,16 @@ type ResolvedRecommendationCatalogRow = {
   intent_keywords: string[] | null;
   keyword_signature: string | null;
   scraped_description: string | null;
+  scraped_product_title: string | null;
+  product_match_confidence: number;
+  exact_match_confirmed: boolean;
   source_version: string;
   resolver_source: string;
   usage_count: number;
 };
 
 const RESOLVED_RECOMMENDATION_SELECT =
-  "fingerprint, brand, product_name, category, recommendation_kind, link_kind, link_url, search_query, price, image_url, intent_keywords, keyword_signature, scraped_description, source_version, resolver_source, usage_count";
+  "fingerprint, brand, product_name, category, recommendation_kind, link_kind, link_url, search_query, price, image_url, intent_keywords, keyword_signature, scraped_description, scraped_product_title, product_match_confidence, exact_match_confirmed, source_version, resolver_source, usage_count";
 
 const findBestKeywordBankMatch = async (
   admin: ReturnType<typeof createClient>,
@@ -286,198 +293,22 @@ const fallbackFromSharedRecommendations = (context: Record<string, unknown>, sel
   return products;
 };
 
-interface ScrapedProduct {
-  image_url: string | null;
-  product_url: string | null;
-  price: string | null;
-  scraped_description: string | null;
-}
+type ScrapedProduct = ExactProductScrapeResult;
 
-const IMAGE_REJECT_WORDS = [
-  "icon", "logo", "sprite", "1x1", "pixel", ".svg", "badge", "banner-ad",
-  "nav", "navtile", "nav-tile", "category-tile", "placeholder", "spacer",
-  "tracking", "loading", "spinner", "arrow", "chevron", "caret",
-  "social-", "facebook", "twitter", "instagram", "pinterest", "youtube",
-  "flag", "payment", "visa", "mastercard", "amex", "paypal",
-  "star-rating", "review", "trustpilot",
-];
+const hasExactProductRecord = (entry: ResolvedRecommendationCatalogRow | null) =>
+  Boolean(entry?.link_kind === "product" && entry?.exact_match_confirmed);
 
-const IMAGE_BOOST_PATTERNS = [
-  /product/i, /pdp/i, /hero/i, /main/i, /primary/i,
-  /detail/i, /zoom/i, /full/i, /large/i, /1200/i, /2048/i, /1024/i,
-];
-
-function scoreImageUrl(url: string, productName: string): number {
-  const lower = url.toLowerCase();
-
-  for (const word of IMAGE_REJECT_WORDS) {
-    if (lower.includes(word)) return -1;
-  }
-
-  const dimMatch = lower.match(/(?:width|w|height|h)[=_](\d+)/i);
-  if (dimMatch && parseInt(dimMatch[1]) < 200) return -1;
-
-  let score = 0;
-
-  for (const pattern of IMAGE_BOOST_PATTERNS) {
-    if (pattern.test(lower)) score += 2;
-  }
-
-  if (dimMatch) {
-    const dim = parseInt(dimMatch[1]);
-    if (dim >= 600) score += 3;
-    else if (dim >= 400) score += 1;
-  }
-
-  const nameWords = productName.toLowerCase().split(/\s+/).filter((word) => word.length > 3);
-  for (const word of nameWords) {
-    if (lower.includes(word)) score += 2;
-  }
-
-  if (/\.(jpg|jpeg|png|webp|avif)/i.test(lower)) score += 1;
-
-  return score;
-}
-
-function pickBestImage(urls: string[], productName: string): string | null {
-  const scored = urls
-    .map((url) => ({ url, score: scoreImageUrl(url, productName) }))
-    .filter((entry) => entry.score >= 0)
-    .sort((a, b) => b.score - a.score);
-  return scored[0]?.url ?? null;
-}
-
-function pickBestResult(results: Array<Record<string, unknown>>): Record<string, unknown> {
-  const scored = results.map((result, index) => {
-    const url = cleanText(result.url).toLowerCase();
-    let score = 0;
-    if (/\/product[s]?\//.test(url)) score += 3;
-    if (/\/p\//.test(url)) score += 3;
-    if (/\/dp\//.test(url)) score += 3;
-    if (/\/collection[s]?/i.test(url)) score -= 2;
-    if (/\/categor/i.test(url)) score -= 2;
-    score -= index * 0.1;
-    return { result, score };
-  });
-
-  scored.sort((a, b) => b.score - a.score);
-  return scored[0]?.result ?? results[0];
-}
-
-async function scrapeProductWithFirecrawl(
+const scrapeProductWithFirecrawl = (
   brand: string,
   productName: string,
   searchQuery: string | null,
-): Promise<ScrapedProduct | null> {
-  const firecrawlApiKey = Deno.env.get("FIRECRAWL_API_KEY");
-  if (!firecrawlApiKey) return null;
-
-  try {
-    const query = searchQuery || `${brand} ${productName} buy`;
-
-    const searchRes = await fetch("https://api.firecrawl.dev/v1/search", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${firecrawlApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query,
-        limit: 5,
-        scrapeOptions: { formats: ["markdown"] },
-      }),
-    });
-
-    if (!searchRes.ok) return null;
-
-    const searchData = await searchRes.json();
-    const results = searchData?.data ?? searchData?.results ?? [];
-    if (!results.length) return null;
-
-    const bestResult = pickBestResult(results);
-    const bestResultMetadata = toObject(bestResult.metadata);
-    const productUrl = cleanText(bestResult.url) || cleanText(bestResultMetadata.sourceURL) || null;
-
-    let imageUrl: string | null = null;
-    let scrapedPrice: string | null = null;
-    let scrapedDescription: string | null = null;
-
-    if (productUrl) {
-      const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${firecrawlApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          url: productUrl,
-          formats: ["markdown"],
-          onlyMainContent: true,
-          waitFor: 1500,
-        }),
-      });
-
-      if (scrapeRes.ok) {
-        const scrapeData = await scrapeRes.json();
-        const metadata = scrapeData?.data?.metadata ?? scrapeData?.metadata ?? {};
-        const markdown = scrapeData?.data?.markdown ?? scrapeData?.markdown ?? "";
-
-        const candidates: string[] = [];
-        if (metadata.ogImage && /^https?:\/\/.+/i.test(metadata.ogImage)) {
-          candidates.push(metadata.ogImage);
-        }
-
-        const markdownImages = [...markdown.matchAll(/!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi)]
-          .map((match: RegExpMatchArray) => match[1]);
-        candidates.push(...markdownImages);
-        imageUrl = pickBestImage(candidates, productName);
-
-        const priceMatch = markdown.match(/\$[\d,]+\.?\d{0,2}/);
-        if (priceMatch) scrapedPrice = priceMatch[0];
-
-        const paragraphs = markdown
-          .split(/\n{2,}/)
-          .map((part: string) => cleanText(part.replace(/^#+\s*/, "")))
-          .filter((part: string) => part.length >= 60);
-        scrapedDescription = paragraphs[0] ?? null;
-      }
-    }
-
-    if (!imageUrl) {
-      const candidates: string[] = [];
-      for (const result of results) {
-        const metadata = toObject(result.metadata);
-        const ogImage = cleanText(metadata.ogImage);
-        if (ogImage) candidates.push(ogImage);
-        const markdown = cleanText(result.markdown);
-        const markdownImages = [...markdown.matchAll(/!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi)]
-          .map((match: RegExpMatchArray) => match[1]);
-        candidates.push(...markdownImages);
-      }
-      imageUrl = pickBestImage(candidates, productName);
-    }
-
-    if (!scrapedPrice) {
-      for (const result of results) {
-        const markdown = cleanText(result.markdown);
-        const priceMatch = markdown.match(/\$[\d,]+\.?\d{0,2}/);
-        if (priceMatch) {
-          scrapedPrice = priceMatch[0];
-          break;
-        }
-      }
-    }
-
-    return {
-      image_url: imageUrl,
-      product_url: productUrl,
-      price: scrapedPrice,
-      scraped_description: scrapedDescription,
-    };
-  } catch (_error) {
-    return null;
-  }
-}
+) =>
+  scrapeExactProductWithFirecrawl({
+    brand,
+    productName,
+    searchQuery,
+    logPrefix: "[firecrawl ai-connection-products]",
+  });
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -785,14 +616,32 @@ Use the provided tool.`;
               );
             }
 
-            const resolved = existing ?? resolveIntentToCatalogEntry(intent);
-            const scraped = existing
+            const fallbackResolved = resolveIntentToCatalogEntry(intent);
+            const resolved = existing ?? fallbackResolved;
+            const shouldScrapeExactProduct = !hasExactProductRecord(existing);
+            const scraped = shouldScrapeExactProduct
+              ? await scrapeProductWithFirecrawl(intent.brand, intent.name, intent.search_query ?? null)
+              : null;
+            const exactProductUrl = scraped?.exact_match_confirmed
+              ? scraped.product_url
+              : hasExactProductRecord(existing)
+                ? existing!.link_url
+                : resolved.exact_match_confirmed && resolved.link_kind === "product"
+                  ? resolved.link_url
+                  : null;
+            const finalImageUrl = exactProductUrl
+              ? scraped?.image_url || existing?.image_url || resolved.image_url || null
+              : null;
+            const finalPrice = exactProductUrl
+              ? scraped?.price || existing?.price || resolved.price || intent.price
+              : resolved.price || intent.price;
+            const finalSearchUrl = exactProductUrl
               ? null
-              : await scrapeProductWithFirecrawl(intent.brand, intent.name, intent.search_query ?? null);
-            const finalImageUrl = scraped?.image_url || resolved.image_url || null;
-            const finalProductUrl = scraped?.product_url || (resolved.link_kind === "product" ? resolved.link_url : null);
-            const finalPrice = scraped?.price || resolved.price || intent.price;
-            const finalSearchUrl = !finalProductUrl && resolved.link_kind === "search" ? resolved.link_url : null;
+              : existing?.search_query
+                ? existing.link_url
+                : resolved.link_kind === "search"
+                  ? resolved.link_url
+                  : fallbackResolved.link_url;
             const finalProductQuery = resolved.search_query || intent.search_query || `${intent.brand} ${intent.name}`;
 
             if (!existing) {
@@ -801,10 +650,14 @@ Use the provided tool.`;
                 image_url: finalImageUrl,
                 intent_keywords: normalizedKeywords,
                 keyword_signature: keywordSignature,
-                scraped_description: scraped?.scraped_description || resolved.scraped_description,
-                link_url: finalProductUrl || resolved.link_url,
-                link_kind: finalProductUrl ? "product" : resolved.link_kind,
-                resolver_source: scraped?.product_url ? "firecrawl" : resolved.resolver_source,
+                scraped_description: exactProductUrl ? scraped?.scraped_description || resolved.scraped_description : resolved.scraped_description,
+                scraped_product_title: scraped?.scraped_product_title || resolved.scraped_product_title,
+                product_match_confidence: scraped?.product_match_confidence ?? resolved.product_match_confidence,
+                exact_match_confirmed: scraped?.exact_match_confirmed ?? resolved.exact_match_confirmed,
+                link_url: exactProductUrl || finalSearchUrl || resolved.link_url,
+                link_kind: exactProductUrl ? "product" : "search",
+                search_query: exactProductUrl ? null : finalProductQuery,
+                resolver_source: scraped?.exact_match_confirmed ? "firecrawl-exact" : resolved.resolver_source,
               }, {
                 onConflict: "fingerprint",
               });
@@ -815,9 +668,20 @@ Use the provided tool.`;
                   usage_count: existing.usage_count + 1,
                   intent_keywords: mergeRecommendationKeywords(existing.intent_keywords, normalizedKeywords),
                   keyword_signature: keywordSignature,
-                  ...(scraped?.image_url ? { image_url: scraped.image_url } : {}),
-                  ...(scraped?.scraped_description ? { scraped_description: scraped.scraped_description } : {}),
-                  ...(scraped?.product_url ? { link_url: scraped.product_url, link_kind: "product", resolver_source: "firecrawl" } : {}),
+                  ...(scraped ? {
+                    scraped_product_title: scraped.scraped_product_title,
+                    product_match_confidence: scraped.product_match_confidence,
+                    exact_match_confirmed: scraped.exact_match_confirmed,
+                  } : {}),
+                  ...(scraped?.exact_match_confirmed ? {
+                    image_url: scraped.image_url,
+                    scraped_description: scraped.scraped_description,
+                    price: scraped.price,
+                    link_url: scraped.product_url,
+                    link_kind: "product",
+                    search_query: null,
+                    resolver_source: "firecrawl-exact",
+                  } : {}),
                 })
                 .eq("fingerprint", existing.fingerprint);
             }
@@ -831,12 +695,12 @@ Use the provided tool.`;
               why: intent.why,
               is_connection_pick: true,
               is_sponsored: false,
-              affiliate_url: finalProductUrl,
+              affiliate_url: exactProductUrl,
               search_url: finalSearchUrl,
               product_query: finalProductQuery,
               sponsored_id: null,
-              image_url: finalProductUrl ? finalImageUrl : null,
-              source_kind: finalProductUrl ? "specific-product" : "brand-search",
+              image_url: exactProductUrl ? finalImageUrl : null,
+              source_kind: exactProductUrl ? "specific-product" : "brand-search",
               source_version: resolved.source_version,
             });
           }
