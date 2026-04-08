@@ -3,8 +3,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   buildRecommendationFingerprint,
   buildKeywordSignature,
+  extractNegativePreferenceKeywords,
   getCatalogVersion,
+  mergeRecommendationKeywords,
   normalizeRecommendationKeywords,
+  scoreKeywordBankCandidate,
   resolveIntentToCatalogEntry,
   type RecommendationIntent,
 } from "../_shared/knowMeCatalog.ts";
@@ -46,10 +49,11 @@ const sanitizeIntents = (rawIntents: unknown): RecommendationIntent[] => {
         why: cleanText(intent.why),
         recommendation_kind: (ALLOWED_KINDS.has(recommendationKind) ? recommendationKind : "catalog") as RecommendationIntent["recommendation_kind"],
         search_query: cleanText(intent.search_query) || null,
+        primary_keyword: cleanText(intent.primary_keyword) || null,
         keywords: sanitizeKeywordList(intent.keywords),
       };
     })
-    .filter((intent) => intent.brand && intent.name && intent.hook && intent.why);
+    .filter((intent) => intent.brand && intent.name && intent.hook && intent.why && intent.primary_keyword);
 };
 
 type ResolvedRecommendationCatalogRow = {
@@ -73,6 +77,30 @@ type ResolvedRecommendationCatalogRow = {
 
 const RESOLVED_RECOMMENDATION_SELECT =
   "fingerprint, brand, product_name, category, recommendation_kind, link_kind, link_url, search_query, price, image_url, intent_keywords, keyword_signature, scraped_description, source_version, resolver_source, usage_count";
+
+const findBestKeywordBankMatch = async (
+  admin: ReturnType<typeof createClient>,
+  category: RecommendationIntent["category"],
+  primaryKeyword: string | null,
+  normalizedKeywords: string[],
+  negativeKeywords: string[],
+): Promise<ResolvedRecommendationCatalogRow | null> => {
+  const { data: candidates } = await admin
+    .from("resolved_recommendation_catalog")
+    .select(RESOLVED_RECOMMENDATION_SELECT)
+    .eq("category", category)
+    .limit(50);
+
+  const best = (Array.isArray(candidates) ? candidates as ResolvedRecommendationCatalogRow[] : [])
+    .map((candidate) => ({
+      candidate,
+      score: scoreKeywordBankCandidate(category, normalizedKeywords, primaryKeyword, negativeKeywords, candidate),
+    }))
+    .filter((entry) => entry.score >= 70)
+    .sort((a, b) => b.score - a.score)[0];
+
+  return best?.candidate ?? null;
+};
 
 const CATEGORY_KEYWORDS: Record<RecommendationIntent["category"], string[]> = {
   clothes: [
@@ -573,6 +601,11 @@ serve(async (req) => {
       const derived = toObject(generatorContext.derived);
       const connectionKind = cleanText(generatorContext.connection_kind || "custom");
       const connectionLabel = cleanText(generatorContext.connection_label || "Connection");
+      const negativePreferenceKeywords = extractNegativePreferenceKeywords({
+        ...toObject(generatorContext.profile),
+        ...toObject(generatorContext.derived),
+        ...generatorContext,
+      });
 
       const profileSnapshot = [
         `display_name: ${cleanText(profile.display_name) || "Not shared"}`,
@@ -626,15 +659,20 @@ RULES:
 3. Recommendations should be suitable for the viewer to buy, plan, or act on for this connection.
 4. Prioritize the occasion when one exists.
 5. Use only signals that were explicitly shared.
-6. Every intent must choose a recommendation kind:
+6. primary_keyword MUST be present and should be the main product type only, like jeans, sneakers, lamp, headphones, sushi, or candle.
+7. keywords MUST be present and should be 3 to 6 lowercase descriptive keywords only, like blue, bootcut, leather, minimal, american eagle, or noise-canceling. Do not repeat the primary keyword.
+8. Never recommend items whose primary keyword or descriptive keywords conflict with the negative / avoid signals that were explicitly shared.
+9. Every intent must choose a recommendation kind:
    - specific
    - generic
    - catalog
-7. Use real brands only.
-8. Never output a URL.
-9. search_query should be present for generic recommendations when useful.
-10. keywords MUST be present - 3 to 6 lowercase recommendation keywords that describe the product intent, style, and product type. Do not include URLs.
-10. Keep hook and why concise and occasion-aware.
+10. Use real brands only.
+11. Never output a URL.
+12. search_query should be present for generic recommendations when useful.
+13. Keep hook and why concise and occasion-aware.
+
+NEGATIVE / AVOID SIGNALS:
+${negativePreferenceKeywords.join(", ") || "None provided"}
 
 Use the provided tool.`;
 
@@ -669,6 +707,10 @@ Use the provided tool.`;
                           why: { type: "string" },
                           recommendation_kind: { type: "string", enum: ["specific", "generic", "catalog"] },
                           search_query: { type: "string" },
+                          primary_keyword: {
+                            type: "string",
+                            description: "Main product type only, like jeans, hoodie, candle, sushi, headphones, or rug",
+                          },
                           keywords: {
                             type: "array",
                             items: { type: "string" },
@@ -676,7 +718,7 @@ Use the provided tool.`;
                             maxItems: 6,
                           },
                         },
-                        required: ["brand", "name", "price", "category", "hook", "why", "recommendation_kind", "keywords"],
+                        required: ["brand", "name", "price", "category", "hook", "why", "recommendation_kind", "primary_keyword", "keywords"],
                         additionalProperties: false,
                       },
                     },
@@ -708,6 +750,7 @@ Use the provided tool.`;
               intent.recommendation_kind,
             );
             const normalizedKeywords = normalizeRecommendationKeywords([
+              intent.primary_keyword,
               ...(intent.keywords ?? []),
               intent.brand,
               intent.name,
@@ -731,6 +774,15 @@ Use the provided tool.`;
                 .eq("fingerprint", fingerprint)
                 .maybeSingle();
               existing = byFingerprint as ResolvedRecommendationCatalogRow | null;
+            }
+            if (!existing) {
+              existing = await findBestKeywordBankMatch(
+                admin,
+                intent.category,
+                intent.primary_keyword ?? null,
+                normalizedKeywords,
+                negativePreferenceKeywords,
+              );
             }
 
             const resolved = existing ?? resolveIntentToCatalogEntry(intent);
@@ -761,7 +813,7 @@ Use the provided tool.`;
                 .from("resolved_recommendation_catalog")
                 .update({
                   usage_count: existing.usage_count + 1,
-                  intent_keywords: normalizedKeywords,
+                  intent_keywords: mergeRecommendationKeywords(existing.intent_keywords, normalizedKeywords),
                   keyword_signature: keywordSignature,
                   ...(scraped?.image_url ? { image_url: scraped.image_url } : {}),
                   ...(scraped?.scraped_description ? { scraped_description: scraped.scraped_description } : {}),

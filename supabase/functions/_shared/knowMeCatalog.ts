@@ -28,6 +28,7 @@ export interface RecommendationIntent {
   why: string;
   recommendation_kind: RecommendationKind;
   search_query?: string | null;
+  primary_keyword?: string | null;
   keywords?: string[] | null;
 }
 
@@ -47,6 +48,15 @@ export interface ResolvedCatalogEntry {
   scraped_description: string | null;
   source_version: string;
   resolver_source: string;
+}
+
+export interface KeywordBankCandidate {
+  fingerprint: string;
+  brand: string;
+  product_name: string;
+  category: RecommendationCategory;
+  recommendation_kind: RecommendationKind;
+  intent_keywords: string[] | null;
 }
 
 type KnowledgeResponses = Record<string, unknown>;
@@ -410,6 +420,21 @@ const normalizeText = (value: unknown): string =>
 const normalizeLoose = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
+const NEGATIVE_SIGNAL_KEY_PATTERN = /(avoid|dislike|hate|turnoff|turn off|pet peeve|no go)/i;
+
+const splitKeywordPhrases = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => splitKeywordPhrases(item));
+  }
+
+  if (typeof value !== "string") return [];
+
+  return value
+    .split(/[;,/|]+/)
+    .map((part) => normalizeLoose(part))
+    .filter(Boolean);
+};
+
 const toArray = (value: unknown): string[] => {
   if (Array.isArray(value)) return value.map(normalizeText).filter(Boolean);
   const single = normalizeText(value);
@@ -477,6 +502,25 @@ export const normalizeRecommendationKeywords = (
     ),
   ).sort();
 
+export const extractNegativePreferenceKeywords = (
+  knowledgeResponses: Record<string, unknown>,
+): string[] => {
+  const negatives: string[] = [];
+
+  for (const [key, value] of Object.entries(knowledgeResponses)) {
+    if (!NEGATIVE_SIGNAL_KEY_PATTERN.test(key)) continue;
+
+    for (const phrase of splitKeywordPhrases(value)) {
+      negatives.push(phrase);
+      for (const token of phrase.split(/\s+/).filter((token) => token.length >= 3)) {
+        negatives.push(token);
+      }
+    }
+  }
+
+  return normalizeRecommendationKeywords(negatives);
+};
+
 export const buildKeywordSignature = (
   category: RecommendationCategory,
   keywords: Array<string | null | undefined>,
@@ -484,6 +528,48 @@ export const buildKeywordSignature = (
   const normalized = normalizeRecommendationKeywords(keywords);
   if (normalized.length === 0) return null;
   return [category, ...normalized].join("::");
+};
+
+export const mergeRecommendationKeywords = (
+  ...keywordSets: Array<Array<string | null | undefined> | null | undefined>
+): string[] => normalizeRecommendationKeywords(keywordSets.flatMap((set) => set ?? []));
+
+export const scoreKeywordBankCandidate = (
+  requestedCategory: RecommendationCategory,
+  requestedKeywords: Array<string | null | undefined>,
+  primaryKeyword: string | null | undefined,
+  negativeKeywords: Array<string | null | undefined>,
+  candidate: KeywordBankCandidate,
+): number => {
+  if (candidate.category !== requestedCategory) return -1;
+
+  const requested = normalizeRecommendationKeywords(requestedKeywords);
+  const candidateKeywords = normalizeRecommendationKeywords(candidate.intent_keywords ?? []);
+  if (requested.length === 0 || candidateKeywords.length === 0) return -1;
+
+  const normalizedPrimaryKeyword = normalizeLoose(primaryKeyword ?? "");
+  if (normalizedPrimaryKeyword && !candidateKeywords.includes(normalizedPrimaryKeyword)) return -1;
+
+  const normalizedNegativeKeywords = normalizeRecommendationKeywords(negativeKeywords);
+  if (normalizedNegativeKeywords.some((keyword) => candidateKeywords.includes(keyword))) return -1;
+
+  const requestedSet = new Set(requested);
+  const candidateSet = new Set(candidateKeywords);
+  const overlap = requested.filter((keyword) => candidateSet.has(keyword));
+  if (overlap.length === 0) return -1;
+
+  const overlapRatio = overlap.length / Math.min(requestedSet.size, candidateSet.size);
+  let score = overlapRatio * 100;
+
+  const candidateBrand = normalizeLoose(candidate.brand);
+  if (requestedSet.has(candidateBrand)) score += 20;
+
+  const requestedNameTerms = requested.filter((keyword) => !["food", "clothes", "tech", "home"].includes(keyword));
+  const candidateNameTerms = normalizeLoose(candidate.product_name).split(/\s+/).filter(Boolean);
+  const sharedNameTerms = requestedNameTerms.filter((term) => candidateNameTerms.includes(term));
+  score += sharedNameTerms.length * 8;
+
+  return score;
 };
 
 export const getSeedCatalogBrands = () =>
@@ -507,6 +593,7 @@ export const resolveIntentToCatalogEntry = (intent: RecommendationIntent): Resol
   const recommendationKind = intent.recommendation_kind;
   const searchQuery = intent.search_query?.trim() || `${intent.brand} ${intent.name}`.trim();
   const normalizedKeywords = normalizeRecommendationKeywords([
+    intent.primary_keyword,
     ...(intent.keywords ?? []),
     intent.brand,
     intent.name,
