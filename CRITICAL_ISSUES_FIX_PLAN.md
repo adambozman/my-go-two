@@ -155,6 +155,7 @@ This is a core product loop and is currently incomplete for token-based logged-o
 ### Progress
 
 - Done: `DashboardLayout` now consumes both `gotwo_invite` and `gotwo_invite_token`, prefers token handoff first, and clears invite keys intentionally after processing.
+- Done: post-login token handoff now shows the correct pending-invite messaging and surfaces invalid/expired token errors instead of silently swallowing them.
 - Remaining: full visual retest across all inviter/token logged-in/logged-out entry combinations.
 
 ### Files

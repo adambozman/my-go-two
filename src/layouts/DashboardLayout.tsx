@@ -15,6 +15,7 @@ const DashboardLayout = () => {
 
     const storedToken = localStorage.getItem("gotwo_invite_token")?.trim() ?? "";
     const storedInviteId = localStorage.getItem("gotwo_invite")?.trim() ?? "";
+    const usedTokenFlow = Boolean(storedToken);
 
     if (!storedToken && (!storedInviteId || storedInviteId === user.id)) {
       localStorage.removeItem("gotwo_invite_token");
@@ -32,7 +33,20 @@ const DashboardLayout = () => {
       localStorage.removeItem("gotwo_invite_token");
       localStorage.removeItem("gotwo_invite");
 
-      if (cancelled || error || data?.error) {
+      if (cancelled) {
+        return;
+      }
+
+      if (error || data?.error) {
+        const message = data?.error || error?.message || "Failed to process invite.";
+        toast({
+          title: "Invite Link Problem",
+          description:
+            message === "Invalid or expired connection token"
+              ? "This invite link is no longer valid. Ask for a fresh invite."
+              : message,
+          variant: "destructive",
+        });
         return;
       }
 
@@ -43,6 +57,14 @@ const DashboardLayout = () => {
 
       if (data?.status === "pending_exists") {
         toast({ title: "Invite Pending", description: "A connection invite is already pending." });
+        return;
+      }
+
+      if (usedTokenFlow) {
+        toast({
+          title: "Invite Sent",
+          description: "Your connection request was sent from the invite link.",
+        });
         return;
       }
 
