@@ -69,6 +69,13 @@ This is the most protected surface in the repo and the handoff repeatedly treats
 5. Audit state transitions between hover, collapse, open category, and background asset warm-up.
 6. Ensure failed transformed images are diagnosable, not silently mysterious.
 
+### Progress
+
+- Done: removed the redundant page-level auth gate from `src/pages/dashboard/MyGoTwo.tsx` so the dashboard shell is the single guard authority.
+- Done: changed the stage hydrator to keep already-loaded preview strips visible when a full transformed strip image misses.
+- Done: added strip-level diagnostics when a full transformed image falls back instead of silently blanking.
+- Remaining: category-by-category visual validation and any further loader tuning that shows up during real browser review.
+
 ### Files
 
 - `src/pages/dashboard/MyGoTwo.tsx`
@@ -105,6 +112,11 @@ The audits consistently point here as the likely source of login bounce and rout
    - subscription check outcomes
 6. Re-test login, refresh, and route transitions visually in the real dashboard.
 
+### Progress
+
+- Done: removed the redundant `My Go Two` leaf guard so the dashboard shell owns that route.
+- Remaining: wider auth/subscription lifecycle separation, temporary diagnostics, and visual pass across login/refresh transitions.
+
 ### Files
 
 - `src/contexts/AuthContext.tsx`
@@ -138,6 +150,11 @@ This is a core product loop and is currently incomplete for token-based logged-o
    - logged in + token link
    - logged out + token link
 5. Keep user messaging explicit when invite processing is pending or failed.
+
+### Progress
+
+- Done: `DashboardLayout` now consumes both `gotwo_invite` and `gotwo_invite_token`, prefers token handoff first, and clears invite keys intentionally after processing.
+- Remaining: full visual retest across all inviter/token logged-in/logged-out entry combinations.
 
 ### Files
 

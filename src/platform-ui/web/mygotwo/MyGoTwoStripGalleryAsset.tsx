@@ -463,11 +463,30 @@ export default function MyGoTwoStripGalleryAsset() {
           return;
         }
 
-        const nextStripImages = assets.stripImages.map((strip) =>
-          strip.image && !loadedVisibleUrls.has(strip.image)
-            ? { ...strip, image: "" }
-            : strip,
+        const previousStripImageById = new Map(
+          currentAssetsRef.current.stripImages.map((strip) => [strip.id, strip.image]),
         );
+        const failedVisibleStrips = assets.stripImages.filter(
+          (strip) => strip.image && !loadedVisibleUrls.has(strip.image),
+        );
+        const nextStripImages = assets.stripImages.map((strip) => {
+          if (!strip.image || loadedVisibleUrls.has(strip.image)) {
+            return strip;
+          }
+
+          return {
+            ...strip,
+            image: previousStripImageById.get(strip.id) || "",
+          };
+        });
+
+        if (failedVisibleStrips.length > 0) {
+          console.warn("My Go Two full strip image load fallback engaged:", failedVisibleStrips.map((strip) => ({
+            id: strip.id,
+            label: strip.label ?? null,
+            image: strip.image,
+          })));
+        }
 
         commitAssets(
           {
