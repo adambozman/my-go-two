@@ -328,7 +328,7 @@ Recommendations are user-facing and currently have "demo-feeling" gaps.
 - Done: recommendation cards now only use resolved remote product photos for true exact-product matches; broader search-style matches consistently fall back to the curated local image banks instead of mixing in unstable scraped imagery.
 - Done: `ai-products` now requires AI-generated recommendation keywords, checks the shared website-level product bank by keyword signature before scraping, and only runs Firecrawl for bank misses.
 - Done: shared recommendation catalog records now store product-only keyword bank fields (`intent_keywords`, `keyword_signature`, `scraped_description`) so reusable product data can be found without storing any user information.
-- Remaining: `ai-connection-products` still does not use the same keyword-bank-first + scrape-on-miss flow as the primary recommendations pipeline.
+- Done: `ai-connection-products` now also requires AI-generated recommendation keywords, checks the shared product bank by keyword signature before scraping, and only uses Firecrawl on misses so connection gifting can reuse existing website-level product data too.
 - Remaining: there is still no explicit sent-to-recipient tracking path for recommendation sharing beyond the user's own share history.
 
 ### Fixes required
