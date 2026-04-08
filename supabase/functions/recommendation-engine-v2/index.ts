@@ -11,6 +11,7 @@ import {
 } from "../_shared/knowMeCatalog.ts";
 import { scrapeExactProductWithFirecrawl } from "../_shared/exactProductScraper.ts";
 import { buildCatalogAiAdapter, fetchKnowledgeCenterState } from "../_shared/knowledgeCenter.ts";
+import { buildProductBankInsertFromExactScrape } from "../_shared/recommendationProductBank.ts";
 import {
   buildNormalizedRecommendationState,
   buildRecommendationSignalSummary,
@@ -467,27 +468,22 @@ serve(async (req) => {
         logPrefix: "[recommendation-engine-v2]",
       });
 
-      if (scraped?.exact_match_confirmed && scraped.product_url && scraped.image_url && scraped.price) {
-        const bankInsert = {
-          primary_keyword: primaryKeyword,
-          descriptor_keywords: descriptorKeywords,
-          keyword_signature: buildKeywordSignature(intent.category, primaryKeyword, descriptorKeywords),
-          category: intent.category,
-          brand: intent.brand,
-          product_title: scraped.scraped_product_title || intent.name,
-          product_url: scraped.product_url,
-          product_image_url: scraped.image_url,
-          product_price_text: scraped.price,
-          scraped_description: scraped.scraped_description,
-          search_query: intent.search_query ?? null,
-          resolver_source: "firecrawl",
-          source_version: GENERATION_VERSION,
-          match_confidence: scraped.product_match_confidence,
-          exact_match_confirmed: true,
-          usage_count: 0,
-          last_verified_at: new Date().toISOString(),
-        };
+      const bankInsert = buildProductBankInsertFromExactScrape({
+        intent,
+        scraped: scraped ?? {
+          image_url: null,
+          product_url: null,
+          price: null,
+          scraped_description: null,
+          scraped_product_title: null,
+          product_match_confidence: 0,
+          exact_match_confirmed: false,
+        },
+        sourceVersion: GENERATION_VERSION,
+        resolverSource: "firecrawl",
+      });
 
+      if (bankInsert) {
         await admin.from("recommendation_product_bank").upsert(bankInsert, {
           onConflict: "product_url_hash",
           ignoreDuplicates: false,

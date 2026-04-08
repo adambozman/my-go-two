@@ -10,6 +10,7 @@ import {
   scoreKeywordBankCandidate,
   type RecommendationIntent,
 } from "../../supabase/functions/_shared/knowMeCatalog.ts";
+import { buildProductBankInsertFromExactScrape } from "../../supabase/functions/_shared/recommendationProductBank.ts";
 
 export type ScrapedProduct = {
   image_url: string | null;
@@ -356,8 +357,23 @@ export class RecommendationFlowHarness {
         const scraped = this.deps.scrapeProduct(intent, context);
         this.firecrawlCalls.push({ intent, context });
         const fallback = resolveIntentToCatalogEntry(intent);
-        const productUrl = scraped?.exact_match_confirmed
-          ? scraped.product_url
+        const bankInsert = buildProductBankInsertFromExactScrape({
+          intent,
+          scraped: scraped ?? {
+            image_url: null,
+            product_url: null,
+            price: null,
+            scraped_description: null,
+            scraped_product_title: null,
+            product_match_confidence: 0,
+            exact_match_confirmed: false,
+          },
+          sourceVersion: getCatalogVersion(),
+          resolverSource: "firecrawl-exact",
+          verifiedAt: "2026-04-08T00:00:00.000Z",
+        });
+        const productUrl = bankInsert?.product_url
+          ? bankInsert.product_url
           : fallback.exact_match_confirmed && fallback.link_kind === "product"
             ? fallback.link_url
             : null;
@@ -373,16 +389,16 @@ export class RecommendationFlowHarness {
           link_kind: linkKind,
           link_url: productUrl || fallback.link_url,
           search_query: fallback.search_query ?? intent.search_query ?? null,
-          price: productUrl ? (scraped?.price ?? fallback.price ?? intent.price) : fallback.price ?? intent.price,
-          image_url: productUrl ? (scraped?.image_url ?? fallback.image_url ?? null) : null,
+          price: productUrl ? (bankInsert?.product_price_text ?? fallback.price ?? intent.price) : fallback.price ?? intent.price,
+          image_url: productUrl ? (bankInsert?.product_image_url ?? fallback.image_url ?? null) : null,
           intent_keywords: normalizedKeywords,
           keyword_signature: keywordSignature,
-          scraped_description: scraped?.exact_match_confirmed ? scraped.scraped_description : fallback.scraped_description,
-          scraped_product_title: scraped?.scraped_product_title ?? fallback.scraped_product_title,
-          product_match_confidence: scraped?.product_match_confidence ?? fallback.product_match_confidence,
-          exact_match_confirmed: scraped?.exact_match_confirmed ?? fallback.exact_match_confirmed,
+          scraped_description: bankInsert?.scraped_description ?? fallback.scraped_description,
+          scraped_product_title: bankInsert?.product_title ?? fallback.scraped_product_title,
+          product_match_confidence: bankInsert?.match_confidence ?? scraped?.product_match_confidence ?? fallback.product_match_confidence,
+          exact_match_confirmed: bankInsert?.exact_match_confirmed ?? false,
           source_version: getCatalogVersion(),
-          resolver_source: scraped?.exact_match_confirmed ? "firecrawl-exact" : fallback.resolver_source,
+          resolver_source: bankInsert ? "firecrawl-exact" : fallback.resolver_source,
           usage_count: 0,
         };
 
