@@ -32,7 +32,25 @@ const logAuthDiagnostic = (event: string, details?: Record<string, unknown>) => 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Something went wrong";
 
-const resolvePostLoginDestination = async (userId: string) => {
+const hasPendingInviteHandoff = () => {
+  try {
+    return Boolean(
+      localStorage.getItem("gotwo_invite")?.trim() || localStorage.getItem("gotwo_invite_token")?.trim(),
+    );
+  } catch {
+    return false;
+  }
+};
+
+const resolvePostLoginDestination = async (userId: string, options?: { pendingInvite?: boolean }) => {
+  if (options?.pendingInvite) {
+    logAuthDiagnostic("login:resolved-destination:pending-invite", {
+      userId,
+      destination: "/dashboard/settings",
+    });
+    return "/dashboard/settings";
+  }
+
   const profileResult = await supabase
     .from("profiles")
     .select("onboarding_completed_at")
@@ -100,7 +118,9 @@ const Login = () => {
   const navigateAfterLogin = async () => {
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (currentUser) {
-      const destination = await resolvePostLoginDestination(currentUser.id);
+      const destination = await resolvePostLoginDestination(currentUser.id, {
+        pendingInvite: hasPendingInviteHandoff(),
+      });
       logAuthDiagnostic("login:navigate-after-login", {
         userId: currentUser.id,
         destination,
