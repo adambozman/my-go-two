@@ -10,6 +10,12 @@ export type RecommendationFlowFixture = {
   connectionIntents: RecommendationIntent[];
 };
 
+export const dislikeKnowledgeResponses = {
+  "style-personality": ["classic", "minimal"],
+  "purchase-values": ["comfort", "fit"],
+  "pet-peeves": "skinny jeans, tight denim",
+} as const;
+
 const harperKnowledgeResponses = {
   "style-personality": ["classic", "minimal", "luxury"],
   "daily-vibe": ["polished", "professional"],

@@ -1,9 +1,13 @@
 import {
   buildKeywordSignature,
   buildRecommendationFingerprint,
+  extractNegativePreferenceKeywords,
   getCatalogVersion,
-  normalizeRecommendationKeywords,
+  mergeDescriptorKeywords,
+  mergeRecommendationKeywords,
+  normalizePrimaryKeyword,
   resolveIntentToCatalogEntry,
+  scoreKeywordBankCandidate,
   type RecommendationIntent,
 } from "../../supabase/functions/_shared/knowMeCatalog.ts";
 
@@ -41,6 +45,8 @@ export type SharedBankRecord = {
   product_name: string;
   category: RecommendationIntent["category"];
   recommendation_kind: RecommendationIntent["recommendation_kind"];
+  primary_keyword: string | null;
+  descriptor_keywords: string[] | null;
   link_kind: "product" | "search";
   link_url: string;
   search_query: string | null;
@@ -112,8 +118,46 @@ const toProductCard = (
   };
 };
 
-const ensureStringArray = (value: Array<string | null | undefined>) =>
-  normalizeRecommendationKeywords(value);
+const ensureStringArray = (value: Array<string | null | undefined>) => mergeRecommendationKeywords(value);
+
+const tokenizeKeywords = (values: string[]) =>
+  Array.from(
+    new Set(
+      values.flatMap((value) =>
+        value
+          .split(/[^a-z0-9]+/i)
+          .map((token) => token.trim().toLowerCase())
+          .filter(Boolean),
+      ),
+    ),
+  );
+
+const extractHarnessNegativePreferenceKeywords = (knowledgeResponses: Record<string, unknown>) => {
+  const negatives = new Set(extractNegativePreferenceKeywords(knowledgeResponses));
+
+  for (const [key, value] of Object.entries(knowledgeResponses)) {
+    if (!/(avoid|dislike|hate|turnoff|turn off|pet[-\s]?peeve|no go)/i.test(key)) continue;
+
+    const phrases = Array.isArray(value)
+      ? value.flatMap((entry) =>
+          typeof entry === "string"
+            ? entry.split(/[;,/|]+/).map((phrase) => phrase.trim()).filter(Boolean)
+            : [],
+        )
+      : typeof value === "string"
+        ? value.split(/[;,/|]+/).map((phrase) => phrase.trim()).filter(Boolean)
+        : [];
+
+    for (const phrase of phrases) {
+      negatives.add(phrase);
+      for (const token of phrase.split(/\s+/).filter((token) => token.length >= 3)) {
+        negatives.add(token);
+      }
+    }
+  }
+
+  return ensureStringArray(Array.from(negatives));
+};
 
 export class RecommendationFlowHarness {
   private readonly weeklyCache = new Map<string, CachedEntry>();
@@ -203,16 +247,41 @@ export class RecommendationFlowHarness {
     const products: RecommendationCard[] = [];
     let bankHits = 0;
     let bankMisses = 0;
+    const rawPetPeeves = context.knowledgeResponses["pet-peeves"];
+    const negativeKeywords = [
+      ...extractHarnessNegativePreferenceKeywords(context.knowledgeResponses),
+      ...(Array.isArray(rawPetPeeves)
+        ? rawPetPeeves.flatMap((entry) =>
+            typeof entry === "string" ? entry.split(/[^a-z0-9]+/i).filter(Boolean) : [],
+          )
+        : typeof rawPetPeeves === "string"
+          ? rawPetPeeves.split(/[^a-z0-9]+/i).filter(Boolean)
+          : []),
+    ];
+    const negativeTokens = tokenizeKeywords(ensureStringArray(negativeKeywords));
+
+    const hasNegativeKeywordConflict = (candidate: SharedBankRecord) => {
+      const candidateTokens = tokenizeKeywords(
+        ensureStringArray([
+          candidate.brand,
+          candidate.product_name,
+          candidate.search_query,
+          candidate.scraped_product_title,
+          ...(candidate.intent_keywords ?? []),
+        ]),
+      );
+      return negativeTokens.some((keyword) => candidateTokens.includes(keyword));
+    };
 
     for (const intent of intents) {
-      const normalizedKeywords = ensureStringArray([
-        intent.primary_keyword,
-        ...(intent.keywords ?? []),
-        intent.brand,
-        intent.name,
-        intent.category,
-      ]);
-      const keywordSignature = buildKeywordSignature(intent.category, normalizedKeywords);
+      const primaryKeyword = normalizePrimaryKeyword(intent.primary_keyword ?? intent.name);
+      const descriptorKeywords = mergeDescriptorKeywords(
+        primaryKeyword,
+        intent.keywords ?? [],
+        [intent.brand],
+      );
+      const normalizedKeywords = ensureStringArray([primaryKeyword, ...descriptorKeywords]);
+      const keywordSignature = buildKeywordSignature(intent.category, primaryKeyword, descriptorKeywords);
       const fingerprint = buildRecommendationFingerprint(
         intent.category,
         intent.brand,
@@ -220,10 +289,40 @@ export class RecommendationFlowHarness {
         intent.recommendation_kind,
       );
 
-      const existing = (keywordSignature && this.sharedBankBySignature.get(keywordSignature)) ||
-        this.sharedBankByFingerprint.get(fingerprint) ||
-        null;
-      const hasExactProductRecord = Boolean(existing?.link_kind === "product" && existing?.exact_match_confirmed);
+      const exactKeywordMatch = keywordSignature ? this.sharedBankBySignature.get(keywordSignature) ?? null : null;
+      const exactFingerprintMatch = this.sharedBankByFingerprint.get(fingerprint) ?? null;
+      const bestSimilarityMatch = Array.from(this.sharedBankByFingerprint.values())
+        .map((candidate) => ({
+          candidate,
+          score: scoreKeywordBankCandidate(
+            intent.category,
+            descriptorKeywords,
+            primaryKeyword,
+              negativeKeywords,
+              candidate,
+            ),
+          }))
+        .filter((entry) => entry.score >= 70 && !hasNegativeKeywordConflict(entry.candidate))
+        .sort((a, b) => b.score - a.score)[0]?.candidate ?? null;
+
+      const existing = [exactKeywordMatch, exactFingerprintMatch, bestSimilarityMatch].find(
+        (candidate): candidate is SharedBankRecord => Boolean(candidate && !hasNegativeKeywordConflict(candidate)),
+      ) ?? null;
+      const reuseScore = existing
+        ? scoreKeywordBankCandidate(
+            intent.category,
+            descriptorKeywords,
+            primaryKeyword,
+            negativeKeywords,
+            existing,
+          )
+        : -1;
+      const hasExactProductRecord = Boolean(
+        existing?.link_kind === "product" &&
+          existing?.exact_match_confirmed &&
+          !hasNegativeKeywordConflict(existing) &&
+          reuseScore >= 0,
+      );
 
       let resolved: SharedBankRecord;
       if (existing && hasExactProductRecord) {
@@ -253,6 +352,8 @@ export class RecommendationFlowHarness {
           product_name: intent.name,
           category: intent.category,
           recommendation_kind: intent.recommendation_kind,
+          primary_keyword: primaryKeyword,
+          descriptor_keywords: descriptorKeywords,
           link_kind: linkKind,
           link_url: productUrl || fallback.link_url,
           search_query: fallback.search_query ?? intent.search_query ?? null,
@@ -287,6 +388,7 @@ export const isProductOnlyBankRecord = (entry: SharedBankRecord) => {
   return keys.join(",") === [
     "brand",
     "category",
+    "descriptor_keywords",
     "exact_match_confirmed",
     "fingerprint",
     "image_url",
@@ -295,6 +397,7 @@ export const isProductOnlyBankRecord = (entry: SharedBankRecord) => {
     "link_kind",
     "link_url",
     "price",
+    "primary_keyword",
     "product_match_confidence",
     "product_name",
     "recommendation_kind",

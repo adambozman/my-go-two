@@ -5,7 +5,9 @@ import {
   buildKeywordSignature,
   extractNegativePreferenceKeywords,
   getCatalogVersion,
+  mergeDescriptorKeywords,
   mergeRecommendationKeywords,
+  normalizePrimaryKeyword,
   normalizeRecommendationKeywords,
   scoreKeywordBankCandidate,
   resolveIntentToCatalogEntry,
@@ -66,6 +68,8 @@ type ResolvedRecommendationCatalogRow = {
   product_name: string;
   category: RecommendationIntent["category"];
   recommendation_kind: RecommendationIntent["recommendation_kind"];
+  primary_keyword: string | null;
+  descriptor_keywords: string[] | null;
   link_kind: "product" | "search";
   link_url: string;
   search_query: string | null;
@@ -83,25 +87,26 @@ type ResolvedRecommendationCatalogRow = {
 };
 
 const RESOLVED_RECOMMENDATION_SELECT =
-  "fingerprint, brand, product_name, category, recommendation_kind, link_kind, link_url, search_query, price, image_url, intent_keywords, keyword_signature, scraped_description, scraped_product_title, product_match_confidence, exact_match_confirmed, source_version, resolver_source, usage_count";
+  "fingerprint, brand, product_name, category, recommendation_kind, primary_keyword, descriptor_keywords, link_kind, link_url, search_query, price, image_url, intent_keywords, keyword_signature, scraped_description, scraped_product_title, product_match_confidence, exact_match_confirmed, source_version, resolver_source, usage_count";
 
 const findBestKeywordBankMatch = async (
   admin: ReturnType<typeof createClient>,
   category: RecommendationIntent["category"],
   primaryKeyword: string | null,
-  normalizedKeywords: string[],
+  descriptorKeywords: string[],
   negativeKeywords: string[],
 ): Promise<ResolvedRecommendationCatalogRow | null> => {
   const { data: candidates } = await admin
     .from("resolved_recommendation_catalog")
     .select(RESOLVED_RECOMMENDATION_SELECT)
     .eq("category", category)
+    .eq("primary_keyword", primaryKeyword)
     .limit(50);
 
   const best = (Array.isArray(candidates) ? candidates as ResolvedRecommendationCatalogRow[] : [])
     .map((candidate) => ({
       candidate,
-      score: scoreKeywordBankCandidate(category, normalizedKeywords, primaryKeyword, negativeKeywords, candidate),
+      score: scoreKeywordBankCandidate(category, descriptorKeywords, primaryKeyword, negativeKeywords, candidate),
     }))
     .filter((entry) => entry.score >= 70)
     .sort((a, b) => b.score - a.score)[0];
@@ -491,7 +496,7 @@ RULES:
 4. Prioritize the occasion when one exists.
 5. Use only signals that were explicitly shared.
 6. primary_keyword MUST be present and should be the main product type only, like jeans, sneakers, lamp, headphones, sushi, or candle.
-7. keywords MUST be present and should be 3 to 6 lowercase descriptive keywords only, like blue, bootcut, leather, minimal, american eagle, or noise-canceling. Do not repeat the primary keyword.
+7. keywords MUST be present and should be 3 to 6 lowercase descriptor keywords only, like blue, bootcut, leather, minimal, american eagle, or noise-canceling. These must narrow the primary_keyword and must not repeat it.
 8. Never recommend items whose primary keyword or descriptive keywords conflict with the negative / avoid signals that were explicitly shared.
 9. Every intent must choose a recommendation kind:
    - specific
@@ -580,14 +585,17 @@ Use the provided tool.`;
               intent.name,
               intent.recommendation_kind,
             );
-            const normalizedKeywords = normalizeRecommendationKeywords([
-              intent.primary_keyword,
-              ...(intent.keywords ?? []),
-              intent.brand,
-              intent.name,
-              intent.category,
+            const primaryKeyword = normalizePrimaryKeyword(intent.primary_keyword ?? intent.name);
+            const descriptorKeywords = mergeDescriptorKeywords(
+              primaryKeyword,
+              intent.keywords ?? [],
+              [intent.brand],
+            );
+            const normalizedKeywords = mergeRecommendationKeywords([
+              primaryKeyword,
+              ...descriptorKeywords,
             ]);
-            const keywordSignature = buildKeywordSignature(intent.category, normalizedKeywords);
+            const keywordSignature = buildKeywordSignature(intent.category, primaryKeyword, descriptorKeywords);
 
             let existing: ResolvedRecommendationCatalogRow | null = null;
             if (keywordSignature) {
@@ -610,8 +618,8 @@ Use the provided tool.`;
               existing = await findBestKeywordBankMatch(
                 admin,
                 intent.category,
-                intent.primary_keyword ?? null,
-                normalizedKeywords,
+                primaryKeyword,
+                descriptorKeywords,
                 negativePreferenceKeywords,
               );
             }
@@ -647,6 +655,8 @@ Use the provided tool.`;
             if (!existing) {
               await admin.from("resolved_recommendation_catalog").upsert({
                 ...resolved,
+                primary_keyword: primaryKeyword,
+                descriptor_keywords: descriptorKeywords,
                 image_url: finalImageUrl,
                 intent_keywords: normalizedKeywords,
                 keyword_signature: keywordSignature,
@@ -666,6 +676,13 @@ Use the provided tool.`;
                 .from("resolved_recommendation_catalog")
                 .update({
                   usage_count: existing.usage_count + 1,
+                  primary_keyword: existing.primary_keyword || primaryKeyword,
+                  descriptor_keywords: mergeDescriptorKeywords(
+                    existing.primary_keyword || primaryKeyword,
+                    existing.descriptor_keywords,
+                    descriptorKeywords,
+                    [existing.brand, intent.brand],
+                  ),
                   intent_keywords: mergeRecommendationKeywords(existing.intent_keywords, normalizedKeywords),
                   keyword_signature: keywordSignature,
                   ...(scraped ? {
