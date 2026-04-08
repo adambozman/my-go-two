@@ -162,6 +162,7 @@ This is a core product loop and is currently incomplete for token-based logged-o
 - Done: post-login token handoff now shows the correct pending-invite messaging and surfaces invalid/expired token errors instead of silently swallowing them.
 - Done: `Login.tsx` and `Signup.tsx` now persist direct `?token=` invite entries into `gotwo_invite_token` so token-based handoff survives auth entry routes instead of only working through `/connect`.
 - Done: Settings now exposes the native invite share sheet alongside QR/email so the existing link flow can be sent through text/phone/WhatsApp on supported devices.
+- Done: `DashboardLayout` now skips duplicate invite handoff re-processing for the same stored invite/token payload, which avoids accidental double-link attempts while auth/layout state is settling.
 - Remaining: full visual retest across all inviter/token logged-in/logged-out entry combinations.
 
 ### Files

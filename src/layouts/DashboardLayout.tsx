@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { DashboardTopBar } from "@/components/DashboardTopBar";
 import { useAuth } from "@/contexts/auth-context";
@@ -23,6 +23,7 @@ const logAuthDiagnostic = (event: string, details?: Record<string, unknown>) => 
 const DashboardLayout = () => {
   const { user, loading } = useAuth();
   const { toast } = useToast();
+  const processedInviteSignatureRef = useRef<string | null>(null);
 
   // Process stored invite/token handoff after auth settles.
   useEffect(() => {
@@ -42,12 +43,23 @@ const DashboardLayout = () => {
     if (!storedToken && (!storedInviteId || storedInviteId === user.id)) {
       localStorage.removeItem("gotwo_invite_token");
       localStorage.removeItem("gotwo_invite");
+      processedInviteSignatureRef.current = null;
       logAuthDiagnostic("dashboard-layout:invite-skip", {
         userId: user.id,
         reason: storedInviteId === user.id ? "self-invite" : "no-pending-invite",
       });
       return;
     }
+
+    const inviteSignature = `${user.id}:${storedToken}:${storedInviteId}`;
+    if (processedInviteSignatureRef.current === inviteSignature) {
+      logAuthDiagnostic("dashboard-layout:invite-duplicate-skip", {
+        userId: user.id,
+        usedTokenFlow,
+      });
+      return;
+    }
+    processedInviteSignatureRef.current = inviteSignature;
 
     let cancelled = false;
 
