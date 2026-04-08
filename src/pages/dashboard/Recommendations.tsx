@@ -2,7 +2,7 @@
 import { useKnowledgeCenter } from "@/contexts/knowledge-center-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
-import { RefreshCw, Loader2, Bookmark, Share2 } from "lucide-react";
+import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PaginationControls } from "@/components/ui/pagination-controls";
@@ -171,6 +171,20 @@ function getProductImage(product: Product) {
   if (hasResolvedProductImage(product)) return product.image_url!;
   if (!shouldUseLegacyImageBank(product)) return null;
   return getFallbackImage(product);
+}
+
+function getProductMatchLabel(product: Product) {
+  return product.source_kind === "specific-product" ? "Exact Match" : "Search Match";
+}
+
+function getProductDestination(product: Product) {
+  return product.affiliate_url || product.search_url || null;
+}
+
+function getProductActionLabel(product: Product) {
+  if (product.affiliate_url) return "View Product";
+  if (product.search_url) return "Search";
+  return "No Link";
 }
 
 function getProductId(product: Product) {
@@ -692,6 +706,9 @@ function ProductCard({
   const ref = useRef<HTMLDivElement>(null);
   const productImage = getProductImage(product);
   const showLegacyFallback = shouldUseLegacyImageBank(product);
+  const productDestination = getProductDestination(product);
+  const productMatchLabel = getProductMatchLabel(product);
+  const productActionLabel = getProductActionLabel(product);
 
   return (
     <motion.div
@@ -718,11 +735,11 @@ function ProductCard({
             />
           ) : (
             <div className="flex h-full w-full items-end bg-[linear-gradient(135deg,#f3ecdf_0%,#ece3d1_100%)] p-4">
-              <div className="max-w-[80%] rounded-2xl bg-white/70 px-3 py-2 backdrop-blur-sm">
+                <div className="max-w-[80%] rounded-2xl bg-white/70 px-3 py-2 backdrop-blur-sm">
                 <p className="surface-meta">{product.brand}</p>
                 <p className="surface-heading-md mt-1">{product.name}</p>
                 <p className="surface-meta mt-2">
-                  {product.source_kind === "specific-product" ? "Exact Match" : "Search Match"}
+                  {productMatchLabel}
                 </p>
               </div>
             </div>
@@ -740,11 +757,9 @@ function ProductCard({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-                      {product.is_connection_pick && (
-              <p className="surface-meta">
-                {product.source_kind === "specific-product" ? "Exact Match" : "Search Match"}
-              </p>
-            )}
+            <p className="surface-meta">
+              {productMatchLabel}
+            </p>
             <p className="surface-meta">{product.price}</p>
           </div>
 
@@ -757,6 +772,20 @@ function ProductCard({
           </p>
 
           <div className="mt-auto pt-1 flex items-center gap-2">
+            <Button
+              onClick={() => {
+                if (!productDestination) return;
+                window.open(productDestination, "_blank", "noopener,noreferrer");
+              }}
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              disabled={!productDestination}
+            >
+              <ExternalLink className="h-3 w-3" />
+              {productActionLabel}
+            </Button>
+
             <Button onClick={onToggleSave} variant="outline" size="sm" className="gap-1.5" disabled={saveLoading}>
               {saveLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Bookmark className="h-3 w-3" />}
               {isSaved ? "Saved" : "Save"}
