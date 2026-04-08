@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Lock, Sparkles } from "lucide-react";
+import { ArrowLeft, ExternalLink, Lock, Sparkles } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Switch } from "@/components/ui/switch";
@@ -100,10 +100,16 @@ interface SharedRecommendationsRecord {
   products: Array<{
     name?: string;
     brand?: string;
+    price?: string;
     hook?: string;
     why?: string;
+    affiliate_url?: string | null;
+    search_url?: string | null;
+    source_kind?: string | null;
   }> | null;
 }
+
+type SharedRecommendationProduct = NonNullable<SharedRecommendationsRecord["products"]>[number];
 
 interface OutgoingSharingStateRecord {
   profile_fields?: Partial<Record<ProfileFieldKey, boolean>> | null;
@@ -225,6 +231,29 @@ function deriveFeedTagsFromMeta(meta: Record<string, unknown> | null, section: F
 function isRpcMissingError(error: { message?: string } | null | undefined) {
   const message = error?.message || "";
   return /schema cache|Could not find the function|function .* does not exist|PGRST/i.test(message);
+}
+
+function getSharedRecommendationMatchLabel(product?: SharedRecommendationProduct | null) {
+  if (product?.source_kind === "specific-product") return "Exact Match";
+  if (product?.source_kind === "catalog-product") return "Catalog Match";
+  return "Search Match";
+}
+
+function getSharedRecommendationDisplayPrice(product?: SharedRecommendationProduct | null) {
+  if (!product) return "Price varies";
+  if (product.source_kind === "brand-search") return "Price varies";
+  return product.price || "Price varies";
+}
+
+function getSharedRecommendationDestination(product?: SharedRecommendationProduct | null) {
+  return product?.affiliate_url || product?.search_url || null;
+}
+
+function getSharedRecommendationActionLabel(product?: SharedRecommendationProduct | null) {
+  if (product?.source_kind === "specific-product" && product.affiliate_url) return "View Product";
+  if (product?.source_kind === "catalog-product" && product.affiliate_url) return "View Catalog";
+  if (product?.search_url) return "Search Brand";
+  return "No Link";
 }
 
 function buildAiSuggestions(
@@ -1147,12 +1176,30 @@ export default function ConnectionPage() {
                           <p className="surface-body mt-3">
                             {sharedRecommendations.products[0]?.hook || sharedRecommendations.products[0]?.why || `Pulled from ${connection.name}'s shared recommendations.`}
                           </p>
+                          <div className="mt-4 flex flex-wrap items-center gap-2">
+                            <p className="surface-meta">
+                              {getSharedRecommendationMatchLabel(sharedRecommendations.products[0])}
+                            </p>
+                            <p className="surface-meta">
+                              {getSharedRecommendationDisplayPrice(sharedRecommendations.products[0])}
+                            </p>
+                          </div>
                         </div>
                       </div>
                       {sharedRecommendations.products[0]?.why && sharedRecommendations.products[0]?.hook !== sharedRecommendations.products[0]?.why ? (
                         <p className="surface-meta mt-4">
                           {sharedRecommendations.products[0]?.why}
                         </p>
+                      ) : null}
+                      {getSharedRecommendationDestination(sharedRecommendations.products[0]) ? (
+                        <button
+                          type="button"
+                          onClick={() => window.open(getSharedRecommendationDestination(sharedRecommendations.products[0])!, "_blank", "noopener,noreferrer")}
+                          className="surface-button-secondary mt-4 inline-flex items-center gap-2 self-start rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.12em]"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          {getSharedRecommendationActionLabel(sharedRecommendations.products[0])}
+                        </button>
                       ) : null}
                     </div>
 
@@ -1167,10 +1214,30 @@ export default function ConnectionPage() {
                         <p className="surface-meta mt-3">
                           {sharedRecommendations.products[1]?.brand || `${sharedRecommendations.products.length} shared gift signals`}
                         </p>
+                        {sharedRecommendations.products[1] ? (
+                          <div className="mt-3 flex flex-wrap items-center gap-2">
+                            <p className="surface-meta">
+                              {getSharedRecommendationMatchLabel(sharedRecommendations.products[1])}
+                            </p>
+                            <p className="surface-meta">
+                              {getSharedRecommendationDisplayPrice(sharedRecommendations.products[1])}
+                            </p>
+                          </div>
+                        ) : null}
                       </div>
                       <p className="surface-body mt-4">
                         {sharedRecommendations.products[1]?.hook || sharedRecommendations.products[1]?.why || `Go Two already has enough signals from ${connection.name} to start shaping better gifts here.`}
                       </p>
+                      {getSharedRecommendationDestination(sharedRecommendations.products[1]) ? (
+                        <button
+                          type="button"
+                          onClick={() => window.open(getSharedRecommendationDestination(sharedRecommendations.products[1])!, "_blank", "noopener,noreferrer")}
+                          className="surface-button-secondary mt-4 inline-flex items-center gap-2 self-start rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.12em]"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          {getSharedRecommendationActionLabel(sharedRecommendations.products[1])}
+                        </button>
+                      ) : null}
                     </div>
 
                     <div className="card-design-neumorph grid gap-4 px-5 py-5 lg:col-span-2 md:grid-cols-2">
@@ -1185,9 +1252,27 @@ export default function ConnectionPage() {
                           <p className="surface-eyebrow-coral mt-2">
                             {product.brand || "Shared signal"}
                           </p>
+                          <div className="mt-3 flex flex-wrap items-center gap-2">
+                            <p className="surface-meta">
+                              {getSharedRecommendationMatchLabel(product)}
+                            </p>
+                            <p className="surface-meta">
+                              {getSharedRecommendationDisplayPrice(product)}
+                            </p>
+                          </div>
                           <p className="surface-body mt-3">
                             {product.hook || product.why || `Another signal Go Two can use for ${connection.name}.`}
                           </p>
+                          {getSharedRecommendationDestination(product) ? (
+                            <button
+                              type="button"
+                              onClick={() => window.open(getSharedRecommendationDestination(product)!, "_blank", "noopener,noreferrer")}
+                              className="surface-button-secondary mt-4 inline-flex items-center gap-2 self-start rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.12em]"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                              {getSharedRecommendationActionLabel(product)}
+                            </button>
+                          ) : null}
                         </div>
                       ))}
                     </div>
