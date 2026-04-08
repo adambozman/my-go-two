@@ -123,7 +123,7 @@ const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
 
 const Recommendations = () => {
   const { knowledgeDerivations, loading: knowledgeLoading } = useKnowledgeCenter();
-  const { subscribed, user } = useAuth();
+  const { subscribed, subscriptionLoading, user } = useAuth();
   const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
   const isDev = user && DEV_USER_IDS.includes(user.id);
   const [products, setProducts] = useState<Product[]>([]);
@@ -210,7 +210,7 @@ const Recommendations = () => {
     ? new Date(generatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })
     : null;
 
-  if (knowledgeLoading) {
+  if (knowledgeLoading || subscriptionLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-6 w-6 animate-spin" />
