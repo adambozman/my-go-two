@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,15 @@ const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (inviteId) {
+      localStorage.setItem("gotwo_invite", inviteId);
+    }
+    if (inviteToken) {
+      localStorage.setItem("gotwo_invite_token", inviteToken);
+    }
+  }, [inviteId, inviteToken]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -35,12 +44,6 @@ const Signup = () => {
       localStorage.setItem("gotwo_signup_data", JSON.stringify({
         age: parseInt(age) || null,
       }));
-      if (inviteId) {
-        localStorage.setItem("gotwo_invite", inviteId);
-      }
-      if (inviteToken) {
-        localStorage.setItem("gotwo_invite_token", inviteToken);
-      }
       toast({ title: "Check your email", description: "We sent you a confirmation link." });
       navigate("/login");
     } catch (error: unknown) {
