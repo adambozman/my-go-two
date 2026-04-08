@@ -220,6 +220,11 @@ The repo mixes platform JWT verification, manual auth checks, `verify_jwt = fals
 - `supabase/config.toml`
 - `supabase/functions/*`
 
+### Progress
+
+- Done: `ai-products`, `create-checkout`, and `customer-portal` now require verified JWTs at the platform layer in `supabase/config.toml`, matching their already-authenticated caller flows instead of leaving them publicly invokable by mistake.
+- Remaining: `check-subscription`, `searchforaddprofile`, `sync-category-registry`, `ai-quizzes`, and `trending-feed` still need explicit classification and hardening decisions before changing their JWT mode.
+
 ## P0: Shared / Global Table Ownership
 
 ### Why this is critical
