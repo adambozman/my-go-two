@@ -748,6 +748,8 @@ function ProductCard({
   const productMatchLabel = getProductMatchLabel(product);
   const productActionLabel = getProductActionLabel(product);
   const productDisplayPrice = getProductDisplayPrice(product);
+  const [imageFailed, setImageFailed] = useState(false);
+  const showProductImage = Boolean(productImage) && !imageFailed;
 
   return (
     <motion.div
@@ -759,11 +761,14 @@ function ProductCard({
     >
       <Card variant="sand" className="relative flex h-full flex-col overflow-hidden">
         <div className="relative h-[200px] overflow-hidden sm:h-[220px]">
-          {productImage ? (
+          {showProductImage ? (
             <img
               src={productImage}
               alt={product.name}
               className="h-full w-full object-cover"
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              onError={() => setImageFailed(true)}
             />
           ) : (
             <div className="flex h-full w-full items-end bg-[linear-gradient(135deg,#f3ecdf_0%,#ece3d1_100%)] p-4">
