@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient, type User } from "https://esm.sh/@supabase/supabase-js@2";
-import { verifyRemoteImageUrl } from "../_shared/exactProductScraper.ts";
+import { getExactProductImageReadiness } from "../_shared/exactProductScraper.ts";
 import { reassessProductBankRow } from "../_shared/recommendationProductBank.ts";
 
 const corsHeaders = {
@@ -60,7 +60,11 @@ serve(async (req) => {
     const results = [];
 
     for (const row of rows ?? []) {
-      const verification = await verifyRemoteImageUrl(row.product_image_url);
+      const verification = await getExactProductImageReadiness(
+        row.product_image_url,
+        row.product_title,
+        row.brand,
+      );
       const reassessment = reassessProductBankRow(
         {
           id: row.id,
@@ -71,7 +75,6 @@ serve(async (req) => {
           brand: row.brand,
           product_title: row.product_title,
           product_url: row.product_url,
-          product_image_url: row.product_image_url,
           product_price_text: row.product_price_text,
           bank_state: row.bank_state,
           exact_match_confirmed: row.exact_match_confirmed,
@@ -97,6 +100,7 @@ serve(async (req) => {
       results.push({
         id: row.id,
         image_status: verification.status,
+        image_score: verification.score,
         bank_state: reassessment.bank_state,
         match_confidence: reassessment.match_confidence,
       });

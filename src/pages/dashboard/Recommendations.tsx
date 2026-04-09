@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/pill";
 import { getYourVibeDerivation } from "@/lib/knowledgeCenter";
+import { hasTrustedRecommendationProductImage } from "@/lib/recommendationProductTruth";
 
 interface Product {
   name: string;
@@ -116,13 +117,7 @@ const PILLARS = [
 const PAGE_SIZE = 4;
 
 function hasResolvedProductImage(product: Product) {
-  return Boolean(
-    product.source_kind &&
-    product.source_kind !== "brand-search" &&
-    product.affiliate_url &&
-    product.image_url &&
-    /^https?:\/\//i.test(product.image_url),
-  );
+  return hasTrustedRecommendationProductImage(product);
 }
 
 function getProductImage(product: Product) {
@@ -753,6 +748,7 @@ function ProductCard({
   const productActionLabel = getProductActionLabel(product);
   const productDisplayPrice = getProductDisplayPrice(product);
   const [imageFailed, setImageFailed] = useState(false);
+  const imageSuppressedByTrust = Boolean(product.image_url) && !productImage;
   const showProductImage = Boolean(productImage) && !imageFailed;
 
   return (
@@ -830,6 +826,8 @@ function ProductCard({
                 {product.explanation?.decision ? <p>Decision: {product.explanation.decision}</p> : null}
                 {product.explanation?.bank_state ? <p>Bank state: {product.explanation.bank_state}</p> : null}
                 {product.explanation?.image_status ? <p>Image status: {product.explanation.image_status}</p> : null}
+                {imageSuppressedByTrust ? <p>Display image: withheld by truth guard</p> : null}
+                {imageFailed ? <p>Display image: failed to load in browser</p> : null}
                 {product.recommendation_match_reasons?.length ? (
                   <p>Reasons: {product.recommendation_match_reasons.join(", ")}</p>
                 ) : null}
