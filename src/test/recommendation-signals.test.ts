@@ -89,6 +89,12 @@ const thisOrThatAnswers = [
     getThisOrThatBank("brands-shopping", "male")!.questions[0]!,
     "A",
   ),
+  buildThisOrThatAnswerRecord(
+    "travel-trips",
+    "male",
+    getThisOrThatBank("travel-trips", "male")!.questions[0]!,
+    "A",
+  ),
 ];
 
 describe("recommendation signal normalization", () => {
@@ -126,7 +132,8 @@ describe("recommendation signal normalization", () => {
 
     expect(state.likes.length).toBeGreaterThan(0);
     expect(state.dislikes.length).toBeGreaterThan(0);
-    expect(state.thisOrThatAnswers).toHaveLength(1);
+    expect(state.thisOrThatAnswers).toHaveLength(2);
+    expect(state.thisOrThatAnswers.some((row) => row.recommendation_category === "travel")).toBe(true);
     expect(
       state.thisOrThatSignalRows.some(
         (row) => row.signal_type === "brand_keyword" && row.brand === "uniqlo" && row.signal_polarity === "positive",
@@ -156,7 +163,7 @@ describe("recommendation signal normalization", () => {
     const inputStrength = buildRecommendationInputStrength(state);
 
     expect(summary.signal_count).toBe(state.signals.length);
-    expect(summary.this_or_that_answer_count).toBe(1);
+    expect(summary.this_or_that_answer_count).toBe(2);
     expect(summary.this_or_that_signal_count).toBe(state.thisOrThatSignalRows.length);
     expect(summary.product_card_keyword_count).toBe(2);
     expect(summary.dislike_count).toBe(state.dislikes.length);

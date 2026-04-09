@@ -51,6 +51,10 @@ type ThisOrThatCategoryState = ThisOrThatCategoryDefinition & {
   isLive: boolean;
 };
 
+type ThisOrThatDashboardItem =
+  | { type: "category"; category: ThisOrThatCategoryState; layoutClass: string }
+  | { type: "feature"; layoutClass: string };
+
 const FREE_CATEGORY_LIMIT = 4;
 const FREE_THIS_OR_THAT_LIMIT = 8;
 
@@ -66,6 +70,21 @@ const AI_FEEDBACK = [
   "Smart pick. Your profile is coming together nicely.",
   "Understood. On to the next one!",
 ];
+
+const THIS_OR_THAT_DASHBOARD_LAYOUT = [
+  "lg:col-span-3",
+  "lg:col-span-3",
+  "lg:col-span-3",
+  "lg:col-span-3",
+  "lg:col-span-3",
+  "lg:col-span-3",
+  "lg:col-span-3",
+  "lg:col-span-3",
+  "lg:col-span-3",
+  "lg:col-span-3",
+  "lg:col-span-3",
+  "lg:col-span-3",
+] as const;
 
 const STYLE_CHAT_SUGGESTIONS = [
   "What vibe do you think I have so far?",
@@ -233,6 +252,22 @@ const KnowMePage = () => {
       buildThisOrThatCategoryState(category, bankGender, knowMeResponses, subscribed),
     );
   }, [bankGender, knowMeResponses, subscribed]);
+  const thisOrThatDashboardItems = useMemo<ThisOrThatDashboardItem[]>(() => {
+    const categories = thisOrThatCategories.map((category, index) => ({
+      type: "category" as const,
+      category,
+      layoutClass:
+        THIS_OR_THAT_DASHBOARD_LAYOUT[index] ??
+        THIS_OR_THAT_DASHBOARD_LAYOUT[THIS_OR_THAT_DASHBOARD_LAYOUT.length - 1],
+    }));
+    const featureIndex = Math.min(6, categories.length);
+
+    return [
+      ...categories.slice(0, featureIndex),
+      { type: "feature" as const, layoutClass: "lg:col-span-3" },
+      ...categories.slice(featureIndex),
+    ];
+  }, [thisOrThatCategories]);
 
   const activeTotCategory = thisOrThatCategories.find((category) => category.id === activeTotCategoryId) ?? null;
   const activeTotQuestion = activeTotCategory?.questions[quizQuestionIdx] ?? null;
@@ -331,15 +366,6 @@ const KnowMePage = () => {
 
     const answerRecord = buildThisOrThatAnswerRecord(categoryId, bankGender, question, choice);
     const updatedAt = new Date().toISOString();
-    const recommendationCategory =
-      answerRecord.selected_payload.category_slug === "clothes"
-        ? "clothes"
-        : answerRecord.selected_payload.category_slug === "household"
-          ? "home"
-          : answerRecord.selected_payload.category_slug === "dining" ||
-              answerRecord.selected_payload.category_slug === "beverages"
-            ? "food"
-            : null;
 
     const { error } = await supabase.from("this_or_that_v2_answers").upsert({
       user_id: userId,
@@ -348,7 +374,7 @@ const KnowMePage = () => {
       rejected_option_key: answerRecord.rejected_option_key,
       category_key: answerRecord.my_go_two_category_slug,
       subgroup_key: answerRecord.selected_payload.subcategory_slug,
-      recommendation_category: recommendationCategory,
+      recommendation_category: answerRecord.recommendation_category,
       primary_keyword: answerRecord.selected_payload.primary_keyword,
       descriptor_keywords: answerRecord.selected_payload.descriptor_keywords,
       brand: answerRecord.selected_payload.brand_keywords[0] ?? null,
@@ -371,7 +397,7 @@ const KnowMePage = () => {
     });
 
     if (error) {
-      console.warn("This or That v2 answer save skipped:", error);
+      throw error;
     }
   };
 
@@ -724,20 +750,7 @@ const KnowMePage = () => {
         <div className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
 
         <div className="grid grid-cols-1 gap-3 auto-rows-[minmax(180px,auto)] sm:gap-4 sm:auto-rows-[minmax(190px,auto)] md:grid-cols-2 lg:grid-cols-12 lg:auto-rows-[minmax(210px,auto)] xl:auto-rows-[minmax(230px,auto)]">
-            {[
-              { type: "category" as const, category: thisOrThatCategories[0],  layoutClass: "lg:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[1],  layoutClass: "lg:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[2],  layoutClass: "lg:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[3],  layoutClass: "lg:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[4],  layoutClass: "lg:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[5],  layoutClass: "lg:col-span-3" },
-              { type: "feature" as const,                                         layoutClass: "lg:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[6],  layoutClass: "lg:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[7],  layoutClass: "lg:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[8],  layoutClass: "lg:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[9],  layoutClass: "lg:col-span-3" },
-              { type: "category" as const, category: thisOrThatCategories[10], layoutClass: "lg:col-span-3" },
-            ].map((item, index) => {
+            {thisOrThatDashboardItems.map((item, index) => {
               if (item.type === "feature") {
                 return (
                   <motion.div

@@ -3,7 +3,9 @@ import { getThisOrThatBank } from "../data/knowMeQuestions";
 import {
   buildThisOrThatAnswerRecord,
   THIS_OR_THAT_V2_DATASET_COVERAGE,
+  THIS_OR_THAT_V2_LIVE_FEMALE_QUESTION_SCAFFOLD,
   THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD,
+  THIS_OR_THAT_V2_LIVE_NON_BINARY_QUESTION_SCAFFOLD,
 } from "../data/thisOrThatV2";
 
 describe("This or That v2 answer contract", () => {
@@ -58,6 +60,14 @@ describe("This or That v2 answer contract", () => {
       THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD.every((question) => question.dataset_gender === "male"),
     ).toBe(true);
     expect(
+      THIS_OR_THAT_V2_LIVE_FEMALE_QUESTION_SCAFFOLD.every((question) => question.dataset_gender === "female"),
+    ).toBe(true);
+    expect(
+      THIS_OR_THAT_V2_LIVE_NON_BINARY_QUESTION_SCAFFOLD.every(
+        (question) => question.dataset_gender === "non-binary",
+      ),
+    ).toBe(true);
+    expect(
       THIS_OR_THAT_V2_DATASET_COVERAGE.male.some(
         (row) =>
           row.source_category_id === "brands-shopping" &&
@@ -81,5 +91,28 @@ describe("This or That v2 answer contract", () => {
           row.source_kind === "authored-v2",
       ),
     ).toBe(true);
+  });
+
+  it("preserves live travel categories instead of collapsing them to null", () => {
+    const bank = getThisOrThatBank("travel-trips", "male");
+    const question = bank?.questions[0];
+
+    expect(question).toBeTruthy();
+
+    const record = buildThisOrThatAnswerRecord("travel-trips", "male", question!, "A");
+
+    expect(record.recommendation_category).toBe("travel");
+    expect(record.my_go_two_category_slug).toBe("travel");
+  });
+
+  it("fails fast when a category is unknown instead of silently using the first blueprint", () => {
+    const bank = getThisOrThatBank("brands-shopping", "male");
+    const question = bank?.questions[0];
+
+    expect(question).toBeTruthy();
+
+    expect(() => buildThisOrThatAnswerRecord("not-a-real-category", "male", question!, "A")).toThrow(
+      /Unknown This or That category/,
+    );
   });
 });

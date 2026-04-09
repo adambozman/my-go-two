@@ -533,6 +533,7 @@ const buildQuestionScaffold = (
 const buildQuestionScaffoldFromAuthoredSeed = (
   category: ThisOrThatCategory,
   seed: ThisOrThatV2AuthoredQuestionSeed,
+  gender: Gender,
 ): ThisOrThatV2QuestionScaffold | null => {
   const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(category.id);
   if (!blueprint) return null;
@@ -545,7 +546,7 @@ const buildQuestionScaffoldFromAuthoredSeed = (
     source_category_id: category.id,
     source_category_title: category.title,
     source_kind: "authored-v2",
-    dataset_gender: seed.supported_genders[0] ?? "non-binary",
+    dataset_gender: gender,
     category_slug: blueprint.category_slug,
     subcategory_slug: blueprint.subcategory_slug,
     prompt: seed.prompt,
@@ -608,7 +609,7 @@ export const buildThisOrThatV2QuestionScaffolds = (
     );
     if (authoredQuestions.length > 0) {
       return authoredQuestions
-        .map((question) => buildQuestionScaffoldFromAuthoredSeed(category, question))
+        .map((question) => buildQuestionScaffoldFromAuthoredSeed(category, question, gender))
         .filter(
           (question): question is ThisOrThatV2QuestionScaffold => Boolean(question),
         );
@@ -689,17 +690,23 @@ export const buildThisOrThatAnswerRecord = (
   choice: "A" | "B",
 ): ThisOrThatV2AnswerRecord => {
   const category = THIS_OR_THAT_CATEGORIES.find((entry) => entry.id === categoryId);
+  if (!category) {
+    throw new Error(`Unknown This or That category: ${categoryId}`);
+  }
+
+  const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(categoryId);
+  if (!blueprint) {
+    throw new Error(`Missing This or That v2 blueprint for category: ${categoryId}`);
+  }
+
   const bank = getThisOrThatBank(categoryId, gender);
   const linkedCategoriesByTitle = new Map(
     (bank?.categories ?? []).map((entry) => [entry.title, entry]),
   );
-  const scaffold =
-    (category && buildQuestionScaffold(category, question, linkedCategoriesByTitle, gender)) || null;
-  const fallbackBlueprint =
-    CATEGORY_BLUEPRINT_BY_ID.get(categoryId) ?? THIS_OR_THAT_V2_CATEGORY_BLUEPRINTS[0];
+  const scaffold = buildQuestionScaffold(category, question, linkedCategoriesByTitle, gender);
 
   const fallbackSelected = buildOptionMetadata(
-    fallbackBlueprint,
+    blueprint,
     choice === "A" ? question.categoryA : question.categoryB,
     choice === "A" ? question.tagsForA : question.tagsForB,
     choice === "A" ? question.categoryB : question.categoryA,
@@ -707,7 +714,7 @@ export const buildThisOrThatAnswerRecord = (
     undefined,
   );
   const fallbackRejected = buildOptionMetadata(
-    fallbackBlueprint,
+    blueprint,
     choice === "A" ? question.categoryB : question.categoryA,
     choice === "A" ? question.tagsForB : question.tagsForA,
     choice === "A" ? question.categoryA : question.categoryB,
@@ -746,8 +753,8 @@ export const buildThisOrThatAnswerRecord = (
       subcategory_slug: selected.metadata.subcategory_slug,
       selected,
       rejected,
-      source_kind: scaffold?.source_kind ?? fallbackBlueprint.source_kind,
-      weight: scaffold?.weight ?? fallbackBlueprint.weight,
+      source_kind: scaffold?.source_kind ?? blueprint.source_kind,
+      weight: scaffold?.weight ?? blueprint.weight,
     },
     source_version: "this-or-that-v2",
   };
