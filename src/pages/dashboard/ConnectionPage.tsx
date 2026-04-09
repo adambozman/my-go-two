@@ -8,6 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
+import {
+  parseSharedRecommendationsRecord,
+  type RecommendationProduct as SharedRecommendationProduct,
+  type SharedRecommendationsContract as SharedRecommendationsRecord,
+} from "@/lib/recommendationContracts";
 import { resolveStorageUrl } from "@/lib/storageRefs";
 
 interface ConnectionRecord {
@@ -92,24 +97,6 @@ interface SharedDerivedFeatureRow {
 interface SharedVibeRecord {
   persona_summary: string | null;
 }
-
-interface SharedRecommendationsRecord {
-  id: string;
-  week_start: string;
-  generated_at: string;
-  products: Array<{
-    name?: string;
-    brand?: string;
-    price?: string;
-    hook?: string;
-    why?: string;
-    affiliate_url?: string | null;
-    search_url?: string | null;
-    source_kind?: string | null;
-  }> | null;
-}
-
-type SharedRecommendationProduct = NonNullable<SharedRecommendationsRecord["products"]>[number];
 
 interface OutgoingSharingStateRecord {
   profile_fields?: Partial<Record<ProfileFieldKey, boolean>> | null;
@@ -479,7 +466,9 @@ export default function ConnectionPage() {
     const incomingFeatureRows = (incomingDerivedRows || []) as SharedDerivedFeatureRow[];
     const outgoingFeatureRows = (outgoingDerivedRows || []) as SharedDerivedFeatureRow[];
     const vibeData = Array.isArray(sharedVibeRows) ? (sharedVibeRows[0] as SharedVibeRecord | undefined) ?? null : null;
-    const recommendationData = Array.isArray(sharedRecommendationRows) ? (sharedRecommendationRows[0] as SharedRecommendationsRecord | undefined) ?? null : null;
+    const recommendationData = Array.isArray(sharedRecommendationRows)
+      ? parseSharedRecommendationsRecord(sharedRecommendationRows[0])
+      : null;
     const cardRows = (incomingSharedCardRows || []) as SharedSavedProductCardRow[];
     const ownSavedProductCards = Array.isArray(ownEntryRows) ? (ownEntryRows as SavedProductCardRecord[]) : [];
     const outgoingSharingState = (outgoingSharingStateResult?.data as OutgoingSharingStateRecord | null) || null;

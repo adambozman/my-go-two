@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTopBar } from "@/contexts/top-bar-context";
 import { buildSprints, getThisOrThatBank, SECTIONS, THIS_OR_THAT, THIS_OR_THAT_CATEGORIES, type BrandBankQuestion, type QuizQuestion } from "@/data/knowMeQuestions";
-import { buildThisOrThatAnswerRecord } from "@/data/thisOrThatV2";
+import { buildThisOrThatAnswerUpsertPayload } from "@/data/thisOrThatV2Persistence";
 import { normalizeGender, type Gender } from "@/lib/gender";
 import {
   buildKnowledgeAiAdapter,
@@ -364,35 +364,17 @@ const KnowMePage = () => {
     const userId = (await supabase.auth.getUser()).data.user?.id;
     if (!userId) throw new Error("No user");
 
-    const answerRecord = buildThisOrThatAnswerRecord(categoryId, bankGender, question, choice);
     const updatedAt = new Date().toISOString();
+    const payload = buildThisOrThatAnswerUpsertPayload({
+      userId,
+      categoryId,
+      gender: bankGender,
+      question,
+      choice,
+      answeredAt: updatedAt,
+    });
 
-    const { error } = await supabase.from("this_or_that_v2_answers").upsert({
-      user_id: userId,
-      question_key: answerRecord.question_id,
-      selected_option_key: answerRecord.selected_option_key,
-      rejected_option_key: answerRecord.rejected_option_key,
-      category_key: answerRecord.my_go_two_category_slug,
-      subgroup_key: answerRecord.selected_payload.subcategory_slug,
-      recommendation_category: answerRecord.recommendation_category,
-      primary_keyword: answerRecord.selected_payload.primary_keyword,
-      descriptor_keywords: answerRecord.selected_payload.descriptor_keywords,
-      brand: answerRecord.selected_payload.brand_keywords[0] ?? null,
-      location_keys: answerRecord.selected_payload.location_keywords,
-      answer_payload: {
-        question_prompt: answerRecord.question_prompt,
-        bank_gender: answerRecord.bank_gender,
-        selected_label: answerRecord.selected_label,
-        rejected_label: answerRecord.rejected_label,
-        selected_payload: answerRecord.selected_payload,
-        rejected_payload: answerRecord.rejected_payload,
-        response_payload: answerRecord.response_payload,
-      },
-      response_source: "this_or_that_v2",
-      source_version: answerRecord.source_version,
-      answered_at: updatedAt,
-      updated_at: updatedAt,
-    }, {
+    const { error } = await supabase.from("this_or_that_v2_answers").upsert(payload, {
       onConflict: "user_id,question_key",
     });
 

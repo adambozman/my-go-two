@@ -11,38 +11,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/pill";
 import { getYourVibeDerivation } from "@/lib/knowledgeCenter";
+import {
+  parseRecommendationEngineResponse,
+  type RecommendationProduct as Product,
+} from "@/lib/recommendationContracts";
 import { hasTrustedRecommendationProductImage } from "@/lib/recommendationProductTruth";
-
-interface Product {
-  name: string;
-  brand: string;
-  price: string;
-  category: string;
-  hook: string;
-  why: string;
-  is_connection_pick?: boolean;
-  affiliate_url?: string | null;
-  search_url?: string | null;
-  product_query?: string | null;
-  image_url?: string | null;
-  source_kind?: string;
-  source_version?: string;
-  exact_match_confirmed?: boolean | null;
-  match_confidence?: number | null;
-  resolver_source?: string | null;
-  recommendation_match_confidence?: number | null;
-  recommendation_match_reasons?: string[] | null;
-  explanation?: {
-    decision?: string;
-    input_level?: string;
-    input_score?: number;
-    match_reasons?: string[];
-    resolver_source?: string | null;
-    bank_state?: string | null;
-    bank_source?: string | null;
-    image_status?: string | null;
-  } | null;
-}
 
 const RECOMMENDATION_V2_VERSION = "recommendation-engine-v2";
 
@@ -280,18 +253,13 @@ const Recommendations = () => {
       }
 
       if (error) throw error;
-      if (data?.products) {
-        setProducts(data.products);
-        setGeneratedAt(data.generated_at ?? null);
-        setIsCached(Boolean(data.cached));
-        setGenerationVersion(typeof data.generation_version === "string" ? data.generation_version : activeFunction);
-        setInputSnapshotSummary(
-          data.input_snapshot_summary && typeof data.input_snapshot_summary === "object"
-            ? data.input_snapshot_summary as Record<string, unknown>
-            : null,
-        );
-        setCurrentPage(1);
-      }
+      const response = parseRecommendationEngineResponse(data);
+      setProducts(response.products);
+      setGeneratedAt(response.generated_at);
+      setIsCached(response.cached);
+      setGenerationVersion(response.generation_version ?? activeFunction);
+      setInputSnapshotSummary(response.input_snapshot_summary);
+      setCurrentPage(1);
     } catch (error: unknown) {
       console.error("Products error:", error);
       setProducts([]);
