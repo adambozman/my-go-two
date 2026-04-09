@@ -723,7 +723,7 @@ const KnowMePage = () => {
       <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
         <div className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
 
-        <div className="grid auto-rows-[minmax(220px,auto)] grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-12 lg:auto-rows-[calc((100vh-var(--header-height)-80px)/3)]">
+        <div className="grid grid-cols-1 gap-3 auto-rows-[minmax(180px,auto)] sm:gap-4 sm:auto-rows-[minmax(190px,auto)] md:grid-cols-2 lg:grid-cols-12 lg:auto-rows-[minmax(210px,auto)] xl:auto-rows-[minmax(230px,auto)]">
             {[
               { type: "category" as const, category: thisOrThatCategories[0],  layoutClass: "lg:col-span-3" },
               { type: "category" as const, category: thisOrThatCategories[1],  layoutClass: "lg:col-span-3" },
@@ -745,14 +745,14 @@ const KnowMePage = () => {
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
-                    className={`rounded-[28px] p-6 md:p-7 text-left relative overflow-hidden ${item.layoutClass}`}
+                    className={`rounded-[24px] p-5 sm:p-6 md:rounded-[28px] md:p-7 text-left relative overflow-hidden min-h-[180px] md:min-h-[200px] ${item.layoutClass}`}
                     style={{ background: "#d4543a", boxShadow: "0 18px 44px rgba(212,84,58,0.3)" }}
                   >
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", height: "100%", textAlign: "center", padding: "20px", gap: 12 }}>
-                      <p style={{ fontSize: 38, lineHeight: 1.0, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", margin: 0 }}>This or That</p>
-                      <p style={{ fontSize: 15, color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Two Options. One Choice.</p>
-                      <p style={{ fontSize: 15, color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Your Pattern Builds Over Time.</p>
-                      <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Help the AI learn your vibe.</p>
+                    <div className="flex h-full flex-col items-center justify-center gap-2 px-1 text-center sm:gap-3 sm:px-3">
+                      <p className="text-[30px] leading-[0.94] sm:text-[34px] md:text-[38px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", margin: 0 }}>This or That</p>
+                      <p className="text-[13px] sm:text-[14px] md:text-[15px]" style={{ color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Two Options. One Choice.</p>
+                      <p className="text-[13px] sm:text-[14px] md:text-[15px]" style={{ color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Your Pattern Builds Over Time.</p>
+                      <p className="text-[11px] sm:text-[12px] md:text-[13px]" style={{ color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Help the AI learn your vibe.</p>
                     </div>
                   </motion.div>
                 );
@@ -771,7 +771,7 @@ const KnowMePage = () => {
                   transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
                   disabled={isDisabled}
                   onClick={() => startThisOrThatCategory(category.id)}
-                  className={`card-design-sand rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden ${item.layoutClass}`}
+                  className={`card-design-sand rounded-[24px] p-4 sm:p-5 md:rounded-[28px] md:p-6 text-left relative overflow-hidden min-h-[180px] sm:min-h-[190px] lg:min-h-0 ${item.layoutClass}`}
                   style={{ opacity: isDisabled ? 0.8 : 1 }}
                 >
                   <div
@@ -783,7 +783,7 @@ const KnowMePage = () => {
                     }}
                   />
 
-                  <div className="relative flex h-full flex-col justify-between gap-5">
+                  <div className="relative flex h-full flex-col justify-between gap-4 sm:gap-5">
                     <div className="flex items-start justify-between gap-3">
                       <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                         {category.eyebrow}
@@ -794,11 +794,11 @@ const KnowMePage = () => {
                       </span>
                     </div>
 
-                    <div className="relative max-w-[26ch]">
-                      <h3 className="text-[24px] md:text-[28px] leading-[0.96] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                    <div className="relative max-w-[24ch] sm:max-w-[26ch]">
+                      <h3 className="text-[21px] leading-[0.98] mb-2 sm:text-[24px] sm:mb-3 md:text-[28px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                         {category.title}
                       </h3>
-                      <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                      <p className="text-[12px] leading-relaxed sm:text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                         {category.description}
                       </p>
                     </div>
@@ -997,12 +997,12 @@ const KnowMePage = () => {
     <>
       <div className="h-full overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 auto-rows-auto">
+          <div className="grid grid-cols-1 gap-4 auto-rows-auto lg:grid-cols-12">
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 260, damping: 24 }}
-              className="lg:col-span-8 card-design-sand rounded-[34px] p-6 md:p-7 relative overflow-hidden min-h-[340px]"
+              className="lg:col-span-8 card-design-sand rounded-[28px] p-5 md:rounded-[34px] md:p-7 relative overflow-hidden min-h-[280px] md:min-h-[320px] lg:min-h-[340px]"
             >
               <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
               <div className="relative flex h-full flex-col justify-between gap-8">
@@ -1011,16 +1011,16 @@ const KnowMePage = () => {
                     <p className="text-[10px] uppercase tracking-[0.22em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                       Go Two / Know Me
                     </p>
-                    <h1 className="text-[44px] md:text-[60px] leading-[0.9] max-w-[9ch] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                    <h1 className="text-[34px] leading-[0.92] max-w-[9ch] mb-4 sm:text-[44px] md:text-[60px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                       Your Vibe
                     </h1>
-                    <p className="text-[16px] leading-relaxed max-w-[44ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    <p className="text-[14px] leading-relaxed max-w-[44ch] sm:text-[15px] md:text-[16px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                       Your Vibe is the AI's live read of your taste so far. It watches for patterns across what you answer, what you skip, what you value, and how you react to quick instinct prompts.
                     </p>
                   </div>
 
-                  <div className="rounded-[26px] px-5 py-4 min-w-[172px] backdrop-blur-md" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)" }}>
-                    <p className="text-[42px] leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-teal)" }}>
+                  <div className="rounded-[22px] px-4 py-3 min-w-[148px] sm:min-w-[172px] backdrop-blur-md md:rounded-[26px] md:px-5 md:py-4" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)" }}>
+                    <p className="text-[34px] leading-none sm:text-[38px] md:text-[42px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-teal)" }}>
                       {vibeProgressPercent}%
                     </p>
                     <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
@@ -1029,13 +1029,13 @@ const KnowMePage = () => {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-[minmax(0,1fr)_260px] gap-4 items-end">
+                <div className="grid gap-4 items-end md:grid-cols-[minmax(0,1fr)_240px] lg:grid-cols-[minmax(0,1fr)_260px]">
                   <div>
-                    <p className="text-[18px] leading-snug mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                    <p className="text-[16px] leading-snug mb-3 sm:text-[18px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                       {yourVibe?.persona_summary || "You're still early, but the AI is already building a point of view on whether your style leans cleaner, louder, softer, practical, elevated, or more trend-driven."}
                     </p>
                     {subscribed && (
-                      <p className="text-[14px] leading-relaxed max-w-[62ch] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                      <p className="text-[13px] leading-relaxed max-w-[62ch] mb-4 sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                         {allDone
                           ? "You've given the system a full profile, so your vibe summary and downstream recommendations can now get much more specific."
                           : `${totalAnswered} of ${totalQuestions} questions answered so far. Every answer sharpens how the AI describes your style and what it recommends next.`}
@@ -1073,17 +1073,17 @@ const KnowMePage = () => {
               transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
               whileTap={{ scale: 0.985 }}
               onClick={openThisOrThat}
-              className="lg:col-span-4 card-design-sand rounded-[34px] p-5 md:p-6 relative overflow-hidden text-left flex flex-col"
+              className="lg:col-span-4 card-design-sand rounded-[28px] p-5 md:rounded-[34px] md:p-6 relative overflow-hidden text-left flex flex-col min-h-[240px] sm:min-h-[260px] lg:min-h-0"
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
               <div className="relative flex flex-col flex-1">
                 <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   Instinct deck
                 </p>
-                <p className="text-[34px] md:text-[40px] leading-[0.95] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                <p className="text-[28px] leading-[0.96] mb-4 sm:text-[34px] md:text-[40px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                   This or That
                 </p>
-                <p className="text-[14px] leading-relaxed max-w-[30ch] mb-6" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                <p className="text-[13px] leading-relaxed max-w-[30ch] mb-6 sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                   Two options. One instinct. No overthinking. Pick fast across style, taste, romance, travel, gifting, and more — and let your pattern build itself over time.
                 </p>
                 <div className="mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
@@ -1101,17 +1101,17 @@ const KnowMePage = () => {
               transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
               whileTap={{ scale: 0.99 }}
               onClick={openStyleChat}
-              className="lg:col-span-5 card-design-sand rounded-[30px] p-5 relative overflow-hidden min-h-[260px] text-left"
+              className="lg:col-span-5 card-design-sand rounded-[26px] p-5 relative overflow-hidden min-h-[220px] sm:min-h-[240px] lg:min-h-[260px] text-left"
               style={{ borderRadius: 30 }}
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
               <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 Style chat with AI
               </p>
-              <p className="text-[34px] leading-[0.96] mb-4 max-w-[12ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+              <p className="text-[28px] leading-[0.98] mb-4 max-w-[12ch] sm:text-[34px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                 Ask the AI what it thinks your style is.
               </p>
-              <p className="text-[14px] leading-relaxed max-w-[34ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              <p className="text-[13px] leading-relaxed max-w-[34ch] mb-5 sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                 Open a live style chat to ask how the AI sees your vibe so far, why it is asking certain questions, how it picks what comes next, and what kinds of recommendations it is building toward from your answers.
               </p>
               <div className="rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
@@ -1128,17 +1128,17 @@ const KnowMePage = () => {
               transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
               whileTap={{ scale: 0.99 }}
               onClick={openCategoriesDashboard}
-              className="lg:col-span-7 card-design-sand rounded-[30px] p-5 md:p-6 text-left relative overflow-hidden min-h-[260px] flex flex-col"
+              className="lg:col-span-7 card-design-sand rounded-[26px] p-5 md:p-6 text-left relative overflow-hidden min-h-[220px] sm:min-h-[240px] lg:min-h-[260px] flex flex-col"
               style={{ borderRadius: 30 }}
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
               <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                 Get to know you
               </p>
-              <p className="text-[34px] leading-[0.96] mb-4 max-w-[16ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+              <p className="text-[28px] leading-[0.98] mb-4 max-w-[16ch] sm:text-[34px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                 Questions by category
               </p>
-              <p className="text-[14px] leading-relaxed max-w-[44ch] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              <p className="text-[13px] leading-relaxed max-w-[44ch] mb-5 sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                 Five categories — Clothes & Style, Food & Drink, Gifts, Home, and Everything Else. Each one builds a deeper read on your taste. Answer at your own pace and pick up right where you left off.
               </p>
               <div className="mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
@@ -1153,7 +1153,7 @@ const KnowMePage = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18, type: "spring", stiffness: 250, damping: 24 }}
-              className="lg:col-span-12 card-design-sand rounded-[28px] px-5 py-5"
+              className="lg:col-span-12 card-design-sand rounded-[24px] px-4 py-4 sm:px-5 sm:py-5 md:rounded-[28px]"
               style={{ borderRadius: 28 }}
             >
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
@@ -1161,14 +1161,14 @@ const KnowMePage = () => {
                   <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                     How the AI gets to know you
                   </p>
-                  <p className="text-[28px] leading-none mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                  <p className="text-[24px] leading-none mb-3 sm:text-[28px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                     It learns from patterns, not one answer.
                   </p>
-                  <p className="text-[14px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  <p className="text-[13px] leading-relaxed sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                     The AI combines your onboarding and Know Me answers with your future fixed This or That category answers to read patterns across your style, gifting, lifestyle, and preferences. It does not invent those category questions — it interprets what your answers reveal.
                   </p>
                 </div>
-                <div className="rounded-[24px] p-4 backdrop-blur-md md:min-w-[320px]" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
+                <div className="rounded-[20px] p-4 backdrop-blur-md md:min-w-[280px] lg:min-w-[320px]" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
                   <p className="text-[11px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
                     Recommendation logic
                   </p>
