@@ -183,6 +183,54 @@ describe("recommendation intent planner", () => {
     expect(completed).toHaveLength(4);
   });
 
+  it("keeps non-qualified categories on broad popular defaults even if they have a thin local signal", () => {
+    const mixedState = buildNormalizedRecommendationState("planner-user-5", {
+      user_id: "planner-user-5",
+      profile_core: { city: "Chicago" },
+      onboarding_responses: {},
+      know_me_responses: {
+        "tot-48": "Sushi",
+      },
+      saved_product_cards: [
+        {
+          id: "card-food-1",
+          product_card_key: "coffee-order",
+          subcategory_label: "Coffee order",
+          card_title: "Oat milk vanilla latte",
+          field_values: {
+            Drink: "Vanilla latte",
+            Milk: "Oat milk",
+          },
+        },
+        {
+          id: "card-tech-1",
+          product_card_key: "tech-headphones",
+          subcategory_label: "Favorite headphones",
+          card_title: "Bang & Olufsen listening setup",
+          field_values: {
+            Brand: "Bang & Olufsen",
+            Style: "premium over-ear",
+          },
+        },
+      ],
+      user_connections: [],
+      snapshot_payload: {},
+      updated_at: new Date().toISOString(),
+    }, []);
+
+    const techSupport = buildRecommendationCategoryPlan(mixedState, 4).find((entry) => entry.category === "tech");
+    expect(techSupport?.state).not.toBe("qualified");
+    expect(techSupport?.state).not.toBe("strong");
+    expect(techSupport?.aiTarget ?? 0).toBe(0);
+
+    const intents = generateFallbackRecommendationIntents(mixedState, 4);
+    const techIntent = intents.find((intent) => intent.category === "tech");
+
+    expect(techIntent).toBeTruthy();
+    expect(techIntent?.brand).not.toBe("Bang & Olufsen");
+    expect(techIntent?.why).toContain("stays broad and popular");
+  });
+
   it("unlocks ai for a qualified category even when the rest of the profile is thin", () => {
     const foodOnlyState = buildNormalizedRecommendationState("planner-user-4", {
       user_id: "planner-user-4",

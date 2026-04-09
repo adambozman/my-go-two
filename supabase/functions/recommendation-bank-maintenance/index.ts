@@ -48,62 +48,82 @@ serve(async (req) => {
 
     const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
     const limit = Math.max(1, Math.min(Number(body?.limit) || 25, 100));
+    const force = Boolean(body?.force);
+    const staleBeforeIso = new Date(Date.now() - 24 * 14 * 60 * 60 * 1000).toISOString();
 
-    const { data: rows, error } = await admin
+    let query = admin
       .from("recommendation_product_bank")
-      .select("id, primary_keyword, descriptor_keywords, keyword_signature, category, brand, product_title, product_url, product_image_url, product_price_text, bank_state, exact_match_confirmed")
+      .select("id, primary_keyword, descriptor_keywords, keyword_signature, category, brand, product_title, product_url, product_image_url, product_price_text, bank_state, exact_match_confirmed, image_status, last_verified_at")
+      .in("bank_state", ["exact_verified", "review_required", "catalog_verified"])
       .order("updated_at", { ascending: true })
       .limit(limit);
+
+    if (!force) {
+      query = query.or(`last_verified_at.is.null,last_verified_at.lt.${staleBeforeIso},image_status.neq.verified`);
+    }
+
+    const { data: rows, error } = await query;
 
     if (error) throw error;
 
     const results = [];
 
     for (const row of rows ?? []) {
-      const verification = await getExactProductImageReadiness(
-        row.product_image_url,
-        row.product_title,
-        row.brand,
-      );
-      const reassessment = reassessProductBankRow(
-        {
+      try {
+        const verification = await getExactProductImageReadiness(
+          row.product_image_url,
+          row.product_title,
+          row.brand,
+        );
+        const reassessment = reassessProductBankRow(
+          {
+            id: row.id,
+            primary_keyword: row.primary_keyword,
+            descriptor_keywords: row.descriptor_keywords ?? [],
+            keyword_signature: row.keyword_signature,
+            category: row.category,
+            brand: row.brand,
+            product_title: row.product_title,
+            product_url: row.product_url,
+            product_price_text: row.product_price_text,
+            bank_state: row.bank_state,
+            exact_match_confirmed: row.exact_match_confirmed,
+            match_confidence: 0,
+          },
+          verification.status,
+        );
+
+        const { error: updateError } = await admin
+          .from("recommendation_product_bank")
+          .update({
+            bank_state: reassessment.bank_state,
+            image_status: verification.status,
+            image_verified_at: new Date().toISOString(),
+            last_verification_error: reassessment.last_verification_error,
+            verification_notes: reassessment.verification_notes,
+            match_confidence: reassessment.match_confidence,
+            exact_match_confirmed: reassessment.exact_match_confirmed,
+            last_verified_at: new Date().toISOString(),
+          })
+          .eq("id", row.id);
+
+        if (updateError) {
+          throw updateError;
+        }
+
+        results.push({
           id: row.id,
-          primary_keyword: row.primary_keyword,
-          descriptor_keywords: row.descriptor_keywords ?? [],
-          keyword_signature: row.keyword_signature,
-          category: row.category,
-          brand: row.brand,
-          product_title: row.product_title,
-          product_url: row.product_url,
-          product_price_text: row.product_price_text,
-          bank_state: row.bank_state,
-          exact_match_confirmed: row.exact_match_confirmed,
-          match_confidence: 0,
-        },
-        verification.status,
-      );
-
-      await admin
-        .from("recommendation_product_bank")
-        .update({
-          bank_state: reassessment.bank_state,
           image_status: verification.status,
-          image_verified_at: new Date().toISOString(),
-          last_verification_error: reassessment.last_verification_error,
-          verification_notes: reassessment.verification_notes,
+          image_score: verification.score,
+          bank_state: reassessment.bank_state,
           match_confidence: reassessment.match_confidence,
-          exact_match_confirmed: reassessment.exact_match_confirmed,
-          last_verified_at: new Date().toISOString(),
-        })
-        .eq("id", row.id);
-
-      results.push({
-        id: row.id,
-        image_status: verification.status,
-        image_score: verification.score,
-        bank_state: reassessment.bank_state,
-        match_confidence: reassessment.match_confidence,
-      });
+        });
+      } catch (rowError) {
+        results.push({
+          id: row.id,
+          error: rowError instanceof Error ? rowError.message : "Unexpected row error",
+        });
+      }
     }
 
     return jsonResponse({

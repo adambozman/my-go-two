@@ -23,6 +23,7 @@ export type ScrapedProduct = {
   scraped_product_title: string | null;
   product_match_confidence: number;
   exact_match_confirmed: boolean;
+  image_verification_status?: string | null;
 };
 
 export type RecommendationCard = {

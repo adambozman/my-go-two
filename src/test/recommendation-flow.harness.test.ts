@@ -17,6 +17,7 @@ const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
     scraped_product_title: "American Eagle Skinny Blue Jeans",
     product_match_confidence: 100,
     exact_match_confirmed: true,
+    image_verification_status: "verified",
   },
   "Mejuri Thin Dome Ring": {
     image_url: "https://cdn.mejuri.com/pdp/thin-dome-ring.jpg",
@@ -27,6 +28,7 @@ const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
     scraped_product_title: "Mejuri Thin Dome Ring",
     product_match_confidence: 100,
     exact_match_confirmed: true,
+    image_verification_status: "verified",
   },
   "Lunya Washable Silk Tee Set": {
     image_url: "https://cdn.lunya.co/pdp/washable-silk-tee-set.jpg",
@@ -37,6 +39,7 @@ const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
     scraped_product_title: "Lunya Washable Silk Tee Set",
     product_match_confidence: 100,
     exact_match_confirmed: true,
+    image_verification_status: "verified",
   },
   "Bellroy Lite Daypack": {
     image_url: "https://cdn.bellroy.com/pdp/lite-daypack.jpg",
@@ -47,6 +50,7 @@ const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
     scraped_product_title: "Bellroy Lite Daypack",
     product_match_confidence: 100,
     exact_match_confirmed: true,
+    image_verification_status: "verified",
   },
   "American Eagle Straight Blue Jeans": {
     image_url: "https://cdn.ae.com/pdp/straight-blue-jeans.jpg",
@@ -57,6 +61,7 @@ const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
     scraped_product_title: "American Eagle Straight Blue Jeans",
     product_match_confidence: 100,
     exact_match_confirmed: true,
+    image_verification_status: "verified",
   },
   "H&M Skinny Blue Jeans": {
     image_url: "https://image.hm.com/pdp/skinny-blue-jeans.jpg",
@@ -67,6 +72,7 @@ const SCRAPE_FIXTURES: Record<string, ScrapedProduct> = {
     scraped_product_title: "H&M Skinny Blue Jeans",
     product_match_confidence: 100,
     exact_match_confirmed: true,
+    image_verification_status: "verified",
   },
 };
 

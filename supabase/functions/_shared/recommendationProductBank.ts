@@ -51,6 +51,7 @@ export type ProductBankCandidateLike = {
   bank_state?: string;
   bank_source?: string;
   image_status?: string;
+  last_verified_at?: string | null;
   verification_notes?: Record<string, unknown> | null;
   last_verification_error?: string | null;
   exact_match_confirmed?: boolean;
@@ -64,6 +65,8 @@ export type ProductBankReassessment = {
   last_verification_error: string | null;
   verification_notes: Record<string, unknown>;
 };
+
+export const PRODUCT_BANK_REVERIFY_MAX_AGE_HOURS = 24 * 14;
 
 const cleanText = (value: string | null | undefined) => (value ?? "").trim();
 const normalizePhrase = (value: string | null | undefined) =>
@@ -136,6 +139,15 @@ export const scoreProductBankReuseCandidate = ({
   requestedBrand: string;
   row: ProductBankCandidateLike;
 }) => {
+  const isFreshEnough = (() => {
+    if (!row.last_verified_at) return true;
+    const verifiedAt = new Date(row.last_verified_at);
+    if (Number.isNaN(verifiedAt.getTime())) return false;
+    const ageHours = (Date.now() - verifiedAt.getTime()) / 36e5;
+    return ageHours <= PRODUCT_BANK_REVERIFY_MAX_AGE_HOURS;
+  })();
+  const hasReusableState = !row.bank_state || row.bank_state === "exact_verified";
+  const hasReusableImage = !row.image_status || row.image_status === "verified";
   const exactSignature = Boolean(
     buildKeywordSignature(category, primaryKeyword, descriptorKeywords) &&
       row.keyword_signature === buildKeywordSignature(category, primaryKeyword, descriptorKeywords),
@@ -153,7 +165,7 @@ export const scoreProductBankReuseCandidate = ({
     descriptorConflict,
     exactSignature,
     score,
-    eligible: !descriptorConflict && exactSignature && brandFit >= 25,
+    eligible: !descriptorConflict && exactSignature && brandFit >= 25 && isFreshEnough && hasReusableState && hasReusableImage,
   };
 };
 
@@ -165,6 +177,7 @@ export const isBankableExactProductScrape = (
   if (!cleanText(scraped.image_url)) return false;
   if (!cleanText(scraped.price)) return false;
   if (!cleanText(scraped.scraped_product_title)) return false;
+  if (cleanText(scraped.image_verification_status) !== "verified") return false;
   return (scraped.product_match_confidence ?? 0) >= MIN_EXACT_PRODUCT_BANK_CONFIDENCE;
 };
 
@@ -222,6 +235,12 @@ export const reassessProductBankRow = (
 ): ProductBankReassessment => {
   const normalizedImageStatus = cleanText(imageStatus) || "unverified";
   const imageVerified = normalizedImageStatus === "verified";
+  const hasCriticalFields = Boolean(
+    cleanText(row.keyword_signature) &&
+    cleanText(row.product_title) &&
+    cleanText(row.product_url) &&
+    cleanText(row.product_price_text),
+  );
   const productNameForMatch = [
     cleanText(row.brand),
     cleanText(row.primary_keyword),
@@ -237,21 +256,30 @@ export const reassessProductBankRow = (
     hasPrice: Boolean(cleanText(row.product_price_text)),
     hasConfidentImage: imageVerified,
   });
+  const canRemainExactVerified = row.bank_state === "exact_verified";
 
-  const bankState = imageVerified
-    ? exact.exact
-      ? "exact_verified"
-      : "catalog_verified"
-    : "image_failed";
+  const bankState = !hasCriticalFields
+    ? "review_required"
+    : !imageVerified
+      ? "image_failed"
+      : canRemainExactVerified && exact.exact
+        ? "exact_verified"
+        : "review_required";
+  const verificationIssues = [
+    !hasCriticalFields ? "critical-fields-missing" : null,
+    !imageVerified ? normalizedImageStatus : null,
+    hasCriticalFields && imageVerified && !exact.exact ? "exact-match-regressed" : null,
+  ].filter(Boolean);
 
   return {
     match_confidence: exact.confidence,
-    exact_match_confirmed: exact.exact,
+    exact_match_confirmed: hasCriticalFields && imageVerified && canRemainExactVerified && exact.exact,
     bank_state: bankState,
-    last_verification_error: imageVerified ? null : normalizedImageStatus,
+    last_verification_error: verificationIssues[0] ?? null,
     verification_notes: {
       maintenance_check: true,
       image_status: normalizedImageStatus,
+      verification_issues: verificationIssues,
       exact_reasons: [
         bankState,
         cleanText(row.product_url) ? "url-present" : "url-missing",
