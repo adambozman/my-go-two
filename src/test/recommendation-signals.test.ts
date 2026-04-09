@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildNormalizedRecommendationState, buildRecommendationSignalSummary } from "../../supabase/functions/_shared/recommendationSignals";
+import {
+  buildNormalizedRecommendationState,
+  buildRecommendationSignalSummary,
+  buildRecommendationInputStrength,
+  buildRecommendationMatchAssessment,
+} from "../../supabase/functions/_shared/recommendationSignals";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "../../supabase/functions/_shared/knowledgeCenter";
 import { getThisOrThatBank } from "../data/knowMeQuestions";
 import { buildThisOrThatAnswerRecord } from "../data/thisOrThatV2";
@@ -148,13 +153,40 @@ describe("recommendation signal normalization", () => {
   it("builds a stable summary for weekly-generation metadata", () => {
     const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers);
     const summary = buildRecommendationSignalSummary(state);
+    const inputStrength = buildRecommendationInputStrength(state);
 
     expect(summary.signal_count).toBe(state.signals.length);
     expect(summary.this_or_that_answer_count).toBe(1);
     expect(summary.this_or_that_signal_count).toBe(state.thisOrThatSignalRows.length);
     expect(summary.product_card_keyword_count).toBe(2);
     expect(summary.dislike_count).toBe(state.dislikes.length);
+    expect(summary.recommendation_target_count).toBe(inputStrength.targetRecommendationCount);
+    expect(summary.input_strength_level).toBe(inputStrength.level);
     expect(summary.recommended_brands).toEqual(expect.arrayContaining(["aritzia", "sezane"]));
     expect(summary.location_keys).toEqual(expect.arrayContaining(["chicago", "illinois"]));
+  });
+
+  it("scores input strength and recommendation fit separately from exact-product confidence", () => {
+    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers);
+    const inputStrength = buildRecommendationInputStrength(state);
+    const supportedMatch = buildRecommendationMatchAssessment(state, {
+      category: "clothes",
+      brand: "Aritzia",
+      primary_keyword: "clothing tops",
+      keywords: ["ivory", "camel", "aritzia"],
+    });
+    const unsupportedMatch = buildRecommendationMatchAssessment(state, {
+      category: "clothes",
+      brand: "Todd Snyder",
+      primary_keyword: "corduroy jacket",
+      keywords: ["olive", "italian", "earth tone"],
+    });
+
+    expect(inputStrength.score).toBeGreaterThanOrEqual(58);
+    expect(inputStrength.targetRecommendationCount).toBeGreaterThanOrEqual(9);
+    expect(supportedMatch.confidence).toBeGreaterThanOrEqual(unsupportedMatch.confidence);
+    expect(supportedMatch.reasons).toContain("brand-aligned");
+    expect(unsupportedMatch.reasons).toContain("brand-not-yet-proven");
+    expect(unsupportedMatch.reasons).toContain("low-direct-support");
   });
 });

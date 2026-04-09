@@ -4,7 +4,10 @@ import {
   normalizePrimaryKeyword,
   type RecommendationIntent,
 } from "./recommendationCatalog.ts";
-import type { ExactProductScrapeResult } from "./exactProductScraper.ts";
+import {
+  scoreExactProductMatch,
+  type ExactProductScrapeResult,
+} from "./exactProductScraper.ts";
 
 export const MIN_EXACT_PRODUCT_BANK_CONFIDENCE = 85;
 
@@ -26,16 +29,40 @@ export type ProductBankInsert = {
   exact_match_confirmed: true;
   usage_count: number;
   last_verified_at: string;
+  bank_state: string;
+  bank_source: string;
+  image_status: string;
+  image_verified_at: string;
+  verification_notes: Record<string, unknown>;
+  last_verification_error: string | null;
 };
 
 export type ProductBankCandidateLike = {
+  id?: string;
   primary_keyword: string;
   descriptor_keywords: string[] | null;
   keyword_signature: string;
   category: RecommendationIntent["category"];
   brand: string;
   product_title: string;
+  product_url?: string;
+  product_image_url?: string;
+  product_price_text?: string;
+  bank_state?: string;
+  bank_source?: string;
+  image_status?: string;
+  verification_notes?: Record<string, unknown> | null;
+  last_verification_error?: string | null;
+  exact_match_confirmed?: boolean;
   match_confidence: number;
+};
+
+export type ProductBankReassessment = {
+  match_confidence: number;
+  exact_match_confirmed: boolean;
+  bank_state: string;
+  last_verification_error: string | null;
+  verification_notes: Record<string, unknown>;
 };
 
 const cleanText = (value: string | null | undefined) => (value ?? "").trim();
@@ -177,5 +204,60 @@ export const buildProductBankInsertFromExactScrape = ({
     exact_match_confirmed: true,
     usage_count: 0,
     last_verified_at: verifiedAt,
+    bank_state: "exact_verified",
+    bank_source: "engine-v2",
+    image_status: cleanText(scraped.image_verification_status) || "verified",
+    image_verified_at: verifiedAt,
+    verification_notes: {
+      exact_match_reasons: scraped.exact_match_reasons ?? [],
+      resolver_source: resolverSource,
+    },
+    last_verification_error: null,
+  };
+};
+
+export const reassessProductBankRow = (
+  row: ProductBankCandidateLike,
+  imageStatus: string | null | undefined,
+): ProductBankReassessment => {
+  const normalizedImageStatus = cleanText(imageStatus) || "unverified";
+  const imageVerified = normalizedImageStatus === "verified";
+  const productNameForMatch = [
+    cleanText(row.brand),
+    cleanText(row.primary_keyword),
+    ...(row.descriptor_keywords ?? []).slice(0, 3).map((descriptor) => cleanText(descriptor)),
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const exact = scoreExactProductMatch({
+    brand: cleanText(row.brand),
+    productName: productNameForMatch || cleanText(row.product_title),
+    title: cleanText(row.product_title) || null,
+    url: cleanText(row.product_url) || null,
+    hasPrice: Boolean(cleanText(row.product_price_text)),
+    hasConfidentImage: imageVerified,
+  });
+
+  const bankState = imageVerified
+    ? exact.exact
+      ? "exact_verified"
+      : "catalog_verified"
+    : "image_failed";
+
+  return {
+    match_confidence: exact.confidence,
+    exact_match_confirmed: exact.exact,
+    bank_state: bankState,
+    last_verification_error: imageVerified ? null : normalizedImageStatus,
+    verification_notes: {
+      maintenance_check: true,
+      image_status: normalizedImageStatus,
+      exact_reasons: [
+        bankState,
+        cleanText(row.product_url) ? "url-present" : "url-missing",
+        cleanText(row.product_price_text) ? "price-present" : "price-missing",
+        cleanText(row.product_title) ? "title-present" : "title-missing",
+      ],
+    },
   };
 };

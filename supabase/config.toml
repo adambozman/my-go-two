@@ -9,6 +9,12 @@ verify_jwt = true
 [functions.recommendation-engine-v2]
 verify_jwt = true
 
+[functions.recommendation-bank-maintenance]
+verify_jwt = true
+
+[functions.recommendation-trend-pipeline]
+verify_jwt = true
+
 [functions.trending-feed]
 verify_jwt = false
 

@@ -47,6 +47,18 @@ const normalizeCategory = (value: unknown): RecommendationCategory | null => {
   return CATEGORY_ORDER.includes(text as RecommendationCategory) ? (text as RecommendationCategory) : null;
 };
 
+const buildCategoryTargets = (targetCount: number) => {
+  const clamped = Math.max(1, Math.min(TOTAL_TARGET, targetCount));
+  const targets = new Map<RecommendationCategory, number>(CATEGORY_ORDER.map((category) => [category, 0]));
+
+  for (let index = 0; index < clamped; index += 1) {
+    const category = CATEGORY_ORDER[index % CATEGORY_ORDER.length];
+    targets.set(category, (targets.get(category) ?? 0) + 1);
+  }
+
+  return targets;
+};
+
 const buildIntentKey = (intent: RecommendationIntent) => [
   intent.category,
   normalizePrimaryKeyword(intent.primary_keyword ?? intent.name) ?? "",
@@ -194,10 +206,14 @@ const createDefaultIntent = (
   };
 };
 
-export const generateFallbackRecommendationIntents = (state: NormalizedRecommendationState): RecommendationIntent[] => {
+export const generateFallbackRecommendationIntents = (
+  state: NormalizedRecommendationState,
+  targetCount = TOTAL_TARGET,
+): RecommendationIntent[] => {
   const results: RecommendationIntent[] = [];
   const seen = new Set<string>();
   const negativeKeywords = buildNegativeKeywordSet(state);
+  const categoryTargets = buildCategoryTargets(targetCount);
 
   for (const category of CATEGORY_ORDER) {
     const categoryRows = state.productCardKeywords.filter((row) => row.category === category && row.primary_keyword);
@@ -207,10 +223,10 @@ export const generateFallbackRecommendationIntents = (state: NormalizedRecommend
       if (seen.has(key) || intentConflictsWithNegatives(intent, negativeKeywords)) continue;
       seen.add(key);
       results.push(intent);
-      if (results.filter((entry) => entry.category === category).length >= CATEGORY_TARGET) break;
+      if (results.filter((entry) => entry.category === category).length >= (categoryTargets.get(category) ?? 0)) break;
     }
 
-    if (results.filter((entry) => entry.category === category).length >= CATEGORY_TARGET) continue;
+    if (results.filter((entry) => entry.category === category).length >= (categoryTargets.get(category) ?? 0)) continue;
 
     const rankedSeeds = CATEGORY_DEFAULTS[category]
       .slice()
@@ -222,19 +238,21 @@ export const generateFallbackRecommendationIntents = (state: NormalizedRecommend
       if (seen.has(key) || intentConflictsWithNegatives(intent, negativeKeywords)) continue;
       seen.add(key);
       results.push(intent);
-      if (results.filter((entry) => entry.category === category).length >= CATEGORY_TARGET) break;
+      if (results.filter((entry) => entry.category === category).length >= (categoryTargets.get(category) ?? 0)) break;
     }
   }
 
-  return results.slice(0, TOTAL_TARGET);
+  return results.slice(0, targetCount);
 };
 
 export const completeRecommendationIntentSet = (
   state: NormalizedRecommendationState,
   intents: RecommendationIntent[],
+  targetCount = TOTAL_TARGET,
 ): RecommendationIntent[] => {
   const negativeKeywords = buildNegativeKeywordSet(state);
   const categoryCounts = new Map<RecommendationCategory, number>(CATEGORY_ORDER.map((category) => [category, 0]));
+  const categoryTargets = buildCategoryTargets(targetCount);
   const results: RecommendationIntent[] = [];
   const seen = new Set<string>();
 
@@ -243,27 +261,27 @@ export const completeRecommendationIntentSet = (
     if (!category) continue;
     const key = buildIntentKey(intent);
     if (seen.has(key)) continue;
-    if ((categoryCounts.get(category) ?? 0) >= CATEGORY_TARGET) continue;
+    if ((categoryCounts.get(category) ?? 0) >= (categoryTargets.get(category) ?? 0)) continue;
     if (intentConflictsWithNegatives(intent, negativeKeywords)) continue;
     seen.add(key);
     categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
     results.push({ ...intent, category });
-    if (results.length >= TOTAL_TARGET) return results;
+    if (results.length >= targetCount) return results;
   }
 
-  const fallback = generateFallbackRecommendationIntents(state);
+  const fallback = generateFallbackRecommendationIntents(state, targetCount);
   for (const intent of fallback) {
     const category = normalizeCategory(intent.category);
     if (!category) continue;
     const key = buildIntentKey(intent);
     if (seen.has(key)) continue;
-    if ((categoryCounts.get(category) ?? 0) >= CATEGORY_TARGET) continue;
+    if ((categoryCounts.get(category) ?? 0) >= (categoryTargets.get(category) ?? 0)) continue;
     if (intentConflictsWithNegatives(intent, negativeKeywords)) continue;
     seen.add(key);
     categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
     results.push(intent);
-    if (results.length >= TOTAL_TARGET) break;
+    if (results.length >= targetCount) break;
   }
 
-  return results.slice(0, TOTAL_TARGET);
+  return results.slice(0, targetCount);
 };

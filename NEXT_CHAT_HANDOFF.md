@@ -140,9 +140,17 @@ Most important recommendation/billing files:
 
 - `src/pages/dashboard/Recommendations.tsx`
 - `supabase/functions/ai-products/index.ts`
+- `supabase/functions/recommendation-engine-v2/index.ts`
+- `supabase/functions/recommendation-bank-maintenance/index.ts`
+- `supabase/functions/recommendation-trend-pipeline/index.ts`
+- `supabase/functions/_shared/recommendationSignals.ts`
+- `supabase/functions/_shared/recommendationIntentPlanner.ts`
+- `supabase/functions/_shared/recommendationProductBank.ts`
+- `supabase/functions/_shared/recommendationTrendPipeline.ts`
 - `supabase/functions/check-subscription/index.ts`
 - `supabase/functions/create-checkout/index.ts`
 - `supabase/functions/customer-portal/index.ts`
+- `RECOMMENDATION_EXECUTION_CHECKLIST.md`
 
 ## Local Run And Login
 
@@ -211,8 +219,14 @@ These are the important current realities established across the docs and repo i
 ### Recommendations
 
 - The frontend recommendations page is a viewer for a weekly cached backend generation path.
-- `resolved_recommendation_catalog` is treated like a global/shared cache.
-- Audits repeatedly flagged that table as too writable for its role.
+- The live page prefers `recommendation-engine-v2` and falls back to `ai-products` if v2 is unavailable.
+- `recommendation-engine-v2` now separates recommendation-fit confidence from exact-product confidence.
+- Sparse profiles now return fewer stronger picks instead of forcing a full 12-card set.
+- `recommendation_product_bank` now carries row state, image verification state, source metadata, and reverification notes.
+- migrated legacy bank rows should start as `review_required` until `recommendation-bank-maintenance` re-verifies them.
+- `recommendation-bank-maintenance` is the trusted cleanup/rescore path for existing bank rows.
+- `recommendation-trend-pipeline` stages trend candidates first and only promotes approved rows into the shared banks.
+- `resolved_recommendation_catalog` still exists, but the v2 direction is to treat `recommendation_product_bank` as the exact-product reuse layer.
 
 ### Public feed and connections
 

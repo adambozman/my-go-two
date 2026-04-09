@@ -3,6 +3,7 @@ import {
   buildProductBankInsertFromExactScrape,
   hasExclusiveDescriptorConflict,
   isBankableExactProductScrape,
+  reassessProductBankRow,
   scoreProductBankReuseCandidate,
 } from "../../supabase/functions/_shared/recommendationProductBank.ts";
 import type { RecommendationIntent } from "../../supabase/functions/_shared/recommendationCatalog.ts";
@@ -55,6 +56,15 @@ describe("recommendation product bank admission", () => {
       exact_match_confirmed: true,
       usage_count: 0,
       last_verified_at: "2026-04-08T00:00:00.000Z",
+      bank_state: "exact_verified",
+      bank_source: "engine-v2",
+      image_status: "verified",
+      image_verified_at: "2026-04-08T00:00:00.000Z",
+      verification_notes: {
+        exact_match_reasons: [],
+        resolver_source: "firecrawl",
+      },
+      last_verification_error: null,
     });
   });
 
@@ -130,5 +140,43 @@ describe("recommendation product bank admission", () => {
 
     expect(reuse.descriptorConflict).toBe(true);
     expect(reuse.eligible).toBe(false);
+  });
+
+  it("reassesses bank rows into explicit verification states", () => {
+    expect(
+      reassessProductBankRow({
+        primary_keyword: "jeans",
+        descriptor_keywords: ["american eagle", "skinny", "blue jeans"],
+        keyword_signature: "clothes::jeans::american eagle::skinny::blue jeans",
+        category: "clothes",
+        brand: "American Eagle",
+        product_title: "American Eagle Skinny Blue Jeans",
+        product_url: "https://www.ae.com/us/en/p/skinny-blue-jeans",
+        product_price_text: "$59.95",
+        match_confidence: 0,
+      }, "verified"),
+    ).toMatchObject({
+      bank_state: "exact_verified",
+      exact_match_confirmed: true,
+      last_verification_error: null,
+    });
+
+    expect(
+      reassessProductBankRow({
+        primary_keyword: "jeans",
+        descriptor_keywords: ["american eagle", "skinny", "blue jeans"],
+        keyword_signature: "clothes::jeans::american eagle::skinny::blue jeans",
+        category: "clothes",
+        brand: "American Eagle",
+        product_title: "American Eagle Skinny Blue Jeans",
+        product_url: "https://www.ae.com/us/en/p/skinny-blue-jeans",
+        product_price_text: "$59.95",
+        match_confidence: 0,
+      }, "http-404"),
+    ).toMatchObject({
+      bank_state: "image_failed",
+      exact_match_confirmed: false,
+      last_verification_error: "http-404",
+    });
   });
 });

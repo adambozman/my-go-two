@@ -8,6 +8,8 @@ export interface ExactProductScrapeResult {
   scraped_product_title: string | null;
   product_match_confidence: number;
   exact_match_confirmed: boolean;
+  image_verification_status?: string | null;
+  exact_match_reasons?: string[] | null;
 }
 
 type SearchResult = Record<string, unknown>;
@@ -174,6 +176,40 @@ export const scoreExactProductMatch = ({
   };
 };
 
+export const verifyRemoteImageUrl = async (url: string | null) => {
+  if (!url) return { ok: false, status: "missing" };
+
+  const runRequest = async (method: "HEAD" | "GET") => {
+    const response = await fetch(url, {
+      method,
+      redirect: "follow",
+      headers: method === "GET" ? { Range: "bytes=0-0" } : undefined,
+    });
+    const contentType = cleanText(response.headers.get("content-type"));
+    return {
+      ok: response.ok && contentType.toLowerCase().startsWith("image/"),
+      status: !response.ok
+        ? `http-${response.status}`
+        : !contentType.toLowerCase().startsWith("image/")
+          ? "non-image"
+          : "verified",
+    };
+  };
+
+  try {
+    const head = await runRequest("HEAD");
+    if (head.ok || head.status === "non-image") return head;
+  } catch {
+    // Fall through to GET probe.
+  }
+
+  try {
+    return await runRequest("GET");
+  } catch {
+    return { ok: false, status: "unreachable" };
+  }
+};
+
 export const pickBestSearchResult = (results: SearchResult[], brand: string, productName: string) => {
   const ranked = results
     .map((result, index) => {
@@ -278,14 +314,22 @@ export const scrapeExactProductWithFirecrawl = async ({
       cleanText(rawMarkdown),
     ].filter(Boolean).join(" "));
     const scrapedDescription = extractBestDescription(rawMarkdown);
+    const imageVerification = await verifyRemoteImageUrl(bestImage.imageUrl);
     const match = scoreExactProductMatch({
       brand,
       productName,
       title: scrapedProductTitle,
       url: productUrl,
       hasPrice: Boolean(scrapedPrice),
-      hasConfidentImage: Boolean(bestImage.imageUrl) && bestImage.imageScore >= 2,
+      hasConfidentImage: Boolean(bestImage.imageUrl) && bestImage.imageScore >= 3 && imageVerification.ok,
     });
+    const exactMatchReasons = [
+      match.exact ? "exact-product-verified" : "exact-product-rejected",
+      looksLikeProductPageUrl(productUrl) ? "pdp-url" : "non-pdp-url",
+      scrapedPrice ? "price-found" : "price-missing",
+      imageVerification.status ?? "image-unknown",
+      scrapedProductTitle ? "title-found" : "title-missing",
+    ];
 
     console.log(`${logPrefix} resolved`, {
       url: productUrl,
@@ -303,6 +347,8 @@ export const scrapeExactProductWithFirecrawl = async ({
         scraped_product_title: scrapedProductTitle,
         product_match_confidence: match.confidence,
         exact_match_confirmed: false,
+        image_verification_status: imageVerification.status,
+        exact_match_reasons: exactMatchReasons,
       };
     }
 
@@ -314,6 +360,8 @@ export const scrapeExactProductWithFirecrawl = async ({
       scraped_product_title: scrapedProductTitle,
       product_match_confidence: match.confidence,
       exact_match_confirmed: true,
+      image_verification_status: imageVerification.status,
+      exact_match_reasons: exactMatchReasons,
     };
   } catch (error) {
     console.error(`${logPrefix} error`, error);

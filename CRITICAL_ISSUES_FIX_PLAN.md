@@ -364,7 +364,15 @@ Treat the current recommendation stack as a bridge system until the replacement 
 - Done: `resolved_recommendation_catalog` writes now run through service-role edge-function clients, and authenticated-user insert/update policies are removed so the shared catalog is no longer directly writable from the client.
 - Done: created `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md` as the replacement architecture plan.
 - Done: created `RECOMMENDATION_SYSTEM_BUILD_SPEC.md` as the concrete schema and implementation contract for the replacement system.
-- Remaining: schema design, input-system contracts, replacement engine implementation, staged cutover, and post-cutover deletion of legacy recommendation code.
+- Done: created `RECOMMENDATION_EXECUTION_CHECKLIST.md` and worked through the 10-step execution pass end to end.
+- Done: `recommendation-engine-v2` now scores recommendation-fit confidence separately from exact-product confidence and reports explainability payloads for each card.
+- Done: sparse profiles now scale down recommendation count instead of forcing a full 12-card weekly set.
+- Done: exact-product verification now includes remote image verification state before a row can be treated as reusable exact product data.
+- Done: `recommendation_product_bank` now carries row state, source metadata, verification notes, and image verification status.
+- Done: added `recommendation-bank-maintenance` as a trusted cleanup/rescore path for existing product-bank rows.
+- Done: added `recommendation-trend-pipeline` plus `recommendation_trend_candidates` as a staged growth path for keyword/brand/product banks.
+- Done: the live page now prefers v2, falls back safely to the legacy engine if v2 is unavailable, and exposes internal recommendation diagnostics for the dev user without cluttering the customer view.
+- Remaining: complete `This or That` / product-card / likes-dislikes v2 inputs, deploy the new maintenance and trend functions, and retire legacy recommendation code only after v2 is fully live and verified.
 
 ### Fixes required
 

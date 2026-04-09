@@ -29,6 +29,18 @@ interface Product {
   exact_match_confirmed?: boolean | null;
   match_confidence?: number | null;
   resolver_source?: string | null;
+  recommendation_match_confidence?: number | null;
+  recommendation_match_reasons?: string[] | null;
+  explanation?: {
+    decision?: string;
+    input_level?: string;
+    input_score?: number;
+    match_reasons?: string[];
+    resolver_source?: string | null;
+    bank_state?: string | null;
+    bank_source?: string | null;
+    image_status?: string | null;
+  } | null;
 }
 
 const RECOMMENDATION_V2_VERSION = "recommendation-engine-v2";
@@ -97,8 +109,16 @@ const getErrorMessage = (error: unknown) =>
 const shouldFallbackToLegacyEngine = (error: unknown) => {
   const status = getRpcStatus(error);
   if (status === 404) return true;
+  if (typeof status === "number" && status >= 500) return true;
   const message = getErrorMessage(error).toLowerCase();
-  return message.includes("failed to send a request to the edge function");
+  return (
+    message.includes("failed to send a request to the edge function") ||
+    message.includes("column") ||
+    message.includes("relation") ||
+    message.includes("schema") ||
+    message.includes("migration") ||
+    message.includes("unexpected error")
+  );
 };
 
 const PILLARS = [
@@ -235,8 +255,15 @@ const Recommendations = () => {
   const [isCached, setIsCached] = useState(false);
   const [generationVersion, setGenerationVersion] = useState<string | null>(null);
   const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
+  const [inputSnapshotSummary, setInputSnapshotSummary] = useState<Record<string, unknown> | null>(null);
   const isUsingRebuiltEngine = generationVersion === RECOMMENDATION_V2_VERSION;
   const isUsingLegacyEngine = generationVersion === LEGACY_RECOMMENDATION_VERSION;
+  const recommendationTargetCount = typeof inputSnapshotSummary?.recommendation_target_count === "number"
+    ? inputSnapshotSummary.recommendation_target_count
+    : null;
+  const recommendationInputLevel = typeof inputSnapshotSummary?.recommendation_input_level === "string"
+    ? inputSnapshotSummary.recommendation_input_level
+    : null;
 
   const activePillarConfig = useMemo(
     () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
@@ -298,6 +325,11 @@ const Recommendations = () => {
         setGeneratedAt(data.generated_at ?? null);
         setIsCached(Boolean(data.cached));
         setGenerationVersion(typeof data.generation_version === "string" ? data.generation_version : activeFunction);
+        setInputSnapshotSummary(
+          data.input_snapshot_summary && typeof data.input_snapshot_summary === "object"
+            ? data.input_snapshot_summary as Record<string, unknown>
+            : null,
+        );
         setCurrentPage(1);
       }
     } catch (error: unknown) {
@@ -306,6 +338,7 @@ const Recommendations = () => {
       setGeneratedAt(null);
       setIsCached(false);
       setGenerationVersion(null);
+      setInputSnapshotSummary(null);
       const status = getRpcStatus(error);
       const message =
         status === 429
@@ -600,6 +633,12 @@ const Recommendations = () => {
                     Showing 4 preview picks from this week&apos;s set
                   </p>
                 )}
+                {isUsingRebuiltEngine && recommendationTargetCount && recommendationTargetCount < 12 && (
+                  <p className="surface-meta mt-1">
+                    Profile still learning · showing {recommendationTargetCount} stronger picks while more taste data builds
+                    {recommendationInputLevel ? ` (${recommendationInputLevel})` : ""}
+                  </p>
+                )}
                 {isDev && (
                   <Button
                     size="sm"
@@ -663,6 +702,7 @@ const Recommendations = () => {
                       isSaved={isSaved}
                       saveLoading={isSaving}
                       shareLoading={isSharing}
+                      showDiagnostics={Boolean(isDev)}
                       onToggleSave={() => subscribed ? void toggleSave(product) : toast("Upgrade to save picks")}
                       onShare={() => void handleShare(product)}
                     />
@@ -731,6 +771,7 @@ function ProductCard({
   isSaved,
   saveLoading,
   shareLoading,
+  showDiagnostics,
   onToggleSave,
   onShare,
 }: {
@@ -739,6 +780,7 @@ function ProductCard({
   isSaved: boolean;
   saveLoading: boolean;
   shareLoading: boolean;
+  showDiagnostics: boolean;
   onToggleSave: () => void;
   onShare: () => void;
 }) {
@@ -807,6 +849,31 @@ function ProductCard({
           <p className="surface-body leading-relaxed">
             {product.why}
           </p>
+
+          {showDiagnostics && (product.recommendation_match_confidence || product.explanation) ? (
+            <details className="rounded-2xl border border-white/60 bg-white/45 px-3 py-2 text-left">
+              <summary className="cursor-pointer text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+                Recommendation Notes
+              </summary>
+              <div className="mt-2 space-y-1 text-xs text-slate-600">
+                {typeof product.recommendation_match_confidence === "number" ? (
+                  <p>Match confidence: {product.recommendation_match_confidence}</p>
+                ) : null}
+                {product.explanation?.input_level ? (
+                  <p>
+                    Input level: {product.explanation.input_level}
+                    {typeof product.explanation.input_score === "number" ? ` (${product.explanation.input_score})` : ""}
+                  </p>
+                ) : null}
+                {product.explanation?.decision ? <p>Decision: {product.explanation.decision}</p> : null}
+                {product.explanation?.bank_state ? <p>Bank state: {product.explanation.bank_state}</p> : null}
+                {product.explanation?.image_status ? <p>Image status: {product.explanation.image_status}</p> : null}
+                {product.recommendation_match_reasons?.length ? (
+                  <p>Reasons: {product.recommendation_match_reasons.join(", ")}</p>
+                ) : null}
+              </div>
+            </details>
+          ) : null}
 
           <div className="mt-auto pt-1 flex items-center gap-2">
             {productDestination && productActionLabel ? (

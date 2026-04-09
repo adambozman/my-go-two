@@ -16,6 +16,8 @@ import {
   scoreProductBankReuseCandidate,
 } from "../_shared/recommendationProductBank.ts";
 import {
+  buildRecommendationInputStrength,
+  buildRecommendationMatchAssessment,
   buildNormalizedRecommendationState,
   buildRecommendationSignalSummary,
   type NormalizedRecommendationState,
@@ -57,6 +59,11 @@ type ProductBankRow = {
   match_confidence: number;
   exact_match_confirmed: boolean;
   usage_count: number;
+  bank_state?: string;
+  bank_source?: string;
+  image_status?: string;
+  verification_notes?: Record<string, unknown> | null;
+  last_verification_error?: string | null;
 };
 
 const jsonResponse = (body: Record<string, unknown>, status = 200) =>
@@ -151,10 +158,12 @@ const findBestProductBankMatch = async (
 ) => {
   const { data } = await admin
     .from("recommendation_product_bank")
-    .select("id, primary_keyword, descriptor_keywords, keyword_signature, category, brand, product_title, product_url, product_image_url, product_price_text, scraped_description, search_query, resolver_source, source_version, match_confidence, exact_match_confirmed, usage_count")
+    .select("id, primary_keyword, descriptor_keywords, keyword_signature, category, brand, product_title, product_url, product_image_url, product_price_text, scraped_description, search_query, resolver_source, source_version, match_confidence, exact_match_confirmed, usage_count, bank_state, bank_source, image_status, verification_notes, last_verification_error")
     .eq("category", category)
     .eq("primary_keyword", primaryKeyword)
     .eq("exact_match_confirmed", true)
+    .eq("bank_state", "exact_verified")
+    .eq("image_status", "verified")
     .limit(50);
 
     const rows = Array.isArray(data) ? (data as ProductBankRow[]) : [];
@@ -177,7 +186,13 @@ const findBestProductBankMatch = async (
   return ranked?.row ?? null;
 };
 
-const toResponseProduct = (intent: RecommendationIntent, bankRow: ProductBankRow | null) => {
+const toResponseProduct = (
+  state: NormalizedRecommendationState,
+  intent: RecommendationIntent,
+  bankRow: ProductBankRow | null,
+) => {
+  const recommendationMatch = buildRecommendationMatchAssessment(state, intent);
+  const inputStrength = buildRecommendationInputStrength(state);
   if (bankRow) {
     return {
       name: bankRow.product_title,
@@ -197,7 +212,19 @@ const toResponseProduct = (intent: RecommendationIntent, bankRow: ProductBankRow
       exact_match_confirmed: true,
       match_confidence: bankRow.match_confidence,
       resolver_source: bankRow.resolver_source,
-    };
+      recommendation_match_confidence: recommendationMatch.confidence,
+      recommendation_match_reasons: recommendationMatch.reasons,
+        explanation: {
+          decision: "bank-reuse",
+          input_level: inputStrength.level,
+          input_score: inputStrength.score,
+          match_reasons: recommendationMatch.reasons,
+          resolver_source: bankRow.resolver_source,
+          bank_state: (bankRow as Record<string, unknown>).bank_state ?? "exact_verified",
+          bank_source: bankRow.bank_source ?? "engine-v2",
+          image_status: bankRow.image_status ?? "verified",
+        },
+      };
   }
 
   const fallback = resolveIntentToCatalogEntry(intent);
@@ -221,12 +248,25 @@ const toResponseProduct = (intent: RecommendationIntent, bankRow: ProductBankRow
     exact_match_confirmed: false,
     match_confidence: productUrl ? 0 : null,
     resolver_source: fallback.resolver_source,
-  };
+    recommendation_match_confidence: recommendationMatch.confidence,
+    recommendation_match_reasons: recommendationMatch.reasons,
+      explanation: {
+        decision: productUrl ? "catalog-fallback" : "search-fallback",
+        input_level: inputStrength.level,
+        input_score: inputStrength.score,
+        match_reasons: recommendationMatch.reasons,
+        resolver_source: fallback.resolver_source,
+        bank_source: "fallback-catalog",
+      },
+    };
 };
 
-const generateAiIntents = async (state: NormalizedRecommendationState) => {
+const generateAiIntents = async (
+  state: NormalizedRecommendationState,
+  targetRecommendationCount: number,
+) => {
   const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-  if (!lovableApiKey) return generateFallbackRecommendationIntents(state);
+  if (!lovableApiKey) return generateFallbackRecommendationIntents(state, targetRecommendationCount);
 
   const profileSnapshot = Object.entries(state.combinedResponses)
     .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(", ") : String(value ?? "")}`)
@@ -282,9 +322,9 @@ NEGATIVE / AVOID SIGNALS:
 ${state.negativeKeywords.join(", ") || "None"}
 
 RULES:
-1. Generate exactly 12 recommendation intents.
+1. Generate exactly ${targetRecommendationCount} recommendation intents.
 2. Categories must be exactly: clothes, food, tech, home.
-3. Produce 3 per category.
+3. Distribute them naturally across those categories, but do not force weak categories if profile signal is thin.
 4. primary_keyword MUST be the main product type only, like jeans, sneakers, candle, lamp, sushi, headphones, or rug.
 5. keywords MUST be 3 to 6 lowercase descriptor keywords only. These narrow the primary keyword using fit, color, brand, material, vibe, or store context.
 6. Do not repeat the primary_keyword inside keywords.
@@ -293,6 +333,7 @@ RULES:
 9. Never output a URL.
 10. Keep hook and why concise and profile-specific.
 11. Prefer brands and products that are actually supported by the user's saved product cards, This or That answers, Know Me answers, and profile facts.
+12. If the profile is thin, prefer fewer stronger ideas over invented niche taste.
 
 Use the provided tool.`;
 
@@ -350,12 +391,12 @@ Use the provided tool.`;
     }),
   });
 
-  if (!response.ok) return generateFallbackRecommendationIntents(state);
+  if (!response.ok) return generateFallbackRecommendationIntents(state, targetRecommendationCount);
   const result = await response.json();
   const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
   const parsed = toolCall?.function?.arguments ? JSON.parse(toolCall.function.arguments) : null;
   const intents = sanitizeIntents(parsed?.intents);
-  return completeRecommendationIntentSet(state, intents);
+  return completeRecommendationIntentSet(state, intents, targetRecommendationCount);
 };
 
 const persistNormalizedState = async (admin: SupabaseClient, userId: string, state: NormalizedRecommendationState) => {
@@ -454,10 +495,11 @@ serve(async (req) => {
       knowledgeState.derivations,
       Array.isArray(thisOrThatAnswerRows) ? (thisOrThatAnswerRows as UserThisOrThatAnswerRow[]) : [],
     );
+    const inputStrength = buildRecommendationInputStrength(state);
     await persistNormalizedState(admin, user.id, state);
 
     const aiAdapter = buildCatalogAiAdapter(knowledgeState.snapshot, knowledgeState.derivations);
-    const intents = await generateAiIntents(state);
+    const intents = await generateAiIntents(state, inputStrength.targetRecommendationCount);
 
     const products = [];
     for (const intent of intents) {
@@ -477,7 +519,7 @@ serve(async (req) => {
           .from("recommendation_product_bank")
           .update({ usage_count: (bankRow.usage_count ?? 0) + 1, last_verified_at: new Date().toISOString() })
           .eq("product_url", bankRow.product_url);
-        products.push(toResponseProduct(intent, bankRow));
+        products.push(toResponseProduct(state, intent, bankRow));
         continue;
       }
 
@@ -509,18 +551,21 @@ serve(async (req) => {
           ignoreDuplicates: false,
         });
 
-        products.push(toResponseProduct(intent, {
+        products.push(toResponseProduct(state, intent, {
           ...bankInsert,
           id: undefined,
         }));
         continue;
       }
 
-      products.push(toResponseProduct(intent, null));
+      products.push(toResponseProduct(state, intent, null));
     }
 
     const inputSnapshotSummary = {
       ...buildRecommendationSignalSummary(state),
+      recommendation_target_count: inputStrength.targetRecommendationCount,
+      recommendation_input_level: inputStrength.level,
+      recommendation_input_score: inputStrength.score,
       profile_core_keys: Object.keys(aiAdapter.profileCore || {}).length,
       onboarding_answer_count: Object.keys(toObject(knowledgeState.snapshot?.onboarding_responses)).length,
       know_me_answer_count: Object.keys(toObject(knowledgeState.snapshot?.know_me_responses)).length,

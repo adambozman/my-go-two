@@ -88,6 +88,24 @@ describe("recommendation intent planner", () => {
     expect(intents.some((intent) => intent.category === "clothes" && intent.keywords?.includes("and"))).toBe(false);
   });
 
+  it("throttles recommendation count down for sparse profiles instead of forcing 12", () => {
+    const sparseState = buildNormalizedRecommendationState("planner-user-2", {
+      user_id: "planner-user-2",
+      profile_core: {},
+      onboarding_responses: {},
+      know_me_responses: {},
+      saved_product_cards: [],
+      user_connections: [],
+      snapshot_payload: {},
+      updated_at: new Date().toISOString(),
+    }, []);
+
+    const intents = generateFallbackRecommendationIntents(sparseState, 4);
+
+    expect(intents).toHaveLength(4);
+    expect(new Set(intents.map((intent) => intent.category)).size).toBe(4);
+  });
+
   it("fills an under-complete ai response back to a balanced 12-intent set without violating dislikes", () => {
     const state = buildNormalizedRecommendationState("planner-user-1", snapshot, derivations);
     const aiIntents: RecommendationIntent[] = [
@@ -143,5 +161,35 @@ describe("recommendation intent planner", () => {
     expect(counts.food).toBe(3);
     expect(counts.tech).toBe(3);
     expect(counts.home).toBe(3);
+  });
+
+  it("fills a sparse ai response back only to the requested lower target", () => {
+    const sparseState = buildNormalizedRecommendationState("planner-user-3", {
+      user_id: "planner-user-3",
+      profile_core: { city: "Chicago" },
+      onboarding_responses: {},
+      know_me_responses: {},
+      saved_product_cards: [],
+      user_connections: [],
+      snapshot_payload: {},
+      updated_at: new Date().toISOString(),
+    }, []);
+
+    const completed = completeRecommendationIntentSet(sparseState, [
+      {
+        brand: "Sony",
+        name: "Wireless Headphones",
+        price: "$199",
+        category: "tech",
+        hook: "A clean audio pick.",
+        why: "Useful everyday tech.",
+        recommendation_kind: "generic",
+        search_query: "Sony wireless headphones",
+        primary_keyword: "headphones",
+        keywords: ["wireless", "travel", "audio"],
+      },
+    ], 4);
+
+    expect(completed).toHaveLength(4);
   });
 });

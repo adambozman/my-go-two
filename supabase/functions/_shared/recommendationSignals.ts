@@ -1,6 +1,5 @@
 import {
   getBankKnowledgeDerivation,
-  getSeedCatalogBrands,
   mergeRecommendationKeywords,
   normalizePrimaryKeyword,
   normalizeRecommendationKeywords,
@@ -153,6 +152,22 @@ export interface NormalizedRecommendationState {
   keywordBankRows: RecommendationKeywordBankRow[];
   brandBankRows: RecommendationBrandBankRow[];
   brandLocationRows: RecommendationBrandLocationBankRow[];
+}
+
+export interface RecommendationInputStrength {
+  score: number;
+  level: "sparse" | "emerging" | "solid" | "rich";
+  targetRecommendationCount: number;
+  directSignalCount: number;
+  structuredSignalCount: number;
+  negativeSignalCount: number;
+  supportedBrandCount: number;
+  categoryCoverageCount: number;
+}
+
+export interface RecommendationMatchAssessment {
+  confidence: number;
+  reasons: string[];
 }
 
 const SOURCE_VERSION = "recommendation-v2";
@@ -1220,7 +1235,6 @@ export const buildNormalizedRecommendationState = (
     ...bankKnowledge.recommended_brands,
     ...bankKnowledge.recommended_stores,
     ...thisOrThatPreferences.positiveBrands,
-    ...getSeedCatalogBrands(),
   ]);
   const recommendedStores = mergeRecommendationKeywords([
     ...toStringArray(yourVibe.recommended_stores),
@@ -1257,6 +1271,7 @@ export const buildNormalizedRecommendationState = (
 };
 
 export const buildRecommendationSignalSummary = (state: NormalizedRecommendationState) => {
+  const inputStrength = buildRecommendationInputStrength(state);
   const prioritizedBrands = Array.from(new Set(
     state.brandBankRows
       .slice()
@@ -1274,7 +1289,180 @@ export const buildRecommendationSignalSummary = (state: NormalizedRecommendation
     keyword_bank_seed_count: state.keywordBankRows.length,
     brand_bank_seed_count: state.brandBankRows.length,
     location_bank_seed_count: state.brandLocationRows.length,
+    input_strength_score: inputStrength.score,
+    input_strength_level: inputStrength.level,
+    recommendation_target_count: inputStrength.targetRecommendationCount,
+    direct_signal_count: inputStrength.directSignalCount,
+    structured_signal_count: inputStrength.structuredSignalCount,
+    negative_signal_count: inputStrength.negativeSignalCount,
+    supported_brand_count: inputStrength.supportedBrandCount,
+    category_coverage_count: inputStrength.categoryCoverageCount,
     recommended_brands: prioritizedBrands.slice(0, 12),
     location_keys: state.locationKeys,
+  };
+};
+
+export const buildRecommendationInputStrength = (
+  state: NormalizedRecommendationState,
+): RecommendationInputStrength => {
+  const userSupportedBrands = Array.from(new Set([
+    ...toStringArray(state.yourVibe.recommended_brands),
+    ...state.productCardKeywords.flatMap((row) => row.brand_keywords),
+    ...state.likes.map((row) => cleanText(row.brand).toLowerCase()).filter(Boolean),
+  ]));
+  const directSignalCount = Object.keys(state.combinedResponses).length + state.productCardKeywords.length;
+  const structuredSignalCount =
+    state.thisOrThatSignalRows.length +
+    state.likes.length +
+    state.brandBankRows.length;
+  const negativeSignalCount = state.dislikes.length + state.negativeKeywords.length;
+  const supportedBrandCount = userSupportedBrands.length;
+  const categoryCoverageCount = Array.from(
+    new Set(
+      [
+        ...state.productCardKeywords.map((row) => row.category),
+        ...state.likes.map((row) => row.category),
+        ...state.thisOrThatSignalRows.map((row) => row.recommendation_category),
+      ].filter(Boolean),
+    ),
+  ).length;
+
+  const score = Math.min(
+    100,
+    Math.round(
+      Math.min(directSignalCount, 14) * 3 +
+      Math.min(structuredSignalCount, 18) * 2 +
+      Math.min(negativeSignalCount, 8) * 1 +
+      Math.min(supportedBrandCount, 10) * 2 +
+      Math.min(categoryCoverageCount, 4) * 8,
+    ),
+  );
+
+  if (score >= 80) {
+    return {
+      score,
+      level: "rich",
+      targetRecommendationCount: 12,
+      directSignalCount,
+      structuredSignalCount,
+      negativeSignalCount,
+      supportedBrandCount,
+      categoryCoverageCount,
+    };
+  }
+
+  if (score >= 58) {
+    return {
+      score,
+      level: "solid",
+      targetRecommendationCount: 9,
+      directSignalCount,
+      structuredSignalCount,
+      negativeSignalCount,
+      supportedBrandCount,
+      categoryCoverageCount,
+    };
+  }
+
+  if (score >= 32) {
+    return {
+      score,
+      level: "emerging",
+      targetRecommendationCount: 6,
+      directSignalCount,
+      structuredSignalCount,
+      negativeSignalCount,
+      supportedBrandCount,
+      categoryCoverageCount,
+    };
+  }
+
+  return {
+    score,
+    level: "sparse",
+    targetRecommendationCount: 4,
+    directSignalCount,
+    structuredSignalCount,
+    negativeSignalCount,
+    supportedBrandCount,
+    categoryCoverageCount,
+  };
+};
+
+export const buildRecommendationMatchAssessment = (
+  state: NormalizedRecommendationState,
+  intent: {
+    category: string;
+    brand: string;
+    primary_keyword?: string | null;
+    keywords?: string[] | null;
+  },
+): RecommendationMatchAssessment => {
+  const reasons: string[] = [];
+  const category = cleanText(intent.category).toLowerCase();
+  const primaryKeyword = normalizePrimaryKeyword(intent.primary_keyword ?? "");
+  const descriptorKeywords = normalizeRecommendationKeywords(intent.keywords ?? []);
+  const positiveKeywordSet = new Set(state.positiveKeywords);
+  const negativeKeywordSet = new Set(state.negativeKeywords);
+  const supportedBrands = new Set([
+    ...toStringArray(state.yourVibe.recommended_brands).map((brand) => cleanText(brand).toLowerCase()),
+    ...state.productCardKeywords.flatMap((row) => row.brand_keywords),
+    ...state.likes.map((row) => cleanText(row.brand).toLowerCase()).filter(Boolean),
+  ]);
+
+  let score = buildRecommendationInputStrength(state).score * 0.45;
+
+  if (supportedBrands.has(cleanText(intent.brand).toLowerCase())) {
+    score += 22;
+    reasons.push("brand-aligned");
+  } else {
+    score -= 16;
+    reasons.push("brand-not-yet-proven");
+  }
+
+  if (primaryKeyword && positiveKeywordSet.has(primaryKeyword)) {
+    score += 16;
+    reasons.push("primary-keyword-supported");
+  }
+
+  const descriptorMatches = descriptorKeywords.filter((keyword) => positiveKeywordSet.has(keyword));
+  if (descriptorMatches.length > 0) {
+    score += Math.min(18, descriptorMatches.length * 6);
+    reasons.push(`descriptor-match:${descriptorMatches.slice(0, 3).join(",")}`);
+  }
+
+  const categorySignalCount =
+    state.productCardKeywords.filter((row) => row.category === category).length +
+    state.likes.filter((row) => row.category === category).length +
+    state.thisOrThatSignalRows.filter((row) => row.recommendation_category === category).length;
+  if (categorySignalCount > 0) {
+    score += Math.min(16, categorySignalCount * 3);
+    reasons.push("category-supported");
+  } else {
+    score -= 10;
+    reasons.push("category-thin");
+  }
+
+  if (
+    !supportedBrands.has(cleanText(intent.brand).toLowerCase()) &&
+    !(primaryKeyword && positiveKeywordSet.has(primaryKeyword)) &&
+    descriptorMatches.length === 0
+  ) {
+    score -= 14;
+    reasons.push("low-direct-support");
+  }
+
+  if (
+    [primaryKeyword, cleanText(intent.brand).toLowerCase(), ...descriptorKeywords].some((keyword) =>
+      keyword && negativeKeywordSet.has(keyword),
+    )
+  ) {
+    score -= 35;
+    reasons.push("negative-signal-conflict");
+  }
+
+  return {
+    confidence: Math.max(0, Math.min(100, Math.round(score))),
+    reasons: reasons.slice(0, 4),
   };
 };
