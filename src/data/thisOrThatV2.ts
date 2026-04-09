@@ -599,6 +599,15 @@ const buildQuestionScaffoldFromAuthoredSeed = (
   };
 };
 
+const findThisOrThatAuthoredSeed = (
+  categoryId: string,
+  gender: Gender,
+  questionId: string,
+) =>
+  getThisOrThatV2AuthoredQuestions(gender, categoryId as ThisOrThatV2AuthoredCategoryId).find(
+    (seed) => seed.question_id === questionId,
+  ) ?? null;
+
 export const buildThisOrThatV2QuestionScaffolds = (
   gender: Gender,
 ): ThisOrThatV2QuestionScaffold[] =>
@@ -703,7 +712,10 @@ export const buildThisOrThatAnswerRecord = (
   const linkedCategoriesByTitle = new Map(
     (bank?.categories ?? []).map((entry) => [entry.title, entry]),
   );
-  const scaffold = buildQuestionScaffold(category, question, linkedCategoriesByTitle, gender);
+  const authoredSeed = findThisOrThatAuthoredSeed(categoryId, gender, question.id);
+  const scaffold =
+    (authoredSeed && buildQuestionScaffoldFromAuthoredSeed(category, authoredSeed, gender)) ??
+    buildQuestionScaffold(category, question, linkedCategoriesByTitle, gender);
 
   const fallbackSelected = buildOptionMetadata(
     blueprint,

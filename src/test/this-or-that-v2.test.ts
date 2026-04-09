@@ -103,6 +103,9 @@ describe("This or That v2 answer contract", () => {
 
     expect(record.recommendation_category).toBe("travel");
     expect(record.my_go_two_category_slug).toBe("travel");
+    expect(record.selected_payload.location_keywords).toEqual(
+      expect.arrayContaining(["aspen", "colorado", "montana", "utah"]),
+    );
   });
 
   it("fails fast when a category is unknown instead of silently using the first blueprint", () => {
