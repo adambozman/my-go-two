@@ -153,7 +153,7 @@ export const scoreProductBankReuseCandidate = ({
     descriptorConflict,
     exactSignature,
     score,
-    eligible: !descriptorConflict && brandFit > 0 && (exactSignature || overlap >= 2 || (overlap >= 1 && brandFit >= 25)),
+    eligible: !descriptorConflict && exactSignature && brandFit >= 25,
   };
 };
 

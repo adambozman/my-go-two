@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildNormalizedRecommendationState } from "../../supabase/functions/_shared/recommendationSignals";
 import {
+  buildRecommendationCategoryPlan,
   completeRecommendationIntentSet,
   generateFallbackRecommendationIntents,
 } from "../../supabase/functions/_shared/recommendationIntentPlanner";
@@ -180,5 +181,37 @@ describe("recommendation intent planner", () => {
     ], 4);
 
     expect(completed).toHaveLength(4);
+  });
+
+  it("unlocks ai for a qualified category even when the rest of the profile is thin", () => {
+    const foodOnlyState = buildNormalizedRecommendationState("planner-user-4", {
+      user_id: "planner-user-4",
+      profile_core: { city: "Chicago" },
+      onboarding_responses: {},
+      know_me_responses: {
+        "tot-48": "Sushi",
+      },
+      saved_product_cards: [
+        {
+          id: "card-food-1",
+          product_card_key: "coffee-order",
+          subcategory_label: "Coffee order",
+          card_title: "Oat milk vanilla latte",
+          field_values: {
+            Drink: "Vanilla latte",
+            Milk: "Oat milk",
+          },
+        },
+      ],
+      user_connections: [],
+      snapshot_payload: {},
+      updated_at: new Date().toISOString(),
+    }, []);
+
+    const plan = buildRecommendationCategoryPlan(foodOnlyState, 4);
+    const foodPlan = plan.find((entry) => entry.category === "food");
+
+    expect(foodPlan?.state).toBe("qualified");
+    expect(foodPlan?.aiTarget).toBeGreaterThan(0);
   });
 });

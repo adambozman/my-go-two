@@ -186,7 +186,7 @@ describe("exact bank identity reuse", () => {
                 ...harperWeeklyFixture.weeklyIntents[1],
                 name: "Minimal Gold Ring",
                 search_query: "Mejuri minimal gold ring",
-                keywords: ["mejuri", "gold", "minimal"],
+                keywords: ["mejuri", "thin dome ring", "gold ring", "jewelry", "minimal"],
               },
             ],
       scrapeProduct: (intent: RecommendationIntent) =>
@@ -449,7 +449,7 @@ describe("shared exact product bank lifecycle", () => {
               ...harperWeeklyFixture.weeklyIntents[0],
               name: "Dark Wash Skinny Jeans",
               search_query: "American Eagle dark wash skinny jeans",
-              keywords: ["american eagle", "skinny", "blue jeans", "denim", "clothes"],
+              keywords: ["american eagle", "skinny blue jeans", "blue jeans", "denim", "clothes"],
             },
           ];
         }

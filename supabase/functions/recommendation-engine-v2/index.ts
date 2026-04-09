@@ -265,13 +265,12 @@ const toResponseProduct = (
 const generateAiIntents = async (
   state: NormalizedRecommendationState,
   targetRecommendationCount: number,
-  personalizationEnabled: boolean,
 ) => {
   const categoryPlan = buildRecommendationCategoryPlan(state, targetRecommendationCount);
   const aiEligiblePlans = categoryPlan.filter((entry) => entry.aiTarget > 0);
   const aiTargetCount = aiEligiblePlans.reduce((sum, entry) => sum + entry.aiTarget, 0);
 
-  if (!personalizationEnabled || aiTargetCount === 0) {
+  if (aiTargetCount === 0) {
     return generateFallbackRecommendationIntents(state, targetRecommendationCount, { popularOnly: true });
   }
 
@@ -522,7 +521,6 @@ serve(async (req) => {
     const intents = await generateAiIntents(
       state,
       inputStrength.targetRecommendationCount,
-      inputStrength.personalizationEnabled,
     );
 
     const products = [];

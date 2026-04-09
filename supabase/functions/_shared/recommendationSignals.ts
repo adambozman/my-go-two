@@ -1401,7 +1401,6 @@ export const buildRecommendationInputStrength = (
     .length;
   const strongCategoryCount = categorySupport.filter((entry) => entry.state === "strong").length;
   const qualifiedCategoryCount = categorySupport.filter((entry) => entry.state === "qualified").length;
-  const emergingCategoryCount = categorySupport.filter((entry) => entry.state === "emerging").length;
 
   const score = Math.min(
     100,
@@ -1414,7 +1413,7 @@ export const buildRecommendationInputStrength = (
     ),
   );
 
-  const personalizationEnabled = (strongCategoryCount + qualifiedCategoryCount) >= 1 && primaryEvidenceCount >= 8;
+  const personalizationEnabled = (strongCategoryCount + qualifiedCategoryCount) >= 1;
   const targetRecommendationCount = 4;
 
   if (score >= 80) {
@@ -1559,9 +1558,9 @@ export const buildRecommendationMatchAssessment = (
     reasons.push("low-direct-support");
   }
 
-  if (!inputStrength.personalizationEnabled) {
+  if (!categorySupport?.eligible) {
     score = Math.min(score, 54);
-    reasons.push("below-personalization-threshold");
+    reasons.push("category-below-threshold");
   }
 
   if (

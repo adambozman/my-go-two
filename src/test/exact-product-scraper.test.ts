@@ -4,6 +4,7 @@ import {
   pickBestImage,
   pickBestSearchResult,
   scoreExactProductMatch,
+  scoreImageSemanticFit,
   scoreImageUrl,
   scoreTitleAndUrlMatch,
 } from "../../supabase/functions/_shared/exactProductScraper.ts";
@@ -72,6 +73,18 @@ describe("exact product scraper scoring", () => {
       ok: false,
       status: "weak-image-candidate",
       score: expect.any(Number),
+    });
+
+    expect(
+      scoreImageSemanticFit(
+        "https://cdn.example.com/images/product-main.jpg?w=1200",
+        "Better Sweater Fleece Vest",
+        "Patagonia",
+      ),
+    ).toEqual({
+      brandMatches: 0,
+      productMatches: 0,
+      totalMatches: 0,
     });
   });
 

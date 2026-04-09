@@ -37,6 +37,12 @@ const TITLE_STOP_WORDS = new Set([
   "the", "and", "with", "for", "from", "this", "that", "your", "our", "new",
   "men", "mens", "women", "womens", "unisex", "size", "color", "colour",
 ]);
+const IMAGE_URL_STOP_WORDS = new Set([
+  ...TITLE_STOP_WORDS,
+  "image", "images", "img", "cdn", "product", "products", "main", "hero", "primary",
+  "front", "back", "side", "large", "medium", "small", "default", "zoom",
+  "jpg", "jpeg", "png", "webp", "avif",
+]);
 
 const cleanText = (value: unknown): string => {
   if (typeof value !== "string") return "";
@@ -50,6 +56,11 @@ const tokenize = (value: string) =>
   normalizeLoose(value)
     .split(/\s+/)
     .filter((token) => token.length >= 2 && !TITLE_STOP_WORDS.has(token));
+
+const tokenizeImageUrl = (value: string) =>
+  normalizeLoose(value)
+    .split(/\s+/)
+    .filter((token) => token.length >= 3 && !IMAGE_URL_STOP_WORDS.has(token));
 
 const unique = (values: string[]) => Array.from(new Set(values));
 
@@ -114,6 +125,22 @@ export const scoreImageUrl = (url: string, productName: string, brand: string): 
 
   if (/\.(jpg|jpeg|png|webp|avif)/i.test(lower)) score += 1;
   return score;
+};
+
+export const scoreImageSemanticFit = (url: string, productName: string, brand: string) => {
+  const imageTokens = new Set(tokenizeImageUrl(url));
+  const brandTokens = tokenize(brand).filter((token) => token.length >= 3);
+  const productTokens = tokenize(productName)
+    .filter((token) => token.length >= 4 && !brandTokens.includes(token));
+
+  const brandMatches = brandTokens.filter((token) => imageTokens.has(token)).length;
+  const productMatches = productTokens.filter((token) => imageTokens.has(token)).length;
+
+  return {
+    brandMatches,
+    productMatches,
+    totalMatches: brandMatches + productMatches,
+  };
 };
 
 export const pickBestImage = (urls: string[], productName: string, brand: string) => {
@@ -228,7 +255,10 @@ export const getExactProductImageReadiness = async (
   if (looksLikeProductPageUrl(url)) return { ok: false, status: "page-url", score: -1 };
 
   const score = scoreImageUrl(url, productName, brand);
-  if (score < 3) return { ok: false, status: "weak-image-candidate", score };
+  const semantic = scoreImageSemanticFit(url, productName, brand);
+  if (score < 5 || semantic.totalMatches < 2 || (semantic.brandMatches === 0 && semantic.productMatches < 2)) {
+    return { ok: false, status: "weak-image-candidate", score };
+  }
 
   const remote = await verifyRemoteImageUrl(url);
   if (!remote.ok) return { ok: false, status: remote.status, score };

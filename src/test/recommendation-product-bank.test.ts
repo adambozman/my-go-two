@@ -142,6 +142,28 @@ describe("recommendation product bank admission", () => {
     expect(reuse.eligible).toBe(false);
   });
 
+  it("requires an exact keyword signature before reusing a banked product row", () => {
+    const reuse = scoreProductBankReuseCandidate({
+      category: "clothes",
+      primaryKeyword: "jeans",
+      descriptorKeywords: ["american eagle", "dark wash", "blue jeans"],
+      requestedBrand: "American Eagle",
+      row: {
+        primary_keyword: "jeans",
+        descriptor_keywords: ["american eagle", "skinny", "blue jeans"],
+        keyword_signature: "clothes::jeans::american eagle::skinny::blue jeans",
+        category: "clothes",
+        brand: "American Eagle",
+        product_title: "American Eagle Skinny Blue Jeans",
+        match_confidence: 100,
+      },
+    });
+
+    expect(reuse.exactSignature).toBe(false);
+    expect(reuse.brandFit).toBeGreaterThanOrEqual(25);
+    expect(reuse.eligible).toBe(false);
+  });
+
   it("reassesses bank rows into explicit verification states", () => {
     expect(
       reassessProductBankRow({

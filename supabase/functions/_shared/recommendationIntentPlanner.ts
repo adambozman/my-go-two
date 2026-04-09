@@ -8,18 +8,16 @@ import {
   buildRecommendationCategorySupport,
   type NormalizedRecommendationState,
   type RecommendationCategory,
-  type RecommendationCategorySupport,
 } from "./recommendationSignals.ts";
+import {
+  BASELINE_RECOMMENDATION_COUNT,
+  buildRecommendationDecisionHierarchy,
+  type RecommendationDecisionCategoryPlan,
+} from "./recommendationDecisionHierarchy.ts";
 
 const CATEGORY_ORDER: RecommendationCategory[] = ["clothes", "food", "tech", "home"];
-const MAX_TARGET = 4;
-type RecommendationCategoryPlan = {
-  category: RecommendationCategory;
-  state: RecommendationCategorySupport["state"];
-  score: number;
-  totalTarget: number;
-  aiTarget: number;
-};
+const MAX_TARGET = BASELINE_RECOMMENDATION_COUNT;
+type RecommendationCategoryPlan = RecommendationDecisionCategoryPlan;
 
 const CATEGORY_DEFAULTS: Record<RecommendationCategory, Array<{ primary: string; brand: string; descriptors: string[] }>> = {
   clothes: [
@@ -63,71 +61,8 @@ export const buildRecommendationCategoryPlan = (
   targetCount: number,
   options: { popularOnly?: boolean } = {},
 ) => {
-  const clamped = Math.max(1, Math.min(MAX_TARGET, targetCount));
-  const popularOnly = Boolean(options.popularOnly);
-  const support = buildRecommendationCategorySupport(state)
-    .slice()
-    .sort((a, b) => b.score - a.score || CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category));
-
-  const plans = new Map<RecommendationCategory, RecommendationCategoryPlan>(
-    CATEGORY_ORDER.map((category) => [
-      category,
-      { category, state: "locked", score: 0, totalTarget: 0, aiTarget: 0 },
-    ]),
-  );
-
-  for (const entry of support) {
-    plans.set(entry.category, {
-      category: entry.category,
-      state: entry.state,
-      score: entry.score,
-      totalTarget:
-        entry.state === "strong" ? 1 :
-        entry.state === "qualified" ? 1 :
-        entry.state === "emerging" ? 0 :
-        0,
-      aiTarget:
-        popularOnly ? 0 :
-        entry.state === "strong" ? 1 :
-        entry.state === "qualified" ? 1 :
-        0,
-    });
-  }
-
-  const orderedPlans = CATEGORY_ORDER.map((category) => plans.get(category)!);
-  let assigned = orderedPlans.reduce((sum, plan) => sum + plan.totalTarget, 0);
-
-  if (assigned === 0) {
-    for (const plan of orderedPlans.slice(0, Math.min(clamped, CATEGORY_ORDER.length))) {
-      plan.totalTarget = 1;
-    }
-    assigned = orderedPlans.reduce((sum, plan) => sum + plan.totalTarget, 0);
-  }
-
-  const expansionOrder = [
-    ...support.map((entry) => plans.get(entry.category)!),
-    ...orderedPlans.filter((plan) => !support.some((entry) => entry.category === plan.category)),
-  ];
-  while (assigned < clamped) {
-    let progressed = false;
-    for (const plan of expansionOrder) {
-      const cap =
-        plan.state === "strong" ? 2 :
-        plan.state === "qualified" ? 1 :
-        1;
-      if (plan.totalTarget >= cap) continue;
-      plan.totalTarget += 1;
-      if (!popularOnly && plan.aiTarget < Math.min(plan.totalTarget, cap) && plan.state === "strong") {
-        plan.aiTarget += 1;
-      }
-      assigned += 1;
-      progressed = true;
-      if (assigned >= clamped) break;
-    }
-    if (!progressed) break;
-  }
-
-  return orderedPlans;
+  const support = buildRecommendationCategorySupport(state);
+  return buildRecommendationDecisionHierarchy(support, targetCount, options).categories;
 };
 
 const buildIntentKey = (intent: RecommendationIntent) => [
