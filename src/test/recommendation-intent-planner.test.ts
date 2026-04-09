@@ -69,7 +69,7 @@ describe("recommendation intent planner", () => {
     const state = buildNormalizedRecommendationState("planner-user-1", snapshot, derivations);
     const intents = generateFallbackRecommendationIntents(state);
 
-    expect(intents).toHaveLength(3);
+    expect(intents).toHaveLength(4);
 
     const counts = intents.reduce<Record<string, number>>((acc, intent) => {
       acc[intent.category] = (acc[intent.category] ?? 0) + 1;
@@ -78,8 +78,7 @@ describe("recommendation intent planner", () => {
 
     expect(counts.clothes).toBeGreaterThanOrEqual(1);
     expect(counts.food).toBeGreaterThanOrEqual(1);
-    expect(counts.tech ?? 0).toBe(0);
-    expect(counts.home ?? 0).toBe(0);
+    expect((counts.tech ?? 0) + (counts.home ?? 0)).toBeGreaterThanOrEqual(1);
     expect(intents.some((intent) => intent.primary_keyword === "jeans")).toBe(false);
     expect(intents.some((intent) => intent.keywords?.includes("skinny"))).toBe(false);
     expect(intents.some((intent) => intent.category === "clothes" && intent.keywords?.includes("camel"))).toBe(true);
@@ -101,8 +100,8 @@ describe("recommendation intent planner", () => {
 
     const intents = generateFallbackRecommendationIntents(sparseState, 4, { popularOnly: true });
 
-    expect(intents).toHaveLength(2);
-    expect(new Set(intents.map((intent) => intent.category)).size).toBe(2);
+    expect(intents).toHaveLength(4);
+    expect(new Set(intents.map((intent) => intent.category)).size).toBe(4);
   });
 
   it("fills an under-complete ai response back only to the supported lower cap without violating dislikes", () => {
@@ -148,7 +147,7 @@ describe("recommendation intent planner", () => {
 
     const completed = completeRecommendationIntentSet(state, aiIntents);
 
-    expect(completed).toHaveLength(3);
+    expect(completed).toHaveLength(4);
     expect(completed.some((intent) => intent.name === "Skinny Jeans")).toBe(false);
     expect(completed.some((intent) => intent.category === "food")).toBe(true);
   });
@@ -180,6 +179,6 @@ describe("recommendation intent planner", () => {
       },
     ], 4);
 
-    expect(completed).toHaveLength(2);
+    expect(completed).toHaveLength(4);
   });
 });

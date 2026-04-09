@@ -1415,9 +1415,7 @@ export const buildRecommendationInputStrength = (
   );
 
   const personalizationEnabled = (strongCategoryCount + qualifiedCategoryCount) >= 1 && primaryEvidenceCount >= 8;
-  const targetRecommendationCount = personalizationEnabled
-    ? Math.min(8, Math.max(4, strongCategoryCount * 3 + qualifiedCategoryCount * 2 + Math.min(emergingCategoryCount, 2)))
-    : Math.min(4, Math.max(2, Math.max(emergingCategoryCount, 1) + (supportedBrandCount > 0 ? 1 : 0)));
+  const targetRecommendationCount = 4;
 
   if (score >= 80) {
     return {

@@ -12,7 +12,7 @@ import {
 } from "./recommendationSignals.ts";
 
 const CATEGORY_ORDER: RecommendationCategory[] = ["clothes", "food", "tech", "home"];
-const MAX_TARGET = 8;
+const MAX_TARGET = 4;
 type RecommendationCategoryPlan = {
   category: RecommendationCategory;
   state: RecommendationCategorySupport["state"];
@@ -82,14 +82,14 @@ export const buildRecommendationCategoryPlan = (
       state: entry.state,
       score: entry.score,
       totalTarget:
-        entry.state === "strong" ? 2 :
-        entry.state === "qualified" ? 2 :
-        entry.state === "emerging" ? 1 :
+        entry.state === "strong" ? 1 :
+        entry.state === "qualified" ? 1 :
+        entry.state === "emerging" ? 0 :
         0,
       aiTarget:
         popularOnly ? 0 :
-        entry.state === "strong" ? 2 :
-        entry.state === "qualified" ? 2 :
+        entry.state === "strong" ? 1 :
+        entry.state === "qualified" ? 1 :
         0,
     });
   }
@@ -98,23 +98,26 @@ export const buildRecommendationCategoryPlan = (
   let assigned = orderedPlans.reduce((sum, plan) => sum + plan.totalTarget, 0);
 
   if (assigned === 0) {
-    for (const plan of orderedPlans.slice(0, Math.min(clamped, 2))) {
+    for (const plan of orderedPlans.slice(0, Math.min(clamped, CATEGORY_ORDER.length))) {
       plan.totalTarget = 1;
     }
     assigned = orderedPlans.reduce((sum, plan) => sum + plan.totalTarget, 0);
   }
 
-  const expansionOrder = support.map((entry) => plans.get(entry.category)!).filter((plan) => plan.totalTarget > 0);
+  const expansionOrder = [
+    ...support.map((entry) => plans.get(entry.category)!),
+    ...orderedPlans.filter((plan) => !support.some((entry) => entry.category === plan.category)),
+  ];
   while (assigned < clamped) {
     let progressed = false;
     for (const plan of expansionOrder) {
       const cap =
-        plan.state === "strong" ? 3 :
-        plan.state === "qualified" ? 2 :
+        plan.state === "strong" ? 2 :
+        plan.state === "qualified" ? 1 :
         1;
       if (plan.totalTarget >= cap) continue;
       plan.totalTarget += 1;
-      if (!popularOnly && plan.aiTarget < Math.min(plan.totalTarget, cap) && (plan.state === "strong" || plan.state === "qualified")) {
+      if (!popularOnly && plan.aiTarget < Math.min(plan.totalTarget, cap) && plan.state === "strong") {
         plan.aiTarget += 1;
       }
       assigned += 1;
