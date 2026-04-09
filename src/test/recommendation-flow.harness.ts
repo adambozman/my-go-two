@@ -7,7 +7,6 @@ import {
   mergeRecommendationKeywords,
   normalizePrimaryKeyword,
   resolveIntentToCatalogEntry,
-  scoreKeywordBankCandidate,
   type RecommendationIntent,
 } from "../../supabase/functions/_shared/recommendationCatalog.ts";
 import {
@@ -311,17 +310,9 @@ export class RecommendationFlowHarness {
             requestedBrand: intent.brand,
             row: candidate,
           });
-          const legacyScore = scoreKeywordBankCandidate(
-            intent.category,
-            descriptorKeywords,
-            primaryKeyword,
-            negativeKeywords,
-            candidate,
-          );
-          return { candidate, score: reuse.score, legacyScore, ...reuse };
+          return { candidate, score: reuse.score, ...reuse };
         })
         .filter((entry) =>
-          entry.legacyScore >= 0 &&
           entry.eligible &&
           !hasNegativeKeywordConflict(entry.candidate) &&
           !entry.descriptorConflict
@@ -331,20 +322,10 @@ export class RecommendationFlowHarness {
       const existing = [exactKeywordMatch, exactFingerprintMatch, bestSimilarityMatch].find(
         (candidate): candidate is SharedBankRecord => Boolean(candidate && !hasNegativeKeywordConflict(candidate)),
       ) ?? null;
-      const reuseScore = existing
-        ? scoreKeywordBankCandidate(
-            intent.category,
-            descriptorKeywords,
-            primaryKeyword,
-            negativeKeywords,
-            existing,
-          )
-        : -1;
       const hasExactProductRecord = Boolean(
         existing?.link_kind === "product" &&
           existing?.exact_match_confirmed &&
-          !hasNegativeKeywordConflict(existing) &&
-          reuseScore >= 0,
+          !hasNegativeKeywordConflict(existing),
       );
 
       let resolved: SharedBankRecord;

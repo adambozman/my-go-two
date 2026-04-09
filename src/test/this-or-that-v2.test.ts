@@ -7,6 +7,7 @@ import {
   THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD,
   THIS_OR_THAT_V2_LIVE_NON_BINARY_QUESTION_SCAFFOLD,
 } from "../data/thisOrThatV2";
+import { getThisOrThatV2AuthoredQuestions } from "../data/thisOrThatV2Authored";
 
 describe("This or That v2 answer contract", () => {
   it("builds a structured answer record for bank-backed category questions", () => {
@@ -89,6 +90,50 @@ describe("This or That v2 answer contract", () => {
           row.source_category_id === "brands-shopping" &&
           row.question_count > 0 &&
           row.source_kind === "authored-v2",
+      ),
+    ).toBe(true);
+  });
+
+  it("ships at least two authored v2 questions per live category for every gender", () => {
+    const liveCategoryIds = [
+      "style-aesthetic",
+      "brands-shopping",
+      "colors-palette",
+      "food-dining",
+      "travel-trips",
+      "date-ideas-romance",
+      "home-living",
+      "love-language-relationships",
+      "hobbies-weekend",
+      "gifting-actually-want",
+    ] as const;
+
+    for (const gender of ["male", "female", "non-binary"] as const) {
+      for (const categoryId of liveCategoryIds) {
+        const questions = getThisOrThatV2AuthoredQuestions(gender, categoryId);
+        expect(questions.length).toBeGreaterThanOrEqual(2);
+      }
+    }
+  });
+
+  it("keeps authored brand and location metadata rich in the categories that drive recommendations hardest", () => {
+    const femaleBrandQuestions = getThisOrThatV2AuthoredQuestions("female", "brands-shopping");
+    const maleTravelQuestions = getThisOrThatV2AuthoredQuestions("male", "travel-trips");
+    const nonBinaryDiningQuestions = getThisOrThatV2AuthoredQuestions("non-binary", "food-dining");
+
+    expect(
+      femaleBrandQuestions.some((question) =>
+        question.options.some((option) => (option.brand_keywords?.length ?? 0) >= 3),
+      ),
+    ).toBe(true);
+    expect(
+      maleTravelQuestions.some((question) =>
+        question.options.some((option) => (option.location_keywords?.length ?? 0) >= 3),
+      ),
+    ).toBe(true);
+    expect(
+      nonBinaryDiningQuestions.some((question) =>
+        question.options.some((option) => option.descriptor_keywords.length >= 3),
       ),
     ).toBe(true);
   });
