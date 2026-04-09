@@ -6,7 +6,6 @@ import {
   mergeRecommendationKeywords,
   normalizePrimaryKeyword,
   normalizeRecommendationKeywords,
-  resolveIntentToCatalogEntry,
   type RecommendationIntent,
 } from "../_shared/recommendationCatalog.ts";
 import { scrapeExactProductWithFirecrawl } from "../_shared/exactProductScraper.ts";
@@ -28,6 +27,7 @@ import {
   completeRecommendationIntentSet,
   generateFallbackRecommendationIntents,
 } from "../_shared/recommendationIntentPlanner.ts";
+import { buildSearchFallbackResponseProduct } from "../_shared/recommendationSearchFallback.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,7 +35,10 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const GENERATION_VERSION = "recommendation-engine-v2";
+const ENGINE_FAMILY = "recommendation-engine-v2";
+const ENGINE_RULESET_VERSION = "2026-04-09-live-truth-pass";
+const GENERATION_VERSION = `${ENGINE_FAMILY}:${ENGINE_RULESET_VERSION}`;
+const BANK_REVERIFY_MAX_AGE_HOURS = 24 * 14;
 
 const ALLOWED_CATEGORIES = new Set(["food", "clothes", "tech", "home"]);
 const ALLOWED_KINDS = new Set(["specific", "generic", "catalog"]);
@@ -60,6 +63,7 @@ type ProductBankRow = {
   match_confidence: number;
   exact_match_confirmed: boolean;
   usage_count: number;
+  last_verified_at?: string | null;
   bank_state?: string;
   bank_source?: string;
   image_status?: string;
@@ -159,7 +163,7 @@ const findBestProductBankMatch = async (
 ) => {
   const { data } = await admin
     .from("recommendation_product_bank")
-    .select("id, primary_keyword, descriptor_keywords, keyword_signature, category, brand, product_title, product_url, product_image_url, product_price_text, scraped_description, search_query, resolver_source, source_version, match_confidence, exact_match_confirmed, usage_count, bank_state, bank_source, image_status, verification_notes, last_verification_error")
+    .select("id, primary_keyword, descriptor_keywords, keyword_signature, category, brand, product_title, product_url, product_image_url, product_price_text, scraped_description, search_query, resolver_source, source_version, match_confidence, exact_match_confirmed, usage_count, last_verified_at, bank_state, bank_source, image_status, verification_notes, last_verification_error")
     .eq("category", category)
     .eq("primary_keyword", primaryKeyword)
     .eq("exact_match_confirmed", true)
@@ -170,6 +174,13 @@ const findBestProductBankMatch = async (
     const rows = Array.isArray(data) ? (data as ProductBankRow[]) : [];
   const ranked = rows
     .filter((row) => !hasDislikeConflict(descriptorKeywords, negativeKeywords, row))
+    .filter((row) => {
+      if (!row.last_verified_at) return false;
+      const verifiedAt = new Date(row.last_verified_at);
+      if (Number.isNaN(verifiedAt.getTime())) return false;
+      const ageHours = (Date.now() - verifiedAt.getTime()) / 36e5;
+      return ageHours <= BANK_REVERIFY_MAX_AGE_HOURS;
+    })
     .map((row) => {
       const reuse = scoreProductBankReuseCandidate({
         category,
@@ -228,38 +239,11 @@ const toResponseProduct = (
       };
   }
 
-  const fallback = resolveIntentToCatalogEntry(intent);
-  const productUrl = fallback.link_kind === "product" ? fallback.link_url : null;
-
-  return {
-    name: intent.name,
-    brand: intent.brand,
-    price: fallback.price || intent.price,
-    category: intent.category,
-    hook: intent.hook,
-    why: intent.why,
-    is_connection_pick: false,
-    affiliate_url: productUrl,
-    search_url: productUrl ? null : fallback.link_url,
-    product_query: fallback.search_query ?? intent.search_query ?? `${intent.brand} ${intent.name}`.trim(),
-    sponsored_id: null,
-    image_url: productUrl ? fallback.image_url ?? null : null,
-    source_kind: productUrl ? "catalog-product" : "brand-search",
-    source_version: GENERATION_VERSION,
-    exact_match_confirmed: false,
-    match_confidence: productUrl ? 0 : null,
-    resolver_source: fallback.resolver_source,
-    recommendation_match_confidence: recommendationMatch.confidence,
-    recommendation_match_reasons: recommendationMatch.reasons,
-      explanation: {
-        decision: productUrl ? "catalog-fallback" : "search-fallback",
-        input_level: inputStrength.level,
-        input_score: inputStrength.score,
-        match_reasons: recommendationMatch.reasons,
-        resolver_source: fallback.resolver_source,
-        bank_source: "fallback-catalog",
-      },
-    };
+  return buildSearchFallbackResponseProduct({
+    state,
+    intent,
+    generationVersion: GENERATION_VERSION,
+  });
 };
 
 const generateAiIntents = async (
@@ -419,39 +403,20 @@ Use the provided tool.`;
 };
 
 const persistNormalizedState = async (admin: SupabaseClient, userId: string, state: NormalizedRecommendationState) => {
-  await Promise.all([
-    admin.from("user_preference_signals").delete().eq("user_id", userId),
-    admin.from("user_product_card_keywords").delete().eq("user_id", userId),
-    admin.from("user_like_signals").delete().eq("user_id", userId),
-    admin.from("user_dislike_signals").delete().eq("user_id", userId),
-    admin.from("this_or_that_v2_answer_signals").delete().eq("user_id", userId),
-  ]);
+  const { error } = await admin.rpc("sync_recommendation_normalized_state", {
+    p_user_id: userId,
+    p_signals: state.signals,
+    p_product_card_keywords: state.productCardKeywords,
+    p_like_signals: state.likes,
+    p_dislike_signals: state.dislikes,
+    p_this_or_that_signal_rows: state.thisOrThatSignalRows,
+    p_keyword_bank_rows: state.keywordBankRows,
+    p_brand_bank_rows: state.brandBankRows,
+    p_brand_location_rows: state.brandLocationRows,
+  });
 
-  if (state.signals.length) await admin.from("user_preference_signals").insert(state.signals);
-  if (state.productCardKeywords.length) await admin.from("user_product_card_keywords").insert(state.productCardKeywords);
-  if (state.likes.length) await admin.from("user_like_signals").insert(state.likes);
-  if (state.dislikes.length) await admin.from("user_dislike_signals").insert(state.dislikes);
-  if (state.thisOrThatSignalRows.length) await admin.from("this_or_that_v2_answer_signals").insert(state.thisOrThatSignalRows);
-
-  if (state.keywordBankRows.length) {
-    await admin.from("recommendation_keyword_bank").upsert(state.keywordBankRows, {
-      onConflict: "primary_keyword,descriptor_keyword,category",
-      ignoreDuplicates: false,
-    });
-  }
-
-  if (state.brandBankRows.length) {
-    await admin.from("recommendation_brand_bank").upsert(state.brandBankRows, {
-      onConflict: "brand,primary_keyword,category",
-      ignoreDuplicates: false,
-    });
-  }
-
-  if (state.brandLocationRows.length) {
-    await admin.from("recommendation_brand_location_bank").upsert(state.brandLocationRows, {
-      onConflict: "location_key,brand,category",
-      ignoreDuplicates: false,
-    });
+  if (error) {
+    throw new Error(`Failed to sync normalized recommendation state: ${error.message}`);
   }
 };
 

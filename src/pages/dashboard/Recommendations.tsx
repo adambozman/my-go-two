@@ -16,8 +16,15 @@ import {
   type RecommendationProduct as Product,
 } from "@/lib/recommendationContracts";
 import { hasTrustedRecommendationProductImage } from "@/lib/recommendationProductTruth";
+import {
+  getRecommendationActionLabel,
+  getRecommendationDestination,
+  getRecommendationDisplayPrice,
+  getRecommendationMatchLabel,
+  getRecommendationStableId,
+} from "@/lib/recommendationPresentation";
 
-const RECOMMENDATION_V2_VERSION = "recommendation-engine-v2";
+const RECOMMENDATION_V2_VERSION_PREFIX = "recommendation-engine-v2";
 
 type RecommendationFavorite = {
   id: string;
@@ -97,45 +104,9 @@ function getProductImage(product: Product) {
   return hasResolvedProductImage(product) ? product.image_url! : null;
 }
 
-function getProductMatchLabel(product: Product) {
-  if (product.source_kind === "specific-product") return "Exact Match";
-  if (product.source_kind === "catalog-product") return "Catalog Match";
-  return "Search Match";
-}
-
-function getProductDisplayPrice(product: Product) {
-  if (product.source_kind === "brand-search") return "Price varies";
-  return product.price?.trim() || "Price varies";
-}
-
-function getProductDestination(product: Product) {
-  return product.affiliate_url || product.search_url || null;
-}
-
-function getProductActionLabel(product: Product) {
-  if (product.source_kind === "specific-product" && product.affiliate_url) return "View Product";
-  if (product.source_kind === "catalog-product" && product.affiliate_url) return "View Catalog";
-  if (product.search_url) return "Search Brand";
-  return null;
-}
-
-function getProductId(product: Product) {
-  const destination = getProductDestination(product);
-  return [
-    product.category,
-    product.source_kind ?? "unknown",
-    product.brand,
-    product.name,
-    destination ?? product.product_query ?? product.hook,
-  ]
-    .filter(Boolean)
-    .join(":")
-    .toLowerCase();
-}
-
 function toRecommendationFavorite(product: Product): RecommendationFavorite {
   return {
-    id: getProductId(product),
+    id: getRecommendationStableId(product),
     name: product.name,
     brand: product.brand,
     category: product.category,
@@ -146,8 +117,8 @@ function toRecommendationFavorite(product: Product): RecommendationFavorite {
     affiliate_url: product.affiliate_url ?? null,
     search_url: product.search_url ?? null,
     product_query: product.product_query ?? null,
-    display_price: getProductDisplayPrice(product),
-    match_label: getProductMatchLabel(product),
+    display_price: getRecommendationDisplayPrice(product),
+    match_label: getRecommendationMatchLabel(product),
     source_kind: product.source_kind ?? null,
     resolver_source: product.resolver_source ?? null,
     exact_match_confirmed: Boolean(product.exact_match_confirmed),
@@ -162,7 +133,7 @@ function toRecommendationShareRecord(
   previous?: RecommendationShareRecord,
 ): RecommendationShareRecord {
   return {
-    id: getProductId(product),
+    id: getRecommendationStableId(product),
     name: product.name,
     brand: product.brand,
     category: product.category,
@@ -173,8 +144,8 @@ function toRecommendationShareRecord(
     affiliate_url: product.affiliate_url ?? null,
     search_url: product.search_url ?? null,
     product_query: product.product_query ?? null,
-    display_price: getProductDisplayPrice(product),
-    match_label: getProductMatchLabel(product),
+    display_price: getRecommendationDisplayPrice(product),
+    match_label: getRecommendationMatchLabel(product),
     source_kind: product.source_kind ?? null,
     resolver_source: product.resolver_source ?? null,
     exact_match_confirmed: Boolean(product.exact_match_confirmed),
@@ -208,7 +179,9 @@ const Recommendations = () => {
   const [generationVersion, setGenerationVersion] = useState<string | null>(null);
   const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
   const [inputSnapshotSummary, setInputSnapshotSummary] = useState<Record<string, unknown> | null>(null);
-  const isUsingRebuiltEngine = generationVersion === RECOMMENDATION_V2_VERSION;
+  const isUsingRebuiltEngine = Boolean(
+    generationVersion && generationVersion.startsWith(RECOMMENDATION_V2_VERSION_PREFIX),
+  );
   const recommendationTargetCount = typeof inputSnapshotSummary?.recommendation_target_count === "number"
     ? inputSnapshotSummary.recommendation_target_count
     : null;
@@ -335,7 +308,7 @@ const Recommendations = () => {
   const toggleSave = useCallback(async (product: Product) => {
     if (!user) return;
 
-    const id = getProductId(product);
+    const id = getRecommendationStableId(product);
     const wasSaved = savedItems.has(id);
 
     setSavedItems((prev) => {
@@ -407,7 +380,7 @@ const Recommendations = () => {
   ) => {
     if (!user) return;
 
-    const id = getProductId(product);
+    const id = getRecommendationStableId(product);
     const { data: existingRow, error: loadError } = await supabase
       .from("user_preferences")
       .select("favorites")
@@ -441,10 +414,10 @@ const Recommendations = () => {
   }, [user]);
 
   const handleShare = useCallback(async (product: Product) => {
-    const id = getProductId(product);
-    const productUrl = product.affiliate_url || product.search_url || null;
-    const matchLabel = getProductMatchLabel(product);
-    const displayPrice = getProductDisplayPrice(product);
+    const id = getRecommendationStableId(product);
+    const productUrl = getRecommendationDestination(product);
+    const matchLabel = getRecommendationMatchLabel(product);
+    const displayPrice = getRecommendationDisplayPrice(product);
     const shareSummary = `${product.brand} ${product.name}\n${matchLabel}\n${displayPrice}`;
     const shareText = [
       shareSummary,
@@ -615,7 +588,7 @@ const Recommendations = () => {
                 className="grid gap-4 lg:grid-cols-2"
               >
                 {displayProducts.map((product, i) => {
-                  const itemId = getProductId(product);
+                  const itemId = getRecommendationStableId(product);
                   const isSaved = savedItems.has(itemId);
                   const isSaving = savingItems.has(itemId);
                   const isSharing = sharingItems.has(itemId);
@@ -711,10 +684,10 @@ function ProductCard({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const productImage = getProductImage(product);
-  const productDestination = getProductDestination(product);
-  const productMatchLabel = getProductMatchLabel(product);
-  const productActionLabel = getProductActionLabel(product);
-  const productDisplayPrice = getProductDisplayPrice(product);
+  const productDestination = getRecommendationDestination(product);
+  const productMatchLabel = getRecommendationMatchLabel(product);
+  const productActionLabel = getRecommendationActionLabel(product);
+  const productDisplayPrice = getRecommendationDisplayPrice(product);
   const [imageFailed, setImageFailed] = useState(false);
   const imageSuppressedByTrust = Boolean(product.image_url) && !productImage;
   const showProductImage = Boolean(productImage) && !imageFailed;
