@@ -65,30 +65,29 @@ const derivations: KnowledgeDerivationRow[] = [
 ];
 
 describe("recommendation intent planner", () => {
-  it("builds a full 12-intent fallback set balanced across categories", () => {
+  it("caps fallback output and only uses the categories the profile actually supports", () => {
     const state = buildNormalizedRecommendationState("planner-user-1", snapshot, derivations);
     const intents = generateFallbackRecommendationIntents(state);
 
-    expect(intents).toHaveLength(12);
+    expect(intents).toHaveLength(3);
 
     const counts = intents.reduce<Record<string, number>>((acc, intent) => {
       acc[intent.category] = (acc[intent.category] ?? 0) + 1;
       return acc;
     }, {});
 
-    expect(counts.clothes).toBe(3);
-    expect(counts.food).toBe(3);
-    expect(counts.tech).toBe(3);
-    expect(counts.home).toBe(3);
+    expect(counts.clothes).toBeGreaterThanOrEqual(1);
+    expect(counts.food).toBeGreaterThanOrEqual(1);
+    expect(counts.tech ?? 0).toBe(0);
+    expect(counts.home ?? 0).toBe(0);
     expect(intents.some((intent) => intent.primary_keyword === "jeans")).toBe(false);
     expect(intents.some((intent) => intent.keywords?.includes("skinny"))).toBe(false);
-    expect(intents.some((intent) => intent.category === "tech" && intent.brand === "apple")).toBe(true);
     expect(intents.some((intent) => intent.category === "clothes" && intent.keywords?.includes("camel"))).toBe(true);
     expect(intents.some((intent) => intent.category === "clothes" && intent.keywords?.includes("brand"))).toBe(false);
     expect(intents.some((intent) => intent.category === "clothes" && intent.keywords?.includes("and"))).toBe(false);
   });
 
-  it("throttles recommendation count down for sparse profiles instead of forcing 12", () => {
+  it("keeps sparse profiles in a smaller popular fallback mode", () => {
     const sparseState = buildNormalizedRecommendationState("planner-user-2", {
       user_id: "planner-user-2",
       profile_core: {},
@@ -100,13 +99,13 @@ describe("recommendation intent planner", () => {
       updated_at: new Date().toISOString(),
     }, []);
 
-    const intents = generateFallbackRecommendationIntents(sparseState, 4);
+    const intents = generateFallbackRecommendationIntents(sparseState, 4, { popularOnly: true });
 
-    expect(intents).toHaveLength(4);
-    expect(new Set(intents.map((intent) => intent.category)).size).toBe(4);
+    expect(intents).toHaveLength(2);
+    expect(new Set(intents.map((intent) => intent.category)).size).toBe(2);
   });
 
-  it("fills an under-complete ai response back to a balanced 12-intent set without violating dislikes", () => {
+  it("fills an under-complete ai response back only to the supported lower cap without violating dislikes", () => {
     const state = buildNormalizedRecommendationState("planner-user-1", snapshot, derivations);
     const aiIntents: RecommendationIntent[] = [
       {
@@ -149,18 +148,9 @@ describe("recommendation intent planner", () => {
 
     const completed = completeRecommendationIntentSet(state, aiIntents);
 
-    expect(completed).toHaveLength(12);
+    expect(completed).toHaveLength(3);
     expect(completed.some((intent) => intent.name === "Skinny Jeans")).toBe(false);
-
-    const counts = completed.reduce<Record<string, number>>((acc, intent) => {
-      acc[intent.category] = (acc[intent.category] ?? 0) + 1;
-      return acc;
-    }, {});
-
-    expect(counts.clothes).toBe(3);
-    expect(counts.food).toBe(3);
-    expect(counts.tech).toBe(3);
-    expect(counts.home).toBe(3);
+    expect(completed.some((intent) => intent.category === "food")).toBe(true);
   });
 
   it("fills a sparse ai response back only to the requested lower target", () => {
@@ -190,6 +180,6 @@ describe("recommendation intent planner", () => {
       },
     ], 4);
 
-    expect(completed).toHaveLength(4);
+    expect(completed).toHaveLength(2);
   });
 });

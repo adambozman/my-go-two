@@ -24,6 +24,7 @@ import {
   type UserThisOrThatAnswerRow,
 } from "../_shared/recommendationSignals.ts";
 import {
+  buildRecommendationCategoryPlan,
   completeRecommendationIntentSet,
   generateFallbackRecommendationIntents,
 } from "../_shared/recommendationIntentPlanner.ts";
@@ -264,7 +265,16 @@ const toResponseProduct = (
 const generateAiIntents = async (
   state: NormalizedRecommendationState,
   targetRecommendationCount: number,
+  personalizationEnabled: boolean,
 ) => {
+  const categoryPlan = buildRecommendationCategoryPlan(state, targetRecommendationCount);
+  const aiEligiblePlans = categoryPlan.filter((entry) => entry.aiTarget > 0);
+  const aiTargetCount = aiEligiblePlans.reduce((sum, entry) => sum + entry.aiTarget, 0);
+
+  if (!personalizationEnabled || aiTargetCount === 0) {
+    return generateFallbackRecommendationIntents(state, targetRecommendationCount, { popularOnly: true });
+  }
+
   const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
   if (!lovableApiKey) return generateFallbackRecommendationIntents(state, targetRecommendationCount);
 
@@ -284,9 +294,14 @@ const generateAiIntents = async (
     ].filter(Boolean).join(" | "))
     .join("\n");
 
+  const categoryPlanSnapshot = categoryPlan
+    .map((entry) => `${entry.category}: state=${entry.state}, total=${entry.totalTarget}, ai=${entry.aiTarget}`)
+    .join("\n");
+
   const prompt = `You are the Go Two recommendation planner for the replacement recommendation engine.
 
 Your job is to create recommendation intents, not final links.
+You may only personalize categories the system has explicitly unlocked.
 
 USER PROFILE SIGNALS:
 ${profileSnapshot || "No profile answers yet"}
@@ -321,19 +336,24 @@ ${state.locationKeys.join(", ") || "None"}
 NEGATIVE / AVOID SIGNALS:
 ${state.negativeKeywords.join(", ") || "None"}
 
+CATEGORY READINESS PLAN:
+${categoryPlanSnapshot}
+
 RULES:
-1. Generate exactly ${targetRecommendationCount} recommendation intents.
+1. Generate exactly ${aiTargetCount} recommendation intents.
 2. Categories must be exactly: clothes, food, tech, home.
-3. Distribute them naturally across those categories, but do not force weak categories if profile signal is thin.
-4. primary_keyword MUST be the main product type only, like jeans, sneakers, candle, lamp, sushi, headphones, or rug.
-5. keywords MUST be 3 to 6 lowercase descriptor keywords only. These narrow the primary keyword using fit, color, brand, material, vibe, or store context.
-6. Do not repeat the primary_keyword inside keywords.
-7. Never recommend items whose primary keyword or descriptive keywords conflict with the negative signals.
-8. Use real brands only.
-9. Never output a URL.
-10. Keep hook and why concise and profile-specific.
-11. Prefer brands and products that are actually supported by the user's saved product cards, This or That answers, Know Me answers, and profile facts.
-12. If the profile is thin, prefer fewer stronger ideas over invented niche taste.
+3. Only generate intents for categories whose ai count is greater than 0 in the CATEGORY READINESS PLAN.
+4. Match the ai count for each eligible category exactly.
+5. primary_keyword MUST be the main product type only, like jeans, sneakers, candle, lamp, sushi, headphones, or rug.
+6. keywords MUST be 3 to 6 lowercase descriptor keywords only. These narrow the primary keyword using fit, color, brand, material, vibe, or store context.
+7. Do not repeat the primary_keyword inside keywords.
+8. Never recommend items whose primary keyword or descriptive keywords conflict with the negative signals.
+9. Use real brands only.
+10. Never output a URL.
+11. Keep hook and why concise and profile-specific.
+12. Prefer brands and products that are actually supported by the user's saved product cards, This or That answers, Know Me answers, and profile facts.
+13. If the profile is thin or a category is not unlocked, prefer no idea over invented niche taste.
+14. Do not use luxury, boutique, or hyper-specific brands unless there is direct user evidence.
 
 Use the provided tool.`;
 
@@ -499,7 +519,11 @@ serve(async (req) => {
     await persistNormalizedState(admin, user.id, state);
 
     const aiAdapter = buildCatalogAiAdapter(knowledgeState.snapshot, knowledgeState.derivations);
-    const intents = await generateAiIntents(state, inputStrength.targetRecommendationCount);
+    const intents = await generateAiIntents(
+      state,
+      inputStrength.targetRecommendationCount,
+      inputStrength.personalizationEnabled,
+    );
 
     const products = [];
     for (const intent of intents) {
@@ -566,6 +590,7 @@ serve(async (req) => {
       recommendation_target_count: inputStrength.targetRecommendationCount,
       recommendation_input_level: inputStrength.level,
       recommendation_input_score: inputStrength.score,
+      recommendation_mode: inputStrength.personalizationEnabled ? "personalized-hybrid" : "popular-fallback",
       profile_core_keys: Object.keys(aiAdapter.profileCore || {}).length,
       onboarding_answer_count: Object.keys(toObject(knowledgeState.snapshot?.onboarding_responses)).length,
       know_me_answer_count: Object.keys(toObject(knowledgeState.snapshot?.know_me_responses)).length,

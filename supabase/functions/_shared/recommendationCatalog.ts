@@ -450,6 +450,7 @@ const PRODUCT_URL_NEGATIVE_PATTERNS = [
 export const looksLikeProductPageUrl = (url: string | null | undefined) => {
   const value = (url ?? "").trim();
   if (!value) return false;
+  if (/\.(?:png|jpe?g|webp|gif|avif|svg)(?:\?|$)/i.test(value)) return false;
   if (PRODUCT_URL_NEGATIVE_PATTERNS.some((pattern) => pattern.test(value))) return false;
   return PRODUCT_URL_POSITIVE_PATTERNS.some((pattern) => pattern.test(value));
 };

@@ -4,34 +4,45 @@ import {
   normalizePrimaryKeyword,
   type RecommendationIntent,
 } from "./recommendationCatalog.ts";
-import type { NormalizedRecommendationState, RecommendationCategory } from "./recommendationSignals.ts";
+import {
+  buildRecommendationCategorySupport,
+  type NormalizedRecommendationState,
+  type RecommendationCategory,
+  type RecommendationCategorySupport,
+} from "./recommendationSignals.ts";
 
 const CATEGORY_ORDER: RecommendationCategory[] = ["clothes", "food", "tech", "home"];
-const CATEGORY_TARGET = 3;
-const TOTAL_TARGET = CATEGORY_ORDER.length * CATEGORY_TARGET;
+const MAX_TARGET = 8;
+type RecommendationCategoryPlan = {
+  category: RecommendationCategory;
+  state: RecommendationCategorySupport["state"];
+  score: number;
+  totalTarget: number;
+  aiTarget: number;
+};
 
 const CATEGORY_DEFAULTS: Record<RecommendationCategory, Array<{ primary: string; brand: string; descriptors: string[] }>> = {
   clothes: [
-    { primary: "jeans", brand: "Madewell", descriptors: ["straight", "blue", "classic denim"] },
-    { primary: "sweater", brand: "Sezane", descriptors: ["knit", "soft neutral", "elevated"] },
+    { primary: "jeans", brand: "Levi's", descriptors: ["straight", "blue", "classic denim"] },
+    { primary: "sweater", brand: "Uniqlo", descriptors: ["knit", "soft neutral", "everyday"] },
     { primary: "sneakers", brand: "Adidas", descriptors: ["everyday", "clean", "low profile"] },
-    { primary: "jacket", brand: "Aritzia", descriptors: ["tailored", "light layer", "polished"] },
+    { primary: "jacket", brand: "Patagonia", descriptors: ["light layer", "practical", "everyday"] },
   ],
   food: [
-    { primary: "coffee", brand: "Blue Bottle", descriptors: ["oat milk", "vanilla", "morning routine"] },
-    { primary: "sushi", brand: "Nobu", descriptors: ["date night", "refined", "shared plates"] },
-    { primary: "pasta", brand: "Eataly", descriptors: ["italian", "comfort", "quality ingredients"] },
-    { primary: "tea", brand: "Harney & Sons", descriptors: ["calming", "daily ritual", "premium"] },
+    { primary: "coffee", brand: "Starbucks", descriptors: ["morning routine", "popular", "daily"] },
+    { primary: "salad", brand: "Sweetgreen", descriptors: ["fresh", "lunch", "popular"] },
+    { primary: "sushi", brand: "Nobu", descriptors: ["shared plates", "date night", "popular"] },
+    { primary: "pasta", brand: "Eataly", descriptors: ["comfort", "italian", "weekend"] },
   ],
   tech: [
     { primary: "headphones", brand: "Sony", descriptors: ["wireless", "travel", "sound quality"] },
-    { primary: "speaker", brand: "Sonos", descriptors: ["home audio", "clean design", "premium"] },
+    { primary: "speaker", brand: "JBL", descriptors: ["portable", "popular", "audio"] },
     { primary: "charger", brand: "Anker", descriptors: ["portable", "daily carry", "fast charging"] },
-    { primary: "camera", brand: "Canon", descriptors: ["travel", "content", "lightweight"] },
+    { primary: "watch", brand: "Apple", descriptors: ["everyday", "popular", "fitness"] },
   ],
   home: [
-    { primary: "candle", brand: "Diptyque", descriptors: ["soft scent", "elevated", "giftable"] },
-    { primary: "lamp", brand: "West Elm", descriptors: ["warm light", "modern", "living room"] },
+    { primary: "candle", brand: "Target", descriptors: ["soft scent", "popular", "giftable"] },
+    { primary: "lamp", brand: "IKEA", descriptors: ["warm light", "practical", "living room"] },
     { primary: "blanket", brand: "Brooklinen", descriptors: ["cozy", "soft texture", "neutral"] },
     { primary: "rug", brand: "Ruggable", descriptors: ["washable", "patterned", "practical"] },
   ],
@@ -47,16 +58,73 @@ const normalizeCategory = (value: unknown): RecommendationCategory | null => {
   return CATEGORY_ORDER.includes(text as RecommendationCategory) ? (text as RecommendationCategory) : null;
 };
 
-const buildCategoryTargets = (targetCount: number) => {
-  const clamped = Math.max(1, Math.min(TOTAL_TARGET, targetCount));
-  const targets = new Map<RecommendationCategory, number>(CATEGORY_ORDER.map((category) => [category, 0]));
+export const buildRecommendationCategoryPlan = (
+  state: NormalizedRecommendationState,
+  targetCount: number,
+  options: { popularOnly?: boolean } = {},
+) => {
+  const clamped = Math.max(1, Math.min(MAX_TARGET, targetCount));
+  const popularOnly = Boolean(options.popularOnly);
+  const support = buildRecommendationCategorySupport(state)
+    .slice()
+    .sort((a, b) => b.score - a.score || CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category));
 
-  for (let index = 0; index < clamped; index += 1) {
-    const category = CATEGORY_ORDER[index % CATEGORY_ORDER.length];
-    targets.set(category, (targets.get(category) ?? 0) + 1);
+  const plans = new Map<RecommendationCategory, RecommendationCategoryPlan>(
+    CATEGORY_ORDER.map((category) => [
+      category,
+      { category, state: "locked", score: 0, totalTarget: 0, aiTarget: 0 },
+    ]),
+  );
+
+  for (const entry of support) {
+    plans.set(entry.category, {
+      category: entry.category,
+      state: entry.state,
+      score: entry.score,
+      totalTarget:
+        entry.state === "strong" ? 2 :
+        entry.state === "qualified" ? 2 :
+        entry.state === "emerging" ? 1 :
+        0,
+      aiTarget:
+        popularOnly ? 0 :
+        entry.state === "strong" ? 2 :
+        entry.state === "qualified" ? 2 :
+        0,
+    });
   }
 
-  return targets;
+  const orderedPlans = CATEGORY_ORDER.map((category) => plans.get(category)!);
+  let assigned = orderedPlans.reduce((sum, plan) => sum + plan.totalTarget, 0);
+
+  if (assigned === 0) {
+    for (const plan of orderedPlans.slice(0, Math.min(clamped, 2))) {
+      plan.totalTarget = 1;
+    }
+    assigned = orderedPlans.reduce((sum, plan) => sum + plan.totalTarget, 0);
+  }
+
+  const expansionOrder = support.map((entry) => plans.get(entry.category)!).filter((plan) => plan.totalTarget > 0);
+  while (assigned < clamped) {
+    let progressed = false;
+    for (const plan of expansionOrder) {
+      const cap =
+        plan.state === "strong" ? 3 :
+        plan.state === "qualified" ? 2 :
+        1;
+      if (plan.totalTarget >= cap) continue;
+      plan.totalTarget += 1;
+      if (!popularOnly && plan.aiTarget < Math.min(plan.totalTarget, cap) && (plan.state === "strong" || plan.state === "qualified")) {
+        plan.aiTarget += 1;
+      }
+      assigned += 1;
+      progressed = true;
+      if (assigned >= clamped) break;
+    }
+    if (!progressed) break;
+  }
+
+  return orderedPlans;
 };
 
 const buildIntentKey = (intent: RecommendationIntent) => [
@@ -208,22 +276,28 @@ const createDefaultIntent = (
 
 export const generateFallbackRecommendationIntents = (
   state: NormalizedRecommendationState,
-  targetCount = TOTAL_TARGET,
+  targetCount = MAX_TARGET,
+  options: { popularOnly?: boolean } = {},
 ): RecommendationIntent[] => {
   const results: RecommendationIntent[] = [];
   const seen = new Set<string>();
   const negativeKeywords = buildNegativeKeywordSet(state);
-  const categoryTargets = buildCategoryTargets(targetCount);
+  const popularOnly = Boolean(options.popularOnly);
+  const categoryPlans = buildRecommendationCategoryPlan(state, targetCount, { popularOnly });
+  const categoryTargets = new Map(categoryPlans.map((plan) => [plan.category, plan.totalTarget]));
 
   for (const category of CATEGORY_ORDER) {
+    if ((categoryTargets.get(category) ?? 0) === 0) continue;
     const categoryRows = state.productCardKeywords.filter((row) => row.category === category && row.primary_keyword);
-    for (const row of categoryRows) {
-      const intent = toCardDrivenIntent(state, category, row);
-      const key = buildIntentKey(intent);
-      if (seen.has(key) || intentConflictsWithNegatives(intent, negativeKeywords)) continue;
-      seen.add(key);
-      results.push(intent);
-      if (results.filter((entry) => entry.category === category).length >= (categoryTargets.get(category) ?? 0)) break;
+    if (!popularOnly) {
+      for (const row of categoryRows) {
+        const intent = toCardDrivenIntent(state, category, row);
+        const key = buildIntentKey(intent);
+        if (seen.has(key) || intentConflictsWithNegatives(intent, negativeKeywords)) continue;
+        seen.add(key);
+        results.push(intent);
+        if (results.filter((entry) => entry.category === category).length >= (categoryTargets.get(category) ?? 0)) break;
+      }
     }
 
     if (results.filter((entry) => entry.category === category).length >= (categoryTargets.get(category) ?? 0)) continue;
@@ -248,11 +322,13 @@ export const generateFallbackRecommendationIntents = (
 export const completeRecommendationIntentSet = (
   state: NormalizedRecommendationState,
   intents: RecommendationIntent[],
-  targetCount = TOTAL_TARGET,
+  targetCount = MAX_TARGET,
 ): RecommendationIntent[] => {
   const negativeKeywords = buildNegativeKeywordSet(state);
   const categoryCounts = new Map<RecommendationCategory, number>(CATEGORY_ORDER.map((category) => [category, 0]));
-  const categoryTargets = buildCategoryTargets(targetCount);
+  const categoryPlans = buildRecommendationCategoryPlan(state, targetCount);
+  const aiTargets = new Map(categoryPlans.map((plan) => [plan.category, plan.aiTarget]));
+  const totalTargets = new Map(categoryPlans.map((plan) => [plan.category, plan.totalTarget]));
   const results: RecommendationIntent[] = [];
   const seen = new Set<string>();
 
@@ -261,7 +337,7 @@ export const completeRecommendationIntentSet = (
     if (!category) continue;
     const key = buildIntentKey(intent);
     if (seen.has(key)) continue;
-    if ((categoryCounts.get(category) ?? 0) >= (categoryTargets.get(category) ?? 0)) continue;
+    if ((categoryCounts.get(category) ?? 0) >= (aiTargets.get(category) ?? 0)) continue;
     if (intentConflictsWithNegatives(intent, negativeKeywords)) continue;
     seen.add(key);
     categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
@@ -275,7 +351,7 @@ export const completeRecommendationIntentSet = (
     if (!category) continue;
     const key = buildIntentKey(intent);
     if (seen.has(key)) continue;
-    if ((categoryCounts.get(category) ?? 0) >= (categoryTargets.get(category) ?? 0)) continue;
+    if ((categoryCounts.get(category) ?? 0) >= (totalTargets.get(category) ?? 0)) continue;
     if (intentConflictsWithNegatives(intent, negativeKeywords)) continue;
     seen.add(key);
     categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);

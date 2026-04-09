@@ -158,8 +158,11 @@ export interface RecommendationInputStrength {
   score: number;
   level: "sparse" | "emerging" | "solid" | "rich";
   targetRecommendationCount: number;
+  personalizationEnabled: boolean;
   directSignalCount: number;
   structuredSignalCount: number;
+  primaryEvidenceCount: number;
+  derivedSupportCount: number;
   negativeSignalCount: number;
   supportedBrandCount: number;
   categoryCoverageCount: number;
@@ -168,6 +171,16 @@ export interface RecommendationInputStrength {
 export interface RecommendationMatchAssessment {
   confidence: number;
   reasons: string[];
+}
+
+export interface RecommendationCategorySupport {
+  category: RecommendationCategory;
+  primaryEvidenceCount: number;
+  derivedSupportCount: number;
+  negativeSignalCount: number;
+  score: number;
+  state: "locked" | "emerging" | "qualified" | "strong";
+  eligible: boolean;
 }
 
 const SOURCE_VERSION = "recommendation-v2";
@@ -1272,6 +1285,7 @@ export const buildNormalizedRecommendationState = (
 
 export const buildRecommendationSignalSummary = (state: NormalizedRecommendationState) => {
   const inputStrength = buildRecommendationInputStrength(state);
+  const categorySupport = buildRecommendationCategorySupport(state);
   const prioritizedBrands = Array.from(new Set(
     state.brandBankRows
       .slice()
@@ -1291,60 +1305,130 @@ export const buildRecommendationSignalSummary = (state: NormalizedRecommendation
     location_bank_seed_count: state.brandLocationRows.length,
     input_strength_score: inputStrength.score,
     input_strength_level: inputStrength.level,
+    recommendation_mode: inputStrength.personalizationEnabled ? "personalized-hybrid" : "popular-fallback",
     recommendation_target_count: inputStrength.targetRecommendationCount,
     direct_signal_count: inputStrength.directSignalCount,
     structured_signal_count: inputStrength.structuredSignalCount,
     negative_signal_count: inputStrength.negativeSignalCount,
     supported_brand_count: inputStrength.supportedBrandCount,
     category_coverage_count: inputStrength.categoryCoverageCount,
+    category_states: categorySupport.map((entry) => ({
+      category: entry.category,
+      state: entry.state,
+      score: entry.score,
+      primary_evidence_count: entry.primaryEvidenceCount,
+      negative_signal_count: entry.negativeSignalCount,
+    })),
     recommended_brands: prioritizedBrands.slice(0, 12),
     location_keys: state.locationKeys,
   };
 };
 
+const buildPrimarySupportedBrands = (state: NormalizedRecommendationState) =>
+  Array.from(new Set([
+    ...state.productCardKeywords.flatMap((row) => row.brand_keywords),
+    ...state.likes.map((row) => cleanText(row.brand).toLowerCase()).filter(Boolean),
+    ...state.thisOrThatSignalRows
+      .filter((row) => row.signal_type === "brand_keyword" && row.signal_polarity === "positive")
+      .map((row) => cleanText(row.brand).toLowerCase())
+      .filter(Boolean),
+  ]));
+
+const buildDerivedSupportedBrands = (state: NormalizedRecommendationState) =>
+  Array.from(new Set([
+    ...toStringArray(state.yourVibe.recommended_brands),
+    ...toStringArray(state.yourVibe.recommended_stores),
+    ...state.brandBankRows.map((row) => cleanText(row.brand).toLowerCase()).filter(Boolean),
+  ]));
+
+export const buildRecommendationCategorySupport = (
+  state: NormalizedRecommendationState,
+): RecommendationCategorySupport[] => {
+  const categories: RecommendationCategory[] = ["clothes", "food", "tech", "home"];
+
+  return categories.map((category) => {
+    const primaryEvidenceCount =
+      state.productCardKeywords.filter((row) => row.category === category).length * 3 +
+      state.likes.filter((row) => row.category === category).length * 2 +
+      state.thisOrThatAnswers.filter((row) => row.recommendation_category === category).length * 2 +
+      state.thisOrThatSignalRows.filter((row) => row.recommendation_category === category && row.signal_polarity === "positive").length;
+
+    const negativeSignalCount =
+      state.dislikes.filter((row) => row.category === category).length * 2 +
+      state.thisOrThatSignalRows.filter((row) => row.recommendation_category === category && row.signal_polarity === "negative").length;
+
+    const derivedSupportCount =
+      state.brandBankRows.filter((row) => row.category === category).length > 0 ? 1 : 0;
+
+    const score = Math.max(0, primaryEvidenceCount + derivedSupportCount - negativeSignalCount);
+    const stateLevel =
+      primaryEvidenceCount >= 10 ? "strong" :
+      primaryEvidenceCount >= 7 ? "qualified" :
+      primaryEvidenceCount >= 4 ? "emerging" :
+      "locked";
+
+    return {
+      category,
+      primaryEvidenceCount,
+      derivedSupportCount,
+      negativeSignalCount,
+      score,
+      state: stateLevel,
+      eligible: stateLevel === "qualified" || stateLevel === "strong",
+    };
+  });
+};
+
 export const buildRecommendationInputStrength = (
   state: NormalizedRecommendationState,
 ): RecommendationInputStrength => {
-  const userSupportedBrands = Array.from(new Set([
-    ...toStringArray(state.yourVibe.recommended_brands),
-    ...state.productCardKeywords.flatMap((row) => row.brand_keywords),
-    ...state.likes.map((row) => cleanText(row.brand).toLowerCase()).filter(Boolean),
-  ]));
+  const primarySupportedBrands = buildPrimarySupportedBrands(state);
+  const derivedSupportedBrands = buildDerivedSupportedBrands(state);
+  const categorySupport = buildRecommendationCategorySupport(state);
   const directSignalCount = Object.keys(state.combinedResponses).length + state.productCardKeywords.length;
   const structuredSignalCount =
-    state.thisOrThatSignalRows.length +
+    state.thisOrThatAnswers.length +
     state.likes.length +
-    state.brandBankRows.length;
+    state.dislikes.length;
+  const primaryEvidenceCount = directSignalCount + structuredSignalCount;
+  const derivedSupportCount =
+    Math.min(state.brandBankRows.length, 6) +
+    Math.min(derivedSupportedBrands.length, 6);
   const negativeSignalCount = state.dislikes.length + state.negativeKeywords.length;
-  const supportedBrandCount = userSupportedBrands.length;
-  const categoryCoverageCount = Array.from(
-    new Set(
-      [
-        ...state.productCardKeywords.map((row) => row.category),
-        ...state.likes.map((row) => row.category),
-        ...state.thisOrThatSignalRows.map((row) => row.recommendation_category),
-      ].filter(Boolean),
-    ),
-  ).length;
+  const supportedBrandCount = primarySupportedBrands.length;
+  const categoryCoverageCount = categorySupport
+    .filter((entry) => entry.eligible)
+    .length;
+  const strongCategoryCount = categorySupport.filter((entry) => entry.state === "strong").length;
+  const qualifiedCategoryCount = categorySupport.filter((entry) => entry.state === "qualified").length;
+  const emergingCategoryCount = categorySupport.filter((entry) => entry.state === "emerging").length;
 
   const score = Math.min(
     100,
     Math.round(
-      Math.min(directSignalCount, 14) * 3 +
-      Math.min(structuredSignalCount, 18) * 2 +
-      Math.min(negativeSignalCount, 8) * 1 +
-      Math.min(supportedBrandCount, 10) * 2 +
+      Math.min(primaryEvidenceCount, 20) * 3 +
+      Math.min(derivedSupportCount, 10) * 0.5 +
+      Math.min(negativeSignalCount, 8) * 1.5 +
+      Math.min(supportedBrandCount, 8) * 2.5 +
       Math.min(categoryCoverageCount, 4) * 8,
     ),
   );
+
+  const personalizationEnabled = (strongCategoryCount + qualifiedCategoryCount) >= 1 && primaryEvidenceCount >= 8;
+  const targetRecommendationCount = personalizationEnabled
+    ? Math.min(8, Math.max(4, strongCategoryCount * 3 + qualifiedCategoryCount * 2 + Math.min(emergingCategoryCount, 2)))
+    : Math.min(4, Math.max(2, Math.max(emergingCategoryCount, 1) + (supportedBrandCount > 0 ? 1 : 0)));
 
   if (score >= 80) {
     return {
       score,
       level: "rich",
-      targetRecommendationCount: 12,
+      targetRecommendationCount,
+      personalizationEnabled,
       directSignalCount,
       structuredSignalCount,
+      primaryEvidenceCount,
+      derivedSupportCount,
       negativeSignalCount,
       supportedBrandCount,
       categoryCoverageCount,
@@ -1355,9 +1439,12 @@ export const buildRecommendationInputStrength = (
     return {
       score,
       level: "solid",
-      targetRecommendationCount: 9,
+      targetRecommendationCount,
+      personalizationEnabled,
       directSignalCount,
       structuredSignalCount,
+      primaryEvidenceCount,
+      derivedSupportCount,
       negativeSignalCount,
       supportedBrandCount,
       categoryCoverageCount,
@@ -1368,9 +1455,12 @@ export const buildRecommendationInputStrength = (
     return {
       score,
       level: "emerging",
-      targetRecommendationCount: 6,
+      targetRecommendationCount,
+      personalizationEnabled,
       directSignalCount,
       structuredSignalCount,
+      primaryEvidenceCount,
+      derivedSupportCount,
       negativeSignalCount,
       supportedBrandCount,
       categoryCoverageCount,
@@ -1380,9 +1470,12 @@ export const buildRecommendationInputStrength = (
   return {
     score,
     level: "sparse",
-    targetRecommendationCount: 4,
+    targetRecommendationCount,
+    personalizationEnabled: false,
     directSignalCount,
     structuredSignalCount,
+    primaryEvidenceCount,
+    derivedSupportCount,
     negativeSignalCount,
     supportedBrandCount,
     categoryCoverageCount,
@@ -1404,17 +1497,19 @@ export const buildRecommendationMatchAssessment = (
   const descriptorKeywords = normalizeRecommendationKeywords(intent.keywords ?? []);
   const positiveKeywordSet = new Set(state.positiveKeywords);
   const negativeKeywordSet = new Set(state.negativeKeywords);
-  const supportedBrands = new Set([
-    ...toStringArray(state.yourVibe.recommended_brands).map((brand) => cleanText(brand).toLowerCase()),
-    ...state.productCardKeywords.flatMap((row) => row.brand_keywords),
-    ...state.likes.map((row) => cleanText(row.brand).toLowerCase()).filter(Boolean),
-  ]);
+  const inputStrength = buildRecommendationInputStrength(state);
+  const categorySupport = buildRecommendationCategorySupport(state).find((entry) => entry.category === category);
+  const primarySupportedBrands = new Set(buildPrimarySupportedBrands(state));
+  const derivedSupportedBrands = new Set(buildDerivedSupportedBrands(state));
 
-  let score = buildRecommendationInputStrength(state).score * 0.45;
+  let score = inputStrength.primaryEvidenceCount * 2.2 + inputStrength.categoryCoverageCount * 6;
 
-  if (supportedBrands.has(cleanText(intent.brand).toLowerCase())) {
+  if (primarySupportedBrands.has(cleanText(intent.brand).toLowerCase())) {
     score += 22;
     reasons.push("brand-aligned");
+  } else if (derivedSupportedBrands.has(cleanText(intent.brand).toLowerCase())) {
+    score += 8;
+    reasons.push("brand-derived-support");
   } else {
     score -= 16;
     reasons.push("brand-not-yet-proven");
@@ -1443,13 +1538,32 @@ export const buildRecommendationMatchAssessment = (
     reasons.push("category-thin");
   }
 
+  if (categorySupport?.state === "locked") {
+    score -= 22;
+    reasons.push("category-locked");
+  } else if (categorySupport?.state === "emerging") {
+    score -= 10;
+    reasons.push("category-emerging");
+  } else if (categorySupport?.state === "qualified") {
+    score += 8;
+    reasons.push("category-qualified");
+  } else if (categorySupport?.state === "strong") {
+    score += 14;
+    reasons.push("category-strong");
+  }
+
   if (
-    !supportedBrands.has(cleanText(intent.brand).toLowerCase()) &&
+    !primarySupportedBrands.has(cleanText(intent.brand).toLowerCase()) &&
     !(primaryKeyword && positiveKeywordSet.has(primaryKeyword)) &&
     descriptorMatches.length === 0
   ) {
     score -= 14;
     reasons.push("low-direct-support");
+  }
+
+  if (!inputStrength.personalizationEnabled) {
+    score = Math.min(score, 54);
+    reasons.push("below-personalization-threshold");
   }
 
   if (

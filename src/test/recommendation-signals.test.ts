@@ -183,10 +183,11 @@ describe("recommendation signal normalization", () => {
     });
 
     expect(inputStrength.score).toBeGreaterThanOrEqual(58);
-    expect(inputStrength.targetRecommendationCount).toBeGreaterThanOrEqual(9);
+    expect(inputStrength.targetRecommendationCount).toBe(5);
+    expect(inputStrength.personalizationEnabled).toBe(true);
     expect(supportedMatch.confidence).toBeGreaterThanOrEqual(unsupportedMatch.confidence);
     expect(supportedMatch.reasons).toContain("brand-aligned");
-    expect(unsupportedMatch.reasons).toContain("brand-not-yet-proven");
+    expect(unsupportedMatch.reasons).toContain("brand-derived-support");
     expect(unsupportedMatch.reasons).toContain("low-direct-support");
   });
 });

@@ -11,12 +11,14 @@ import {
   mergeRecommendationKeywords,
   normalizePrimaryKeyword,
   normalizeRecommendationKeywords,
+  looksLikeProductPageUrl,
   scoreKeywordBankCandidate,
   getSeedCatalogBrands,
   resolveIntentToCatalogEntry,
   type RecommendationIntent,
 } from "../_shared/recommendationCatalog.ts";
 import {
+  getExactProductImageReadiness,
   scrapeExactProductWithFirecrawl,
   type ExactProductScrapeResult,
 } from "../_shared/exactProductScraper.ts";
@@ -147,6 +149,91 @@ const findBestKeywordBankMatch = async (
 
 const hasExactProductRecord = (entry: ResolvedRecommendationCatalogRow | null) =>
   Boolean(entry?.link_kind === "product" && entry?.exact_match_confirmed);
+
+const getResolvedExactProductState = async (
+  entry: ResolvedRecommendationCatalogRow | null,
+): Promise<{
+  usable: boolean;
+  imageUrl: string | null;
+  productUrl: string | null;
+  price: string | null;
+  status: string;
+}> => {
+  if (!entry || !hasExactProductRecord(entry)) {
+    return { usable: false, imageUrl: null, productUrl: null, price: null, status: "not-exact" };
+  }
+
+  if (!looksLikeProductPageUrl(entry.link_url)) {
+    return { usable: false, imageUrl: null, productUrl: null, price: null, status: "bad-product-url" };
+  }
+
+  if (!cleanText(entry.price)) {
+    return { usable: false, imageUrl: null, productUrl: null, price: null, status: "missing-price" };
+  }
+
+  const imageReadiness = await getExactProductImageReadiness(
+    entry.image_url,
+    entry.product_name,
+    entry.brand,
+  );
+
+  if (!imageReadiness.ok) {
+    return {
+      usable: false,
+      imageUrl: null,
+      productUrl: entry.link_url,
+      price: entry.price,
+      status: imageReadiness.status,
+    };
+  }
+
+  return {
+    usable: true,
+    imageUrl: entry.image_url,
+    productUrl: entry.link_url,
+    price: entry.price,
+    status: imageReadiness.status,
+  };
+};
+
+const getScrapedExactProductState = async (
+  scraped: ExactProductScrapeResult | null,
+  intent: RecommendationIntent,
+): Promise<{
+  usable: boolean;
+  imageUrl: string | null;
+  productUrl: string | null;
+  price: string | null;
+  status: string;
+}> => {
+  if (!scraped?.exact_match_confirmed || !scraped.product_url || !scraped.price) {
+    return { usable: false, imageUrl: null, productUrl: null, price: null, status: "not-exact" };
+  }
+
+  const imageReadiness = await getExactProductImageReadiness(
+    scraped.image_url,
+    intent.name,
+    intent.brand,
+  );
+
+  if (!imageReadiness.ok) {
+    return {
+      usable: false,
+      imageUrl: null,
+      productUrl: scraped.product_url,
+      price: scraped.price,
+      status: imageReadiness.status,
+    };
+  }
+
+  return {
+    usable: true,
+    imageUrl: scraped.image_url,
+    productUrl: scraped.product_url,
+    price: scraped.price,
+    status: imageReadiness.status,
+  };
+};
 
 const scrapeProductWithFirecrawl = (
   brand: string,
@@ -398,32 +485,37 @@ Use the provided tool.`;
 
             const fallbackResolved = resolveIntentToCatalogEntry(intent);
             const resolved = existing ?? fallbackResolved;
-            const shouldScrapeExactProduct = !hasExactProductRecord(existing);
+            const existingExactState = await getResolvedExactProductState(existing);
+            const resolvedExactState = existing
+              ? existingExactState
+              : await getResolvedExactProductState(resolved as ResolvedRecommendationCatalogRow);
+            const shouldScrapeExactProduct = !existingExactState.usable;
             const scraped = shouldScrapeExactProduct
               ? await scrapeProductWithFirecrawl(intent.brand, intent.name, intent.search_query ?? null)
               : null;
 
-            const exactProductUrl = scraped?.exact_match_confirmed
-              ? scraped.product_url
-              : hasExactProductRecord(existing)
-                ? existing!.link_url
-                : resolved.exact_match_confirmed && resolved.link_kind === "product"
-                  ? resolved.link_url
-                  : null;
-            const finalImageUrl = exactProductUrl
-              ? scraped?.image_url || existing?.image_url || intent.product_image_url || resolved.image_url || null
-              : null;
-            const finalPrice = exactProductUrl
-              ? scraped?.price || existing?.price || resolved.price || intent.price
+            const scrapedExactState = await getScrapedExactProductState(scraped, intent);
+            const exactProductState = scrapedExactState.usable
+              ? scrapedExactState
+              : existingExactState.usable
+                ? existingExactState
+                : resolvedExactState.usable
+                  ? resolvedExactState
+                  : { usable: false, imageUrl: null, productUrl: null, price: null, status: "not-exact" };
+
+            const exactProductUrl = exactProductState.usable ? exactProductState.productUrl : null;
+            const finalImageUrl = exactProductState.usable ? exactProductState.imageUrl : null;
+            const finalPrice = exactProductState.usable
+              ? exactProductState.price || intent.price
               : resolved.price || intent.price;
-            const finalDescription = exactProductUrl
+            const finalDescription = exactProductState.usable
               ? scraped?.scraped_description || existing?.scraped_description || resolved.scraped_description || null
               : existing?.scraped_description || resolved.scraped_description || null;
             const finalSearchUrl = exactProductUrl
               ? null
-              : existing?.search_query
-                ? existing.link_url
-                : resolved.link_kind === "search"
+                : existing?.search_query
+                  ? existing.link_url
+                  : resolved.link_kind === "search"
                   ? resolved.link_url
                   : fallbackResolved.link_url;
             const finalProductQuery = resolved.search_query || intent.search_query || `${intent.brand} ${intent.name}`;
@@ -439,12 +531,14 @@ Use the provided tool.`;
                 keyword_signature: keywordSignature,
                 scraped_description: finalDescription,
                 scraped_product_title: scraped?.scraped_product_title || resolved.scraped_product_title,
-                product_match_confidence: scraped?.product_match_confidence ?? resolved.product_match_confidence,
-                exact_match_confirmed: scraped?.exact_match_confirmed ?? resolved.exact_match_confirmed,
+                product_match_confidence: scrapedExactState.usable
+                  ? scraped?.product_match_confidence ?? resolved.product_match_confidence
+                  : resolved.product_match_confidence,
+                exact_match_confirmed: Boolean(exactProductState.usable),
                 link_url: exactProductUrl || finalSearchUrl || resolved.link_url,
                 link_kind: exactProductUrl ? "product" : "search",
                 search_query: exactProductUrl ? null : finalProductQuery,
-                resolver_source: scraped?.exact_match_confirmed ? "firecrawl-exact" : resolved.resolver_source,
+                resolver_source: scrapedExactState.usable ? "firecrawl-exact" : resolved.resolver_source,
               };
               await admin.from("resolved_recommendation_catalog").upsert(enrichedResolved, {
                 onConflict: "fingerprint",
@@ -466,13 +560,17 @@ Use the provided tool.`;
                   ...(scraped ? {
                     scraped_product_title: scraped.scraped_product_title,
                     product_match_confidence: scraped.product_match_confidence,
-                    exact_match_confirmed: scraped.exact_match_confirmed,
+                    exact_match_confirmed: scrapedExactState.usable,
                   } : {}),
-                  ...(scraped?.exact_match_confirmed ? {
-                    image_url: scraped.image_url,
+                  ...(!existingExactState.usable && existing?.exact_match_confirmed ? {
+                    exact_match_confirmed: false,
+                    resolver_source: `legacy-recheck-${existingExactState.status}`,
+                  } : {}),
+                  ...(scrapedExactState.usable ? {
+                    image_url: scrapedExactState.imageUrl,
                     scraped_description: scraped.scraped_description,
-                    price: scraped.price,
-                    link_url: scraped.product_url,
+                    price: scrapedExactState.price,
+                    link_url: scrapedExactState.productUrl,
                     link_kind: "product",
                     search_query: null,
                     resolver_source: "firecrawl-exact",

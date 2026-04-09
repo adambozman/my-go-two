@@ -25,7 +25,12 @@ const IMAGE_REJECT_WORDS = [
 
 const IMAGE_BOOST_PATTERNS = [
   /product/i, /pdp/i, /hero/i, /main/i, /primary/i,
-  /detail/i, /zoom/i, /full/i, /large/i, /1200/i, /2048/i, /1024/i,
+  /zoom/i, /full/i, /large/i, /1200/i, /2048/i, /1024/i,
+];
+
+const IMAGE_PENALTY_WORDS = [
+  "detail", "close", "closeup", "close-up", "texture", "fabric", "swatch",
+  "editorial", "campaign", "lifestyle", "lookbook", "thumbnail",
 ];
 
 const TITLE_STOP_WORDS = new Set([
@@ -90,6 +95,10 @@ export const scoreImageUrl = (url: string, productName: string, brand: string): 
   let score = 0;
   for (const pattern of IMAGE_BOOST_PATTERNS) {
     if (pattern.test(lower)) score += 2;
+  }
+
+  for (const word of IMAGE_PENALTY_WORDS) {
+    if (lower.includes(word)) score -= 2;
   }
 
   if (dimMatch) {
@@ -210,6 +219,23 @@ export const verifyRemoteImageUrl = async (url: string | null) => {
   }
 };
 
+export const getExactProductImageReadiness = async (
+  url: string | null,
+  productName: string,
+  brand: string,
+) => {
+  if (!url) return { ok: false, status: "missing", score: -1 };
+  if (looksLikeProductPageUrl(url)) return { ok: false, status: "page-url", score: -1 };
+
+  const score = scoreImageUrl(url, productName, brand);
+  if (score < 3) return { ok: false, status: "weak-image-candidate", score };
+
+  const remote = await verifyRemoteImageUrl(url);
+  if (!remote.ok) return { ok: false, status: remote.status, score };
+
+  return { ok: true, status: "verified", score };
+};
+
 export const pickBestSearchResult = (results: SearchResult[], brand: string, productName: string) => {
   const ranked = results
     .map((result, index) => {
@@ -314,20 +340,20 @@ export const scrapeExactProductWithFirecrawl = async ({
       cleanText(rawMarkdown),
     ].filter(Boolean).join(" "));
     const scrapedDescription = extractBestDescription(rawMarkdown);
-    const imageVerification = await verifyRemoteImageUrl(bestImage.imageUrl);
+    const imageReadiness = await getExactProductImageReadiness(bestImage.imageUrl, productName, brand);
     const match = scoreExactProductMatch({
       brand,
       productName,
       title: scrapedProductTitle,
       url: productUrl,
       hasPrice: Boolean(scrapedPrice),
-      hasConfidentImage: Boolean(bestImage.imageUrl) && bestImage.imageScore >= 3 && imageVerification.ok,
+      hasConfidentImage: imageReadiness.ok,
     });
     const exactMatchReasons = [
       match.exact ? "exact-product-verified" : "exact-product-rejected",
       looksLikeProductPageUrl(productUrl) ? "pdp-url" : "non-pdp-url",
       scrapedPrice ? "price-found" : "price-missing",
-      imageVerification.status ?? "image-unknown",
+      imageReadiness.status ?? "image-unknown",
       scrapedProductTitle ? "title-found" : "title-missing",
     ];
 
@@ -347,7 +373,7 @@ export const scrapeExactProductWithFirecrawl = async ({
         scraped_product_title: scrapedProductTitle,
         product_match_confidence: match.confidence,
         exact_match_confirmed: false,
-        image_verification_status: imageVerification.status,
+        image_verification_status: imageReadiness.status,
         exact_match_reasons: exactMatchReasons,
       };
     }
@@ -360,7 +386,7 @@ export const scrapeExactProductWithFirecrawl = async ({
       scraped_product_title: scrapedProductTitle,
       product_match_confidence: match.confidence,
       exact_match_confirmed: true,
-      image_verification_status: imageVerification.status,
+      image_verification_status: imageReadiness.status,
       exact_match_reasons: exactMatchReasons,
     };
   } catch (error) {

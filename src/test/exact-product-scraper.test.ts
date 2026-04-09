@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  getExactProductImageReadiness,
   pickBestImage,
   pickBestSearchResult,
   scoreExactProductMatch,
@@ -35,6 +36,7 @@ describe("exact product scraper scoring", () => {
       pickBestImage(
         [
           "https://cdn.example.com/nav/logo.svg",
+          "https://cdn.example.com/products/american-eagle-skinny-blue-jeans-detail.jpg?w=1200",
           "https://cdn.example.com/products/american-eagle-skinny-blue-jeans-main.jpg?w=1200",
           "https://cdn.example.com/products/american-eagle-skinny-blue-jeans-side.jpg?w=420",
         ],
@@ -44,6 +46,32 @@ describe("exact product scraper scoring", () => {
     ).toEqual({
       imageUrl: "https://cdn.example.com/products/american-eagle-skinny-blue-jeans-main.jpg?w=1200",
       imageScore: expect.any(Number),
+    });
+  });
+
+  it("rejects page urls and weak detail-like assets as exact-product images", async () => {
+    await expect(
+      getExactProductImageReadiness(
+        "https://www.patagonia.com/product/mens-better-sweater-fleece-vest/25882.html",
+        "Better Sweater Fleece Vest",
+        "Patagonia",
+      ),
+    ).resolves.toEqual({
+      ok: false,
+      status: "page-url",
+      score: -1,
+    });
+
+    await expect(
+      getExactProductImageReadiness(
+        "https://cdn.example.com/products/fabric-texture-closeup.jpg?w=1200",
+        "Corduroy Jacket",
+        "Todd Snyder",
+      ),
+    ).resolves.toEqual({
+      ok: false,
+      status: "weak-image-candidate",
+      score: expect.any(Number),
     });
   });
 

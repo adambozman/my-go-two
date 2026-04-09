@@ -44,7 +44,6 @@ interface Product {
 }
 
 const RECOMMENDATION_V2_VERSION = "recommendation-engine-v2";
-const LEGACY_RECOMMENDATION_VERSION = "ai-products";
 
 type RecommendationFavorite = {
   id: string;
@@ -105,21 +104,6 @@ const getRpcStatus = (error: unknown) =>
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Failed to load recommendations";
-
-const shouldFallbackToLegacyEngine = (error: unknown) => {
-  const status = getRpcStatus(error);
-  if (status === 404) return true;
-  if (typeof status === "number" && status >= 500) return true;
-  const message = getErrorMessage(error).toLowerCase();
-  return (
-    message.includes("failed to send a request to the edge function") ||
-    message.includes("column") ||
-    message.includes("relation") ||
-    message.includes("schema") ||
-    message.includes("migration") ||
-    message.includes("unexpected error")
-  );
-};
 
 const PILLARS = [
   { key: "all", label: "For You", matches: ["food", "clothes", "tech", "home"] },
@@ -257,7 +241,6 @@ const Recommendations = () => {
   const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
   const [inputSnapshotSummary, setInputSnapshotSummary] = useState<Record<string, unknown> | null>(null);
   const isUsingRebuiltEngine = generationVersion === RECOMMENDATION_V2_VERSION;
-  const isUsingLegacyEngine = generationVersion === LEGACY_RECOMMENDATION_VERSION;
   const recommendationTargetCount = typeof inputSnapshotSummary?.recommendation_target_count === "number"
     ? inputSnapshotSummary.recommendation_target_count
     : null;
@@ -286,7 +269,7 @@ const Recommendations = () => {
     setLoading(true);
     setLoadErrorMessage(null);
     try {
-      let activeFunction = RECOMMENDATION_V2_VERSION;
+      const activeFunction = RECOMMENDATION_V2_VERSION;
       let { data, error } = await supabase.functions.invoke(activeFunction, {
         body: forceRefresh ? { force_refresh: true } : {},
       });
@@ -299,24 +282,6 @@ const Recommendations = () => {
         });
         data = retry.data;
         error = retry.error;
-      }
-
-      if (error && shouldFallbackToLegacyEngine(error)) {
-        activeFunction = LEGACY_RECOMMENDATION_VERSION;
-        const fallback = await supabase.functions.invoke(activeFunction, {
-          body: forceRefresh ? { force_refresh: true } : {},
-        });
-        data = fallback.data;
-        error = fallback.error;
-
-        if (error && getRpcStatus(error) === 401) {
-          await supabase.auth.refreshSession();
-          const retryFallback = await supabase.functions.invoke(activeFunction, {
-            body: forceRefresh ? { force_refresh: true } : {},
-          });
-          data = retryFallback.data;
-          error = retryFallback.error;
-        }
       }
 
       if (error) throw error;
@@ -345,6 +310,8 @@ const Recommendations = () => {
           ? "Recommendation refresh is rate-limited right now. Try again shortly."
           : status === 402
             ? "Recommendation generation is unavailable right now."
+            : status === 404
+              ? "The rebuilt recommendation engine is not deployed yet."
             : getErrorMessage(error);
       setLoadErrorMessage(message);
       toast.error(message);
@@ -621,11 +588,6 @@ const Recommendations = () => {
                 {isUsingRebuiltEngine && (
                   <p className="surface-meta mt-1">
                     Powered by the rebuilt recommendation engine
-                  </p>
-                )}
-                {isUsingLegacyEngine && (
-                  <p className="surface-meta mt-1">
-                    Using the current live recommendation engine while the rebuilt engine is not yet deployed
                   </p>
                 )}
                 {isGuestPreview && (
