@@ -41,6 +41,10 @@ export const getRecommendationActionLabel = (product: RecommendationProduct) => 
 };
 
 export const getRecommendationStableId = (product: RecommendationProduct) => {
+  if (product.stable_id?.trim()) {
+    return product.stable_id.trim().toLowerCase();
+  }
+
   const normalizedAffiliate = normalizeUrl(product.affiliate_url);
   const normalizedSearch = normalizeUrl(product.search_url);
 

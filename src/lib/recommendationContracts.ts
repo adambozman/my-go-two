@@ -10,6 +10,7 @@ export interface RecommendationExplanation {
 }
 
 export interface RecommendationProduct {
+  stable_id?: string | null;
   name: string;
   brand: string;
   price: string;
@@ -87,6 +88,7 @@ export const parseRecommendationProduct = (value: unknown): RecommendationProduc
   }
 
   return {
+    stable_id: asNullableString(value.stable_id),
     name: asString(value.name, "product.name"),
     brand: asString(value.brand, "product.brand"),
     price: asString(value.price, "product.price"),

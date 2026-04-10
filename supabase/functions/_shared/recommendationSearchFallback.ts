@@ -4,8 +4,16 @@ import {
   buildRecommendationMatchAssessment,
   type NormalizedRecommendationState,
 } from "./recommendationSignals.ts";
+import { normalizePrimaryKeyword, normalizeRecommendationKeywords } from "./recommendationCatalog.ts";
 
 const cleanText = (value: string | null | undefined) => (value ?? "").trim();
+
+const buildFallbackStableId = (intent: RecommendationIntent) => {
+  const primaryKeyword = normalizePrimaryKeyword(intent.primary_keyword ?? intent.name) ?? cleanText(intent.name).toLowerCase();
+  const brand = cleanText(intent.brand).toLowerCase();
+  const descriptors = normalizeRecommendationKeywords(intent.keywords ?? []).slice(0, 3);
+  return ["fallback", intent.category, primaryKeyword, brand, ...descriptors].join("::");
+};
 
 export const buildRecommendationSearchUrl = (brand: string, query: string) => {
   const text = cleanText(query) || cleanText(brand);
@@ -26,6 +34,7 @@ export const buildSearchFallbackResponseProduct = ({
   const productQuery = cleanText(intent.search_query) || `${intent.brand} ${intent.name}`.trim();
 
   return {
+    stable_id: buildFallbackStableId(intent),
     name: intent.name,
     brand: intent.brand,
     price: cleanText(intent.price) || "Price varies",

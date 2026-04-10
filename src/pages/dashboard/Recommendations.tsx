@@ -188,6 +188,7 @@ const Recommendations = () => {
   const recommendationInputLevel = typeof inputSnapshotSummary?.recommendation_input_level === "string"
     ? inputSnapshotSummary.recommendation_input_level
     : null;
+  const hasLoadedProducts = products.length > 0;
 
   const activePillarConfig = useMemo(
     () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
@@ -235,11 +236,6 @@ const Recommendations = () => {
       setCurrentPage(1);
     } catch (error: unknown) {
       console.error("Products error:", error);
-      setProducts([]);
-      setGeneratedAt(null);
-      setIsCached(false);
-      setGenerationVersion(null);
-      setInputSnapshotSummary(null);
       const status = getRpcStatus(error);
       const message =
         status === 429
@@ -250,12 +246,12 @@ const Recommendations = () => {
               ? "The rebuilt recommendation engine is not deployed yet."
             : getErrorMessage(error);
       setLoadErrorMessage(message);
-      toast.error(message);
+      toast.error(hasLoadedProducts ? `${message} Showing your last saved weekly set.` : message);
     } finally {
       setLoading(false);
       setHasLoaded(true);
     }
-  }, [setCurrentPage]);
+  }, [hasLoadedProducts, setCurrentPage]);
 
   useEffect(() => {
     if (!knowledgeLoading && !hasLoaded) {
@@ -568,6 +564,27 @@ const Recommendations = () => {
           </Card>
         </motion.div>
 
+        {loadErrorMessage && hasLoadedProducts && (
+          <Card variant="sand" className="border border-amber-200/80 bg-amber-50/70 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="surface-heading-md">Showing your last saved recommendations.</p>
+                <p className="surface-body">{loadErrorMessage}</p>
+              </div>
+              <Button
+                onClick={() => fetchProducts(true)}
+                disabled={loading}
+                variant="outline"
+                size="sm"
+                className="gap-1.5 self-start sm:self-auto"
+              >
+                {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                Try Again
+              </Button>
+            </div>
+          </Card>
+        )}
+
         {/* ── Product grid ── */}
         {loading && products.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-16">
@@ -618,7 +635,7 @@ const Recommendations = () => {
               />
             )}
           </>
-        ) : loadErrorMessage ? (
+        ) : loadErrorMessage && !hasLoadedProducts ? (
           <Card variant="sand" className="p-8 text-center">
             <p className="surface-heading-md mb-2">
               Recommendations are temporarily unavailable.

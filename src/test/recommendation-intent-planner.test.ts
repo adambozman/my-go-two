@@ -7,6 +7,8 @@ import {
 } from "../../supabase/functions/_shared/recommendationIntentPlanner";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "../../supabase/functions/_shared/knowledgeCenter";
 import type { RecommendationIntent } from "../../supabase/functions/_shared/recommendationCatalog";
+import { getThisOrThatBank } from "../data/knowMeQuestions";
+import { buildThisOrThatAnswerRecord } from "../data/thisOrThatV2";
 
 const snapshot: KnowledgeSnapshotRow = {
   user_id: "planner-user-1",
@@ -261,5 +263,98 @@ describe("recommendation intent planner", () => {
 
     expect(foodPlan?.state).toBe("qualified");
     expect(foodPlan?.aiTarget).toBeGreaterThan(0);
+  });
+
+  it("lets richer this or that brand answers unlock clothes without product cards", () => {
+    const thisOrThatAnswers = [
+      buildThisOrThatAnswerRecord(
+        "brands-shopping",
+        "female",
+        getThisOrThatBank("brands-shopping", "female")!.questions[0]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "brands-shopping",
+        "female",
+        getThisOrThatBank("brands-shopping", "female")!.questions[1]!,
+        "A",
+      ),
+    ];
+
+    const signalDrivenState = buildNormalizedRecommendationState("planner-user-6", {
+      user_id: "planner-user-6",
+      profile_core: { city: "Chicago" },
+      onboarding_responses: {},
+      know_me_responses: {},
+      saved_product_cards: [],
+      user_connections: [],
+      snapshot_payload: {},
+      updated_at: new Date().toISOString(),
+    }, [], thisOrThatAnswers);
+
+    const plan = buildRecommendationCategoryPlan(signalDrivenState, 4);
+    const clothesPlan = plan.find((entry) => entry.category === "clothes");
+
+    expect(clothesPlan?.state === "qualified" || clothesPlan?.state === "strong").toBe(true);
+    expect((clothesPlan?.aiTarget ?? 0) >= 1).toBe(true);
+
+    const intents = generateFallbackRecommendationIntents(signalDrivenState, 4);
+    const clothesIntent = intents.find((intent) => intent.category === "clothes");
+
+    expect(clothesIntent).toBeTruthy();
+    expect(["sezane", "everlane", "j.crew", "madewell", "aritzia", "club monaco", "cos"]).toContain(
+      clothesIntent?.brand.toLowerCase(),
+    );
+  });
+
+  it("maps dining and home this or that answers into food and home readiness without product cards", () => {
+    const thisOrThatAnswers = [
+      buildThisOrThatAnswerRecord(
+        "food-dining",
+        "female",
+        getThisOrThatBank("food-dining", "female")!.questions[0]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "food-dining",
+        "female",
+        getThisOrThatBank("food-dining", "female")!.questions[1]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "home-living",
+        "female",
+        getThisOrThatBank("home-living", "female")!.questions[0]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "home-living",
+        "female",
+        getThisOrThatBank("home-living", "female")!.questions[1]!,
+        "A",
+      ),
+    ];
+
+    const signalDrivenState = buildNormalizedRecommendationState("planner-user-7", {
+      user_id: "planner-user-7",
+      profile_core: { city: "Chicago" },
+      onboarding_responses: {},
+      know_me_responses: {},
+      saved_product_cards: [],
+      user_connections: [],
+      snapshot_payload: {},
+      updated_at: new Date().toISOString(),
+    }, [], thisOrThatAnswers);
+
+    const plan = buildRecommendationCategoryPlan(signalDrivenState, 4);
+    const foodPlan = plan.find((entry) => entry.category === "food");
+    const homePlan = plan.find((entry) => entry.category === "home");
+
+    expect(foodPlan?.state === "qualified" || foodPlan?.state === "strong").toBe(true);
+    expect(homePlan?.state === "qualified" || homePlan?.state === "strong").toBe(true);
+
+    const intents = generateFallbackRecommendationIntents(signalDrivenState, 4);
+    expect(intents.some((intent) => intent.category === "food")).toBe(true);
+    expect(intents.some((intent) => intent.category === "home")).toBe(true);
   });
 });

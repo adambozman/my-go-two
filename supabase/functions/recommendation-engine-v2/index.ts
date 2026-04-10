@@ -207,6 +207,7 @@ const toResponseProduct = (
   const inputStrength = buildRecommendationInputStrength(state);
   if (bankRow) {
     return {
+      stable_id: bankRow.keyword_signature ?? ["bank", intent.category, cleanText(bankRow.brand).toLowerCase(), cleanText(bankRow.product_title).toLowerCase()].join("::"),
       name: bankRow.product_title,
       brand: bankRow.brand,
       price: bankRow.product_price_text,

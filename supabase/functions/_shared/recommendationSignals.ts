@@ -184,6 +184,7 @@ export interface RecommendationCategorySupport {
 }
 
 const SOURCE_VERSION = "recommendation-v2";
+const RECOMMENDATION_CATEGORY_ORDER: RecommendationCategory[] = ["clothes", "food", "tech", "home"];
 const THIS_OR_THAT_LOOKUP = new Map(THIS_OR_THAT.map((item) => [item.id, item]));
 const QUESTION_WORDS = new Set(["would", "do", "are", "team"]);
 const PRODUCT_CARD_DESCRIPTOR_STOP_WORDS = new Set([
@@ -205,6 +206,45 @@ const PRODUCT_CARD_DESCRIPTOR_STOP_WORDS = new Set([
 const cleanText = (value: unknown): string => {
   if (typeof value !== "string") return "";
   return value.replace(/[^\x20-\x7E]/g, " ").replace(/\s+/g, " ").trim();
+};
+
+const RECOMMENDATION_CATEGORY_ALIASES: Record<string, RecommendationCategory> = {
+  clothes: "clothes",
+  clothing: "clothes",
+  style: "clothes",
+  apparel: "clothes",
+  dining: "food",
+  beverages: "food",
+  beverage: "food",
+  food: "food",
+  restaurant: "food",
+  restaurants: "food",
+  household: "home",
+  home: "home",
+  living: "home",
+  decor: "home",
+  housing: "home",
+  tech: "tech",
+  technology: "tech",
+  electronics: "tech",
+};
+
+const normalizeRecommendationCategory = (value: unknown): RecommendationCategory | null => {
+  const text = cleanText(value).toLowerCase();
+  if (!text) return null;
+  if (RECOMMENDATION_CATEGORY_ORDER.includes(text as RecommendationCategory)) {
+    return text as RecommendationCategory;
+  }
+  return RECOMMENDATION_CATEGORY_ALIASES[text] ?? null;
+};
+
+const resolveRecommendationCategory = (
+  value: unknown,
+  ...fallbackValues: Array<unknown>
+): RecommendationCategory | null => {
+  const direct = normalizeRecommendationCategory(value);
+  if (direct) return direct;
+  return inferCategoryFromText(value, ...fallbackValues);
 };
 
 const toObject = (value: unknown): JsonObject =>
@@ -314,14 +354,8 @@ const extractBrandKeywords = (...values: Array<unknown>) => {
   return normalizeRecommendationKeywords(matches);
 };
 
-const mapThisOrThatCategory = (value: string): RecommendationCategory | null => {
-  const category = cleanText(value).toLowerCase();
-  if (category === "clothing brands" || category === "style") return "clothes";
-  if (category === "food") return "food";
-  if (category === "electronics") return "tech";
-  if (category === "home") return "home";
-  return null;
-};
+const mapThisOrThatCategory = (value: string): RecommendationCategory | null =>
+  resolveRecommendationCategory(value);
 
 const normalizeAnswerChoice = (answer: unknown, option: string) => {
   const normalizedAnswer = cleanText(answer).toLowerCase();
@@ -475,7 +509,15 @@ const extractThisOrThatV2Preferences = (
     const answerPayload = toObject(answer.answer_payload);
     const selectedPayload = toObject(answer.selected_payload ?? answerPayload.selected_payload);
     const rejectedPayload = toObject(answer.rejected_payload ?? answerPayload.rejected_payload);
-    const category = cleanText(answer.recommendation_category) || null;
+    const category = resolveRecommendationCategory(
+      answer.recommendation_category,
+      selectedPayload.primary_keyword,
+      selectedPayload.descriptor_keywords,
+      selectedPayload.brand_keywords,
+      selectedPayload.tags,
+      selectedPayload.entity_label,
+      answer.question_prompt,
+    );
     const selectedPrimaryKeyword = cleanText(selectedPayload.primary_keyword) || null;
     const rejectedPrimaryKeyword = cleanText(rejectedPayload.primary_keyword) || null;
     const selectedDescriptors = normalizeRecommendationKeywords(
@@ -505,23 +547,31 @@ const extractThisOrThatV2Preferences = (
     for (const brand of selectedBrands) positiveBrands.add(brand);
     for (const brand of rejectedBrands) negativeBrands.add(brand);
 
-    likes.push({
-      like_type: "this_or_that_v2",
-      primary_keyword: selectedPrimaryKeyword,
-      descriptor_keywords: selectedDescriptors,
-      brand: selectedBrands[0] ?? null,
-      category,
-      notes: cleanText(answer.question_id ?? answer.question_key),
-    });
+    const noteKey = cleanText(answer.question_id ?? answer.question_key);
+    const selectedLikeBrands = selectedBrands.length > 0 ? selectedBrands : [null];
+    const rejectedDislikeBrands = rejectedBrands.length > 0 ? rejectedBrands : [null];
 
-    dislikes.push({
-      dislike_type: "this_or_that_v2",
-      primary_keyword: rejectedPrimaryKeyword,
-      descriptor_keywords: mergeRecommendationKeywords([...rejectedDescriptors, ...selectedAvoids]),
-      brand: rejectedBrands[0] ?? null,
-      category,
-      notes: cleanText(answer.question_id ?? answer.question_key),
-    });
+    for (const brand of selectedLikeBrands) {
+      likes.push({
+        like_type: "this_or_that_v2",
+        primary_keyword: selectedPrimaryKeyword,
+        descriptor_keywords: selectedDescriptors,
+        brand,
+        category,
+        notes: noteKey,
+      });
+    }
+
+    for (const brand of rejectedDislikeBrands) {
+      dislikes.push({
+        dislike_type: "this_or_that_v2",
+        primary_keyword: rejectedPrimaryKeyword,
+        descriptor_keywords: mergeRecommendationKeywords([...rejectedDescriptors, ...selectedAvoids]),
+        brand,
+        category,
+        notes: noteKey,
+      });
+    }
   }
 
   return {
@@ -849,8 +899,15 @@ const toThisOrThatSignalRows = (
     const normalizedKey = cleanText(signalKey).toLowerCase();
     if (!normalizedKey) return;
     const rowKey = `${questionId}::${signalKind}::${normalizedKey}::${isNegative ? "neg" : "pos"}`;
-    const recommendationCategory =
-      cleanText(signalValue.recommendation_category || signalValue.category_slug) || null;
+    const recommendationCategory = resolveRecommendationCategory(
+      signalValue.recommendation_category || signalValue.category_slug,
+      signalValue.primary_keyword,
+      signalValue.descriptor_keywords,
+      signalValue.brand_keywords,
+      signalValue.brand,
+      signalValue.tags,
+      signalValue.entity_label,
+    );
     const subgroupKey =
       cleanText(signalValue.subcategory_slug || signalValue.subgroup_key) || null;
     const entityType =
@@ -1131,6 +1188,7 @@ const toLikeAndDislikeRows = (
 const toKeywordBankRows = (
   productCardKeywords: UserProductCardKeywordRow[],
   likes: UserLikeSignalRow[],
+  thisOrThatSignalRows: UserThisOrThatSignalRow[],
 ) => {
   const rows = new Map<string, RecommendationKeywordBankRow>();
 
@@ -1159,12 +1217,32 @@ const toKeywordBankRows = (
     }
   }
 
+  for (const row of thisOrThatSignalRows) {
+    if (row.signal_polarity !== "positive" || !row.recommendation_category) continue;
+    const category = normalizeRecommendationCategory(row.recommendation_category);
+    if (!category || !row.primary_keyword) continue;
+
+    if (row.signal_type === "primary_keyword") {
+      for (const descriptor of row.descriptor_keywords) {
+        addRow(row.primary_keyword, descriptor, category, "this_or_that_v2", 0.95);
+      }
+      for (const descriptor of row.tags) {
+        addRow(row.primary_keyword, descriptor, category, "this_or_that_v2_tag", 0.75);
+      }
+    } else if (row.signal_type === "descriptor_keyword") {
+      addRow(row.primary_keyword, row.entity_key ?? row.descriptor_keywords[0] ?? "", category, "this_or_that_v2", 0.85);
+    } else if (row.signal_type === "tag_keyword") {
+      addRow(row.primary_keyword, row.entity_key ?? row.tags[0] ?? "", category, "this_or_that_v2_tag", 0.7);
+    }
+  }
+
   return Array.from(rows.values());
 };
 
 const toBrandBankRows = (
   productCardKeywords: UserProductCardKeywordRow[],
   recommendedBrands: string[],
+  thisOrThatSignalRows: UserThisOrThatSignalRow[],
 ) => {
   const rows = new Map<string, RecommendationBrandBankRow>();
 
@@ -1198,6 +1276,26 @@ const toBrandBankRows = (
         source_version: SOURCE_VERSION,
       });
     }
+  }
+
+  for (const row of thisOrThatSignalRows) {
+    if (row.signal_polarity !== "positive" || row.signal_type !== "brand_keyword" || !row.brand) continue;
+    const category = normalizeRecommendationCategory(row.recommendation_category);
+    const primaryKeyword = normalizePrimaryKeyword(row.primary_keyword ?? row.entity_label ?? row.entity_key ?? "");
+    if (!category || !primaryKeyword) continue;
+    rows.set(`${row.brand}::${primaryKeyword}::${category}`, {
+      brand: row.brand,
+      primary_keyword: primaryKeyword,
+      descriptor_keywords: mergeRecommendationKeywords([
+        ...row.descriptor_keywords,
+        ...row.tags,
+        row.entity_label,
+      ]),
+      category,
+      weight: 0.9,
+      source_type: "this_or_that_v2",
+      source_version: SOURCE_VERSION,
+    });
   }
 
   return Array.from(rows.values());
@@ -1258,8 +1356,8 @@ export const buildNormalizedRecommendationState = (
   const thisOrThatSignalRows = toThisOrThatSignalRows(userId, thisOrThatAnswers, combinedResponses, snapshotPayload);
   const productCardKeywords = toProductCardKeywordRows(userId, snapshot);
   const { likes, dislikes } = toLikeAndDislikeRows(userId, combinedResponses, productCardKeywords, thisOrThatAnswers, snapshotPayload);
-  const keywordBankRows = toKeywordBankRows(productCardKeywords, likes);
-  const brandBankRows = toBrandBankRows(productCardKeywords, recommendedBrands);
+  const keywordBankRows = toKeywordBankRows(productCardKeywords, likes, thisOrThatSignalRows);
+  const brandBankRows = toBrandBankRows(productCardKeywords, recommendedBrands, thisOrThatSignalRows);
   const brandLocationRows = toBrandLocationRows(locationKeys, brandBankRows);
 
   return {
@@ -1350,12 +1448,53 @@ export const buildRecommendationCategorySupport = (
     const primaryEvidenceCount =
       state.productCardKeywords.filter((row) => row.category === category).length * 3 +
       state.likes.filter((row) => row.category === category).length * 2 +
-      state.thisOrThatAnswers.filter((row) => row.recommendation_category === category).length * 2 +
-      state.thisOrThatSignalRows.filter((row) => row.recommendation_category === category && row.signal_polarity === "positive").length;
+      state.thisOrThatAnswers.filter((row) =>
+        resolveRecommendationCategory(
+          row.recommendation_category,
+          row.primary_keyword,
+          row.descriptor_keywords,
+          row.brand,
+          row.selected_label,
+          row.question_prompt,
+        ) === category
+      ).length * 2 +
+      state.thisOrThatSignalRows
+        .filter((row) =>
+          resolveRecommendationCategory(
+            row.recommendation_category,
+            row.primary_keyword,
+            row.descriptor_keywords,
+            row.brand,
+            row.tags,
+            row.entity_label,
+          ) === category && row.signal_polarity === "positive"
+        )
+        .reduce((sum, row) => {
+          if (row.signal_type === "brand_keyword") return sum + 2;
+          if (row.signal_type === "primary_keyword") return sum + 2;
+          if (row.signal_type === "descriptor_keyword") return sum + 1;
+          return sum + 0.5;
+        }, 0);
 
     const negativeSignalCount =
       state.dislikes.filter((row) => row.category === category).length * 2 +
-      state.thisOrThatSignalRows.filter((row) => row.recommendation_category === category && row.signal_polarity === "negative").length;
+      state.thisOrThatSignalRows
+        .filter((row) =>
+          resolveRecommendationCategory(
+            row.recommendation_category,
+            row.primary_keyword,
+            row.descriptor_keywords,
+            row.brand,
+            row.tags,
+            row.entity_label,
+          ) === category && row.signal_polarity === "negative"
+        )
+        .reduce((sum, row) => {
+          if (row.signal_type === "brand_keyword") return sum + 2;
+          if (row.signal_type === "primary_keyword") return sum + 2;
+          if (row.signal_type === "descriptor_keyword") return sum + 1;
+          return sum + 0.5;
+        }, 0);
 
     const derivedSupportCount =
       state.brandBankRows.filter((row) => row.category === category).length > 0 ? 1 : 0;

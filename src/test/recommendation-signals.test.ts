@@ -95,6 +95,18 @@ const thisOrThatAnswers = [
     getThisOrThatBank("travel-trips", "male")!.questions[0]!,
     "A",
   ),
+  buildThisOrThatAnswerRecord(
+    "food-dining",
+    "female",
+    getThisOrThatBank("food-dining", "female")!.questions[0]!,
+    "A",
+  ),
+  buildThisOrThatAnswerRecord(
+    "home-living",
+    "female",
+    getThisOrThatBank("home-living", "female")!.questions[0]!,
+    "A",
+  ),
 ];
 
 describe("recommendation signal normalization", () => {
@@ -132,7 +144,7 @@ describe("recommendation signal normalization", () => {
 
     expect(state.likes.length).toBeGreaterThan(0);
     expect(state.dislikes.length).toBeGreaterThan(0);
-    expect(state.thisOrThatAnswers).toHaveLength(2);
+    expect(state.thisOrThatAnswers).toHaveLength(4);
     expect(state.thisOrThatAnswers.some((row) => row.recommendation_category === "travel")).toBe(true);
     expect(
       state.thisOrThatSignalRows.some(
@@ -149,11 +161,47 @@ describe("recommendation signal normalization", () => {
     ).toBe(true);
     expect(state.likes.some((row) => row.like_type === "this_or_that_brand" && row.brand === "lululemon")).toBe(true);
     expect(state.likes.some((row) => row.like_type === "this_or_that_v2" && row.category === "clothes")).toBe(true);
+    expect(state.likes.some((row) => row.like_type === "this_or_that_v2" && row.category === "food")).toBe(true);
+    expect(state.likes.some((row) => row.like_type === "this_or_that_v2" && row.category === "home")).toBe(true);
     expect(state.likes.some((row) => row.like_type === "this_or_that_choice" && row.descriptor_keywords.includes("neutrals"))).toBe(true);
     expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_brand" && row.brand === "h m")).toBe(true);
     expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_v2" && row.descriptor_keywords.includes("outdoor"))).toBe(true);
     expect(state.keywordBankRows.some((row) => row.category === "food")).toBe(true);
     expect(state.brandBankRows.some((row) => row.brand === "aritzia")).toBe(true);
+    expect(
+      state.keywordBankRows.some(
+        (row) =>
+          row.source_type === "this_or_that_v2" &&
+          row.category === "clothes" &&
+          row.primary_keyword === "brand preference" &&
+          row.descriptor_keyword === "basics",
+      ),
+    ).toBe(true);
+    expect(
+      state.brandBankRows.some(
+        (row) =>
+          row.source_type === "this_or_that_v2" &&
+          row.category === "clothes" &&
+          row.brand === "uniqlo" &&
+          row.primary_keyword === "brand preference",
+      ),
+    ).toBe(true);
+    expect(
+      state.keywordBankRows.some(
+        (row) =>
+          row.source_type === "this_or_that_v2" &&
+          row.category === "food" &&
+          row.primary_keyword === "dining preference",
+      ),
+    ).toBe(true);
+    expect(
+      state.keywordBankRows.some(
+        (row) =>
+          row.source_type === "this_or_that_v2" &&
+          row.category === "home" &&
+          row.primary_keyword === "home style",
+      ),
+    ).toBe(true);
     expect(state.brandLocationRows.some((row) => row.location_key === "chicago")).toBe(true);
   });
 
@@ -163,7 +211,7 @@ describe("recommendation signal normalization", () => {
     const inputStrength = buildRecommendationInputStrength(state);
 
     expect(summary.signal_count).toBe(state.signals.length);
-    expect(summary.this_or_that_answer_count).toBe(2);
+    expect(summary.this_or_that_answer_count).toBe(4);
     expect(summary.this_or_that_signal_count).toBe(state.thisOrThatSignalRows.length);
     expect(summary.product_card_keyword_count).toBe(2);
     expect(summary.dislike_count).toBe(state.dislikes.length);
@@ -195,6 +243,6 @@ describe("recommendation signal normalization", () => {
     expect(supportedMatch.confidence).toBeGreaterThanOrEqual(unsupportedMatch.confidence);
     expect(supportedMatch.reasons).toContain("brand-aligned");
     expect(unsupportedMatch.reasons).toContain("brand-derived-support");
-    expect(unsupportedMatch.reasons).toContain("low-direct-support");
+    expect(unsupportedMatch.reasons).not.toContain("brand-aligned");
   });
 });
