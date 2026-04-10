@@ -1,4 +1,10 @@
-export type RecommendationDecisionCategory = "clothes" | "food" | "tech" | "home";
+import {
+  RECOMMENDATION_CATEGORY_ORDER,
+  getRecommendationCategoryMeta,
+  type RecommendationCategory,
+} from "../../../src/lib/recommendationCategories.ts";
+
+export type RecommendationDecisionCategory = RecommendationCategory;
 
 export type RecommendationDecisionCategorySupport = {
   category: RecommendationDecisionCategory;
@@ -26,7 +32,7 @@ export type RecommendationDecisionHierarchy = {
 };
 
 export const BASELINE_RECOMMENDATION_COUNT = 4;
-const CATEGORY_ORDER: RecommendationDecisionCategory[] = ["clothes", "food", "tech", "home"];
+const CATEGORY_ORDER: RecommendationDecisionCategory[] = RECOMMENDATION_CATEGORY_ORDER;
 
 export const buildRecommendationDecisionHierarchy = (
   support: RecommendationDecisionCategorySupport[],
@@ -37,7 +43,11 @@ export const buildRecommendationDecisionHierarchy = (
   const popularOnly = Boolean(options.popularOnly);
   const rankedSupport = support
     .slice()
-    .sort((a, b) => b.score - a.score || CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category));
+    .sort((a, b) =>
+      b.score - a.score ||
+      (getRecommendationCategoryMeta(a.category)?.baselinePriority ?? 999) -
+        (getRecommendationCategoryMeta(b.category)?.baselinePriority ?? 999),
+    );
 
   const planMap = new Map<RecommendationDecisionCategory, RecommendationDecisionCategoryPlan>(
     CATEGORY_ORDER.map((category) => [
@@ -68,7 +78,13 @@ export const buildRecommendationDecisionHierarchy = (
   let assigned = orderedPlans.reduce((sum, plan) => sum + plan.totalTarget, 0);
 
   if (assigned === 0) {
-    for (const plan of orderedPlans.slice(0, Math.min(clamped, CATEGORY_ORDER.length))) {
+    const fallbackPlans = orderedPlans
+      .slice()
+      .sort((a, b) =>
+        (getRecommendationCategoryMeta(a.category)?.baselinePriority ?? 999) -
+          (getRecommendationCategoryMeta(b.category)?.baselinePriority ?? 999),
+      );
+    for (const plan of fallbackPlans.slice(0, Math.min(clamped, fallbackPlans.length))) {
       plan.totalTarget = 1;
     }
     assigned = orderedPlans.reduce((sum, plan) => sum + plan.totalTarget, 0);
@@ -76,7 +92,12 @@ export const buildRecommendationDecisionHierarchy = (
 
   const expansionOrder = [
     ...rankedSupport.map((entry) => planMap.get(entry.category)!),
-    ...orderedPlans.filter((plan) => !rankedSupport.some((entry) => entry.category === plan.category)),
+    ...orderedPlans
+      .filter((plan) => !rankedSupport.some((entry) => entry.category === plan.category))
+      .sort((a, b) =>
+        (getRecommendationCategoryMeta(a.category)?.baselinePriority ?? 999) -
+          (getRecommendationCategoryMeta(b.category)?.baselinePriority ?? 999),
+      ),
   ];
 
   while (assigned < clamped) {

@@ -28,6 +28,10 @@ import {
   generateFallbackRecommendationIntents,
 } from "../_shared/recommendationIntentPlanner.ts";
 import { buildSearchFallbackResponseProduct } from "../_shared/recommendationSearchFallback.ts";
+import {
+  normalizeRecommendationCategoryKey,
+  RECOMMENDATION_CATEGORY_ORDER,
+} from "../../../src/lib/recommendationCategories.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -40,7 +44,7 @@ const ENGINE_RULESET_VERSION = "2026-04-09-live-truth-pass";
 const GENERATION_VERSION = `${ENGINE_FAMILY}:${ENGINE_RULESET_VERSION}`;
 const BANK_REVERIFY_MAX_AGE_HOURS = 24 * 14;
 
-const ALLOWED_CATEGORIES = new Set(["food", "clothes", "tech", "home"]);
+const ALLOWED_CATEGORIES = new Set(RECOMMENDATION_CATEGORY_ORDER);
 const ALLOWED_KINDS = new Set(["specific", "generic", "catalog"]);
 
 type JsonObject = Record<string, unknown>;
@@ -95,13 +99,14 @@ const sanitizeIntents = (rawIntents: unknown): RecommendationIntent[] => {
   return rawIntents
     .map((item) => {
       const intent = item as Record<string, unknown>;
-      const category = cleanText(intent.category).toLowerCase();
+      const category = normalizeRecommendationCategoryKey(intent.category);
       const recommendationKind = cleanText(intent.recommendation_kind).toLowerCase();
+      if (!category) return null;
       return {
         brand: cleanText(intent.brand),
         name: cleanText(intent.name),
         price: cleanText(intent.price),
-        category: (ALLOWED_CATEGORIES.has(category) ? category : "clothes") as RecommendationIntent["category"],
+        category: category as RecommendationIntent["category"],
         hook: cleanText(intent.hook),
         why: cleanText(intent.why),
         recommendation_kind: (ALLOWED_KINDS.has(recommendationKind) ? recommendationKind : "catalog") as RecommendationIntent["recommendation_kind"],
@@ -110,7 +115,7 @@ const sanitizeIntents = (rawIntents: unknown): RecommendationIntent[] => {
         keywords: sanitizeKeywordList(intent.keywords),
       };
     })
-    .filter((intent) => intent.brand && intent.name && intent.hook && intent.why && intent.primary_keyword);
+    .filter((intent): intent is RecommendationIntent => Boolean(intent && intent.brand && intent.name && intent.hook && intent.why && intent.primary_keyword));
 };
 
 const getRequiredEnv = (name: string): string => {
@@ -206,8 +211,16 @@ const toResponseProduct = (
   const recommendationMatch = buildRecommendationMatchAssessment(state, intent);
   const inputStrength = buildRecommendationInputStrength(state);
   if (bankRow) {
+    const stableId = cleanText(bankRow.id) || bankRow.keyword_signature || [
+      "bank",
+      intent.category,
+      cleanText(bankRow.brand).toLowerCase(),
+      cleanText(bankRow.product_title).toLowerCase(),
+      cleanText(bankRow.product_url).toLowerCase(),
+    ].join("::");
+
     return {
-      stable_id: bankRow.keyword_signature ?? ["bank", intent.category, cleanText(bankRow.brand).toLowerCase(), cleanText(bankRow.product_title).toLowerCase()].join("::"),
+      stable_id: stableId,
       name: bankRow.product_title,
       brand: bankRow.brand,
       price: bankRow.product_price_text,
@@ -281,6 +294,7 @@ const generateAiIntents = async (
   const categoryPlanSnapshot = categoryPlan
     .map((entry) => `${entry.category}: state=${entry.state}, total=${entry.totalTarget}, ai=${entry.aiTarget}`)
     .join("\n");
+  const categoryEnum = [...RECOMMENDATION_CATEGORY_ORDER];
 
   const prompt = `You are the Go Two recommendation planner for the replacement recommendation engine.
 
@@ -325,7 +339,7 @@ ${categoryPlanSnapshot}
 
 RULES:
 1. Generate exactly ${aiTargetCount} recommendation intents.
-2. Categories must be exactly: clothes, food, tech, home.
+2. Categories must be exactly: ${categoryEnum.join(", ")}.
 3. Only generate intents for categories whose ai count is greater than 0 in the CATEGORY READINESS PLAN.
 4. Match the ai count for each eligible category exactly.
 5. primary_keyword MUST be the main product type only, like jeans, sneakers, candle, lamp, sushi, headphones, or rug.
@@ -367,7 +381,7 @@ Use the provided tool.`;
                       brand: { type: "string" },
                       name: { type: "string" },
                       price: { type: "string" },
-                      category: { type: "string", enum: ["food", "clothes", "tech", "home"] },
+                      category: { type: "string", enum: categoryEnum },
                       hook: { type: "string" },
                       why: { type: "string" },
                       recommendation_kind: { type: "string", enum: ["specific", "generic", "catalog"] },

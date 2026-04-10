@@ -4,7 +4,6 @@ import {
   mergeDescriptorKeywords,
   normalizePrimaryKeyword,
   normalizeRecommendationKeywords,
-  type RecommendationCategory,
 } from "./recommendationCatalog.ts";
 import type {
   RecommendationBrandBankRow,
@@ -13,6 +12,11 @@ import type {
 } from "./recommendationSignals.ts";
 import type { ProductBankInsert } from "./recommendationProductBank.ts";
 import { scoreExactProductMatch } from "./exactProductScraper.ts";
+import {
+  normalizeRecommendationCategoryKey,
+  RECOMMENDATION_CATEGORY_ORDER,
+  type RecommendationCategory,
+} from "../../../src/lib/recommendationCategories.ts";
 
 type TrendCandidateState = "staged" | "approved" | "approved_exact" | "promoted" | "reviewed";
 
@@ -71,14 +75,14 @@ export type TrendExactVerification = {
 };
 
 const SOURCE_VERSION = "recommendation-trend-v1";
-const ALLOWED_CATEGORIES = new Set<RecommendationCategory>(["clothes", "food", "tech", "home"]);
+const ALLOWED_CATEGORIES = new Set<RecommendationCategory>(RECOMMENDATION_CATEGORY_ORDER);
 
 const cleanText = (value: unknown) =>
   typeof value === "string" ? value.replace(/[^\x20-\x7E]/g, " ").replace(/\s+/g, " ").trim() : "";
 
 const normalizeCategory = (value: unknown): RecommendationCategory | null => {
-  const normalized = cleanText(value).toLowerCase() as RecommendationCategory;
-  return ALLOWED_CATEGORIES.has(normalized) ? normalized : null;
+  const normalized = normalizeRecommendationCategoryKey(value);
+  return normalized && ALLOWED_CATEGORIES.has(normalized) ? normalized : null;
 };
 
 const normalizeUrl = (value: unknown) => {

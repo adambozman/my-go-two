@@ -2,6 +2,7 @@ import {
   normalizePrimaryKeyword,
   normalizeRecommendationKeywords,
 } from "./recommendationCatalog.ts";
+import { normalizeRecommendationCategoryKey } from "../../../src/lib/recommendationCategories.ts";
 
 type JsonObject = Record<string, unknown>;
 
@@ -72,23 +73,7 @@ const toStringArray = (value: unknown): string[] =>
   );
 
 const normalizeRecommendationCategory = (value: unknown): string | null => {
-  const normalized = cleanText(value).toLowerCase();
-  if (!normalized) return null;
-
-  if (["clothes", "style-fit", "style-aesthetic", "brands-shopping", "colors-palette"].includes(normalized)) {
-    return "clothes";
-  }
-  if (["food", "food-dining", "food-drink", "dining", "beverages", "food-orders"].includes(normalized)) {
-    return "food";
-  }
-  if (["tech", "electronics"].includes(normalized)) {
-    return "tech";
-  }
-  if (["home", "home-living", "household"].includes(normalized)) {
-    return "home";
-  }
-
-  return null;
+  return normalizeRecommendationCategoryKey(value);
 };
 
 const normalizePolarity = (value: unknown): "positive" | "negative" => {

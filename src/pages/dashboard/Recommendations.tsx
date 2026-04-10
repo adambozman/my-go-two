@@ -23,6 +23,10 @@ import {
   getRecommendationMatchLabel,
   getRecommendationStableId,
 } from "@/lib/recommendationPresentation";
+import {
+  RECOMMENDATION_CATEGORY_REGISTRY,
+  type RecommendationCategory,
+} from "@/lib/recommendationCategories";
 
 const RECOMMENDATION_V2_VERSION_PREFIX = "recommendation-engine-v2";
 
@@ -85,14 +89,6 @@ const getRpcStatus = (error: unknown) =>
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Failed to load recommendations";
-
-const PILLARS = [
-  { key: "all", label: "For You", matches: ["food", "clothes", "tech", "home"] },
-  { key: "clothes", label: "Style & Fit", matches: ["clothes"] },
-  { key: "food", label: "Food & Drink", matches: ["food"] },
-  { key: "home", label: "Home & Living", matches: ["home"] },
-  { key: "tech", label: "Tech & Gear", matches: ["tech"] },
-] as const;
 
 const PAGE_SIZE = 4;
 
@@ -189,15 +185,55 @@ const Recommendations = () => {
     ? inputSnapshotSummary.recommendation_input_level
     : null;
   const hasLoadedProducts = products.length > 0;
+  const availableRecommendationCategories = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          products
+            .map((product) => product.category)
+            .filter((category): category is RecommendationCategory =>
+              RECOMMENDATION_CATEGORY_REGISTRY.some((entry) => entry.key === category),
+            ),
+        ),
+      ),
+    [products],
+  );
+
+  const pillars = useMemo(() => {
+    const categoryPills = RECOMMENDATION_CATEGORY_REGISTRY
+      .filter((entry) => availableRecommendationCategories.includes(entry.key))
+      .map((entry) => ({
+        key: entry.key,
+        label: entry.filterLabel,
+        matches: [entry.key],
+      }));
+
+    return [
+      {
+        key: "all",
+        label: "For You",
+        matches: availableRecommendationCategories.length > 0
+          ? availableRecommendationCategories
+          : RECOMMENDATION_CATEGORY_REGISTRY.map((entry) => entry.key),
+      },
+      ...categoryPills,
+    ];
+  }, [availableRecommendationCategories]);
 
   const activePillarConfig = useMemo(
-    () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
-    [activePillar],
+    () => pillars.find((pillar) => pillar.key === activePillar) || pillars[0],
+    [activePillar, pillars],
   );
+
+  useEffect(() => {
+    if (!pillars.some((pillar) => pillar.key === activePillar)) {
+      setActivePillar("all");
+    }
+  }, [activePillar, pillars]);
 
   const filtered = useMemo(() => {
     if (activePillar === "all") return products;
-    return products.filter((p) => (activePillarConfig.matches as readonly string[]).includes(p.category));
+    return products.filter((p) => activePillarConfig.matches.includes(p.category as RecommendationCategory));
   }, [products, activePillar, activePillarConfig]);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems: paginatedProducts } = usePagination({
@@ -481,7 +517,7 @@ const Recommendations = () => {
           transition={{ delay: 0.05, type: "spring", stiffness: 260, damping: 24 }}
           className="flex gap-2 flex-wrap"
         >
-          {PILLARS.map(({ key, label }) => {
+          {pillars.map(({ key, label }) => {
             const isActive = activePillar === key;
             return (
               <button key={key} onClick={() => setActivePillar(key)} type="button">

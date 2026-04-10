@@ -357,4 +357,87 @@ describe("recommendation intent planner", () => {
     expect(intents.some((intent) => intent.category === "food")).toBe(true);
     expect(intents.some((intent) => intent.category === "home")).toBe(true);
   });
+
+  it("treats personal, gifts, entertainment, and travel as first-class readiness buckets", () => {
+    const thisOrThatAnswers = [
+      buildThisOrThatAnswerRecord(
+        "colors-palette",
+        "female",
+        getThisOrThatBank("colors-palette", "female")!.questions[0]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "colors-palette",
+        "female",
+        getThisOrThatBank("colors-palette", "female")!.questions[1]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "gifting-actually-want",
+        "female",
+        getThisOrThatBank("gifting-actually-want", "female")!.questions[0]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "gifting-actually-want",
+        "female",
+        getThisOrThatBank("gifting-actually-want", "female")!.questions[1]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "hobbies-weekend",
+        "female",
+        getThisOrThatBank("hobbies-weekend", "female")!.questions[0]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "hobbies-weekend",
+        "female",
+        getThisOrThatBank("hobbies-weekend", "female")!.questions[1]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "travel-trips",
+        "female",
+        getThisOrThatBank("travel-trips", "female")!.questions[0]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "travel-trips",
+        "female",
+        getThisOrThatBank("travel-trips", "female")!.questions[1]!,
+        "A",
+      ),
+    ];
+
+    const signalDrivenState = buildNormalizedRecommendationState("planner-user-8", {
+      user_id: "planner-user-8",
+      profile_core: { city: "Chicago" },
+      onboarding_responses: {},
+      know_me_responses: {},
+      saved_product_cards: [],
+      user_connections: [],
+      snapshot_payload: {},
+      updated_at: new Date().toISOString(),
+    }, [], thisOrThatAnswers);
+
+    const plan = buildRecommendationCategoryPlan(signalDrivenState, 4);
+    const personalPlan = plan.find((entry) => entry.category === "personal");
+    const giftsPlan = plan.find((entry) => entry.category === "gifts");
+    const entertainmentPlan = plan.find((entry) => entry.category === "entertainment");
+    const travelPlan = plan.find((entry) => entry.category === "travel");
+
+    expect(personalPlan?.state).not.toBe("locked");
+    expect(giftsPlan?.state).not.toBe("locked");
+    expect(entertainmentPlan?.state).not.toBe("locked");
+    expect(travelPlan?.state).not.toBe("locked");
+
+    const intents = generateFallbackRecommendationIntents(signalDrivenState, 4);
+    expect(intents).toHaveLength(4);
+    expect(
+      intents.filter((intent) =>
+        ["personal", "gifts", "entertainment", "travel"].includes(intent.category),
+      ).length,
+    ).toBeGreaterThanOrEqual(2);
+  });
 });

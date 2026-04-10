@@ -8,10 +8,13 @@ import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "./knowledgeCe
 import { getCombinedKnowledgeResponses, getKnowledgeDerivationPayload, toRecord, toRecordArray, toStringArray } from "./knowledgeCenter.ts";
 import { extractStructuredThisOrThatAnswerSignals, type StructuredThisOrThatSignal } from "./thisOrThatV2.ts";
 import { THIS_OR_THAT } from "../../../src/data/knowMeQuestions.ts";
+import {
+  normalizeRecommendationCategoryKey,
+  RECOMMENDATION_CATEGORY_ORDER,
+  type RecommendationCategory,
+} from "../../../src/lib/recommendationCategories.ts";
 
 type JsonObject = Record<string, unknown>;
-
-export type RecommendationCategory = "clothes" | "food" | "tech" | "home";
 
 export interface UserPreferenceSignalRow {
   user_id: string;
@@ -184,7 +187,6 @@ export interface RecommendationCategorySupport {
 }
 
 const SOURCE_VERSION = "recommendation-v2";
-const RECOMMENDATION_CATEGORY_ORDER: RecommendationCategory[] = ["clothes", "food", "tech", "home"];
 const THIS_OR_THAT_LOOKUP = new Map(THIS_OR_THAT.map((item) => [item.id, item]));
 const QUESTION_WORDS = new Set(["would", "do", "are", "team"]);
 const PRODUCT_CARD_DESCRIPTOR_STOP_WORDS = new Set([
@@ -208,34 +210,8 @@ const cleanText = (value: unknown): string => {
   return value.replace(/[^\x20-\x7E]/g, " ").replace(/\s+/g, " ").trim();
 };
 
-const RECOMMENDATION_CATEGORY_ALIASES: Record<string, RecommendationCategory> = {
-  clothes: "clothes",
-  clothing: "clothes",
-  style: "clothes",
-  apparel: "clothes",
-  dining: "food",
-  beverages: "food",
-  beverage: "food",
-  food: "food",
-  restaurant: "food",
-  restaurants: "food",
-  household: "home",
-  home: "home",
-  living: "home",
-  decor: "home",
-  housing: "home",
-  tech: "tech",
-  technology: "tech",
-  electronics: "tech",
-};
-
 const normalizeRecommendationCategory = (value: unknown): RecommendationCategory | null => {
-  const text = cleanText(value).toLowerCase();
-  if (!text) return null;
-  if (RECOMMENDATION_CATEGORY_ORDER.includes(text as RecommendationCategory)) {
-    return text as RecommendationCategory;
-  }
-  return RECOMMENDATION_CATEGORY_ALIASES[text] ?? null;
+  return normalizeRecommendationCategoryKey(value);
 };
 
 const resolveRecommendationCategory = (
@@ -318,6 +294,10 @@ const inferCategoryFromText = (...values: Array<unknown>): RecommendationCategor
     ["food", ["coffee", "tea", "restaurant", "meal", "food", "drink", "snack", "cocktail", "grocery", "cuisine", "sushi"]],
     ["tech", ["tech", "headphones", "camera", "laptop", "phone", "speaker", "gaming", "device", "charger"]],
     ["home", ["home", "decor", "bedding", "candle", "kitchen", "rug", "lamp", "furniture", "bath", "living"]],
+    ["personal", ["skincare", "beauty", "wellness", "grooming", "fragrance", "body wash", "self care", "serum", "moisturizer"]],
+    ["gifts", ["gift", "gifting", "wishlist", "flowers", "gift set", "personalized", "thoughtful"]],
+    ["entertainment", ["movie", "music", "book", "streaming", "concert", "game", "gaming", "vinyl", "puzzle", "weekend"]],
+    ["travel", ["travel", "trip", "vacation", "getaway", "hotel", "flight", "airline", "weekender", "passport", "packing"]],
   ];
 
   for (const [category, terms] of checks) {
@@ -1442,7 +1422,7 @@ const buildDerivedSupportedBrands = (state: NormalizedRecommendationState) =>
 export const buildRecommendationCategorySupport = (
   state: NormalizedRecommendationState,
 ): RecommendationCategorySupport[] => {
-  const categories: RecommendationCategory[] = ["clothes", "food", "tech", "home"];
+  const categories: RecommendationCategory[] = RECOMMENDATION_CATEGORY_ORDER;
 
   return categories.map((category) => {
     const primaryEvidenceCount =
@@ -1665,7 +1645,16 @@ export const buildRecommendationMatchAssessment = (
   const categorySignalCount =
     state.productCardKeywords.filter((row) => row.category === category).length +
     state.likes.filter((row) => row.category === category).length +
-    state.thisOrThatSignalRows.filter((row) => row.recommendation_category === category).length;
+    state.thisOrThatSignalRows.filter((row) =>
+      resolveRecommendationCategory(
+        row.recommendation_category,
+        row.primary_keyword,
+        row.descriptor_keywords,
+        row.brand,
+        row.tags,
+        row.entity_label,
+      ) === category
+    ).length;
   if (categorySignalCount > 0) {
     score += Math.min(16, categorySignalCount * 3);
     reasons.push("category-supported");

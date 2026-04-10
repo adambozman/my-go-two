@@ -7,15 +7,19 @@ import {
 import {
   buildRecommendationCategorySupport,
   type NormalizedRecommendationState,
-  type RecommendationCategory,
 } from "./recommendationSignals.ts";
 import {
   BASELINE_RECOMMENDATION_COUNT,
   buildRecommendationDecisionHierarchy,
   type RecommendationDecisionCategoryPlan,
 } from "./recommendationDecisionHierarchy.ts";
+import {
+  normalizeRecommendationCategoryKey,
+  RECOMMENDATION_CATEGORY_ORDER,
+  type RecommendationCategory,
+} from "../../../src/lib/recommendationCategories.ts";
 
-const CATEGORY_ORDER: RecommendationCategory[] = ["clothes", "food", "tech", "home"];
+const CATEGORY_ORDER: RecommendationCategory[] = RECOMMENDATION_CATEGORY_ORDER;
 const MAX_TARGET = BASELINE_RECOMMENDATION_COUNT;
 type RecommendationCategoryPlan = RecommendationDecisionCategoryPlan;
 
@@ -44,6 +48,30 @@ const CATEGORY_DEFAULTS: Record<RecommendationCategory, Array<{ primary: string;
     { primary: "blanket", brand: "Brooklinen", descriptors: ["cozy", "soft texture", "neutral"] },
     { primary: "rug", brand: "Ruggable", descriptors: ["washable", "patterned", "practical"] },
   ],
+  personal: [
+    { primary: "moisturizer", brand: "CeraVe", descriptors: ["daily", "popular", "skin barrier"] },
+    { primary: "body mist", brand: "Sol de Janeiro", descriptors: ["warm scent", "popular", "everyday"] },
+    { primary: "serum", brand: "The Ordinary", descriptors: ["skincare", "routine", "practical"] },
+    { primary: "electric toothbrush", brand: "Philips Sonicare", descriptors: ["wellness", "daily", "personal care"] },
+  ],
+  gifts: [
+    { primary: "gift set", brand: "Uncommon Goods", descriptors: ["thoughtful", "popular", "giftable"] },
+    { primary: "flowers", brand: "UrbanStems", descriptors: ["occasion", "delivery", "popular"] },
+    { primary: "custom mug", brand: "Etsy", descriptors: ["personalized", "thoughtful", "gift"] },
+    { primary: "candy box", brand: "Sugarfina", descriptors: ["sweet", "shareable", "giftable"] },
+  ],
+  entertainment: [
+    { primary: "board game", brand: "Target", descriptors: ["popular", "group night", "fun"] },
+    { primary: "book", brand: "Barnes & Noble", descriptors: ["popular", "cozy", "weekend"] },
+    { primary: "vinyl", brand: "Urban Outfitters", descriptors: ["music", "collector", "fun"] },
+    { primary: "lego set", brand: "LEGO", descriptors: ["creative", "popular", "weekend"] },
+  ],
+  travel: [
+    { primary: "weekender bag", brand: "Away", descriptors: ["carry on", "popular", "travel"] },
+    { primary: "packing cubes", brand: "Baggu", descriptors: ["organized", "travel", "practical"] },
+    { primary: "travel organizer", brand: "Calpak", descriptors: ["portable", "popular", "trip ready"] },
+    { primary: "neck pillow", brand: "Cabeau", descriptors: ["flight", "comfort", "travel"] },
+  ],
 };
 
 const cleanText = (value: unknown): string => {
@@ -52,8 +80,7 @@ const cleanText = (value: unknown): string => {
 };
 
 const normalizeCategory = (value: unknown): RecommendationCategory | null => {
-  const text = cleanText(value).toLowerCase();
-  return CATEGORY_ORDER.includes(text as RecommendationCategory) ? (text as RecommendationCategory) : null;
+  return normalizeRecommendationCategoryKey(value);
 };
 
 export const buildRecommendationCategoryPlan = (
@@ -276,6 +303,34 @@ export const generateFallbackRecommendationIntents = (
       seen.add(key);
       results.push(intent);
       if (results.filter((entry) => entry.category === category).length >= (categoryTargets.get(category) ?? 0)) break;
+    }
+  }
+
+  if (results.length < targetCount) {
+    const recoveryCategories = CATEGORY_ORDER
+      .slice()
+      .sort((a, b) => {
+        const aCount = results.filter((entry) => entry.category === a).length;
+        const bCount = results.filter((entry) => entry.category === b).length;
+        return aCount - bCount || CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b);
+      });
+
+    for (const category of recoveryCategories) {
+      const allowPersonalization = personalizedCategories.has(category);
+      const rankedSeeds = CATEGORY_DEFAULTS[category]
+        .slice()
+        .sort((a, b) => scoreDefaultSeed(state, category, b) - scoreDefaultSeed(state, category, a));
+
+      for (const seed of rankedSeeds) {
+        const intent = createDefaultIntent(state, category, seed, allowPersonalization);
+        const key = buildIntentKey(intent);
+        if (seen.has(key) || intentConflictsWithNegatives(intent, negativeKeywords)) continue;
+        seen.add(key);
+        results.push(intent);
+        if (results.length >= targetCount) {
+          return results.slice(0, targetCount);
+        }
+      }
     }
   }
 
