@@ -14,6 +14,7 @@ const snapshot: KnowledgeSnapshotRow = {
   profile_core: {
     city: "Chicago",
     state: "Illinois",
+    gender: "female",
     birthday: "1992-04-02",
     anniversary: "2020-10-10",
   },
@@ -131,15 +132,17 @@ describe("recommendation signal normalization", () => {
 
     const clothingCard = state.productCardKeywords.find((row) => row.saved_product_card_id === "card-1");
     expect(clothingCard).toBeTruthy();
-    expect(clothingCard?.primary_keyword).toBe("clothing tops");
+    expect(clothingCard?.primary_keyword).toBe("tops");
     expect(clothingCard?.category).toBe("clothes");
     expect(clothingCard?.brand_keywords).toEqual(expect.arrayContaining(["aritzia", "sezane"]));
+    expect(clothingCard?.descriptor_keywords).toEqual(expect.arrayContaining(["fitted", "knits", "polished", "everyday"]));
     expect(clothingCard?.negative_keywords).toEqual(expect.arrayContaining(["oversized logos", "neon trim"]));
 
     const coffeeCard = state.productCardKeywords.find((row) => row.saved_product_card_id === "card-2");
     expect(coffeeCard).toBeTruthy();
+    expect(coffeeCard?.primary_keyword).toBe("coffee");
     expect(coffeeCard?.category).toBe("food");
-    expect(coffeeCard?.descriptor_keywords).toEqual(expect.arrayContaining(["oat milk", "vanilla latte"]));
+    expect(coffeeCard?.descriptor_keywords).toEqual(expect.arrayContaining(["oat milk", "vanilla latte", "daily order", "morning ritual"]));
     expect(coffeeCard?.negative_keywords).toEqual(expect.arrayContaining(["dark roast", "extra sweet syrup"]));
 
     expect(state.likes.length).toBeGreaterThan(0);
@@ -164,10 +167,29 @@ describe("recommendation signal normalization", () => {
     expect(state.likes.some((row) => row.like_type === "this_or_that_v2" && row.category === "food")).toBe(true);
     expect(state.likes.some((row) => row.like_type === "this_or_that_v2" && row.category === "home")).toBe(true);
     expect(state.likes.some((row) => row.like_type === "this_or_that_choice" && row.descriptor_keywords.includes("neutrals"))).toBe(true);
+    expect(state.likes.some((row) => row.like_type === "product_card_brand" && row.brand === "aritzia")).toBe(true);
+    expect(state.likes.some((row) => row.like_type === "product_card_brand" && row.brand === "sezane")).toBe(true);
     expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_brand" && row.brand === "h m")).toBe(true);
     expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_v2" && row.descriptor_keywords.includes("outdoor"))).toBe(true);
     expect(state.keywordBankRows.some((row) => row.category === "food")).toBe(true);
     expect(state.brandBankRows.some((row) => row.brand === "aritzia")).toBe(true);
+    expect(
+      state.keywordBankRows.some(
+        (row) =>
+          row.source_type === "popular_style_bank" &&
+          row.category === "clothes" &&
+          row.primary_keyword === "tops",
+      ),
+    ).toBe(true);
+    expect(
+      state.brandBankRows.some(
+        (row) =>
+          row.source_type === "popular_brand_bank" &&
+          row.category === "food" &&
+          row.primary_keyword === "coffee" &&
+          row.brand === "sweetgreen",
+      ),
+    ).toBe(true);
     expect(
       state.keywordBankRows.some(
         (row) =>
@@ -227,7 +249,7 @@ describe("recommendation signal normalization", () => {
     const supportedMatch = buildRecommendationMatchAssessment(state, {
       category: "clothes",
       brand: "Aritzia",
-      primary_keyword: "clothing tops",
+      primary_keyword: "tops",
       keywords: ["ivory", "camel", "aritzia"],
     });
     const unsupportedMatch = buildRecommendationMatchAssessment(state, {

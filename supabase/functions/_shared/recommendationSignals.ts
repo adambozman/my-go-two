@@ -9,6 +9,12 @@ import { getCombinedKnowledgeResponses, getKnowledgeDerivationPayload, toRecord,
 import { extractStructuredThisOrThatAnswerSignals, type StructuredThisOrThatSignal } from "./thisOrThatV2.ts";
 import { THIS_OR_THAT } from "../../../src/data/knowMeQuestions.ts";
 import {
+  getPopularPreferenceProfile,
+  getSavedProductCardMetadata,
+  normalizeProductCardFieldKey,
+} from "../../../src/data/recommendationPreferenceMetadata.ts";
+import { normalizeGender, type Gender } from "../../../src/lib/gender.ts";
+import {
   normalizeRecommendationCategoryKey,
   RECOMMENDATION_CATEGORY_ORDER,
   type RecommendationCategory,
@@ -233,6 +239,9 @@ const toTextArray = (value: unknown) =>
       ? [cleanText(value)].filter(Boolean)
       : [];
 
+const resolveSnapshotGender = (snapshot: KnowledgeSnapshotRow | null): Gender =>
+  normalizeGender(cleanText(toObject(snapshot?.profile_core).gender));
+
 const splitPhrases = (value: unknown) => {
   if (Array.isArray(value)) {
     return value.flatMap((entry) => splitPhrases(entry));
@@ -333,6 +342,42 @@ const extractBrandKeywords = (...values: Array<unknown>) => {
   const matches = text.match(/\b[A-Z][A-Za-z&']+(?:\s+[A-Z][A-Za-z&']+)*\b/g) ?? [];
   return normalizeRecommendationKeywords(matches);
 };
+
+const extractMatchedFieldPhrases = (
+  fieldValues: Record<string, unknown>,
+  matchers: string[],
+) => {
+  if (matchers.length === 0) return [];
+
+  return Object.entries(fieldValues)
+    .filter(([key]) => {
+      const normalizedKey = normalizeProductCardFieldKey(key);
+      return matchers.some((matcher) => normalizedKey.includes(matcher));
+    })
+    .flatMap(([, value]) => splitPhrases(value));
+};
+
+const buildProductCardDescriptorKeywords = (
+  descriptorSeeds: string[],
+  typeKeywords: string[],
+  styleKeywords: string[],
+  cardTitle: string,
+  subcategoryLabel: string,
+  fieldValues: Record<string, unknown>,
+  descriptorFieldMatchers: string[],
+  primaryKeyword: string | null,
+) =>
+  mergeRecommendationKeywords([
+    ...descriptorSeeds,
+    ...typeKeywords,
+    ...styleKeywords,
+    ...extractProductCardDescriptorKeywords(
+      cardTitle,
+      subcategoryLabel,
+      ...extractMatchedFieldPhrases(fieldValues, descriptorFieldMatchers),
+      ...Object.values(fieldValues),
+    ),
+  ]).filter((keyword) => keyword !== primaryKeyword && !PRODUCT_CARD_DESCRIPTOR_STOP_WORDS.has(keyword));
 
 const mapThisOrThatCategory = (value: string): RecommendationCategory | null =>
   resolveRecommendationCategory(value);
@@ -1039,23 +1084,45 @@ const toProductCardKeywordRows = (userId: string, snapshot: KnowledgeSnapshotRow
     const productCardKey = cleanText(card.product_card_key);
     const cardTitle = cleanText(card.card_title);
     const subcategoryLabel = cleanText(card.subcategory_label);
-    const category = inferCategoryFromText(productCardKey, cardTitle, subcategoryLabel);
-    const primaryKeyword = inferPrimaryKeywordFromCard(productCardKey, cardTitle, subcategoryLabel, fieldValues);
-    const descriptorKeywords = extractProductCardDescriptorKeywords(
-      subcategoryLabel,
-      cardTitle,
-      ...Object.values(fieldValues),
-    ).filter((keyword) =>
-      keyword !== primaryKeyword && !PRODUCT_CARD_DESCRIPTOR_STOP_WORDS.has(keyword)
-    );
-    const negativeKeywords = mergeRecommendationKeywords(
-      Object.entries(fieldValues)
+    const metadata = getSavedProductCardMetadata(productCardKey);
+    const category =
+      metadata?.category ??
+      inferCategoryFromText(productCardKey, cardTitle, subcategoryLabel);
+    const primaryKeyword =
+      metadata?.primaryKeyword ??
+      inferPrimaryKeywordFromCard(productCardKey, cardTitle, subcategoryLabel, fieldValues);
+    const descriptorKeywords = metadata
+      ? buildProductCardDescriptorKeywords(
+          metadata.descriptorSeeds,
+          metadata.typeKeywords,
+          metadata.styleKeywords,
+          cardTitle,
+          subcategoryLabel,
+          fieldValues,
+          metadata.descriptorFieldMatchers,
+          primaryKeyword,
+        )
+      : extractProductCardDescriptorKeywords(
+          subcategoryLabel,
+          cardTitle,
+          ...Object.values(fieldValues),
+        ).filter((keyword) =>
+          keyword !== primaryKeyword && !PRODUCT_CARD_DESCRIPTOR_STOP_WORDS.has(keyword)
+        );
+    const negativeKeywords = mergeRecommendationKeywords([
+      ...extractMatchedFieldPhrases(
+        fieldValues,
+        metadata?.negativeFieldMatchers ?? ["avoid", "dislike", "hate", "allerg", "sensitive", "no_go"],
+      ),
+      ...Object.entries(fieldValues)
         .filter(([key]) => /(avoid|dislike|hate|allerg|sensitive|no go)/i.test(key))
         .flatMap(([, value]) => splitPhrases(value)),
-    );
-    const explicitBrandValues = Object.entries(fieldValues)
-      .filter(([key]) => /(brand|brands|store|stores|retailer|retailers|shop|shops)/i.test(key))
-      .flatMap(([, value]) => splitPhrases(value));
+    ]);
+    const explicitBrandValues = metadata
+      ? extractMatchedFieldPhrases(fieldValues, metadata.brandFieldMatchers)
+      : Object.entries(fieldValues)
+          .filter(([key]) => /(brand|brands|store|stores|retailer|retailers|shop|shops)/i.test(key))
+          .flatMap(([, value]) => splitPhrases(value));
     const brandKeywords = explicitBrandValues.length > 0
       ? mergeRecommendationKeywords(explicitBrandValues)
       : extractBrandKeywords(subcategoryLabel, cardTitle);
@@ -1143,7 +1210,19 @@ const toLikeAndDislikeRows = (
         like_type: "product_card",
         primary_keyword: card.primary_keyword,
         descriptor_keywords: card.descriptor_keywords,
-        brand: card.brand_keywords[0] ?? null,
+        brand: null,
+        category: card.category,
+        notes: card.product_card_key,
+      });
+    }
+
+    for (const brand of card.brand_keywords) {
+      likes.push({
+        user_id: userId,
+        like_type: "product_card_brand",
+        primary_keyword: card.primary_keyword,
+        descriptor_keywords: card.descriptor_keywords,
+        brand,
         category: card.category,
         notes: card.product_card_key,
       });
@@ -1169,20 +1248,25 @@ const toKeywordBankRows = (
   productCardKeywords: UserProductCardKeywordRow[],
   likes: UserLikeSignalRow[],
   thisOrThatSignalRows: UserThisOrThatSignalRow[],
+  profileGender: Gender,
 ) => {
   const rows = new Map<string, RecommendationKeywordBankRow>();
 
   const addRow = (primaryKeyword: string | null, descriptorKeyword: string, category: string | null, sourceType: string, weight: number) => {
     if (!primaryKeyword || !descriptorKeyword || !category) return;
     const key = `${category}::${primaryKeyword}::${descriptorKeyword}`;
-    rows.set(key, {
+    const nextRow: RecommendationKeywordBankRow = {
       primary_keyword: primaryKeyword,
       descriptor_keyword: descriptorKeyword,
       category,
       weight,
       source_type: sourceType,
       source_version: SOURCE_VERSION,
-    });
+    };
+    const existing = rows.get(key);
+    if (!existing || existing.weight <= nextRow.weight) {
+      rows.set(key, nextRow);
+    }
   };
 
   for (const row of productCardKeywords) {
@@ -1216,13 +1300,46 @@ const toKeywordBankRows = (
     }
   }
 
+  const activeCategoryKeywords = new Map<RecommendationCategory, Set<string>>();
+  const noteCategoryKeyword = (category: RecommendationCategory | null, primaryKeyword: string | null) => {
+    if (!category || !primaryKeyword) return;
+    const existing = activeCategoryKeywords.get(category) ?? new Set<string>();
+    existing.add(primaryKeyword);
+    activeCategoryKeywords.set(category, existing);
+  };
+
+  for (const row of productCardKeywords) {
+    noteCategoryKeyword(normalizeRecommendationCategory(row.category), row.primary_keyword);
+  }
+
+  for (const row of likes) {
+    noteCategoryKeyword(normalizeRecommendationCategory(row.category), row.primary_keyword);
+  }
+
+  for (const [category, primaryKeywords] of activeCategoryKeywords) {
+    const popularProfile = getPopularPreferenceProfile(profileGender, category);
+    if (!popularProfile) continue;
+
+    for (const primaryKeyword of primaryKeywords) {
+      for (const descriptor of popularProfile.styles) {
+        addRow(primaryKeyword, descriptor, category, "popular_style_bank", 0.35);
+      }
+
+      for (const descriptor of popularProfile.types) {
+        addRow(primaryKeyword, descriptor, category, "popular_type_bank", 0.35);
+      }
+    }
+  }
+
   return Array.from(rows.values());
 };
 
 const toBrandBankRows = (
   productCardKeywords: UserProductCardKeywordRow[],
+  likes: UserLikeSignalRow[],
   recommendedBrands: string[],
   thisOrThatSignalRows: UserThisOrThatSignalRow[],
+  profileGender: Gender,
 ) => {
   const rows = new Map<string, RecommendationBrandBankRow>();
 
@@ -1278,6 +1395,49 @@ const toBrandBankRows = (
     });
   }
 
+  const activeCategoryKeywords = new Map<RecommendationCategory, Set<string>>();
+  const noteCategoryKeyword = (category: RecommendationCategory | null, primaryKeyword: string | null) => {
+    if (!category || !primaryKeyword) return;
+    const existing = activeCategoryKeywords.get(category) ?? new Set<string>();
+    existing.add(primaryKeyword);
+    activeCategoryKeywords.set(category, existing);
+  };
+
+  for (const row of productCardKeywords) {
+    noteCategoryKeyword(normalizeRecommendationCategory(row.category), row.primary_keyword);
+  }
+
+  for (const row of likes) {
+    noteCategoryKeyword(normalizeRecommendationCategory(row.category), row.primary_keyword);
+  }
+
+  for (const [category, primaryKeywords] of activeCategoryKeywords) {
+    const popularProfile = getPopularPreferenceProfile(profileGender, category);
+    if (!popularProfile) continue;
+
+    for (const primaryKeyword of primaryKeywords) {
+      for (const brand of popularProfile.brands.slice(0, 4)) {
+        const key = `${brand}::${primaryKeyword}::${category}`;
+        const nextRow: RecommendationBrandBankRow = {
+          brand,
+          primary_keyword: primaryKeyword,
+          descriptor_keywords: mergeRecommendationKeywords([
+            ...popularProfile.styles.slice(0, 2),
+            ...popularProfile.types.slice(0, 2),
+          ]),
+          category,
+          weight: 0.3,
+          source_type: "popular_brand_bank",
+          source_version: SOURCE_VERSION,
+        };
+        const existing = rows.get(key);
+        if (!existing || existing.weight <= nextRow.weight) {
+          rows.set(key, nextRow);
+        }
+      }
+    }
+  }
+
   return Array.from(rows.values());
 };
 
@@ -1318,6 +1478,7 @@ export const buildNormalizedRecommendationState = (
   const combinedResponses = getCombinedKnowledgeResponses(snapshot);
   const snapshotPayload = toRecord(snapshot?.snapshot_payload);
   const profileCore = toRecord(snapshot?.profile_core);
+  const profileGender = resolveSnapshotGender(snapshot);
   const yourVibe = getKnowledgeDerivationPayload(derivations, "your_vibe");
   const bankKnowledge = getBankKnowledgeDerivation(combinedResponses, yourVibe);
   const thisOrThatPreferences = extractThisOrThatPreferences(combinedResponses, thisOrThatAnswers, snapshotPayload);
@@ -1336,8 +1497,8 @@ export const buildNormalizedRecommendationState = (
   const thisOrThatSignalRows = toThisOrThatSignalRows(userId, thisOrThatAnswers, combinedResponses, snapshotPayload);
   const productCardKeywords = toProductCardKeywordRows(userId, snapshot);
   const { likes, dislikes } = toLikeAndDislikeRows(userId, combinedResponses, productCardKeywords, thisOrThatAnswers, snapshotPayload);
-  const keywordBankRows = toKeywordBankRows(productCardKeywords, likes, thisOrThatSignalRows);
-  const brandBankRows = toBrandBankRows(productCardKeywords, recommendedBrands, thisOrThatSignalRows);
+  const keywordBankRows = toKeywordBankRows(productCardKeywords, likes, thisOrThatSignalRows, profileGender);
+  const brandBankRows = toBrandBankRows(productCardKeywords, likes, recommendedBrands, thisOrThatSignalRows, profileGender);
   const brandLocationRows = toBrandLocationRows(locationKeys, brandBankRows);
 
   return {
@@ -1425,9 +1586,36 @@ export const buildRecommendationCategorySupport = (
   const categories: RecommendationCategory[] = RECOMMENDATION_CATEGORY_ORDER;
 
   return categories.map((category) => {
+    const categoryLikes = state.likes.filter((row) => row.category === category);
+    const productCardLikeEvidence =
+      categoryLikes.filter((row) => row.like_type === "product_card").length;
+    const directLikeEvidence =
+      categoryLikes.filter((row) => row.like_type !== "product_card" && row.like_type !== "product_card_brand").length * 2;
+    const productCardBrandEvidence =
+      categoryLikes.some((row) => row.like_type === "product_card_brand") ? 0.5 : 0;
+    const categoryPositiveKeywordEvidence =
+      Math.min(
+        new Set(
+          state.positiveKeywords
+            .filter((keyword) => inferCategoryFromText(keyword) === category),
+        ).size,
+        2,
+      );
+    const categoryNegativeKeywordEvidence =
+      Math.min(
+        new Set(
+          state.negativeKeywords
+            .filter((keyword) => inferCategoryFromText(keyword) === category),
+        ).size,
+        2,
+      );
+
     const primaryEvidenceCount =
-      state.productCardKeywords.filter((row) => row.category === category).length * 3 +
-      state.likes.filter((row) => row.category === category).length * 2 +
+      state.productCardKeywords.filter((row) => row.category === category).length * 5 +
+      productCardLikeEvidence +
+      directLikeEvidence +
+      productCardBrandEvidence +
+      categoryPositiveKeywordEvidence +
       state.thisOrThatAnswers.filter((row) =>
         resolveRecommendationCategory(
           row.recommendation_category,
@@ -1457,6 +1645,7 @@ export const buildRecommendationCategorySupport = (
         }, 0);
 
     const negativeSignalCount =
+      categoryNegativeKeywordEvidence +
       state.dislikes.filter((row) => row.category === category).length * 2 +
       state.thisOrThatSignalRows
         .filter((row) =>
