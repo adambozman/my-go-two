@@ -8,8 +8,9 @@ import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTopBar } from "@/contexts/top-bar-context";
-import { buildSprints, getThisOrThatBank, SECTIONS, THIS_OR_THAT, THIS_OR_THAT_CATEGORIES, type BrandBankQuestion, type QuizQuestion } from "@/data/knowMeQuestions";
+import { buildSprints, SECTIONS, THIS_OR_THAT, THIS_OR_THAT_CATEGORIES, type QuizQuestion } from "@/data/knowMeQuestions";
 import { buildThisOrThatAnswerUpsertPayload } from "@/data/thisOrThatV2Persistence";
+import { buildThisOrThatV2RuntimeQuestionBank, type ThisOrThatV2QuestionLike } from "@/data/thisOrThatV2";
 import { normalizeGender, type Gender } from "@/lib/gender";
 import {
   buildKnowledgeAiAdapter,
@@ -41,7 +42,7 @@ type CategoryState = SectionDefinition & {
 };
 
 type ThisOrThatCategoryState = ThisOrThatCategoryDefinition & {
-  questions: BrandBankQuestion[];
+  questions: ThisOrThatV2QuestionLike[];
   answered: number;
   visibleTotal: number;
   visibleAnswered: number;
@@ -160,12 +161,10 @@ const buildCategoryState = (
 
 const buildThisOrThatCategoryState = (
   category: ThisOrThatCategoryDefinition,
-  bankGender: Gender,
+  questions: ThisOrThatV2QuestionLike[],
   knowMeResponses: KnowledgeResponseMap,
   subscribed: boolean,
 ): ThisOrThatCategoryState => {
-  const bank = getThisOrThatBank(category.id, bankGender);
-  const questions = bank?.questions ?? [];
   const answered = questions.filter((question) => getAnswerValues(knowMeResponses?.[question.id]).length > 0).length;
   const visibleTotal = subscribed ? questions.length : Math.min(questions.length, FREE_THIS_OR_THAT_LIMIT);
   const visibleAnswered = subscribed ? answered : Math.min(answered, visibleTotal);
@@ -248,8 +247,9 @@ const KnowMePage = () => {
     : [];
 
   const thisOrThatCategories = useMemo(() => {
+    const questionBank = buildThisOrThatV2RuntimeQuestionBank(bankGender);
     return THIS_OR_THAT_CATEGORIES.map((category) =>
-      buildThisOrThatCategoryState(category, bankGender, knowMeResponses, subscribed),
+      buildThisOrThatCategoryState(category, questionBank[category.id] ?? [], knowMeResponses, subscribed),
     );
   }, [bankGender, knowMeResponses, subscribed]);
   const thisOrThatDashboardItems = useMemo<ThisOrThatDashboardItem[]>(() => {
@@ -358,7 +358,7 @@ const KnowMePage = () => {
 
   const persistThisOrThatAnswerRecord = async (
     categoryId: string,
-    question: BrandBankQuestion,
+    question: ThisOrThatV2QuestionLike,
     choice: "A" | "B",
   ) => {
     const userId = (await supabase.auth.getUser()).data.user?.id;

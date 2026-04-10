@@ -1,6 +1,6 @@
-import type { BrandBankQuestion } from "./knowMeQuestions";
 import {
   buildThisOrThatAnswerRecord,
+  type ThisOrThatV2QuestionLike,
   type ThisOrThatV2AnswerRecord,
 } from "./thisOrThatV2";
 import type { Gender } from "@/lib/gender";
@@ -43,7 +43,7 @@ export const buildThisOrThatAnswerUpsertPayload = ({
   userId: string;
   categoryId: string;
   gender: Gender;
-  question: BrandBankQuestion;
+  question: ThisOrThatV2QuestionLike;
   choice: "A" | "B";
   answeredAt?: string;
 }): ThisOrThatAnswerUpsertPayload => {

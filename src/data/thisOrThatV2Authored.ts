@@ -439,8 +439,15 @@ export const getThisOrThatV2AuthoredBank = (
 
   for (const question of questions) {
     for (const option of question.options) {
-      if (categoriesByLabel.has(option.label)) continue;
-      categoriesByLabel.set(option.label, {
+      const fingerprint = [
+        option.label,
+        ...(option.brand_keywords ?? []),
+        ...option.descriptor_keywords,
+      ]
+        .map((entry) => entry.trim().toLowerCase())
+        .join("::");
+      if (categoriesByLabel.has(fingerprint)) continue;
+      categoriesByLabel.set(fingerprint, {
         id: `${categoryId}-${option.option_key.toLowerCase()}-${question.question_id}`,
         title: option.label,
         brands: (option.brand_keywords ?? []).map((brand) => ({

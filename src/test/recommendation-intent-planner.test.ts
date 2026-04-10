@@ -84,7 +84,13 @@ describe("recommendation intent planner", () => {
     expect((counts.tech ?? 0) + (counts.home ?? 0)).toBeGreaterThanOrEqual(1);
     expect(intents.some((intent) => intent.primary_keyword === "jeans")).toBe(false);
     expect(intents.some((intent) => intent.keywords?.includes("skinny"))).toBe(false);
-    expect(intents.some((intent) => intent.category === "clothes" && intent.keywords?.includes("camel"))).toBe(true);
+    expect(
+      intents.some(
+        (intent) =>
+          intent.category === "clothes" &&
+          intent.why.includes("stays broad and popular"),
+      ),
+    ).toBe(true);
     expect(intents.some((intent) => intent.category === "clothes" && intent.keywords?.includes("brand"))).toBe(false);
     expect(intents.some((intent) => intent.category === "clothes" && intent.keywords?.includes("and"))).toBe(false);
   });

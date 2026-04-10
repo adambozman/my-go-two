@@ -629,8 +629,19 @@ const extractThisOrThatPreferences = (
   likes.push(...v2Preferences.likes);
   dislikes.push(...v2Preferences.dislikes);
 
+  const structuredQuestionKeys = new Set(
+    thisOrThatAnswers
+      .flatMap((answer) => [
+        cleanText(answer.question_id ?? answer.question_key),
+        cleanText(answer.question_key),
+      ])
+      .map((value) => value.toLowerCase())
+      .filter(Boolean),
+  );
+
   for (const [key, answer] of Object.entries(responses)) {
     if (!key.startsWith("tot-")) continue;
+    if (structuredQuestionKeys.has(key.toLowerCase())) continue;
     const question = THIS_OR_THAT_LOOKUP.get(key);
     if (!question) continue;
 
@@ -1609,13 +1620,17 @@ export const buildRecommendationCategorySupport = (
         ).size,
         2,
       );
-
-    const primaryEvidenceCount =
-      state.productCardKeywords.filter((row) => row.category === category).length * 5 +
-      productCardLikeEvidence +
-      directLikeEvidence +
-      productCardBrandEvidence +
-      categoryPositiveKeywordEvidence +
+    const categoryDislikeEvidence = Math.min(
+      state.dislikes
+        .filter((row) => row.category === category)
+        .reduce((sum, row) => {
+          if (row.dislike_type === "this_or_that_brand") return sum + 0.75;
+          if (row.dislike_type === "this_or_that_v2") return sum + 0.75;
+          return sum + 1.5;
+        }, 0),
+      4,
+    );
+    const thisOrThatAnswerEvidence =
       state.thisOrThatAnswers.filter((row) =>
         resolveRecommendationCategory(
           row.recommendation_category,
@@ -1625,7 +1640,8 @@ export const buildRecommendationCategorySupport = (
           row.selected_label,
           row.question_prompt,
         ) === category
-      ).length * 2 +
+      ).length * 2;
+    const thisOrThatPositiveSignalEvidence = Math.min(
       state.thisOrThatSignalRows
         .filter((row) =>
           resolveRecommendationCategory(
@@ -1638,15 +1654,14 @@ export const buildRecommendationCategorySupport = (
           ) === category && row.signal_polarity === "positive"
         )
         .reduce((sum, row) => {
-          if (row.signal_type === "brand_keyword") return sum + 2;
-          if (row.signal_type === "primary_keyword") return sum + 2;
-          if (row.signal_type === "descriptor_keyword") return sum + 1;
+          if (row.signal_type === "brand_keyword") return sum + 1.5;
+          if (row.signal_type === "primary_keyword") return sum + 1.5;
+          if (row.signal_type === "descriptor_keyword") return sum + 0.75;
           return sum + 0.5;
-        }, 0);
-
-    const negativeSignalCount =
-      categoryNegativeKeywordEvidence +
-      state.dislikes.filter((row) => row.category === category).length * 2 +
+        }, 0),
+      6,
+    );
+    const thisOrThatNegativeSignalEvidence = Math.min(
       state.thisOrThatSignalRows
         .filter((row) =>
           resolveRecommendationCategory(
@@ -1659,20 +1674,36 @@ export const buildRecommendationCategorySupport = (
           ) === category && row.signal_polarity === "negative"
         )
         .reduce((sum, row) => {
-          if (row.signal_type === "brand_keyword") return sum + 2;
-          if (row.signal_type === "primary_keyword") return sum + 2;
-          if (row.signal_type === "descriptor_keyword") return sum + 1;
-          return sum + 0.5;
-        }, 0);
+          if (row.signal_type === "brand_keyword") return sum + 1.25;
+          if (row.signal_type === "primary_keyword") return sum + 1.25;
+          if (row.signal_type === "descriptor_keyword") return sum + 0.5;
+          return sum + 0.35;
+        }, 0),
+      4,
+    );
+
+    const primaryEvidenceCount =
+      state.productCardKeywords.filter((row) => row.category === category).length * 4 +
+      productCardLikeEvidence +
+      directLikeEvidence +
+      productCardBrandEvidence +
+      categoryPositiveKeywordEvidence +
+      thisOrThatAnswerEvidence +
+      thisOrThatPositiveSignalEvidence;
+
+    const negativeSignalCount =
+      categoryNegativeKeywordEvidence +
+      categoryDislikeEvidence +
+      thisOrThatNegativeSignalEvidence;
 
     const derivedSupportCount =
       state.brandBankRows.filter((row) => row.category === category).length > 0 ? 1 : 0;
 
     const score = Math.max(0, primaryEvidenceCount + derivedSupportCount - negativeSignalCount);
     const stateLevel =
-      primaryEvidenceCount >= 10 ? "strong" :
-      primaryEvidenceCount >= 7 ? "qualified" :
-      primaryEvidenceCount >= 4 ? "emerging" :
+      score >= 10 && primaryEvidenceCount >= 8 ? "strong" :
+      score >= 7 && primaryEvidenceCount >= 5 ? "qualified" :
+      score >= 4 ? "emerging" :
       "locked";
 
     return {
@@ -1806,8 +1837,27 @@ export const buildRecommendationMatchAssessment = (
   const categorySupport = buildRecommendationCategorySupport(state).find((entry) => entry.category === category);
   const primarySupportedBrands = new Set(buildPrimarySupportedBrands(state));
   const derivedSupportedBrands = new Set(buildDerivedSupportedBrands(state));
+  const categorySignalCount =
+    state.productCardKeywords.filter((row) => row.category === category).length +
+    state.likes.filter((row) => row.category === category).length +
+    state.thisOrThatSignalRows.filter((row) =>
+      resolveRecommendationCategory(
+        row.recommendation_category,
+        row.primary_keyword,
+        row.descriptor_keywords,
+        row.brand,
+        row.tags,
+        row.entity_label,
+      ) === category
+    ).length;
 
-  let score = inputStrength.primaryEvidenceCount * 2.2 + inputStrength.categoryCoverageCount * 6;
+  let score =
+    12 +
+    Math.min(24, Math.max(0, (categorySupport?.score ?? 0)) * 3) +
+    Math.min(8, inputStrength.categoryCoverageCount * 2);
+
+  if (inputStrength.level === "rich") score += 4;
+  if (inputStrength.level === "sparse") score -= 4;
 
   if (primarySupportedBrands.has(cleanText(intent.brand).toLowerCase())) {
     score += 22;
@@ -1831,19 +1881,6 @@ export const buildRecommendationMatchAssessment = (
     reasons.push(`descriptor-match:${descriptorMatches.slice(0, 3).join(",")}`);
   }
 
-  const categorySignalCount =
-    state.productCardKeywords.filter((row) => row.category === category).length +
-    state.likes.filter((row) => row.category === category).length +
-    state.thisOrThatSignalRows.filter((row) =>
-      resolveRecommendationCategory(
-        row.recommendation_category,
-        row.primary_keyword,
-        row.descriptor_keywords,
-        row.brand,
-        row.tags,
-        row.entity_label,
-      ) === category
-    ).length;
   if (categorySignalCount > 0) {
     score += Math.min(16, categorySignalCount * 3);
     reasons.push("category-supported");

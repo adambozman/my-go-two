@@ -4,6 +4,7 @@ import {
   buildRecommendationSignalSummary,
   buildRecommendationInputStrength,
   buildRecommendationMatchAssessment,
+  buildRecommendationCategorySupport,
 } from "../../supabase/functions/_shared/recommendationSignals";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "../../supabase/functions/_shared/knowledgeCenter";
 import { getThisOrThatBank } from "../data/knowMeQuestions";
@@ -266,5 +267,71 @@ describe("recommendation signal normalization", () => {
     expect(supportedMatch.reasons).toContain("brand-aligned");
     expect(unsupportedMatch.reasons).toContain("brand-derived-support");
     expect(unsupportedMatch.reasons).not.toContain("brand-aligned");
+  });
+
+  it("prefers structured this or that answers over duplicate legacy tot answers", () => {
+    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, [
+      {
+        user_id: "test-user-1",
+        question_id: "tot-03",
+        question_key: "tot-03",
+        question_prompt: "Would you wear Lululemon?",
+        recommendation_category: "clothes",
+        descriptor_keywords: ["athleisure"],
+        brand: "lululemon",
+        selected_payload: {
+          primary_keyword: "brand preference",
+          descriptor_keywords: ["athleisure"],
+          brand_keywords: ["lululemon"],
+          avoid_keywords: ["h m"],
+        },
+        rejected_payload: {
+          primary_keyword: "brand preference",
+          descriptor_keywords: ["fast fashion"],
+          brand_keywords: ["h m"],
+        },
+        answer_payload: {
+          selected_payload: {
+            primary_keyword: "brand preference",
+            descriptor_keywords: ["athleisure"],
+            brand_keywords: ["lululemon"],
+            avoid_keywords: ["h m"],
+          },
+          rejected_payload: {
+            primary_keyword: "brand preference",
+            descriptor_keywords: ["fast fashion"],
+            brand_keywords: ["h m"],
+          },
+        },
+        source_version: "this-or-that-v2",
+      },
+    ]);
+
+    expect(
+      state.likes.filter((row) => row.like_type === "this_or_that_brand" && row.brand === "lululemon"),
+    ).toHaveLength(0);
+    expect(
+      state.likes.filter((row) => row.like_type === "this_or_that_v2" && row.brand === "lululemon"),
+    ).toHaveLength(1);
+  });
+
+  it("lets strong negatives keep a category below the ai threshold", () => {
+    const state = buildNormalizedRecommendationState("test-user-1", {
+      ...snapshot,
+      onboarding_responses: {
+        ...snapshot.onboarding_responses,
+        "avoid-colors": ["neon", "ivory"],
+      },
+      know_me_responses: {
+        ...snapshot.know_me_responses,
+        "pet-peeves": "skinny jeans, tight denim, fitted knits, silk tanks, cardigans",
+      },
+    }, derivations, []);
+
+    const clothesSupport = buildRecommendationCategorySupport(state).find((entry) => entry.category === "clothes");
+
+    expect(clothesSupport).toBeTruthy();
+    expect(clothesSupport?.eligible).toBe(false);
+    expect(["locked", "emerging"]).toContain(clothesSupport?.state ?? "");
   });
 });

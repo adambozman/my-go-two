@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getThisOrThatBank } from "../data/knowMeQuestions";
 import {
   buildThisOrThatAnswerRecord,
+  buildThisOrThatV2RuntimeQuestionBank,
   THIS_OR_THAT_V2_DATASET_COVERAGE,
   THIS_OR_THAT_V2_LIVE_FEMALE_QUESTION_SCAFFOLD,
   THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD,
@@ -92,6 +93,16 @@ describe("This or That v2 answer contract", () => {
           row.source_kind === "authored-v2",
       ),
     ).toBe(true);
+  });
+
+  it("builds the live runtime bank from v2 scaffolds instead of raw legacy bank reads", () => {
+    const runtimeBank = buildThisOrThatV2RuntimeQuestionBank("female");
+    const categoryQuestions = runtimeBank["brands-shopping"];
+
+    expect(categoryQuestions).toBeTruthy();
+    expect(categoryQuestions?.length).toBeGreaterThanOrEqual(2);
+    expect(categoryQuestions?.every((question) => question.id && question.prompt)).toBe(true);
+    expect(categoryQuestions?.every((question) => question.source_kind === "authored-v2")).toBe(true);
   });
 
   it("ships at least two authored v2 questions per live category for every gender", () => {

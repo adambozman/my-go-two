@@ -106,7 +106,6 @@ const buildNegativeKeywordSet = (state: NormalizedRecommendationState) =>
       row.primary_keyword,
       ...(row.descriptor_keywords ?? []),
       row.brand,
-      row.notes,
     ]),
   ]));
 
@@ -130,7 +129,6 @@ const buildPositiveKeywordSet = (state: NormalizedRecommendationState) =>
       row.primary_keyword,
       ...(row.descriptor_keywords ?? []),
       row.brand,
-      row.notes,
     ]),
   ]));
 

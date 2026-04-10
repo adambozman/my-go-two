@@ -90,6 +90,22 @@ export interface ThisOrThatV2QuestionScaffold {
   options: [ThisOrThatV2QuestionOptionScaffold, ThisOrThatV2QuestionOptionScaffold];
 }
 
+export interface ThisOrThatV2QuestionLike {
+  id: string;
+  prompt: string;
+  categoryA: string;
+  categoryB: string;
+  tagsForA: string[];
+  tagsForB: string[];
+}
+
+export interface ThisOrThatV2RuntimeQuestion extends ThisOrThatV2QuestionLike {
+  source_kind: ThisOrThatV2SourceKind;
+  dataset_gender: Gender;
+  category_slug: ThisOrThatV2TopLevelCategorySlug;
+  subcategory_slug: string;
+}
+
 export interface ThisOrThatV2DatasetCoverageRow {
   gender: Gender;
   source_category_id: string;
@@ -692,10 +708,39 @@ export const THIS_OR_THAT_V2_CONTENT_SOURCES = {
   datasetCoverage: THIS_OR_THAT_V2_DATASET_COVERAGE,
 } as const;
 
+const toRuntimeQuestion = (
+  scaffold: ThisOrThatV2QuestionScaffold,
+): ThisOrThatV2RuntimeQuestion => ({
+  id: scaffold.question_id,
+  prompt: scaffold.prompt,
+  categoryA: scaffold.options[0].label,
+  categoryB: scaffold.options[1].label,
+  tagsForA: scaffold.options[0].metadata.descriptor_keywords,
+  tagsForB: scaffold.options[1].metadata.descriptor_keywords,
+  source_kind: scaffold.source_kind,
+  dataset_gender: scaffold.dataset_gender,
+  category_slug: scaffold.category_slug,
+  subcategory_slug: scaffold.subcategory_slug,
+});
+
+export const buildThisOrThatV2RuntimeQuestionBank = (
+  gender: Gender,
+): Record<string, ThisOrThatV2RuntimeQuestion[]> => {
+  const bank: Record<string, ThisOrThatV2RuntimeQuestion[]> = {};
+
+  for (const scaffold of buildThisOrThatV2QuestionScaffolds(gender)) {
+    const questions = bank[scaffold.source_category_id] ?? [];
+    questions.push(toRuntimeQuestion(scaffold));
+    bank[scaffold.source_category_id] = questions;
+  }
+
+  return bank;
+};
+
 export const buildThisOrThatAnswerRecord = (
   categoryId: string,
   gender: Gender,
-  question: BrandBankQuestion,
+  question: ThisOrThatV2QuestionLike,
   choice: "A" | "B",
 ): ThisOrThatV2AnswerRecord => {
   const category = THIS_OR_THAT_CATEGORIES.find((entry) => entry.id === categoryId);
