@@ -77,7 +77,7 @@ const COLLAPSE_IMAGE_TRANSFORM = {
 
 async function resolveGalleryRowUrls(
   rows: Array<{ image_url: string | null }>,
-  transform: typeof STRIP_IMAGE_TRANSFORM,
+  transform: { width: number; height: number; resize: "cover"; quality: number },
 ) {
   return resolveStorageUrlsWithTransform(
     rows.map((row) => row.image_url),

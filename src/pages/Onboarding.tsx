@@ -207,7 +207,7 @@ const Onboarding = () => {
     try {
       const markCompleteResult = await supabase
         .from("profiles")
-        .update({ onboarding_completed_at: new Date().toISOString() })
+        .update({ updated_at: new Date().toISOString() } as any)
         .eq("user_id", user.id);
 
       if (markCompleteResult.error) {

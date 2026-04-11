@@ -110,11 +110,13 @@ function SnapshotUploader({
   uploading,
   resolvedImageUrl,
   onAddPhoto,
+  interactive: isInteractive,
 }: {
   compact: boolean;
   uploading: boolean;
   resolvedImageUrl: string;
   onAddPhoto: () => void;
+  interactive?: boolean;
 }) {
   const frameHeight = compact ? 160 : 224;
 
@@ -123,8 +125,8 @@ function SnapshotUploader({
       <FieldLabel>Snapshot</FieldLabel>
       <button
         type="button"
-        onClick={interactive ? onAddPhoto : undefined}
-        disabled={!interactive || uploading}
+        onClick={isInteractive ? onAddPhoto : undefined}
+        disabled={!isInteractive || uploading}
         className="surface-field mt-3 flex w-full flex-col overflow-hidden rounded-[28px] text-left transition-opacity disabled:cursor-default disabled:opacity-100"
         style={{ minHeight: frameHeight }}
       >

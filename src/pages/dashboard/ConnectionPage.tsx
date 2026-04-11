@@ -229,7 +229,7 @@ function isRpcMissingError(error: { message?: string } | null | undefined) {
 
 function getSharedRecommendationCategoryLabel(product: SharedRecommendationProduct | null | undefined) {
   if (!product?.category) return "Recommendation";
-  return getRecommendationCategoryMeta(product.category)?.filterLabel ?? product.category;
+  return getRecommendationCategoryMeta(product.category as any)?.filterLabel ?? product.category;
 }
 
 function buildAiSuggestions(
@@ -409,17 +409,17 @@ export default function ConnectionPage() {
         : Promise.resolve({ data: [] }),
       connectionUserId
         ? supabase.rpc("get_connection_shared_vibe", {
-            p_user_connection_id: userConnection.id,
+            p_couple_id: userConnection.id,
             p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
-          })
+          } as any)
         : Promise.resolve({ data: [] }),
       connectionUserId
         ? supabase.rpc("get_connection_shared_recommendations", {
-            p_user_connection_id: userConnection.id,
+            p_couple_id: userConnection.id,
             p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
-          })
+          } as any)
         : Promise.resolve({ data: [] }),
       connectionUserId
         ? (supabase as any)
