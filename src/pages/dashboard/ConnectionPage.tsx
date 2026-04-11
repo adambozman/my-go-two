@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Lock, Sparkles } from "lucide-react";
+import { ArrowLeft, ExternalLink, Lock, Sparkles } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Switch } from "@/components/ui/switch";
@@ -8,6 +8,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
+import {
+  parseSharedRecommendationsRecord,
+  type RecommendationProduct as SharedRecommendationProduct,
+  type SharedRecommendationsContract as SharedRecommendationsRecord,
+} from "@/lib/recommendationContracts";
+import {
+  getRecommendationActionLabel,
+  getRecommendationDestination,
+  getRecommendationDisplayPrice,
+  getRecommendationMatchLabel,
+} from "@/lib/recommendationPresentation";
+import { getRecommendationCategoryMeta } from "@/lib/recommendationCategories";
 import { resolveStorageUrl } from "@/lib/storageRefs";
 
 interface ConnectionRecord {
@@ -91,18 +103,6 @@ interface SharedDerivedFeatureRow {
 
 interface SharedVibeRecord {
   persona_summary: string | null;
-}
-
-interface SharedRecommendationsRecord {
-  id: string;
-  week_start: string;
-  generated_at: string;
-  products: Array<{
-    name?: string;
-    brand?: string;
-    hook?: string;
-    why?: string;
-  }> | null;
 }
 
 interface OutgoingSharingStateRecord {
@@ -227,6 +227,11 @@ function isRpcMissingError(error: { message?: string } | null | undefined) {
   return /schema cache|Could not find the function|function .* does not exist|PGRST/i.test(message);
 }
 
+function getSharedRecommendationCategoryLabel(product: SharedRecommendationProduct | null | undefined) {
+  if (!product?.category) return "Recommendation";
+  return getRecommendationCategoryMeta(product.category as any)?.filterLabel ?? product.category;
+}
+
 function buildAiSuggestions(
   connectionName: string,
   visibleItems: FeedItem[],
@@ -305,10 +310,21 @@ export default function ConnectionPage() {
   const [sharedSavedProductCardIds, setSharedSavedProductCardIds] = useState<string[]>([]);
   const [sharedVibe, setSharedVibe] = useState<string | null>(null);
   const [sharedRecommendations, setSharedRecommendations] = useState<SharedRecommendationsRecord | null>(null);
+  const [sharedRecommendationsIssue, setSharedRecommendationsIssue] = useState<"invalid" | null>(null);
   const [resolvedConnectionImage, setResolvedConnectionImage] = useState("");
   const [resolvedFeedImages, setResolvedFeedImages] = useState<Record<string, string>>({});
   const [connectionKind, setConnectionKind] = useState<ConnectionKind>("custom");
   const [savingConnectionKind, setSavingConnectionKind] = useState(false);
+  const sharedRecommendationCategoryLabels = useMemo(() => {
+    const products = sharedRecommendations?.products ?? [];
+    return Array.from(
+      new Set(
+        products
+          .map((product) => getSharedRecommendationCategoryLabel(product))
+          .filter((label): label is string => Boolean(label)),
+      ),
+    ).slice(0, 4);
+  }, [sharedRecommendations]);
   const loadConnection = useCallback(async () => {
     if (!user || !connectionId) return;
 
@@ -392,18 +408,18 @@ export default function ConnectionPage() {
             .eq("connection_user_id", connectionUserId)
         : Promise.resolve({ data: [] }),
       connectionUserId
-        ? (supabase.rpc as any)("get_connection_shared_vibe", {
-            p_user_connection_id: userConnection.id,
+        ? supabase.rpc("get_connection_shared_vibe", {
+            p_couple_id: userConnection.id,
             p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
-          })
+          } as any)
         : Promise.resolve({ data: [] }),
       connectionUserId
-        ? (supabase.rpc as any)("get_connection_shared_recommendations", {
-            p_user_connection_id: userConnection.id,
+        ? supabase.rpc("get_connection_shared_recommendations", {
+            p_couple_id: userConnection.id,
             p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
-          })
+          } as any)
         : Promise.resolve({ data: [] }),
       connectionUserId
         ? (supabase as any)
@@ -450,7 +466,10 @@ export default function ConnectionPage() {
     const incomingFeatureRows = (incomingDerivedRows || []) as SharedDerivedFeatureRow[];
     const outgoingFeatureRows = (outgoingDerivedRows || []) as SharedDerivedFeatureRow[];
     const vibeData = Array.isArray(sharedVibeRows) ? (sharedVibeRows[0] as SharedVibeRecord | undefined) ?? null : null;
-    const recommendationData = Array.isArray(sharedRecommendationRows) ? (sharedRecommendationRows[0] as SharedRecommendationsRecord | undefined) ?? null : null;
+    const recommendationRow = Array.isArray(sharedRecommendationRows) ? sharedRecommendationRows[0] : null;
+    const recommendationData = recommendationRow
+      ? parseSharedRecommendationsRecord(recommendationRow)
+      : null;
     const cardRows = (incomingSharedCardRows || []) as SharedSavedProductCardRow[];
     const ownSavedProductCards = Array.isArray(ownEntryRows) ? (ownEntryRows as SavedProductCardRecord[]) : [];
     const outgoingSharingState = (outgoingSharingStateResult?.data as OutgoingSharingStateRecord | null) || null;
@@ -515,6 +534,7 @@ export default function ConnectionPage() {
     });
     setSharedVibe(vibeData?.persona_summary || null);
     setSharedRecommendations(recommendationData || null);
+    setSharedRecommendationsIssue(recommendationRow && !recommendationData ? "invalid" : null);
     setSharedSavedProductCardIds(
       outgoingSharedSavedProductCardIds || cardRows.map((row) => row.saved_product_card_id),
     );
@@ -1127,6 +1147,18 @@ export default function ConnectionPage() {
                 <p className="surface-eyebrow-coral">
                   AI Connection
                 </p>
+                {sharedRecommendationCategoryLabels.length ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {sharedRecommendationCategoryLabels.map((label) => (
+                      <span
+                        key={label}
+                        className="surface-meta rounded-full border border-white/60 bg-white/35 px-3 py-1"
+                      >
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
               </div>
 
               <div className="mt-5 grid flex-1 gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,1.18fr)_250px] lg:grid-rows-[minmax(0,1fr)_minmax(180px,auto)]">
@@ -1139,7 +1171,7 @@ export default function ConnectionPage() {
                         </span>
                         <div className="min-w-0">
                           <p className="surface-heading-lg">
-                            {sharedRecommendations.products[0]?.name || "Gift recommendation"}
+                            {sharedRecommendations.products[0]?.name || "Shared recommendation"}
                           </p>
                           <p className="surface-eyebrow-coral mt-2">
                             {sharedRecommendations.products[0]?.brand || "For this connection"}
@@ -1147,6 +1179,17 @@ export default function ConnectionPage() {
                           <p className="surface-body mt-3">
                             {sharedRecommendations.products[0]?.hook || sharedRecommendations.products[0]?.why || `Pulled from ${connection.name}'s shared recommendations.`}
                           </p>
+                          <div className="mt-4 flex flex-wrap items-center gap-2">
+                            <p className="surface-meta">
+                              {getSharedRecommendationCategoryLabel(sharedRecommendations.products[0])}
+                            </p>
+                            <p className="surface-meta">
+                              {sharedRecommendations.products[0] ? getRecommendationMatchLabel(sharedRecommendations.products[0]) : "Search Match"}
+                            </p>
+                            <p className="surface-meta">
+                              {sharedRecommendations.products[0] ? getRecommendationDisplayPrice(sharedRecommendations.products[0]) : "Price varies"}
+                            </p>
+                          </div>
                         </div>
                       </div>
                       {sharedRecommendations.products[0]?.why && sharedRecommendations.products[0]?.hook !== sharedRecommendations.products[0]?.why ? (
@@ -1154,40 +1197,94 @@ export default function ConnectionPage() {
                           {sharedRecommendations.products[0]?.why}
                         </p>
                       ) : null}
+                      {sharedRecommendations.products[0] && getRecommendationDestination(sharedRecommendations.products[0]) ? (
+                        <button
+                          type="button"
+                          onClick={() => window.open(getRecommendationDestination(sharedRecommendations.products[0])!, "_blank", "noopener,noreferrer")}
+                          className="surface-button-secondary mt-4 inline-flex items-center gap-2 self-start rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.12em]"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          {getRecommendationActionLabel(sharedRecommendations.products[0])}
+                        </button>
+                      ) : null}
                     </div>
 
                     <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5">
                       <div>
                         <p className="surface-eyebrow-coral">
-                          Next gift
+                          Next recommendation
                         </p>
                         <p className="surface-heading-lg mt-3">
                           {sharedRecommendations.products[1]?.name || "More to unlock"}
                         </p>
                         <p className="surface-meta mt-3">
-                          {sharedRecommendations.products[1]?.brand || `${sharedRecommendations.products.length} shared gift signals`}
+                          {sharedRecommendations.products[1]?.brand || `${sharedRecommendations.products.length} shared recommendation signals`}
                         </p>
+                        {sharedRecommendations.products[1] ? (
+                          <div className="mt-3 flex flex-wrap items-center gap-2">
+                            <p className="surface-meta">
+                              {getSharedRecommendationCategoryLabel(sharedRecommendations.products[1])}
+                            </p>
+                            <p className="surface-meta">
+                              {getRecommendationMatchLabel(sharedRecommendations.products[1])}
+                            </p>
+                            <p className="surface-meta">
+                              {getRecommendationDisplayPrice(sharedRecommendations.products[1])}
+                            </p>
+                          </div>
+                        ) : null}
                       </div>
                       <p className="surface-body mt-4">
-                        {sharedRecommendations.products[1]?.hook || sharedRecommendations.products[1]?.why || `Go Two already has enough signals from ${connection.name} to start shaping better gifts here.`}
+                        {sharedRecommendations.products[1]?.hook || sharedRecommendations.products[1]?.why || `Go Two already has enough signals from ${connection.name} to keep shaping sharper recommendations here.`}
                       </p>
+                      {sharedRecommendations.products[1] && getRecommendationDestination(sharedRecommendations.products[1]) ? (
+                        <button
+                          type="button"
+                          onClick={() => window.open(getRecommendationDestination(sharedRecommendations.products[1])!, "_blank", "noopener,noreferrer")}
+                          className="surface-button-secondary mt-4 inline-flex items-center gap-2 self-start rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.12em]"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          {getRecommendationActionLabel(sharedRecommendations.products[1])}
+                        </button>
+                      ) : null}
                     </div>
 
                     <div className="card-design-neumorph grid gap-4 px-5 py-5 lg:col-span-2 md:grid-cols-2">
                       {(sharedRecommendations.products.slice(2, 4).length > 0 ? sharedRecommendations.products.slice(2, 4) : sharedRecommendations.products.slice(0, 2)).map((product, index) => (
                         <div
-                          key={`${product.brand || "gift"}-${product.name || index}-secondary`}
+                          key={`${product.brand || "shared"}-${product.name || index}-secondary`}
                           className="surface-inset-panel flex h-full flex-col rounded-[24px] px-4 py-4"
                         >
                           <p className="surface-heading-sm">
-                            {product.name || "Gift recommendation"}
+                            {product.name || "Shared recommendation"}
                           </p>
                           <p className="surface-eyebrow-coral mt-2">
                             {product.brand || "Shared signal"}
                           </p>
+                          <div className="mt-3 flex flex-wrap items-center gap-2">
+                            <p className="surface-meta">
+                              {getSharedRecommendationCategoryLabel(product)}
+                            </p>
+                            <p className="surface-meta">
+                              {getRecommendationMatchLabel(product)}
+                            </p>
+                            <p className="surface-meta">
+                              {getRecommendationDisplayPrice(product)}
+                            </p>
+                          </div>
                           <p className="surface-body mt-3">
-                            {product.hook || product.why || `Another signal Go Two can use for ${connection.name}.`}
+                            {product.hook || product.why || `Another shared recommendation signal Go Two can use for ${connection.name}.`}
                           </p>
+                          {getRecommendationDestination(product) ? (
+                            <button
+                              type="button"
+                              onClick={() => window.open(getRecommendationDestination(product)!, "_blank", "noopener,noreferrer")}
+                              className="surface-button-secondary mt-4 inline-flex items-center gap-2 self-start rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.12em]"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                              {getRecommendationActionLabel(product)}
+                            </button>
+                          ) : null}
                         </div>
                       ))}
                     </div>
@@ -1197,14 +1294,16 @@ export default function ConnectionPage() {
                     <div className="card-design-neumorph flex h-full flex-col justify-between px-5 py-5">
                       <div>
                         <p className="surface-heading-lg">
-                          Gifts are not ready yet.
+                          Recommendations are not ready yet.
                         </p>
                         <p className="surface-body mt-3">
-                          There are not enough shared recommendation signals yet.
+                          {sharedRecommendationsIssue === "invalid"
+                            ? "Shared recommendation data needs a refresh before this section can load correctly."
+                            : "There are not enough shared recommendation signals yet."}
                         </p>
                       </div>
                       <p className="surface-meta mt-4">
-                        Tell {connection.name} to share more so Go Two can start filling this area with real gift picks.
+                        Tell {connection.name} to share more so Go Two can start filling this area with real recommendations.
                       </p>
                     </div>
 
@@ -1218,7 +1317,7 @@ export default function ConnectionPage() {
                         </p>
                       </div>
                       <p className="surface-body mt-4">
-                        Product cards, preferences, and This or That answers will turn this panel into gift recommendations.
+                        Product cards, preferences, and This or That answers will turn this panel into sharper shared recommendations.
                       </p>
                     </div>
 
@@ -1228,11 +1327,11 @@ export default function ConnectionPage() {
                           What belongs here
                         </p>
                         <p className="surface-heading-lg mt-3">
-                          Gift ideas shaped to {connection.name}.
+                          Shared picks shaped to {connection.name}.
                         </p>
                       </div>
                       <p className="surface-body mt-4">
-                        Once {connection.name} shares enough cards and recommendation signals, this lower box fills with more gifts instead of placeholder copy.
+                        Once {connection.name} shares enough cards and recommendation signals, this lower box fills with real picks across categories instead of placeholder copy.
                       </p>
                     </div>
                   </>

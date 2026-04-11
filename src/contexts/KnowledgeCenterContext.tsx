@@ -67,7 +67,7 @@ export const KnowledgeCenterProvider = ({ children }: { children: ReactNode }) =
       if (!mountedRef.current || latestRefreshRequestRef.current !== requestId) return;
 
       setKnowledgeSnapshot(
-        (snapshotResult.data as KnowledgeSnapshotRow | null) ?? emptySnapshot(activeUser.id),
+        (snapshotResult.data as unknown as KnowledgeSnapshotRow | null) ?? emptySnapshot(activeUser.id),
       );
       setKnowledgeDerivations(
         ((derivationResult.data as KnowledgeDerivationRow[] | null) ?? []).filter(Boolean),

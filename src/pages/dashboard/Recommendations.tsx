@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useKnowledgeCenter } from "@/contexts/knowledge-center-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,63 +11,91 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/pill";
 import { getYourVibeDerivation } from "@/lib/knowledgeCenter";
-// ── Clothes bank (8 diverse images) ──
-import clothingJacketImage from "@/assets/templates/clothing-jacket.jpg";
-import dressShirtImage from "@/assets/templates/clothing-dress-shirt.jpg";
-import clothingSweaterImage from "@/assets/templates/clothing-sweater.jpg";
-import clothingPoloImage from "@/assets/templates/clothing-polo.jpg";
-import clothingBlazerImage from "@/assets/templates/clothing-blazer.jpg";
-import clothingTshirtImage from "@/assets/templates/clothing-tshirt.jpg";
-import clothingCoatImage from "@/assets/templates/clothing-coat.jpg";
-import clothingHoodieImage from "@/assets/templates/clothing-hoodie.jpg";
+import {
+  parseRecommendationEngineResponse,
+  type RecommendationProduct as Product,
+} from "@/lib/recommendationContracts";
+import { hasTrustedRecommendationProductImage } from "@/lib/recommendationProductTruth";
+import {
+  getRecommendationActionLabel,
+  getRecommendationDestination,
+  getRecommendationDisplayPrice,
+  getRecommendationMatchLabel,
+  getRecommendationStableId,
+} from "@/lib/recommendationPresentation";
+import {
+  RECOMMENDATION_CATEGORY_REGISTRY,
+  type RecommendationCategory,
+} from "@/lib/recommendationCategories";
 
-// ── Food bank (8 diverse images) ──
-import espressoImage from "@/assets/templates/coffee-espresso.jpg";
-import coffeeHotImage from "@/assets/templates/coffee-hot.jpg";
-import foodItalianImage from "@/assets/templates/food-italian.jpg";
-import foodSushiImage from "@/assets/templates/food-sushi.jpg";
-import foodMexicanImage from "@/assets/templates/food-mexican.jpg";
-import groceryProduceImage from "@/assets/templates/grocery-produce.jpg";
-import favoriteMealsImage from "@/assets/templates/favorite-meals.jpg";
-import diningImage from "@/assets/styles/dining.jpg";
+const RECOMMENDATION_V2_VERSION_PREFIX = "recommendation-engine-v2";
 
-// ── Home bank (8 diverse images) ──
-import homeDecorImage from "@/assets/templates/home-decor.jpg";
-import homeBeddingImage from "@/assets/templates/home-bedding.jpg";
-import homeLightingImage from "@/assets/templates/home-lighting.jpg";
-import homeFurnitureImage from "@/assets/templates/home-furniture.jpg";
-import homeArtImage from "@/assets/templates/home-art.jpg";
-import kitchenCookwareImage from "@/assets/templates/kitchen-cookware.jpg";
-import homeRugImage from "@/assets/templates/home-rug.jpg";
-import homeSofaImage from "@/assets/templates/home-sofa.jpg";
-
-// ── Tech bank (8 diverse images) ──
-import cameraImage from "@/assets/templates/tech-camera.jpg";
-import headphonesImage from "@/assets/templates/tech-headphones.jpg";
-import gamingConsoleImage from "@/assets/templates/gaming-console.jpg";
-import gamingPcImage from "@/assets/templates/gaming-pc.jpg";
-import booksImage from "@/assets/templates/books-reading.jpg";
-import fitnessImage from "@/assets/styles/fitness.jpg";
-import qualityImage from "@/assets/styles/quality.jpg";
-import practicalGiftImage from "@/assets/styles/practical-gift.jpg";
-
-interface Product {
+type RecommendationFavorite = {
+  id: string;
   name: string;
   brand: string;
-  price: string;
   category: string;
+  price: string;
   hook: string;
   why: string;
-  is_connection_pick?: boolean;
-  affiliate_url?: string | null;
-  search_url?: string | null;
-  product_query?: string | null;
-  image_url?: string | null;
-  source_kind?: string;
-  source_version?: string;
-}
+  image_url: string | null;
+  affiliate_url: string | null;
+  search_url: string | null;
+  product_query: string | null;
+  display_price: string;
+  match_label: string;
+  source_kind: string | null;
+  resolver_source: string | null;
+  exact_match_confirmed: boolean;
+  match_confidence: number | null;
+  saved_at: string;
+};
+
+type RecommendationShareRecord = {
+  id: string;
+  name: string;
+  brand: string;
+  category: string;
+  price: string;
+  hook: string;
+  why: string;
+  image_url: string | null;
+  affiliate_url: string | null;
+  search_url: string | null;
+  product_query: string | null;
+  display_price: string;
+  match_label: string;
+  source_kind: string | null;
+  resolver_source: string | null;
+  exact_match_confirmed: boolean;
+  match_confidence: number | null;
+  shared_at: string;
+  share_count: number;
+  last_share_method: "native" | "clipboard";
+};
+
+type FavoritesPayload = {
+  recommendations?: Record<string, RecommendationFavorite>;
+  shared_recommendations?: Record<string, RecommendationShareRecord>;
+  [key: string]: unknown;
+};
 
 type RpcError = { message?: string; status?: number } | null;
+
+type UserPreferencesFavoriteWriter = {
+  from: (table: "user_preferences") => {
+    upsert: (
+      values: {
+        user_id: string;
+        favorites: Record<string, unknown>;
+        updated_at: string;
+      },
+      options: { onConflict: string },
+    ) => Promise<{ error: RpcError }>;
+  };
+};
+
+const userPreferencesFavoriteWriter = supabase as unknown as UserPreferencesFavoriteWriter;
 
 const getRpcStatus = (error: unknown) =>
   typeof error === "object" && error !== null && "status" in error
@@ -77,53 +105,77 @@ const getRpcStatus = (error: unknown) =>
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Failed to load recommendations";
 
-const PILLARS = [
-  { key: "all", label: "For You", matches: ["food", "clothes", "tech", "home"] },
-  { key: "clothes", label: "Style & Fit", matches: ["clothes"] },
-  { key: "food", label: "Food & Drink", matches: ["food"] },
-  { key: "home", label: "Home & Living", matches: ["home"] },
-  { key: "tech", label: "Tech & Gear", matches: ["tech"] },
-] as const;
-
 const PAGE_SIZE = 4;
 
-const PRODUCT_IMAGE_BANK: Record<Product["category"], string[]> = {
-  clothes: [
-    clothingJacketImage, dressShirtImage, clothingSweaterImage, clothingPoloImage,
-    clothingBlazerImage, clothingTshirtImage, clothingCoatImage, clothingHoodieImage,
-  ],
-  food: [
-    espressoImage, coffeeHotImage, foodItalianImage, foodSushiImage,
-    foodMexicanImage, groceryProduceImage, favoriteMealsImage, diningImage,
-  ],
-  home: [
-    homeDecorImage, homeBeddingImage, homeLightingImage, homeFurnitureImage,
-    homeArtImage, kitchenCookwareImage, homeRugImage, homeSofaImage,
-  ],
-  tech: [
-    cameraImage, headphonesImage, gamingConsoleImage, gamingPcImage,
-    booksImage, fitnessImage, qualityImage, practicalGiftImage,
-  ],
-};
-
-function getFallbackImage(product: Product) {
-  const bank = PRODUCT_IMAGE_BANK[product.category] || PRODUCT_IMAGE_BANK.clothes;
-  const seed = `${product.brand}-${product.name}`;
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-  return bank[hash % bank.length];
+function hasResolvedProductImage(product: Product) {
+  return hasTrustedRecommendationProductImage(product);
 }
 
 function getProductImage(product: Product) {
-  if (product.image_url) return product.image_url;
-  return getFallbackImage(product);
+  return hasResolvedProductImage(product) ? product.image_url! : null;
+}
+
+function toRecommendationFavorite(product: Product): RecommendationFavorite {
+  return {
+    id: getRecommendationStableId(product),
+    name: product.name,
+    brand: product.brand,
+    category: product.category,
+    price: product.price,
+    hook: product.hook,
+    why: product.why,
+    image_url: product.image_url ?? null,
+    affiliate_url: product.affiliate_url ?? null,
+    search_url: product.search_url ?? null,
+    product_query: product.product_query ?? null,
+    display_price: getRecommendationDisplayPrice(product),
+    match_label: getRecommendationMatchLabel(product),
+    source_kind: product.source_kind ?? null,
+    resolver_source: product.resolver_source ?? null,
+    exact_match_confirmed: Boolean(product.exact_match_confirmed),
+    match_confidence: product.match_confidence ?? null,
+    saved_at: new Date().toISOString(),
+  };
+}
+
+function toRecommendationShareRecord(
+  product: Product,
+  method: "native" | "clipboard",
+  previous?: RecommendationShareRecord,
+): RecommendationShareRecord {
+  return {
+    id: getRecommendationStableId(product),
+    name: product.name,
+    brand: product.brand,
+    category: product.category,
+    price: product.price,
+    hook: product.hook,
+    why: product.why,
+    image_url: product.image_url ?? null,
+    affiliate_url: product.affiliate_url ?? null,
+    search_url: product.search_url ?? null,
+    product_query: product.product_query ?? null,
+    display_price: getRecommendationDisplayPrice(product),
+    match_label: getRecommendationMatchLabel(product),
+    source_kind: product.source_kind ?? null,
+    resolver_source: product.resolver_source ?? null,
+    exact_match_confirmed: Boolean(product.exact_match_confirmed),
+    match_confidence: product.match_confidence ?? null,
+    shared_at: new Date().toISOString(),
+    share_count: (previous?.share_count ?? 0) + 1,
+    last_share_method: method,
+  };
+}
+
+function isFavoritesPayload(value: unknown): value is FavoritesPayload {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
 
 const Recommendations = () => {
   const { knowledgeDerivations, loading: knowledgeLoading } = useKnowledgeCenter();
-  const { subscribed, user } = useAuth();
+  const { subscribed, subscriptionLoading, user } = useAuth();
   const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
   const isDev = user && DEV_USER_IDS.includes(user.id);
   const [products, setProducts] = useState<Product[]>([]);
@@ -131,17 +183,72 @@ const Recommendations = () => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [activePillar, setActivePillar] = useState<string>("all");
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
+  const [savingItems, setSavingItems] = useState<Set<string>>(new Set());
+  const [sharingItems, setSharingItems] = useState<Set<string>>(new Set());
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [isCached, setIsCached] = useState(false);
+  const [generationVersion, setGenerationVersion] = useState<string | null>(null);
+  const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
+  const [inputSnapshotSummary, setInputSnapshotSummary] = useState<Record<string, unknown> | null>(null);
+  const isUsingRebuiltEngine = Boolean(
+    generationVersion && generationVersion.startsWith(RECOMMENDATION_V2_VERSION_PREFIX),
+  );
+  const recommendationTargetCount = typeof inputSnapshotSummary?.recommendation_target_count === "number"
+    ? inputSnapshotSummary.recommendation_target_count
+    : null;
+  const recommendationInputLevel = typeof inputSnapshotSummary?.recommendation_input_level === "string"
+    ? inputSnapshotSummary.recommendation_input_level
+    : null;
+  const hasLoadedProducts = products.length > 0;
+  const availableRecommendationCategories = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          products
+            .map((product) => product.category)
+            .filter((category): category is RecommendationCategory =>
+              RECOMMENDATION_CATEGORY_REGISTRY.some((entry) => entry.key === category),
+            ),
+        ),
+      ),
+    [products],
+  );
+
+  const pillars = useMemo(() => {
+    const categoryPills = RECOMMENDATION_CATEGORY_REGISTRY
+      .filter((entry) => availableRecommendationCategories.includes(entry.key))
+      .map((entry) => ({
+        key: entry.key,
+        label: entry.filterLabel,
+        matches: [entry.key],
+      }));
+
+    return [
+      {
+        key: "all",
+        label: "For You",
+        matches: availableRecommendationCategories.length > 0
+          ? availableRecommendationCategories
+          : RECOMMENDATION_CATEGORY_REGISTRY.map((entry) => entry.key),
+      },
+      ...categoryPills,
+    ];
+  }, [availableRecommendationCategories]);
 
   const activePillarConfig = useMemo(
-    () => PILLARS.find((pillar) => pillar.key === activePillar) || PILLARS[0],
-    [activePillar],
+    () => pillars.find((pillar) => pillar.key === activePillar) || pillars[0],
+    [activePillar, pillars],
   );
+
+  useEffect(() => {
+    if (!pillars.some((pillar) => pillar.key === activePillar)) {
+      setActivePillar("all");
+    }
+  }, [activePillar, pillars]);
 
   const filtered = useMemo(() => {
     if (activePillar === "all") return products;
-    return products.filter((p) => (activePillarConfig.matches as readonly string[]).includes(p.category));
+    return products.filter((p) => activePillarConfig.matches.includes(p.category as RecommendationCategory));
   }, [products, activePillar, activePillarConfig]);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems: paginatedProducts } = usePagination({
@@ -153,15 +260,17 @@ const Recommendations = () => {
   const fetchProducts = useCallback(
     async (forceRefresh = false) => {
     setLoading(true);
+    setLoadErrorMessage(null);
     try {
-      let { data, error } = await supabase.functions.invoke("ai-products", {
+      const activeFunction = RECOMMENDATION_V2_VERSION_PREFIX;
+      let { data, error } = await supabase.functions.invoke(activeFunction, {
         body: forceRefresh ? { force_refresh: true } : {},
       });
 
       // If session expired, refresh and retry once
       if (error && getRpcStatus(error) === 401) {
         await supabase.auth.refreshSession();
-        const retry = await supabase.functions.invoke("ai-products", {
+        const retry = await supabase.functions.invoke(activeFunction, {
           body: forceRefresh ? { force_refresh: true } : {},
         });
         data = retry.data;
@@ -169,23 +278,31 @@ const Recommendations = () => {
       }
 
       if (error) throw error;
-      if (data?.products) {
-        setProducts(data.products);
-        setGeneratedAt(data.generated_at ?? null);
-        setIsCached(Boolean(data.cached));
-        setCurrentPage(1);
-      }
+      const response = parseRecommendationEngineResponse(data);
+      setProducts(response.products);
+      setGeneratedAt(response.generated_at);
+      setIsCached(response.cached);
+      setGenerationVersion(response.generation_version ?? activeFunction);
+      setInputSnapshotSummary(response.input_snapshot_summary);
+      setCurrentPage(1);
     } catch (error: unknown) {
       console.error("Products error:", error);
       const status = getRpcStatus(error);
-      if (status === 429) toast.error("Rate limit reached. Try again shortly.");
-      else if (status === 402) toast.error("AI credits exhausted.");
-      else toast.error(getErrorMessage(error));
+      const message =
+        status === 429
+          ? "Recommendation refresh is rate-limited right now. Try again shortly."
+          : status === 402
+            ? "Recommendation generation is unavailable right now."
+            : status === 404
+              ? "The rebuilt recommendation engine is not deployed yet."
+            : getErrorMessage(error);
+      setLoadErrorMessage(message);
+      toast.error(hasLoadedProducts ? `${message} Showing your last saved weekly set.` : message);
     } finally {
       setLoading(false);
       setHasLoaded(true);
     }
-  }, [setCurrentPage]);
+  }, [hasLoadedProducts, setCurrentPage]);
 
   useEffect(() => {
     if (!knowledgeLoading && !hasLoaded) {
@@ -193,24 +310,213 @@ const Recommendations = () => {
     }
   }, [fetchProducts, knowledgeLoading, hasLoaded]);
 
-  const toggleSave = (id: string) => {
+  useEffect(() => {
+    if (!user) {
+      setSavedItems(new Set());
+      setSavingItems(new Set());
+      setSharingItems(new Set());
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadSavedRecommendations = async () => {
+      const { data, error } = await supabase
+        .from("user_preferences")
+        .select("favorites")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (cancelled) return;
+
+      if (error) {
+        console.error("Failed to load saved recommendations:", error);
+        return;
+      }
+
+      const favorites = isFavoritesPayload(data?.favorites) ? data.favorites : null;
+      const recommendations = favorites?.recommendations;
+
+      if (!recommendations || typeof recommendations !== "object") {
+        setSavedItems(new Set());
+        return;
+      }
+
+      setSavedItems(new Set(Object.keys(recommendations)));
+    };
+
+    void loadSavedRecommendations();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const toggleSave = useCallback(async (product: Product) => {
+    if (!user) return;
+
+    const id = getRecommendationStableId(product);
+    const wasSaved = savedItems.has(id);
+
     setSavedItems((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); toast("Removed from profile"); }
-      else { next.add(id); toast.success("Saved to your profile"); }
+      if (wasSaved) next.delete(id);
+      else next.add(id);
       return next;
     });
-  };
+    setSavingItems((prev) => new Set(prev).add(id));
 
-  const handleShare = (product: Product) => {
-    toast.success(`Ready to share ${product.name} with your connection`);
-  };
+    try {
+      const { data: existingRow, error: loadError } = await supabase
+        .from("user_preferences")
+        .select("favorites")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (loadError) throw loadError;
+
+      const favorites: Record<string, unknown> = isFavoritesPayload(existingRow?.favorites)
+        ? { ...(existingRow.favorites as Record<string, unknown>) }
+        : {};
+      const recommendations = isFavoritesPayload(favorites.recommendations)
+        ? { ...(favorites.recommendations as Record<string, RecommendationFavorite>) }
+        : {};
+
+      if (wasSaved) {
+        delete recommendations[id];
+      } else {
+        recommendations[id] = toRecommendationFavorite(product);
+      }
+
+      favorites.recommendations = recommendations;
+
+      const { error: saveError } = await userPreferencesFavoriteWriter.from("user_preferences").upsert(
+        {
+          user_id: user.id,
+          favorites,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" },
+      );
+
+      if (saveError) throw saveError;
+
+      if (wasSaved) {
+        toast("Removed from saved picks");
+      } else {
+        toast.success("Saved to your profile");
+      }
+    } catch (error: unknown) {
+      setSavedItems((prev) => {
+        const next = new Set(prev);
+        if (wasSaved) next.add(id);
+        else next.delete(id);
+        return next;
+      });
+      toast.error(getErrorMessage(error));
+    } finally {
+      setSavingItems((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  }, [savedItems, user]);
+
+  const persistShareActivity = useCallback(async (
+    product: Product,
+    method: "native" | "clipboard",
+  ) => {
+    if (!user) return;
+
+    const id = getRecommendationStableId(product);
+    const { data: existingRow, error: loadError } = await supabase
+      .from("user_preferences")
+      .select("favorites")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (loadError) throw loadError;
+
+    const favorites: Record<string, unknown> = isFavoritesPayload(existingRow?.favorites)
+      ? { ...(existingRow.favorites as Record<string, unknown>) }
+      : {};
+    const sharedRecommendations = isFavoritesPayload(favorites.shared_recommendations)
+      ? { ...(favorites.shared_recommendations as Record<string, RecommendationShareRecord>) }
+      : {};
+
+    sharedRecommendations[id] = toRecommendationShareRecord(
+      product,
+      method,
+      sharedRecommendations[id],
+    );
+    favorites.shared_recommendations = sharedRecommendations;
+
+    const { error: saveError } = await userPreferencesFavoriteWriter.from("user_preferences").upsert(
+      {
+        user_id: user.id,
+        favorites,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
+
+    if (saveError) throw saveError;
+  }, [user]);
+
+  const handleShare = useCallback(async (product: Product) => {
+    const id = getRecommendationStableId(product);
+    const productUrl = getRecommendationDestination(product);
+    const matchLabel = getRecommendationMatchLabel(product);
+    const displayPrice = getRecommendationDisplayPrice(product);
+    const shareSummary = `${product.brand} ${product.name}\n${matchLabel}\n${displayPrice}`;
+    const shareText = [
+      shareSummary,
+      product.hook,
+      product.why,
+      productUrl,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    setSharingItems((prev) => new Set(prev).add(id));
+
+    try {
+      if (typeof navigator.share === "function") {
+        await navigator.share({
+          title: `${product.brand} ${product.name}`,
+          text: `${shareSummary}\n\n${product.hook}\n\n${product.why}`,
+          url: productUrl ?? undefined,
+        });
+        await persistShareActivity(product, "native");
+        toast.success("Shared from your share sheet");
+        return;
+      }
+
+      await navigator.clipboard.writeText(shareText);
+      await persistShareActivity(product, "clipboard");
+        toast.success(productUrl ? "Share details copied to clipboard" : "Recommendation copied to clipboard");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Could not share recommendation";
+      if (message.toLowerCase().includes("abort")) {
+        return;
+      }
+      toast.error(message);
+    } finally {
+      setSharingItems((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  }, [persistShareActivity]);
 
   const generatedLabel = generatedAt
     ? new Date(generatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })
     : null;
+  const isGuestPreview = !subscribed && filtered.length > PAGE_SIZE;
 
-  if (knowledgeLoading) {
+  if (knowledgeLoading || subscriptionLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-6 w-6 animate-spin" />
@@ -230,7 +536,7 @@ const Recommendations = () => {
           transition={{ delay: 0.05, type: "spring", stiffness: 260, damping: 24 }}
           className="flex gap-2 flex-wrap"
         >
-          {PILLARS.map(({ key, label }) => {
+          {pillars.map(({ key, label }) => {
             const isActive = activePillar === key;
             return (
               <button key={key} onClick={() => setActivePillar(key)} type="button">
@@ -266,6 +572,22 @@ const Recommendations = () => {
                     {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
                   </p>
                 )}
+                {isUsingRebuiltEngine && (
+                  <p className="surface-meta mt-1">
+                    Powered by the rebuilt recommendation engine
+                  </p>
+                )}
+                {isGuestPreview && (
+                  <p className="surface-meta mt-1">
+                    Showing 4 preview picks from this week&apos;s set
+                  </p>
+                )}
+                {isUsingRebuiltEngine && recommendationTargetCount && recommendationTargetCount < 12 && (
+                  <p className="surface-meta mt-1">
+                    Profile still learning · showing {recommendationTargetCount} stronger picks while more taste data builds
+                    {recommendationInputLevel ? ` (${recommendationInputLevel})` : ""}
+                  </p>
+                )}
                 {isDev && (
                   <Button
                     size="sm"
@@ -297,6 +619,27 @@ const Recommendations = () => {
           </Card>
         </motion.div>
 
+        {loadErrorMessage && hasLoadedProducts && (
+          <Card variant="sand" className="border border-amber-200/80 bg-amber-50/70 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="surface-heading-md">Showing your last saved recommendations.</p>
+                <p className="surface-body">{loadErrorMessage}</p>
+              </div>
+              <Button
+                onClick={() => fetchProducts(true)}
+                disabled={loading}
+                variant="outline"
+                size="sm"
+                className="gap-1.5 self-start sm:self-auto"
+              >
+                {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                Try Again
+              </Button>
+            </div>
+          </Card>
+        )}
+
         {/* ── Product grid ── */}
         {loading && products.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-16">
@@ -317,16 +660,21 @@ const Recommendations = () => {
                 className="grid gap-4 lg:grid-cols-2"
               >
                 {displayProducts.map((product, i) => {
-                  const itemId = `${product.brand}-${product.name}`;
+                  const itemId = getRecommendationStableId(product);
                   const isSaved = savedItems.has(itemId);
+                  const isSaving = savingItems.has(itemId);
+                  const isSharing = sharingItems.has(itemId);
                   return (
                     <ProductCard
-                      key={itemId + i}
+                      key={itemId}
                       product={product}
                       index={i}
                       isSaved={isSaved}
-                      onToggleSave={() => subscribed ? toggleSave(itemId) : toast("Upgrade to save picks")}
-                      onShare={() => (product.affiliate_url || product.search_url) ? undefined : handleShare(product)}
+                      saveLoading={isSaving}
+                      shareLoading={isSharing}
+                      showDiagnostics={Boolean(isDev)}
+                      onToggleSave={() => subscribed ? void toggleSave(product) : toast("Upgrade to save picks")}
+                      onShare={() => void handleShare(product)}
                     />
                   );
                 })}
@@ -342,14 +690,26 @@ const Recommendations = () => {
               />
             )}
           </>
-        ) : hasLoaded ? (
+        ) : loadErrorMessage && !hasLoadedProducts ? (
           <Card variant="sand" className="p-8 text-center">
             <p className="surface-heading-md mb-2">
-              No picks in this category yet.
+              Recommendations are temporarily unavailable.
             </p>
             <p className="surface-body">
-              Try refreshing or answer more Know Me questions to sharpen the read.
+              {loadErrorMessage}
             </p>
+            <div className="mt-4 flex justify-center">
+              <Button
+                onClick={() => fetchProducts(true)}
+                disabled={loading}
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+              >
+                {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                Try Again
+              </Button>
+            </div>
           </Card>
         ) : !subscribed ? (
           <Card variant="sand" className="p-8 text-center">
@@ -358,6 +718,15 @@ const Recommendations = () => {
             </p>
             <p className="surface-body">
               Upgrade to unlock the full weekly set and saving.
+            </p>
+          </Card>
+        ) : hasLoaded ? (
+          <Card variant="sand" className="p-8 text-center">
+            <p className="surface-heading-md mb-2">
+              No picks in this category yet.
+            </p>
+            <p className="surface-body">
+              Try refreshing or answer more Know Me questions to sharpen the read.
             </p>
           </Card>
         ) : null}
@@ -370,26 +739,30 @@ function ProductCard({
   product,
   index,
   isSaved,
+  saveLoading,
+  shareLoading,
+  showDiagnostics,
   onToggleSave,
   onShare,
 }: {
   product: Product;
   index: number;
   isSaved: boolean;
+  saveLoading: boolean;
+  shareLoading: boolean;
+  showDiagnostics: boolean;
   onToggleSave: () => void;
   onShare: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-
-  const handleAction = () => {
-    if (product.affiliate_url) {
-      window.open(product.affiliate_url, "_blank", "noopener");
-      return;
-    }
-    if (product.search_url) {
-      window.open(product.search_url, "_blank", "noopener");
-    }
-  };
+  const productImage = getProductImage(product);
+  const productDestination = getRecommendationDestination(product);
+  const productMatchLabel = getRecommendationMatchLabel(product);
+  const productActionLabel = getRecommendationActionLabel(product);
+  const productDisplayPrice = getRecommendationDisplayPrice(product);
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSuppressedByTrust = Boolean(product.image_url) && !productImage;
+  const showProductImage = Boolean(productImage) && !imageFailed;
 
   return (
     <motion.div
@@ -401,12 +774,26 @@ function ProductCard({
     >
       <Card variant="sand" className="relative flex h-full flex-col overflow-hidden">
         <div className="relative h-[200px] overflow-hidden sm:h-[220px]">
-          <img
-            src={getProductImage(product)}
-            alt={product.name}
-            className="h-full w-full object-cover"
-            onError={(e) => { (e.target as HTMLImageElement).src = getFallbackImage(product); }}
-          />
+          {showProductImage ? (
+            <img
+              src={productImage}
+              alt={product.name}
+              className="h-full w-full object-cover"
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              onError={() => setImageFailed(true)}
+            />
+          ) : (
+            <div className="flex h-full w-full items-end bg-[linear-gradient(135deg,#f3ecdf_0%,#ece3d1_100%)] p-4">
+              <div className="max-w-[80%] rounded-2xl bg-white/70 px-3 py-2 backdrop-blur-sm">
+                <p className="surface-meta">{product.brand}</p>
+                <p className="surface-heading-md mt-1">{product.name}</p>
+                <p className="surface-meta mt-2">
+                  {productMatchLabel}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="p-5 pt-4 flex flex-col gap-3">
@@ -420,12 +807,10 @@ function ProductCard({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-                      {product.is_connection_pick && (
-              <p className="surface-meta">
-                {product.source_kind === "specific-product" ? "Exact Match" : "Search Match"}
-              </p>
-            )}
-            <p className="surface-meta">{product.price}</p>
+            <p className="surface-meta">
+              {productMatchLabel}
+            </p>
+            <p className="surface-meta">{productDisplayPrice}</p>
           </div>
 
           <p className="surface-heading-md leading-[1.18]">
@@ -436,20 +821,62 @@ function ProductCard({
             {product.why}
           </p>
 
+          {showDiagnostics && (product.recommendation_match_confidence || product.explanation) ? (
+            <details className="rounded-2xl border border-white/60 bg-white/45 px-3 py-2 text-left">
+              <summary className="cursor-pointer text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+                Recommendation Notes
+              </summary>
+              <div className="mt-2 space-y-1 text-xs text-slate-600">
+                {typeof product.recommendation_match_confidence === "number" ? (
+                  <p>Match confidence: {product.recommendation_match_confidence}</p>
+                ) : null}
+                {product.explanation?.input_level ? (
+                  <p>
+                    Input level: {product.explanation.input_level}
+                    {typeof product.explanation.input_score === "number" ? ` (${product.explanation.input_score})` : ""}
+                  </p>
+                ) : null}
+                {product.explanation?.decision ? <p>Decision: {product.explanation.decision}</p> : null}
+                {product.explanation?.bank_state ? <p>Bank state: {product.explanation.bank_state}</p> : null}
+                {product.explanation?.image_status ? <p>Image status: {product.explanation.image_status}</p> : null}
+                {imageSuppressedByTrust ? <p>Display image: withheld by truth guard</p> : null}
+                {imageFailed ? <p>Display image: failed to load in browser</p> : null}
+                {product.recommendation_match_reasons?.length ? (
+                  <p>Reasons: {product.recommendation_match_reasons.join(", ")}</p>
+                ) : null}
+              </div>
+            </details>
+          ) : null}
+
           <div className="mt-auto pt-1 flex items-center gap-2">
-            <Button onClick={onToggleSave} variant="outline" size="sm" className="gap-1.5">
-              <Bookmark className="h-3 w-3" />
+            {productDestination && productActionLabel ? (
+              <Button
+                onClick={() => {
+                  window.open(productDestination, "_blank", "noopener,noreferrer");
+                }}
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+              >
+                <ExternalLink className="h-3 w-3" />
+                {productActionLabel}
+              </Button>
+            ) : null}
+
+            <Button onClick={onToggleSave} variant="outline" size="sm" className="gap-1.5" disabled={saveLoading}>
+              {saveLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Bookmark className="h-3 w-3" />}
               {isSaved ? "Saved" : "Save"}
             </Button>
 
             <Button
-              onClick={product.affiliate_url || product.search_url ? handleAction : onShare}
-              variant={product.affiliate_url || product.search_url ? "default" : "outline"}
+              onClick={onShare}
+              variant="outline"
               size="sm"
               className="gap-1.5"
+              disabled={shareLoading}
             >
-              {product.affiliate_url || product.search_url ? <ExternalLink className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
-              {product.affiliate_url ? "View Product" : product.search_url ? "Search Brand" : "Share"}
+              {shareLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Share2 className="h-3 w-3" />}
+              Share
             </Button>
           </div>
         </div>
@@ -459,6 +886,3 @@ function ProductCard({
 }
 
 export default Recommendations;
-
-// Codebase classification: runtime recommendations page.
-// Codebase classification: runtime recommendations page.

@@ -2,12 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Hide scrollbar but keep scrolling */
+/* Global scrollbar styling */
 html {
-  scrollbar-width: none;
-}
-html::-webkit-scrollbar {
-  display: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--swatch-teal-rgb), 0.58) rgba(255, 255, 255, 0.08);
 }
 
 /* Google Fonts loaded via index.html <link> for reliability */
@@ -744,14 +742,39 @@ body {
   46%, 100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
 }
 
-/* Hide all scrollbars globally */
-*::-webkit-scrollbar {
-  display: none;
+* {
+  -ms-overflow-style: auto;
 }
 
-* {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(var(--swatch-teal-rgb), 0.62) 0%,
+    rgba(var(--swatch-viridian-odyssey-rgb), 0.74) 100%
+  );
+  border-radius: 999px;
+  border: 2px solid rgba(245, 233, 220, 0.55);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(var(--swatch-teal-rgb), 0.74) 0%,
+    rgba(var(--swatch-viridian-odyssey-rgb), 0.88) 100%
+  );
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }
 @media (min-width: 768px) {
   .gotwo-coverflow-scale {

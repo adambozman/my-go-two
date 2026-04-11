@@ -64,7 +64,11 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
   };
 
   const formattedEnd = subscriptionEnd
-    ? new Date(subscriptionEnd).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+    ? new Date(subscriptionEnd).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
     : null;
 
   return (
@@ -72,28 +76,56 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
       <button
         onClick={onBack}
         className="hover:underline block text-left"
-        style={{ color: '#2d6870', fontFamily: "'Jost', sans-serif", fontWeight: 400, fontSize: 13, marginBottom: 12 }}
+        style={{
+          color: "#2d6870",
+          fontFamily: "'Jost', sans-serif",
+          fontWeight: 400,
+          fontSize: 13,
+          marginBottom: 12,
+        }}
       >
-        ← Back to Settings
+        Back to Settings
       </button>
       <div className="card-design-neumorph text-center" style={{ padding: 40 }}>
-        <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6">Subscription</h2>
+        <h2
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontWeight: 600,
+            fontSize: 28,
+            color: "var(--swatch-teal)",
+          }}
+          className="mb-6"
+        >
+          Subscription
+        </h2>
 
         {subscriptionLoading ? (
-          <p className="text-sm" style={{ color: 'var(--swatch-text-light)' }}>Checking subscription…</p>
+          <p className="text-sm" style={{ color: "var(--swatch-text-light)" }}>
+            Checking subscription...
+          </p>
         ) : subscribed ? (
-          /* ── Active Subscriber ── */
           <div className="space-y-6">
-            <div className="p-5 rounded-2xl" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.25)', border: '2px solid var(--swatch-teal)' }}>
-              <p className="text-sm font-semibold mb-2" style={{ color: 'var(--swatch-teal)' }}>Current Plan</p>
-              <span className="text-xs font-medium px-2.5 py-1 rounded-full inline-block mb-2" style={{ background: 'var(--swatch-teal)', color: 'white' }}>
+            <div
+              className="p-5 rounded-2xl"
+              style={{
+                background: "rgba(var(--swatch-gypsum-rose-rgb), 0.25)",
+                border: "2px solid var(--swatch-teal)",
+              }}
+            >
+              <p className="text-sm font-semibold mb-2" style={{ color: "var(--swatch-teal)" }}>
+                Current Plan
+              </p>
+              <span
+                className="text-xs font-medium px-2.5 py-1 rounded-full inline-block mb-2"
+                style={{ background: "var(--swatch-teal)", color: "white" }}
+              >
                 Premium
               </span>
-              <p className="text-xs mt-1" style={{ color: 'var(--swatch-text-light)' }}>
-                No ads · Increased AI usage
+              <p className="text-xs mt-1" style={{ color: "var(--swatch-text-light)" }}>
+                No ads - Increased AI usage
               </p>
               {formattedEnd && (
-                <p className="text-xs mt-2" style={{ color: 'var(--swatch-text-light)' }}>
+                <p className="text-xs mt-2" style={{ color: "var(--swatch-text-light)" }}>
                   Renews {formattedEnd}
                 </p>
               )}
@@ -105,49 +137,82 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
               onClick={handleManage}
               disabled={portalLoading}
             >
-              {portalLoading ? "Loading…" : "Manage Subscription"}
+              {portalLoading ? "Loading..." : "Manage Subscription"}
             </Button>
           </div>
         ) : (
-          /* ── Free User ── */
           <div className="space-y-6">
-            {/* Free tier */}
-            <div className="p-5 rounded-2xl text-left" style={{ background: 'rgba(var(--swatch-gypsum-rose-rgb), 0.25)', border: '2px solid var(--swatch-teal)' }}>
+            <div
+              className="p-5 rounded-2xl text-left"
+              style={{
+                background: "rgba(var(--swatch-gypsum-rose-rgb), 0.25)",
+                border: "2px solid var(--swatch-teal)",
+              }}
+            >
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold" style={{ color: 'var(--swatch-teal)' }}>Free</p>
-                <span className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ background: 'var(--swatch-teal)', color: 'white' }}>
+                <p className="text-sm font-semibold" style={{ color: "var(--swatch-teal)" }}>
+                  Free
+                </p>
+                <span
+                  className="text-xs font-medium px-2.5 py-1 rounded-full"
+                  style={{ background: "var(--swatch-teal)", color: "white" }}
+                >
                   Your Plan
                 </span>
               </div>
-              <p className="text-xl font-bold mb-3" style={{ color: 'var(--swatch-teal)' }}>$0<span className="text-xs font-normal">/month</span></p>
+              <p className="text-xl font-bold mb-3" style={{ color: "var(--swatch-teal)" }}>
+                $0<span className="text-xs font-normal">/month</span>
+              </p>
               <ul className="space-y-1.5">
-                {["Basic lists & cards", "Limited AI recommendations"].map(f => (
-                  <li key={f} className="flex items-center gap-2 text-xs" style={{ color: 'var(--swatch-text-light)' }}>
-                    <Check className="h-3 w-3 shrink-0" style={{ color: 'var(--swatch-teal)' }} /> {f}
+                {["Basic lists & cards", "Limited AI recommendations"].map((feature) => (
+                  <li
+                    key={feature}
+                    className="flex items-center gap-2 text-xs"
+                    style={{ color: "var(--swatch-text-light)" }}
+                  >
+                    <Check className="h-3 w-3 shrink-0" style={{ color: "var(--swatch-teal)" }} />{" "}
+                    {feature}
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Premium tier */}
-            <div className="p-5 rounded-2xl text-left" style={{ border: '1px solid rgba(var(--swatch-teal-rgb), 0.2)' }}>
-              <p className="text-sm font-semibold mb-1" style={{ color: 'var(--swatch-teal)' }}>Premium</p>
-              <p className="text-xl font-bold mb-3" style={{ color: 'var(--swatch-teal)' }}>$7.99<span className="text-xs font-normal">/month</span></p>
+            <div
+              className="p-5 rounded-2xl text-left"
+              style={{ border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}
+            >
+              <p className="text-sm font-semibold mb-1" style={{ color: "var(--swatch-teal)" }}>
+                Premium
+              </p>
+              <p className="text-xl font-bold mb-3" style={{ color: "var(--swatch-teal)" }}>
+                $7.99<span className="text-xs font-normal">/month</span>
+              </p>
               <ul className="space-y-1.5 mb-4">
-                {["No ads", "Increased AI usage", "Unlimited lists & cards", "Priority support"].map(f => (
-                  <li key={f} className="flex items-center gap-2 text-xs" style={{ color: 'var(--swatch-text-light)' }}>
-                    <Check className="h-3 w-3 shrink-0" style={{ color: 'var(--swatch-teal)' }} /> {f}
+                {["No ads", "Increased AI usage", "Unlimited lists & cards", "Priority support"].map((feature) => (
+                  <li
+                    key={feature}
+                    className="flex items-center gap-2 text-xs"
+                    style={{ color: "var(--swatch-text-light)" }}
+                  >
+                    <Check className="h-3 w-3 shrink-0" style={{ color: "var(--swatch-teal)" }} />{" "}
+                    {feature}
                   </li>
                 ))}
               </ul>
               <div className="flex flex-col gap-2">
                 <Button
                   className="rounded-full w-full"
-                  style={{ background: '#d4543a', color: 'white', boxShadow: '0 4px 20px rgba(212,84,58,0.3)' }}
+                  style={{
+                    background: "#d4543a",
+                    color: "white",
+                    boxShadow: "0 4px 20px rgba(212,84,58,0.3)",
+                  }}
                   onClick={() => handleCheckout(SUBSCRIPTION_TIERS.premium.monthly_price_id)}
                   disabled={checkoutLoading === SUBSCRIPTION_TIERS.premium.monthly_price_id}
                 >
-                  {checkoutLoading === SUBSCRIPTION_TIERS.premium.monthly_price_id ? "Loading…" : "Upgrade Monthly — $7.99/mo"}
+                  {checkoutLoading === SUBSCRIPTION_TIERS.premium.monthly_price_id
+                    ? "Loading..."
+                    : "Upgrade Monthly - $7.99/mo"}
                 </Button>
                 <Button
                   className="rounded-full w-full"
@@ -155,24 +220,25 @@ const SubscriptionSection = ({ onBack }: SubscriptionSectionProps) => {
                   onClick={() => handleCheckout(SUBSCRIPTION_TIERS.premium.yearly_price_id)}
                   disabled={checkoutLoading === SUBSCRIPTION_TIERS.premium.yearly_price_id}
                 >
-                  {checkoutLoading === SUBSCRIPTION_TIERS.premium.yearly_price_id ? "Loading…" : "Upgrade Yearly — $59.99/yr (save 37%)"}
+                  {checkoutLoading === SUBSCRIPTION_TIERS.premium.yearly_price_id
+                    ? "Loading..."
+                    : "Upgrade Yearly - $59.99/yr (save 37%)"}
                 </Button>
               </div>
             </div>
 
-            <div className="border-t pt-4" style={{ borderColor: 'rgba(var(--swatch-teal-rgb), 0.1)' }}>
-              <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>
+            <div className="border-t pt-4" style={{ borderColor: "rgba(var(--swatch-teal-rgb), 0.1)" }}>
+              <p className="text-xs" style={{ color: "var(--swatch-text-light)" }}>
                 You can cancel anytime from the subscription portal.
               </p>
             </div>
           </div>
         )}
 
-        {/* Refresh button */}
         <button
           onClick={checkSubscription}
           className="mt-4 text-xs hover:underline"
-          style={{ color: '#2d6870', fontFamily: "'Jost', sans-serif" }}
+          style={{ color: "#2d6870", fontFamily: "'Jost', sans-serif" }}
         >
           Refresh subscription status
         </button>

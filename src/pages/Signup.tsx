@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { ArrowRight } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AppleSignInButton from "@/components/AppleSignInButton";
 import GoTwoText from "@/components/GoTwoText";
+import { resolvePostAuthDestination } from "@/lib/authEntryRedirect";
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Something went wrong";
@@ -17,14 +18,32 @@ const getErrorMessage = (error: unknown) =>
 const Signup = () => {
   const [searchParams] = useSearchParams();
   const inviteId = searchParams.get("invite");
+  const inviteToken = searchParams.get("token");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [age, setAge] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  const { signUp, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (inviteId) {
+      localStorage.setItem("gotwo_invite", inviteId);
+    }
+    if (inviteToken) {
+      localStorage.setItem("gotwo_invite_token", inviteToken);
+    }
+  }, [inviteId, inviteToken]);
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+
+    void resolvePostAuthDestination(user.id).then((destination) => {
+      navigate(destination, { replace: true });
+    });
+  }, [authLoading, navigate, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,9 +53,6 @@ const Signup = () => {
       localStorage.setItem("gotwo_signup_data", JSON.stringify({
         age: parseInt(age) || null,
       }));
-      if (inviteId) {
-        localStorage.setItem("gotwo_invite", inviteId);
-      }
       toast({ title: "Check your email", description: "We sent you a confirmation link." });
       navigate("/login");
     } catch (error: unknown) {

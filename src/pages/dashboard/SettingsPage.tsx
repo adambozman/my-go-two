@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+﻿import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { normalizeGender } from "@/lib/gender";
 import { QRCodeSVG } from "qrcode.react";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { User, Bell, Shield, Users, ChevronRight, Save, KeyRound, Mail, QrCode, Copy, Check, Clock, UserCheck, UserX, CreditCard, HelpCircle, Info, Trash2, Database, Loader2 } from "lucide-react";
+import { User, Bell, Shield, Users, ChevronRight, Save, KeyRound, Mail, QrCode, Copy, Check, Clock, UserCheck, UserX, CreditCard, HelpCircle, Info, Trash2, Loader2, Share2 } from "lucide-react";
 import SubscriptionSection from "@/components/SubscriptionSection";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth-context";
@@ -32,6 +32,7 @@ interface UserSettingsRow {
   email_digests: boolean;
 }
 
+// TEST-ONLY response shape for reseeding fake connection accounts.
 interface TestProfileSeedUser {
   display_name?: string;
   email?: string;
@@ -40,6 +41,17 @@ interface TestProfileSeedUser {
 interface TestProfileSeedResult {
   users?: TestProfileSeedUser[];
 }
+
+type UserSettingsWriter = {
+  from: (table: "user_settings") => {
+    upsert: (
+      values: Record<string, boolean | string>,
+      options: { onConflict: string },
+    ) => Promise<{ error: { message?: string } | null }>;
+  };
+};
+
+const userSettingsWriter = supabase as unknown as UserSettingsWriter;
 
 const SettingsPage = () => {
   const { user } = useAuth();
@@ -65,6 +77,7 @@ const SettingsPage = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
+  const [sharingInvite, setSharingInvite] = useState(false);
   const [resettingTestProfiles, setResettingTestProfiles] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [shareToken, setShareToken] = useState("");
@@ -96,8 +109,8 @@ const SettingsPage = () => {
     const newVal = !settings[key];
     setSettings(prev => ({ ...prev, [key]: newVal }));
     // Upsert
-    const payload: Pick<UserSettingsRow, "user_id"> & Partial<UserSettingsRow> = { user_id: user.id, [key]: newVal };
-    const { error } = await supabase.from("user_settings").upsert(
+    const payload: Record<string, boolean | string> = { user_id: user.id, [key]: newVal };
+    const { error } = await userSettingsWriter.from("user_settings").upsert(
       payload,
       { onConflict: "user_id" }
     );
@@ -222,6 +235,35 @@ const SettingsPage = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleShareInvite = async () => {
+    setSharingInvite(true);
+    try {
+      const token = await ensureShareToken();
+      const nextInviteLink = `${window.location.origin}/connect?token=${token}`;
+      const shareText = `Connect with me on Go Two.\n\n${nextInviteLink}`;
+
+      if (typeof navigator.share === "function") {
+        await navigator.share({
+          title: "Connect on Go Two",
+          text: shareText,
+          url: nextInviteLink,
+        });
+        toast({ title: "Invite ready", description: "Sent from your share sheet." });
+        return;
+      }
+
+      await navigator.clipboard.writeText(nextInviteLink);
+      setCopied(true);
+      toast({ title: "Link copied!", description: "Paste it into text, WhatsApp, or anywhere you share." });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Could not share invite";
+      toast({ title: "Could not share invite", description: message, variant: "destructive" });
+    } finally {
+      setSharingInvite(false);
+    }
+  };
+
   const handleAccept = async (userConnectionId: string) => {
     try {
       await callEdgeFunction("accept-invite", { invite_id: userConnectionId });
@@ -307,7 +349,6 @@ const SettingsPage = () => {
     { key: "subscription", icon: CreditCard, title: "Subscription", description: "Your plan and billing details" },
     { key: "help", icon: HelpCircle, title: "Help & Support", description: "Get help, contact us, FAQs" },
     { key: "about", icon: Info, title: "About GoTwo", description: "Version, terms, and privacy policy" },
-    { key: "data-sync", icon: Database, title: "Data Sync", description: "Sync category registry to Supabase" },
   ];
 
   return (
@@ -322,7 +363,7 @@ const SettingsPage = () => {
               {settingsItems.map((item) => (
                 <button
                   key={item.key}
-                  onClick={() => item.key === "data-sync" ? navigate("/dashboard/data-sync") : setActiveSection(item.key)}
+                  onClick={() => setActiveSection(item.key)}
                   className="flex items-center gap-4 px-4 py-4 rounded-2xl transition-colors text-left group w-full hover:bg-secondary/30"
                 >
                   <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>
@@ -452,7 +493,7 @@ const SettingsPage = () => {
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: 'var(--swatch-teal)' }} className="mb-6 text-center">Connections</h2>
 
             {/* Invite Methods */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-3">
               <button
                 onClick={() => setQrDialogOpen(true)}
                 className="card-design-neumorph p-5 text-left hover:scale-[1.01] transition-transform group flex items-center gap-3"
@@ -477,6 +518,23 @@ const SettingsPage = () => {
                   <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>Send an invitation</p>
                 </div>
               </button>
+              <button
+                onClick={handleShareInvite}
+                disabled={sharingInvite}
+                className="card-design-neumorph p-5 text-left hover:scale-[1.01] transition-transform group flex items-center gap-3 disabled:opacity-60"
+              >
+                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(var(--swatch-teal-rgb), 0.08)' }}>
+                  {sharingInvite ? (
+                    <Loader2 className="w-5 h-5 animate-spin" style={{ color: 'var(--swatch-teal)' }} />
+                  ) : (
+                    <Share2 className="w-5 h-5" style={{ color: 'var(--swatch-teal)' }} />
+                  )}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-sm group-hover:underline" style={{ color: 'var(--swatch-teal)' }}>Share Link</h3>
+                  <p className="text-xs" style={{ color: 'var(--swatch-text-light)' }}>Text, phone, or WhatsApp</p>
+                </div>
+              </button>
             </div>
             <div className="mb-8">
               <Button
@@ -489,7 +547,7 @@ const SettingsPage = () => {
                 {resettingTestProfiles ? "Resetting test profiles..." : "Reset 2 Test Profiles"}
               </Button>
               <p className="mt-2 text-xs text-center" style={{ color: "var(--swatch-text-light)" }}>
-                Resets Harper and Rowan as full test profiles for connection, delete, and share QA.
+                TEST-ONLY: resets Harper and Rowan as fake profiles for connection, delete, and share QA.
               </p>
             </div>
 

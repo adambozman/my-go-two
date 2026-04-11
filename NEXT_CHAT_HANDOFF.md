@@ -1,16 +1,12 @@
 # Next Chat Handoff
 
-This is the single handoff document the next chat should read first.
+This is the primary operator handoff for this repo.
 
-It exists to preserve:
+Read this file first.
 
-- product context
-- user terminology
-- hard rules
-- current live `My Go Two` state
-- what this chat established
-- what still needs to be done
+It consolidates the repo rules, product constraints, live working paths, login path, important files, verified realities, and the minimum context needed to work safely without bouncing through the audit folder.
 
+<<<<<<< HEAD
 ## 2026-04-08 Current Delta
 
 This section is append-only. Do not remove earlier sections unless the work is truly finished.
@@ -132,313 +128,359 @@ Important warning:
 - Future chats should preserve that practice on newly edited runtime files.
 
 ## Product Context
+=======
+Source material consolidated into this handoff:
+>>>>>>> 495927ef830082e70405199fbec87c1979705368
 
-`Go Two` is a relationship and recommendation product, not a generic preference app.
+- `.lovable/plan.md`
+- `CRITICAL_ISSUES_FIX_PLAN.md`
+- `RECOMMENDATION_INTELLIGENCE_OVERHAUL_PLAN.md`
+- `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md`
+- `RECOMMENDATION_SYSTEM_BUILD_SPEC.md`
+- `MY_GO_TWO_OVERHAUL_PLAN.md`
+- `LINT_AUDIT.md`
+- `audit/agent-reports/Atlas/INDEX.md`
+- `audit/agent-reports/Briar/001-auth-session-data.md`
+- `audit/agent-reports/Briar/002-storage-ref-and-bucket-policies.md`
+- `audit/agent-reports/Briar/INDEX.md`
+- `audit/agent-reports/Coda/001-app-shell-routing.md`
+- `audit/agent-reports/Coda/002-auth-session-routing-guards.md`
+- `audit/agent-reports/Coda/INDEX.md`
+- `audit/agent-reports/Hypatia.md`
+- `audit/agent-reports/Hypatia_FINAL_SELF.md`
+- `audit/agent-reports/Hypatia_REVIEW_OF_Laplace.md`
+- `audit/agent-reports/Kepler.md`
+- `audit/agent-reports/Kepler_FINAL_SELF.md`
+- `audit/agent-reports/Laplace.md`
+- `audit/agent-reports/Laplace_FINAL_SELF.md`
+- `src/assets/spare/README.md`
+- `src/assets/templates/non-binary/README.md`
+- `src/platform-ui/README.md`
 
-Core purpose:
+## Purpose
 
-- users create `Go Two` lists
-- users save exact product and preference cards
-- users answer `Know Me` questions
-- AI uses those saved preferences and answers to make recommendations
-- trusted connections can search shared saved preferences so they know exactly what to buy, order, recommend, or avoid
+`Go Two` is a relationship and recommendation product.
 
-Examples of what matters:
+Core loop:
 
-- brand
-- color
-- recipe
-- store
-- style
-- vibe
-- exact Starbucks or Dunkin order
-- winter vs summer
-- hot vs cold
-- cocktail preference
-- Taco Bell or restaurant order
+1. Users create and maintain `Go Two` preference cards and lists.
+2. Users answer `Know Me` questions.
+3. AI uses saved preferences and answers to recommend products, gifts, restaurants, and decisions.
+4. Trusted connections can search shared preferences and act on exact saved details.
 
-This is a business-critical product surface. The standard is working, usable, user-ready code and live behavior, not just code that compiles.
+Examples of meaningful saved information:
 
-## User Terminology
+- exact coffee order
+- color and brand preferences
+- fit, size, and style preferences
+- home, travel, and gift preferences
+- seasonal and context-specific preferences
 
-Use the user’s terms the way the user means them.
+This is not a generic demo app. Product behavior matters more than abstract cleanup.
 
-- `asset`:
-  Any reusable global thing created to use repeatedly. Not automatically an image.
+## Non-Negotiable Rules
 
-- `product card`:
-  A real React component, not a screenshot and not a flat image.
+These rules came up repeatedly across the handoff and audits and should be treated as binding.
 
-- `beverage card`:
-  The whole opened Beverages experience on screen.
+1. Do exactly what the user asked. Do not broaden scope.
+2. User-visible behavior is the source of truth.
+3. A passing build is not proof that a live behavior issue is solved.
+4. Do not redesign `My Go Two` while fixing behavior or performance.
+5. Do not invent placeholder UI, fallback imagery, or temporary fake visuals unless explicitly requested.
+6. Do not revive deleted image-bank flows.
+7. If the user says an asset is a component, treat it as code, not a screenshot.
+8. Before claiming cleanup/removal/consolidation, verify the repo state.
+9. On critical `My Go Two` issues, first split research into two tracks:
+   - runtime/data/loading
+   - navigation/live behavior/state tracing
+10. Prefer the existing local running app and existing browser session instead of repeatedly launching new servers and windows.
 
-- `Product card beverages`:
-  The specific reusable right-side card asset.
+## Product Terminology
 
-- `collapse`:
-  The strip state where only the preview strips remain visible and fill the stage.
+Use the user's terms consistently.
 
-- `preview strips`:
-  The 8 image-only strips used in both collapsed and uncollapsed states. They are part of the intended scaffold, not temporary filler.
-
-- `category strips`:
-  The labeled strips like `Clothes`, `Personal`, `Health`, `Gifts`, `Dining`, `Beverages`, `Household`, `Entertainment`, `Travel`.
-
-## Hard Rules
-
-These rules are binding.
-
-1. Do exactly what the user asks. Do not broaden the task.
-2. Do not be “helpful” by changing extra things that were not requested.
-3. On critical `My Go Two` issues, first send out two research agents:
-   - one for runtime/data/loading
-   - one for navigation/live behavior/state tracing
-4. User-visible output is the source of truth.
-5. A passing build does not mean the issue is solved if the live page still behaves badly.
-6. Do not minimize runtime or rendering issues just because `npm run build` passes.
-7. Do not create placeholder slabs, stand-in screens, invented fallback visuals, or made-up imagery unless explicitly asked.
-8. Do not revive starter images or hidden fallback imagery for the strip.
-9. Do not flatten React component assets into static images.
-10. If the user says an asset is a component, treat it as code.
-11. If the user says a file or asset should be deleted or unhooked, verify that it is actually gone before claiming consolidation or cleanup is complete.
-12. Before answering that something was combined, cleaned, or removed, verify the real repo state.
+- `asset`: any reusable global thing, not automatically an image
+- `product card`: a real React component
+- `beverage card`: the opened Beverages experience
+- `Product card beverages`: the specific reusable right-side beverage card asset
+- `preview strips`: the 8 image-only strips that form the scaffold
+- `category strips`: the labeled strips such as `Clothes`, `Personal`, `Health`, `Gifts`, `Dining`, `Beverages`, `Household`, `Entertainment`, `Travel`
+- `collapse`: the state where only preview strips remain visible and fill the stage
+- `card image` / `detail image`: the larger opened-category image, separate from the narrow strip image
 
 ## Current Live `My Go Two` Rules
 
-These should not be broken.
+These are the current live behavior constraints and should not be broken during refactors or fixes.
 
-1. Do not redesign `My Go Two` when making behavior fixes.
-2. The 8 preview strips stay the 8 preview strips in both states.
-3. In uncollapsed state, preview strips are larger than normal strips but do not grow on hover.
+1. The 8 preview strips remain part of both states.
+2. In the uncollapsed state, preview strips are larger than normal strips.
+3. Preview strips do not grow on hover.
 4. Only labeled category strips grow on hover.
-5. In collapsed state, only the preview strips remain visible and fill the stage.
+5. In the collapsed state, only the preview strips remain visible and fill the stage.
 6. Collapse rotation happens only while collapsed.
 7. Collapse rotation is 10 seconds per image.
 8. The 5-image collapse bank is separate from the normal strip images.
-9. Clicking a labeled category opens an in-place full-stage panel, not a popup, stretched strip, or route change.
-10. The strip page must use assigned images only.
-11. Do not reintroduce the deleted legacy `category-images/bank/...` upload flow.
-
-## Current Important Files
-
-Live `My Go Two` page:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\pages\dashboard\MyGoTwo.tsx`
-
-Live strip component:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\platform-ui\web\mygotwo\MyGoTwoStripGalleryAsset.tsx`
-
-Strip image metadata:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\platform-ui\web\mygotwo\myGoTwoStripGallery.images.ts`
-
-Strip data/loading path:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\platform-ui\web\mygotwo\myGoTwoStripGallery.data.ts`
-
-Photo bank/editor page:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\pages\PhotoGallery.tsx`
-
-Image assignment helper:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\lib\imageOverrides.ts`
-
-Storage resolution:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\lib\storageRefs.ts`
-
-Legacy image cleanup:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\lib\legacyImageCleanup.ts`
-
-Live logo component:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\components\GoTwoText.tsx`
-
-Reusable product card asset base:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\platform-ui\web\mygotwo\MyGoTwoProductCard.tsx`
-
-Reusable beverages product card asset:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\platform-ui\web\mygotwo\MyProductCardBeverages.tsx`
-
-## What This Chat Established
-
-### 1. `My Go Two` loading problems were real runtime problems
-
-The slowness and jank were not just perception issues.
-
-Main causes identified in the strip system:
-
-- heavy image/data loading on first render
-- loader and stage timing getting out of sync
-- timer-driven collapse/hover/open behavior fighting live loading
-- earlier starter/fallback image behavior was wrong and should not return
-
-### 2. `PNG` strip assets were a real issue for the transformed strip path
-
-Two strip images appeared “missing” because transformed Supabase render URLs for those `PNG` assets were returning `400`.
-
-The correct product answer is:
-
-- use `JPG` for strip photography
-- do not rely on `PNG` in that transformed strip pipeline unless there is a real reason
-
-### 3. `--no-sandbox` is not a site-code line
-
-The warning about:
-
-- `You are using an unsupported command-line flag: --no-sandbox`
-
-is coming from the external Playwright/Codex browser launcher, not from the app’s source code.
-
-### 4. The current `DashboardTopBar.tsx` issue reported by the user does not reproduce in this checkout as a frontend build blocker
-
-Current local checks:
-
-- `npm run build` passes
-- `npx tsc --noEmit` passes
-
-There is a real type-shape concern in `navItems` because only one item has `end: true`, but in this checkout it is not currently blocking the frontend build.
-
-### 5. Edge-function type errors are separate from the frontend
-
-The `searchforaddprofile` and `ai-products` edge-function errors are dominated by reading from untyped `req.json()` / external JSON values without narrowing.
-
-Those issues affect edge deployment/type-checking, not current frontend rendering.
-
-### 6. Asset cleanup was not actually complete
-
-The next chat must not assume cleanup happened just because it was discussed earlier.
-
-What is true right now:
-
-- `GoTwoTransparentNew.png` is still the live logo asset in use
-- `GoTwoTransparent.png` is stale
-- `gotwo-script-lockup.svg` is stale
-- the four `dashboard/quick-*` JPGs are stale leftovers
-- there are many additional repo-root screenshots/reference images and broad-glob asset folders that need explicit review and cleanup
-
-## Asset Findings From This Chat
-
-### Clearly active
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\GoTwoTransparentNew.png`
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\fonts\Benedict-Regular.otf`
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\fonts\Pierson-Regular.ttf`
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\previews\bg-clean-linen.jpg`
-- root `styles` JPGs used by `profileQuestions.ts`
-- relationship stock photos used by `stockPhotos.ts`
-- specific template images directly imported by `Recommendations.tsx`
-
-### Clearly stale leftovers
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\GoTwoTransparent.png`
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\logos\gotwo-script-lockup.svg`
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\dashboard\quick-gift-ideas.jpg`
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\dashboard\quick-saved-items.jpg`
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\dashboard\quick-their-brands.jpg`
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\dashboard\quick-their-sizes.jpg`
-
-### Dev-only / screenshot artifacts
-
-There are many repo-root and tool-output screenshots that are not app assets, including files like:
-
-- `desktop-mygotwo*.png`
-- `mygotwo-coverflow-*.png`
-- `output-mygotwo-*.png`
-- `playwright-mygotwo-home.png`
-- `tmp-mygotwo-*.png`
-- files under `.playwright-cli`
-- files under `output\playwright`
-
-### Manual-review folders
-
-These buckets need explicit cleanup review because they are not clearly direct live assets:
-
-- `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\spare`
-- much of `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\templates`
-- much of `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\styles\female`
-- much of `C:\Users\adamb\Documents\GitHub\my-go-two\src\assets\styles\male`
-- extra preview images under `src\assets\previews` other than `bg-clean-linen.jpg`
-
-## Photo Gallery Findings
-
-The current `PhotoGallery` page is overloaded and slower than it should be.
-
-Main reasons:
-
-- it loads the full `category_bank_photos` table at once
-- it resolves storage URLs for every image before the page settles
-- it also loads assigned slots in parallel
-- it runs legacy cleanup on mount, which can trigger extra reload work
-- every card shows too many controls
-- the page is acting as uploader, bank browser, assignment tool, inspector, and deleter all at once
-
-The correct direction is:
-
-- split `PhotoGallery` into lighter parts
-- reduce first-load data and image work
-- reduce visible controls
-- make slot assignment the main workflow instead of making every card a control panel
-
-## What Still Needs To Be Done
-
-### `My Go Two`
-
-1. Keep tightening route-level startup work so the strip page settles faster.
-2. Validate open-category behavior category by category.
-3. Keep assigned-images-only behavior strict.
-4. Keep loading/state behavior smooth and synchronized.
-
-### Assets
-
-1. Delete stale logo files and stale dashboard quick-action images.
-2. Audit the repo-root screenshot/reference files and remove what should not live in the repo.
-3. Review `spare`, `styles`, `templates`, and non-core preview folders and decide what is truly live versus leftover.
-
-### Photo Gallery
-
-1. Redesign the page structure so it is not one overloaded admin slab.
-2. Reduce first-load image work.
-3. Reduce button clutter.
-4. Separate assignment workflow from bank browsing.
-
-## Working Local App
-
-Local app:
+9. Clicking a labeled category opens an in-place full-stage panel, not a popup or route change.
+10. The strip page must render assigned images only.
+11. Do not reintroduce the old `category-images/bank/...` upload flow.
+12. Separate strip images and card/detail images are valid and already supported by the current architecture.
+
+## Live Working Paths
+
+Most important live pages:
+
+- Landing: `src/pages/Landing.tsx`
+- Login: `src/pages/Login.tsx`
+- Signup: `src/pages/Signup.tsx`
+- Dashboard shell: `src/layouts/DashboardLayout.tsx`
+- Dashboard home: `src/pages/dashboard/DashboardHome.tsx`
+- My Go Two: `src/pages/dashboard/MyGoTwo.tsx`
+- Recommendations: `src/pages/dashboard/Recommendations.tsx`
+- Settings: `src/pages/dashboard/SettingsPage.tsx`
+- Questionnaires: `src/pages/dashboard/Questionnaires.tsx`
+- Photo Gallery: `src/pages/PhotoGallery.tsx`
+
+Most important `My Go Two` implementation files:
+
+- `src/pages/dashboard/MyGoTwo.tsx`
+- `src/platform-ui/web/mygotwo/MyGoTwoStripGalleryAsset.tsx`
+- `src/platform-ui/web/mygotwo/myGoTwoStripGallery.data.ts`
+- `src/platform-ui/web/mygotwo/myGoTwoStripGallery.images.ts`
+- `src/lib/imageOverrides.ts`
+- `src/lib/storageRefs.ts`
+- `src/pages/PhotoGallery.tsx`
+
+Most important auth/invite files:
+
+- `src/contexts/AuthContext.tsx`
+- `src/contexts/auth-context.ts`
+- `src/pages/Login.tsx`
+- `src/pages/Signup.tsx`
+- `src/pages/Connect.tsx`
+- `src/layouts/DashboardLayout.tsx`
+- `supabase/functions/dev-login/index.ts`
+- `supabase/functions/searchforaddprofile/index.ts`
+
+Most important recommendation/billing files:
+
+- `src/pages/dashboard/Recommendations.tsx`
+- `supabase/functions/recommendation-engine-v2/index.ts`
+- `supabase/functions/recommendation-bank-maintenance/index.ts`
+- `supabase/functions/recommendation-trend-pipeline/index.ts`
+- `supabase/functions/_shared/recommendationSignals.ts`
+- `supabase/functions/_shared/recommendationIntentPlanner.ts`
+- `supabase/functions/_shared/recommendationProductBank.ts`
+- `supabase/functions/_shared/recommendationTrendPipeline.ts`
+- `supabase/functions/check-subscription/index.ts`
+- `supabase/functions/create-checkout/index.ts`
+- `supabase/functions/customer-portal/index.ts`
+- `RECOMMENDATION_EXECUTION_CHECKLIST.md`
+
+Most important `Know Me` / `This or That` files:
+
+- `src/pages/dashboard/KnowMePage.tsx`
+- `src/data/knowMeQuestions.ts`
+- `src/data/thisOrThatV2.ts`
+- `src/data/thisOrThatV2Authored.ts`
+- `src/data/thisOrThatV2Persistence.ts`
+
+## Local Run And Login
+
+Package scripts:
+
+- `npm run dev`
+- `npm run build`
+- `npm run lint`
+- `npm test`
+
+Current working local app URL used in this environment:
 
 - `http://127.0.0.1:5180/`
 
-Run:
+Preferred local workflow:
 
-```sh
-npm run dev -- --host 127.0.0.1 --port 5180
-```
+1. Reuse the existing local app/browser session when it is already running.
+2. Do not keep spawning new browser windows and Vite instances for routine checks.
+3. Visually verify real pages after meaningful changes, especially `My Go Two`, dashboard, and any touched user path.
 
-Build:
+Documented dev login path from code:
 
-```sh
-npm run build
-```
+1. Open `/login`.
+2. Use `adam.bozman@gmail.com`.
+3. `Login.tsx` detects that allowlisted email and calls the `dev-login` edge.
+4. `supabase/functions/dev-login/index.ts` generates a magic link server-side and returns a session.
+5. The client calls `supabase.auth.setSession(...)`.
+6. Post-login routing resolves to `/onboarding` or `/dashboard`.
 
-Type check:
+Important auth note:
 
-```sh
-npx tsc --noEmit
-```
+- The current `dev-login` flow uses server-generated magic-link verification and does not rotate passwords anymore.
+- That change exists specifically to stop repeated dev-session invalidation.
 
-## Resume Rule
+## Verified Current Truths
 
-The next chat should start with this file.
+These are the important current realities established across the docs and repo inspection.
 
-Before changing code:
+### Auth and routing
 
-1. Read this file first.
-2. Confirm the exact requested scope.
-3. On critical `My Go Two` work, send out two research agents first.
-4. Change only the thing requested.
-5. Verify the actual repo state before claiming something was combined, deleted, cleaned up, or consolidated.
+- `DashboardLayout.tsx` is the main dashboard auth gate.
+- Some leaf pages still duplicate auth redirect behavior, especially `MyGoTwo.tsx`.
+- Duplicate guarding is considered a likely contributor to bounce/login instability.
+- `check-subscription` is coupled too closely to auth/session boot and also runs on an interval.
+
+### Invite/connect flow
+
+- `gotwo_invite` is consumed after login.
+- `gotwo_invite_token` is stored but not fully and cleanly consumed post-login.
+- Token invites are therefore structurally incomplete in some logged-out entry paths.
+
+### My Go Two image system
+
+- The live runtime source of truth is `category_images` plus `storage://bucket/path` refs.
+- `PhotoGallery.tsx` is currently the live operator editor for slot assignments.
+- The loader already supports separate strip and detail/card images.
+- The collapse bank is separate from category strip/card images.
+
+### Storage resolution
+
+- `storageRefs.ts` is the browser URL boundary.
+- Bucket privacy handling is currently hard-coded via `PRIVATE_BUCKETS`.
+- Audits repeatedly flagged policy drift between migrations and that hard-coded list.
+- `photo-bank` and `images-mygotwo-strip` are frequent drift-risk buckets.
+
+### Recommendations
+
+- The frontend recommendations page is a viewer for a weekly cached backend generation path.
+- The live recommendations page is on `recommendation-engine-v2`; do not add a second product-generation runtime path.
+- `recommendation-engine-v2` now separates recommendation-fit confidence from exact-product confidence.
+- Sparse profiles now return fewer stronger picks instead of forcing a full 12-card set.
+- `recommendation_product_bank` now carries row state, image verification state, source metadata, and reverification notes.
+- migrated bank rows should start as `review_required` until `recommendation-bank-maintenance` re-verifies them.
+- `recommendation-bank-maintenance` is the trusted cleanup/rescore path for existing bank rows.
+- `recommendation-trend-pipeline` stages trend candidates first and only promotes approved rows into the shared banks.
+- `resolved_recommendation_catalog` still exists, but the v2 direction is to treat `recommendation_product_bank` as the exact-product reuse layer.
+
+### Know Me / This or That
+
+- `KnowMePage.tsx` uses the authored v2 runtime bank from `src/data/thisOrThatV2.ts`.
+- `src/data/knowMeQuestions.ts` is now only the main non-This-or-That quiz bank.
+- Flat `tot-*` parsing is removed from recommendation normalization.
+- This-or-That recommendation signals should come from structured `this_or_that_v2_answers` payloads and the v2 authored dataset.
+- Do not rebuild helper aliases that read the removed flat question bank.
+
+### Public feed and connections
+
+- Connection safety is mostly handled via SQL RPCs and explicit share tables.
+- Public feed backend design is comparatively coherent, but the frontend still reloads too much and assumes raw image URLs.
+
+### Tooling
+
+- `npm run lint` currently passes.
+- `npm run build` currently passes.
+- Targeted recommendation and This-or-That contract tests cover the v2 signal pipeline, but live browser/runtime checks are still required before claiming user-facing behavior is fixed.
+- `LINT_AUDIT.md` is stale and should not be trusted as current status.
+
+## Asset And Cleanup Status
+
+The repo had real cleanup work completed, but cleanup is not "done" in the broad sense.
+
+### Safe cleanup already completed
+
+- retired carousel test routes/pages removed
+- dead `CategorySync` route/file removed from runtime
+- repo-root screenshot and capture clutter removed
+- several clearly unused template/preview assets removed
+- several orphaned utilities/components removed
+
+### Active asset buckets that are not safe to bulk-delete
+
+- `src/assets/previews`
+- `src/assets/templates`
+- `src/assets/styles`
+- `src/assets/spare`
+
+These are still connected to live code or active data systems and need file-by-file review only.
+
+### Future-project assets intentionally retained
+
+- `src/lib/quotes.ts`
+- `src/hooks/useRotatingQuote.ts`
+
+These are reserved for future work and not part of the live flow right now.
+
+## High-Risk Areas To Treat Carefully
+
+These are the places where the docs consistently say "do not freestyle".
+
+1. `My Go Two` startup/load path
+2. auth/session lifecycle
+3. invite/connect handoff
+4. storage bucket privacy assumptions
+5. shared/global writable tables
+6. `PhotoGallery.tsx` because it edits live slot mappings
+7. `searchforaddprofile` because it is a large multi-action edge function
+
+## Known Architectural Problems
+
+These are documented repeatedly across the audits.
+
+1. Duplicate auth guards create redirect/bounce risk.
+2. Edge auth strategy is inconsistent across functions.
+3. `searchforaddprofile` is doing too much.
+4. `DashboardHome.tsx`, `SettingsPage.tsx`, `Questionnaires.tsx`, and `PhotoGallery.tsx` are too large and mix too many responsibilities.
+5. Some shared/global tables are too broadly writable.
+6. Storage bucket privacy and frontend resolver behavior are not derived from one source of truth.
+7. Several flows still contain demo/test/dev assumptions that need to stay clearly isolated.
+8. Source files contain some corrupted unicode copy that should be cleaned up before launch-quality polish.
+
+## Current Do-Not-Touch Blindly List
+
+Do not blindly delete or rework these without tracing active usage first.
+
+- `src/pages/dashboard/MyGoTwo.tsx`
+- `src/platform-ui/web/mygotwo/*`
+- `src/pages/PhotoGallery.tsx`
+- `src/lib/storageRefs.ts`
+- `src/contexts/AuthContext.tsx`
+- `src/layouts/DashboardLayout.tsx`
+- `src/pages/Connect.tsx`
+- `supabase/functions/searchforaddprofile/index.ts`
+- `supabase/config.toml`
+- `supabase/migrations/*` touching shared/global tables or storage buckets
+
+## Verification Standard
+
+When making changes:
+
+1. Check the relevant live page visually, not just by build output.
+2. Use the existing local app/session when available.
+3. Keep `My Go Two` rules intact.
+4. Keep login/invite flows intact.
+5. Run lint/build when touching code paths that can affect them.
+6. Do not claim cleanup or behavior fixes until the actual repo and the actual page agree.
+
+## What Still Needs To Be Done
+
+See `CRITICAL_ISSUES_FIX_PLAN.md` for the consolidated fix plan.
+
+For the recommendation rebuild specifically, use:
+
+- `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md`
+- `RECOMMENDATION_SYSTEM_BUILD_SPEC.md`
+
+The shortest version is:
+
+1. finish `My Go Two` startup/load/state work
+2. simplify and harden auth/session behavior
+3. complete invite token handoff
+4. harden edge auth and shared/global table ownership
+5. simplify `PhotoGallery.tsx`
+6. clean up large overloaded dashboard pages and product surfaces without breaking behavior
+
+## Archive Note
+
+The original audit and planning docs still exist as source material and historical detail.
+
+Use this handoff first.
+
+Use `CRITICAL_ISSUES_FIX_PLAN.md` second.

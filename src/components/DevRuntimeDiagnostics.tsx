@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
+import {
+  MYGOTWO_STAGE_DIAGNOSTIC_EVENT,
+  type MyGoTwoStageDiagnosticDetail,
+} from "@/lib/devRuntimeEvents";
 
 type RuntimeDiagnostic = {
-  kind: "error" | "rejection";
+  kind: "error" | "rejection" | "notice";
+  title: string;
   message: string;
 };
 
@@ -30,21 +35,40 @@ export function DevRuntimeDiagnostics() {
     const handleError = (event: ErrorEvent) => {
       const message = getDiagnosticMessage(event.error ?? event.message);
       console.error("Unhandled runtime error:", event.error ?? event.message);
-      setDiagnostic({ kind: "error", message });
+      setDiagnostic({ kind: "error", title: "Runtime Diagnostic", message });
     };
 
     const handleRejection = (event: PromiseRejectionEvent) => {
       const message = getDiagnosticMessage(event.reason);
       console.error("Unhandled promise rejection:", event.reason);
-      setDiagnostic({ kind: "rejection", message });
+      setDiagnostic({ kind: "rejection", title: "Runtime Diagnostic", message });
+    };
+
+    const handleMyGoTwoDiagnostic = (
+      event: Event,
+    ) => {
+      const detail = (event as CustomEvent<MyGoTwoStageDiagnosticDetail>).detail;
+      if (!detail || detail.kind !== "mygotwo-stage-fallback") return;
+
+      const failedLabels = detail.failedStrips
+        .map((strip) => strip.label || `Strip ${strip.id}`)
+        .join(", ");
+
+      setDiagnostic({
+        kind: "notice",
+        title: "My Go Two Fallback",
+        message: `Full strip transforms failed for: ${failedLabels}. The preview stage stayed in place so the page did not blank out.`,
+      });
     };
 
     window.addEventListener("error", handleError);
     window.addEventListener("unhandledrejection", handleRejection);
+    window.addEventListener(MYGOTWO_STAGE_DIAGNOSTIC_EVENT, handleMyGoTwoDiagnostic);
 
     return () => {
       window.removeEventListener("error", handleError);
       window.removeEventListener("unhandledrejection", handleRejection);
+      window.removeEventListener(MYGOTWO_STAGE_DIAGNOSTIC_EVENT, handleMyGoTwoDiagnostic);
     };
   }, []);
 
@@ -57,10 +81,12 @@ export function DevRuntimeDiagnostics() {
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-destructive">
-            Runtime Diagnostic
+            {diagnostic.title}
           </p>
           <p className="text-sm text-foreground">
-            Captured an unhandled {diagnostic.kind === "rejection" ? "promise rejection" : "runtime error"}.
+            {diagnostic.kind === "notice"
+              ? "Captured a non-fatal development notice."
+              : `Captured an unhandled ${diagnostic.kind === "rejection" ? "promise rejection" : "runtime error"}.`}
           </p>
         </div>
         <button

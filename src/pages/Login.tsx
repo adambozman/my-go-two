@@ -11,64 +11,78 @@ import { ArrowRight } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AppleSignInButton from "@/components/AppleSignInButton";
 import GoTwoText from "@/components/GoTwoText";
+import { resolvePostAuthDestination } from "@/lib/authEntryRedirect";
+import { isDevAuthEmail, normalizeAuthEmail } from "@/lib/devAuth";
 
-const DEV_EMAILS = ["adam.bozman@gmail.com"];
+const AUTH_DIAGNOSTIC_FLAG = "gotwo_debug_auth";
+
+const authDiagnosticsEnabled = () => {
+  try {
+    return localStorage.getItem(AUTH_DIAGNOSTIC_FLAG) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const logAuthDiagnostic = (event: string, details?: Record<string, unknown>) => {
+  if (!authDiagnosticsEnabled()) return;
+  console.info(`[auth] ${event}`, details ?? {});
+};
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Something went wrong";
-
-const resolvePostLoginDestination = async (userId: string) => {
-  const profileResult = await supabase
-    .from("profiles")
-    .select("onboarding_completed_at")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (!profileResult.error) {
-    return profileResult.data?.onboarding_completed_at ? "/dashboard" : "/onboarding";
-  }
-
-  const legacyResult = await supabase
-    .from("user_preferences")
-    .select("onboarding_complete")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (!legacyResult.error && legacyResult.data?.onboarding_complete) {
-    return "/dashboard";
-  }
-
-  console.warn("Falling back to onboarding because onboarding status could not be resolved.", {
-    profileError: profileResult.error,
-    legacyError: legacyResult.error,
-  });
-  return "/onboarding";
-};
 
 const Login = () => {
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const isDevEmail = DEV_EMAILS.includes(email.toLowerCase().trim());
+  const normalizedEmail = normalizeAuthEmail(email);
+  const isDevEmail = isDevAuthEmail(email);
 
   useEffect(() => {
     const inviteId = searchParams.get("invite");
+    const inviteToken = searchParams.get("token");
     if (inviteId) {
       localStorage.setItem("gotwo_invite", inviteId);
+      logAuthDiagnostic("login:stored-invite-id", { inviteId });
+    }
+    if (inviteToken) {
+      localStorage.setItem("gotwo_invite_token", inviteToken);
+      logAuthDiagnostic("login:stored-invite-token", { hasToken: true });
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+
+    void resolvePostAuthDestination(user.id).then((destination) => {
+      logAuthDiagnostic("login:redirect-existing-user", {
+        userId: user.id,
+        destination,
+      });
+      navigate(destination, { replace: true });
+    });
+  }, [authLoading, navigate, user]);
 
   const navigateAfterLogin = async () => {
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (currentUser) {
-      navigate(await resolvePostLoginDestination(currentUser.id));
+      const destination = await resolvePostAuthDestination(currentUser.id);
+      logAuthDiagnostic("login:navigate-after-login", {
+        userId: currentUser.id,
+        destination,
+      });
+      navigate(destination, { replace: true });
     } else {
-      navigate("/dashboard");
+      logAuthDiagnostic("login:navigate-after-login:no-user", {
+        destination: "/dashboard",
+      });
+      navigate("/dashboard", { replace: true });
     }
   };
 
@@ -80,10 +94,15 @@ const Login = () => {
         throw new Error(supabaseConfigError);
       }
 
+      logAuthDiagnostic("login:submit", {
+        email: normalizedEmail,
+        isDevEmail,
+      });
+
       if (isDevEmail) {
-        // Dev bypass: instant sign-in via server-generated session
+        // DEV-ONLY bypass: instant sign-in via server-generated session.
         const { data, error } = await supabase.functions.invoke("dev-login", {
-          body: { email: email.toLowerCase().trim() },
+          body: { email: normalizedEmail },
         });
         if (error) throw error;
         if (!data?.access_token || !data?.refresh_token) throw new Error("Dev login failed");
@@ -92,12 +111,22 @@ const Login = () => {
           refresh_token: data.refresh_token,
         });
         if (sessionError) throw sessionError;
+        logAuthDiagnostic("login:dev-session-set", {
+          email: normalizedEmail,
+        });
         await navigateAfterLogin();
       } else {
         await signIn(email, password);
+        logAuthDiagnostic("login:password-sign-in-success", {
+          email: normalizedEmail,
+        });
         await navigateAfterLogin();
       }
     } catch (error: unknown) {
+      logAuthDiagnostic("login:submit-failed", {
+        email: normalizedEmail,
+        message: getErrorMessage(error),
+      });
       toast({ title: "Error", description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setLoading(false);

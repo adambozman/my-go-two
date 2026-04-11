@@ -26,10 +26,11 @@ const ConnectionPage = lazy(() => import("./pages/dashboard/ConnectionPage"));
 const ConnectionFeed = lazy(() => import("./pages/dashboard/ConnectionFeed"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
+// Internal asset-management tool. Not part of the public hero/login/dashboard journey.
 const PhotoGallery = lazy(() => import("./pages/PhotoGallery"));
 const Search = lazy(() => import("./pages/Search"));
+// Internal admin surface for sponsored content management.
 const SponsoredAdmin = lazy(() => import("./pages/admin/SponsoredAdmin"));
-const CarouselTest = lazy(() => import("./pages/CarouselTest"));
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ const App = () => {
                       <Route path="/reset-password" element={<ForgotPassword />} />
                       <Route path="/onboarding" element={<Onboarding />} />
                       <Route path="/connect" element={<Connect />} />
+                      {/* Internal asset-management route, not part of the normal customer website. */}
                       <Route path="/photo-gallery" element={<PhotoGallery />} />
                       <Route path="/dashboard" element={<DashboardLayout />}>
                         <Route index element={<DashboardHome />} />
@@ -74,10 +76,10 @@ const App = () => {
                         <Route path="public-feed" element={<PublicFeed />} />
                         <Route path="connection-feed" element={<ConnectionFeed />} />
                         <Route path="connections/:connectionId" element={<ConnectionPage />} />
+                        {/* Internal admin route, not part of the normal customer dashboard flow. */}
                         <Route path="sponsored" element={<SponsoredAdmin />} />
                       </Route>
                       <Route path="*" element={<NotFound />} />
-                      <Route path="/carousel-test" element={<CarouselTest />} />
                     </Routes>
                   </Suspense>
                 </BrowserRouter>

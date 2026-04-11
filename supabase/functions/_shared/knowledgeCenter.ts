@@ -2,6 +2,31 @@ import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 type JsonObject = Record<string, unknown>;
 
+type SnapshotQuery = {
+  select: (columns: string) => {
+    eq: (column: string, value: string) => {
+      maybeSingle: () => Promise<{ data: unknown; error: unknown }>;
+    };
+  };
+};
+
+type DerivationQuery = {
+  select: (columns: string) => {
+    eq: (column: string, value: string) => {
+      order: (
+        column: string,
+        options: { ascending: boolean },
+      ) => Promise<{ data: unknown; error: unknown }>;
+    };
+  };
+};
+
+interface KnowledgeCenterClient {
+  from(table: "user_knowledge_snapshots"): SnapshotQuery;
+  from(table: "user_knowledge_derivations"): DerivationQuery;
+  from(table: string): SnapshotQuery | DerivationQuery;
+}
+
 export interface KnowledgeSnapshotRow {
   user_id: string;
   profile_core: JsonObject | null;
@@ -69,14 +94,15 @@ export const fetchKnowledgeCenterState = async (
   supabase: SupabaseClient,
   userId: string,
 ) => {
+  const knowledgeClient = supabase as unknown as KnowledgeCenterClient;
   const [{ data: snapshotData, error: snapshotError }, { data: derivationData, error: derivationError }] =
     await Promise.all([
-      (supabase as unknown as { from: (table: string) => any })
+      knowledgeClient
         .from("user_knowledge_snapshots")
         .select("user_id, profile_core, onboarding_responses, know_me_responses, saved_product_cards, user_connections, snapshot_payload, updated_at")
         .eq("user_id", userId)
         .maybeSingle(),
-      (supabase as unknown as { from: (table: string) => any })
+      knowledgeClient
         .from("user_knowledge_derivations")
         .select("id, user_id, derivation_key, derivation_payload, source_snapshot, created_at, updated_at")
         .eq("user_id", userId)

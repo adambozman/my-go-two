@@ -2,13 +2,26 @@ import { useEffect, useState, ReactNode, useCallback, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContext } from "@/contexts/auth-context";
+import { isDevAuthEmail, isDevAuthUserId } from "@/lib/devAuth";
 
-// Dev account always treated as premium
-const DEV_USER_IDS = ["e78cff1c-54e3-4365-b172-461b7b6f25e6"];
-const DEV_EMAILS = ["adam.bozman@gmail.com"];
 const SUBSCRIPTION_CACHE_KEY = "gotwo_subscription_cache_v1";
 const SUBSCRIPTION_CACHE_TTL_MS = 5 * 60 * 1000;
 const SUBSCRIPTION_TIMEOUT_MS = 8000;
+const FOREGROUND_REFRESH_DEBOUNCE_MS = 1500;
+const AUTH_DIAGNOSTIC_FLAG = "gotwo_debug_auth";
+
+const authDiagnosticsEnabled = () => {
+  try {
+    return localStorage.getItem(AUTH_DIAGNOSTIC_FLAG) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const logAuthDiagnostic = (event: string, details?: Record<string, unknown>) => {
+  if (!authDiagnosticsEnabled()) return;
+  console.info(`[auth] ${event}`, details ?? {});
+};
 
 type SubscriptionCacheRecord = {
   userId: string;
@@ -49,6 +62,14 @@ const writeSubscriptionCache = (record: SubscriptionCacheRecord) => {
   }
 };
 
+const clearSubscriptionCache = () => {
+  try {
+    sessionStorage.removeItem(SUBSCRIPTION_CACHE_KEY);
+  } catch {
+    // Ignore cache removal failures.
+  }
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -59,6 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const mountedRef = useRef(true);
   const latestSubscriptionRequestRef = useRef(0);
   const signupDataAppliedForUserRef = useRef<string | null>(null);
+  const lastForegroundRefreshAtRef = useRef(0);
 
   const applySignupData = async (userId: string) => {
     if (signupDataAppliedForUserRef.current === userId) return;
@@ -82,15 +104,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const checkSubscription = useCallback(async () => {
+  const runSubscriptionCheck = useCallback(async (
+    options?: { forceRefresh?: boolean; silent?: boolean }
+  ) => {
     const accessToken = session?.access_token ?? null;
     const activeUser = session?.user ?? user;
+    const forceRefresh = options?.forceRefresh ?? false;
+    const silent = options?.silent ?? false;
     if (!accessToken || !activeUser) return;
 
+    logAuthDiagnostic("subscription-check:start", {
+      userId: activeUser.id,
+      forceRefresh,
+      silent,
+    });
+
     // Dev override — skip Stripe check
-    if (DEV_USER_IDS.includes(activeUser.id) || DEV_EMAILS.includes(activeUser.email ?? "")) {
+    // DEV-ONLY override: skip Stripe subscription checks for known test accounts.
+    if (isDevAuthUserId(activeUser.id) || isDevAuthEmail(activeUser.email)) {
       setSubscribed(true);
       setSubscriptionEnd(null);
+      setSubscriptionLoading(false);
+      logAuthDiagnostic("subscription-check:dev-override", {
+        userId: activeUser.id,
+        email: activeUser.email ?? null,
+      });
       writeSubscriptionCache({
         userId: activeUser.id,
         checkedAt: Date.now(),
@@ -100,16 +138,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    const cached = readSubscriptionCache(activeUser.id);
+    const cached = forceRefresh ? null : readSubscriptionCache(activeUser.id);
     if (cached) {
       setSubscribed(cached.subscribed);
       setSubscriptionEnd(cached.subscriptionEnd);
+      setSubscriptionLoading(false);
+      logAuthDiagnostic("subscription-check:cache-hit", {
+        userId: activeUser.id,
+        subscribed: cached.subscribed,
+        subscriptionEnd: cached.subscriptionEnd,
+      });
       return;
     }
 
     const requestId = latestSubscriptionRequestRef.current + 1;
     latestSubscriptionRequestRef.current = requestId;
-    setSubscriptionLoading(true);
+    if (!silent) {
+      setSubscriptionLoading(true);
+    }
 
     try {
       const result = await Promise.race([
@@ -131,6 +177,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setSubscribed(nextSubscribed);
       setSubscriptionEnd(nextSubscriptionEnd);
+      logAuthDiagnostic("subscription-check:success", {
+        userId: activeUser.id,
+        subscribed: nextSubscribed,
+        subscriptionEnd: nextSubscriptionEnd,
+      });
       writeSubscriptionCache({
         userId: activeUser.id,
         checkedAt: Date.now(),
@@ -139,6 +190,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
     } catch (error) {
       console.warn("Subscription check failed:", error);
+      logAuthDiagnostic("subscription-check:failed", {
+        userId: activeUser.id,
+        message: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       if (mountedRef.current && latestSubscriptionRequestRef.current === requestId) {
         setSubscriptionLoading(false);
@@ -146,13 +201,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [session, user]);
 
+  const checkSubscription = useCallback(async () => {
+    await runSubscriptionCheck({ forceRefresh: true });
+  }, [runSubscriptionCheck]);
+
   useEffect(() => {
     mountedRef.current = true;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      logAuthDiagnostic("auth-state-change", {
+        event: _event,
+        userId: session?.user?.id ?? null,
+      });
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      if (!session) {
+        signupDataAppliedForUserRef.current = null;
+      }
       if (_event === "SIGNED_IN" && session?.user) {
         void applySignupData(session.user.id);
       }
@@ -161,12 +227,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     void supabase.auth.getSession()
       .then(({ data: { session } }) => {
         if (!mountedRef.current) return;
+        logAuthDiagnostic("session-restore:success", {
+          userId: session?.user?.id ?? null,
+        });
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
       })
       .catch((error) => {
         console.error("Failed to restore auth session:", error);
+        logAuthDiagnostic("session-restore:failed", {
+          message: error instanceof Error ? error.message : String(error),
+        });
         if (!mountedRef.current) return;
         setSession(null);
         setUser(null);
@@ -183,22 +255,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Check subscription when session changes
   useEffect(() => {
     if (session?.access_token) {
-      void checkSubscription();
+      void runSubscriptionCheck();
     } else {
       setSubscribed(false);
       setSubscriptionEnd(null);
       setSubscriptionLoading(false);
     }
-  }, [session?.access_token, checkSubscription]);
+  }, [session?.access_token, runSubscriptionCheck]);
 
-  // Auto-refresh subscription every 60s
   useEffect(() => {
     if (!session?.access_token) return;
-    const interval = window.setInterval(() => {
-      void checkSubscription();
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [session?.access_token, checkSubscription]);
+
+    const refreshOnForeground = () => {
+      if (document.visibilityState === "hidden") return;
+
+      const now = Date.now();
+      if (now - lastForegroundRefreshAtRef.current < FOREGROUND_REFRESH_DEBOUNCE_MS) {
+        return;
+      }
+
+      lastForegroundRefreshAtRef.current = now;
+      void runSubscriptionCheck({ forceRefresh: true, silent: true });
+    };
+
+    window.addEventListener("focus", refreshOnForeground);
+    document.addEventListener("visibilitychange", refreshOnForeground);
+
+    return () => {
+      window.removeEventListener("focus", refreshOnForeground);
+      document.removeEventListener("visibilitychange", refreshOnForeground);
+    };
+  }, [session?.access_token, runSubscriptionCheck]);
 
   const signUp = async (email: string, password: string, displayName: string) => {
     const { error } = await supabase.auth.signUp({
@@ -220,6 +307,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    clearSubscriptionCache();
+    setSubscribed(false);
+    setSubscriptionEnd(null);
+    setSubscriptionLoading(false);
   };
 
   const resetPassword = async (email: string) => {

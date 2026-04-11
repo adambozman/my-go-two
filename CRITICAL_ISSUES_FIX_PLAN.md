@@ -1,316 +1,514 @@
-# Critical Issues Fix Plan
+# Fix It Plan
 
-This is the second handoff-adjacent document.
+This is the consolidated fix plan for the repo.
 
-It exists to isolate the real critical issues from the broader repo audit noise.
+It replaces the scattered "what still needs to happen" material from the audit and planning docs with one prioritized implementation list.
 
-This document intentionally uses product context:
-- demo/test utilities are not treated as launch blockers if they are clearly isolated, clearly named, and removed or disabled before launch
-- `seed-demo-profiles` falls into that bucket and is not the point of this plan
-- this plan focuses only on issues that matter to launch stability, data integrity, security posture, and real product behavior
-
-The main handoff document is still:
-- [NEXT_CHAT_HANDOFF.md](/Users/adamb/Documents/GitHub/my-go-two/NEXT_CHAT_HANDOFF.md)
+Read `NEXT_CHAT_HANDOFF.md` first, then use this file to choose and sequence work.
 
 ## Scope
 
-This plan covers only the critical issues discussed after the repo-wide audits:
+This document covers:
 
-1. image system update / source-of-truth cleanup
-2. `resolved_recommendation_catalog`
-3. edge auth strategy
-4. auth/session lifecycle
-5. incomplete invite/connect flow
-6. shared table ownership boundaries
+- launch-critical issues
+- product-critical behavior issues
+- security and ownership fixes
+- structural cleanup that is still important after launch blockers
 
-## Not Critical In This Plan
+This document does not treat already-isolated dev/test leftovers as equal priority to live product and data integrity problems.
 
-These may still be worth cleaning up, but they are not treated as launch-critical here:
+## Priority Order
 
-- `seed-demo-profiles` if it stays a clearly isolated test/demo utility and is deleted or disabled before launch
-- general repo artifact cleanup
-- empty function folders
-- old screenshots in repo root
-- broader schema cleanup not currently wired into live flows
-- test/dev tools that are clearly dev-only
+Work in this order unless the user explicitly redirects.
 
-## Critical Issue 1: Image System Update
+### P0: Protect live product behavior
 
-### Problem
+1. `My Go Two` startup/load/state stabilization
+2. auth/session guard simplification and login-bounce prevention
+3. invite/connect completion, especially token handoff
+4. edge auth standardization for active functions
+5. ownership hardening for shared/global tables
 
-The repo has too many overlapping image and asset assignment systems:
+### P1: Fix live operator and user flows
 
-- `category_images`
-- `category_bank_photos`
-- `website_asset_assignments`
-- `dev_asset_image_overrides`
-- multiple buckets and historical image flows
+6. `PhotoGallery.tsx` simplification and source-of-truth clarity
+7. storage bucket privacy vs resolver alignment
+8. recommendations trust/persistence gaps
+9. dashboard/settings/questionnaires overload reduction
 
-The current live `My Go Two` path is understandable, but the overall system is still too easy to misread or update incorrectly.
+### P2: Cleanup and durability
 
-### Why It Is Critical
+10. stale or misleading docs and status files
+11. corrupted unicode/user-facing copy cleanup
+12. tests for critical flows
+13. rationalize dead/legacy schema and function surfaces
 
-- operators can easily fix the wrong layer
-- image behavior can differ by environment because storage assumptions are not centralized enough
-- launch-time debugging becomes slower because there is not one obvious source of truth
+## P0: My Go Two Startup, Loading, And State
 
-### Current Preferred Direction
+### Why this is first
 
-For live `My Go Two` image wiring:
+This is the most protected surface in the repo and the handoff repeatedly treats it as business-critical.
 
-- storage file is the actual image source
-- `category_images` is the active mapping table
-- `storage://bucket/path` is the image reference contract
+### What must be preserved
 
-### Fix Plan
+1. 8 preview strips remain in both states
+2. only labeled category strips grow on hover
+3. collapsed state shows only preview strips
+4. rotation only runs while collapsed
+5. 5-image collapse bank stays separate
+6. clicking a category opens an in-place full-stage panel
+7. assigned images only
+8. separate strip image and detail/card image support
 
-1. Declare one live image system for `My Go Two`.
-   - Keep `category_images` as the active slot-mapping table.
-   - Keep `storage://...` refs as the storage contract.
-2. Mark every other image assignment path as one of:
-   - legacy
-   - unused
-   - future
-3. Add a short internal contract doc section that names:
-   - active table
-   - active bucket(s)
-   - active runtime loader
-   - inactive legacy systems
-4. Remove runtime dependence on any legacy table that is no longer needed.
-5. Keep the separate `Small` / `Card` / repeat-image model now that the editor supports it.
+### Fixes required
 
-### Files / Areas
+1. Tighten route-level startup so the stage settles faster.
+2. Validate preview-to-full swap behavior category by category.
+3. Keep loader exit tied to a real usable stage, not "everything is done".
+4. Keep collapse warm-loading from fighting initial interactivity.
+5. Audit state transitions between hover, collapse, open category, and background asset warm-up.
+6. Ensure failed transformed images are diagnosable, not silently mysterious.
 
-- [src/pages/PhotoGallery.tsx](/Users/adamb/Documents/GitHub/my-go-two/src/pages/PhotoGallery.tsx)
-- [src/lib/imageOverrides.ts](/Users/adamb/Documents/GitHub/my-go-two/src/lib/imageOverrides.ts)
-- [src/lib/storageRefs.ts](/Users/adamb/Documents/GitHub/my-go-two/src/lib/storageRefs.ts)
-- [src/platform-ui/web/mygotwo/myGoTwoStripGallery.data.ts](/Users/adamb/Documents/GitHub/my-go-two/src/platform-ui/web/mygotwo/myGoTwoStripGallery.data.ts)
-- [src/platform-ui/web/mygotwo/myGoTwoStripGallery.images.ts](/Users/adamb/Documents/GitHub/my-go-two/src/platform-ui/web/mygotwo/myGoTwoStripGallery.images.ts)
-- related legacy migrations under [supabase/migrations](/Users/adamb/Documents/GitHub/my-go-two/supabase/migrations)
+### Progress
 
-## Critical Issue 2: `resolved_recommendation_catalog`
+- Done: removed the redundant page-level auth gate from `src/pages/dashboard/MyGoTwo.tsx` so the dashboard shell is the single guard authority.
+- Done: changed the stage hydrator to keep already-loaded preview strips visible when a full transformed strip image misses.
+- Done: added strip-level diagnostics when a full transformed image falls back instead of silently blanking.
+- Done: added a dev-only runtime notice for `My Go Two` strip fallback events so local verification exposes transform failures without changing the production stage behavior.
+- Done: centralized the active `My Go Two` gender key so the stage loader and the live slot editor query the same source instead of duplicating `"male"` in separate files.
+- Remaining: category-by-category visual validation and any further loader tuning that shows up during real browser review.
 
-### Problem
+### Files
 
-The audit flagged `resolved_recommendation_catalog` as too open for mutation relative to its role as a shared/global recommendation cache.
+- `src/pages/dashboard/MyGoTwo.tsx`
+- `src/platform-ui/web/mygotwo/MyGoTwoStripGalleryAsset.tsx`
+- `src/platform-ui/web/mygotwo/myGoTwoStripGallery.data.ts`
+- `src/platform-ui/web/mygotwo/myGoTwoStripGallery.images.ts`
 
-### Why It Is Critical
+## P0: Auth, Session, And Guard Lifecycle
 
-- if it is a shared/global recommendation resolution layer, it should not be easy for ordinary authenticated traffic to poison it
-- recommendation quality and trust degrade fast if the cache layer is writable too broadly
+### Why this is critical
 
-### Fix Plan
+The audits consistently point here as the likely source of login bounce and route instability.
 
-1. Decide what `resolved_recommendation_catalog` is:
-   - shared/global cache
-   - per-user helper
-   - internal recommendation resolution store
-2. If it is shared/global, restrict writes to:
-   - service role only
-   - or one tightly controlled edge/RPC path
-3. Leave read access as broad only if that is truly needed.
-4. Route all writes through one controlled backend layer.
-5. Add one verification query/check during testing to confirm a normal authenticated user cannot mutate the global catalog directly.
+### Problems to solve
 
-### Files / Areas
+1. duplicated guarding between `DashboardLayout` and leaf pages
+2. auth boot mixed with subscription state
+3. multiple auth entrypoints:
+   - native Supabase auth
+   - Lovable OAuth bridge
+   - dev login
+4. interval-based subscription checks adding noise to auth lifecycle
 
-- [supabase/migrations](/Users/adamb/Documents/GitHub/my-go-two/supabase/migrations)
-- [supabase/functions/ai-products/index.ts](/Users/adamb/Documents/GitHub/my-go-two/supabase/functions/ai-products/index.ts)
-- recommendation frontend flows in [src/pages/dashboard/Recommendations.tsx](/Users/adamb/Documents/GitHub/my-go-two/src/pages/dashboard/Recommendations.tsx)
+### Fixes required
 
-## Critical Issue 3: Edge Auth Strategy
-
-### Problem
-
-The repo mixes:
-
-- platform-level verification
-- `verify_jwt = false`
-- custom/manual auth checks inside functions
-
-That means security behavior is inconsistent across edge functions.
-
-### Why It Is Critical
-
-- a single missed auth check becomes a public mutation path
-- service-role usage makes mistakes much more dangerous
-- launch confidence is low when each function has its own security style
-
-### Fix Plan
-
-1. Create one edge auth policy decision:
-   - default to verified JWT
-   - only disable platform verification when there is a very explicit reason
-2. Standardize one internal guard pattern for every edge function:
-   - CORS
-   - env access
-   - auth parsing
-   - explicit authorization rules
-   - error shape
-3. Audit every function currently using `verify_jwt = false`.
-4. Split functions into:
-   - public by design
-   - authenticated user
-   - admin/operator only
-   - dev/test only
-5. For admin/operator/dev functions, require explicit gates, not assumptions.
-
-### Files / Areas
-
-- [supabase/config.toml](/Users/adamb/Documents/GitHub/my-go-two/supabase/config.toml)
-- all active functions under [supabase/functions](/Users/adamb/Documents/GitHub/my-go-two/supabase/functions)
-- especially:
-  - [searchforaddprofile/index.ts](/Users/adamb/Documents/GitHub/my-go-two/supabase/functions/searchforaddprofile/index.ts)
-  - [sync-category-registry/index.ts](/Users/adamb/Documents/GitHub/my-go-two/supabase/functions/sync-category-registry/index.ts)
-  - [check-subscription/index.ts](/Users/adamb/Documents/GitHub/my-go-two/supabase/functions/check-subscription/index.ts)
-  - [create-checkout/index.ts](/Users/adamb/Documents/GitHub/my-go-two/supabase/functions/create-checkout/index.ts)
-  - [customer-portal/index.ts](/Users/adamb/Documents/GitHub/my-go-two/supabase/functions/customer-portal/index.ts)
-
-## Critical Issue 4: Auth / Session Lifecycle
-
-### Problem
-
-The frontend auth/session lifecycle appears too fragile:
-
-- duplicated or layered guarding
-- session boot and redirect timing
-- subscription polling tied into auth
-- OAuth session bridging as another variable
-
-### Why It Is Critical
-
-- this is the area most likely connected to the login bounce / repeated sign-in symptom
-- even if the backend auth is valid, poor frontend lifecycle handling can make the app feel broken
-
-### Fix Plan
-
-1. Make one route-guard authority for dashboard auth.
-   - avoid duplicated guard behavior where possible
-2. Separate auth boot from subscription state.
-   - auth should settle first
-   - subscription should not be the thing destabilizing route access
-3. Audit OAuth bridge flow carefully.
-   - verify token/session shape
-   - verify refresh behavior
-   - verify redirect return path behavior
-4. Add temporary diagnostic logging for:
+1. Make one dashboard guard authority.
+2. Remove redundant leaf-route redirects where safe.
+3. Separate "auth resolved" from "subscription known".
+4. Keep dev login stable and avoid session invalidation regressions.
+5. Add temporary diagnostic logging around:
    - auth state changes
    - redirect decisions
-   - session refresh failures
+   - refresh failures
    - subscription check outcomes
-5. Re-test the exact bounce flow after simplifying guard responsibility.
+6. Re-test login, refresh, and route transitions visually in the real dashboard.
 
-### Files / Areas
+### Progress
 
-- [src/contexts/AuthContext.tsx](/Users/adamb/Documents/GitHub/my-go-two/src/contexts/AuthContext.tsx)
-- [src/contexts/auth-context.ts](/Users/adamb/Documents/GitHub/my-go-two/src/contexts/auth-context.ts)
-- [src/layouts/DashboardLayout.tsx](/Users/adamb/Documents/GitHub/my-go-two/src/layouts/DashboardLayout.tsx)
-- [src/pages/Login.tsx](/Users/adamb/Documents/GitHub/my-go-two/src/pages/Login.tsx)
-- [src/integrations/lovable/index.ts](/Users/adamb/Documents/GitHub/my-go-two/src/integrations/lovable/index.ts)
-- [src/integrations/supabase/client.ts](/Users/adamb/Documents/GitHub/my-go-two/src/integrations/supabase/client.ts)
+- Done: removed the redundant `My Go Two` leaf guard so the dashboard shell owns that route.
+- Done: stabilized subscription state for cache-hit/dev-override/sign-out paths so stale `subscriptionLoading` does not linger across session changes.
+- Done: replaced the 60-second global subscription poll with explicit refresh plus foreground revalidation when the app becomes active again.
+- Done: added opt-in auth diagnostics in `AuthContext` behind `localStorage.gotwo_debug_auth = "1"` so login/session/subscription churn can be traced without changing live behavior by default.
+- Done: extended the opt-in auth diagnostics into `Login.tsx` and `DashboardLayout.tsx` so redirect decisions and invite handoff outcomes are traceable during real browser testing.
+- Done: Google and Apple OAuth now return to the current auth entry URL instead of always dropping users at the site root, which preserves invite/deep-link context through the external auth round-trip.
+- Done: `/login` and `/signup` now redirect already-authenticated users back into the real post-auth flow instead of leaving them stranded on an auth-entry page, using a shared destination resolver.
+- Done: frontend dev-login and dev-subscription override checks now use one shared allowlist helper so those protected operator paths do not drift between `Login.tsx` and `AuthContext.tsx`.
+- Done: auth completion, invite completion, and sign-out redirects now replace browser history entries so back-navigation does not bounce users into stale `/login` or `/connect` pages after session state changes.
+- Done: the notifications page now waits for subscription resolution before showing the Premium lock state, so subscribed users do not get a false locked screen during auth/subscription settle.
+- Done: the recommendations page now waits for subscription resolution before choosing between guest and Premium behavior, preventing a brief false downgraded state for subscribed users.
+- Done: the `Know Me` page now holds its existing loading state until subscription resolution finishes, so paid users do not briefly fall into free-tier question limits during auth settle.
+- Done: dashboard-home connection gating now waits for subscription resolution before showing the multi-connection Premium lock or opening the add flow, preventing both false locks and false temporary access while auth settles.
+- Remaining: wider auth/subscription lifecycle separation and visual pass across login/refresh transitions.
 
-## Critical Issue 5: Incomplete Invite / Connect Flow
+### Files
 
-### Problem
+- `src/contexts/AuthContext.tsx`
+- `src/contexts/auth-context.ts`
+- `src/layouts/DashboardLayout.tsx`
+- `src/pages/Login.tsx`
+- `src/integrations/lovable/index.ts`
+- `src/integrations/supabase/client.ts`
+- `supabase/functions/check-subscription/index.ts`
+- `supabase/functions/dev-login/index.ts`
 
-The invite/connect system is structurally incomplete:
+## P0: Invite / Connect Completion
 
-- `gotwo_invite` is consumed
-- `gotwo_invite_token` is stored but not cleanly consumed after login
+### Why this is critical
 
-### Why It Is Critical
+This is a core product loop and is currently incomplete for token-based logged-out flows.
 
-- users can hit inconsistent connection outcomes depending on where they enter the flow and whether they are already logged in
-- broken connection onboarding undermines a core product loop
+### Current documented issue
 
-### Fix Plan
+- `gotwo_invite` is consumed post-login
+- `gotwo_invite_token` is stored but not cleanly consumed post-login
 
-1. Pick one canonical post-login invite processing path.
-2. Support both:
-   - inviter-based flow
-   - token-based flow
-3. Remove any localStorage handoff key that is not truly used.
-4. Add explicit expiration/cleanup for invite handoff keys.
-5. Re-test all four cases:
+### Fixes required
+
+1. Choose one canonical post-login invite processing path.
+2. Support both inviter-based and token-based handoff cleanly.
+3. Expire and clean localStorage invite keys intentionally.
+4. Re-test:
    - logged in + inviter link
    - logged out + inviter link
    - logged in + token link
    - logged out + token link
+5. Keep user messaging explicit when invite processing is pending or failed.
 
-### Files / Areas
+### Progress
 
-- [src/pages/Connect.tsx](/Users/adamb/Documents/GitHub/my-go-two/src/pages/Connect.tsx)
-- [src/pages/Login.tsx](/Users/adamb/Documents/GitHub/my-go-two/src/pages/Login.tsx)
-- [src/layouts/DashboardLayout.tsx](/Users/adamb/Documents/GitHub/my-go-two/src/layouts/DashboardLayout.tsx)
-- [supabase/functions/searchforaddprofile/index.ts](/Users/adamb/Documents/GitHub/my-go-two/supabase/functions/searchforaddprofile/index.ts)
+- Done: `DashboardLayout` now consumes both `gotwo_invite` and `gotwo_invite_token`, prefers token handoff first, and clears invite keys intentionally after processing.
+- Done: post-login token handoff now shows the correct pending-invite messaging and surfaces invalid/expired token errors instead of silently swallowing them.
+- Done: `Login.tsx` and `Signup.tsx` now persist direct `?token=` invite entries into `gotwo_invite_token` so token-based handoff survives auth entry routes instead of only working through `/connect`.
+- Done: login now routes pending-invite sign-ins into the dashboard shell (`/dashboard/settings`) so the stored invite/token handoff actually executes instead of getting stranded on onboarding first.
+- Done: Settings now exposes the native invite share sheet alongside QR/email so the existing link flow can be sent through text/phone/WhatsApp on supported devices.
+- Done: `DashboardLayout` now skips duplicate invite handoff re-processing for the same stored invite/token payload, which avoids accidental double-link attempts while auth/layout state is settling.
+- Remaining: full visual retest across all inviter/token logged-in/logged-out entry combinations.
 
-## Critical Issue 6: Shared Table Ownership Boundaries
+### Files
 
-### Problem
+- `src/pages/Connect.tsx`
+- `src/pages/Login.tsx`
+- `src/layouts/DashboardLayout.tsx`
+- `supabase/functions/searchforaddprofile/index.ts`
 
-Some shared/editorial tables are being treated too much like ordinary user-editable data.
+## P0: Edge Auth Strategy
 
-This is related to edge auth, but it is its own problem: even if edge auth improves, the table ownership model still needs to be correct.
+### Why this is critical
 
-### Why It Is Critical
+The repo mixes platform JWT verification, manual auth checks, `verify_jwt = false`, and service-role operations.
 
-- global or editorial truth should not be broadly writable
-- if those tables define live app behavior, their ownership rules need to reflect that
+### Active risk pattern
 
-### Fix Plan
+- a missed check can expose a destructive or expensive endpoint
+- service-role functions amplify mistakes
 
-1. Identify every table that is:
-   - user-owned
-   - connection-shared
-   - global/editorial
-   - admin/operator managed
-2. Tighten RLS to match that ownership model.
-3. Move global/editorial writes through one controlled admin/backend path.
-4. Confirm that live app behavior uses the intended ownership model and not leftover broad permissions.
+### Fixes required
 
-### Most Likely Tables To Review First
+1. Default active functions to verified JWT unless there is a deliberate exception.
+2. Standardize one internal auth/validation wrapper pattern.
+3. Classify functions as:
+   - public by design
+   - authenticated user
+   - admin/operator only
+   - dev/test only
+4. Audit every function using `verify_jwt = false`.
+5. Tighten CORS for production-sensitive endpoints.
+6. Remove or explicitly quarantine empty and unwired edge surfaces.
 
-- `category_registry`
-- `category_images`
-- `resolved_recommendation_catalog`
-- any asset assignment table that still participates in live flows
+### Highest-risk functions
 
-### Files / Areas
+- `supabase/functions/searchforaddprofile/index.ts`
+- `supabase/functions/sync-category-registry/index.ts`
+- `supabase/functions/check-subscription/index.ts`
+- `supabase/functions/create-checkout/index.ts`
+- `supabase/functions/customer-portal/index.ts`
+- `supabase/functions/ai-products/index.ts`
 
-- [src/integrations/supabase/types.ts](/Users/adamb/Documents/GitHub/my-go-two/src/integrations/supabase/types.ts)
-- related policy migrations under [supabase/migrations](/Users/adamb/Documents/GitHub/my-go-two/supabase/migrations)
+### Files
 
-## Recommended Fix Order
+- `supabase/config.toml`
+- `supabase/functions/*`
 
-If this is handled as a focused launch-stability sprint, the order should be:
+### Progress
 
-1. edge auth strategy
-2. shared table ownership boundaries
-3. `resolved_recommendation_catalog`
-4. auth/session lifecycle
-5. invite/connect flow
-6. image system update / cleanup
+- Done: `ai-products`, `create-checkout`, and `customer-portal` now require verified JWTs at the platform layer in `supabase/config.toml`, matching their already-authenticated caller flows instead of leaving them publicly invokable by mistake.
+- Remaining: `check-subscription`, `searchforaddprofile`, `sync-category-registry`, `ai-quizzes`, and `trending-feed` still need explicit classification and hardening decisions before changing their JWT mode.
 
-Reason:
-- auth and ownership mistakes can cause the highest damage
-- session lifecycle affects whether the app even feels usable
-- image system cleanup is important, but safer once the security and flow boundaries are clearer
+## P0: Shared / Global Table Ownership
 
-## Verification Checklist
+### Why this is critical
 
-A fix is not complete until these are true:
+Several tables behave like shared editorial or global truth but are too writable for that role.
 
-- ordinary authenticated traffic cannot mutate global/editorial data directly unless intended
-- edge functions have a consistent auth posture
-- login and dashboard navigation no longer bounce unexpectedly
-- inviter link and token link both work whether the user starts logged in or logged out
-- `My Go Two` and `PhotoGallery` are using one declared active image wiring system
-- recommendation catalog writes are controlled and intentional
+### Most important ownership fixes
 
-## Resume Rule
+1. `resolved_recommendation_catalog`
+2. `category_registry`
+3. `category_images`
+4. any other global/editorial assignment tables still in live use
 
-If the next chat resumes from this document:
+### Fixes required
 
-1. use this file for critical-only planning
-2. use [NEXT_CHAT_HANDOFF.md](/Users/adamb/Documents/GitHub/my-go-two/NEXT_CHAT_HANDOFF.md) for full product and My Go Two context
-3. do not treat demo/test utilities as critical launch blockers unless they are still exposed in live launch paths
+1. Decide the owner for each shared/global table.
+2. Restrict writes to service-role or controlled admin/RPC paths where appropriate.
+3. Keep broad reads only where product truly needs them.
+4. Verify a normal authenticated user cannot mutate shared/global truth accidentally.
+
+### Files and areas
+
+- `supabase/migrations/*`
+- `supabase/functions/ai-products/index.ts`
+- `supabase/functions/sync-category-registry/index.ts`
+- runtime flows consuming those tables
+
+## P1: Photo Gallery Simplification
+
+### Why this matters
+
+`PhotoGallery.tsx` edits live `My Go Two` slot assignments and is overloaded enough to confuse operators.
+
+### Current good direction
+
+- `category_images` is the live slot-mapping table
+- `storage://bucket/path` is the storage contract
+- separate strip and card/detail images are valid
+
+### Fixes required
+
+1. Simplify the operator experience around slot assignment.
+2. Reduce first-load image work.
+3. Reduce button clutter.
+4. Separate assignment workflow from bank browsing/debug controls.
+5. Make delete semantics explicit and safe.
+6. Keep manual cleanup support, but move it behind clearer operator intent.
+7. Make gender handling explicit in helpers instead of silently broad.
+
+### Files
+
+- `src/pages/PhotoGallery.tsx`
+- `src/lib/imageOverrides.ts`
+- `src/platform-ui/web/mygotwo/myGoTwoStripGallery.images.ts`
+- `src/lib/storageRefs.ts`
+
+## P1: Storage Policy And Resolver Alignment
+
+### Why this matters
+
+The audits repeatedly flagged drift between bucket privacy in migrations and frontend resolver assumptions.
+
+### Known issue shape
+
+- frontend uses `PRIVATE_BUCKETS`
+- migrations and runtime bucket privacy can drift
+- the result is environment-dependent broken images
+
+### Fixes required
+
+1. Make bucket privacy classification come from one source of truth.
+2. Align `storageRefs.ts` with actual active bucket policy.
+3. Verify `photo-bank` and `images-mygotwo-strip` behavior explicitly.
+4. Add better diagnostics for failed storage ref resolution.
+5. Stop relying on "works locally" when bucket privacy is inconsistent.
+
+### Files
+
+- `src/lib/storageRefs.ts`
+- storage-related migrations in `supabase/migrations`
+
+## P1: Recommendation System Replacement
+
+### Why this matters
+
+The current recommendation stack is functional enough to keep the live product running, but it is not the long-term architecture.
+
+It currently mixes:
+
+- user preference inputs
+- keyword and brand guidance
+- curated fallback catalog logic
+- exact product resolution
+- shared reusable product memory
+- weekly user caches
+- connection-specific reuse rules
+- frontend display fallback behavior
+
+That makes it too easy to keep patching a system that should instead be replaced cleanly.
+
+### Source of truth
+
+Use `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md` as the architecture and sequencing guide for this work.
+
+Use `RECOMMENDATION_SYSTEM_BUILD_SPEC.md` as the concrete schema, contract, and build-order spec for implementation.
+
+Treat the current recommendation stack as a bridge system until the replacement is built and verified.
+
+### Replacement goals
+
+1. Use all meaningful user input:
+   - This or That answers
+   - Know Me answers
+   - product cards
+   - birthday / anniversary / location
+   - explicit likes
+   - explicit dislikes
+   - future category cards
+2. Remove frontend image-bank behavior from the final recommendation product flow.
+3. Separate keyword intelligence from exact reusable product records.
+4. Keep user-specific weekly output separate from the shared product bank.
+5. Store only exact confirmed product rows in the shared reusable bank.
+
+### Replacement layers
+
+1. user preference signals
+2. recommendation keyword bank
+3. recommendation product bank
+4. user weekly recommendation output
+
+### Progress
+
+- Done: full top-to-bottom recommendation-path research across frontend, edge functions, helpers, migrations, Knowledge Center inputs, connection context, Firecrawl resolver, and shared/global table roles.
+- Done: recommendation saves now persist in `user_preferences.favorites.recommendations`, load back on refresh, and rollback cleanly on failed writes instead of behaving like local-only demo state.
+- Done: recommendation share now uses the native share sheet when available and falls back to copying a real share message to the clipboard, so it no longer acts like a toast-only placeholder.
+- Done: successful recommendation shares now also persist lightweight share history in `user_preferences.favorites.shared_recommendations`, so the action leaves a durable user-owned artifact instead of disappearing after the device handoff.
+- Done: `resolved_recommendation_catalog` writes now run through service-role edge-function clients, and authenticated-user insert/update policies are removed so the shared catalog is no longer directly writable from the client.
+- Done: created `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md` as the replacement architecture plan.
+- Done: created `RECOMMENDATION_SYSTEM_BUILD_SPEC.md` as the concrete schema and implementation contract for the replacement system.
+- Done: created `RECOMMENDATION_EXECUTION_CHECKLIST.md` and worked through the 10-step execution pass end to end.
+- Done: `recommendation-engine-v2` now scores recommendation-fit confidence separately from exact-product confidence and reports explainability payloads for each card.
+- Done: sparse profiles now scale down recommendation count instead of forcing a full 12-card weekly set.
+- Done: exact-product verification now includes remote image verification state before a row can be treated as reusable exact product data.
+- Done: `recommendation_product_bank` now carries row state, source metadata, verification notes, and image verification status.
+- Done: added `recommendation-bank-maintenance` as a trusted cleanup/rescore path for existing product-bank rows.
+- Done: added `recommendation-trend-pipeline` plus `recommendation_trend_candidates` as a staged growth path for keyword/brand/product banks.
+- Done: the live page now prefers v2, falls back safely to the legacy engine if v2 is unavailable, and exposes internal recommendation diagnostics for the dev user without cluttering the customer view.
+- Remaining: complete `This or That` / product-card / likes-dislikes v2 inputs, deploy the new maintenance and trend functions, and retire legacy recommendation code only after v2 is fully live and verified.
+
+### Fixes required
+
+1. Finish the architecture/spec work.
+2. Normalize the unfinished input systems:
+   - This or That v2
+   - Product Cards v2
+   - Likes / Dislikes
+   - future Category Cards support
+3. Build the new keyword-bank and exact-product-bank schema.
+4. Build the new recommendation engine beside the current one.
+5. Run parallel verification.
+6. Cut the frontend over only after the new engine is verified.
+7. Delete legacy recommendation code only after cutover.
+
+### Important constraints
+
+1. Do not keep broadening the current recommender with more permanent logic if that same work belongs in the replacement system.
+2. Do not delete the live recommender before the replacement exists.
+3. Do not treat the current keyword/brand guidance banks as the final exact-product bank.
+4. Do not treat `weekly_recommendations` as the shared reusable product bank.
+
+### Files
+
+- `src/pages/dashboard/Recommendations.tsx`
+- `supabase/functions/ai-products/index.ts`
+- `supabase/functions/ai-connection-products/index.ts`
+- `supabase/functions/_shared/knowledgeCenter.ts`
+- `supabase/functions/_shared/knowMeCatalog.ts`
+- `supabase/functions/_shared/exactProductScraper.ts`
+- recommendation-related migrations
+- `RECOMMENDATION_SYSTEM_OVERHAUL_PLAN.md`
+- `RECOMMENDATION_SYSTEM_BUILD_SPEC.md`
+
+## P1: Large Overloaded Product Surfaces
+
+### Why this matters
+
+Several pages are too large and mix too many responsibilities, which raises regression risk.
+
+### Main targets
+
+1. `src/pages/dashboard/DashboardHome.tsx`
+2. `src/pages/dashboard/SettingsPage.tsx`
+3. `src/pages/dashboard/Questionnaires.tsx`
+4. `src/pages/dashboard/ConnectionPage.tsx`
+5. `src/pages/PhotoGallery.tsx`
+
+### Fixes required
+
+1. Split large pages into bounded feature modules.
+2. Reduce boot-time work on dashboard home.
+3. Deep-link searches to actual matched destinations instead of generic landings.
+4. Separate settings concerns:
+   - account
+   - connections
+   - notifications
+   - billing
+5. Reduce chatty writes and full refetch loops where possible.
+
+## P1: User-Facing Trust Problems
+
+These are not always "security critical", but they hurt product trust and should be fixed.
+
+1. Dashboard home demo milestones and placeholder-feeling stock photo behavior
+2. non-persistent recommendation actions
+3. corrupted unicode copy in user-facing text
+4. premium gating that can hide notifications based on unstable subscription state
+
+### Progress
+
+- Done: fixed corrupted user-facing copy on the live Settings, Signup, Forgot Password, Recommendations, and Know Me category-card surfaces so broken placeholder bullets, back-nav labels, timestamp separators, recommendation meta text, and category accents no longer render as mojibake.
+- Remaining: internal/admin mojibake still exists in `SponsoredAdmin.tsx` and should be cleaned separately without changing runtime behavior.
+
+## P2: Docs And Status File Cleanup
+
+### Problems
+
+1. too many docs were required to understand the repo
+2. some docs are stale, especially `LINT_AUDIT.md`
+3. historical audits contain valid detail but are not good operator starting points
+
+### Fixes required
+
+1. Keep `NEXT_CHAT_HANDOFF.md` as the primary operator doc.
+2. Keep this file as the unified fix plan.
+3. Update or retire stale status docs.
+4. If future design/history screenshots remain, keep them in one intentional location with a README.
+
+## P2: Testing And Verification Gaps
+
+### Current issue
+
+Tooling is green, but critical flows are barely tested.
+
+### High-value tests to add
+
+1. auth routing:
+   - login -> onboarding vs dashboard
+   - session refresh stability
+2. invite/connect handoff:
+   - inviter and token links
+3. My Go Two:
+   - preview strips
+   - collapse behavior
+   - category open behavior
+4. Photo Gallery:
+   - slot assignment updates live rendering
+5. storage ref resolution:
+   - public vs private bucket behavior
+
+## P2: Legacy Surface Rationalization
+
+These are not the first fixes, but they should be cleaned deliberately.
+
+1. old or duplicate schema layers around assets
+2. empty or unwired edge function directories
+3. historical admin tooling that is no longer part of the active runtime
+4. duplicate or bespoke card implementations that drift from the generic path
+
+## Completed / Already Handled
+
+These items no longer need to stay on the active fix list.
+
+1. dev login password-reset session invalidation was fixed by switching to magic-link session generation
+2. legacy carousel test route/page was removed
+3. several dead repo-root screenshots and generated artifacts were removed
+4. several clearly unused assets/utilities/components were removed
+5. broad active asset buckets were reviewed enough to confirm they are not safe bulk-delete targets
+
+## Working Rule For Future Changes
+
+For any implementation in this plan:
+
+1. change the smallest safe surface first
+2. keep the live user-facing behavior intact
+3. verify visually on the real page
+4. run lint/build when code paths justify it
+5. update `NEXT_CHAT_HANDOFF.md` when a material rule or status changes

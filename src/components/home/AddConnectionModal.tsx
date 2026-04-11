@@ -83,6 +83,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
     return Array.from(aggregateResults.values()).slice(0, 10);
   };
 
+  // TEST-ONLY helper for recreating fake QA profiles used in connection flows.
   const resetTestProfiles = async (showToast = true) => {
     const { data, error } = await supabase.functions.invoke("searchforaddprofile", {
       body: { action: "reset-test-profiles" },
@@ -253,7 +254,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
       const rawQuery = searchQuery.trim();
       let results = await runSearchQuery(rawQuery);
 
-      // Auto-heal test profile setup in environments where seed data wasn't created yet.
+      // TEST-ONLY auto-heal for fake QA profiles when seed data is missing.
       if (
         results.length === 0 &&
         /(harper|rowan|test profile|gotwo\.local)/i.test(rawQuery)

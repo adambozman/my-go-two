@@ -22,6 +22,17 @@ const toResponseRows = (userId: string, input: Record<string, unknown>) =>
     updated_at: new Date().toISOString(),
   }));
 
+type ResponseTable = {
+  upsert: (
+    values: Array<Record<string, unknown>>,
+    options: { onConflict: string },
+  ) => Promise<{ error: unknown }>;
+};
+
+type ResponseWriterClient = {
+  from: (table: "onboarding_responses" | "know_me_responses") => ResponseTable;
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -47,9 +58,10 @@ serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const onboardingResponses = toRecord(body.onboardingResponses);
     const knowMeResponses = toRecord(body.knowMeResponses);
+    const responseWriter = supabase as unknown as ResponseWriterClient;
 
     if (Object.keys(onboardingResponses).length > 0) {
-      const { error } = await (supabase as unknown as { from: (table: string) => any })
+      const { error } = await responseWriter
         .from("onboarding_responses")
         .upsert(toResponseRows(user.id, onboardingResponses), {
           onConflict: "user_id,question_key",
@@ -58,7 +70,7 @@ serve(async (req) => {
     }
 
     if (Object.keys(knowMeResponses).length > 0) {
-      const { error } = await (supabase as unknown as { from: (table: string) => any })
+      const { error } = await responseWriter
         .from("know_me_responses")
         .upsert(toResponseRows(user.id, knowMeResponses), {
           onConflict: "user_id,question_key",

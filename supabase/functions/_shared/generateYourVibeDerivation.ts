@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { getBankKnowledgeDerivation } from "./knowMeCatalog.ts";
+import { getBankKnowledgeDerivation } from "./recommendationCatalog.ts";
 
 type ResponseMap = Record<string, unknown>;
 
@@ -12,6 +12,17 @@ type YourVibeDerivation = {
   price_tier: "budget" | "mid-range" | "premium" | "luxury";
   style_keywords: string[];
   persona_summary: string;
+};
+
+type UpsertableTable = {
+  upsert: (
+    values: Record<string, unknown>,
+    options: { onConflict: string },
+  ) => Promise<{ error: unknown }>;
+};
+
+type UpsertCapableClient = {
+  from: (table: string) => UpsertableTable;
 };
 
 const toStringArray = (value: unknown): string[] =>
@@ -148,7 +159,7 @@ export const upsertYourVibeDerivation = async (
   derivationPayload: YourVibeDerivation,
   sourceSnapshot: unknown,
 ) => {
-  const { error } = await (supabase as unknown as { from: (table: string) => any })
+  const { error } = await (supabase as unknown as UpsertCapableClient)
     .from("knowledge_derivations")
     .upsert(
       {

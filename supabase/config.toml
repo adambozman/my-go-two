@@ -3,8 +3,14 @@ project_id = "emaarjwsapuldzvdsite"
 [functions.ai-quizzes]
 verify_jwt = false
 
-[functions.ai-products]
-verify_jwt = false
+[functions.recommendation-engine-v2]
+verify_jwt = true
+
+[functions.recommendation-bank-maintenance]
+verify_jwt = true
+
+[functions.recommendation-trend-pipeline]
+verify_jwt = true
 
 [functions.trending-feed]
 verify_jwt = false
@@ -13,10 +19,10 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.create-checkout]
-verify_jwt = false
+verify_jwt = true
 
 [functions.customer-portal]
-verify_jwt = false
+verify_jwt = true
 
 [functions.searchforaddprofile]
 verify_jwt = false
