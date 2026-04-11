@@ -108,7 +108,7 @@ const thisOrThatAnswers = [
 
 describe("recommendation signal normalization", () => {
   it("normalizes profile, answers, saved cards, likes, dislikes, and bank rows", () => {
-    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers);
+    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers as any);
 
     expect(state.signals.length).toBeGreaterThan(6);
     expect(state.locationKeys).toEqual(expect.arrayContaining(["chicago", "illinois"]));

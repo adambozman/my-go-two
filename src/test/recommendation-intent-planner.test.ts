@@ -261,13 +261,13 @@ describe("recommendation intent planner", () => {
         "female",
         getThisOrThatV2RuntimeQuestions("female", "food-dining")[0]!,
         "A",
-      ) },
+      ) } as any,
       { user_id: "planner-user-1", ...buildThisOrThatAnswerRecord(
         "food-dining",
         "female",
         getThisOrThatV2RuntimeQuestions("female", "food-dining")[1]!,
         "A",
-      ) },
+      ) } as any,
     ]);
 
     const plan = buildRecommendationCategoryPlan(foodOnlyState, 4);
@@ -302,7 +302,7 @@ describe("recommendation intent planner", () => {
       user_connections: [],
       snapshot_payload: {},
       updated_at: new Date().toISOString(),
-    }, [], thisOrThatAnswers);
+    }, [], thisOrThatAnswers as any);
 
     const plan = buildRecommendationCategoryPlan(signalDrivenState, 4);
     const clothesPlan = plan.find((entry) => entry.category === "clothes");
@@ -356,7 +356,7 @@ describe("recommendation intent planner", () => {
       user_connections: [],
       snapshot_payload: {},
       updated_at: new Date().toISOString(),
-    }, [], thisOrThatAnswers);
+    }, [], thisOrThatAnswers as any);
 
     const plan = buildRecommendationCategoryPlan(signalDrivenState, 4);
     const foodPlan = plan.find((entry) => entry.category === "food");
@@ -431,7 +431,7 @@ describe("recommendation intent planner", () => {
       user_connections: [],
       snapshot_payload: {},
       updated_at: new Date().toISOString(),
-    }, [], thisOrThatAnswers);
+    }, [], thisOrThatAnswers as any);
 
     const plan = buildRecommendationCategoryPlan(signalDrivenState, 4);
     const personalPlan = plan.find((entry) => entry.category === "personal");
