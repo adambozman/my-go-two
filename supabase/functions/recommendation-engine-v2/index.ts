@@ -115,7 +115,7 @@ const sanitizeIntents = (rawIntents: unknown): RecommendationIntent[] => {
         keywords: sanitizeKeywordList(intent.keywords),
       };
     })
-    .filter((intent): intent is RecommendationIntent => Boolean(intent && intent.brand && intent.name && intent.hook && intent.why && intent.primary_keyword));
+    .filter((intent): intent is NonNullable<typeof intent> & RecommendationIntent => Boolean(intent && intent.brand && intent.name && intent.hook && intent.why && intent.primary_keyword));
 };
 
 const getRequiredEnv = (name: string): string => {
@@ -505,7 +505,7 @@ serve(async (req) => {
 
     const products = [];
     for (const intent of intents) {
-      const primaryKeyword = normalizePrimaryKeyword(intent.primary_keyword ?? intent.name);
+      const primaryKeyword = normalizePrimaryKeyword(intent.primary_keyword ?? intent.name) ?? "";
       const descriptorKeywords = mergeDescriptorKeywords(primaryKeyword, intent.keywords ?? [], [intent.brand]);
       const bankRow = await findBestProductBankMatch(
         admin,
