@@ -62,7 +62,7 @@ export type SharedBankRecord = {
   image_url: string | null;
   intent_keywords: string[] | null;
   keyword_signature: string | null;
-  match_confidence?: number;
+  match_confidence: number;
   scraped_description: string | null;
   scraped_product_title: string | null;
   product_match_confidence: number;
