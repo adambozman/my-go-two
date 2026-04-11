@@ -63,7 +63,7 @@ These rules came up repeatedly across the handoff and audits and should be treat
 3. A passing build is not proof that a live behavior issue is solved.
 4. Do not redesign `My Go Two` while fixing behavior or performance.
 5. Do not invent placeholder UI, fallback imagery, or temporary fake visuals unless explicitly requested.
-6. Do not revive deleted legacy image-bank flows.
+6. Do not revive deleted image-bank flows.
 7. If the user says an asset is a component, treat it as code, not a screenshot.
 8. Before claiming cleanup/removal/consolidation, verify the repo state.
 9. On critical `My Go Two` issues, first split research into two tracks:
@@ -140,7 +140,6 @@ Most important auth/invite files:
 Most important recommendation/billing files:
 
 - `src/pages/dashboard/Recommendations.tsx`
-- `supabase/functions/ai-products/index.ts`
 - `supabase/functions/recommendation-engine-v2/index.ts`
 - `supabase/functions/recommendation-bank-maintenance/index.ts`
 - `supabase/functions/recommendation-trend-pipeline/index.ts`
@@ -152,6 +151,14 @@ Most important recommendation/billing files:
 - `supabase/functions/create-checkout/index.ts`
 - `supabase/functions/customer-portal/index.ts`
 - `RECOMMENDATION_EXECUTION_CHECKLIST.md`
+
+Most important `Know Me` / `This or That` files:
+
+- `src/pages/dashboard/KnowMePage.tsx`
+- `src/data/knowMeQuestions.ts`
+- `src/data/thisOrThatV2.ts`
+- `src/data/thisOrThatV2Authored.ts`
+- `src/data/thisOrThatV2Persistence.ts`
 
 ## Local Run And Login
 
@@ -220,14 +227,22 @@ These are the important current realities established across the docs and repo i
 ### Recommendations
 
 - The frontend recommendations page is a viewer for a weekly cached backend generation path.
-- The live page prefers `recommendation-engine-v2` and falls back to `ai-products` if v2 is unavailable.
+- The live recommendations page is on `recommendation-engine-v2`; do not add a second product-generation runtime path.
 - `recommendation-engine-v2` now separates recommendation-fit confidence from exact-product confidence.
 - Sparse profiles now return fewer stronger picks instead of forcing a full 12-card set.
 - `recommendation_product_bank` now carries row state, image verification state, source metadata, and reverification notes.
-- migrated legacy bank rows should start as `review_required` until `recommendation-bank-maintenance` re-verifies them.
+- migrated bank rows should start as `review_required` until `recommendation-bank-maintenance` re-verifies them.
 - `recommendation-bank-maintenance` is the trusted cleanup/rescore path for existing bank rows.
 - `recommendation-trend-pipeline` stages trend candidates first and only promotes approved rows into the shared banks.
 - `resolved_recommendation_catalog` still exists, but the v2 direction is to treat `recommendation_product_bank` as the exact-product reuse layer.
+
+### Know Me / This or That
+
+- `KnowMePage.tsx` uses the authored v2 runtime bank from `src/data/thisOrThatV2.ts`.
+- `src/data/knowMeQuestions.ts` is now only the main non-This-or-That quiz bank.
+- Flat `tot-*` parsing is removed from recommendation normalization.
+- This-or-That recommendation signals should come from structured `this_or_that_v2_answers` payloads and the v2 authored dataset.
+- Do not rebuild helper aliases that read the removed flat question bank.
 
 ### Public feed and connections
 
@@ -238,7 +253,7 @@ These are the important current realities established across the docs and repo i
 
 - `npm run lint` currently passes.
 - `npm run build` currently passes.
-- Tests are minimal and do not meaningfully cover the critical user flows.
+- Targeted recommendation and This-or-That contract tests cover the v2 signal pipeline, but live browser/runtime checks are still required before claiming user-facing behavior is fixed.
 - `LINT_AUDIT.md` is stale and should not be trusted as current status.
 
 ## Asset And Cleanup Status
@@ -247,7 +262,7 @@ The repo had real cleanup work completed, but cleanup is not "done" in the broad
 
 ### Safe cleanup already completed
 
-- legacy carousel test routes/pages removed
+- retired carousel test routes/pages removed
 - dead `CategorySync` route/file removed from runtime
 - repo-root screenshot and capture clutter removed
 - several clearly unused template/preview assets removed
@@ -306,7 +321,6 @@ Do not blindly delete or rework these without tracing active usage first.
 - `src/layouts/DashboardLayout.tsx`
 - `src/pages/Connect.tsx`
 - `supabase/functions/searchforaddprofile/index.ts`
-- `supabase/functions/ai-products/index.ts`
 - `supabase/config.toml`
 - `supabase/migrations/*` touching shared/global tables or storage buckets
 

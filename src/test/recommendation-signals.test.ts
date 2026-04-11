@@ -7,8 +7,7 @@ import {
   buildRecommendationCategorySupport,
 } from "../../supabase/functions/_shared/recommendationSignals";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "../../supabase/functions/_shared/knowledgeCenter";
-import { getThisOrThatBank } from "../data/knowMeQuestions";
-import { buildThisOrThatAnswerRecord } from "../data/thisOrThatV2";
+import { buildThisOrThatAnswerRecord, getThisOrThatV2RuntimeQuestions } from "../data/thisOrThatV2";
 
 const snapshot: KnowledgeSnapshotRow = {
   user_id: "test-user-1",
@@ -26,10 +25,6 @@ const snapshot: KnowledgeSnapshotRow = {
     "free-time": ["dining", "traveling"],
   },
   know_me_responses: {
-    "tot-03": "Yes",
-    "tot-07": "No",
-    "tot-54": "Neutrals",
-    "tot-48": "Sushi",
     "pet-peeves": "skinny jeans, tight denim",
     "sf-10": ["luxury", "sustainable", "high-street"],
   },
@@ -88,25 +83,25 @@ const thisOrThatAnswers = [
   buildThisOrThatAnswerRecord(
     "brands-shopping",
     "male",
-    getThisOrThatBank("brands-shopping", "male")!.questions[0]!,
+    getThisOrThatV2RuntimeQuestions("male", "brands-shopping")[0]!,
     "A",
   ),
   buildThisOrThatAnswerRecord(
     "travel-trips",
     "male",
-    getThisOrThatBank("travel-trips", "male")!.questions[0]!,
+    getThisOrThatV2RuntimeQuestions("male", "travel-trips")[0]!,
     "A",
   ),
   buildThisOrThatAnswerRecord(
     "food-dining",
     "female",
-    getThisOrThatBank("food-dining", "female")!.questions[0]!,
+    getThisOrThatV2RuntimeQuestions("female", "food-dining")[0]!,
     "A",
   ),
   buildThisOrThatAnswerRecord(
     "home-living",
     "female",
-    getThisOrThatBank("home-living", "female")!.questions[0]!,
+    getThisOrThatV2RuntimeQuestions("female", "home-living")[0]!,
     "A",
   ),
 ];
@@ -118,15 +113,15 @@ describe("recommendation signal normalization", () => {
     expect(state.signals.length).toBeGreaterThan(6);
     expect(state.locationKeys).toEqual(expect.arrayContaining(["chicago", "illinois"]));
     expect(state.recommendedBrands).toEqual(
-      expect.arrayContaining(["aritzia", "sezane", "mejuri", "lululemon", "uniqlo"]),
+      expect.arrayContaining(["aritzia", "sezane", "mejuri", "uniqlo"]),
     );
 
     expect(state.negativeKeywords).toEqual(
-      expect.arrayContaining(["skinny jeans", "skinny", "tight denim", "neon", "h m"]),
+      expect.arrayContaining(["skinny jeans", "skinny", "tight denim", "neon"]),
     );
 
     expect(state.positiveKeywords).toEqual(
-      expect.arrayContaining(["thoughtful", "lululemon", "neutrals", "sushi"]),
+      expect.arrayContaining(["thoughtful", "brand preference", "travel preference", "dining preference"]),
     );
 
     expect(state.productCardKeywords).toHaveLength(2);
@@ -163,14 +158,11 @@ describe("recommendation signal normalization", () => {
           row.signal_polarity === "negative",
       ),
     ).toBe(true);
-    expect(state.likes.some((row) => row.like_type === "this_or_that_brand" && row.brand === "lululemon")).toBe(true);
     expect(state.likes.some((row) => row.like_type === "this_or_that_v2" && row.category === "clothes")).toBe(true);
     expect(state.likes.some((row) => row.like_type === "this_or_that_v2" && row.category === "food")).toBe(true);
     expect(state.likes.some((row) => row.like_type === "this_or_that_v2" && row.category === "home")).toBe(true);
-    expect(state.likes.some((row) => row.like_type === "this_or_that_choice" && row.descriptor_keywords.includes("neutrals"))).toBe(true);
     expect(state.likes.some((row) => row.like_type === "product_card_brand" && row.brand === "aritzia")).toBe(true);
     expect(state.likes.some((row) => row.like_type === "product_card_brand" && row.brand === "sezane")).toBe(true);
-    expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_brand" && row.brand === "h m")).toBe(true);
     expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_v2" && row.descriptor_keywords.includes("outdoor"))).toBe(true);
     expect(state.keywordBankRows.some((row) => row.category === "food")).toBe(true);
     expect(state.brandBankRows.some((row) => row.brand === "aritzia")).toBe(true);
@@ -269,13 +261,13 @@ describe("recommendation signal normalization", () => {
     expect(unsupportedMatch.reasons).not.toContain("brand-aligned");
   });
 
-  it("prefers structured this or that answers over duplicate legacy tot answers", () => {
+  it("uses structured this or that answers without needing flat tot answer heuristics", () => {
     const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, [
       {
         user_id: "test-user-1",
-        question_id: "tot-03",
-        question_key: "tot-03",
-        question_prompt: "Would you wear Lululemon?",
+        question_id: "totv2-f-brand-01",
+        question_key: "totv2-f-brand-01",
+        question_prompt: "Which shopping mix feels most like your closet?",
         recommendation_category: "clothes",
         descriptor_keywords: ["athleisure"],
         brand: "lululemon",
@@ -307,9 +299,6 @@ describe("recommendation signal normalization", () => {
       },
     ]);
 
-    expect(
-      state.likes.filter((row) => row.like_type === "this_or_that_brand" && row.brand === "lululemon"),
-    ).toHaveLength(0);
     expect(
       state.likes.filter((row) => row.like_type === "this_or_that_v2" && row.brand === "lululemon"),
     ).toHaveLength(1);

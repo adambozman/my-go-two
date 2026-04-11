@@ -1,12 +1,5 @@
 import type { Gender } from "@/lib/gender";
 import {
-  THIS_OR_THAT_CATEGORIES,
-  getThisOrThatBank,
-  type BrandBankCategory,
-  type BrandBankQuestion,
-  type ThisOrThatCategory,
-} from "./knowMeQuestions";
-import {
   getThisOrThatV2AuthoredQuestions,
   type ThisOrThatV2AuthoredCategoryId,
   type ThisOrThatV2AuthoredQuestionSeed,
@@ -36,7 +29,7 @@ export type ThisOrThatV2EntityKind =
   | "gift-preference"
   | "order-preference";
 
-export type ThisOrThatV2SourceKind = "legacy-flat" | "bank-v1" | "authored-v2";
+export type ThisOrThatV2SourceKind = "authored-v2";
 
 export interface ThisOrThatV2TopLevelCategoryBlueprint {
   slug: ThisOrThatV2TopLevelCategorySlug;
@@ -55,6 +48,15 @@ export interface ThisOrThatV2CategoryBlueprint {
   entity_kind: ThisOrThatV2EntityKind;
   weight: number;
   notes: string;
+}
+
+export interface ThisOrThatV2CategoryDefinition {
+  id: string;
+  title: string;
+  description: string;
+  eyebrow: string;
+  supportedGenders: Gender[];
+  status: "live" | "coming-soon";
 }
 
 export interface ThisOrThatV2OptionMetadata {
@@ -145,42 +147,37 @@ export const THIS_OR_THAT_V2_TOP_LEVEL_CATEGORIES: ThisOrThatV2TopLevelCategoryB
     slug: "clothes",
     label: "Clothes",
     status: "live",
-    rationale:
-      "Style, shopping, and fit-forward instinct questions should resolve into the same top-level bucket as My Go Two clothes.",
+    rationale: "Style, shopping, and fit-forward instinct questions should resolve into My Go Two clothes.",
   },
   {
     slug: "personal",
     label: "Personal",
     status: "live",
-    rationale:
-      "Personal taste, relationships, and identity-adjacent signals belong here when they are not direct purchase categories.",
+    rationale: "Personal taste, relationship, and identity-adjacent signals belong here when they are not direct purchase categories.",
   },
   {
     slug: "health",
     label: "Health",
     status: "planned",
-    rationale:
-      "No live This or That health bank exists yet, but the v2 contract should reserve the bucket now.",
+    rationale: "Reserve the health bucket for future authored question sets.",
   },
   {
     slug: "gifts",
     label: "Gifts",
     status: "live",
-    rationale:
-      "Gift appetite and gift-style instincts should land in the same top-level area as My Go Two gifts.",
+    rationale: "Gift appetite and gift-style instincts should land in the same area as My Go Two gifts.",
   },
   {
     slug: "dining",
     label: "Dining",
     status: "live",
-    rationale: "Food and dining taste cues should align to the My Go Two dining surface.",
+    rationale: "Food and dining taste cues align to the My Go Two dining surface.",
   },
   {
     slug: "beverages",
     label: "Beverages",
     status: "planned",
-    rationale:
-      "No dedicated beverage This or That bank is live yet, but beverage questions should not be forced into dining forever.",
+    rationale: "Hold a beverage bucket for later instead of forcing every drink signal into dining.",
   },
   {
     slug: "household",
@@ -192,8 +189,7 @@ export const THIS_OR_THAT_V2_TOP_LEVEL_CATEGORIES: ThisOrThatV2TopLevelCategoryB
     slug: "entertainment",
     label: "Entertainment",
     status: "live",
-    rationale:
-      "Date ideas, hobbies, and weekend rhythm currently fit best under the live entertainment area.",
+    rationale: "Date ideas, hobbies, and weekend rhythm currently fit best under entertainment.",
   },
   {
     slug: "travel",
@@ -203,171 +199,228 @@ export const THIS_OR_THAT_V2_TOP_LEVEL_CATEGORIES: ThisOrThatV2TopLevelCategoryB
   },
 ];
 
+export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinition[] = [
+  {
+    id: "style-aesthetic",
+    title: "Style & Aesthetic",
+    description: "Fixed instinct prompts around visual taste, silhouettes, and overall vibe.",
+    eyebrow: "Style lens",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "live",
+  },
+  {
+    id: "brands-shopping",
+    title: "Brands & Shopping",
+    description: "Quick picks about labels, stores, and the kinds of brands that feel like you.",
+    eyebrow: "Brand signals",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "live",
+  },
+  {
+    id: "colors-palette",
+    title: "Colors & Palette",
+    description: "Preference prompts for tones, contrast, color energy, and what feels most natural.",
+    eyebrow: "Color read",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "live",
+  },
+  {
+    id: "food-dining",
+    title: "Food & Dining",
+    description: "Taste cues around cravings, comfort meals, restaurants, and how you like to dine.",
+    eyebrow: "Taste cues",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "live",
+  },
+  {
+    id: "travel-trips",
+    title: "Travel & Trips",
+    description: "Instinctive picks about destinations, travel mood, and what kind of getaway fits you.",
+    eyebrow: "Travel mood",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "live",
+  },
+  {
+    id: "date-ideas-romance",
+    title: "Date Ideas & Romance",
+    description: "Chemistry, date-night energy, and the romantic experiences you lean toward.",
+    eyebrow: "Romance cues",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "live",
+  },
+  {
+    id: "home-living",
+    title: "Home & Living",
+    description: "Signals about comfort, decor, routines, and what makes a space feel right.",
+    eyebrow: "Home feel",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "live",
+  },
+  {
+    id: "love-language-relationships",
+    title: "Love Language & Relationships",
+    description: "Instinct questions for connection style, affection, and relationship patterns that fit.",
+    eyebrow: "Connection read",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "live",
+  },
+  {
+    id: "hobbies-weekend",
+    title: "Hobbies & Weekend",
+    description: "Fast reads on downtime, interests, and the kind of weekend rhythm that feels good.",
+    eyebrow: "Weekend rhythm",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "live",
+  },
+  {
+    id: "gifting-actually-want",
+    title: "Gifting - what you actually want",
+    description: "Gift instincts, wish-list clues, and what feels genuinely thoughtful.",
+    eyebrow: "Gift instinct",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "live",
+  },
+  {
+    id: "food-orders",
+    title: "Your Go-To Orders",
+    description: "Your exact orders at the places you love so the people in your life always get it right.",
+    eyebrow: "Go-to orders",
+    supportedGenders: ["male", "female", "non-binary"],
+    status: "coming-soon",
+  },
+];
+
 export const THIS_OR_THAT_V2_CATEGORY_BLUEPRINTS: ThisOrThatV2CategoryBlueprint[] = [
   {
     source_category_id: "style-aesthetic",
     source_title: "Style & Aesthetic",
     source_status: "live",
-    source_kind: "legacy-flat",
+    source_kind: "authored-v2",
     category_slug: "clothes",
     subcategory_slug: "style-aesthetic",
     entity_kind: "aesthetic",
     weight: 0.92,
-    notes:
-      "Legacy tot-* style prompts remain live and should become structured aesthetic signals under clothes.",
+    notes: "Style prompts map directly into the clothes signal stack.",
   },
   {
     source_category_id: "brands-shopping",
     source_title: "Brands & Shopping",
     source_status: "live",
-    source_kind: "bank-v1",
+    source_kind: "authored-v2",
     category_slug: "clothes",
     subcategory_slug: "brands-shopping",
     entity_kind: "brand-cluster",
     weight: 0.96,
-    notes:
-      "Shopping identity is still clothes-first in the current live bank and should preserve linked brand lists per option.",
+    notes: "Shopping identity should preserve linked brand lists per option.",
   },
   {
     source_category_id: "colors-palette",
     source_title: "Colors & Palette",
     source_status: "live",
-    source_kind: "bank-v1",
+    source_kind: "authored-v2",
     category_slug: "personal",
     subcategory_slug: "colors-palette",
     entity_kind: "palette",
     weight: 0.86,
-    notes:
-      "Palette answers are broad preference signals and should stay reusable across clothes, gifts, and personal recommendations.",
+    notes: "Palette answers should stay reusable across clothes, gifts, and personal recommendations.",
   },
   {
     source_category_id: "food-dining",
     source_title: "Food & Dining",
     source_status: "live",
-    source_kind: "bank-v1",
+    source_kind: "authored-v2",
     category_slug: "dining",
     subcategory_slug: "food-dining",
     entity_kind: "taste-cluster",
     weight: 0.9,
-    notes:
-      "Dining questions should preserve cuisine and restaurant-style metadata rather than collapsing to plain text.",
+    notes: "Dining questions should preserve cuisine and restaurant-style metadata.",
   },
   {
     source_category_id: "travel-trips",
     source_title: "Travel & Trips",
     source_status: "live",
-    source_kind: "bank-v1",
+    source_kind: "authored-v2",
     category_slug: "travel",
     subcategory_slug: "travel-trips",
     entity_kind: "destination-cluster",
-    weight: 0.9,
-    notes:
-      "Travel answers should retain destination and travel-mode keywords plus location-oriented metadata.",
+    weight: 0.88,
+    notes: "Trip and destination choices feed travel preferences directly.",
   },
   {
     source_category_id: "date-ideas-romance",
     source_title: "Date Ideas & Romance",
     source_status: "live",
-    source_kind: "bank-v1",
+    source_kind: "authored-v2",
     category_slug: "entertainment",
     subcategory_slug: "date-ideas-romance",
     entity_kind: "experience-cluster",
-    weight: 0.88,
-    notes:
-      "Date content fits entertainment today and can be remapped later if My Go Two gets a dedicated romance branch.",
+    weight: 0.87,
+    notes: "Date ideas read most cleanly as entertainment-style experience preferences.",
   },
   {
     source_category_id: "home-living",
     source_title: "Home & Living",
     source_status: "live",
-    source_kind: "bank-v1",
+    source_kind: "authored-v2",
     category_slug: "household",
     subcategory_slug: "home-living",
     entity_kind: "home-style",
     weight: 0.88,
-    notes: "Home and decor instincts should align directly with the household bucket.",
+    notes: "Home and living choices should strengthen household recommendations.",
   },
   {
     source_category_id: "love-language-relationships",
     source_title: "Love Language & Relationships",
     source_status: "live",
-    source_kind: "bank-v1",
+    source_kind: "authored-v2",
     category_slug: "personal",
     subcategory_slug: "love-language-relationships",
     entity_kind: "relationship-signal",
-    weight: 0.84,
-    notes:
-      "Relationship-pattern questions are personal signals, not a direct commerce bucket.",
+    weight: 0.82,
+    notes: "Relationship preferences are personal signals that also inform gifts.",
   },
   {
     source_category_id: "hobbies-weekend",
     source_title: "Hobbies & Weekend",
     source_status: "live",
-    source_kind: "bank-v1",
+    source_kind: "authored-v2",
     category_slug: "entertainment",
     subcategory_slug: "hobbies-weekend",
     entity_kind: "interest-cluster",
     weight: 0.84,
-    notes:
-      "Hobby and weekend rhythm answers currently best support entertainment-style downstream recommendations.",
+    notes: "Hobby and weekend rhythm answers support entertainment recommendations.",
   },
   {
     source_category_id: "gifting-actually-want",
     source_title: "Gifting - what you actually want",
     source_status: "live",
-    source_kind: "bank-v1",
+    source_kind: "authored-v2",
     category_slug: "gifts",
     subcategory_slug: "gifting-actually-want",
     entity_kind: "gift-preference",
     weight: 0.95,
-    notes:
-      "This category should strongly influence gift recommendations and saved gift signals.",
+    notes: "This category should strongly influence gift recommendations and saved gift signals.",
   },
   {
     source_category_id: "food-orders",
     source_title: "Your Go-To Orders",
     source_status: "coming-soon",
-    source_kind: "bank-v1",
+    source_kind: "authored-v2",
     category_slug: "dining",
     subcategory_slug: "food-orders",
     entity_kind: "order-preference",
     weight: 0.97,
-    notes:
-      "Keep this as a dining scaffold for now; beverage-specific order banks can split into beverages later.",
+    notes: "Keep this as a dining scaffold for now; beverage-specific order banks can split later.",
   },
 ];
+
+const CATEGORY_DEFINITION_BY_ID = new Map(
+  THIS_OR_THAT_V2_CATEGORY_DEFINITIONS.map((category) => [category.id, category]),
+);
 
 const CATEGORY_BLUEPRINT_BY_ID = new Map(
   THIS_OR_THAT_V2_CATEGORY_BLUEPRINTS.map((blueprint) => [blueprint.source_category_id, blueprint]),
 );
-
-const LOCATION_TOKEN_ALLOWLIST = new Set([
-  "austin",
-  "beach",
-  "brooklyn",
-  "chicago",
-  "country",
-  "desert",
-  "italy",
-  "japan",
-  "las",
-  "miami",
-  "mountain",
-  "mountains",
-  "nashville",
-  "new",
-  "orleans",
-  "osaka",
-  "paris",
-  "portland",
-  "road",
-  "snow",
-  "surf",
-  "tokyo",
-  "travel",
-  "vegas",
-  "winter",
-]);
 
 const STOP_WORDS = new Set([
   "a",
@@ -404,28 +457,6 @@ const tokenize = (value: string) =>
     .split(" ")
     .filter((token) => token.length >= 3 && !STOP_WORDS.has(token));
 
-const flattenBrandKeywords = (brandCategory: BrandBankCategory | undefined) =>
-  unique(
-    (brandCategory?.brands ?? []).map((entry) => normalizeKeyword(entry.brand)).filter(Boolean),
-  );
-
-const flattenDnaTags = (brandCategory: BrandBankCategory | undefined) =>
-  unique(
-    (brandCategory?.brands ?? [])
-      .flatMap((entry) => entry.dnaTags.map((tag) => normalizeKeyword(tag)))
-      .filter(Boolean),
-  );
-
-const extractLocationKeywords = (brandCategory: BrandBankCategory | undefined) =>
-  unique(
-    [
-      ...(brandCategory?.brands ?? []).map((entry) => normalizeKeyword(entry.brand)),
-      ...(brandCategory?.brands ?? []).flatMap((entry) => entry.dnaTags.map((tag) => normalizeKeyword(tag))),
-    ]
-      .flatMap((value) => value.split(" "))
-      .filter((token) => LOCATION_TOKEN_ALLOWLIST.has(token)),
-  );
-
 const getPrimaryKeywordForEntityKind = (
   blueprint: ThisOrThatV2CategoryBlueprint,
   optionLabel: string,
@@ -458,108 +489,23 @@ const getPrimaryKeywordForEntityKind = (
   }
 };
 
-const buildOptionMetadata = (
-  blueprint: ThisOrThatV2CategoryBlueprint,
-  optionLabel: string,
-  optionTags: string[],
-  oppositeLabel: string,
-  oppositeTags: string[],
-  linkedCategory: BrandBankCategory | undefined,
-): ThisOrThatV2OptionMetadata => {
-  const entitySlug = slugify(optionLabel);
-  const descriptorKeywords = unique([
-    ...optionTags.map(normalizeKeyword),
-    ...tokenize(optionLabel),
-    ...flattenDnaTags(linkedCategory),
-  ]);
-  const avoidKeywords = unique([
-    normalizeKeyword(oppositeLabel),
-    ...oppositeTags.map(normalizeKeyword),
-    ...tokenize(oppositeLabel),
-  ]);
-  const brandKeywords = flattenBrandKeywords(linkedCategory);
-  const locationKeywords = extractLocationKeywords(linkedCategory);
-
-  return {
-    category_slug: blueprint.category_slug,
-    subcategory_slug: blueprint.subcategory_slug,
-    entity_kind: blueprint.entity_kind,
-    entity_slug: entitySlug,
-    primary_keyword: getPrimaryKeywordForEntityKind(blueprint, optionLabel),
-    descriptor_keywords: descriptorKeywords,
-    avoid_keywords: avoidKeywords,
-    brand_keywords: brandKeywords,
-    location_keywords: locationKeywords,
-    weight: blueprint.weight,
-  };
-};
-
-const buildQuestionScaffold = (
-  category: ThisOrThatCategory,
-  question: BrandBankQuestion,
-  linkedCategoriesByTitle: Map<string, BrandBankCategory>,
-  gender: Gender,
-): ThisOrThatV2QuestionScaffold | null => {
-  const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(category.id);
-  if (!blueprint) return null;
-
-  const linkedCategoryA = linkedCategoriesByTitle.get(question.categoryA);
-  const linkedCategoryB = linkedCategoriesByTitle.get(question.categoryB);
-
-  return {
-    question_id: question.id,
-    source_category_id: category.id,
-    source_category_title: category.title,
-    source_kind: blueprint.source_kind,
-    dataset_gender: gender,
-    category_slug: blueprint.category_slug,
-    subcategory_slug: blueprint.subcategory_slug,
-    prompt: question.prompt,
-    supported_genders: category.supportedGenders,
-    weight: blueprint.weight,
-    options: [
-      {
-        option_key: "A",
-        label: question.categoryA,
-        metadata: buildOptionMetadata(
-          blueprint,
-          question.categoryA,
-          question.tagsForA,
-          question.categoryB,
-          question.tagsForB,
-          linkedCategoryA,
-        ),
-      },
-      {
-        option_key: "B",
-        label: question.categoryB,
-        metadata: buildOptionMetadata(
-          blueprint,
-          question.categoryB,
-          question.tagsForB,
-          question.categoryA,
-          question.tagsForA,
-          linkedCategoryB,
-        ),
-      },
-    ],
-  };
-};
-
 const buildQuestionScaffoldFromAuthoredSeed = (
-  category: ThisOrThatCategory,
   seed: ThisOrThatV2AuthoredQuestionSeed,
   gender: Gender,
-): ThisOrThatV2QuestionScaffold | null => {
-  const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(category.id);
-  if (!blueprint) return null;
+): ThisOrThatV2QuestionScaffold => {
+  const category = CATEGORY_DEFINITION_BY_ID.get(seed.source_category_id);
+  const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(seed.source_category_id);
+
+  if (!category || !blueprint) {
+    throw new Error(`Unknown This or That v2 category: ${seed.source_category_id}`);
+  }
 
   const optionA = seed.options[0];
   const optionB = seed.options[1];
 
   return {
     question_id: seed.question_id,
-    source_category_id: category.id,
+    source_category_id: seed.source_category_id,
     source_category_title: category.title,
     source_kind: "authored-v2",
     dataset_gender: gender,
@@ -577,16 +523,15 @@ const buildQuestionScaffoldFromAuthoredSeed = (
           subcategory_slug: blueprint.subcategory_slug,
           entity_kind: blueprint.entity_kind,
           entity_slug: slugify(optionA.label),
-          primary_keyword: normalizeKeyword(optionA.primary_keyword),
-          descriptor_keywords: unique(optionA.descriptor_keywords.map(normalizeKeyword)),
+          primary_keyword: normalizeKeyword(optionA.primary_keyword || getPrimaryKeywordForEntityKind(blueprint, optionA.label)),
+          descriptor_keywords: unique([...optionA.descriptor_keywords.map(normalizeKeyword), ...tokenize(optionA.label)]),
           avoid_keywords: unique(
-            (optionA.avoid_keywords?.length
-              ? optionA.avoid_keywords
-              : [optionB.label, ...optionB.descriptor_keywords]
-            ).map(normalizeKeyword),
+            (optionA.avoid_keywords?.length ? optionA.avoid_keywords : [optionB.label, ...optionB.descriptor_keywords]).map(
+              normalizeKeyword,
+            ),
           ),
-          brand_keywords: unique(optionA.brand_keywords?.map(normalizeKeyword) ?? []),
-          location_keywords: unique(optionA.location_keywords?.map(normalizeKeyword) ?? []),
+          brand_keywords: unique((optionA.brand_keywords ?? []).map(normalizeKeyword)),
+          location_keywords: unique((optionA.location_keywords ?? []).map(normalizeKeyword)),
           weight: optionA.weight ?? blueprint.weight,
         },
       },
@@ -598,16 +543,15 @@ const buildQuestionScaffoldFromAuthoredSeed = (
           subcategory_slug: blueprint.subcategory_slug,
           entity_kind: blueprint.entity_kind,
           entity_slug: slugify(optionB.label),
-          primary_keyword: normalizeKeyword(optionB.primary_keyword),
-          descriptor_keywords: unique(optionB.descriptor_keywords.map(normalizeKeyword)),
+          primary_keyword: normalizeKeyword(optionB.primary_keyword || getPrimaryKeywordForEntityKind(blueprint, optionB.label)),
+          descriptor_keywords: unique([...optionB.descriptor_keywords.map(normalizeKeyword), ...tokenize(optionB.label)]),
           avoid_keywords: unique(
-            (optionB.avoid_keywords?.length
-              ? optionB.avoid_keywords
-              : [optionA.label, ...optionA.descriptor_keywords]
-            ).map(normalizeKeyword),
+            (optionB.avoid_keywords?.length ? optionB.avoid_keywords : [optionA.label, ...optionA.descriptor_keywords]).map(
+              normalizeKeyword,
+            ),
           ),
-          brand_keywords: unique(optionB.brand_keywords?.map(normalizeKeyword) ?? []),
-          location_keywords: unique(optionB.location_keywords?.map(normalizeKeyword) ?? []),
+          brand_keywords: unique((optionB.brand_keywords ?? []).map(normalizeKeyword)),
+          location_keywords: unique((optionB.location_keywords ?? []).map(normalizeKeyword)),
           weight: optionB.weight ?? blueprint.weight,
         },
       },
@@ -615,71 +559,57 @@ const buildQuestionScaffoldFromAuthoredSeed = (
   };
 };
 
-const findThisOrThatAuthoredSeed = (
-  categoryId: string,
+export const getThisOrThatV2CategoryDefinitions = () => THIS_OR_THAT_V2_CATEGORY_DEFINITIONS;
+
+export const getThisOrThatV2RuntimeQuestions = (
   gender: Gender,
-  questionId: string,
-) =>
-  getThisOrThatV2AuthoredQuestions(gender, categoryId as ThisOrThatV2AuthoredCategoryId).find(
-    (seed) => seed.question_id === questionId,
-  ) ?? null;
+  categoryId?: string,
+): ThisOrThatV2RuntimeQuestion[] => {
+  const scaffolds = buildThisOrThatV2QuestionScaffolds(gender);
+  return scaffolds
+    .filter((scaffold) => !categoryId || scaffold.source_category_id === categoryId)
+    .map((scaffold) => ({
+      id: scaffold.question_id,
+      prompt: scaffold.prompt,
+      categoryA: scaffold.options[0].label,
+      categoryB: scaffold.options[1].label,
+      tagsForA: scaffold.options[0].metadata.descriptor_keywords,
+      tagsForB: scaffold.options[1].metadata.descriptor_keywords,
+      source_kind: scaffold.source_kind,
+      dataset_gender: scaffold.dataset_gender,
+      category_slug: scaffold.category_slug,
+      subcategory_slug: scaffold.subcategory_slug,
+    }));
+};
 
 export const buildThisOrThatV2QuestionScaffolds = (
   gender: Gender,
 ): ThisOrThatV2QuestionScaffold[] =>
-  THIS_OR_THAT_CATEGORIES.flatMap((category) => {
-    const authoredQuestions = getThisOrThatV2AuthoredQuestions(
+  THIS_OR_THAT_V2_CATEGORY_DEFINITIONS.flatMap((category) =>
+    getThisOrThatV2AuthoredQuestions(
       gender,
       category.id as ThisOrThatV2AuthoredCategoryId,
-    );
-    if (authoredQuestions.length > 0) {
-      return authoredQuestions
-        .map((question) => buildQuestionScaffoldFromAuthoredSeed(category, question, gender))
-        .filter(
-          (question): question is ThisOrThatV2QuestionScaffold => Boolean(question),
-        );
-    }
-
-    const bank = getThisOrThatBank(category.id, gender);
-    const linkedCategoriesByTitle = new Map(
-      (bank?.categories ?? []).map((entry) => [entry.title, entry]),
-    );
-
-    return (bank?.questions ?? [])
-      .map((question) =>
-        buildQuestionScaffold(category, question, linkedCategoriesByTitle, gender),
-      )
-      .filter(
-        (question): question is ThisOrThatV2QuestionScaffold => Boolean(question),
-      );
-  });
+    ).map((question) => buildQuestionScaffoldFromAuthoredSeed(question, gender)),
+  );
 
 export const buildThisOrThatV2DatasetCoverage = (
   gender: Gender,
 ): ThisOrThatV2DatasetCoverageRow[] =>
-  THIS_OR_THAT_CATEGORIES.map((category) => {
+  THIS_OR_THAT_V2_CATEGORY_DEFINITIONS.map((category) => {
     const authoredQuestions = getThisOrThatV2AuthoredQuestions(
       gender,
       category.id as ThisOrThatV2AuthoredCategoryId,
     );
-    const bank = getThisOrThatBank(category.id, gender);
     const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(category.id);
-    const questionCount = authoredQuestions.length > 0 ? authoredQuestions.length : bank?.questions.length ?? 0;
-    const sourceKind: ThisOrThatV2DatasetCoverageRow["source_kind"] =
-      authoredQuestions.length > 0
-        ? "authored-v2"
-        : bank?.questions.length
-          ? blueprint?.source_kind ?? "bank-v1"
-          : "none";
 
     return {
       gender,
       source_category_id: category.id,
       source_category_title: category.title,
-      question_count: questionCount,
+      question_count: authoredQuestions.length,
       status: category.status,
       top_level_category: blueprint?.category_slug ?? null,
-      source_kind: sourceKind,
+      source_kind: authoredQuestions.length > 0 ? "authored-v2" : "none",
     };
   });
 
@@ -699,29 +629,12 @@ export const THIS_OR_THAT_V2_DATASET_COVERAGE = {
 } as const;
 
 export const THIS_OR_THAT_V2_CONTENT_SOURCES = {
-  runtimeV1File: "src/data/knowMeQuestions.ts",
+  runtimeFile: "src/data/thisOrThatV2.ts",
   contentContractFile: "src/data/thisOrThatV2.ts",
   authoredDatasetFile: "src/data/thisOrThatV2Authored.ts",
-  topLevelMyGoTwoSlugs: THIS_OR_THAT_V2_TOP_LEVEL_CATEGORIES.map(
-    (category) => category.slug,
-  ),
+  topLevelMyGoTwoSlugs: THIS_OR_THAT_V2_TOP_LEVEL_CATEGORIES.map((category) => category.slug),
   datasetCoverage: THIS_OR_THAT_V2_DATASET_COVERAGE,
 } as const;
-
-const toRuntimeQuestion = (
-  scaffold: ThisOrThatV2QuestionScaffold,
-): ThisOrThatV2RuntimeQuestion => ({
-  id: scaffold.question_id,
-  prompt: scaffold.prompt,
-  categoryA: scaffold.options[0].label,
-  categoryB: scaffold.options[1].label,
-  tagsForA: scaffold.options[0].metadata.descriptor_keywords,
-  tagsForB: scaffold.options[1].metadata.descriptor_keywords,
-  source_kind: scaffold.source_kind,
-  dataset_gender: scaffold.dataset_gender,
-  category_slug: scaffold.category_slug,
-  subcategory_slug: scaffold.subcategory_slug,
-});
 
 export const buildThisOrThatV2RuntimeQuestionBank = (
   gender: Gender,
@@ -729,9 +642,20 @@ export const buildThisOrThatV2RuntimeQuestionBank = (
   const bank: Record<string, ThisOrThatV2RuntimeQuestion[]> = {};
 
   for (const scaffold of buildThisOrThatV2QuestionScaffolds(gender)) {
-    const questions = bank[scaffold.source_category_id] ?? [];
-    questions.push(toRuntimeQuestion(scaffold));
-    bank[scaffold.source_category_id] = questions;
+    const existing = bank[scaffold.source_category_id] ?? [];
+    existing.push({
+      id: scaffold.question_id,
+      prompt: scaffold.prompt,
+      categoryA: scaffold.options[0].label,
+      categoryB: scaffold.options[1].label,
+      tagsForA: scaffold.options[0].metadata.descriptor_keywords,
+      tagsForB: scaffold.options[1].metadata.descriptor_keywords,
+      source_kind: scaffold.source_kind,
+      dataset_gender: scaffold.dataset_gender,
+      category_slug: scaffold.category_slug,
+      subcategory_slug: scaffold.subcategory_slug,
+    });
+    bank[scaffold.source_category_id] = existing;
   }
 
   return bank;
@@ -743,59 +667,26 @@ export const buildThisOrThatAnswerRecord = (
   question: ThisOrThatV2QuestionLike,
   choice: "A" | "B",
 ): ThisOrThatV2AnswerRecord => {
-  const category = THIS_OR_THAT_CATEGORIES.find((entry) => entry.id === categoryId);
+  const category = CATEGORY_DEFINITION_BY_ID.get(categoryId);
   if (!category) {
     throw new Error(`Unknown This or That category: ${categoryId}`);
   }
 
-  const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(categoryId);
-  if (!blueprint) {
-    throw new Error(`Missing This or That v2 blueprint for category: ${categoryId}`);
+  const scaffold = buildThisOrThatV2QuestionScaffolds(gender).find(
+    (entry) => entry.source_category_id === categoryId && entry.question_id === question.id,
+  );
+
+  if (!scaffold) {
+    throw new Error(`Unknown This or That question: ${categoryId}/${question.id}`);
   }
 
-  const bank = getThisOrThatBank(categoryId, gender);
-  const linkedCategoriesByTitle = new Map(
-    (bank?.categories ?? []).map((entry) => [entry.title, entry]),
-  );
-  const authoredSeed = findThisOrThatAuthoredSeed(categoryId, gender, question.id);
-  const scaffold =
-    (authoredSeed && buildQuestionScaffoldFromAuthoredSeed(category, authoredSeed, gender)) ??
-    buildQuestionScaffold(category, question, linkedCategoriesByTitle, gender);
-
-  const fallbackSelected = buildOptionMetadata(
-    blueprint,
-    choice === "A" ? question.categoryA : question.categoryB,
-    choice === "A" ? question.tagsForA : question.tagsForB,
-    choice === "A" ? question.categoryB : question.categoryA,
-    choice === "A" ? question.tagsForB : question.tagsForA,
-    undefined,
-  );
-  const fallbackRejected = buildOptionMetadata(
-    blueprint,
-    choice === "A" ? question.categoryB : question.categoryA,
-    choice === "A" ? question.tagsForB : question.tagsForA,
-    choice === "A" ? question.categoryA : question.categoryB,
-    choice === "A" ? question.tagsForA : question.tagsForB,
-    undefined,
-  );
-
-  const selected =
-    scaffold?.options.find((option) => option.option_key === choice) ?? {
-      option_key: choice,
-      label: choice === "A" ? question.categoryA : question.categoryB,
-      metadata: fallbackSelected,
-    };
-  const rejected =
-    scaffold?.options.find((option) => option.option_key !== choice) ?? {
-      option_key: choice === "A" ? "B" : "A",
-      label: choice === "A" ? question.categoryB : question.categoryA,
-      metadata: fallbackRejected,
-    };
+  const selected = scaffold.options.find((option) => option.option_key === choice)!;
+  const rejected = scaffold.options.find((option) => option.option_key !== choice)!;
 
   return {
     category_id: categoryId,
-    question_id: question.id,
-    question_prompt: question.prompt,
+    question_id: scaffold.question_id,
+    question_prompt: scaffold.prompt,
     bank_gender: gender,
     my_go_two_category_slug: selected.metadata.category_slug,
     recommendation_category: selected.metadata.category_slug,
@@ -810,8 +701,8 @@ export const buildThisOrThatAnswerRecord = (
       subcategory_slug: selected.metadata.subcategory_slug,
       selected,
       rejected,
-      source_kind: scaffold?.source_kind ?? blueprint.source_kind,
-      weight: scaffold?.weight ?? blueprint.weight,
+      source_kind: scaffold.source_kind,
+      weight: scaffold.weight,
     },
     source_version: "this-or-that-v2",
   };

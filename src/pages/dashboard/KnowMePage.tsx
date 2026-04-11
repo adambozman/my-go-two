@@ -8,9 +8,14 @@ import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTopBar } from "@/contexts/top-bar-context";
-import { buildSprints, SECTIONS, THIS_OR_THAT, THIS_OR_THAT_CATEGORIES, type QuizQuestion } from "@/data/knowMeQuestions";
+import { buildSprints, SECTIONS, type QuizQuestion } from "@/data/knowMeQuestions";
 import { buildThisOrThatAnswerUpsertPayload } from "@/data/thisOrThatV2Persistence";
-import { buildThisOrThatV2RuntimeQuestionBank, type ThisOrThatV2QuestionLike } from "@/data/thisOrThatV2";
+import {
+  buildThisOrThatV2RuntimeQuestionBank,
+  getThisOrThatV2CategoryDefinitions,
+  type ThisOrThatV2CategoryDefinition,
+  type ThisOrThatV2QuestionLike,
+} from "@/data/thisOrThatV2";
 import { normalizeGender, type Gender } from "@/lib/gender";
 import {
   buildKnowledgeAiAdapter,
@@ -27,8 +32,6 @@ type ChatMessage = {
 type KnowledgeResponseValue = string | string[] | undefined;
 type KnowledgeResponseMap = Record<string, KnowledgeResponseValue> | null | undefined;
 type SectionDefinition = (typeof SECTIONS)[number];
-type ThisOrThatCategoryDefinition = (typeof THIS_OR_THAT_CATEGORIES)[number];
-
 type CategoryState = SectionDefinition & {
   title: string;
   description: string;
@@ -248,7 +251,7 @@ const KnowMePage = () => {
 
   const thisOrThatCategories = useMemo(() => {
     const questionBank = buildThisOrThatV2RuntimeQuestionBank(bankGender);
-    return THIS_OR_THAT_CATEGORIES.map((category) =>
+    return getThisOrThatV2CategoryDefinitions().map((category) =>
       buildThisOrThatCategoryState(category, questionBank[category.id] ?? [], knowMeResponses, subscribed),
     );
   }, [bankGender, knowMeResponses, subscribed]);
@@ -474,7 +477,7 @@ const KnowMePage = () => {
 
   const getSectionForQuestion = (q: QuizQuestion) => SECTIONS.find((section) => section.id === q.section);
 
-  const pickThisOrThat = async (question: BrandBankQuestion, choice: "A" | "B") => {
+  const pickThisOrThat = async (question: ThisOrThatV2QuestionLike, choice: "A" | "B") => {
     if (!question || !activeTotCategory) return;
 
     const dir = choice === "A" ? "right" : "left";

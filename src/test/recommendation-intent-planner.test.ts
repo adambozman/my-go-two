@@ -7,8 +7,7 @@ import {
 } from "../../supabase/functions/_shared/recommendationIntentPlanner";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "../../supabase/functions/_shared/knowledgeCenter";
 import type { RecommendationIntent } from "../../supabase/functions/_shared/recommendationCatalog";
-import { getThisOrThatBank } from "../data/knowMeQuestions";
-import { buildThisOrThatAnswerRecord } from "../data/thisOrThatV2";
+import { buildThisOrThatAnswerRecord, getThisOrThatV2RuntimeQuestions } from "../data/thisOrThatV2";
 
 const snapshot: KnowledgeSnapshotRow = {
   user_id: "planner-user-1",
@@ -21,8 +20,6 @@ const snapshot: KnowledgeSnapshotRow = {
     "avoid-brands": ["Shein"],
   },
   know_me_responses: {
-    "tot-21": "Yes",
-    "tot-54": "Neutrals",
     "pet-peeves": "skinny jeans, neon",
   },
   saved_product_cards: [
@@ -196,9 +193,7 @@ describe("recommendation intent planner", () => {
       user_id: "planner-user-5",
       profile_core: { city: "Chicago" },
       onboarding_responses: {},
-      know_me_responses: {
-        "tot-48": "Sushi",
-      },
+      know_me_responses: {},
       saved_product_cards: [
         {
           id: "card-food-1",
@@ -244,9 +239,7 @@ describe("recommendation intent planner", () => {
       user_id: "planner-user-4",
       profile_core: { city: "Chicago" },
       onboarding_responses: {},
-      know_me_responses: {
-        "tot-48": "Sushi",
-      },
+      know_me_responses: {},
       saved_product_cards: [
         {
           id: "card-food-1",
@@ -262,12 +255,25 @@ describe("recommendation intent planner", () => {
       user_connections: [],
       snapshot_payload: {},
       updated_at: new Date().toISOString(),
-    }, []);
+    }, [], [
+      buildThisOrThatAnswerRecord(
+        "food-dining",
+        "female",
+        getThisOrThatV2RuntimeQuestions("female", "food-dining")[0]!,
+        "A",
+      ),
+      buildThisOrThatAnswerRecord(
+        "food-dining",
+        "female",
+        getThisOrThatV2RuntimeQuestions("female", "food-dining")[1]!,
+        "A",
+      ),
+    ]);
 
     const plan = buildRecommendationCategoryPlan(foodOnlyState, 4);
     const foodPlan = plan.find((entry) => entry.category === "food");
 
-    expect(foodPlan?.state).toBe("qualified");
+    expect(foodPlan?.state === "qualified" || foodPlan?.state === "strong").toBe(true);
     expect(foodPlan?.aiTarget).toBeGreaterThan(0);
   });
 
@@ -276,13 +282,13 @@ describe("recommendation intent planner", () => {
       buildThisOrThatAnswerRecord(
         "brands-shopping",
         "female",
-        getThisOrThatBank("brands-shopping", "female")!.questions[0]!,
+        getThisOrThatV2RuntimeQuestions("female", "brands-shopping")[0]!,
         "A",
       ),
       buildThisOrThatAnswerRecord(
         "brands-shopping",
         "female",
-        getThisOrThatBank("brands-shopping", "female")!.questions[1]!,
+        getThisOrThatV2RuntimeQuestions("female", "brands-shopping")[1]!,
         "A",
       ),
     ];
@@ -318,25 +324,25 @@ describe("recommendation intent planner", () => {
       buildThisOrThatAnswerRecord(
         "food-dining",
         "female",
-        getThisOrThatBank("food-dining", "female")!.questions[0]!,
+        getThisOrThatV2RuntimeQuestions("female", "food-dining")[0]!,
         "A",
       ),
       buildThisOrThatAnswerRecord(
         "food-dining",
         "female",
-        getThisOrThatBank("food-dining", "female")!.questions[1]!,
+        getThisOrThatV2RuntimeQuestions("female", "food-dining")[1]!,
         "A",
       ),
       buildThisOrThatAnswerRecord(
         "home-living",
         "female",
-        getThisOrThatBank("home-living", "female")!.questions[0]!,
+        getThisOrThatV2RuntimeQuestions("female", "home-living")[0]!,
         "A",
       ),
       buildThisOrThatAnswerRecord(
         "home-living",
         "female",
-        getThisOrThatBank("home-living", "female")!.questions[1]!,
+        getThisOrThatV2RuntimeQuestions("female", "home-living")[1]!,
         "A",
       ),
     ];
@@ -369,49 +375,49 @@ describe("recommendation intent planner", () => {
       buildThisOrThatAnswerRecord(
         "colors-palette",
         "female",
-        getThisOrThatBank("colors-palette", "female")!.questions[0]!,
+        getThisOrThatV2RuntimeQuestions("female", "colors-palette")[0]!,
         "A",
       ),
       buildThisOrThatAnswerRecord(
         "colors-palette",
         "female",
-        getThisOrThatBank("colors-palette", "female")!.questions[1]!,
+        getThisOrThatV2RuntimeQuestions("female", "colors-palette")[1]!,
         "A",
       ),
       buildThisOrThatAnswerRecord(
         "gifting-actually-want",
         "female",
-        getThisOrThatBank("gifting-actually-want", "female")!.questions[0]!,
+        getThisOrThatV2RuntimeQuestions("female", "gifting-actually-want")[0]!,
         "A",
       ),
       buildThisOrThatAnswerRecord(
         "gifting-actually-want",
         "female",
-        getThisOrThatBank("gifting-actually-want", "female")!.questions[1]!,
+        getThisOrThatV2RuntimeQuestions("female", "gifting-actually-want")[1]!,
         "A",
       ),
       buildThisOrThatAnswerRecord(
         "hobbies-weekend",
         "female",
-        getThisOrThatBank("hobbies-weekend", "female")!.questions[0]!,
+        getThisOrThatV2RuntimeQuestions("female", "hobbies-weekend")[0]!,
         "A",
       ),
       buildThisOrThatAnswerRecord(
         "hobbies-weekend",
         "female",
-        getThisOrThatBank("hobbies-weekend", "female")!.questions[1]!,
+        getThisOrThatV2RuntimeQuestions("female", "hobbies-weekend")[1]!,
         "A",
       ),
       buildThisOrThatAnswerRecord(
         "travel-trips",
         "female",
-        getThisOrThatBank("travel-trips", "female")!.questions[0]!,
+        getThisOrThatV2RuntimeQuestions("female", "travel-trips")[0]!,
         "A",
       ),
       buildThisOrThatAnswerRecord(
         "travel-trips",
         "female",
-        getThisOrThatBank("travel-trips", "female")!.questions[1]!,
+        getThisOrThatV2RuntimeQuestions("female", "travel-trips")[1]!,
         "A",
       ),
     ];

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { getThisOrThatBank } from "../data/knowMeQuestions";
 import {
   buildThisOrThatAnswerRecord,
   buildThisOrThatV2RuntimeQuestionBank,
+  getThisOrThatV2RuntimeQuestions,
   THIS_OR_THAT_V2_DATASET_COVERAGE,
   THIS_OR_THAT_V2_LIVE_FEMALE_QUESTION_SCAFFOLD,
   THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD,
@@ -11,9 +11,8 @@ import {
 import { getThisOrThatV2AuthoredQuestions } from "../data/thisOrThatV2Authored";
 
 describe("This or That v2 answer contract", () => {
-  it("builds a structured answer record for bank-backed category questions", () => {
-    const bank = getThisOrThatBank("brands-shopping", "male");
-    const question = bank?.questions[0];
+  it("builds a structured answer record for authored category questions", () => {
+    const question = getThisOrThatV2RuntimeQuestions("male", "brands-shopping")[0];
 
     expect(question).toBeTruthy();
 
@@ -37,8 +36,7 @@ describe("This or That v2 answer contract", () => {
   });
 
   it("builds an opposite-side avoid payload for legacy style questions", () => {
-    const bank = getThisOrThatBank("style-aesthetic", "male");
-    const question = bank?.questions[0];
+    const question = getThisOrThatV2RuntimeQuestions("male", "style-aesthetic")[0];
 
     expect(question).toBeTruthy();
 
@@ -56,8 +54,8 @@ describe("This or That v2 answer contract", () => {
   });
 
   it("tracks dataset coverage by gender instead of flattening everyone into one authored bank", () => {
-    expect(getThisOrThatBank("brands-shopping", "female")?.questions.length).toBeGreaterThan(0);
-    expect(getThisOrThatBank("brands-shopping", "non-binary")?.questions.length).toBeGreaterThan(0);
+    expect(getThisOrThatV2RuntimeQuestions("female", "brands-shopping").length).toBeGreaterThan(0);
+    expect(getThisOrThatV2RuntimeQuestions("non-binary", "brands-shopping").length).toBeGreaterThan(0);
     expect(
       THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD.every((question) => question.dataset_gender === "male"),
     ).toBe(true);
@@ -150,8 +148,7 @@ describe("This or That v2 answer contract", () => {
   });
 
   it("preserves live travel categories instead of collapsing them to null", () => {
-    const bank = getThisOrThatBank("travel-trips", "male");
-    const question = bank?.questions[0];
+    const question = getThisOrThatV2RuntimeQuestions("male", "travel-trips")[0];
 
     expect(question).toBeTruthy();
 
@@ -165,8 +162,7 @@ describe("This or That v2 answer contract", () => {
   });
 
   it("fails fast when a category is unknown instead of silently using the first blueprint", () => {
-    const bank = getThisOrThatBank("brands-shopping", "male");
-    const question = bank?.questions[0];
+    const question = getThisOrThatV2RuntimeQuestions("male", "brands-shopping")[0];
 
     expect(question).toBeTruthy();
 

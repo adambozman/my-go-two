@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { getThisOrThatBank } from "../data/knowMeQuestions";
+import { getThisOrThatV2RuntimeQuestions } from "../data/thisOrThatV2";
 import { buildThisOrThatAnswerUpsertPayload } from "../data/thisOrThatV2Persistence";
 
 describe("This or That v2 persistence payload", () => {
   it("writes the full structured payload for a live travel answer", () => {
-    const bank = getThisOrThatBank("travel-trips", "male");
-    const question = bank?.questions[0];
+    const question = getThisOrThatV2RuntimeQuestions("male", "travel-trips")[0];
 
     expect(question).toBeTruthy();
 

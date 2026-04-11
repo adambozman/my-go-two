@@ -31,31 +31,6 @@ export interface ThisOrThatV2AuthoredQuestionSeed {
   options: [ThisOrThatV2AuthoredOptionSeed, ThisOrThatV2AuthoredOptionSeed];
 }
 
-export interface ThisOrThatV2AuthoredBrandBankEntry {
-  brand: string;
-  dnaTags: string[];
-}
-
-export interface ThisOrThatV2AuthoredBrandBankCategory {
-  id: string;
-  title: string;
-  brands: ThisOrThatV2AuthoredBrandBankEntry[];
-}
-
-export interface ThisOrThatV2AuthoredBrandBankQuestion {
-  id: string;
-  prompt: string;
-  categoryA: string;
-  categoryB: string;
-  tagsForA: string[];
-  tagsForB: string[];
-}
-
-export interface ThisOrThatV2AuthoredBank {
-  categories: ThisOrThatV2AuthoredBrandBankCategory[];
-  questions: ThisOrThatV2AuthoredBrandBankQuestion[];
-}
-
 const q = (
   question_id: string,
   source_category_id: ThisOrThatV2AuthoredCategoryId,
@@ -426,47 +401,4 @@ export const getThisOrThatV2AuthoredQuestions = (
   const dataset = THIS_OR_THAT_V2_AUTHORED_DATASETS[gender] ?? [];
   if (!categoryId) return dataset;
   return dataset.filter((question) => question.source_category_id === categoryId);
-};
-
-export const getThisOrThatV2AuthoredBank = (
-  gender: Gender,
-  categoryId: ThisOrThatV2AuthoredCategoryId,
-): ThisOrThatV2AuthoredBank | null => {
-  const questions = getThisOrThatV2AuthoredQuestions(gender, categoryId);
-  if (questions.length === 0) return null;
-
-  const categoriesByLabel = new Map<string, ThisOrThatV2AuthoredBrandBankCategory>();
-
-  for (const question of questions) {
-    for (const option of question.options) {
-      const fingerprint = [
-        option.label,
-        ...(option.brand_keywords ?? []),
-        ...option.descriptor_keywords,
-      ]
-        .map((entry) => entry.trim().toLowerCase())
-        .join("::");
-      if (categoriesByLabel.has(fingerprint)) continue;
-      categoriesByLabel.set(fingerprint, {
-        id: `${categoryId}-${option.option_key.toLowerCase()}-${question.question_id}`,
-        title: option.label,
-        brands: (option.brand_keywords ?? []).map((brand) => ({
-          brand,
-          dnaTags: option.descriptor_keywords,
-        })),
-      });
-    }
-  }
-
-  return {
-    categories: Array.from(categoriesByLabel.values()),
-    questions: questions.map((question) => ({
-      id: question.question_id,
-      prompt: question.prompt,
-      categoryA: question.options[0].label,
-      categoryB: question.options[1].label,
-      tagsForA: question.options[0].descriptor_keywords,
-      tagsForB: question.options[1].descriptor_keywords,
-    })),
-  };
 };

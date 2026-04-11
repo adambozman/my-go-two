@@ -7,7 +7,6 @@ import {
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "./knowledgeCenter.ts";
 import { getCombinedKnowledgeResponses, getKnowledgeDerivationPayload, toRecord, toRecordArray, toStringArray } from "./knowledgeCenter.ts";
 import { extractStructuredThisOrThatAnswerSignals, type StructuredThisOrThatSignal } from "./thisOrThatV2.ts";
-import { THIS_OR_THAT } from "../../../src/data/knowMeQuestions.ts";
 import {
   getPopularPreferenceProfile,
   getSavedProductCardMetadata,
@@ -193,8 +192,6 @@ export interface RecommendationCategorySupport {
 }
 
 const SOURCE_VERSION = "recommendation-v2";
-const THIS_OR_THAT_LOOKUP = new Map(THIS_OR_THAT.map((item) => [item.id, item]));
-const QUESTION_WORDS = new Set(["would", "do", "are", "team"]);
 const PRODUCT_CARD_DESCRIPTOR_STOP_WORDS = new Set([
   "and",
   "brand",
@@ -378,30 +375,6 @@ const buildProductCardDescriptorKeywords = (
       ...Object.values(fieldValues),
     ),
   ]).filter((keyword) => keyword !== primaryKeyword && !PRODUCT_CARD_DESCRIPTOR_STOP_WORDS.has(keyword));
-
-const mapThisOrThatCategory = (value: string): RecommendationCategory | null =>
-  resolveRecommendationCategory(value);
-
-const normalizeAnswerChoice = (answer: unknown, option: string) => {
-  const normalizedAnswer = cleanText(answer).toLowerCase();
-  const normalizedOption = cleanText(option).toLowerCase();
-  if (!normalizedAnswer || !normalizedOption) return false;
-  return normalizedAnswer === normalizedOption;
-};
-
-const extractPromptBrands = (prompt: string) => {
-  const matches = cleanText(prompt).match(/\b[A-Z][A-Za-z&']+(?:\s+[A-Z][A-Za-z&']+)*\b/g) ?? [];
-  return normalizeRecommendationKeywords(
-    matches
-      .map((match) =>
-        match
-          .split(/\s+/)
-          .filter((part) => !QUESTION_WORDS.has(part.toLowerCase()))
-          .join(" "),
-      )
-      .filter(Boolean),
-  );
-};
 
 type ThisOrThatPreferenceSummary = {
   positiveKeywords: string[];
@@ -614,122 +587,8 @@ const extractThisOrThatPreferences = (
   thisOrThatAnswers: UserThisOrThatAnswerRow[] = [],
   snapshotPayload: JsonObject = {},
 ): ThisOrThatPreferenceSummary => {
-  const positiveKeywords = new Set<string>();
-  const negativeKeywords = new Set<string>();
-  const positiveBrands = new Set<string>();
-  const negativeBrands = new Set<string>();
-  const likes: ThisOrThatPreferenceSummary["likes"] = [];
-  const dislikes: ThisOrThatPreferenceSummary["dislikes"] = [];
-
   const v2Preferences = extractThisOrThatV2Preferences(thisOrThatAnswers);
-  for (const keyword of v2Preferences.positiveKeywords) positiveKeywords.add(keyword);
-  for (const keyword of v2Preferences.negativeKeywords) negativeKeywords.add(keyword);
-  for (const brand of v2Preferences.positiveBrands) positiveBrands.add(brand);
-  for (const brand of v2Preferences.negativeBrands) negativeBrands.add(brand);
-  likes.push(...v2Preferences.likes);
-  dislikes.push(...v2Preferences.dislikes);
-
-  const structuredQuestionKeys = new Set(
-    thisOrThatAnswers
-      .flatMap((answer) => [
-        cleanText(answer.question_id ?? answer.question_key),
-        cleanText(answer.question_key),
-      ])
-      .map((value) => value.toLowerCase())
-      .filter(Boolean),
-  );
-
-  for (const [key, answer] of Object.entries(responses)) {
-    if (!key.startsWith("tot-")) continue;
-    if (structuredQuestionKeys.has(key.toLowerCase())) continue;
-    const question = THIS_OR_THAT_LOOKUP.get(key);
-    if (!question) continue;
-
-    const category = mapThisOrThatCategory(question.category);
-    const prompt = cleanText(question.prompt);
-    const optionA = cleanText(question.optionA);
-    const optionB = cleanText(question.optionB);
-    const yesNoPrompt = optionA.toLowerCase() === "yes" && optionB.toLowerCase() === "no";
-
-    const brands = extractPromptBrands(prompt);
-
-    if (yesNoPrompt && brands.length > 0) {
-      if (normalizeAnswerChoice(answer, optionA)) {
-        for (const brand of brands) {
-          positiveBrands.add(brand);
-          positiveKeywords.add(brand);
-          likes.push({
-            like_type: "this_or_that_brand",
-            primary_keyword: null,
-            descriptor_keywords: [],
-            brand,
-            category,
-            notes: key,
-          });
-        }
-      }
-
-      if (normalizeAnswerChoice(answer, optionB)) {
-        for (const brand of brands) {
-          negativeBrands.add(brand);
-          negativeKeywords.add(brand);
-          dislikes.push({
-            dislike_type: "this_or_that_brand",
-            primary_keyword: null,
-            descriptor_keywords: [],
-            brand,
-            category,
-            notes: key,
-          });
-        }
-      }
-
-      continue;
-    }
-
-    const preferMatch = yesNoPrompt
-      ? prompt.match(/prefer\s+(.+?)\s+over\s+(.+?)(?:\?|$)/i)
-      : null;
-
-    const chosenOption = preferMatch
-      ? normalizeAnswerChoice(answer, optionA)
-        ? preferMatch[1]
-        : normalizeAnswerChoice(answer, optionB)
-          ? preferMatch[2]
-          : null
-      : normalizeAnswerChoice(answer, optionA)
-        ? optionA
-        : normalizeAnswerChoice(answer, optionB)
-          ? optionB
-          : null;
-
-    if (!chosenOption) continue;
-
-    const normalizedChoice = cleanText(chosenOption).toLowerCase();
-    if (!normalizedChoice) continue;
-
-    positiveKeywords.add(normalizedChoice);
-    for (const token of keywordTokens(normalizedChoice)) positiveKeywords.add(token);
-
-    likes.push({
-      like_type: "this_or_that_choice",
-      primary_keyword: null,
-      descriptor_keywords: mergeRecommendationKeywords([normalizedChoice]),
-      brand: null,
-      category,
-      notes: key,
-    });
-  }
-
-  const baseSummary: ThisOrThatPreferenceSummary = {
-    positiveKeywords: normalizeRecommendationKeywords(Array.from(positiveKeywords)),
-    negativeKeywords: normalizeRecommendationKeywords(Array.from(negativeKeywords)),
-    positiveBrands: normalizeRecommendationKeywords(Array.from(positiveBrands)),
-    negativeBrands: normalizeRecommendationKeywords(Array.from(negativeBrands)),
-    likes,
-    dislikes,
-  };
-
+  const baseSummary: ThisOrThatPreferenceSummary = { ...v2Preferences };
   const structuredSignals = extractStructuredThisOrThatAnswerSignals(responses, snapshotPayload);
   if (structuredSignals.length === 0) return baseSummary;
 
@@ -834,11 +693,11 @@ const toSignalRows = (
   for (const [key, value] of Object.entries(toRecord(snapshot?.know_me_responses))) {
     signals.push({
       user_id: userId,
-      signal_type: key.startsWith("tot-") ? "this_or_that" : "know_me_answer",
+      signal_type: "know_me_answer",
       signal_key: key,
       signal_value: value,
       signal_source: "know_me_responses",
-      signal_strength: key.startsWith("tot-") ? 65 : 75,
+      signal_strength: 75,
       is_negative: /(avoid|dislike|hate)/i.test(key),
       recorded_at: now,
     });
