@@ -26,7 +26,7 @@ export type RecommendationDecisionCategoryPlan = {
 
 export type RecommendationDecisionHierarchy = {
   targetCount: number;
-  mode: "popular-fallback" | "personalized-hybrid";
+  mode: "popular-fallback" | "signal-hybrid";
   aiTargetCount: number;
   categories: RecommendationDecisionCategoryPlan[];
 };
@@ -123,7 +123,7 @@ export const buildRecommendationDecisionHierarchy = (
 
   return {
     targetCount: clamped,
-    mode: aiTargetCount > 0 ? "personalized-hybrid" : "popular-fallback",
+    mode: aiTargetCount > 0 ? "signal-hybrid" : "popular-fallback",
     aiTargetCount,
     categories: orderedPlans,
   };

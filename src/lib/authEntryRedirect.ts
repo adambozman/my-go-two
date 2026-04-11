@@ -17,32 +17,18 @@ export const resolvePostAuthDestination = async (userId: string) => {
 
   const profileResult = await supabase
     .from("profiles")
-    .select("updated_at")
+    .select("onboarding_completed_at")
     .eq("user_id", userId)
     .maybeSingle();
 
-  if (!profileResult.error && profileResult.data) {
-    // Profile exists — check legacy onboarding flag
-    const legacyResult = await supabase
-      .from("user_preferences")
-      .select("onboarding_complete")
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (!legacyResult.error && legacyResult.data?.onboarding_complete) {
-      return "/dashboard";
-    }
+  if (profileResult.error) {
     return "/onboarding";
   }
 
-  const legacyResult = await supabase
-    .from("user_preferences")
-    .select("onboarding_complete")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (!legacyResult.error && legacyResult.data?.onboarding_complete) {
+  if (profileResult.data?.onboarding_completed_at) {
     return "/dashboard";
   }
 
   return "/onboarding";
 };
+// Codebase classification: runtime post-auth route gate using profile onboarding completion state.

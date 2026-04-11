@@ -166,7 +166,7 @@ export interface RecommendationInputStrength {
   score: number;
   level: "sparse" | "emerging" | "solid" | "rich";
   targetRecommendationCount: number;
-  personalizationEnabled: boolean;
+  signalDrivenRecommendationsEnabled: boolean;
   directSignalCount: number;
   structuredSignalCount: number;
   primaryEvidenceCount: number;
@@ -1414,7 +1414,7 @@ export const buildRecommendationSignalSummary = (state: NormalizedRecommendation
     location_bank_seed_count: state.brandLocationRows.length,
     input_strength_score: inputStrength.score,
     input_strength_level: inputStrength.level,
-    recommendation_mode: inputStrength.personalizationEnabled ? "personalized-hybrid" : "popular-fallback",
+    recommendation_mode: inputStrength.signalDrivenRecommendationsEnabled ? "signal-hybrid" : "popular-fallback",
     recommendation_target_count: inputStrength.targetRecommendationCount,
     direct_signal_count: inputStrength.directSignalCount,
     structured_signal_count: inputStrength.structuredSignalCount,
@@ -1611,7 +1611,7 @@ export const buildRecommendationInputStrength = (
     ),
   );
 
-  const personalizationEnabled = (strongCategoryCount + qualifiedCategoryCount) >= 1;
+  const signalDrivenRecommendationsEnabled = (strongCategoryCount + qualifiedCategoryCount) >= 1;
   const targetRecommendationCount = 4;
 
   if (score >= 80) {
@@ -1619,7 +1619,7 @@ export const buildRecommendationInputStrength = (
       score,
       level: "rich",
       targetRecommendationCount,
-      personalizationEnabled,
+      signalDrivenRecommendationsEnabled,
       directSignalCount,
       structuredSignalCount,
       primaryEvidenceCount,
@@ -1635,7 +1635,7 @@ export const buildRecommendationInputStrength = (
       score,
       level: "solid",
       targetRecommendationCount,
-      personalizationEnabled,
+      signalDrivenRecommendationsEnabled,
       directSignalCount,
       structuredSignalCount,
       primaryEvidenceCount,
@@ -1651,7 +1651,7 @@ export const buildRecommendationInputStrength = (
       score,
       level: "emerging",
       targetRecommendationCount,
-      personalizationEnabled,
+      signalDrivenRecommendationsEnabled,
       directSignalCount,
       structuredSignalCount,
       primaryEvidenceCount,
@@ -1666,7 +1666,7 @@ export const buildRecommendationInputStrength = (
     score,
     level: "sparse",
     targetRecommendationCount,
-    personalizationEnabled: false,
+    signalDrivenRecommendationsEnabled: false,
     directSignalCount,
     structuredSignalCount,
     primaryEvidenceCount,

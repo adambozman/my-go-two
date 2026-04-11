@@ -109,7 +109,7 @@ const buildNegativeKeywordSet = (state: NormalizedRecommendationState) =>
     ]),
   ]));
 
-const getPersonalizedCategories = (
+const getSignalDrivenCategories = (
   state: NormalizedRecommendationState,
   targetCount: number,
   options: { popularOnly?: boolean } = {},
@@ -201,9 +201,9 @@ const toCardDrivenIntent = (
 const getFallbackBrandForCategory = (
   state: NormalizedRecommendationState,
   category: RecommendationCategory,
-  personalized: boolean,
+  signalDriven: boolean,
 ) => {
-  if (!personalized) return CATEGORY_DEFAULTS[category][0]?.brand || "Target";
+  if (!signalDriven) return CATEGORY_DEFAULTS[category][0]?.brand || "Target";
   const likedBrand = getCategoryLikeBrands(state, category)[0];
   if (likedBrand) return likedBrand;
   const categoryBrand = state.brandBankRows
@@ -233,12 +233,12 @@ const createDefaultIntent = (
   state: NormalizedRecommendationState,
   category: RecommendationCategory,
   seed: { primary: string; brand: string; descriptors: string[] },
-  personalized: boolean,
+  signalDriven: boolean,
 ): RecommendationIntent => {
-  const brand = getFallbackBrandForCategory(state, category, personalized) || seed.brand;
+  const brand = getFallbackBrandForCategory(state, category, signalDriven) || seed.brand;
   const descriptors = mergePrioritizedDescriptors(
     seed.primary,
-    personalized ? getCategoryPositiveDescriptors(state, category) : [],
+    signalDriven ? getCategoryPositiveDescriptors(state, category) : [],
     seed.descriptors,
     brand,
   );
@@ -247,10 +247,10 @@ const createDefaultIntent = (
     name: `${seed.primary} recommendation`,
     price: "",
     category,
-    hook: personalized
+    hook: signalDriven
       ? `A ${seed.primary} direction shaped by your profile and category preferences.`
       : `A current popular ${seed.primary} pick while this category is still learning.`,
-    why: personalized
+    why: signalDriven
       ? "This fills an uncovered category using your strongest saved signals and approved brands."
       : "This stays broad and popular until you add enough signals in this category.",
     recommendation_kind: "generic",
@@ -269,15 +269,15 @@ export const generateFallbackRecommendationIntents = (
   const seen = new Set<string>();
   const negativeKeywords = buildNegativeKeywordSet(state);
   const popularOnly = Boolean(options.popularOnly);
-  const personalizedCategories = getPersonalizedCategories(state, targetCount, options);
+  const signalDrivenCategories = getSignalDrivenCategories(state, targetCount, options);
   const categoryPlans = buildRecommendationCategoryPlan(state, targetCount, { popularOnly });
   const categoryTargets = new Map(categoryPlans.map((plan) => [plan.category, plan.totalTarget]));
 
   for (const category of CATEGORY_ORDER) {
     if ((categoryTargets.get(category) ?? 0) === 0) continue;
-    const allowPersonalization = personalizedCategories.has(category);
+    const allowSignalDrivenCategory = signalDrivenCategories.has(category);
     const categoryRows = state.productCardKeywords.filter((row) => row.category === category && row.primary_keyword);
-    if (allowPersonalization) {
+    if (allowSignalDrivenCategory) {
       for (const row of categoryRows) {
         const intent = toCardDrivenIntent(state, category, row);
         const key = buildIntentKey(intent);
@@ -295,7 +295,7 @@ export const generateFallbackRecommendationIntents = (
       .sort((a, b) => scoreDefaultSeed(state, category, b) - scoreDefaultSeed(state, category, a));
 
     for (const seed of rankedSeeds) {
-      const intent = createDefaultIntent(state, category, seed, allowPersonalization);
+      const intent = createDefaultIntent(state, category, seed, allowSignalDrivenCategory);
       const key = buildIntentKey(intent);
       if (seen.has(key) || intentConflictsWithNegatives(intent, negativeKeywords)) continue;
       seen.add(key);
@@ -314,13 +314,13 @@ export const generateFallbackRecommendationIntents = (
       });
 
     for (const category of recoveryCategories) {
-      const allowPersonalization = personalizedCategories.has(category);
+      const allowSignalDrivenCategory = signalDrivenCategories.has(category);
       const rankedSeeds = CATEGORY_DEFAULTS[category]
         .slice()
         .sort((a, b) => scoreDefaultSeed(state, category, b) - scoreDefaultSeed(state, category, a));
 
       for (const seed of rankedSeeds) {
-        const intent = createDefaultIntent(state, category, seed, allowPersonalization);
+        const intent = createDefaultIntent(state, category, seed, allowSignalDrivenCategory);
         const key = buildIntentKey(intent);
         if (seen.has(key) || intentConflictsWithNegatives(intent, negativeKeywords)) continue;
         seen.add(key);

@@ -39,7 +39,7 @@ type TestProfileContentSeed = {
   onboarding_responses: Record<string, string | string[]>;
   know_me_responses: Record<string, string | string[]>;
   knowledge_derivations: Record<string, unknown>;
-  weekly_recommendations: Array<Record<string, unknown>>;
+  user_weekly_recommendations: Array<Record<string, unknown>>;
   saved_product_cards: TestSavedProductCardSeed[];
 };
 
@@ -191,7 +191,7 @@ const testProfileContentByEmail: Record<string, TestProfileContentSeed> = {
       price_tier: "premium",
       style_keywords: ["polished", "minimal", "soft luxury", "romantic", "refined"],
     },
-    weekly_recommendations: [
+    user_weekly_recommendations: [
       {
         name: "Mini leather shoulder bag",
         brand: "Coach",
@@ -376,7 +376,7 @@ const testProfileContentByEmail: Record<string, TestProfileContentSeed> = {
       price_tier: "mid-range",
       style_keywords: ["functional", "creative", "relaxed", "modern", "outdoor"],
     },
-    weekly_recommendations: [
+    user_weekly_recommendations: [
       {
         name: "Technical daypack",
         brand: "Bellroy",
@@ -847,12 +847,11 @@ async function purgeManagedTestProfile(
   };
 
   await deleteByUserId("notifications");
-  await deleteByUserId("weekly_recommendations");
+  await deleteByUserId("user_weekly_recommendations");
   await deleteByUserId("saved_product_cards");
   await deleteByUserId("know_me_responses");
   await deleteByUserId("onboarding_responses");
   await deleteByUserId("knowledge_derivations");
-  await deleteByUserId("user_preferences");
   await deleteByUserId("user_settings");
   await deleteByUserId("user_discovery_contacts");
   await deleteByUserId("user_discovery_settings");
@@ -1028,11 +1027,17 @@ async function seedTestProfileContent(
     }
   }
 
-  const { error: recommendationError } = await supabase.from("weekly_recommendations").upsert({
+  const { error: recommendationError } = await supabase.from("user_weekly_recommendations").upsert({
     user_id: testUserId,
     week_start: getCurrentWeekStartKey(),
+    generation_version: "recommendation-engine-v2-seed",
+    input_snapshot_summary: {
+      source_kind: "test-profile-seed",
+      recommendation_input_level: "seeded-profile",
+      recommendation_target_count: seed.user_weekly_recommendations.length,
+    },
     generated_at: new Date().toISOString(),
-    products: seed.weekly_recommendations,
+    products: seed.user_weekly_recommendations,
   }, { onConflict: "user_id,week_start" });
   if (recommendationError) {
     throw new Error(`Failed weekly recommendations seed for ${profile.email}: ${recommendationError.message}`);

@@ -42,45 +42,6 @@ const normalizeOptionalDate = (value: string | string[] | undefined) => {
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Something went wrong";
 
-type ProfileTimestampWriter = {
-  from: (table: "profiles") => {
-    update: (values: { updated_at: string }) => {
-      eq: (column: "user_id", value: string) => Promise<{ error: unknown | null }>;
-    };
-  };
-};
-
-const writeLegacyOnboardingProfile = async (
-  userId: string,
-  profileAnswerData: Record<string, string | string[]>,
-) => {
-  const { data: existingPreference } = await supabase
-    .from("user_preferences")
-    .select("profile_answers")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  const existingAnswers =
-    existingPreference?.profile_answers && typeof existingPreference.profile_answers === "object"
-      ? (existingPreference.profile_answers as Record<string, string | string[]>)
-      : {};
-
-  const { error } = await supabase.from("user_preferences").upsert(
-    {
-      user_id: userId,
-      profile_answers: {
-        ...existingAnswers,
-        ...profileAnswerData,
-      },
-      onboarding_complete: true,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "user_id" },
-  );
-
-  if (error) throw error;
-};
-
 const Onboarding = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -165,45 +126,24 @@ const Onboarding = () => {
     const { error } = await supabase
       .from("onboarding_responses")
       .upsert(payload, { onConflict: "user_id,question_key" });
-    if (!error) return;
-
-    await writeLegacyOnboardingProfile(user.id, profileAnswerData);
+    if (error) throw error;
   };
 
   const markOnboardingComplete = async (profileAnswerData: Record<string, string | string[]>) => {
     if (!user) return;
 
-    const identityAnswer = profileAnswerData.identity;
-    const rawIdentity = Array.isArray(identityAnswer) ? identityAnswer[0] : identityAnswer;
     const birthday = normalizeOptionalDate(profileAnswerData.birthday);
     const anniversary = normalizeOptionalDate(profileAnswerData.anniversary);
 
-    const primaryResult = await supabase
+    const { error } = await supabase
       .from("profiles")
       .update({
-        gender: typeof rawIdentity === "string" && rawIdentity !== "prefer-not" ? rawIdentity : null,
         birthday,
         anniversary,
         onboarding_completed_at: new Date().toISOString(),
       })
       .eq("user_id", user.id);
-
-    if (!primaryResult.error) return;
-
-    const profileFallback = await supabase
-      .from("profiles")
-      .update({
-        gender: typeof rawIdentity === "string" && rawIdentity !== "prefer-not" ? rawIdentity : null,
-        birthday,
-        anniversary,
-      })
-      .eq("user_id", user.id);
-
-    if (profileFallback.error) {
-      throw profileFallback.error;
-    }
-
-    await writeLegacyOnboardingProfile(user.id, profileAnswerData);
+    if (error) throw error;
   };
 
   const handleSkip = async () => {
@@ -213,25 +153,13 @@ const Onboarding = () => {
     }
 
     try {
-      const markCompleteResult = await (supabase as unknown as ProfileTimestampWriter)
+      const { error } = await supabase
         .from("profiles")
-        .update({ updated_at: new Date().toISOString() })
+        .update({
+          onboarding_completed_at: new Date().toISOString(),
+        })
         .eq("user_id", user.id);
-
-      if (markCompleteResult.error) {
-        const legacyFallback = await supabase.from("user_preferences").upsert(
-          {
-            user_id: user.id,
-            onboarding_complete: true,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "user_id" },
-        );
-
-        if (legacyFallback.error) {
-          throw legacyFallback.error;
-        }
-      }
+      if (error) throw error;
     } catch (error) {
       console.error("Onboarding skip save failed:", error);
     }
@@ -820,4 +748,4 @@ const Onboarding = () => {
 };
 
 export default Onboarding;
-// Codebase classification: runtime onboarding flow.
+// Codebase classification: runtime onboarding flow writing onboarding responses and profile completion state.

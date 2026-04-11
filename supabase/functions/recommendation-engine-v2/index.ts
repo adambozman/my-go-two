@@ -568,7 +568,7 @@ serve(async (req) => {
       recommendation_target_count: inputStrength.targetRecommendationCount,
       recommendation_input_level: inputStrength.level,
       recommendation_input_score: inputStrength.score,
-      recommendation_mode: inputStrength.personalizationEnabled ? "personalized-hybrid" : "popular-fallback",
+      recommendation_mode: inputStrength.signalDrivenRecommendationsEnabled ? "signal-hybrid" : "popular-fallback",
       profile_core_keys: Object.keys(aiAdapter.profileCore || {}).length,
       onboarding_answer_count: Object.keys(toObject(knowledgeState.snapshot?.onboarding_responses)).length,
       know_me_answer_count: Object.keys(toObject(knowledgeState.snapshot?.know_me_responses)).length,

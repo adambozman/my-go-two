@@ -255,7 +255,7 @@ describe("recommendation signal normalization", () => {
 
     expect(inputStrength.score).toBeGreaterThanOrEqual(58);
     expect(inputStrength.targetRecommendationCount).toBe(4);
-    expect(inputStrength.personalizationEnabled).toBe(true);
+    expect(inputStrength.signalDrivenRecommendationsEnabled).toBe(true);
     expect(supportedMatch.confidence).toBeGreaterThanOrEqual(unsupportedMatch.confidence);
     expect(supportedMatch.reasons).toContain("brand-aligned");
     expect(unsupportedMatch.reasons).toContain("brand-derived-support");
