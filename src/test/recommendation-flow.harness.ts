@@ -50,7 +50,7 @@ export type SharedBankRecord = {
   fingerprint: string;
   brand: string;
   product_name: string;
-  product_title?: string;
+  product_title: string;
   category: RecommendationIntent["category"];
   recommendation_kind: RecommendationIntent["recommendation_kind"];
   primary_keyword: string | null;
