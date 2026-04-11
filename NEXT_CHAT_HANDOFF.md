@@ -11,6 +11,126 @@ It exists to preserve:
 - what this chat established
 - what still needs to be done
 
+## 2026-04-08 Current Delta
+
+This section is append-only. Do not remove earlier sections unless the work is truly finished.
+
+### Latest product-language rules
+
+- Never write `Go-To` again. Use `Go Two`.
+- The Beverage saved card header should read `My Go Two / Vault`, not `Saved Product Card`.
+- `vault` is still experience copy, not a runtime or schema noun.
+- Keep the canonical runtime/product nouns from the refactor work:
+  - `Onboarding`
+  - `Know Me`
+  - `Saved Product Card`
+  - `Connection`
+  - `Knowledge Center`
+
+### Latest UI rules added after the original handoff
+
+- Cards, pills, and assets must use the existing shared visual system.
+- Do not invent custom field boxes, custom bordered slabs, or one-off button treatments when shared card/pill classes already exist.
+- If the user says something is not in the product style, stop patching around it and align to the shared `surface-*`, `pill-*`, and existing card treatments.
+- Browser-visible output is still the source of truth. Do not treat `npm run build` as proof that a visual issue is fixed.
+- If a browser or local Vite instance is already running, reuse it. Do not open a second browser or start another Vite instance just to check the page.
+
+### Knowledge Center / naming-cutover status
+
+This work is not finished.
+
+What is true right now:
+
+- The repo contains the new Knowledge Center migration and naming direction.
+- The repo also contains runtime work that points at the new naming model.
+- Live Supabase schema drift is still an active risk if the migration has not actually been applied.
+
+Important migration files:
+
+- `C:\Users\adamb\Documents\GitHub\my-go-two\supabase\migrations\20260405120000_knowledge_center_cutover.sql`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\supabase\migrations\20260405153000_seed_test_profiles.sql`
+
+Important runtime files tied to the cutover:
+
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\contexts\KnowledgeCenterContext.tsx`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\integrations\supabase\runtime-types.ts`
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\integrations\supabase\client.ts`
+
+Known live-schema problem from recent chats:
+
+- local/browser runs showed 404 / missing-relation behavior for:
+  - `user_knowledge_snapshots`
+  - `user_knowledge_derivations`
+  - `user_connections`
+- A schema cache refresh alone is not enough if the tables/views were never created.
+- Do not claim the Knowledge Center migration is done unless the live Supabase project actually has the new relations.
+
+### Demo / fake profile status
+
+This work is not finished and the next chat must not collapse it into a single completed statement.
+
+What is true right now:
+
+- The repo still has legacy demo-profile logic in:
+  - `C:\Users\adamb\Documents\GitHub\my-go-two\supabase\functions\searchforaddprofile\index.ts`
+- That path still supported `abby.demo@gotwo.local` during local browser checks.
+- A separate SQL seed for replacement test profiles exists in:
+  - `C:\Users\adamb\Documents\GitHub\my-go-two\supabase\migrations\20260405153000_seed_test_profiles.sql`
+- That SQL seed was created for:
+  - `harper.test@gotwo.local`
+  - `rowan.test@gotwo.local`
+- That seed was not confirmed as pushed/applied in the live project.
+
+Therefore:
+
+- Do not claim the old fake profiles were fully deleted.
+- Do not claim the new fake profiles are live until the SQL is actually applied and verified.
+
+### Beverage saved-card state as of 2026-04-08
+
+Current file:
+
+- `C:\Users\adamb\Documents\GitHub\my-go-two\src\platform-ui\web\mygotwo\MyProductCardBeverages.tsx`
+
+The latest local code state is:
+
+- header copy uses `My Go Two / Vault`
+- title remains `Beverage`
+- the description is now:
+  - `Your drink, your way, down to the last detail. The exact order, the exact place, the way you always take it. Tagged and searchable so nothing gets lost and nobody has to guess.`
+- the order field label is `Go Two Order`
+- all extra Beverage dropdown fields were removed
+- only `Keywords` remains under the order field
+- the separate `Add Photo` and `Take Photo` buttons were removed
+- the snapshot box itself remains the upload trigger
+
+Important warning:
+
+- The final 2026-04-08 Beverage edits were type-checked and built successfully.
+- Those final edits were not browser-verified after the last patch set.
+- The next chat should visually verify the Beverage card before claiming it matches the user's screenshots.
+
+### My Go Two / Photo Gallery state added after the original handoff
+
+- The strip renderer was previously overpatched and then restored back toward the original narrow strip layout.
+- The user did not want the strip layout redesigned; the problem was image treatment and crop/readability, not replacing the strip concept.
+- Photo Gallery guidance was shifted toward aspect-ratio-first previews, but this whole area is still sensitive and not user-approved as complete.
+- Do not assume the My Go Two image/upload flow is finished just because parts of it compile.
+
+### Tooling note for the next chat
+
+- Built-in Playwright MCP browser automation can fail on this machine with a permission error trying to create `C:\Windows\System32\.playwright-mcp`.
+- CLI fallback worked through:
+  - `npx --package @playwright/cli playwright-cli ...`
+- When using browser automation, keep artifacts under:
+  - `C:\Users\adamb\Documents\GitHub\my-go-two\output\playwright`
+
+### Ongoing codebase rule
+
+- The user asked for a short descriptive classification line at the end of touched code files.
+- Several touched runtime files already end with classification footer comments.
+- Future chats should preserve that practice on newly edited runtime files.
+
 ## Product Context
 
 `Go Two` is a relationship and recommendation product, not a generic preference app.
