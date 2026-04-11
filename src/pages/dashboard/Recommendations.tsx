@@ -376,9 +376,9 @@ const Recommendations = () => {
       const { error: saveError } = await supabase.from("user_preferences").upsert(
         {
           user_id: user.id,
-          favorites,
+          favorites: favorites as any,
           updated_at: new Date().toISOString(),
-        },
+        } as any,
         { onConflict: "user_id" },
       );
 
@@ -436,9 +436,9 @@ const Recommendations = () => {
     const { error: saveError } = await supabase.from("user_preferences").upsert(
       {
         user_id: user.id,
-        favorites,
+        favorites: favorites as any,
         updated_at: new Date().toISOString(),
-      },
+      } as any,
       { onConflict: "user_id" },
     );
 
