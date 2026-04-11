@@ -42,6 +42,17 @@ interface TestProfileSeedResult {
   users?: TestProfileSeedUser[];
 }
 
+type UserSettingsWriter = {
+  from: (table: "user_settings") => {
+    upsert: (
+      values: Record<string, boolean | string>,
+      options: { onConflict: string },
+    ) => Promise<{ error: { message?: string } | null }>;
+  };
+};
+
+const userSettingsWriter = supabase as unknown as UserSettingsWriter;
+
 const SettingsPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -98,8 +109,8 @@ const SettingsPage = () => {
     const newVal = !settings[key];
     setSettings(prev => ({ ...prev, [key]: newVal }));
     // Upsert
-    const payload = { user_id: user.id, [key]: newVal } as any;
-    const { error } = await supabase.from("user_settings").upsert(
+    const payload: Record<string, boolean | string> = { user_id: user.id, [key]: newVal };
+    const { error } = await userSettingsWriter.from("user_settings").upsert(
       payload,
       { onConflict: "user_id" }
     );

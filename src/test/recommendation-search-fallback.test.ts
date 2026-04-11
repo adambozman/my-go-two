@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildSearchFallbackResponseProduct } from "../../supabase/functions/_shared/recommendationSearchFallback";
-import { buildNormalizedRecommendationState, buildRecommendationInputStrength } from "../../supabase/functions/_shared/recommendationSignals";
+import { buildNormalizedRecommendationState } from "../../supabase/functions/_shared/recommendationSignals";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "../../supabase/functions/_shared/knowledgeCenter";
 
 const emptySnapshot = { snapshot_payload: {} } as KnowledgeSnapshotRow;
@@ -9,7 +9,6 @@ const emptyDerivations: KnowledgeDerivationRow[] = [];
 describe("recommendation search fallback", () => {
   it("returns an honest search-only product instead of catalog truth", () => {
     const state = buildNormalizedRecommendationState("user-1", emptySnapshot, emptyDerivations, []);
-    (state as any).inputStrength = buildRecommendationInputStrength(state);
 
     const product = buildSearchFallbackResponseProduct({
       state,

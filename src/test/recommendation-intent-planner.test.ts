@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildNormalizedRecommendationState } from "../../supabase/functions/_shared/recommendationSignals";
+import {
+  buildNormalizedRecommendationState,
+  type UserThisOrThatAnswerRow,
+} from "../../supabase/functions/_shared/recommendationSignals";
 import {
   buildRecommendationCategoryPlan,
   completeRecommendationIntentSet,
@@ -261,13 +264,13 @@ describe("recommendation intent planner", () => {
         "female",
         getThisOrThatV2RuntimeQuestions("female", "food-dining")[0]!,
         "A",
-      ) } as any,
+      ) } as UserThisOrThatAnswerRow,
       { user_id: "planner-user-1", ...buildThisOrThatAnswerRecord(
         "food-dining",
         "female",
         getThisOrThatV2RuntimeQuestions("female", "food-dining")[1]!,
         "A",
-      ) } as any,
+      ) } as UserThisOrThatAnswerRow,
     ]);
 
     const plan = buildRecommendationCategoryPlan(foodOnlyState, 4);
@@ -302,7 +305,7 @@ describe("recommendation intent planner", () => {
       user_connections: [],
       snapshot_payload: {},
       updated_at: new Date().toISOString(),
-    }, [], thisOrThatAnswers as any);
+    }, [], thisOrThatAnswers as UserThisOrThatAnswerRow[]);
 
     const plan = buildRecommendationCategoryPlan(signalDrivenState, 4);
     const clothesPlan = plan.find((entry) => entry.category === "clothes");
@@ -356,7 +359,7 @@ describe("recommendation intent planner", () => {
       user_connections: [],
       snapshot_payload: {},
       updated_at: new Date().toISOString(),
-    }, [], thisOrThatAnswers as any);
+    }, [], thisOrThatAnswers as UserThisOrThatAnswerRow[]);
 
     const plan = buildRecommendationCategoryPlan(signalDrivenState, 4);
     const foodPlan = plan.find((entry) => entry.category === "food");
@@ -431,7 +434,7 @@ describe("recommendation intent planner", () => {
       user_connections: [],
       snapshot_payload: {},
       updated_at: new Date().toISOString(),
-    }, [], thisOrThatAnswers as any);
+    }, [], thisOrThatAnswers as UserThisOrThatAnswerRow[]);
 
     const plan = buildRecommendationCategoryPlan(signalDrivenState, 4);
     const personalPlan = plan.find((entry) => entry.category === "personal");

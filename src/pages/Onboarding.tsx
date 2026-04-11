@@ -42,6 +42,14 @@ const normalizeOptionalDate = (value: string | string[] | undefined) => {
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Something went wrong";
 
+type ProfileTimestampWriter = {
+  from: (table: "profiles") => {
+    update: (values: { updated_at: string }) => {
+      eq: (column: "user_id", value: string) => Promise<{ error: unknown | null }>;
+    };
+  };
+};
+
 const writeLegacyOnboardingProfile = async (
   userId: string,
   profileAnswerData: Record<string, string | string[]>,
@@ -205,9 +213,9 @@ const Onboarding = () => {
     }
 
     try {
-      const markCompleteResult = await supabase
+      const markCompleteResult = await (supabase as unknown as ProfileTimestampWriter)
         .from("profiles")
-        .update({ updated_at: new Date().toISOString() } as any)
+        .update({ updated_at: new Date().toISOString() })
         .eq("user_id", user.id);
 
       if (markCompleteResult.error) {

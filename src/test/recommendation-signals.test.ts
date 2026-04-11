@@ -5,6 +5,7 @@ import {
   buildRecommendationInputStrength,
   buildRecommendationMatchAssessment,
   buildRecommendationCategorySupport,
+  type UserThisOrThatAnswerRow,
 } from "../../supabase/functions/_shared/recommendationSignals";
 import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "../../supabase/functions/_shared/knowledgeCenter";
 import { buildThisOrThatAnswerRecord, getThisOrThatV2RuntimeQuestions } from "../data/thisOrThatV2";
@@ -108,7 +109,7 @@ const thisOrThatAnswers = [
 
 describe("recommendation signal normalization", () => {
   it("normalizes profile, answers, saved cards, likes, dislikes, and bank rows", () => {
-    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers as any);
+    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers as UserThisOrThatAnswerRow[]);
 
     expect(state.signals.length).toBeGreaterThan(6);
     expect(state.locationKeys).toEqual(expect.arrayContaining(["chicago", "illinois"]));
@@ -221,7 +222,7 @@ describe("recommendation signal normalization", () => {
   });
 
   it("builds a stable summary for weekly-generation metadata", () => {
-    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers as any);
+    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers as UserThisOrThatAnswerRow[]);
     const summary = buildRecommendationSignalSummary(state);
     const inputStrength = buildRecommendationInputStrength(state);
 
@@ -237,7 +238,7 @@ describe("recommendation signal normalization", () => {
   });
 
   it("scores input strength and recommendation fit separately from exact-product confidence", () => {
-    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers as any);
+    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers as UserThisOrThatAnswerRow[]);
     const inputStrength = buildRecommendationInputStrength(state);
     const supportedMatch = buildRecommendationMatchAssessment(state, {
       category: "clothes",

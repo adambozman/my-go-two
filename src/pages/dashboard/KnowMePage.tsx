@@ -59,6 +59,16 @@ type ThisOrThatDashboardItem =
   | { type: "category"; category: ThisOrThatCategoryState; layoutClass: string }
   | { type: "feature"; layoutClass: string };
 
+type ThisOrThatAnswerPayload = ReturnType<typeof buildThisOrThatAnswerUpsertPayload>;
+type ThisOrThatAnswerWriter = {
+  from: (table: "this_or_that_v2_answers") => {
+    upsert: (
+      values: ThisOrThatAnswerPayload,
+      options: { onConflict: string },
+    ) => Promise<{ error: unknown | null }>;
+  };
+};
+
 const FREE_CATEGORY_LIMIT = 4;
 const FREE_THIS_OR_THAT_LIMIT = 8;
 
@@ -377,7 +387,7 @@ const KnowMePage = () => {
       answeredAt: updatedAt,
     });
 
-    const { error } = await (supabase as any).from("this_or_that_v2_answers").upsert(payload, {
+    const { error } = await (supabase as unknown as ThisOrThatAnswerWriter).from("this_or_that_v2_answers").upsert(payload, {
       onConflict: "user_id,question_key",
     });
 

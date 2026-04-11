@@ -82,6 +82,21 @@ type FavoritesPayload = {
 
 type RpcError = { message?: string; status?: number } | null;
 
+type UserPreferencesFavoriteWriter = {
+  from: (table: "user_preferences") => {
+    upsert: (
+      values: {
+        user_id: string;
+        favorites: Record<string, unknown>;
+        updated_at: string;
+      },
+      options: { onConflict: string },
+    ) => Promise<{ error: RpcError }>;
+  };
+};
+
+const userPreferencesFavoriteWriter = supabase as unknown as UserPreferencesFavoriteWriter;
+
 const getRpcStatus = (error: unknown) =>
   typeof error === "object" && error !== null && "status" in error
     ? Number((error as { status?: unknown }).status)
@@ -360,7 +375,9 @@ const Recommendations = () => {
 
       if (loadError) throw loadError;
 
-      const favorites = isFavoritesPayload(existingRow?.favorites) ? { ...(existingRow!.favorites as Record<string, unknown>) } : {} as Record<string, unknown>;
+      const favorites: Record<string, unknown> = isFavoritesPayload(existingRow?.favorites)
+        ? { ...(existingRow.favorites as Record<string, unknown>) }
+        : {};
       const recommendations = isFavoritesPayload(favorites.recommendations)
         ? { ...(favorites.recommendations as Record<string, RecommendationFavorite>) }
         : {};
@@ -373,12 +390,12 @@ const Recommendations = () => {
 
       favorites.recommendations = recommendations;
 
-      const { error: saveError } = await supabase.from("user_preferences").upsert(
+      const { error: saveError } = await userPreferencesFavoriteWriter.from("user_preferences").upsert(
         {
           user_id: user.id,
-          favorites: favorites as any,
+          favorites,
           updated_at: new Date().toISOString(),
-        } as any,
+        },
         { onConflict: "user_id" },
       );
 
@@ -421,7 +438,9 @@ const Recommendations = () => {
 
     if (loadError) throw loadError;
 
-    const favorites = isFavoritesPayload(existingRow?.favorites) ? { ...(existingRow!.favorites as Record<string, unknown>) } : {} as Record<string, unknown>;
+    const favorites: Record<string, unknown> = isFavoritesPayload(existingRow?.favorites)
+      ? { ...(existingRow.favorites as Record<string, unknown>) }
+      : {};
     const sharedRecommendations = isFavoritesPayload(favorites.shared_recommendations)
       ? { ...(favorites.shared_recommendations as Record<string, RecommendationShareRecord>) }
       : {};
@@ -433,12 +452,12 @@ const Recommendations = () => {
     );
     favorites.shared_recommendations = sharedRecommendations;
 
-    const { error: saveError } = await supabase.from("user_preferences").upsert(
+    const { error: saveError } = await userPreferencesFavoriteWriter.from("user_preferences").upsert(
       {
         user_id: user.id,
-        favorites: favorites as any,
+        favorites,
         updated_at: new Date().toISOString(),
-      } as any,
+      },
       { onConflict: "user_id" },
     );
 
