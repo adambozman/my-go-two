@@ -108,7 +108,7 @@ const thisOrThatAnswers = [
 
 describe("recommendation signal normalization", () => {
   it("normalizes profile, answers, saved cards, likes, dislikes, and bank rows", () => {
-    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers);
+    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers as any);
 
     expect(state.signals.length).toBeGreaterThan(6);
     expect(state.locationKeys).toEqual(expect.arrayContaining(["chicago", "illinois"]));
@@ -221,7 +221,7 @@ describe("recommendation signal normalization", () => {
   });
 
   it("builds a stable summary for weekly-generation metadata", () => {
-    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers);
+    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers as any);
     const summary = buildRecommendationSignalSummary(state);
     const inputStrength = buildRecommendationInputStrength(state);
 
@@ -237,7 +237,7 @@ describe("recommendation signal normalization", () => {
   });
 
   it("scores input strength and recommendation fit separately from exact-product confidence", () => {
-    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers);
+    const state = buildNormalizedRecommendationState("test-user-1", snapshot, derivations, thisOrThatAnswers as any);
     const inputStrength = buildRecommendationInputStrength(state);
     const supportedMatch = buildRecommendationMatchAssessment(state, {
       category: "clothes",

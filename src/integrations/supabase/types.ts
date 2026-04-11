@@ -1361,8 +1361,8 @@ export type Database = {
       get_connection_shared_recommendations: {
         Args: {
           p_connection_user_id: string
+          p_couple_id: string
           p_owner_user_id: string
-          p_user_connection_id: string
         }
         Returns: {
           generated_at: string
@@ -1374,8 +1374,8 @@ export type Database = {
       get_connection_shared_vibe: {
         Args: {
           p_connection_user_id: string
+          p_couple_id: string
           p_owner_user_id: string
-          p_user_connection_id: string
         }
         Returns: {
           persona_summary: string

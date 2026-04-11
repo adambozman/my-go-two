@@ -247,7 +247,7 @@ const Recommendations = () => {
     setLoading(true);
     setLoadErrorMessage(null);
     try {
-      const activeFunction = RECOMMENDATION_V2_VERSION;
+      const activeFunction = RECOMMENDATION_V2_VERSION_PREFIX;
       let { data, error } = await supabase.functions.invoke(activeFunction, {
         body: forceRefresh ? { force_refresh: true } : {},
       });
@@ -360,7 +360,7 @@ const Recommendations = () => {
 
       if (loadError) throw loadError;
 
-      const favorites = isFavoritesPayload(existingRow?.favorites) ? { ...existingRow.favorites } : {};
+      const favorites = isFavoritesPayload(existingRow?.favorites) ? { ...(existingRow!.favorites as Record<string, unknown>) } : {} as Record<string, unknown>;
       const recommendations = isFavoritesPayload(favorites.recommendations)
         ? { ...(favorites.recommendations as Record<string, RecommendationFavorite>) }
         : {};
@@ -376,9 +376,9 @@ const Recommendations = () => {
       const { error: saveError } = await supabase.from("user_preferences").upsert(
         {
           user_id: user.id,
-          favorites,
+          favorites: favorites as any,
           updated_at: new Date().toISOString(),
-        },
+        } as any,
         { onConflict: "user_id" },
       );
 
@@ -421,7 +421,7 @@ const Recommendations = () => {
 
     if (loadError) throw loadError;
 
-    const favorites = isFavoritesPayload(existingRow?.favorites) ? { ...existingRow.favorites } : {};
+    const favorites = isFavoritesPayload(existingRow?.favorites) ? { ...(existingRow!.favorites as Record<string, unknown>) } : {} as Record<string, unknown>;
     const sharedRecommendations = isFavoritesPayload(favorites.shared_recommendations)
       ? { ...(favorites.shared_recommendations as Record<string, RecommendationShareRecord>) }
       : {};
@@ -436,9 +436,9 @@ const Recommendations = () => {
     const { error: saveError } = await supabase.from("user_preferences").upsert(
       {
         user_id: user.id,
-        favorites,
+        favorites: favorites as any,
         updated_at: new Date().toISOString(),
-      },
+      } as any,
       { onConflict: "user_id" },
     );
 

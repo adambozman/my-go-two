@@ -239,25 +239,25 @@ const toTextArray = (value: unknown) =>
 const resolveSnapshotGender = (snapshot: KnowledgeSnapshotRow | null): Gender =>
   normalizeGender(cleanText(toObject(snapshot?.profile_core).gender));
 
-const splitPhrases = (value: unknown) => {
+const splitPhrases = (value: unknown): string[] => {
   if (Array.isArray(value)) {
-    return value.flatMap((entry) => splitPhrases(entry));
+    return value.flatMap((entry: unknown) => splitPhrases(entry));
   }
   const text = cleanText(value);
   if (!text) return [];
   return text
     .split(/[;,/|]/)
-    .map((entry) => cleanText(entry))
-    .filter(Boolean);
+    .map((entry: string) => cleanText(entry))
+    .filter(Boolean) as string[];
 };
 
 const keywordTokens = (value: unknown) =>
   normalizeRecommendationKeywords(
-    splitPhrases(value).flatMap((entry) => {
+    splitPhrases(value).flatMap((entry: string) => {
       const tokens = entry
         .split(/\s+/)
-        .map((token) => cleanText(token).toLowerCase())
-        .filter((token) => token.length >= 3 && !PRODUCT_CARD_DESCRIPTOR_STOP_WORDS.has(token));
+        .map((token: string) => cleanText(token).toLowerCase())
+        .filter((token: string) => token.length >= 3 && !PRODUCT_CARD_DESCRIPTOR_STOP_WORDS.has(token));
       return [entry.toLowerCase(), ...tokens];
     }),
   );

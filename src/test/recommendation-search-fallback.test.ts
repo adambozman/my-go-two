@@ -9,7 +9,7 @@ const emptyDerivations: KnowledgeDerivationRow[] = [];
 describe("recommendation search fallback", () => {
   it("returns an honest search-only product instead of catalog truth", () => {
     const state = buildNormalizedRecommendationState("user-1", emptySnapshot, emptyDerivations, []);
-    state.inputStrength = buildRecommendationInputStrength(state);
+    (state as any).inputStrength = buildRecommendationInputStrength(state);
 
     const product = buildSearchFallbackResponseProduct({
       state,

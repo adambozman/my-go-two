@@ -7,6 +7,7 @@ import { resolveStorageUrl } from "@/lib/storageRefs";
 interface ConnectionFeedRow {
   feed_item_id: string;
   user_connection_id: string;
+  couple_id: string;
   connection_label: string | null;
   item_kind: string | null;
   title: string | null;

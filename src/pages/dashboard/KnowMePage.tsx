@@ -44,7 +44,7 @@ type CategoryState = SectionDefinition & {
   isLocked: boolean;
 };
 
-type ThisOrThatCategoryState = ThisOrThatCategoryDefinition & {
+type ThisOrThatCategoryState = ThisOrThatV2CategoryDefinition & {
   questions: ThisOrThatV2QuestionLike[];
   answered: number;
   visibleTotal: number;
@@ -163,7 +163,7 @@ const buildCategoryState = (
 };
 
 const buildThisOrThatCategoryState = (
-  category: ThisOrThatCategoryDefinition,
+  category: ThisOrThatV2CategoryDefinition,
   questions: ThisOrThatV2QuestionLike[],
   knowMeResponses: KnowledgeResponseMap,
   subscribed: boolean,
@@ -200,7 +200,7 @@ const KnowMePage = () => {
     [knowledgeSnapshot],
   );
   const bankGender = useMemo(
-    () => normalizeGender(knowledgeSnapshot?.profile_core?.gender),
+    () => normalizeGender(knowledgeSnapshot?.profile_core?.gender as string | undefined),
     [knowledgeSnapshot],
   );
 
@@ -377,7 +377,7 @@ const KnowMePage = () => {
       answeredAt: updatedAt,
     });
 
-    const { error } = await supabase.from("this_or_that_v2_answers").upsert(payload, {
+    const { error } = await (supabase as any).from("this_or_that_v2_answers").upsert(payload, {
       onConflict: "user_id,question_key",
     });
 

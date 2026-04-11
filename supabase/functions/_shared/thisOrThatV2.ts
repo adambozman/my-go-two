@@ -116,7 +116,7 @@ const coerceStructuredOption = (
   const entityKey = cleanText(record.entity_key).toLowerCase() || null;
   const entityLabel = cleanText(record.entity_label || record.label) || null;
   const primaryKeyword =
-    normalizePrimaryKeyword(record.primary_keyword || (entityType === "product_type" ? entityKey || entityLabel : null));
+    normalizePrimaryKeyword(String(record.primary_keyword || "") || (entityType === "product_type" ? entityKey || entityLabel : null));
   const descriptorKeywords = normalizeRecommendationKeywords([
     ...toStringArray(record.descriptor_keywords),
     ...toStringArray(record.tags),

@@ -200,9 +200,9 @@ export const buildProductBankInsertFromExactScrape = ({
   const descriptorKeywords = mergeDescriptorKeywords(primaryKeyword, intent.keywords ?? [], [intent.brand]);
 
   return {
-    primary_keyword: primaryKeyword,
+    primary_keyword: primaryKeyword ?? "",
     descriptor_keywords: descriptorKeywords,
-    keyword_signature: buildKeywordSignature(intent.category, primaryKeyword, descriptorKeywords),
+    keyword_signature: buildKeywordSignature(intent.category, primaryKeyword ?? "", descriptorKeywords) ?? "",
     category: intent.category,
     brand: intent.brand,
     product_title: cleanText(scraped.scraped_product_title) || intent.name,

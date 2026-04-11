@@ -41,12 +41,16 @@ export type RecommendationCard = {
   image_url: string | null;
   source_kind: string;
   source_version: string;
+  exact_match_confirmed?: boolean;
+  match_confidence?: number;
+  resolver_source?: string;
 };
 
 export type SharedBankRecord = {
   fingerprint: string;
   brand: string;
   product_name: string;
+  product_title: string;
   category: RecommendationIntent["category"];
   recommendation_kind: RecommendationIntent["recommendation_kind"];
   primary_keyword: string | null;
@@ -58,6 +62,7 @@ export type SharedBankRecord = {
   image_url: string | null;
   intent_keywords: string[] | null;
   keyword_signature: string | null;
+  match_confidence: number;
   scraped_description: string | null;
   scraped_product_title: string | null;
   product_match_confidence: number;
@@ -369,6 +374,7 @@ export class RecommendationFlowHarness {
           fingerprint,
           brand: intent.brand,
           product_name: intent.name,
+          product_title: bankInsert?.product_title ?? intent.name,
           category: intent.category,
           recommendation_kind: intent.recommendation_kind,
           primary_keyword: primaryKeyword,
@@ -380,6 +386,7 @@ export class RecommendationFlowHarness {
           image_url: productUrl ? (bankInsert?.product_image_url ?? fallback.image_url ?? null) : null,
           intent_keywords: normalizedKeywords,
           keyword_signature: keywordSignature,
+          match_confidence: bankInsert?.match_confidence ?? scraped?.product_match_confidence ?? fallback.product_match_confidence ?? 0,
           scraped_description: bankInsert?.scraped_description ?? fallback.scraped_description,
           scraped_product_title: bankInsert?.product_title ?? fallback.scraped_product_title,
           product_match_confidence: bankInsert?.match_confidence ?? scraped?.product_match_confidence ?? fallback.product_match_confidence,

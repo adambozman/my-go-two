@@ -21,10 +21,11 @@ type DerivationQuery = {
   };
 };
 
-type KnowledgeCenterClient = {
-  from: (table: "user_knowledge_snapshots") => SnapshotQuery;
-  from: (table: "user_knowledge_derivations") => DerivationQuery;
-};
+interface KnowledgeCenterClient {
+  from(table: "user_knowledge_snapshots"): SnapshotQuery;
+  from(table: "user_knowledge_derivations"): DerivationQuery;
+  from(table: string): SnapshotQuery | DerivationQuery;
+}
 
 export interface KnowledgeSnapshotRow {
   user_id: string;

@@ -17,12 +17,21 @@ export const resolvePostAuthDestination = async (userId: string) => {
 
   const profileResult = await supabase
     .from("profiles")
-    .select("onboarding_completed_at")
+    .select("updated_at")
     .eq("user_id", userId)
     .maybeSingle();
 
-  if (!profileResult.error) {
-    return profileResult.data?.onboarding_completed_at ? "/dashboard" : "/onboarding";
+  if (!profileResult.error && profileResult.data) {
+    // Profile exists — check legacy onboarding flag
+    const legacyResult = await supabase
+      .from("user_preferences")
+      .select("onboarding_complete")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (!legacyResult.error && legacyResult.data?.onboarding_complete) {
+      return "/dashboard";
+    }
+    return "/onboarding";
   }
 
   const legacyResult = await supabase

@@ -98,7 +98,7 @@ const SettingsPage = () => {
     const newVal = !settings[key];
     setSettings(prev => ({ ...prev, [key]: newVal }));
     // Upsert
-    const payload: Pick<UserSettingsRow, "user_id"> & Partial<UserSettingsRow> = { user_id: user.id, [key]: newVal };
+    const payload = { user_id: user.id, [key]: newVal } as any;
     const { error } = await supabase.from("user_settings").upsert(
       payload,
       { onConflict: "user_id" }
