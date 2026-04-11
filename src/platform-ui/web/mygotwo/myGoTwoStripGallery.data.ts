@@ -152,7 +152,7 @@ async function fetchAssignedRows(options?: { force?: boolean }) {
 async function buildAssignedAssets(
   rows: AssignedAssetRow[],
   options: {
-    stripTransform: typeof STRIP_IMAGE_TRANSFORM;
+    stripTransform: { width: number; height: number; resize: "cover"; quality: number };
     includeCollapse: boolean;
   },
 ) {

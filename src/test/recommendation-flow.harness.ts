@@ -41,12 +41,16 @@ export type RecommendationCard = {
   image_url: string | null;
   source_kind: string;
   source_version: string;
+  exact_match_confirmed?: boolean;
+  match_confidence?: number;
+  resolver_source?: string;
 };
 
 export type SharedBankRecord = {
   fingerprint: string;
   brand: string;
   product_name: string;
+  product_title?: string;
   category: RecommendationIntent["category"];
   recommendation_kind: RecommendationIntent["recommendation_kind"];
   primary_keyword: string | null;
@@ -58,6 +62,7 @@ export type SharedBankRecord = {
   image_url: string | null;
   intent_keywords: string[] | null;
   keyword_signature: string | null;
+  match_confidence?: number;
   scraped_description: string | null;
   scraped_product_title: string | null;
   product_match_confidence: number;
