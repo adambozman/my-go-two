@@ -256,18 +256,18 @@ describe("recommendation intent planner", () => {
       snapshot_payload: {},
       updated_at: new Date().toISOString(),
     }, [], [
-      buildThisOrThatAnswerRecord(
+      { user_id: "planner-user-1", ...buildThisOrThatAnswerRecord(
         "food-dining",
         "female",
         getThisOrThatV2RuntimeQuestions("female", "food-dining")[0]!,
         "A",
-      ),
-      buildThisOrThatAnswerRecord(
+      ) },
+      { user_id: "planner-user-1", ...buildThisOrThatAnswerRecord(
         "food-dining",
         "female",
         getThisOrThatV2RuntimeQuestions("female", "food-dining")[1]!,
         "A",
-      ),
+      ) },
     ]);
 
     const plan = buildRecommendationCategoryPlan(foodOnlyState, 4);
