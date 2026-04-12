@@ -13,7 +13,6 @@ import {
   MYGOTWO_STRIP_SOURCE_IMAGE_SIZE,
 } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.data";
 import {
-  MYGOTWO_ACTIVE_GENDER,
   MYGOTWO_CATEGORY_TARGETS,
   MYGOTWO_COLLAPSE_SLOT_TARGETS,
   MYGOTWO_SLOT_TARGETS,
@@ -259,7 +258,6 @@ export default function PhotoGallery() {
     const { data, error } = await supabase
       .from("category_images")
       .select("category_key, image_url, created_at")
-      .eq("gender", MYGOTWO_ACTIVE_GENDER)
       .in("category_key", slotKeys);
 
     if (error) {

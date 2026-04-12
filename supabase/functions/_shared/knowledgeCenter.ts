@@ -90,6 +90,82 @@ export const buildCatalogAiAdapter = (
   })),
 });
 
+const isMissingKnowledgeCenterSchema = (error: unknown) => {
+  if (!error || typeof error !== "object") return false;
+  const code = "code" in error ? String(error.code ?? "") : "";
+  const message = "message" in error ? String(error.message ?? "") : "";
+  return code === "PGRST205" || message.includes("schema cache") || message.includes("user_knowledge_");
+};
+
+const toResponseRecord = (
+  rows: Array<{ question_key: string; response_value: unknown }> | null | undefined,
+): JsonObject =>
+  Object.fromEntries(
+    (rows ?? [])
+      .filter((row) => typeof row?.question_key === "string" && row.question_key.length > 0)
+      .map((row) => [row.question_key, row.response_value]),
+  );
+
+const fetchKnowledgeCenterFallbackState = async (
+  supabase: SupabaseClient,
+  userId: string,
+) => {
+  const baseClient = supabase as unknown as {
+    from: (table: string) => {
+      select: (columns: string) => {
+        eq: (column: string, value: string) => {
+          maybeSingle: () => Promise<{ data: unknown; error: unknown }>;
+          order: (
+            column: string,
+            options: { ascending: boolean },
+          ) => Promise<{ data: unknown; error: unknown }>;
+          then?: never;
+        };
+      };
+    };
+  };
+
+  const [
+    profileResult,
+    onboardingResult,
+    knowMeResult,
+    savedCardsResult,
+    connectionsResult,
+    derivationsResult,
+  ] = await Promise.all([
+    baseClient.from("profiles").select("*").eq("user_id", userId).maybeSingle(),
+    baseClient.from("onboarding_responses").select("question_key, response_value").eq("user_id", userId).order("question_key", { ascending: true }),
+    baseClient.from("know_me_responses").select("question_key, response_value").eq("user_id", userId).order("question_key", { ascending: true }),
+    baseClient.from("saved_product_cards").select("*").eq("user_id", userId).order("updated_at", { ascending: false }),
+    baseClient.from("user_connections").select("id, connection_user_id, invitee_email, display_label, photo_url, status, role, updated_at").eq("owner_user_id", userId).order("updated_at", { ascending: false }),
+    baseClient.from("knowledge_derivations").select("id, user_id, derivation_key, derivation_payload, source_snapshot, created_at, updated_at").eq("user_id", userId).order("updated_at", { ascending: false }),
+  ]);
+
+  if (profileResult.error) throw profileResult.error;
+  if (onboardingResult.error) throw onboardingResult.error;
+  if (knowMeResult.error) throw knowMeResult.error;
+  if (savedCardsResult.error) throw savedCardsResult.error;
+  if (connectionsResult.error) throw connectionsResult.error;
+  if (derivationsResult.error) throw derivationsResult.error;
+
+  const profileData = toRecord(profileResult.data);
+  const { user_id: _userId, ...profileCore } = profileData;
+
+  return {
+    snapshot: {
+      user_id: userId,
+      profile_core: profileCore,
+      onboarding_responses: toResponseRecord(onboardingResult.data as Array<{ question_key: string; response_value: unknown }> | null),
+      know_me_responses: toResponseRecord(knowMeResult.data as Array<{ question_key: string; response_value: unknown }> | null),
+      saved_product_cards: toRecordArray(savedCardsResult.data),
+      user_connections: toRecordArray(connectionsResult.data),
+      snapshot_payload: {},
+      updated_at: new Date().toISOString(),
+    } as KnowledgeSnapshotRow,
+    derivations: Array.isArray(derivationsResult.data) ? (derivationsResult.data as KnowledgeDerivationRow[]) : [],
+  };
+};
+
 export const fetchKnowledgeCenterState = async (
   supabase: SupabaseClient,
   userId: string,
@@ -109,8 +185,13 @@ export const fetchKnowledgeCenterState = async (
         .order("updated_at", { ascending: false }),
     ]);
 
-  if (snapshotError) throw snapshotError;
-  if (derivationError) throw derivationError;
+  if (snapshotError || derivationError) {
+    const primaryError = snapshotError ?? derivationError;
+    if (isMissingKnowledgeCenterSchema(primaryError)) {
+      return fetchKnowledgeCenterFallbackState(supabase, userId);
+    }
+    throw primaryError;
+  }
 
   return {
     snapshot: (snapshotData as KnowledgeSnapshotRow | null) ?? null,

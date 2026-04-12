@@ -3,7 +3,6 @@ import {
   resolveStorageUrlsWithTransform,
 } from "@/lib/storageRefs";
 import {
-  MYGOTWO_ACTIVE_GENDER,
   MYGOTWO_ASSIGNMENT_KEYS,
   MYGOTWO_COLLAPSE_IMAGES,
   MYGOTWO_COLLAPSE_SLOT_TARGETS,
@@ -130,7 +129,6 @@ async function fetchAssignedRows(options?: { force?: boolean }) {
     supabase
       .from("category_images")
       .select("category_key, image_url")
-      .eq("gender", MYGOTWO_ACTIVE_GENDER)
       .in("category_key", SLOT_KEYS)
   )
     .then(({ data, error }) => {

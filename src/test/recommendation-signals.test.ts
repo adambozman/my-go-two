@@ -83,26 +83,22 @@ const derivations: KnowledgeDerivationRow[] = [
 const thisOrThatAnswers = [
   buildThisOrThatAnswerRecord(
     "brands-shopping",
-    "male",
-    getThisOrThatV2RuntimeQuestions("male", "brands-shopping")[0]!,
+    getThisOrThatV2RuntimeQuestions("brands-shopping")[0]!,
     "A",
   ),
   buildThisOrThatAnswerRecord(
     "travel-trips",
-    "male",
-    getThisOrThatV2RuntimeQuestions("male", "travel-trips")[0]!,
+    getThisOrThatV2RuntimeQuestions("travel-trips")[0]!,
     "A",
   ),
   buildThisOrThatAnswerRecord(
     "food-dining",
-    "female",
-    getThisOrThatV2RuntimeQuestions("female", "food-dining")[0]!,
+    getThisOrThatV2RuntimeQuestions("food-dining")[0]!,
     "A",
   ),
   buildThisOrThatAnswerRecord(
     "home-living",
-    "female",
-    getThisOrThatV2RuntimeQuestions("female", "home-living")[0]!,
+    getThisOrThatV2RuntimeQuestions("home-living")[0]!,
     "A",
   ),
 ];

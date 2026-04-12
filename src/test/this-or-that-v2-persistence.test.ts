@@ -4,14 +4,13 @@ import { buildThisOrThatAnswerUpsertPayload } from "../data/thisOrThatV2Persiste
 
 describe("This or That v2 persistence payload", () => {
   it("writes the full structured payload for a live travel answer", () => {
-    const question = getThisOrThatV2RuntimeQuestions("male", "travel-trips")[0];
+    const question = getThisOrThatV2RuntimeQuestions("travel-trips")[0];
 
     expect(question).toBeTruthy();
 
     const payload = buildThisOrThatAnswerUpsertPayload({
       userId: "user-1",
       categoryId: "travel-trips",
-      gender: "male",
       question: question!,
       choice: "A",
       answeredAt: "2026-04-09T12:00:00.000Z",

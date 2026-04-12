@@ -407,16 +407,16 @@ export default function ConnectionPage() {
             .eq("owner_user_id", user.id)
             .eq("connection_user_id", connectionUserId)
         : Promise.resolve({ data: [] }),
-      connectionUserId
+        connectionUserId
         ? supabase.rpc("get_connection_shared_vibe", {
-            p_couple_id: userConnection.id,
+            p_user_connection_id: userConnection.id,
             p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
           } as any)
         : Promise.resolve({ data: [] }),
-      connectionUserId
+        connectionUserId
         ? supabase.rpc("get_connection_shared_recommendations", {
-            p_couple_id: userConnection.id,
+            p_user_connection_id: userConnection.id,
             p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
           } as any)

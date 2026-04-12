@@ -25,6 +25,56 @@ const emptySnapshot = (userId: string): UserKnowledgeSnapshot => ({
   updated_at: new Date(0).toISOString(),
 });
 
+const toResponseRecord = (
+  rows: Array<{ question_key: string; response_value: unknown }> | null | undefined,
+) =>
+  Object.fromEntries(
+    (rows ?? [])
+      .filter((row) => typeof row?.question_key === "string" && row.question_key.length > 0)
+      .map((row) => [row.question_key, row.response_value]),
+  );
+
+const loadBaseKnowledgeState = async (userId: string) => {
+  const [
+    profileResult,
+    onboardingResult,
+    knowMeResult,
+    savedCardsResult,
+    connectionsResult,
+    derivationsResult,
+  ] = await Promise.all([
+    supabase.from("profiles").select("*").eq("user_id", userId).maybeSingle(),
+    supabase.from("onboarding_responses").select("question_key, response_value").eq("user_id", userId),
+    supabase.from("know_me_responses").select("question_key, response_value").eq("user_id", userId),
+    supabase.from("saved_product_cards").select("*").eq("user_id", userId).order("updated_at", { ascending: false }),
+    supabase.from("user_connections").select("id, connection_user_id, invitee_email, display_label, photo_url, status, role, updated_at").eq("owner_user_id", userId),
+    supabase.from("knowledge_derivations").select("*").eq("user_id", userId).order("updated_at", { ascending: false }),
+  ]);
+
+  if (profileResult.error) throw profileResult.error;
+  if (onboardingResult.error) throw onboardingResult.error;
+  if (knowMeResult.error) throw knowMeResult.error;
+  if (savedCardsResult.error) throw savedCardsResult.error;
+  if (connectionsResult.error) throw connectionsResult.error;
+  if (derivationsResult.error) throw derivationsResult.error;
+
+  const { user_id: _userId, ...profileCore } = (profileResult.data ?? {}) as Record<string, unknown>;
+
+  return {
+    snapshot: {
+      user_id: userId,
+      profile_core: profileCore,
+      onboarding_responses: toResponseRecord(onboardingResult.data as Array<{ question_key: string; response_value: unknown }> | null),
+      know_me_responses: toResponseRecord(knowMeResult.data as Array<{ question_key: string; response_value: unknown }> | null),
+      saved_product_cards: (savedCardsResult.data as UserKnowledgeSnapshot["saved_product_cards"]) ?? [],
+      user_connections: (connectionsResult.data as UserKnowledgeSnapshot["user_connections"]) ?? [],
+      snapshot_payload: {},
+      updated_at: new Date().toISOString(),
+    } satisfies UserKnowledgeSnapshot,
+    derivations: (derivationsResult.data as UserKnowledgeDerivation[]) ?? [],
+  };
+};
+
 export const KnowledgeCenterProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [knowledgeSnapshot, setKnowledgeSnapshot] = useState<UserKnowledgeSnapshot | null>(null);
@@ -75,8 +125,18 @@ export const KnowledgeCenterProvider = ({ children }: { children: ReactNode }) =
     } catch (error) {
       if (isMissingKnowledgeCenterSchema(error)) {
         if (!schemaFallbackLoggedRef.current) {
-          console.warn("Knowledge Center schema is unavailable. Falling back to an empty snapshot.", error);
+          console.warn("Knowledge Center views are unavailable. Falling back to base-table reads.", error);
           schemaFallbackLoggedRef.current = true;
+        }
+
+        try {
+          const fallbackState = await loadBaseKnowledgeState(activeUser.id);
+          if (!mountedRef.current || latestRefreshRequestRef.current !== requestId) return;
+          setKnowledgeSnapshot(fallbackState.snapshot);
+          setKnowledgeDerivations(fallbackState.derivations);
+          return;
+        } catch (fallbackError) {
+          console.error("Knowledge Center base-table fallback failed:", fallbackError);
         }
       } else {
         console.error("Failed to load knowledge center data:", error);
@@ -127,7 +187,17 @@ export const KnowledgeCenterProvider = ({ children }: { children: ReactNode }) =
       )
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "user_knowledge_derivations", filter: `user_id=eq.${user.id}` },
+        { event: "*", schema: "public", table: "this_or_that_v2_answers", filter: `user_id=eq.${user.id}` },
+        () => void refreshKnowledge(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_connections", filter: `owner_user_id=eq.${user.id}` },
+        () => void refreshKnowledge(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "knowledge_derivations", filter: `user_id=eq.${user.id}` },
         () => void refreshKnowledge(),
       )
       .subscribe();

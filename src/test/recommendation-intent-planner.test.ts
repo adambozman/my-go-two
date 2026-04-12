@@ -317,7 +317,7 @@ describe("recommendation intent planner", () => {
     const clothesIntent = intents.find((intent) => intent.category === "clothes");
 
     expect(clothesIntent).toBeTruthy();
-    expect(["sezane", "everlane", "j.crew", "madewell", "aritzia", "club monaco", "cos"]).toContain(
+    expect(["sezane", "everlane", "j.crew", "madewell", "aritzia", "club monaco", "cos", "buck mason"]).toContain(
       clothesIntent?.brand.toLowerCase(),
     );
   });

@@ -1,4 +1,4 @@
-import type { RecommendationCategory } from "@/lib/recommendationCategories";
+import { RECOMMENDATION_CATEGORY_ORDER, type RecommendationCategory } from "@/lib/recommendationCategories";
 import type { Gender } from "@/lib/gender";
 
 export type PopularPreferenceProfile = {
@@ -30,7 +30,7 @@ const categoryProfile = (
   types,
 });
 
-export const POPULAR_PREFERENCE_BANK: Record<Gender, Record<RecommendationCategory, PopularPreferenceProfile>> = {
+const POPULAR_PREFERENCE_GENDER_BANK: Record<Gender, Record<RecommendationCategory, PopularPreferenceProfile>> = {
   male: {
     clothes: categoryProfile(
       ["uniqlo", "buck mason", "j crew", "todd snyder", "new balance", "nike"],
@@ -158,6 +158,29 @@ export const POPULAR_PREFERENCE_BANK: Record<Gender, Record<RecommendationCatego
     ),
   },
 };
+
+const mergeProfileValues = (
+  category: RecommendationCategory,
+  key: keyof PopularPreferenceProfile,
+) =>
+  Array.from(
+    new Set(
+      Object.values(POPULAR_PREFERENCE_GENDER_BANK)
+        .flatMap((profileByCategory) => profileByCategory[category]?.[key] ?? []),
+    ),
+  );
+
+export const POPULAR_PREFERENCE_BANK: Record<RecommendationCategory, PopularPreferenceProfile> =
+  Object.fromEntries(
+    RECOMMENDATION_CATEGORY_ORDER.map((category) => [
+      category,
+      categoryProfile(
+        mergeProfileValues(category, "brands"),
+        mergeProfileValues(category, "styles"),
+        mergeProfileValues(category, "types"),
+      ),
+    ]),
+  ) as Record<RecommendationCategory, PopularPreferenceProfile>;
 
 export const SAVED_PRODUCT_CARD_METADATA: Record<string, SavedProductCardMetadata> = {
   "brand-preferences": {
@@ -351,10 +374,7 @@ export function getSavedProductCardMetadata(productCardKey: string | null | unde
   return SAVED_PRODUCT_CARD_METADATA[normalizedKey] ?? null;
 }
 
-export function getPopularPreferenceProfile(
-  gender: Gender,
-  category: RecommendationCategory | null | undefined,
-) {
+export function getPopularPreferenceProfile(category: RecommendationCategory | null | undefined) {
   if (!category) return null;
-  return POPULAR_PREFERENCE_BANK[gender]?.[category] ?? null;
+  return POPULAR_PREFERENCE_BANK[category] ?? null;
 }

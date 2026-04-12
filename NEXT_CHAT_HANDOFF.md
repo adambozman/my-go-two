@@ -6,7 +6,6 @@ Read this file first.
 
 It consolidates the repo rules, product constraints, live working paths, login path, important files, verified realities, and the minimum context needed to work safely without bouncing through the audit folder.
 
-<<<<<<< HEAD
 ## 2026-04-08 Current Delta
 
 This section is append-only. Do not remove earlier sections unless the work is truly finished.
@@ -128,9 +127,8 @@ Important warning:
 - Future chats should preserve that practice on newly edited runtime files.
 
 ## Product Context
-=======
+
 Source material consolidated into this handoff:
->>>>>>> 495927ef830082e70405199fbec87c1979705368
 
 - `.lovable/plan.md`
 - `CRITICAL_ISSUES_FIX_PLAN.md`

@@ -16,7 +16,6 @@ import {
   type ThisOrThatV2CategoryDefinition,
   type ThisOrThatV2QuestionLike,
 } from "@/data/thisOrThatV2";
-import { normalizeGender, type Gender } from "@/lib/gender";
 import {
   buildKnowledgeAiAdapter,
   getCombinedKnowledgeResponses,
@@ -209,15 +208,7 @@ const KnowMePage = () => {
     () => toKnowledgeResponseRecord(knowledgeSnapshot?.know_me_responses),
     [knowledgeSnapshot],
   );
-  const bankGender = useMemo(
-    () => normalizeGender(knowledgeSnapshot?.profile_core?.gender as string | undefined),
-    [knowledgeSnapshot],
-  );
-
-  const allQuestions = useMemo(
-    () => buildSprints(bankGender).flatMap((sprint) => sprint.questions),
-    [bankGender],
-  );
+  const allQuestions = useMemo(() => buildSprints().flatMap((sprint) => sprint.questions), []);
 
   const categories = useMemo(() => {
     return SECTIONS.map((section) => buildCategoryState(section, allQuestions, knowMeResponses, subscribed));
@@ -260,11 +251,11 @@ const KnowMePage = () => {
     : [];
 
   const thisOrThatCategories = useMemo(() => {
-    const questionBank = buildThisOrThatV2RuntimeQuestionBank(bankGender);
+    const questionBank = buildThisOrThatV2RuntimeQuestionBank();
     return getThisOrThatV2CategoryDefinitions().map((category) =>
       buildThisOrThatCategoryState(category, questionBank[category.id] ?? [], knowMeResponses, subscribed),
     );
-  }, [bankGender, knowMeResponses, subscribed]);
+  }, [knowMeResponses, subscribed]);
   const thisOrThatDashboardItems = useMemo<ThisOrThatDashboardItem[]>(() => {
     const categories = thisOrThatCategories.map((category, index) => ({
       type: "category" as const,
@@ -381,7 +372,6 @@ const KnowMePage = () => {
     const payload = buildThisOrThatAnswerUpsertPayload({
       userId,
       categoryId,
-      gender: bankGender,
       question,
       choice,
       answeredAt: updatedAt,

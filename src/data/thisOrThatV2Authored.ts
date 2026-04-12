@@ -394,11 +394,18 @@ export const THIS_OR_THAT_V2_AUTHORED_DATASETS: Record<
   ],
 };
 
+const SHARED_THIS_OR_THAT_V2_AUTHORED_DATASET = Array.from(
+  new Map(
+    Object.values(THIS_OR_THAT_V2_AUTHORED_DATASETS)
+      .flat()
+      .map((question) => [question.question_id, question]),
+  ).values(),
+);
+
 export const getThisOrThatV2AuthoredQuestions = (
-  gender: Gender,
   categoryId?: ThisOrThatV2AuthoredCategoryId,
 ): ThisOrThatV2AuthoredQuestionSeed[] => {
-  const dataset = THIS_OR_THAT_V2_AUTHORED_DATASETS[gender] ?? [];
+  const dataset = SHARED_THIS_OR_THAT_V2_AUTHORED_DATASET;
   if (!categoryId) return dataset;
   return dataset.filter((question) => question.source_category_id === categoryId);
 };

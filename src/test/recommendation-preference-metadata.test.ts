@@ -9,15 +9,13 @@ import {
 import { RECOMMENDATION_CATEGORY_ORDER } from "../lib/recommendationCategories";
 
 describe("recommendation preference metadata", () => {
-  it("covers every live recommendation category for every gender", () => {
-    for (const gender of ["male", "female", "non-binary"] as const) {
-      for (const category of RECOMMENDATION_CATEGORY_ORDER) {
-        const profile = getPopularPreferenceProfile(gender, category);
-        expect(profile, `${gender}:${category}`).toBeTruthy();
-        expect(profile?.brands.length).toBeGreaterThanOrEqual(4);
-        expect(profile?.styles.length).toBeGreaterThanOrEqual(4);
-        expect(profile?.types.length).toBeGreaterThanOrEqual(4);
-      }
+  it("covers every live recommendation category with one shared fallback bank", () => {
+    for (const category of RECOMMENDATION_CATEGORY_ORDER) {
+      const profile = getPopularPreferenceProfile(category);
+      expect(profile, category).toBeTruthy();
+      expect(profile?.brands.length).toBeGreaterThanOrEqual(4);
+      expect(profile?.styles.length).toBeGreaterThanOrEqual(4);
+      expect(profile?.types.length).toBeGreaterThanOrEqual(4);
     }
   });
 
@@ -42,8 +40,8 @@ describe("recommendation preference metadata", () => {
   });
 
   it("ships non-empty preference banks instead of placeholder structures", () => {
-    expect(POPULAR_PREFERENCE_BANK.female.personal.brands).toContain("mejuri");
-    expect(POPULAR_PREFERENCE_BANK.male.tech.types).toContain("phones");
-    expect(POPULAR_PREFERENCE_BANK["non-binary"].travel.styles).toContain("organized");
+    expect(POPULAR_PREFERENCE_BANK.personal.brands).toContain("mejuri");
+    expect(POPULAR_PREFERENCE_BANK.tech.types).toContain("phones");
+    expect(POPULAR_PREFERENCE_BANK.travel.styles).toContain("organized");
   });
 });

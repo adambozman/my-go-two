@@ -12,7 +12,6 @@ import {
   getSavedProductCardMetadata,
   normalizeProductCardFieldKey,
 } from "../../../src/data/recommendationPreferenceMetadata.ts";
-import { normalizeGender, type Gender } from "../../../src/lib/gender.ts";
 import {
   normalizeRecommendationCategoryKey,
   RECOMMENDATION_CATEGORY_ORDER,
@@ -235,9 +234,6 @@ const toTextArray = (value: unknown) =>
     : typeof value === "string"
       ? [cleanText(value)].filter(Boolean)
       : [];
-
-const resolveSnapshotGender = (snapshot: KnowledgeSnapshotRow | null): Gender =>
-  normalizeGender(cleanText(toObject(snapshot?.profile_core).gender));
 
 const splitPhrases = (value: unknown): string[] => {
   if (Array.isArray(value)) {
@@ -1118,7 +1114,6 @@ const toKeywordBankRows = (
   productCardKeywords: UserProductCardKeywordRow[],
   likes: UserLikeSignalRow[],
   thisOrThatSignalRows: UserThisOrThatSignalRow[],
-  profileGender: Gender,
 ) => {
   const rows = new Map<string, RecommendationKeywordBankRow>();
 
@@ -1187,7 +1182,7 @@ const toKeywordBankRows = (
   }
 
   for (const [category, primaryKeywords] of activeCategoryKeywords) {
-    const popularProfile = getPopularPreferenceProfile(profileGender, category);
+    const popularProfile = getPopularPreferenceProfile(category);
     if (!popularProfile) continue;
 
     for (const primaryKeyword of primaryKeywords) {
@@ -1209,7 +1204,6 @@ const toBrandBankRows = (
   likes: UserLikeSignalRow[],
   recommendedBrands: string[],
   thisOrThatSignalRows: UserThisOrThatSignalRow[],
-  profileGender: Gender,
 ) => {
   const rows = new Map<string, RecommendationBrandBankRow>();
 
@@ -1282,7 +1276,7 @@ const toBrandBankRows = (
   }
 
   for (const [category, primaryKeywords] of activeCategoryKeywords) {
-    const popularProfile = getPopularPreferenceProfile(profileGender, category);
+    const popularProfile = getPopularPreferenceProfile(category);
     if (!popularProfile) continue;
 
     for (const primaryKeyword of primaryKeywords) {
@@ -1348,7 +1342,6 @@ export const buildNormalizedRecommendationState = (
   const combinedResponses = getCombinedKnowledgeResponses(snapshot);
   const snapshotPayload = toRecord(snapshot?.snapshot_payload);
   const profileCore = toRecord(snapshot?.profile_core);
-  const profileGender = resolveSnapshotGender(snapshot);
   const yourVibe = getKnowledgeDerivationPayload(derivations, "your_vibe");
   const bankKnowledge = getBankKnowledgeDerivation(combinedResponses, yourVibe);
   const thisOrThatPreferences = extractThisOrThatPreferences(combinedResponses, thisOrThatAnswers, snapshotPayload);
@@ -1367,8 +1360,8 @@ export const buildNormalizedRecommendationState = (
   const thisOrThatSignalRows = toThisOrThatSignalRows(userId, thisOrThatAnswers, combinedResponses, snapshotPayload);
   const productCardKeywords = toProductCardKeywordRows(userId, snapshot);
   const { likes, dislikes } = toLikeAndDislikeRows(userId, combinedResponses, productCardKeywords, thisOrThatAnswers, snapshotPayload);
-  const keywordBankRows = toKeywordBankRows(productCardKeywords, likes, thisOrThatSignalRows, profileGender);
-  const brandBankRows = toBrandBankRows(productCardKeywords, likes, recommendedBrands, thisOrThatSignalRows, profileGender);
+  const keywordBankRows = toKeywordBankRows(productCardKeywords, likes, thisOrThatSignalRows);
+  const brandBankRows = toBrandBankRows(productCardKeywords, likes, recommendedBrands, thisOrThatSignalRows);
   const brandLocationRows = toBrandLocationRows(locationKeys, brandBankRows);
 
   return {

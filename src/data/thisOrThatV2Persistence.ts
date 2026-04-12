@@ -2,8 +2,8 @@ import {
   buildThisOrThatAnswerRecord,
   type ThisOrThatV2QuestionLike,
   type ThisOrThatV2AnswerRecord,
+  type ThisOrThatV2DatasetKey,
 } from "./thisOrThatV2";
-import type { Gender } from "@/lib/gender";
 
 export interface ThisOrThatAnswerUpsertPayload {
   user_id: string;
@@ -19,7 +19,7 @@ export interface ThisOrThatAnswerUpsertPayload {
   location_keys: string[];
   answer_payload: {
     question_prompt: string;
-    bank_gender: Gender;
+    bank_gender: ThisOrThatV2DatasetKey;
     selected_label: string;
     rejected_label: string;
     selected_payload: ThisOrThatV2AnswerRecord["selected_payload"];
@@ -35,19 +35,17 @@ export interface ThisOrThatAnswerUpsertPayload {
 export const buildThisOrThatAnswerUpsertPayload = ({
   userId,
   categoryId,
-  gender,
   question,
   choice,
   answeredAt = new Date().toISOString(),
 }: {
   userId: string;
   categoryId: string;
-  gender: Gender;
   question: ThisOrThatV2QuestionLike;
   choice: "A" | "B";
   answeredAt?: string;
 }): ThisOrThatAnswerUpsertPayload => {
-  const answerRecord = buildThisOrThatAnswerRecord(categoryId, gender, question, choice);
+  const answerRecord = buildThisOrThatAnswerRecord(categoryId, question, choice);
 
   return {
     user_id: userId,

@@ -124,8 +124,18 @@ export const parseRecommendationEngineResponse = (value: unknown): Recommendatio
     throw new Error("Malformed recommendation payload: products array missing");
   }
 
+  const products = value.products
+    .map((product) => {
+      try {
+        return parseRecommendationProduct(product);
+      } catch {
+        return null;
+      }
+    })
+    .filter((product): product is RecommendationProduct => Boolean(product));
+
   return {
-    products: value.products.map(parseRecommendationProduct),
+    products,
     cached: Boolean(value.cached),
     generated_at: asNullableString(value.generated_at),
     week_start: asNullableString(value.week_start),
@@ -158,3 +168,5 @@ export const parseSharedRecommendationsRecord = (
     products,
   };
 };
+
+// Codebase classification: runtime recommendation response contract parser.

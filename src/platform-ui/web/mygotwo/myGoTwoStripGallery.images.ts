@@ -31,8 +31,6 @@ export type MyGoTwoCategoryTarget = {
   cardFolder: string;
 };
 
-export const MYGOTWO_ACTIVE_GENDER = "male" as const;
-
 type StripLayout = Omit<MyGoTwoStripGalleryImage, "image" | "detailImage">;
 
 const STRIP_LAYOUT: StripLayout[] = [

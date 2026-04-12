@@ -130,58 +130,83 @@ const Recommendations = () => {
     resetKeys: [activePillar],
   });
 
+  useEffect(() => {
+    setProducts([]);
+    setGeneratedAt(null);
+    setIsCached(false);
+    setGenerationVersion(null);
+    setInputSnapshotSummary(null);
+    setLoadErrorMessage(null);
+    setHasLoaded(false);
+    setActivePillar("all");
+    setSavedItems(new Set());
+    setSharingItems(new Set());
+    setCurrentPage(1);
+  }, [user?.id, setCurrentPage]);
+
   const fetchProducts = useCallback(
     async (forceRefresh = false) => {
-    setLoading(true);
-    setLoadErrorMessage(null);
-    try {
-      const activeFunction = RECOMMENDATION_V2_VERSION_PREFIX;
-      let { data, error } = await supabase.functions.invoke(activeFunction, {
-        body: forceRefresh ? { force_refresh: true } : {},
-      });
-
-      // If session expired, refresh and retry once
-      if (error && getRpcStatus(error) === 401) {
-        await supabase.auth.refreshSession();
-        const retry = await supabase.functions.invoke(activeFunction, {
-          body: forceRefresh ? { force_refresh: true } : {},
-        });
-        data = retry.data;
-        error = retry.error;
+      if (!user) {
+        setLoading(false);
+        setHasLoaded(false);
+        return;
       }
 
-      if (error) throw error;
-      const response = parseRecommendationEngineResponse(data);
-      setProducts(response.products);
-      setGeneratedAt(response.generated_at);
-      setIsCached(response.cached);
-      setGenerationVersion(response.generation_version ?? activeFunction);
-      setInputSnapshotSummary(response.input_snapshot_summary);
-      setCurrentPage(1);
-    } catch (error: unknown) {
-      console.error("Products error:", error);
-      const status = getRpcStatus(error);
-      const message =
-        status === 429
-          ? "Recommendation refresh is rate-limited right now. Try again shortly."
-          : status === 402
-            ? "Recommendation generation is unavailable right now."
-            : status === 404
-              ? "The rebuilt recommendation engine is not deployed yet."
-            : getErrorMessage(error);
-      setLoadErrorMessage(message);
-      toast.error(hasLoadedProducts ? `${message} Keeping the current V2 set on screen.` : message);
-    } finally {
-      setLoading(false);
-      setHasLoaded(true);
-    }
-  }, [hasLoadedProducts, setCurrentPage]);
+      setLoading(true);
+      setLoadErrorMessage(null);
+      try {
+        const activeFunction = RECOMMENDATION_V2_VERSION_PREFIX;
+        let { data, error } = await supabase.functions.invoke(activeFunction, {
+          body: forceRefresh ? { force_refresh: true } : {},
+        });
+
+        if (error && getRpcStatus(error) === 401) {
+          await supabase.auth.refreshSession();
+          const retry = await supabase.functions.invoke(activeFunction, {
+            body: forceRefresh ? { force_refresh: true } : {},
+          });
+          data = retry.data;
+          error = retry.error;
+        }
+
+        if (error) throw error;
+        const response = parseRecommendationEngineResponse(data);
+        if (response.products.length === 0) {
+          throw new Error("The recommendation engine returned no usable products.");
+        }
+
+        setProducts(response.products);
+        setGeneratedAt(response.generated_at);
+        setIsCached(response.cached);
+        setGenerationVersion(response.generation_version ?? activeFunction);
+        setInputSnapshotSummary(response.input_snapshot_summary);
+        setCurrentPage(1);
+      } catch (error: unknown) {
+        console.error("Products error:", error);
+        const status = getRpcStatus(error);
+        const message =
+          status === 429
+            ? "Recommendation refresh is rate-limited right now. Try again shortly."
+            : status === 402
+              ? "Recommendation generation is unavailable right now."
+              : status === 404
+                ? "The rebuilt recommendation engine is not deployed yet."
+                : getErrorMessage(error);
+        setLoadErrorMessage(message);
+        toast.error(hasLoadedProducts ? `${message} Keeping the current V2 set on screen.` : message);
+      } finally {
+        setLoading(false);
+        setHasLoaded(true);
+      }
+    },
+    [hasLoadedProducts, setCurrentPage, user],
+  );
 
   useEffect(() => {
-    if (!knowledgeLoading && !hasLoaded) {
+    if (user && !hasLoaded) {
       fetchProducts();
     }
-  }, [fetchProducts, knowledgeLoading, hasLoaded]);
+  }, [fetchProducts, hasLoaded, user]);
 
   useEffect(() => {
     if (!user) {
@@ -252,7 +277,7 @@ const Recommendations = () => {
     : null;
   const isGuestPreview = !subscribed && filtered.length > PAGE_SIZE;
 
-  if (knowledgeLoading || subscriptionLoading) {
+  if (subscriptionLoading || (user && loading && !hasLoaded)) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-6 w-6 animate-spin" />
@@ -442,14 +467,26 @@ const Recommendations = () => {
               Upgrade to unlock the full weekly set and saving.
             </p>
           </Card>
-        ) : hasLoaded ? (
+        ) : hasLoaded && user ? (
           <Card variant="sand" className="p-8 text-center">
             <p className="surface-heading-md mb-2">
-              No picks in this category yet.
+              Recommendations did not resolve correctly.
             </p>
             <p className="surface-body">
-              Try refreshing or answer more Know Me questions to sharpen the read.
+              V2 should always return picks or a fallback set. Refresh to retry the engine.
             </p>
+            <div className="mt-4 flex justify-center">
+              <Button
+                onClick={() => fetchProducts(true)}
+                disabled={loading}
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+              >
+                {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                Try Again
+              </Button>
+            </div>
           </Card>
         ) : null}
       </div>
@@ -576,5 +613,7 @@ function ProductCard({
 }
 
 export default Recommendations;
+
+// Codebase classification: runtime dashboard recommendations viewer.
 
 // Codebase classification: runtime recommendations page.

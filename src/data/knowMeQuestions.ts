@@ -816,16 +816,14 @@ export interface Sprint {
  * Build 10 sprints of 10 questions each (2 per section per sprint).
  * Resolves gender-specific options.
  */
-export function buildSprints(gender: Gender): Sprint[] {
+export function buildSprints(): Sprint[] {
   const bySection: Record<string, QuizQuestion[]> = {};
   for (const q of ALL_QUESTIONS) {
     if (!bySection[q.section]) bySection[q.section] = [];
-    // Resolve gender options
-    const resolved: QuizQuestion = {
+    bySection[q.section].push({
       ...q,
-      options: q.genderOptions?.[gender] ?? q.options,
-    };
-    bySection[q.section].push(resolved);
+      options: q.options,
+    });
   }
 
   const sprints: Sprint[] = [];

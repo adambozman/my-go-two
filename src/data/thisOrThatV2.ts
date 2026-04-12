@@ -5,6 +5,8 @@ import {
   type ThisOrThatV2AuthoredQuestionSeed,
 } from "./thisOrThatV2Authored";
 
+export type ThisOrThatV2DatasetKey = "shared";
+
 export type ThisOrThatV2TopLevelCategorySlug =
   | "clothes"
   | "personal"
@@ -83,7 +85,7 @@ export interface ThisOrThatV2QuestionScaffold {
   source_category_id: string;
   source_category_title: string;
   source_kind: ThisOrThatV2SourceKind;
-  dataset_gender: Gender;
+  dataset_gender: ThisOrThatV2DatasetKey;
   category_slug: ThisOrThatV2TopLevelCategorySlug;
   subcategory_slug: string;
   prompt: string;
@@ -103,13 +105,13 @@ export interface ThisOrThatV2QuestionLike {
 
 export interface ThisOrThatV2RuntimeQuestion extends ThisOrThatV2QuestionLike {
   source_kind: ThisOrThatV2SourceKind;
-  dataset_gender: Gender;
+  dataset_gender: ThisOrThatV2DatasetKey;
   category_slug: ThisOrThatV2TopLevelCategorySlug;
   subcategory_slug: string;
 }
 
 export interface ThisOrThatV2DatasetCoverageRow {
-  gender: Gender;
+  dataset: ThisOrThatV2DatasetKey;
   source_category_id: string;
   source_category_title: string;
   question_count: number;
@@ -122,7 +124,7 @@ export interface ThisOrThatV2AnswerRecord {
   category_id: string;
   question_id: string;
   question_prompt: string;
-  bank_gender: Gender;
+  bank_gender: ThisOrThatV2DatasetKey;
   my_go_two_category_slug: ThisOrThatV2TopLevelCategorySlug;
   recommendation_category: ThisOrThatV2TopLevelCategorySlug;
   selected_option_key: "A" | "B";
@@ -491,7 +493,6 @@ const getPrimaryKeywordForEntityKind = (
 
 const buildQuestionScaffoldFromAuthoredSeed = (
   seed: ThisOrThatV2AuthoredQuestionSeed,
-  gender: Gender,
 ): ThisOrThatV2QuestionScaffold => {
   const category = CATEGORY_DEFINITION_BY_ID.get(seed.source_category_id);
   const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(seed.source_category_id);
@@ -508,7 +509,7 @@ const buildQuestionScaffoldFromAuthoredSeed = (
     source_category_id: seed.source_category_id,
     source_category_title: category.title,
     source_kind: "authored-v2",
-    dataset_gender: gender,
+    dataset_gender: "shared",
     category_slug: blueprint.category_slug,
     subcategory_slug: blueprint.subcategory_slug,
     prompt: seed.prompt,
@@ -561,11 +562,22 @@ const buildQuestionScaffoldFromAuthoredSeed = (
 
 export const getThisOrThatV2CategoryDefinitions = () => THIS_OR_THAT_V2_CATEGORY_DEFINITIONS;
 
-export const getThisOrThatV2RuntimeQuestions = (
-  gender: Gender,
+export function getThisOrThatV2RuntimeQuestions(
   categoryId?: string,
-): ThisOrThatV2RuntimeQuestion[] => {
-  const scaffolds = buildThisOrThatV2QuestionScaffolds(gender);
+): ThisOrThatV2RuntimeQuestion[];
+export function getThisOrThatV2RuntimeQuestions(
+  legacyDataset: Gender,
+  categoryId?: string,
+): ThisOrThatV2RuntimeQuestion[];
+export function getThisOrThatV2RuntimeQuestions(
+  arg1?: string,
+  arg2?: string,
+): ThisOrThatV2RuntimeQuestion[] {
+  const categoryId =
+    arg1 === "male" || arg1 === "female" || arg1 === "non-binary"
+      ? arg2
+      : arg1;
+  const scaffolds = buildThisOrThatV2QuestionScaffolds();
   return scaffolds
     .filter((scaffold) => !categoryId || scaffold.source_category_id === categoryId)
     .map((scaffold) => ({
@@ -580,30 +592,26 @@ export const getThisOrThatV2RuntimeQuestions = (
       category_slug: scaffold.category_slug,
       subcategory_slug: scaffold.subcategory_slug,
     }));
-};
+}
 
 export const buildThisOrThatV2QuestionScaffolds = (
-  gender: Gender,
 ): ThisOrThatV2QuestionScaffold[] =>
   THIS_OR_THAT_V2_CATEGORY_DEFINITIONS.flatMap((category) =>
     getThisOrThatV2AuthoredQuestions(
-      gender,
       category.id as ThisOrThatV2AuthoredCategoryId,
-    ).map((question) => buildQuestionScaffoldFromAuthoredSeed(question, gender)),
+    ).map((question) => buildQuestionScaffoldFromAuthoredSeed(question)),
   );
 
 export const buildThisOrThatV2DatasetCoverage = (
-  gender: Gender,
 ): ThisOrThatV2DatasetCoverageRow[] =>
   THIS_OR_THAT_V2_CATEGORY_DEFINITIONS.map((category) => {
     const authoredQuestions = getThisOrThatV2AuthoredQuestions(
-      gender,
       category.id as ThisOrThatV2AuthoredCategoryId,
     );
     const blueprint = CATEGORY_BLUEPRINT_BY_ID.get(category.id);
 
     return {
-      gender,
+      dataset: "shared",
       source_category_id: category.id,
       source_category_title: category.title,
       question_count: authoredQuestions.length,
@@ -613,20 +621,11 @@ export const buildThisOrThatV2DatasetCoverage = (
     };
   });
 
-export const THIS_OR_THAT_V2_LIVE_MALE_QUESTION_SCAFFOLD =
-  buildThisOrThatV2QuestionScaffolds("male");
+export const THIS_OR_THAT_V2_LIVE_SHARED_QUESTION_SCAFFOLD =
+  buildThisOrThatV2QuestionScaffolds();
 
-export const THIS_OR_THAT_V2_LIVE_FEMALE_QUESTION_SCAFFOLD =
-  buildThisOrThatV2QuestionScaffolds("female");
-
-export const THIS_OR_THAT_V2_LIVE_NON_BINARY_QUESTION_SCAFFOLD =
-  buildThisOrThatV2QuestionScaffolds("non-binary");
-
-export const THIS_OR_THAT_V2_DATASET_COVERAGE = {
-  male: buildThisOrThatV2DatasetCoverage("male"),
-  female: buildThisOrThatV2DatasetCoverage("female"),
-  "non-binary": buildThisOrThatV2DatasetCoverage("non-binary"),
-} as const;
+export const THIS_OR_THAT_V2_DATASET_COVERAGE =
+  buildThisOrThatV2DatasetCoverage();
 
 export const THIS_OR_THAT_V2_CONTENT_SOURCES = {
   runtimeFile: "src/data/thisOrThatV2.ts",
@@ -637,11 +636,10 @@ export const THIS_OR_THAT_V2_CONTENT_SOURCES = {
 } as const;
 
 export const buildThisOrThatV2RuntimeQuestionBank = (
-  gender: Gender,
 ): Record<string, ThisOrThatV2RuntimeQuestion[]> => {
   const bank: Record<string, ThisOrThatV2RuntimeQuestion[]> = {};
 
-  for (const scaffold of buildThisOrThatV2QuestionScaffolds(gender)) {
+  for (const scaffold of buildThisOrThatV2QuestionScaffolds()) {
     const existing = bank[scaffold.source_category_id] ?? [];
     existing.push({
       id: scaffold.question_id,
@@ -661,18 +659,38 @@ export const buildThisOrThatV2RuntimeQuestionBank = (
   return bank;
 };
 
-export const buildThisOrThatAnswerRecord = (
+export function buildThisOrThatAnswerRecord(
   categoryId: string,
-  gender: Gender,
   question: ThisOrThatV2QuestionLike,
   choice: "A" | "B",
-): ThisOrThatV2AnswerRecord => {
+): ThisOrThatV2AnswerRecord;
+export function buildThisOrThatAnswerRecord(
+  categoryId: string,
+  legacyDataset: Gender,
+  question: ThisOrThatV2QuestionLike,
+  choice: "A" | "B",
+): ThisOrThatV2AnswerRecord;
+export function buildThisOrThatAnswerRecord(
+  categoryId: string,
+  arg2: Gender | ThisOrThatV2QuestionLike,
+  arg3: ThisOrThatV2QuestionLike | "A" | "B",
+  arg4?: "A" | "B",
+): ThisOrThatV2AnswerRecord {
   const category = CATEGORY_DEFINITION_BY_ID.get(categoryId);
   if (!category) {
     throw new Error(`Unknown This or That category: ${categoryId}`);
   }
 
-  const scaffold = buildThisOrThatV2QuestionScaffolds(gender).find(
+  const question =
+    typeof arg2 === "string"
+      ? (arg3 as ThisOrThatV2QuestionLike)
+      : arg2;
+  const choice =
+    typeof arg2 === "string"
+      ? (arg4 as "A" | "B")
+      : (arg3 as "A" | "B");
+
+  const scaffold = buildThisOrThatV2QuestionScaffolds().find(
     (entry) => entry.source_category_id === categoryId && entry.question_id === question.id,
   );
 
@@ -687,7 +705,7 @@ export const buildThisOrThatAnswerRecord = (
     category_id: categoryId,
     question_id: scaffold.question_id,
     question_prompt: scaffold.prompt,
-    bank_gender: gender,
+    bank_gender: "shared",
     my_go_two_category_slug: selected.metadata.category_slug,
     recommendation_category: selected.metadata.category_slug,
     selected_option_key: selected.option_key,
@@ -706,4 +724,4 @@ export const buildThisOrThatAnswerRecord = (
     },
     source_version: "this-or-that-v2",
   };
-};
+}
