@@ -1,6 +1,6 @@
-// LEGACY GENERATED SCHEMA SNAPSHOT.
-// This file remains only as a compatibility base for runtime-types.ts.
-// It contains stale legacy names and must never be imported by runtime app code.
+// GENERATED SCHEMA BASELINE.
+// This file exists only as an internal compatibility base for runtime-types.ts.
+// Runtime app code should import from runtime-types.ts or types.ts.
 
 export type Json =
   | string

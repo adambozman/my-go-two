@@ -1,5 +1,3 @@
-import type { Gender } from "@/lib/gender";
-
 export type ThisOrThatV2AuthoredCategoryId =
   | "style-aesthetic"
   | "brands-shopping"
@@ -27,7 +25,6 @@ export interface ThisOrThatV2AuthoredQuestionSeed {
   question_id: string;
   source_category_id: ThisOrThatV2AuthoredCategoryId;
   prompt: string;
-  supported_genders: Gender[];
   options: [ThisOrThatV2AuthoredOptionSeed, ThisOrThatV2AuthoredOptionSeed];
 }
 
@@ -40,7 +37,6 @@ const q = (
   question_id,
   source_category_id,
   prompt,
-  supported_genders: ["male", "female", "non-binary"],
   options,
 });
 
@@ -70,11 +66,7 @@ const b = (
   ...extras,
 });
 
-export const THIS_OR_THAT_V2_AUTHORED_DATASETS: Record<
-  Gender,
-  ThisOrThatV2AuthoredQuestionSeed[]
-> = {
-  male: [
+const AUTHORED_THIS_OR_THAT_V2_SHARED_SET_A: ThisOrThatV2AuthoredQuestionSeed[] = [
     q("totv2-m-style-01", "style-aesthetic", "Which style lane feels more like you right now?", [
       a("Tailored Essentials", "style", ["tailored", "clean", "minimal", "sharp"]),
       b("Relaxed Streetwear", "style", ["relaxed", "streetwear", "oversized", "casual"]),
@@ -179,8 +171,9 @@ export const THIS_OR_THAT_V2_AUTHORED_DATASETS: Record<
       a("A Great Jacket, Watch Strap, or Everyday Upgrade", "gift preference", ["style upgrade", "wearable", "daily upgrade"]),
       b("A Reservation, Event, or Weekend Plan", "gift preference", ["reservation", "event", "weekend plan", "experience"]),
     ]),
-  ],
-  female: [
+  ];
+
+const AUTHORED_THIS_OR_THAT_V2_SHARED_SET_B: ThisOrThatV2AuthoredQuestionSeed[] = [
     q("totv2-f-style-01", "style-aesthetic", "Which style lane feels more like you right now?", [
       a("Elevated Minimal", "style", ["elevated", "minimal", "clean", "polished"]),
       b("Romantic Statement", "style", ["romantic", "statement", "color", "feminine"]),
@@ -285,8 +278,9 @@ export const THIS_OR_THAT_V2_AUTHORED_DATASETS: Record<
       a("Jewelry, Fragrance, or a Bag I'll Reach For", "gift preference", ["jewelry", "fragrance", "bag", "wearable gift"]),
       b("A Stay, Reservation, or Planned Escape", "gift preference", ["stay", "reservation", "escape", "experience gift"]),
     ]),
-  ],
-  "non-binary": [
+  ];
+
+const AUTHORED_THIS_OR_THAT_V2_SHARED_SET_C: ThisOrThatV2AuthoredQuestionSeed[] = [
     q("totv2-nb-style-01", "style-aesthetic", "Which style lane feels more like you right now?", [
       a("Sharp Androgynous Minimal", "style", ["androgynous", "sharp", "minimal", "clean"]),
       b("Expressive Creative Layering", "style", ["expressive", "creative", "layered", "playful"]),
@@ -391,13 +385,15 @@ export const THIS_OR_THAT_V2_AUTHORED_DATASETS: Record<
       a("A Designed Everyday Object I'll Keep Using", "gift preference", ["designed object", "everyday", "useful", "keepsake"]),
       b("A Ticket, Stay, or Shared Plan", "gift preference", ["ticket", "stay", "shared plan", "experience"]),
     ]),
-  ],
-};
+  ];
 
 const SHARED_THIS_OR_THAT_V2_AUTHORED_DATASET = Array.from(
   new Map(
-    Object.values(THIS_OR_THAT_V2_AUTHORED_DATASETS)
-      .flat()
+    [
+      ...AUTHORED_THIS_OR_THAT_V2_SHARED_SET_A,
+      ...AUTHORED_THIS_OR_THAT_V2_SHARED_SET_B,
+      ...AUTHORED_THIS_OR_THAT_V2_SHARED_SET_C,
+    ]
       .map((question) => [question.question_id, question]),
   ).values(),
 );

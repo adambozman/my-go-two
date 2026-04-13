@@ -1,60 +1,4 @@
-import { OnboardingQuestion } from "./onboardingQuestions";
-
-// Local style images
-import minimalImg from "@/assets/styles/minimal.jpg";
-import classicImg from "@/assets/styles/classic.jpg";
-import sportyImg from "@/assets/styles/sporty.jpg";
-import trendyImg from "@/assets/styles/trendy.jpg";
-import edgyImg from "@/assets/styles/edgy.jpg";
-import bohoImg from "@/assets/styles/boho.jpg";
-import luxuryImg from "@/assets/styles/luxury.jpg";
-import laidBackImg from "@/assets/styles/laid-back.jpg";
-import hippyImg from "@/assets/styles/hippy.jpg";
-import preppyImg from "@/assets/styles/preppy.jpg";
-import streetImg from "@/assets/styles/street.jpg";
-import elegantImg from "@/assets/styles/elegant.jpg";
-import bougieImg from "@/assets/styles/bougie.jpg";
-import polishedImg from "@/assets/styles/polished.jpg";
-import casualImg from "@/assets/styles/casual.jpg";
-import creativeImg from "@/assets/styles/creative.jpg";
-import professionalImg from "@/assets/styles/professional.jpg";
-import chillImg from "@/assets/styles/chill.jpg";
-import budgetImg from "@/assets/styles/budget.jpg";
-import balancedImg from "@/assets/styles/balanced.jpg";
-import qualityImg from "@/assets/styles/quality.jpg";
-import comfortImg from "@/assets/styles/comfort.jpg";
-import fitImg from "@/assets/styles/fit.jpg";
-import brandImg from "@/assets/styles/brand.jpg";
-import priceImg from "@/assets/styles/price.jpg";
-import timelessImg from "@/assets/styles/timeless.jpg";
-import diningImg from "@/assets/styles/dining.jpg";
-import travelingImg from "@/assets/styles/traveling.jpg";
-import outdoorsImg from "@/assets/styles/outdoors.jpg";
-import eventsImg from "@/assets/styles/events.jpg";
-import stayingInImg from "@/assets/styles/staying-in.jpg";
-import fitnessImg from "@/assets/styles/fitness.jpg";
-import practicalGiftImg from "@/assets/styles/practical-gift.jpg";
-import thoughtfulGiftImg from "@/assets/styles/thoughtful-gift.jpg";
-import luxuriousGiftImg from "@/assets/styles/luxurious-gift.jpg";
-import experienceGiftImg from "@/assets/styles/experience-gift.jpg";
-import surpriseGiftImg from "@/assets/styles/surprise-gift.jpg";
-
-export const profileQuestions: OnboardingQuestion[] = [
-  {
-    id: "identity",
-    category: "profile",
-    type: "single-select",
-    title: "How do you identify?",
-    subtitle: "Helps us with fit, tone, and recommendations",
-    funnySubtext: "",
-    multiSelect: false,
-    options: [
-      { id: "male", label: "Male" },
-      { id: "female", label: "Female" },
-      { id: "non-binary", label: "Non-binary" },
-      { id: "prefer-not", label: "Prefer not to say" },
-    ],
-  },
+export const profileQuestions = [
   {
     id: "birthday",
     category: "profile",
@@ -83,14 +27,14 @@ export const profileQuestions: OnboardingQuestion[] = [
     subtitle: "Pick all that resonate with you",
     funnySubtext: "",
     options: [
-      { id: "minimal", label: "Minimal", localImage: minimalImg },
-      { id: "classic", label: "Classic", localImage: classicImg },
-      { id: "sporty", label: "Sporty", localImage: sportyImg },
-      { id: "trendy", label: "Trendy", localImage: trendyImg },
-      { id: "edgy", label: "Edgy", localImage: edgyImg },
-      { id: "boho", label: "Boho", localImage: bohoImg },
-      { id: "luxury", label: "Luxury", localImage: luxuryImg },
-      { id: "laid-back", label: "Laid-back", localImage: laidBackImg },
+      { id: "minimal", label: "Minimal" },
+      { id: "classic", label: "Classic" },
+      { id: "sporty", label: "Sporty" },
+      { id: "trendy", label: "Trendy" },
+      { id: "edgy", label: "Edgy" },
+      { id: "boho", label: "Boho" },
+      { id: "luxury", label: "Luxury" },
+      { id: "laid-back", label: "Laid-back" },
     ],
   },
   {
@@ -101,12 +45,12 @@ export const profileQuestions: OnboardingQuestion[] = [
     subtitle: "How do you show up to the world?",
     funnySubtext: "",
     options: [
-      { id: "polished", label: "Polished", localImage: polishedImg },
-      { id: "casual", label: "Casual", localImage: casualImg },
-      { id: "athletic", label: "Athletic", localImage: sportyImg },
-      { id: "creative", label: "Creative", localImage: creativeImg },
-      { id: "professional", label: "Professional", localImage: professionalImg },
-      { id: "chill", label: "Chill", localImage: chillImg },
+      { id: "polished", label: "Polished" },
+      { id: "casual", label: "Casual" },
+      { id: "athletic", label: "Athletic" },
+      { id: "creative", label: "Creative" },
+      { id: "professional", label: "Professional" },
+      { id: "chill", label: "Chill" },
     ],
   },
   {
@@ -118,10 +62,10 @@ export const profileQuestions: OnboardingQuestion[] = [
     funnySubtext: "",
     multiSelect: false,
     options: [
-      { id: "budget", label: "Budget-conscious", localImage: budgetImg },
-      { id: "balanced", label: "Balanced", localImage: balancedImg },
-      { id: "quality", label: "Quality-focused", localImage: qualityImg },
-      { id: "luxury-first", label: "Luxury-first", localImage: luxuryImg },
+      { id: "budget", label: "Budget-conscious" },
+      { id: "balanced", label: "Balanced" },
+      { id: "quality", label: "Quality-focused" },
+      { id: "luxury-first", label: "Luxury-first" },
     ],
   },
   {
@@ -132,12 +76,12 @@ export const profileQuestions: OnboardingQuestion[] = [
     subtitle: "Pick what matters to you",
     funnySubtext: "",
     options: [
-      { id: "comfort", label: "Comfort", localImage: comfortImg },
-      { id: "fit", label: "Fit", localImage: fitImg },
-      { id: "brand", label: "Brand name", localImage: brandImg },
-      { id: "price", label: "Price", localImage: priceImg },
-      { id: "trend", label: "Trend", localImage: trendyImg },
-      { id: "timeless", label: "Timeless quality", localImage: timelessImg },
+      { id: "comfort", label: "Comfort" },
+      { id: "fit", label: "Fit" },
+      { id: "brand", label: "Brand name" },
+      { id: "price", label: "Price" },
+      { id: "trend", label: "Trend" },
+      { id: "timeless", label: "Timeless quality" },
     ],
   },
   {
@@ -148,12 +92,12 @@ export const profileQuestions: OnboardingQuestion[] = [
     subtitle: "Pick everything that applies",
     funnySubtext: "",
     options: [
-      { id: "dining", label: "Dining out", localImage: diningImg },
-      { id: "traveling", label: "Traveling", localImage: travelingImg },
-      { id: "outdoors", label: "Outdoors", localImage: outdoorsImg },
-      { id: "events", label: "Events", localImage: eventsImg },
-      { id: "staying-in", label: "Staying in", localImage: stayingInImg },
-      { id: "fitness", label: "Fitness", localImage: fitnessImg },
+      { id: "dining", label: "Dining out" },
+      { id: "traveling", label: "Traveling" },
+      { id: "outdoors", label: "Outdoors" },
+      { id: "events", label: "Events" },
+      { id: "staying-in", label: "Staying in" },
+      { id: "fitness", label: "Fitness" },
     ],
   },
   {
@@ -165,11 +109,11 @@ export const profileQuestions: OnboardingQuestion[] = [
     funnySubtext: "",
     multiSelect: false,
     options: [
-      { id: "practical", label: "Something practical", localImage: practicalGiftImg },
-      { id: "thoughtful", label: "Something thoughtful", localImage: thoughtfulGiftImg },
-      { id: "luxurious", label: "Something luxurious", localImage: luxuriousGiftImg },
-      { id: "experience", label: "An experience", localImage: experienceGiftImg },
-      { id: "surprise", label: "A surprise", localImage: surpriseGiftImg },
+      { id: "practical", label: "Something practical" },
+      { id: "thoughtful", label: "Something thoughtful" },
+      { id: "luxurious", label: "Something luxurious" },
+      { id: "experience", label: "An experience" },
+      { id: "surprise", label: "A surprise" },
     ],
   },
   {
@@ -180,12 +124,14 @@ export const profileQuestions: OnboardingQuestion[] = [
     subtitle: "Pick what fits your energy",
     funnySubtext: "",
     options: [
-      { id: "hippy", label: "Hippy", localImage: hippyImg },
-      { id: "preppy", label: "Preppy", localImage: preppyImg },
-      { id: "street", label: "Street", localImage: streetImg },
-      { id: "elegant", label: "Elegant", localImage: elegantImg },
-      { id: "bougie", label: "Bougie", localImage: bougieImg },
-      { id: "minimal", label: "Minimal", localImage: minimalImg },
+      { id: "hippy", label: "Hippy" },
+      { id: "preppy", label: "Preppy" },
+      { id: "street", label: "Street" },
+      { id: "elegant", label: "Elegant" },
+      { id: "bougie", label: "Bougie" },
+      { id: "minimal", label: "Minimal" },
     ],
   },
 ];
+
+// Code path: runtime onboarding question source with no local image bank or gender gate.

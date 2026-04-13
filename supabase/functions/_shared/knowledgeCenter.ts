@@ -121,6 +121,13 @@ const fetchKnowledgeCenterFallbackState = async (
           ) => Promise<{ data: unknown; error: unknown }>;
           then?: never;
         };
+        or: (filters: string) => {
+          order: (
+            column: string,
+            options: { ascending: boolean },
+          ) => Promise<{ data: unknown; error: unknown }>;
+          then?: never;
+        };
       };
     };
   };
@@ -137,7 +144,11 @@ const fetchKnowledgeCenterFallbackState = async (
     baseClient.from("onboarding_responses").select("question_key, response_value").eq("user_id", userId).order("question_key", { ascending: true }),
     baseClient.from("know_me_responses").select("question_key, response_value").eq("user_id", userId).order("question_key", { ascending: true }),
     baseClient.from("saved_product_cards").select("*").eq("user_id", userId).order("updated_at", { ascending: false }),
-    baseClient.from("user_connections").select("id, connection_user_id, invitee_email, display_label, photo_url, status, role, updated_at").eq("owner_user_id", userId).order("updated_at", { ascending: false }),
+    baseClient
+      .from("user_connections")
+      .select("id, inviter_id, invitee_id, invitee_email, display_label, photo_url, status, created_at, updated_at")
+      .or(`inviter_id.eq.${userId},invitee_id.eq.${userId}`)
+      .order("updated_at", { ascending: false }),
     baseClient.from("knowledge_derivations").select("id, user_id, derivation_key, derivation_payload, source_snapshot, created_at, updated_at").eq("user_id", userId).order("updated_at", { ascending: false }),
   ]);
 

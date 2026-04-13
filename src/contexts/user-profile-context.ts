@@ -14,8 +14,4 @@ export const UserProfileContext = createContext<UseKnowledgeCenterResult>(
 
 export const useUserProfile = () => useContext(UserProfileContext);
 
-// Compatibility alias for legacy imports while the rename lands across the app.
-export const KnowledgeCenterContext = UserProfileContext;
-export const useKnowledgeCenter = useUserProfile;
-
 // Codebase classification: runtime user-profile context contract.

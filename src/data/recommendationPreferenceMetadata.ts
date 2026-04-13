@@ -1,5 +1,4 @@
 import { RECOMMENDATION_CATEGORY_ORDER, type RecommendationCategory } from "@/lib/recommendationCategories";
-import type { Gender } from "@/lib/gender";
 
 export type PopularPreferenceProfile = {
   brands: string[];
@@ -30,8 +29,8 @@ const categoryProfile = (
   types,
 });
 
-const POPULAR_PREFERENCE_GENDER_BANK: Record<Gender, Record<RecommendationCategory, PopularPreferenceProfile>> = {
-  male: {
+const POPULAR_PREFERENCE_SOURCE_BANKS: Record<string, Record<RecommendationCategory, PopularPreferenceProfile>> = {
+  setA: {
     clothes: categoryProfile(
       ["uniqlo", "buck mason", "j crew", "todd snyder", "new balance", "nike"],
       ["tailored", "minimal", "rugged", "sporty", "preppy", "elevated casual"],
@@ -73,7 +72,7 @@ const POPULAR_PREFERENCE_GENDER_BANK: Record<Gender, Record<RecommendationCatego
       ["luggage", "backpacks", "travel accessories", "outerwear", "hotel picks", "getaways"],
     ),
   },
-  female: {
+  setB: {
     clothes: categoryProfile(
       ["aritzia", "reformation", "sezane", "madewell", "free people", "adidas"],
       ["polished", "romantic", "minimal", "soft tailoring", "trend-aware", "feminine"],
@@ -115,7 +114,7 @@ const POPULAR_PREFERENCE_GENDER_BANK: Record<Gender, Record<RecommendationCatego
       ["luggage", "weekender bags", "packing cubes", "travel accessories", "getaways", "hotel picks"],
     ),
   },
-  "non-binary": {
+  setC: {
     clothes: categoryProfile(
       ["uniqlo", "cos", "aritzia", "madewell", "nike", "new balance"],
       ["clean", "androgynous", "relaxed", "creative", "functional", "modern"],
@@ -159,13 +158,13 @@ const POPULAR_PREFERENCE_GENDER_BANK: Record<Gender, Record<RecommendationCatego
   },
 };
 
-const mergeProfileValues = (
+const mergeProfileSources = (
   category: RecommendationCategory,
   key: keyof PopularPreferenceProfile,
 ) =>
   Array.from(
     new Set(
-      Object.values(POPULAR_PREFERENCE_GENDER_BANK)
+      Object.values(POPULAR_PREFERENCE_SOURCE_BANKS)
         .flatMap((profileByCategory) => profileByCategory[category]?.[key] ?? []),
     ),
   );
@@ -173,11 +172,11 @@ const mergeProfileValues = (
 export const POPULAR_PREFERENCE_BANK: Record<RecommendationCategory, PopularPreferenceProfile> =
   Object.fromEntries(
     RECOMMENDATION_CATEGORY_ORDER.map((category) => [
-      category,
+        category,
       categoryProfile(
-        mergeProfileValues(category, "brands"),
-        mergeProfileValues(category, "styles"),
-        mergeProfileValues(category, "types"),
+        mergeProfileSources(category, "brands"),
+        mergeProfileSources(category, "styles"),
+        mergeProfileSources(category, "types"),
       ),
     ]),
   ) as Record<RecommendationCategory, PopularPreferenceProfile>;

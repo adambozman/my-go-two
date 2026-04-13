@@ -4,8 +4,6 @@ import { ArrowUpRight, Clock3, Search, Sparkles, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth-context";
-import { assignUniquePhotos } from "@/data/stockPhotos";
-import { initBlocklist } from "@/data/imageBlocklist";
 import { type Milestone } from "@/components/home/MilestoneCountdown";
 import { EventCalendar } from "@/components/home/EventCalendar";
 import { type DirectoryEntry } from "@/components/home/ConnectionDirectory";
@@ -155,8 +153,6 @@ const DashboardHome = () => {
   const loadConnections = useCallback(async () => {
     if (!user) return;
 
-    await initBlocklist();
-
     const { data, error } = await supabase
       .from("user_connections")
       .select("*")
@@ -181,7 +177,7 @@ const DashboardHome = () => {
       };
     });
 
-    setConnections(assignUniquePhotos(cards, (c) => !!c.image));
+    setConnections(cards);
   }, [user]);
 
   const loadMilestones = useCallback(async () => {

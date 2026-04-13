@@ -2,8 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { Pencil, Check, Camera, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { initBlocklist } from "@/data/imageBlocklist";
-import { STOCK_PHOTOS, getPhotosForLabel } from "@/data/stockPhotos";
 import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
 
 interface CardEditButtonProps {
@@ -27,7 +25,6 @@ const CardEditButton = ({
   const [selectedPhoto, setSelectedPhoto] = useState(currentImage || "");
   const [resolvedSelectedPhoto, setResolvedSelectedPhoto] = useState(currentImage || "");
   const [uploading, setUploading] = useState(false);
-  const [blocklistLoading, setBlocklistLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -56,23 +53,6 @@ const CardEditButton = ({
       setEmail(currentEmail || "");
     }
   }, [editing, title, currentImage, currentEmail]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    if (!editing || !isConnection) return;
-
-    setBlocklistLoading(true);
-    initBlocklist().finally(() => {
-      if (!cancelled) {
-        setBlocklistLoading(false);
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [editing, isConnection]);
 
   useEffect(() => {
     let cancelled = false;
@@ -132,7 +112,6 @@ const CardEditButton = ({
   };
 
   if (editing && isConnection) {
-    const photos = getPhotosForLabel(value || title);
     return (
       <div
         ref={panelRef}
@@ -170,7 +149,7 @@ const CardEditButton = ({
 
         {/* Photo grid */}
         <label className="text-[11px] font-medium text-white/60 mb-1.5 tracking-wide uppercase">Photo</label>
-        <div className="grid grid-cols-3 gap-1.5 mb-3">
+        <div className="grid grid-cols-2 gap-1.5 mb-3">
           <button
             className="relative rounded-lg overflow-hidden aspect-square flex flex-col items-center justify-center gap-1 border border-dashed border-white/30"
             style={{ background: "rgba(255,255,255,0.08)" }}
@@ -194,43 +173,22 @@ const CardEditButton = ({
             onChange={handleFileUpload}
           />
 
-          {blocklistLoading ? (
-            <div className="col-span-2 flex items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[11px] uppercase tracking-wide text-white/60">
-              Loading photos...
-            </div>
-          ) : photos.map((photo) => {
-            const isSelected = selectedPhoto === photo.url;
-            return (
-              <button
-                key={photo.id}
-                className="relative rounded-lg overflow-hidden aspect-square"
-                onClick={() => setSelectedPhoto(photo.url)}
-              >
-                <img src={photo.url} alt={photo.id} className="w-full h-full object-cover" />
-                {isSelected && (
-                  <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(45,104,112,0.45)" }}>
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "#2D6870" }}>
-                      <Check className="w-3.5 h-3.5 text-white" />
-                    </div>
+          <div className="relative rounded-lg overflow-hidden aspect-square border border-white/10 bg-white/5">
+            {resolvedSelectedPhoto ? (
+              <>
+                <img src={resolvedSelectedPhoto} alt="Selected connection photo" className="h-full w-full object-cover" />
+                <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(45,104,112,0.45)" }}>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "#2D6870" }}>
+                    <Check className="w-3.5 h-3.5 text-white" />
                   </div>
-                )}
-              </button>
-            );
-          })}
-
-          {selectedPhoto && !photos.some((p) => p.url === selectedPhoto) && (
-            <button
-              className="relative rounded-lg overflow-hidden aspect-square"
-              onClick={() => {}}
-            >
-              <img src={resolvedSelectedPhoto} alt="Your photo" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(45,104,112,0.45)" }}>
-                <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "#2D6870" }}>
-                  <Check className="w-3.5 h-3.5 text-white" />
                 </div>
+              </>
+            ) : (
+              <div className="flex h-full items-center justify-center px-3 text-center text-[11px] uppercase tracking-wide text-white/50">
+                Upload a connection photo
               </div>
-            </button>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Save button */}

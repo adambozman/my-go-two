@@ -1,10 +1,7 @@
 /**
  * Static Know Me question bank — 100 questions, 20 per section.
- * Gender-varied where relevant (options change, not the question itself).
  * Organized into 10 sprints of 10 questions (2 per section per sprint).
  */
-
-import type { Gender } from "@/lib/gender";
 
 export interface QuizOption {
   id: string;
@@ -20,8 +17,6 @@ export interface QuizQuestion {
   multiSelect: boolean;
   maxSelect?: number;
   options: QuizOption[];
-  /** Gender-specific option overrides */
-  genderOptions?: Partial<Record<Gender, QuizOption[]>>;
 }
 
 /* ── Helper ── */
@@ -72,10 +67,6 @@ const STYLE_FIT: QuizQuestion[] = [
     subtitle: "Select all that apply.",
     type: "pill-select", multiSelect: true,
     options: [opt("sneakers", "Sneakers"), opt("boots", "Boots"), opt("loafers", "Loafers"), opt("sandals", "Sandals"), opt("heels", "Heels"), opt("flats", "Flats")],
-    genderOptions: {
-      male: [opt("sneakers", "Sneakers"), opt("boots", "Boots"), opt("loafers", "Loafers"), opt("sandals", "Sandals"), opt("dress-shoes", "Dress Shoes"), opt("slides", "Slides")],
-      female: [opt("sneakers", "Sneakers"), opt("boots", "Boots"), opt("loafers", "Loafers"), opt("sandals", "Sandals"), opt("heels", "Heels"), opt("flats", "Flats")],
-    },
   },
   {
     id: "sf-07", section: "style-fit",
@@ -90,10 +81,6 @@ const STYLE_FIT: QuizQuestion[] = [
     subtitle: "Pick one.",
     type: "single-select", multiSelect: false,
     options: [opt("watch", "Watch"), opt("sunglasses", "Sunglasses"), opt("hat", "Hat / Cap"), opt("jewelry", "Jewelry"), opt("scarf", "Scarf"), opt("bag", "Bag / Tote")],
-    genderOptions: {
-      male: [opt("watch", "Watch"), opt("sunglasses", "Sunglasses"), opt("hat", "Hat / Cap"), opt("bracelet", "Bracelet"), opt("belt", "Belt"), opt("backpack", "Backpack")],
-      female: [opt("watch", "Watch"), opt("sunglasses", "Sunglasses"), opt("earrings", "Earrings"), opt("necklace", "Necklace"), opt("scarf", "Scarf"), opt("handbag", "Handbag")],
-    },
   },
   {
     id: "sf-09", section: "style-fit",
@@ -129,10 +116,6 @@ const STYLE_FIT: QuizQuestion[] = [
     subtitle: "Pick what fits best.",
     type: "single-select", multiSelect: false,
     options: [opt("athleisure", "Athleisure"), opt("jeans-tee", "Jeans + Tee"), opt("sundress", "Sundress / Linen"), opt("loungewear", "Loungewear"), opt("put-together", "Still put-together"), opt("outdoorsy", "Outdoor / Adventure")],
-    genderOptions: {
-      male: [opt("athleisure", "Athleisure"), opt("jeans-tee", "Jeans + Tee"), opt("shorts-polo", "Shorts + Polo"), opt("loungewear", "Loungewear"), opt("put-together", "Still put-together"), opt("outdoorsy", "Outdoor / Adventure")],
-      female: [opt("athleisure", "Athleisure"), opt("jeans-tee", "Jeans + Tee"), opt("sundress", "Sundress / Linen"), opt("loungewear", "Loungewear"), opt("put-together", "Still put-together"), opt("outdoorsy", "Outdoor / Adventure")],
-    },
   },
   {
     id: "sf-14", section: "style-fit",
@@ -397,10 +380,6 @@ const GIFTS_WISHLIST: QuizQuestion[] = [
     subtitle: "Pick one.",
     type: "single-select", multiSelect: false,
     options: [opt("streaming", "Streaming Service"), opt("book-box", "Book Box"), opt("food-box", "Food / Snack Box"), opt("beauty", "Beauty / Grooming"), opt("wine-spirits", "Wine / Spirits"), opt("fitness", "Fitness / Wellness")],
-    genderOptions: {
-      male: [opt("streaming", "Streaming Service"), opt("book-box", "Book Box"), opt("food-box", "Food / Snack Box"), opt("grooming", "Grooming Box"), opt("wine-spirits", "Wine / Spirits"), opt("fitness", "Fitness / Wellness")],
-      female: [opt("streaming", "Streaming Service"), opt("book-box", "Book Box"), opt("food-box", "Food / Snack Box"), opt("beauty", "Beauty Box"), opt("wine-spirits", "Wine / Spirits"), opt("fitness", "Fitness / Wellness")],
-    },
   },
   {
     id: "gw-10", section: "gifts-wishlist",
@@ -814,7 +793,6 @@ export interface Sprint {
 
 /**
  * Build 10 sprints of 10 questions each (2 per section per sprint).
- * Resolves gender-specific options.
  */
 export function buildSprints(): Sprint[] {
   const bySection: Record<string, QuizQuestion[]> = {};

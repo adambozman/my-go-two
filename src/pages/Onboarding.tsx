@@ -11,19 +11,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
 import { profileQuestions } from "@/data/profileQuestions";
-import { getCategoryImage, getStyleImage } from "@/lib/imageResolver";
 import { getYourVibeDerivation } from "@/lib/knowledgeCenter";
 
 type Phase = "intro" | "profile" | "personalizing" | "complete";
 
-const INTRO_IMAGES = [
-  { id: "shopping", label: "Shopping" },
-  { id: "style", label: "Style" },
-  { id: "food", label: "Food" },
-  { id: "gifts", label: "Gifting" },
-  { id: "lifestyle", label: "Lifestyle" },
-  { id: "fit", label: "Fit" },
-  { id: "style", label: "Taste" },
+const INTRO_CARDS = [
+  { id: "shopping", label: "Shopping", note: "What you buy and how you spend." },
+  { id: "style", label: "Style", note: "The silhouettes and signals that feel like you." },
+  { id: "food", label: "Food", note: "What you order, crave, and return to." },
+  { id: "gifts", label: "Gifting", note: "What lands well when someone shops for you." },
+  { id: "lifestyle", label: "Lifestyle", note: "How your free time and routines actually feel." },
+  { id: "fit", label: "Fit", note: "The practical details that make recommendations usable." },
+  { id: "taste", label: "Taste", note: "The aesthetic direction underneath all of it." },
 ];
 
 const getProfileAccent = () => ({
@@ -39,8 +38,24 @@ const normalizeOptionalDate = (value: string | string[] | undefined) => {
   return /^\d{4}-\d{2}-\d{2}$/.test(trimmed) ? trimmed : null;
 };
 
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : "Something went wrong";
+const getErrorMessage = (error: unknown) => {
+  const message =
+    error instanceof Error
+      ? error.message
+      : error && typeof error === "object" && "message" in error && typeof error.message === "string"
+        ? error.message
+        : "Something went wrong";
+
+  if (
+    message.includes("onboarding_responses")
+    || message.includes("onboarding_completed_at")
+    || message.includes("user_knowledge_snapshots")
+  ) {
+    return "The live Supabase schema is missing the onboarding Knowledge Center tables or columns this flow writes to.";
+  }
+
+  return message;
+};
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -54,16 +69,7 @@ const Onboarding = () => {
   const [profileIndex, setProfileIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [slideDir, setSlideDir] = useState<1 | -1>(1);
-  const [introCenter, setIntroCenter] = useState(3);
   const accent = getProfileAccent();
-
-  useEffect(() => {
-    if (phase !== "intro") return;
-    const interval = setInterval(() => {
-      setIntroCenter((prev) => (prev + 1) % INTRO_IMAGES.length);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, [phase]);
 
   useEffect(() => {
     if (phase === "intro") return;
@@ -279,58 +285,47 @@ const Onboarding = () => {
           </div>
 
           <div className="flex flex-1 flex-col items-center justify-center px-4 pb-10 sm:px-6">
-            <div className="relative mb-8 flex h-[360px] w-full max-w-4xl items-center justify-center sm:h-[420px] md:h-[460px]">
-              {INTRO_IMAGES.map((image, index) => {
-                const offset = index - introCenter;
-                const wrapped =
-                  offset > 3
-                    ? offset - INTRO_IMAGES.length
-                    : offset < -3
-                      ? offset + INTRO_IMAGES.length
-                      : offset;
-                const abs = Math.abs(wrapped);
-                if (abs > 3) return null;
-                const isCenter = wrapped === 0;
-
-                return (
-                  <motion.div
-                    key={`${image.id}-${index}`}
-                    animate={{
-                      x: wrapped * 180,
-                      scale: isCenter ? 1 : 0.77 - abs * 0.06,
-                      zIndex: 10 - abs,
-                      opacity: isCenter ? 1 : Math.max(0.28, 0.72 - abs * 0.16),
-                      rotateY: wrapped * -8,
+            <div className="mb-8 grid w-full max-w-5xl grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+              {INTRO_CARDS.map((card) => (
+                <div
+                  key={card.id}
+                  className="relative min-h-[180px] overflow-hidden rounded-[24px] border p-5 shadow-xl"
+                  style={{
+                    borderColor: "rgba(45, 104, 112, 0.18)",
+                    background: "linear-gradient(160deg, rgba(255,255,255,0.88), rgba(232,198,174,0.48), rgba(45,104,112,0.12))",
+                  }}
+                >
+                  <div
+                    className="absolute inset-0 opacity-75"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)",
+                      backgroundSize: "20px 20px",
                     }}
-                    transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                    className="absolute"
-                    style={{ perspective: "1200px" }}
-                  >
-                    <div
-                      className={`relative overflow-hidden ${isCenter ? "h-[300px] w-[220px] shadow-2xl sm:h-[360px] sm:w-[270px] md:h-[410px] md:w-[305px]" : "h-[240px] w-[176px] sm:h-[300px] sm:w-[216px] md:h-[340px] md:w-[245px]"}`}
-                      style={{ borderRadius: "1.4rem" }}
-                    >
-                      <img
-                        src={getCategoryImage(image.id)}
-                        alt={image.label}
-                        className="h-full w-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <p className="card-title">{image.label}</p>
-                      </div>
+                  />
+                  <div className="relative flex h-full flex-col justify-between">
+                    <p className="surface-eyebrow-coral">{card.id}</p>
+                    <div>
+                      <p
+                        className="text-[26px] leading-[0.95]"
+                        style={{
+                          fontFamily: "'Cormorant Garamond', serif",
+                          fontWeight: 700,
+                          color: "var(--swatch-teal)",
+                        }}
+                      >
+                        {card.label}
+                      </p>
+                      <p className="mt-3 text-[13px] leading-[1.35] text-[var(--swatch-teal)]/80">
+                        {card.note}
+                      </p>
                     </div>
-                  </motion.div>
-                );
-              })}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
-              className="max-w-[760px] text-center"
-            >
+            <div className="max-w-[760px] text-center">
               <p className="surface-eyebrow-coral text-center">Go Two / Onboarding</p>
               <h1
                 className="mt-4 text-[34px] leading-[0.96] sm:text-[38px] md:text-[56px]"
@@ -376,7 +371,7 @@ const Onboarding = () => {
                   Skip for now
                 </Button>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
@@ -593,16 +588,26 @@ const Onboarding = () => {
                           }}
                         >
                           <div className="relative aspect-[4/5] overflow-hidden">
-                            <img
-                              src={getStyleImage(option.id)}
-                              alt={option.label}
-                              className={`h-full w-full object-cover transition-transform duration-300 ${
+                            <div
+                              className={`h-full w-full transition-transform duration-300 ${
                                 isSelected ? "scale-105" : "group-hover:scale-105"
                               }`}
-                              loading="lazy"
+                              style={{
+                                background: isSelected
+                                  ? "linear-gradient(160deg, rgba(45,104,112,0.92), rgba(232,198,174,0.68))"
+                                  : "linear-gradient(160deg, rgba(255,255,255,0.96), rgba(232,198,174,0.52), rgba(45,104,112,0.14))",
+                              }}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
-                            {isSelected && <div className="absolute inset-0 bg-primary/20" />}
+                            <div
+                              className="absolute inset-0 opacity-70"
+                              style={{
+                                backgroundImage:
+                                  "linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)",
+                                backgroundSize: "18px 18px",
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#2d6870]/24 via-transparent to-white/14" />
+                            {isSelected && <div className="absolute inset-0 bg-primary/8" />}
                             {isSelected && (
                               <motion.div
                                 initial={{ scale: 0 }}
@@ -614,7 +619,16 @@ const Onboarding = () => {
                               </motion.div>
                             )}
                             <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
-                              <p className="text-sm font-semibold leading-tight text-white drop-shadow">{option.label}</p>
+                              <p
+                                className="text-lg leading-[1] drop-shadow"
+                                style={{
+                                  fontFamily: "'Cormorant Garamond', serif",
+                                  fontWeight: 700,
+                                  color: isSelected ? "#ffffff" : "var(--swatch-teal)",
+                                }}
+                              >
+                                {option.label}
+                              </p>
                             </div>
                           </div>
                         </div>

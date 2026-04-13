@@ -47,7 +47,11 @@ const loadBaseKnowledgeState = async (userId: string) => {
     supabase.from("onboarding_responses").select("question_key, response_value").eq("user_id", userId),
     supabase.from("know_me_responses").select("question_key, response_value").eq("user_id", userId),
     supabase.from("saved_product_cards").select("*").eq("user_id", userId).order("updated_at", { ascending: false }),
-    supabase.from("user_connections").select("id, connection_user_id, invitee_email, display_label, photo_url, status, role, updated_at").eq("owner_user_id", userId),
+    supabase
+      .from("user_connections")
+      .select("id, inviter_id, invitee_id, invitee_email, display_label, photo_url, status, created_at, updated_at")
+      .or(`inviter_id.eq.${userId},invitee_id.eq.${userId}`)
+      .order("updated_at", { ascending: false }),
     supabase.from("knowledge_derivations").select("*").eq("user_id", userId).order("updated_at", { ascending: false }),
   ]);
 
@@ -206,7 +210,12 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       )
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "user_connections", filter: `owner_user_id=eq.${user.id}` },
+        { event: "*", schema: "public", table: "user_connections", filter: `inviter_id=eq.${user.id}` },
+        () => void refreshKnowledge(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_connections", filter: `invitee_id=eq.${user.id}` },
         () => void refreshKnowledge(),
       )
       .on(
@@ -229,8 +238,5 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     </UserProfileContext.Provider>
   );
 };
-
-// Compatibility alias for legacy imports while the rename lands across the app.
-export const KnowledgeCenterProvider = UserProfileProvider;
 
 // Codebase classification: runtime user-profile provider.

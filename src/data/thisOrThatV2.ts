@@ -1,4 +1,3 @@
-import type { Gender } from "@/lib/gender";
 import {
   getThisOrThatV2AuthoredQuestions,
   type ThisOrThatV2AuthoredCategoryId,
@@ -57,7 +56,6 @@ export interface ThisOrThatV2CategoryDefinition {
   title: string;
   description: string;
   eyebrow: string;
-  supportedGenders: Gender[];
   status: "live" | "coming-soon";
 }
 
@@ -89,7 +87,6 @@ export interface ThisOrThatV2QuestionScaffold {
   category_slug: ThisOrThatV2TopLevelCategorySlug;
   subcategory_slug: string;
   prompt: string;
-  supported_genders: Gender[];
   weight: number;
   options: [ThisOrThatV2QuestionOptionScaffold, ThisOrThatV2QuestionOptionScaffold];
 }
@@ -207,7 +204,6 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
     title: "Style & Aesthetic",
     description: "Fixed instinct prompts around visual taste, silhouettes, and overall vibe.",
     eyebrow: "Style lens",
-    supportedGenders: ["male", "female", "non-binary"],
     status: "live",
   },
   {
@@ -215,7 +211,6 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
     title: "Brands & Shopping",
     description: "Quick picks about labels, stores, and the kinds of brands that feel like you.",
     eyebrow: "Brand signals",
-    supportedGenders: ["male", "female", "non-binary"],
     status: "live",
   },
   {
@@ -223,7 +218,6 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
     title: "Colors & Palette",
     description: "Preference prompts for tones, contrast, color energy, and what feels most natural.",
     eyebrow: "Color read",
-    supportedGenders: ["male", "female", "non-binary"],
     status: "live",
   },
   {
@@ -231,7 +225,6 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
     title: "Food & Dining",
     description: "Taste cues around cravings, comfort meals, restaurants, and how you like to dine.",
     eyebrow: "Taste cues",
-    supportedGenders: ["male", "female", "non-binary"],
     status: "live",
   },
   {
@@ -239,7 +232,6 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
     title: "Travel & Trips",
     description: "Instinctive picks about destinations, travel mood, and what kind of getaway fits you.",
     eyebrow: "Travel mood",
-    supportedGenders: ["male", "female", "non-binary"],
     status: "live",
   },
   {
@@ -247,7 +239,6 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
     title: "Date Ideas & Romance",
     description: "Chemistry, date-night energy, and the romantic experiences you lean toward.",
     eyebrow: "Romance cues",
-    supportedGenders: ["male", "female", "non-binary"],
     status: "live",
   },
   {
@@ -255,7 +246,6 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
     title: "Home & Living",
     description: "Signals about comfort, decor, routines, and what makes a space feel right.",
     eyebrow: "Home feel",
-    supportedGenders: ["male", "female", "non-binary"],
     status: "live",
   },
   {
@@ -263,7 +253,6 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
     title: "Love Language & Relationships",
     description: "Instinct questions for connection style, affection, and relationship patterns that fit.",
     eyebrow: "Connection read",
-    supportedGenders: ["male", "female", "non-binary"],
     status: "live",
   },
   {
@@ -271,7 +260,6 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
     title: "Hobbies & Weekend",
     description: "Fast reads on downtime, interests, and the kind of weekend rhythm that feels good.",
     eyebrow: "Weekend rhythm",
-    supportedGenders: ["male", "female", "non-binary"],
     status: "live",
   },
   {
@@ -279,7 +267,6 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
     title: "Gifting - what you actually want",
     description: "Gift instincts, wish-list clues, and what feels genuinely thoughtful.",
     eyebrow: "Gift instinct",
-    supportedGenders: ["male", "female", "non-binary"],
     status: "live",
   },
   {
@@ -287,7 +274,6 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
     title: "Your Go-To Orders",
     description: "Your exact orders at the places you love so the people in your life always get it right.",
     eyebrow: "Go-to orders",
-    supportedGenders: ["male", "female", "non-binary"],
     status: "coming-soon",
   },
 ];
@@ -513,7 +499,6 @@ const buildQuestionScaffoldFromAuthoredSeed = (
     category_slug: blueprint.category_slug,
     subcategory_slug: blueprint.subcategory_slug,
     prompt: seed.prompt,
-    supported_genders: seed.supported_genders,
     weight: blueprint.weight,
     options: [
       {
@@ -564,19 +549,7 @@ export const getThisOrThatV2CategoryDefinitions = () => THIS_OR_THAT_V2_CATEGORY
 
 export function getThisOrThatV2RuntimeQuestions(
   categoryId?: string,
-): ThisOrThatV2RuntimeQuestion[];
-export function getThisOrThatV2RuntimeQuestions(
-  legacyDataset: Gender,
-  categoryId?: string,
-): ThisOrThatV2RuntimeQuestion[];
-export function getThisOrThatV2RuntimeQuestions(
-  arg1?: string,
-  arg2?: string,
 ): ThisOrThatV2RuntimeQuestion[] {
-  const categoryId =
-    arg1 === "male" || arg1 === "female" || arg1 === "non-binary"
-      ? arg2
-      : arg1;
   const scaffolds = buildThisOrThatV2QuestionScaffolds();
   return scaffolds
     .filter((scaffold) => !categoryId || scaffold.source_category_id === categoryId)
@@ -666,29 +639,13 @@ export function buildThisOrThatAnswerRecord(
 ): ThisOrThatV2AnswerRecord;
 export function buildThisOrThatAnswerRecord(
   categoryId: string,
-  legacyDataset: Gender,
   question: ThisOrThatV2QuestionLike,
   choice: "A" | "B",
-): ThisOrThatV2AnswerRecord;
-export function buildThisOrThatAnswerRecord(
-  categoryId: string,
-  arg2: Gender | ThisOrThatV2QuestionLike,
-  arg3: ThisOrThatV2QuestionLike | "A" | "B",
-  arg4?: "A" | "B",
 ): ThisOrThatV2AnswerRecord {
   const category = CATEGORY_DEFINITION_BY_ID.get(categoryId);
   if (!category) {
     throw new Error(`Unknown This or That category: ${categoryId}`);
   }
-
-  const question =
-    typeof arg2 === "string"
-      ? (arg3 as ThisOrThatV2QuestionLike)
-      : arg2;
-  const choice =
-    typeof arg2 === "string"
-      ? (arg4 as "A" | "B")
-      : (arg3 as "A" | "B");
 
   const scaffold = buildThisOrThatV2QuestionScaffolds().find(
     (entry) => entry.source_category_id === categoryId && entry.question_id === question.id,

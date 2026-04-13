@@ -1,7 +1,7 @@
 // Canonical runtime Supabase types.
 // This file patches the legacy generated snapshot with the production names used by the live app.
 
-import type { Database as GeneratedDatabase, Json } from "./generated-legacy-types";
+import type { Database as GeneratedDatabase, Json } from "./generated-base-types";
 
 type TableDefinition<Row, Insert = Row, Update = Partial<Insert>> = {
   Row: Row;
