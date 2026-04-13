@@ -496,9 +496,85 @@ const requestAiIntents = async (
     return [];
   }
 
+  // ── Extract v3 spend signals from yourVibe derivation ─────────────────────
+  // yourVibe is populated by generateYourVibeDerivation which stores
+  // spend_signals (per-item dollar anchors), category_priority, price_tier,
+  // brand_affinity, shopping_behavior, and subscription_habits.
+  const yourVibePayload = toObject(state.yourVibe);
+  const vibeSpendSignals = toObject(yourVibePayload.spend_signals as unknown);
+  const vibeCategoryPriority: string[] = Array.isArray(yourVibePayload.category_priority)
+    ? (yourVibePayload.category_priority as string[])
+    : [];
+  const vibeOverallPriceTier = cleanText(yourVibePayload.price_tier as unknown) || "mid-range";
+  const vibeBrandAffinity: string[] = Array.isArray(yourVibePayload.recommended_brands)
+    ? (yourVibePayload.recommended_brands as string[]).slice(0, 12)
+    : state.recommendedBrands.slice(0, 12);
+  const vibeShoppingBehavior: string[] = Array.isArray(yourVibePayload.shopping_behavior)
+    ? (yourVibePayload.shopping_behavior as string[])
+    : [];
+  const vibeSubscriptions: string[] = Array.isArray(yourVibePayload.subscription_habits)
+    ? (yourVibePayload.subscription_habits as string[])
+    : [];
+
+  // Human-readable range labels for the prompt
+  const RANGE_LABELS: Record<string, string> = {
+    under_25: "under $25", "25_75": "$25-$75", "75_150": "$75-$150", "150_plus": "$150+",
+    under_50: "under $50", "50_120": "$50-$120", "120_250": "$120-$250", "250_plus": "$250+",
+    under_20: "under $20", "20_50": "$20-$50", "50_100": "$50-$100", "100_plus": "$100+",
+    under_300: "under $300", "300_800": "$300-$800", "800_1500": "$800-$1,500", "1500_plus": "$1,500+",
+    under_15: "under $15", "15_40": "$15-$40", "40_80": "$40-$80", "80_plus": "$80+",
+    "50_150": "$50-$150", "150_500": "$150-$500", "500_plus": "$500+",
+    under_20mo: "under $20/mo", "20_60mo": "$20-$60/mo", "60_150mo": "$60-$150/mo", "150_plus_mo": "$150+/mo",
+  };
+
+  // Human-readable item names
+  const ITEM_LABELS: Record<string, string> = {
+    tshirt: "t-shirt", pants: "jeans/pants", shoes: "shoes", dinner_out: "nice dinner out",
+    tv: "TV", plant: "plant", book: "book", coffee: "coffee/drink",
+    wine: "bottle of wine", skincare: "skincare product", supplement: "supplement",
+    gym: "gym membership", concert: "concert tickets", gaming: "gaming gear",
+    luggage: "luggage", kitchen: "kitchen gadget", takeout: "weeknight takeout",
+  };
+
+  // Build spend anchor block — per item, not a global tier
+  const spendAnchorLines: string[] = [];
+  for (const [itemId, rangeId] of Object.entries(vibeSpendSignals)) {
+    const label = ITEM_LABELS[itemId] ?? itemId.replace(/_/g, " ");
+    const range = RANGE_LABELS[cleanText(rangeId as unknown)] ?? cleanText(rangeId as unknown);
+    if (range) spendAnchorLines.push(`  ${label}: ${range}`);
+  }
+  // Also scan combinedResponses directly for spend sub-keys in case vibe hasn't been derived yet
+  for (const [key, value] of Object.entries(state.combinedResponses)) {
+    if (!key.startsWith("spend_baseline__") && !key.startsWith("spend_generated__")) continue;
+    const itemId = key.replace("spend_baseline__", "").replace("spend_generated__", "");
+    if (vibeSpendSignals[itemId]) continue;
+    const label = ITEM_LABELS[itemId] ?? itemId.replace(/_/g, " ");
+    const rangeId = Array.isArray(value) ? cleanText(value[0]) : cleanText(value);
+    const range = RANGE_LABELS[rangeId] ?? rangeId;
+    if (range) spendAnchorLines.push(`  ${label}: ${range}`);
+  }
+  const spendAnchorBlock = spendAnchorLines.length > 0
+    ? spendAnchorLines.join("\n")
+    : "  No per-item spend anchors yet — use overall price tier as fallback.";
+
+  const categoryPriorityBlock = vibeCategoryPriority.length > 0
+    ? vibeCategoryPriority.map((cat, i) => `  #${i + 1}: ${cat}`).join("\n")
+    : "  Not specified";
+
+  const brandAffinityBlock = vibeBrandAffinity.length > 0
+    ? vibeBrandAffinity.join(", ")
+    : "None confirmed";
+
+  const behaviorBlock = [
+    vibeShoppingBehavior.length ? `Shopping: ${vibeShoppingBehavior.join(", ")}` : "",
+    vibeSubscriptions.length ? `Subscriptions/services: ${vibeSubscriptions.join(", ")}` : "",
+  ].filter(Boolean).join(" | ") || "Not specified";
+
+  // Profile snapshot — exclude spend sub-keys (already in spend block)
   const profileSnapshot = Object.entries(state.combinedResponses)
+    .filter(([key]) => !key.startsWith("spend_baseline__") && !key.startsWith("spend_generated__"))
     .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(", ") : String(value ?? "")}`)
-    .slice(0, 24)
+    .slice(0, 20)
     .join("\n");
 
   const savedCardSnapshot = state.productCardKeywords
@@ -542,7 +618,44 @@ const requestAiIntents = async (
 Your job is to create recommendation intents, not final links.
 You may only personalize categories the system has explicitly unlocked.
 
-USER PROFILE SIGNALS:
+═══════════════════════════════════════
+SPEND ANCHORS (per item — ground every price here)
+═══════════════════════════════════════
+${spendAnchorBlock}
+
+Overall price tier (weighted by top categories): ${vibeOverallPriceTier}
+
+CRITICAL PRICING RULE: The spend anchors above are the source of truth for the price field.
+Do NOT guess or average prices. Set the price field to match the user's actual anchor range
+for that product type. If someone spends "$25-$75" on a t-shirt, surface t-shirts in that range.
+If they spend "$1,500+" on a TV, surface TVs in that range. Do not normalize to a middle tier.
+A user can be budget on clothes but luxury on electronics — treat each category independently.
+
+═══════════════════════════════════════
+CATEGORY PRIORITY (weight recs toward these)
+═══════════════════════════════════════
+${categoryPriorityBlock}
+
+═══════════════════════════════════════
+CONFIRMED BRAND AFFINITY (brands they actually buy from)
+═══════════════════════════════════════
+${brandAffinityBlock}
+
+Weight recommendations toward these brands. Surface a different brand only if it clearly fits
+both the spend anchor and style signals for that product type.
+
+═══════════════════════════════════════
+SHOPPING BEHAVIOR & SUBSCRIPTIONS
+═══════════════════════════════════════
+${behaviorBlock}
+
+If amazon_prime is listed: prefer Amazon-available products.
+If deal_hunter is listed: prefer mid-range options when spend anchors allow, not premium.
+If impulse is listed: surface high-confidence "specific" recommendations.
+
+═══════════════════════════════════════
+PROFILE SIGNALS (onboarding + Know Me)
+═══════════════════════════════════════
 ${profileSnapshot || "No profile answers yet"}
 
 SAVED PRODUCT CARD KEYWORDS:
@@ -568,9 +681,6 @@ ${state.thisOrThatAnswers
     ].filter(Boolean).join(" | ");
   })
   .join("\n") || "No structured This or That answers yet"}
-
-RECOMMENDED BRANDS / STORES:
-${state.recommendedBrands.slice(0, 24).join(", ") || "None"}
 
 LIKES / POSITIVE SIGNALS:
 ${likeSummary || "None"}
@@ -599,9 +709,12 @@ RULES:
 9. Use real brands only.
 10. Never output a URL.
 11. Keep hook and why concise and profile-specific.
-12. Prefer brands and products that are actually supported by the user's saved product cards, This or That answers, Know Me answers, and profile facts.
+12. Prefer brands and products actually supported by confirmed brand affinity, saved product cards, This or That answers, and profile signals.
 13. If the profile is thin or a category is not unlocked, prefer no idea over invented niche taste.
-14. Do not use luxury, boutique, or hyper-specific brands unless there is direct user evidence.
+14. Do not use luxury, boutique, or hyper-specific brands unless they appear in confirmed brand affinity or spend anchors support it.
+15. PRICE FIELD: Set using the spend anchor for that product type. Format as a dollar range (e.g. "$25-$75") or specific price (e.g. "$49.99"). Never leave price empty or generic.
+16. CATEGORY PRIORITY: When you have category flexibility, fill top-ranked categories first.
+17. BRAND AFFINITY: When confirmed brand affinity exists, strongly prefer those brands per category.
 
 Use the provided tool.`;
 
