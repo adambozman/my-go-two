@@ -1,6 +1,6 @@
 -- Sharing permissions table: one row per couple, per user direction
 -- Each user in a couple has their own permissions object controlling what they share
-CREATE TABLE public.sharing_permissions (
+CREATE TABLE IF NOT EXISTS public.sharing_permissions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   couple_id uuid NOT NULL REFERENCES public.couples(id) ON DELETE CASCADE,
   user_id uuid NOT NULL,
@@ -24,24 +24,28 @@ CREATE TABLE public.sharing_permissions (
 ALTER TABLE public.sharing_permissions ENABLE ROW LEVEL SECURITY;
 
 -- Users can view their own permissions or permissions targeting them as partner
+DROP POLICY IF EXISTS "Users can view own sharing permissions" ON public.sharing_permissions;
 CREATE POLICY "Users can view own sharing permissions"
   ON public.sharing_permissions FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id OR auth.uid() = partner_id);
 
 -- Users can insert their own sharing permissions
+DROP POLICY IF EXISTS "Users can insert own sharing permissions" ON public.sharing_permissions;
 CREATE POLICY "Users can insert own sharing permissions"
   ON public.sharing_permissions FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
 -- Users can update their own sharing permissions
+DROP POLICY IF EXISTS "Users can update own sharing permissions" ON public.sharing_permissions;
 CREATE POLICY "Users can update own sharing permissions"
   ON public.sharing_permissions FOR UPDATE
   TO authenticated
   USING (auth.uid() = user_id);
 
 -- Users can delete their own sharing permissions
+DROP POLICY IF EXISTS "Users can delete own sharing permissions" ON public.sharing_permissions;
 CREATE POLICY "Users can delete own sharing permissions"
   ON public.sharing_permissions FOR DELETE
   TO authenticated

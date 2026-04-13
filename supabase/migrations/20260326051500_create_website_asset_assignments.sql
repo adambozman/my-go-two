@@ -10,12 +10,14 @@ CREATE TABLE IF NOT EXISTS public.website_asset_assignments (
 ALTER TABLE public.website_asset_assignments ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Authenticated users can read website asset assignments" ON public.website_asset_assignments;
+DROP POLICY IF EXISTS "Authenticated users can read website asset assignments" ON public.website_asset_assignments;
 CREATE POLICY "Authenticated users can read website asset assignments"
 ON public.website_asset_assignments
 FOR SELECT
 TO authenticated
 USING (true);
 
+DROP POLICY IF EXISTS "Authenticated users can manage website asset assignments" ON public.website_asset_assignments;
 DROP POLICY IF EXISTS "Authenticated users can manage website asset assignments" ON public.website_asset_assignments;
 CREATE POLICY "Authenticated users can manage website asset assignments"
 ON public.website_asset_assignments

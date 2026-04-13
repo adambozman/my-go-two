@@ -1,5 +1,6 @@
 
 -- Allow users to delete their own connections
+DROP POLICY IF EXISTS "Users can delete own couples" ON public.couples;
 CREATE POLICY "Users can delete own couples"
 ON public.couples
 FOR DELETE

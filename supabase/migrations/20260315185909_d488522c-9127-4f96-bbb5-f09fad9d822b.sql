@@ -1,5 +1,5 @@
 
-CREATE TABLE public.card_entries (
+CREATE TABLE IF NOT EXISTS public.card_entries (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   card_key text NOT NULL,
@@ -10,13 +10,15 @@ CREATE TABLE public.card_entries (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_card_entries_user_key ON public.card_entries(user_id, card_key);
+CREATE INDEX IF NOT EXISTS idx_card_entries_user_key ON public.card_entries(user_id, card_key);
 
 ALTER TABLE public.card_entries ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users manage own entries" ON public.card_entries;
 CREATE POLICY "Users manage own entries" ON public.card_entries FOR ALL
   USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Partners can view entries" ON public.card_entries;
 CREATE POLICY "Partners can view entries" ON public.card_entries FOR SELECT
   USING (EXISTS (
     SELECT 1 FROM couples

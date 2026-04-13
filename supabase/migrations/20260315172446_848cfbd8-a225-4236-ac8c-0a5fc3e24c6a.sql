@@ -1,4 +1,5 @@
 -- Add UPDATE and DELETE policies for category_images table
+DROP POLICY IF EXISTS "Authenticated can update category images" ON public.category_images;
 CREATE POLICY "Authenticated can update category images"
 ON public.category_images
 FOR UPDATE
@@ -6,6 +7,7 @@ TO authenticated
 USING (true)
 WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Authenticated can delete category images" ON public.category_images;
 CREATE POLICY "Authenticated can delete category images"
 ON public.category_images
 FOR DELETE

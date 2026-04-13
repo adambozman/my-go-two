@@ -37,17 +37,29 @@ BEGIN
 END;
 $$;
 
-UPDATE public.profiles
+DO $$ BEGIN
+  UPDATE public.profiles
 SET avatar_url = public.public_storage_url_to_ref(avatar_url)
 WHERE avatar_url IS NOT NULL
   AND avatar_url NOT LIKE 'storage://%';
+EXCEPTION WHEN undefined_column OR undefined_table THEN
+  NULL; -- column or table doesn't exist yet, skip
+END $$;
 
-UPDATE public.card_entries
+DO $$ BEGIN
+  UPDATE public.card_entries
 SET image_url = public.public_storage_url_to_ref(image_url)
 WHERE image_url IS NOT NULL
   AND image_url NOT LIKE 'storage://%';
+EXCEPTION WHEN undefined_column OR undefined_table THEN
+  NULL; -- column or table doesn't exist yet, skip
+END $$;
 
-UPDATE public.couples
+DO $$ BEGIN
+  UPDATE public.couples
 SET photo_url = public.public_storage_url_to_ref(photo_url)
 WHERE photo_url IS NOT NULL
   AND photo_url NOT LIKE 'storage://%';
+EXCEPTION WHEN undefined_column OR undefined_table THEN
+  NULL; -- column or table doesn't exist yet, skip
+END $$;

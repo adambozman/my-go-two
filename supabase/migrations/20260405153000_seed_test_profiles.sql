@@ -52,18 +52,23 @@ begin
      or owner_user_id = any(managed_user_ids)
      or connection_user_id = any(managed_user_ids);
 
-  delete from public.connection_recommendations
-  where couple_id = any(managed_connection_ids)
-     or viewer_user_id = any(managed_user_ids)
-     or connection_user_id = any(managed_user_ids);
+  -- connection_recommendations: legacy table, may not exist on fresh DB
+  if exists (select 1 from information_schema.tables where table_schema='public' and table_name='connection_recommendations') then
+    execute 'delete from public.connection_recommendations where couple_id = any($1) or viewer_user_id = any($2) or connection_user_id = any($2)'
+      using managed_connection_ids, managed_user_ids;
+  end if;
 
-  delete from public.connection_invite_events
-  where couple_id = any(managed_connection_ids)
-     or owner_user_id = any(managed_user_ids)
-     or invitee_user_id = any(managed_user_ids);
+  -- connection_invite_events: may not exist on fresh DB
+  if exists (select 1 from information_schema.tables where table_schema='public' and table_name='connection_invite_events') then
+    execute 'delete from public.connection_invite_events where couple_id = any($1) or owner_user_id = any($2) or invitee_user_id = any($2)'
+      using managed_connection_ids, managed_user_ids;
+  end if;
 
-  delete from public.connection_share_tokens
-  where owner_user_id = any(managed_user_ids);
+  -- connection_share_tokens: may not exist on fresh DB
+  if exists (select 1 from information_schema.tables where table_schema='public' and table_name='connection_share_tokens') then
+    execute 'delete from public.connection_share_tokens where owner_user_id = any($1)'
+      using managed_user_ids;
+  end if;
 
   delete from public.user_connections
   where id = any(managed_connection_ids)
@@ -94,11 +99,13 @@ begin
   delete from public.user_settings
   where user_id = any(managed_user_ids);
 
-  delete from public.user_discovery_contacts
-  where user_id = any(managed_user_ids);
+  if exists (select 1 from information_schema.tables where table_schema='public' and table_name='user_discovery_contacts') then
+    execute 'delete from public.user_discovery_contacts where user_id = any($1)' using managed_user_ids;
+  end if;
 
-  delete from public.user_discovery_settings
-  where user_id = any(managed_user_ids);
+  if exists (select 1 from information_schema.tables where table_schema='public' and table_name='user_discovery_settings') then
+    execute 'delete from public.user_discovery_settings where user_id = any($1)' using managed_user_ids;
+  end if;
 
   delete from public.calendar_events
   where user_id = any(managed_user_ids);
@@ -127,7 +134,6 @@ insert into auth.users (
   email,
   encrypted_password,
   email_confirmed_at,
-  confirmed_at,
   raw_app_meta_data,
   raw_user_meta_data,
   created_at,
@@ -146,7 +152,6 @@ values
     'harper.test@gotwo.local',
     crypt('GoTwoTest!2026', gen_salt('bf')),
     now(),
-    now(),
     '{"provider":"email","providers":["email"]}'::jsonb,
     '{"display_name":"Harper Test Profile","test_profile":true,"test_profile_label":"test-profile","test_profile_seed":"harper.test@gotwo.local"}'::jsonb,
     now(),
@@ -164,7 +169,6 @@ values
     'rowan.test@gotwo.local',
     crypt('GoTwoTest!2026', gen_salt('bf')),
     now(),
-    now(),
     '{"provider":"email","providers":["email"]}'::jsonb,
     '{"display_name":"Rowan Test Profile","test_profile":true,"test_profile_label":"test-profile","test_profile_seed":"rowan.test@gotwo.local"}'::jsonb,
     now(),
@@ -173,7 +177,8 @@ values
     '',
     '',
     ''
-  );
+  )
+on conflict do nothing;
 
 insert into auth.identities (
   id,
@@ -205,7 +210,8 @@ values
     now(),
     now(),
     now()
-  );
+  )
+on conflict do nothing;
 
 insert into public.profiles (
   user_id,
@@ -243,30 +249,25 @@ values
     now(),
     now(),
     now()
-  );
+  )
+on conflict do nothing;
 
-insert into public.user_discovery_settings (
-  user_id,
-  allow_name_discovery,
-  allow_phone_discovery,
-  share_avatar_in_discovery,
-  created_at,
-  updated_at
-)
-values
-  ('6e4a86c5-2c6d-4d16-93cc-2a4c4e6a7b01', true, true, true, now(), now()),
-  ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', true, true, true, now(), now());
-
-insert into public.user_discovery_contacts (
-  user_id,
-  phone_raw,
-  phone_search_normalized,
-  created_at,
-  updated_at
-)
-values
-  ('6e4a86c5-2c6d-4d16-93cc-2a4c4e6a7b01', '(312) 555-0101', '3125550101', now(), now()),
-  ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', '(312) 555-0102', '3125550102', now(), now());
+do $$ begin
+  if exists (select 1 from information_schema.tables where table_schema='public' and table_name='user_discovery_settings') then
+    insert into public.user_discovery_settings (user_id, allow_name_discovery, allow_phone_discovery, share_avatar_in_discovery, created_at, updated_at)
+    values
+      ('6e4a86c5-2c6d-4d16-93cc-2a4c4e6a7b01', true, true, true, now(), now()),
+      ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', true, true, true, now(), now())
+    on conflict do nothing;
+  end if;
+  if exists (select 1 from information_schema.tables where table_schema='public' and table_name='user_discovery_contacts') then
+    insert into public.user_discovery_contacts (user_id, phone_raw, phone_search_normalized, created_at, updated_at)
+    values
+      ('6e4a86c5-2c6d-4d16-93cc-2a4c4e6a7b01', '(312) 555-0101', '3125550101', now(), now()),
+      ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', '(312) 555-0102', '3125550102', now(), now())
+    on conflict do nothing;
+  end if;
+end $$;
 
 insert into public.user_settings (
   user_id,
@@ -282,7 +283,8 @@ insert into public.user_settings (
 )
 values
   ('6e4a86c5-2c6d-4d16-93cc-2a4c4e6a7b01', true, true, true, false, true, true, true, now(), now()),
-  ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', true, true, true, false, true, true, true, now(), now());
+  ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', true, true, true, false, true, true, true, now(), now())
+on conflict do nothing;
 
 insert into public.onboarding_responses (
   user_id,
@@ -311,7 +313,8 @@ values
   ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', 'purchase-values', '["comfort","price","trend"]'::jsonb, now(), now()),
   ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', 'free-time', '["outdoors","fitness","staying-in"]'::jsonb, now(), now()),
   ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', 'gift-preference', to_jsonb('experience'::text), now(), now()),
-  ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', 'aesthetic-lean', '["street","boho"]'::jsonb, now(), now());
+  ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', 'aesthetic-lean', '["street","boho"]'::jsonb, now(), now())
+on conflict do nothing;
 
 insert into public.know_me_responses (
   user_id,
@@ -380,7 +383,8 @@ values
   ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', 'en-04', to_jsonb('outdoors'::text), now(), now()),
   ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', 'en-08', to_jsonb('board-games'::text), now(), now()),
   ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', 'en-13', '["hiking","cycling","yoga"]'::jsonb, now(), now()),
-  ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', 'en-18', to_jsonb('bucket-list'::text), now(), now());
+  ('7c4bb75f-50d7-4f7f-8ac4-41f8895f8d02', 'en-18', to_jsonb('bucket-list'::text), now(), now())
+on conflict do nothing;
 
 insert into public.knowledge_derivations (
   user_id,
@@ -424,7 +428,8 @@ values
     '{"source_kind":"test-profile-seed","profile_email":"rowan.test@gotwo.local"}'::jsonb,
     now(),
     now()
-  );
+  )
+on conflict do nothing;
 
 insert into public.weekly_recommendations (
   user_id,
@@ -537,7 +542,8 @@ values
         "source_version":"rowan-test-v2"
       }
     ]'::jsonb
-  );
+  )
+on conflict do nothing;
 
 insert into public.saved_product_cards (
   user_id,
@@ -699,7 +705,8 @@ values
     null,
     now(),
     now()
-  );
+  )
+on conflict do nothing;
 
 commit;
 

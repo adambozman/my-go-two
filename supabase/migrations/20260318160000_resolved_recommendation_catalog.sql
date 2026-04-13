@@ -1,4 +1,4 @@
-CREATE TABLE public.resolved_recommendation_catalog (
+CREATE TABLE IF NOT EXISTS public.resolved_recommendation_catalog (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   fingerprint TEXT NOT NULL UNIQUE,
   brand TEXT NOT NULL,
@@ -19,18 +19,21 @@ CREATE TABLE public.resolved_recommendation_catalog (
 
 ALTER TABLE public.resolved_recommendation_catalog ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Authenticated users can view resolved recommendation catalog" ON public.resolved_recommendation_catalog;
 CREATE POLICY "Authenticated users can view resolved recommendation catalog"
 ON public.resolved_recommendation_catalog
 FOR SELECT
 TO authenticated
 USING (true);
 
+DROP POLICY IF EXISTS "Authenticated users can insert resolved recommendation catalog" ON public.resolved_recommendation_catalog;
 CREATE POLICY "Authenticated users can insert resolved recommendation catalog"
 ON public.resolved_recommendation_catalog
 FOR INSERT
 TO authenticated
 WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Authenticated users can update resolved recommendation catalog" ON public.resolved_recommendation_catalog;
 CREATE POLICY "Authenticated users can update resolved recommendation catalog"
 ON public.resolved_recommendation_catalog
 FOR UPDATE
@@ -38,10 +41,10 @@ TO authenticated
 USING (true)
 WITH CHECK (true);
 
-CREATE INDEX idx_resolved_recommendation_catalog_brand
+CREATE INDEX IF NOT EXISTS idx_resolved_recommendation_catalog_brand
 ON public.resolved_recommendation_catalog (brand);
 
-CREATE INDEX idx_resolved_recommendation_catalog_category
+CREATE INDEX IF NOT EXISTS idx_resolved_recommendation_catalog_category
 ON public.resolved_recommendation_catalog (category);
 
 CREATE TRIGGER update_resolved_recommendation_catalog_updated_at

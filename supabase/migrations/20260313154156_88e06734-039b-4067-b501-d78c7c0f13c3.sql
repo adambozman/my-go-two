@@ -258,4 +258,13 @@ INSERT INTO public.category_registry (key, label, section, page, genders, sort_o
   {"id":"beauty-brands","name":"Beauty Brands","image":"grooming-makeup","fields":[{"label":"Favorite Brands","type":"text","value":""},{"label":"Category","type":"select","value":"","options":["Makeup","Nails","Brows","Lashes","All"]},{"label":"Price Range","type":"select","value":"","options":["Drugstore","Mid-Range","Prestige","Luxury"]},{"label":"Notes","type":"text","value":""}]},
   {"id":"jewelry-brands","name":"Jewelry Brands","image":"jewelry","fields":[{"label":"Favorite Brands","type":"text","value":""},{"label":"Metal Preference","type":"select","value":"","options":["Gold","Silver","Rose Gold","Platinum","Mixed"]},{"label":"Price Range","type":"select","value":"","options":["Budget","Mid-Range","Premium","Luxury"]},{"label":"Notes","type":"text","value":""}]},
   {"id":"fragrance-brands","name":"Fragrance Brands","image":"scent-perfume","fields":[{"label":"Favorite Brands","type":"text","value":""},{"label":"Price Range","type":"select","value":"","options":["Drugstore","Mid-Range","Designer","Niche/Luxury"]},{"label":"Notes","type":"text","value":""}]}
-]'::jsonb);
+]'::jsonb)
+ON CONFLICT (key) DO UPDATE SET
+  label = EXCLUDED.label,
+  section = EXCLUDED.section,
+  page = EXCLUDED.page,
+  genders = EXCLUDED.genders,
+  sort_order = EXCLUDED.sort_order,
+  is_active = EXCLUDED.is_active,
+  fields = EXCLUDED.fields,
+  subcategories = EXCLUDED.subcategories;

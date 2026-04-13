@@ -1,4 +1,4 @@
-CREATE TABLE public.ai_generated_quizzes (
+CREATE TABLE IF NOT EXISTS public.ai_generated_quizzes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   quizzes JSONB NOT NULL DEFAULT '[]'::jsonb,
@@ -8,16 +8,19 @@ CREATE TABLE public.ai_generated_quizzes (
 
 ALTER TABLE public.ai_generated_quizzes ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read own quizzes" ON public.ai_generated_quizzes;
 CREATE POLICY "Users can read own quizzes"
   ON public.ai_generated_quizzes FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own quizzes" ON public.ai_generated_quizzes;
 CREATE POLICY "Users can insert own quizzes"
   ON public.ai_generated_quizzes FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own quizzes" ON public.ai_generated_quizzes;
 CREATE POLICY "Users can update own quizzes"
   ON public.ai_generated_quizzes FOR UPDATE
   TO authenticated

@@ -121,12 +121,14 @@ ALTER TABLE public.this_or_that_v2_answers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.this_or_that_v2_answer_signals ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Authenticated users can view This or That v2 questions" ON public.this_or_that_v2_questions;
+DROP POLICY IF EXISTS "Authenticated users can view This or That v2 questions" ON public.this_or_that_v2_questions;
 CREATE POLICY "Authenticated users can view This or That v2 questions"
   ON public.this_or_that_v2_questions
   FOR SELECT
   TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS "Authenticated users can view This or That v2 options" ON public.this_or_that_v2_options;
 DROP POLICY IF EXISTS "Authenticated users can view This or That v2 options" ON public.this_or_that_v2_options;
 CREATE POLICY "Authenticated users can view This or That v2 options"
   ON public.this_or_that_v2_options
@@ -135,12 +137,14 @@ CREATE POLICY "Authenticated users can view This or That v2 options"
   USING (true);
 
 DROP POLICY IF EXISTS "Users manage their This or That v2 structured answers" ON public.this_or_that_v2_answers;
+DROP POLICY IF EXISTS "Users manage their This or That v2 structured answers" ON public.this_or_that_v2_answers;
 CREATE POLICY "Users manage their This or That v2 structured answers"
   ON public.this_or_that_v2_answers
   FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users manage their This or That v2 structured answer signals" ON public.this_or_that_v2_answer_signals;
 DROP POLICY IF EXISTS "Users manage their This or That v2 structured answer signals" ON public.this_or_that_v2_answer_signals;
 CREATE POLICY "Users manage their This or That v2 structured answer signals"
   ON public.this_or_that_v2_answer_signals

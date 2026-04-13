@@ -1,4 +1,4 @@
-CREATE TABLE public.connection_context_preferences (
+CREATE TABLE IF NOT EXISTS public.connection_context_preferences (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   couple_id uuid NOT NULL REFERENCES public.couples(id) ON DELETE CASCADE,
   owner_user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -23,11 +23,13 @@ CREATE TABLE public.connection_context_preferences (
 
 ALTER TABLE public.connection_context_preferences ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Owners can view connection context preferences" ON public.connection_context_preferences;
 CREATE POLICY "Owners can view connection context preferences"
 ON public.connection_context_preferences
 FOR SELECT
 USING (auth.uid() = owner_user_id);
 
+DROP POLICY IF EXISTS "Owners can insert connection context preferences" ON public.connection_context_preferences;
 CREATE POLICY "Owners can insert connection context preferences"
 ON public.connection_context_preferences
 FOR INSERT
@@ -46,12 +48,14 @@ WITH CHECK (
   )
 );
 
+DROP POLICY IF EXISTS "Owners can update connection context preferences" ON public.connection_context_preferences;
 CREATE POLICY "Owners can update connection context preferences"
 ON public.connection_context_preferences
 FOR UPDATE
 USING (auth.uid() = owner_user_id)
 WITH CHECK (auth.uid() = owner_user_id);
 
+DROP POLICY IF EXISTS "Owners can delete connection context preferences" ON public.connection_context_preferences;
 CREATE POLICY "Owners can delete connection context preferences"
 ON public.connection_context_preferences
 FOR DELETE
@@ -64,7 +68,7 @@ EXECUTE FUNCTION public.update_updated_at_column();
 
 ALTER PUBLICATION supabase_realtime ADD TABLE public.connection_context_preferences;
 
-CREATE TABLE public.connection_recommendations (
+CREATE TABLE IF NOT EXISTS public.connection_recommendations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   couple_id uuid NOT NULL REFERENCES public.couples(id) ON DELETE CASCADE,
   viewer_user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -92,28 +96,32 @@ CREATE TABLE public.connection_recommendations (
 
 ALTER TABLE public.connection_recommendations ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Viewers can view connection recommendations" ON public.connection_recommendations;
 CREATE POLICY "Viewers can view connection recommendations"
 ON public.connection_recommendations
 FOR SELECT
 USING (auth.uid() = viewer_user_id);
 
+DROP POLICY IF EXISTS "Viewers can insert connection recommendations" ON public.connection_recommendations;
 CREATE POLICY "Viewers can insert connection recommendations"
 ON public.connection_recommendations
 FOR INSERT
 WITH CHECK (auth.uid() = viewer_user_id);
 
+DROP POLICY IF EXISTS "Viewers can update connection recommendations" ON public.connection_recommendations;
 CREATE POLICY "Viewers can update connection recommendations"
 ON public.connection_recommendations
 FOR UPDATE
 USING (auth.uid() = viewer_user_id)
 WITH CHECK (auth.uid() = viewer_user_id);
 
+DROP POLICY IF EXISTS "Viewers can delete connection recommendations" ON public.connection_recommendations;
 CREATE POLICY "Viewers can delete connection recommendations"
 ON public.connection_recommendations
 FOR DELETE
 USING (auth.uid() = viewer_user_id);
 
-CREATE INDEX idx_connection_recommendations_viewer_connection
+CREATE INDEX IF NOT EXISTS idx_connection_recommendations_viewer_connection
 ON public.connection_recommendations (viewer_user_id, connection_user_id, updated_at DESC);
 
 CREATE TRIGGER update_connection_recommendations_updated_at

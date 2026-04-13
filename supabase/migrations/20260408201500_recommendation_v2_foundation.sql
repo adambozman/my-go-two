@@ -182,12 +182,14 @@ ALTER TABLE public.recommendation_product_bank ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_weekly_recommendations ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users manage their preference signals" ON public.user_preference_signals;
+DROP POLICY IF EXISTS "Users manage their preference signals" ON public.user_preference_signals;
 CREATE POLICY "Users manage their preference signals"
   ON public.user_preference_signals
   FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users manage their product card keywords" ON public.user_product_card_keywords;
 DROP POLICY IF EXISTS "Users manage their product card keywords" ON public.user_product_card_keywords;
 CREATE POLICY "Users manage their product card keywords"
   ON public.user_product_card_keywords
@@ -196,12 +198,14 @@ CREATE POLICY "Users manage their product card keywords"
   WITH CHECK (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Users manage their like signals" ON public.user_like_signals;
+DROP POLICY IF EXISTS "Users manage their like signals" ON public.user_like_signals;
 CREATE POLICY "Users manage their like signals"
   ON public.user_like_signals
   FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users manage their dislike signals" ON public.user_dislike_signals;
 DROP POLICY IF EXISTS "Users manage their dislike signals" ON public.user_dislike_signals;
 CREATE POLICY "Users manage their dislike signals"
   ON public.user_dislike_signals
@@ -210,12 +214,14 @@ CREATE POLICY "Users manage their dislike signals"
   WITH CHECK (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Authenticated users can view recommendation keyword bank" ON public.recommendation_keyword_bank;
+DROP POLICY IF EXISTS "Authenticated users can view recommendation keyword bank" ON public.recommendation_keyword_bank;
 CREATE POLICY "Authenticated users can view recommendation keyword bank"
   ON public.recommendation_keyword_bank
   FOR SELECT
   TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS "Authenticated users can view recommendation brand bank" ON public.recommendation_brand_bank;
 DROP POLICY IF EXISTS "Authenticated users can view recommendation brand bank" ON public.recommendation_brand_bank;
 CREATE POLICY "Authenticated users can view recommendation brand bank"
   ON public.recommendation_brand_bank
@@ -224,6 +230,7 @@ CREATE POLICY "Authenticated users can view recommendation brand bank"
   USING (true);
 
 DROP POLICY IF EXISTS "Authenticated users can view recommendation brand location bank" ON public.recommendation_brand_location_bank;
+DROP POLICY IF EXISTS "Authenticated users can view recommendation brand location bank" ON public.recommendation_brand_location_bank;
 CREATE POLICY "Authenticated users can view recommendation brand location bank"
   ON public.recommendation_brand_location_bank
   FOR SELECT
@@ -231,12 +238,14 @@ CREATE POLICY "Authenticated users can view recommendation brand location bank"
   USING (true);
 
 DROP POLICY IF EXISTS "Authenticated users can view recommendation product bank" ON public.recommendation_product_bank;
+DROP POLICY IF EXISTS "Authenticated users can view recommendation product bank" ON public.recommendation_product_bank;
 CREATE POLICY "Authenticated users can view recommendation product bank"
   ON public.recommendation_product_bank
   FOR SELECT
   TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS "Users manage their weekly recommendation output" ON public.user_weekly_recommendations;
 DROP POLICY IF EXISTS "Users manage their weekly recommendation output" ON public.user_weekly_recommendations;
 CREATE POLICY "Users manage their weekly recommendation output"
   ON public.user_weekly_recommendations

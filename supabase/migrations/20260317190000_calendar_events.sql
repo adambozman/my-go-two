@@ -19,18 +19,21 @@ CREATE TABLE IF NOT EXISTS public.calendar_events (
 
 ALTER TABLE public.calendar_events ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own calendar events" ON public.calendar_events;
 CREATE POLICY "Users can view own calendar events"
 ON public.calendar_events
 FOR SELECT
 TO authenticated
 USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own calendar events" ON public.calendar_events;
 CREATE POLICY "Users can insert own calendar events"
 ON public.calendar_events
 FOR INSERT
 TO authenticated
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own calendar events" ON public.calendar_events;
 CREATE POLICY "Users can update own calendar events"
 ON public.calendar_events
 FOR UPDATE
@@ -38,6 +41,7 @@ TO authenticated
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own calendar events" ON public.calendar_events;
 CREATE POLICY "Users can delete own calendar events"
 ON public.calendar_events
 FOR DELETE

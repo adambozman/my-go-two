@@ -1,6 +1,26 @@
 ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS onboarding_completed_at timestamptz;
 
+-- Ensure image_url exists on saved_product_cards before any VIEWs or functions reference it.
+-- The column was originally added in legacy migrations (20260320150000–20260326234412) that were
+-- skipped during fresh-DB migration. This ADD COLUMN IF NOT EXISTS is idempotent.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'saved_product_cards'
+  ) THEN
+    ALTER TABLE public.saved_product_cards ADD COLUMN IF NOT EXISTS image_url text;
+  END IF;
+  -- Also handle the pre-rename table name (card_entries)
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'card_entries'
+  ) THEN
+    ALTER TABLE public.card_entries ADD COLUMN IF NOT EXISTS image_url text;
+  END IF;
+END $$;
+
 DO $$
 BEGIN
   IF EXISTS (
@@ -33,11 +53,17 @@ BEGIN
     ALTER TABLE public.card_entries RENAME COLUMN entry_name TO card_title;
   END IF;
 
+  -- Only rename if card_entries exists AND saved_product_cards does NOT yet exist
   IF EXISTS (
     SELECT 1
     FROM information_schema.tables
     WHERE table_schema = 'public'
       AND table_name = 'card_entries'
+  ) AND NOT EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'saved_product_cards'
   ) THEN
     ALTER TABLE public.card_entries RENAME TO saved_product_cards;
   END IF;
@@ -70,6 +96,11 @@ BEGIN
     FROM information_schema.tables
     WHERE table_schema = 'public'
       AND table_name = 'shared_card_entries'
+  ) AND NOT EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'shared_saved_product_cards'
   ) THEN
     ALTER TABLE public.shared_card_entries RENAME TO shared_saved_product_cards;
   END IF;
@@ -82,6 +113,11 @@ BEGIN
     FROM information_schema.tables
     WHERE table_schema = 'public'
       AND table_name = 'couples'
+  ) AND NOT EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'user_connections'
   ) THEN
     ALTER TABLE public.couples RENAME TO user_connections;
   END IF;
@@ -104,6 +140,11 @@ BEGIN
     FROM information_schema.tables
     WHERE table_schema = 'public'
       AND table_name = 'connection_context_preferences'
+  ) AND NOT EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'connection_access_settings'
   ) THEN
     ALTER TABLE public.connection_context_preferences RENAME TO connection_access_settings;
   END IF;
@@ -126,6 +167,11 @@ BEGIN
     FROM information_schema.tables
     WHERE table_schema = 'public'
       AND table_name = 'shared_profile_fields'
+  ) AND NOT EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'shared_connection_profile_fields'
   ) THEN
     ALTER TABLE public.shared_profile_fields RENAME TO shared_connection_profile_fields;
   END IF;
@@ -148,6 +194,11 @@ BEGIN
     FROM information_schema.tables
     WHERE table_schema = 'public'
       AND table_name = 'shared_derived_features'
+  ) AND NOT EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'shared_connection_derivations'
   ) THEN
     ALTER TABLE public.shared_derived_features RENAME TO shared_connection_derivations;
   END IF;
@@ -198,6 +249,7 @@ ALTER TABLE public.know_me_responses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.knowledge_derivations ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users manage their onboarding responses" ON public.onboarding_responses;
+DROP POLICY IF EXISTS "Users manage their onboarding responses" ON public.onboarding_responses;
 CREATE POLICY "Users manage their onboarding responses"
   ON public.onboarding_responses
   FOR ALL
@@ -205,12 +257,14 @@ CREATE POLICY "Users manage their onboarding responses"
   WITH CHECK (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Users manage their Know Me responses" ON public.know_me_responses;
+DROP POLICY IF EXISTS "Users manage their Know Me responses" ON public.know_me_responses;
 CREATE POLICY "Users manage their Know Me responses"
   ON public.know_me_responses
   FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users manage their knowledge derivations" ON public.knowledge_derivations;
 DROP POLICY IF EXISTS "Users manage their knowledge derivations" ON public.knowledge_derivations;
 CREATE POLICY "Users manage their knowledge derivations"
   ON public.knowledge_derivations
@@ -556,12 +610,25 @@ LEFT JOIN know_me_data km ON km.user_id = u.user_id
 LEFT JOIN saved_cards sc ON sc.user_id = u.user_id
 LEFT JOIN connections cn ON cn.user_id = u.user_id;
 
-DROP FUNCTION IF EXISTS public.infer_card_entry_section(text, text, text);
-DROP FUNCTION IF EXISTS public.connection_can_view_card_entry(uuid, uuid);
-DROP FUNCTION IF EXISTS public.get_connection_visible_card_entries(uuid, uuid, uuid);
-DROP FUNCTION IF EXISTS public.share_all_card_entries_with_connection(uuid, uuid, uuid);
-DROP FUNCTION IF EXISTS public.unshare_all_card_entries_with_connection(uuid, uuid, uuid);
-DROP FUNCTION IF EXISTS public.set_connection_card_share(uuid, uuid, uuid, boolean);
+-- Drop policies that depend on legacy functions before dropping those functions
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'card_entries') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Partners can view shared entries" ON public.card_entries';
+    EXECUTE 'DROP POLICY IF EXISTS "connection_can_view" ON public.card_entries';
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'saved_product_cards') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Partners can view shared entries" ON public.saved_product_cards';
+    EXECUTE 'DROP POLICY IF EXISTS "connection_can_view" ON public.saved_product_cards';
+  END IF;
+END $$;
+
+DROP FUNCTION IF EXISTS public.infer_card_entry_section(text, text, text) CASCADE;
+DROP FUNCTION IF EXISTS public.connection_can_view_card_entry(uuid, uuid) CASCADE;
+DROP FUNCTION IF EXISTS public.get_connection_visible_card_entries(uuid, uuid, uuid) CASCADE;
+DROP FUNCTION IF EXISTS public.share_all_card_entries_with_connection(uuid, uuid, uuid) CASCADE;
+DROP FUNCTION IF EXISTS public.unshare_all_card_entries_with_connection(uuid, uuid, uuid) CASCADE;
+DROP FUNCTION IF EXISTS public.set_connection_card_share(uuid, uuid, uuid, boolean) CASCADE;
 
 CREATE OR REPLACE FUNCTION public.infer_saved_product_card_section(
   p_product_card_key text,

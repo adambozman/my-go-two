@@ -2,7 +2,7 @@
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS age integer;
 
 -- Create user_preferences table for questionnaire answers
-CREATE TABLE public.user_preferences (
+CREATE TABLE IF NOT EXISTS public.user_preferences (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL UNIQUE,
   onboarding_complete boolean DEFAULT false,
@@ -19,12 +19,15 @@ CREATE TABLE public.user_preferences (
 ALTER TABLE public.user_preferences ENABLE ROW LEVEL SECURITY;
 
 -- RLS policies
+DROP POLICY IF EXISTS "Users can view own preferences" ON public.user_preferences;
 CREATE POLICY "Users can view own preferences" ON public.user_preferences
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own preferences" ON public.user_preferences;
 CREATE POLICY "Users can insert own preferences" ON public.user_preferences
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own preferences" ON public.user_preferences;
 CREATE POLICY "Users can update own preferences" ON public.user_preferences
   FOR UPDATE USING (auth.uid() = user_id);
 

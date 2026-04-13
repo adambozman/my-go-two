@@ -46,6 +46,7 @@ CREATE INDEX IF NOT EXISTS idx_recommendation_trend_candidates_lookup
 ALTER TABLE public.recommendation_trend_candidates ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Authenticated users can view recommendation trend candidates" ON public.recommendation_trend_candidates;
+DROP POLICY IF EXISTS "Authenticated users can view recommendation trend candidates" ON public.recommendation_trend_candidates;
 CREATE POLICY "Authenticated users can view recommendation trend candidates"
   ON public.recommendation_trend_candidates
   FOR SELECT

@@ -30,7 +30,8 @@ BEGIN
       AND tablename = 'connection_invite_events'
       AND policyname = 'Users can view own connection invite events'
   ) THEN
-    CREATE POLICY "Users can view own connection invite events"
+    DROP POLICY IF EXISTS "Users can view own connection invite events" ON public.connection_invite_events;
+CREATE POLICY "Users can view own connection invite events"
     ON public.connection_invite_events
     FOR SELECT
     USING (auth.uid() = owner_user_id);

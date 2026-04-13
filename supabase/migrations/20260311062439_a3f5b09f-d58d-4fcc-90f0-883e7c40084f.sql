@@ -1,5 +1,5 @@
 
-CREATE TABLE public.notifications (
+CREATE TABLE IF NOT EXISTS public.notifications (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id uuid NOT NULL,
   type text NOT NULL DEFAULT 'general',
@@ -11,21 +11,25 @@ CREATE TABLE public.notifications (
 
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own notifications" ON public.notifications;
 CREATE POLICY "Users can view own notifications"
   ON public.notifications FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own notifications" ON public.notifications;
 CREATE POLICY "Users can update own notifications"
   ON public.notifications FOR UPDATE
   TO authenticated
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own notifications" ON public.notifications;
 CREATE POLICY "Users can delete own notifications"
   ON public.notifications FOR DELETE
   TO authenticated
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Service can insert notifications" ON public.notifications;
 CREATE POLICY "Service can insert notifications"
   ON public.notifications FOR INSERT
   TO authenticated

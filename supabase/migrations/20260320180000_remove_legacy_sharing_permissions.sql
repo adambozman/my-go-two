@@ -1,5 +1,6 @@
 DROP POLICY IF EXISTS "Partners can view shared entries" ON public.card_entries;
 
+DROP POLICY IF EXISTS "Connections can view explicitly shared entries" ON public.card_entries;
 CREATE POLICY "Connections can view explicitly shared entries"
 ON public.card_entries
 FOR SELECT

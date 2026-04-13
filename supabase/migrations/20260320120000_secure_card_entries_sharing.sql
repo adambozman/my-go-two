@@ -33,6 +33,7 @@ $$;
 
 DROP POLICY IF EXISTS "Partners can view entries" ON public.card_entries;
 
+DROP POLICY IF EXISTS "Partners can view shared entries" ON public.card_entries;
 CREATE POLICY "Partners can view shared entries"
 ON public.card_entries
 FOR SELECT

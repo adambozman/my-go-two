@@ -1,5 +1,5 @@
 
-CREATE TABLE public.category_registry (
+CREATE TABLE IF NOT EXISTS public.category_registry (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   key text NOT NULL UNIQUE,
   label text NOT NULL,
@@ -18,12 +18,16 @@ CREATE TABLE public.category_registry (
 
 ALTER TABLE public.category_registry ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can read registry" ON public.category_registry;
 CREATE POLICY "Anyone can read registry" ON public.category_registry FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Authenticated can insert registry" ON public.category_registry;
 CREATE POLICY "Authenticated can insert registry" ON public.category_registry FOR INSERT TO authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "Authenticated can update registry" ON public.category_registry;
 CREATE POLICY "Authenticated can update registry" ON public.category_registry FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Authenticated can delete registry" ON public.category_registry;
 CREATE POLICY "Authenticated can delete registry" ON public.category_registry FOR DELETE TO authenticated USING (true);
 
-CREATE TABLE public.category_images (
+CREATE TABLE IF NOT EXISTS public.category_images (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   category_key text NOT NULL,
   gender text NOT NULL CHECK (gender IN ('male','female','non-binary')),
@@ -34,7 +38,9 @@ CREATE TABLE public.category_images (
 
 ALTER TABLE public.category_images ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can read category images" ON public.category_images;
 CREATE POLICY "Anyone can read category images" ON public.category_images FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Authenticated can insert category images" ON public.category_images;
 CREATE POLICY "Authenticated can insert category images" ON public.category_images FOR INSERT TO authenticated WITH CHECK (true);
 
 INSERT INTO storage.buckets (id, name, public) VALUES ('category-images', 'category-images', true);

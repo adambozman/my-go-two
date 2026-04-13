@@ -41,11 +41,13 @@ ALTER TABLE public.shared_profile_fields ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.shared_derived_features ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Owners can view shared card entries" ON public.shared_card_entries;
+DROP POLICY IF EXISTS "Owners can view shared card entries" ON public.shared_card_entries;
 CREATE POLICY "Owners can view shared card entries"
 ON public.shared_card_entries
 FOR SELECT
 USING (auth.uid() = owner_user_id OR auth.uid() = connection_user_id);
 
+DROP POLICY IF EXISTS "Owners can insert shared card entries" ON public.shared_card_entries;
 DROP POLICY IF EXISTS "Owners can insert shared card entries" ON public.shared_card_entries;
 CREATE POLICY "Owners can insert shared card entries"
 ON public.shared_card_entries
@@ -71,17 +73,20 @@ WITH CHECK (
 );
 
 DROP POLICY IF EXISTS "Owners can delete shared card entries" ON public.shared_card_entries;
+DROP POLICY IF EXISTS "Owners can delete shared card entries" ON public.shared_card_entries;
 CREATE POLICY "Owners can delete shared card entries"
 ON public.shared_card_entries
 FOR DELETE
 USING (auth.uid() = owner_user_id);
 
 DROP POLICY IF EXISTS "Connections can view shared profile fields" ON public.shared_profile_fields;
+DROP POLICY IF EXISTS "Connections can view shared profile fields" ON public.shared_profile_fields;
 CREATE POLICY "Connections can view shared profile fields"
 ON public.shared_profile_fields
 FOR SELECT
 USING (auth.uid() = owner_user_id OR auth.uid() = connection_user_id);
 
+DROP POLICY IF EXISTS "Owners can insert shared profile fields" ON public.shared_profile_fields;
 DROP POLICY IF EXISTS "Owners can insert shared profile fields" ON public.shared_profile_fields;
 CREATE POLICY "Owners can insert shared profile fields"
 ON public.shared_profile_fields
@@ -101,6 +106,7 @@ WITH CHECK (
 );
 
 DROP POLICY IF EXISTS "Owners can update shared profile fields" ON public.shared_profile_fields;
+DROP POLICY IF EXISTS "Owners can update shared profile fields" ON public.shared_profile_fields;
 CREATE POLICY "Owners can update shared profile fields"
 ON public.shared_profile_fields
 FOR UPDATE
@@ -108,17 +114,20 @@ USING (auth.uid() = owner_user_id)
 WITH CHECK (auth.uid() = owner_user_id);
 
 DROP POLICY IF EXISTS "Owners can delete shared profile fields" ON public.shared_profile_fields;
+DROP POLICY IF EXISTS "Owners can delete shared profile fields" ON public.shared_profile_fields;
 CREATE POLICY "Owners can delete shared profile fields"
 ON public.shared_profile_fields
 FOR DELETE
 USING (auth.uid() = owner_user_id);
 
 DROP POLICY IF EXISTS "Connections can view shared derived features" ON public.shared_derived_features;
+DROP POLICY IF EXISTS "Connections can view shared derived features" ON public.shared_derived_features;
 CREATE POLICY "Connections can view shared derived features"
 ON public.shared_derived_features
 FOR SELECT
 USING (auth.uid() = owner_user_id OR auth.uid() = connection_user_id);
 
+DROP POLICY IF EXISTS "Owners can insert shared derived features" ON public.shared_derived_features;
 DROP POLICY IF EXISTS "Owners can insert shared derived features" ON public.shared_derived_features;
 CREATE POLICY "Owners can insert shared derived features"
 ON public.shared_derived_features
@@ -138,12 +147,14 @@ WITH CHECK (
 );
 
 DROP POLICY IF EXISTS "Owners can update shared derived features" ON public.shared_derived_features;
+DROP POLICY IF EXISTS "Owners can update shared derived features" ON public.shared_derived_features;
 CREATE POLICY "Owners can update shared derived features"
 ON public.shared_derived_features
 FOR UPDATE
 USING (auth.uid() = owner_user_id)
 WITH CHECK (auth.uid() = owner_user_id);
 
+DROP POLICY IF EXISTS "Owners can delete shared derived features" ON public.shared_derived_features;
 DROP POLICY IF EXISTS "Owners can delete shared derived features" ON public.shared_derived_features;
 CREATE POLICY "Owners can delete shared derived features"
 ON public.shared_derived_features
@@ -166,6 +177,7 @@ ALTER TABLE public.connection_context_preferences
   ADD COLUMN IF NOT EXISTS feed_enabled boolean NOT NULL DEFAULT true,
   ADD COLUMN IF NOT EXISTS for_them_enabled boolean NOT NULL DEFAULT true;
 
+DROP POLICY IF EXISTS "Owners can insert connection context preferences" ON public.connection_context_preferences;
 DROP POLICY IF EXISTS "Owners can insert connection context preferences" ON public.connection_context_preferences;
 CREATE POLICY "Owners can insert connection context preferences"
 ON public.connection_context_preferences

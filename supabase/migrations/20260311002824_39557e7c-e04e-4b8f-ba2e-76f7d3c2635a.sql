@@ -1,6 +1,6 @@
 
 -- Custom templates table for user-created cards
-CREATE TABLE public.custom_templates (
+CREATE TABLE IF NOT EXISTS public.custom_templates (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   category text NOT NULL,
@@ -12,21 +12,25 @@ CREATE TABLE public.custom_templates (
 
 ALTER TABLE public.custom_templates ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own custom templates" ON public.custom_templates;
 CREATE POLICY "Users can view own custom templates"
   ON public.custom_templates FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own custom templates" ON public.custom_templates;
 CREATE POLICY "Users can insert own custom templates"
   ON public.custom_templates FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own custom templates" ON public.custom_templates;
 CREATE POLICY "Users can update own custom templates"
   ON public.custom_templates FOR UPDATE
   TO authenticated
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own custom templates" ON public.custom_templates;
 CREATE POLICY "Users can delete own custom templates"
   ON public.custom_templates FOR DELETE
   TO authenticated

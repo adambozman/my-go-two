@@ -83,8 +83,7 @@ AS $$
     SELECT COALESCE(
       (
         SELECT jsonb_build_object(
-          'persona_summary', vibe.persona_summary,
-          'updated_at', vibe.updated_at
+          'persona_summary', vibe.persona_summary
         )
         FROM relation r
         JOIN viewer v ON true
@@ -104,11 +103,11 @@ AS $$
         SELECT jsonb_agg(
           jsonb_build_object(
             'id', recommendation.id,
-            'summary', recommendation.summary,
+            'week_start', recommendation.week_start,
             'products', recommendation.products,
-            'updated_at', recommendation.updated_at
+            'generated_at', recommendation.generated_at
           )
-          ORDER BY recommendation.updated_at DESC
+          ORDER BY recommendation.generated_at DESC
         )
         FROM relation r
         JOIN viewer v ON true

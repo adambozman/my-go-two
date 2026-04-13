@@ -204,4 +204,13 @@ INSERT INTO public.category_registry (key, label, section, page, genders, sort_o
     {"id":"tech","name":"Tech","image":"specific-products",
      "fields":[{"label":"Favorite Brands","type":"text","value":""},{"label":"Category","type":"select","value":"","options":["Phone","Laptop","Audio","Smart Home","Wearables"]},{"label":"Ecosystem","type":"select","value":"","options":["Apple","Android/Google","Samsung","Mixed"]},{"label":"Notes","type":"text","value":""}]}
   ]'::jsonb
+ON CONFLICT (key) DO UPDATE SET
+  label = EXCLUDED.label,
+  section = EXCLUDED.section,
+  page = EXCLUDED.page,
+  genders = EXCLUDED.genders,
+  sort_order = EXCLUDED.sort_order,
+  is_active = EXCLUDED.is_active,
+  fields = EXCLUDED.fields,
+  subcategories = EXCLUDED.subcategories
 );

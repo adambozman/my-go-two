@@ -9,7 +9,7 @@ END;
 $$ LANGUAGE plpgsql SET search_path = public;
 
 -- Profiles table
-CREATE TABLE public.profiles (
+CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
   display_name TEXT,
@@ -18,8 +18,11 @@ CREATE TABLE public.profiles (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
 CREATE POLICY "Users can insert own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = user_id);
 CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
@@ -38,7 +41,7 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Couples table
-CREATE TABLE public.couples (
+CREATE TABLE IF NOT EXISTS public.couples (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   inviter_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   invitee_email TEXT NOT NULL,
@@ -48,13 +51,16 @@ CREATE TABLE public.couples (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.couples ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view own couples" ON public.couples;
 CREATE POLICY "Users can view own couples" ON public.couples FOR SELECT USING (auth.uid() = inviter_id OR auth.uid() = invitee_id);
+DROP POLICY IF EXISTS "Users can create couples" ON public.couples;
 CREATE POLICY "Users can create couples" ON public.couples FOR INSERT WITH CHECK (auth.uid() = inviter_id);
+DROP POLICY IF EXISTS "Users can update own couples" ON public.couples;
 CREATE POLICY "Users can update own couples" ON public.couples FOR UPDATE USING (auth.uid() = inviter_id OR auth.uid() = invitee_id);
 CREATE TRIGGER update_couples_updated_at BEFORE UPDATE ON public.couples FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Lists table
-CREATE TABLE public.lists (
+CREATE TABLE IF NOT EXISTS public.lists (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
@@ -65,7 +71,9 @@ CREATE TABLE public.lists (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.lists ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view own lists" ON public.lists;
 CREATE POLICY "Users can view own lists" ON public.lists FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Partners can view shared lists" ON public.lists;
 CREATE POLICY "Partners can view shared lists" ON public.lists FOR SELECT USING (
   is_shared = true AND EXISTS (
     SELECT 1 FROM public.couples
@@ -74,13 +82,16 @@ CREATE POLICY "Partners can view shared lists" ON public.lists FOR SELECT USING 
       OR (invitee_id = lists.user_id AND inviter_id = auth.uid()))
   )
 );
+DROP POLICY IF EXISTS "Users can insert own lists" ON public.lists;
 CREATE POLICY "Users can insert own lists" ON public.lists FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can update own lists" ON public.lists;
 CREATE POLICY "Users can update own lists" ON public.lists FOR UPDATE USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can delete own lists" ON public.lists;
 CREATE POLICY "Users can delete own lists" ON public.lists FOR DELETE USING (auth.uid() = user_id);
 CREATE TRIGGER update_lists_updated_at BEFORE UPDATE ON public.lists FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Card templates (before cards)
-CREATE TABLE public.card_templates (
+CREATE TABLE IF NOT EXISTS public.card_templates (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   category TEXT NOT NULL,
@@ -90,10 +101,11 @@ CREATE TABLE public.card_templates (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.card_templates ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can view templates" ON public.card_templates;
 CREATE POLICY "Anyone can view templates" ON public.card_templates FOR SELECT USING (true);
 
 -- Cards table
-CREATE TABLE public.cards (
+CREATE TABLE IF NOT EXISTS public.cards (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   list_id UUID NOT NULL REFERENCES public.lists(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -105,7 +117,9 @@ CREATE TABLE public.cards (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.cards ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view own cards" ON public.cards;
 CREATE POLICY "Users can view own cards" ON public.cards FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Partners can view shared cards" ON public.cards;
 CREATE POLICY "Partners can view shared cards" ON public.cards FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM public.lists l
@@ -118,8 +132,11 @@ CREATE POLICY "Partners can view shared cards" ON public.cards FOR SELECT USING 
     )
   )
 );
+DROP POLICY IF EXISTS "Users can insert own cards" ON public.cards;
 CREATE POLICY "Users can insert own cards" ON public.cards FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can update own cards" ON public.cards;
 CREATE POLICY "Users can update own cards" ON public.cards FOR UPDATE USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can delete own cards" ON public.cards;
 CREATE POLICY "Users can delete own cards" ON public.cards FOR DELETE USING (auth.uid() = user_id);
 CREATE TRIGGER update_cards_updated_at BEFORE UPDATE ON public.cards FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 

@@ -16,18 +16,21 @@ CREATE TABLE IF NOT EXISTS public.calendar_accounts (
 
 ALTER TABLE public.calendar_accounts ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own calendar accounts" ON public.calendar_accounts;
 CREATE POLICY "Users can view own calendar accounts"
 ON public.calendar_accounts
 FOR SELECT
 TO authenticated
 USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own calendar accounts" ON public.calendar_accounts;
 CREATE POLICY "Users can insert own calendar accounts"
 ON public.calendar_accounts
 FOR INSERT
 TO authenticated
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own calendar accounts" ON public.calendar_accounts;
 CREATE POLICY "Users can update own calendar accounts"
 ON public.calendar_accounts
 FOR UPDATE
@@ -35,6 +38,7 @@ TO authenticated
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own calendar accounts" ON public.calendar_accounts;
 CREATE POLICY "Users can delete own calendar accounts"
 ON public.calendar_accounts
 FOR DELETE
@@ -72,18 +76,21 @@ CREATE TABLE IF NOT EXISTS public.external_calendar_events (
 
 ALTER TABLE public.external_calendar_events ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own external calendar events" ON public.external_calendar_events;
 CREATE POLICY "Users can view own external calendar events"
 ON public.external_calendar_events
 FOR SELECT
 TO authenticated
 USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own external calendar events" ON public.external_calendar_events;
 CREATE POLICY "Users can insert own external calendar events"
 ON public.external_calendar_events
 FOR INSERT
 TO authenticated
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own external calendar events" ON public.external_calendar_events;
 CREATE POLICY "Users can update own external calendar events"
 ON public.external_calendar_events
 FOR UPDATE
@@ -91,6 +98,7 @@ TO authenticated
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own external calendar events" ON public.external_calendar_events;
 CREATE POLICY "Users can delete own external calendar events"
 ON public.external_calendar_events
 FOR DELETE

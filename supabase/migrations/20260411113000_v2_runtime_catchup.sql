@@ -87,6 +87,7 @@ CREATE INDEX IF NOT EXISTS idx_saved_product_cards_user_key
 ALTER TABLE public.saved_product_cards ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users manage own saved product cards" ON public.saved_product_cards;
+DROP POLICY IF EXISTS "Users manage own saved product cards" ON public.saved_product_cards;
 CREATE POLICY "Users manage own saved product cards"
   ON public.saved_product_cards
   FOR ALL
@@ -174,11 +175,13 @@ ALTER TABLE public.user_connections
 ALTER TABLE public.user_connections ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users can view own user connections" ON public.user_connections;
+DROP POLICY IF EXISTS "Users can view own user connections" ON public.user_connections;
 CREATE POLICY "Users can view own user connections"
   ON public.user_connections
   FOR SELECT
   USING (auth.uid() = inviter_id OR auth.uid() = invitee_id);
 
+DROP POLICY IF EXISTS "Users can create user connections" ON public.user_connections;
 DROP POLICY IF EXISTS "Users can create user connections" ON public.user_connections;
 CREATE POLICY "Users can create user connections"
   ON public.user_connections
@@ -186,11 +189,13 @@ CREATE POLICY "Users can create user connections"
   WITH CHECK (auth.uid() = inviter_id);
 
 DROP POLICY IF EXISTS "Users can update own user connections" ON public.user_connections;
+DROP POLICY IF EXISTS "Users can update own user connections" ON public.user_connections;
 CREATE POLICY "Users can update own user connections"
   ON public.user_connections
   FOR UPDATE
   USING (auth.uid() = inviter_id OR auth.uid() = invitee_id);
 
+DROP POLICY IF EXISTS "Users can delete own user connections" ON public.user_connections;
 DROP POLICY IF EXISTS "Users can delete own user connections" ON public.user_connections;
 CREATE POLICY "Users can delete own user connections"
   ON public.user_connections
@@ -251,6 +256,7 @@ CREATE TABLE IF NOT EXISTS public.connection_access_settings (
 ALTER TABLE public.connection_access_settings ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Owners manage connection access settings" ON public.connection_access_settings;
+DROP POLICY IF EXISTS "Owners manage connection access settings" ON public.connection_access_settings;
 CREATE POLICY "Owners manage connection access settings"
   ON public.connection_access_settings
   FOR ALL
@@ -305,6 +311,7 @@ CREATE TABLE IF NOT EXISTS public.shared_connection_profile_fields (
 
 ALTER TABLE public.shared_connection_profile_fields ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Owners manage shared connection profile fields" ON public.shared_connection_profile_fields;
 DROP POLICY IF EXISTS "Owners manage shared connection profile fields" ON public.shared_connection_profile_fields;
 CREATE POLICY "Owners manage shared connection profile fields"
   ON public.shared_connection_profile_fields
@@ -361,6 +368,7 @@ CREATE TABLE IF NOT EXISTS public.shared_connection_derivations (
 ALTER TABLE public.shared_connection_derivations ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Owners manage shared connection derivations" ON public.shared_connection_derivations;
+DROP POLICY IF EXISTS "Owners manage shared connection derivations" ON public.shared_connection_derivations;
 CREATE POLICY "Owners manage shared connection derivations"
   ON public.shared_connection_derivations
   FOR ALL
@@ -385,6 +393,7 @@ CREATE TABLE IF NOT EXISTS public.shared_saved_product_cards (
 
 ALTER TABLE public.shared_saved_product_cards ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Owners manage shared saved product cards" ON public.shared_saved_product_cards;
 DROP POLICY IF EXISTS "Owners manage shared saved product cards" ON public.shared_saved_product_cards;
 CREATE POLICY "Owners manage shared saved product cards"
   ON public.shared_saved_product_cards
@@ -428,6 +437,7 @@ ALTER TABLE public.know_me_responses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.knowledge_derivations ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users manage their onboarding responses" ON public.onboarding_responses;
+DROP POLICY IF EXISTS "Users manage their onboarding responses" ON public.onboarding_responses;
 CREATE POLICY "Users manage their onboarding responses"
   ON public.onboarding_responses
   FOR ALL
@@ -435,12 +445,14 @@ CREATE POLICY "Users manage their onboarding responses"
   WITH CHECK (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Users manage their Know Me responses" ON public.know_me_responses;
+DROP POLICY IF EXISTS "Users manage their Know Me responses" ON public.know_me_responses;
 CREATE POLICY "Users manage their Know Me responses"
   ON public.know_me_responses
   FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users manage their knowledge derivations" ON public.knowledge_derivations;
 DROP POLICY IF EXISTS "Users manage their knowledge derivations" ON public.knowledge_derivations;
 CREATE POLICY "Users manage their knowledge derivations"
   ON public.knowledge_derivations
@@ -519,12 +531,14 @@ ALTER TABLE public.this_or_that_v2_answers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.this_or_that_v2_answer_signals ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users manage their This or That v2 structured answers" ON public.this_or_that_v2_answers;
+DROP POLICY IF EXISTS "Users manage their This or That v2 structured answers" ON public.this_or_that_v2_answers;
 CREATE POLICY "Users manage their This or That v2 structured answers"
   ON public.this_or_that_v2_answers
   FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users manage their This or That v2 structured answer signals" ON public.this_or_that_v2_answer_signals;
 DROP POLICY IF EXISTS "Users manage their This or That v2 structured answer signals" ON public.this_or_that_v2_answer_signals;
 CREATE POLICY "Users manage their This or That v2 structured answer signals"
   ON public.this_or_that_v2_answer_signals
@@ -697,12 +711,14 @@ ALTER TABLE public.recommendation_product_bank ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_weekly_recommendations ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users manage their preference signals" ON public.user_preference_signals;
+DROP POLICY IF EXISTS "Users manage their preference signals" ON public.user_preference_signals;
 CREATE POLICY "Users manage their preference signals"
   ON public.user_preference_signals
   FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users manage their product card keywords" ON public.user_product_card_keywords;
 DROP POLICY IF EXISTS "Users manage their product card keywords" ON public.user_product_card_keywords;
 CREATE POLICY "Users manage their product card keywords"
   ON public.user_product_card_keywords
@@ -711,12 +727,14 @@ CREATE POLICY "Users manage their product card keywords"
   WITH CHECK (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Users manage their like signals" ON public.user_like_signals;
+DROP POLICY IF EXISTS "Users manage their like signals" ON public.user_like_signals;
 CREATE POLICY "Users manage their like signals"
   ON public.user_like_signals
   FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users manage their dislike signals" ON public.user_dislike_signals;
 DROP POLICY IF EXISTS "Users manage their dislike signals" ON public.user_dislike_signals;
 CREATE POLICY "Users manage their dislike signals"
   ON public.user_dislike_signals
@@ -725,12 +743,14 @@ CREATE POLICY "Users manage their dislike signals"
   WITH CHECK (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Authenticated users can view recommendation keyword bank" ON public.recommendation_keyword_bank;
+DROP POLICY IF EXISTS "Authenticated users can view recommendation keyword bank" ON public.recommendation_keyword_bank;
 CREATE POLICY "Authenticated users can view recommendation keyword bank"
   ON public.recommendation_keyword_bank
   FOR SELECT
   TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS "Authenticated users can view recommendation brand bank" ON public.recommendation_brand_bank;
 DROP POLICY IF EXISTS "Authenticated users can view recommendation brand bank" ON public.recommendation_brand_bank;
 CREATE POLICY "Authenticated users can view recommendation brand bank"
   ON public.recommendation_brand_bank
@@ -739,6 +759,7 @@ CREATE POLICY "Authenticated users can view recommendation brand bank"
   USING (true);
 
 DROP POLICY IF EXISTS "Authenticated users can view recommendation brand location bank" ON public.recommendation_brand_location_bank;
+DROP POLICY IF EXISTS "Authenticated users can view recommendation brand location bank" ON public.recommendation_brand_location_bank;
 CREATE POLICY "Authenticated users can view recommendation brand location bank"
   ON public.recommendation_brand_location_bank
   FOR SELECT
@@ -746,12 +767,14 @@ CREATE POLICY "Authenticated users can view recommendation brand location bank"
   USING (true);
 
 DROP POLICY IF EXISTS "Authenticated users can view recommendation product bank" ON public.recommendation_product_bank;
+DROP POLICY IF EXISTS "Authenticated users can view recommendation product bank" ON public.recommendation_product_bank;
 CREATE POLICY "Authenticated users can view recommendation product bank"
   ON public.recommendation_product_bank
   FOR SELECT
   TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS "Users manage their weekly recommendation output" ON public.user_weekly_recommendations;
 DROP POLICY IF EXISTS "Users manage their weekly recommendation output" ON public.user_weekly_recommendations;
 CREATE POLICY "Users manage their weekly recommendation output"
   ON public.user_weekly_recommendations

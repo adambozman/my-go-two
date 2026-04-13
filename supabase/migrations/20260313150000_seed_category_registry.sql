@@ -44,5 +44,14 @@ VALUES
 ('events',               'Events',             'entertainment', 'mygotwo', ARRAY['male','female','non-binary'], 10, true, '[]', NULL),
 ('date-ideas',           'Date Ideas',         'entertainment', 'mygotwo', ARRAY['male','female','non-binary'], 20, true, '[]', NULL),
 ('love-language',        'Love Language',      'entertainment', 'mygotwo', ARRAY['male','female','non-binary'], 30, true, '[]', NULL),
-('travel-preferences',   'Travel',             'entertainment', 'mygotwo', ARRAY['male','female','non-binary'], 40, true, '[]', NULL);
+('travel-preferences',   'Travel',             'entertainment', 'mygotwo', ARRAY['male','female','non-binary'], 40, true, '[]', NULL
+ON CONFLICT (key) DO UPDATE SET
+  label = EXCLUDED.label,
+  section = EXCLUDED.section,
+  page = EXCLUDED.page,
+  genders = EXCLUDED.genders,
+  sort_order = EXCLUDED.sort_order,
+  is_active = EXCLUDED.is_active,
+  fields = EXCLUDED.fields,
+  subcategories = EXCLUDED.subcategories);
 

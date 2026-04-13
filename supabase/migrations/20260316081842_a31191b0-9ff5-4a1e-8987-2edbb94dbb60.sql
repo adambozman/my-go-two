@@ -1,6 +1,6 @@
 
 -- Sponsored products catalog (admin-managed)
-CREATE TABLE public.sponsored_products (
+CREATE TABLE IF NOT EXISTS public.sponsored_products (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   brand text NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE public.sponsored_products (
 );
 
 -- Analytics: impressions and clicks
-CREATE TABLE public.ad_events (
+CREATE TABLE IF NOT EXISTS public.ad_events (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id uuid REFERENCES public.sponsored_products(id) ON DELETE CASCADE NOT NULL,
   user_id uuid NOT NULL,
@@ -43,11 +43,13 @@ ALTER TABLE public.sponsored_products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ad_events ENABLE ROW LEVEL SECURITY;
 
 -- Sponsored products: anyone can read active ones, only admin email can manage
+DROP POLICY IF EXISTS "Anyone can read active sponsored products" ON public.sponsored_products;
 CREATE POLICY "Anyone can read active sponsored products"
   ON public.sponsored_products FOR SELECT
   TO authenticated
   USING (is_active = true);
 
+DROP POLICY IF EXISTS "Admin can manage sponsored products" ON public.sponsored_products;
 CREATE POLICY "Admin can manage sponsored products"
   ON public.sponsored_products FOR ALL
   TO authenticated
@@ -55,11 +57,13 @@ CREATE POLICY "Admin can manage sponsored products"
   WITH CHECK (auth.jwt() ->> 'email' = 'adambozman@gmail.com');
 
 -- Ad events: users can insert their own, admin can read all
+DROP POLICY IF EXISTS "Users can insert own ad events" ON public.ad_events;
 CREATE POLICY "Users can insert own ad events"
   ON public.ad_events FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Admin can read all ad events" ON public.ad_events;
 CREATE POLICY "Admin can read all ad events"
   ON public.ad_events FOR SELECT
   TO authenticated

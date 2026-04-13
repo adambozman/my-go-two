@@ -1,4 +1,4 @@
-CREATE TABLE public.public_creator_profiles (
+CREATE TABLE IF NOT EXISTS public.public_creator_profiles (
   user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   creator_name text,
   creator_tag text,
@@ -15,22 +15,26 @@ CREATE TABLE public.public_creator_profiles (
 
 ALTER TABLE public.public_creator_profiles ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Owners can view own public creator profile" ON public.public_creator_profiles;
 CREATE POLICY "Owners can view own public creator profile"
 ON public.public_creator_profiles
 FOR SELECT
 USING (auth.uid() = user_id OR is_public = true);
 
+DROP POLICY IF EXISTS "Owners can insert own public creator profile" ON public.public_creator_profiles;
 CREATE POLICY "Owners can insert own public creator profile"
 ON public.public_creator_profiles
 FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Owners can update own public creator profile" ON public.public_creator_profiles;
 CREATE POLICY "Owners can update own public creator profile"
 ON public.public_creator_profiles
 FOR UPDATE
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Owners can delete own public creator profile" ON public.public_creator_profiles;
 CREATE POLICY "Owners can delete own public creator profile"
 ON public.public_creator_profiles
 FOR DELETE
@@ -43,7 +47,7 @@ CREATE TRIGGER update_public_creator_profiles_updated_at
 
 ALTER PUBLICATION supabase_realtime ADD TABLE public.public_creator_profiles;
 
-CREATE TABLE public.public_creator_follows (
+CREATE TABLE IF NOT EXISTS public.public_creator_follows (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   follower_user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   creator_user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -58,16 +62,19 @@ CREATE TABLE public.public_creator_follows (
 
 ALTER TABLE public.public_creator_follows ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Followers can view own follows" ON public.public_creator_follows;
 CREATE POLICY "Followers can view own follows"
 ON public.public_creator_follows
 FOR SELECT
 USING (auth.uid() = follower_user_id OR auth.uid() = creator_user_id);
 
+DROP POLICY IF EXISTS "Followers can create own follows" ON public.public_creator_follows;
 CREATE POLICY "Followers can create own follows"
 ON public.public_creator_follows
 FOR INSERT
 WITH CHECK (auth.uid() = follower_user_id);
 
+DROP POLICY IF EXISTS "Followers can delete own follows" ON public.public_creator_follows;
 CREATE POLICY "Followers can delete own follows"
 ON public.public_creator_follows
 FOR DELETE
@@ -75,7 +82,7 @@ USING (auth.uid() = follower_user_id);
 
 ALTER PUBLICATION supabase_realtime ADD TABLE public.public_creator_follows;
 
-CREATE TABLE public.public_published_entities (
+CREATE TABLE IF NOT EXISTS public.public_published_entities (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   owner_user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   entity_kind text NOT NULL CHECK (entity_kind IN ('product', 'outfit')),
@@ -96,6 +103,7 @@ CREATE TABLE public.public_published_entities (
 
 ALTER TABLE public.public_published_entities ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Owners can view own published entities and public can view published ones" ON public.public_published_entities;
 CREATE POLICY "Owners can view own published entities and public can view published ones"
 ON public.public_published_entities
 FOR SELECT
@@ -104,17 +112,20 @@ USING (
   OR (visibility = 'public' AND status = 'published')
 );
 
+DROP POLICY IF EXISTS "Owners can insert own published entities" ON public.public_published_entities;
 CREATE POLICY "Owners can insert own published entities"
 ON public.public_published_entities
 FOR INSERT
 WITH CHECK (auth.uid() = owner_user_id);
 
+DROP POLICY IF EXISTS "Owners can update own published entities" ON public.public_published_entities;
 CREATE POLICY "Owners can update own published entities"
 ON public.public_published_entities
 FOR UPDATE
 USING (auth.uid() = owner_user_id)
 WITH CHECK (auth.uid() = owner_user_id);
 
+DROP POLICY IF EXISTS "Owners can delete own published entities" ON public.public_published_entities;
 CREATE POLICY "Owners can delete own published entities"
 ON public.public_published_entities
 FOR DELETE
@@ -127,7 +138,7 @@ CREATE TRIGGER update_public_published_entities_updated_at
 
 ALTER PUBLICATION supabase_realtime ADD TABLE public.public_published_entities;
 
-CREATE TABLE public.public_published_entity_cards (
+CREATE TABLE IF NOT EXISTS public.public_published_entity_cards (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   published_entity_id uuid NOT NULL REFERENCES public.public_published_entities(id) ON DELETE CASCADE,
   owner_user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -140,6 +151,7 @@ CREATE TABLE public.public_published_entity_cards (
 
 ALTER TABLE public.public_published_entity_cards ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Owners can view own published entity cards and public can view public entity cards" ON public.public_published_entity_cards;
 CREATE POLICY "Owners can view own published entity cards and public can view public entity cards"
 ON public.public_published_entity_cards
 FOR SELECT
@@ -154,6 +166,7 @@ USING (
   )
 );
 
+DROP POLICY IF EXISTS "Owners can insert own published entity cards" ON public.public_published_entity_cards;
 CREATE POLICY "Owners can insert own published entity cards"
 ON public.public_published_entity_cards
 FOR INSERT
@@ -173,12 +186,14 @@ WITH CHECK (
   )
 );
 
+DROP POLICY IF EXISTS "Owners can update own published entity cards" ON public.public_published_entity_cards;
 CREATE POLICY "Owners can update own published entity cards"
 ON public.public_published_entity_cards
 FOR UPDATE
 USING (auth.uid() = owner_user_id)
 WITH CHECK (auth.uid() = owner_user_id);
 
+DROP POLICY IF EXISTS "Owners can delete own published entity cards" ON public.public_published_entity_cards;
 CREATE POLICY "Owners can delete own published entity cards"
 ON public.public_published_entity_cards
 FOR DELETE
@@ -186,7 +201,7 @@ USING (auth.uid() = owner_user_id);
 
 ALTER PUBLICATION supabase_realtime ADD TABLE public.public_published_entity_cards;
 
-CREATE TABLE public.public_entity_reactions (
+CREATE TABLE IF NOT EXISTS public.public_entity_reactions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   published_entity_id uuid NOT NULL REFERENCES public.public_published_entities(id) ON DELETE CASCADE,
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -197,16 +212,19 @@ CREATE TABLE public.public_entity_reactions (
 
 ALTER TABLE public.public_entity_reactions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view public entity reactions" ON public.public_entity_reactions;
 CREATE POLICY "Users can view public entity reactions"
 ON public.public_entity_reactions
 FOR SELECT
 USING (true);
 
+DROP POLICY IF EXISTS "Users can create own public entity reactions" ON public.public_entity_reactions;
 CREATE POLICY "Users can create own public entity reactions"
 ON public.public_entity_reactions
 FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own public entity reactions" ON public.public_entity_reactions;
 CREATE POLICY "Users can delete own public entity reactions"
 ON public.public_entity_reactions
 FOR DELETE

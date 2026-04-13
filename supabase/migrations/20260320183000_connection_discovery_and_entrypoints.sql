@@ -1,4 +1,4 @@
-CREATE TABLE public.user_discovery_settings (
+CREATE TABLE IF NOT EXISTS public.user_discovery_settings (
   user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   allow_name_discovery boolean NOT NULL DEFAULT true,
   allow_phone_discovery boolean NOT NULL DEFAULT false,
@@ -9,21 +9,25 @@ CREATE TABLE public.user_discovery_settings (
 
 ALTER TABLE public.user_discovery_settings ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own discovery settings" ON public.user_discovery_settings;
 CREATE POLICY "Users can view own discovery settings"
 ON public.user_discovery_settings
 FOR SELECT
 USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own discovery settings" ON public.user_discovery_settings;
 CREATE POLICY "Users can insert own discovery settings"
 ON public.user_discovery_settings
 FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own discovery settings" ON public.user_discovery_settings;
 CREATE POLICY "Users can update own discovery settings"
 ON public.user_discovery_settings
 FOR UPDATE
 USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own discovery settings" ON public.user_discovery_settings;
 CREATE POLICY "Users can delete own discovery settings"
 ON public.user_discovery_settings
 FOR DELETE
@@ -36,7 +40,7 @@ CREATE TRIGGER update_user_discovery_settings_updated_at
 
 ALTER PUBLICATION supabase_realtime ADD TABLE public.user_discovery_settings;
 
-CREATE TABLE public.user_discovery_contacts (
+CREATE TABLE IF NOT EXISTS public.user_discovery_contacts (
   user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   phone_raw text,
   phone_search_normalized text GENERATED ALWAYS AS (
@@ -46,27 +50,31 @@ CREATE TABLE public.user_discovery_contacts (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE UNIQUE INDEX user_discovery_contacts_phone_search_normalized_key
+CREATE UNIQUE INDEX IF NOT EXISTS user_discovery_contacts_phone_search_normalized_key
   ON public.user_discovery_contacts (phone_search_normalized)
   WHERE phone_search_normalized IS NOT NULL;
 
 ALTER TABLE public.user_discovery_contacts ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own discovery contacts" ON public.user_discovery_contacts;
 CREATE POLICY "Users can view own discovery contacts"
 ON public.user_discovery_contacts
 FOR SELECT
 USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own discovery contacts" ON public.user_discovery_contacts;
 CREATE POLICY "Users can insert own discovery contacts"
 ON public.user_discovery_contacts
 FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own discovery contacts" ON public.user_discovery_contacts;
 CREATE POLICY "Users can update own discovery contacts"
 ON public.user_discovery_contacts
 FOR UPDATE
 USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own discovery contacts" ON public.user_discovery_contacts;
 CREATE POLICY "Users can delete own discovery contacts"
 ON public.user_discovery_contacts
 FOR DELETE
@@ -79,7 +87,7 @@ CREATE TRIGGER update_user_discovery_contacts_updated_at
 
 ALTER PUBLICATION supabase_realtime ADD TABLE public.user_discovery_contacts;
 
-CREATE TABLE public.connection_share_tokens (
+CREATE TABLE IF NOT EXISTS public.connection_share_tokens (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   owner_user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   token text NOT NULL UNIQUE DEFAULT encode(gen_random_bytes(24), 'hex'),
@@ -93,21 +101,25 @@ CREATE TABLE public.connection_share_tokens (
 
 ALTER TABLE public.connection_share_tokens ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own connection share tokens" ON public.connection_share_tokens;
 CREATE POLICY "Users can view own connection share tokens"
 ON public.connection_share_tokens
 FOR SELECT
 USING (auth.uid() = owner_user_id);
 
+DROP POLICY IF EXISTS "Users can insert own connection share tokens" ON public.connection_share_tokens;
 CREATE POLICY "Users can insert own connection share tokens"
 ON public.connection_share_tokens
 FOR INSERT
 WITH CHECK (auth.uid() = owner_user_id);
 
+DROP POLICY IF EXISTS "Users can update own connection share tokens" ON public.connection_share_tokens;
 CREATE POLICY "Users can update own connection share tokens"
 ON public.connection_share_tokens
 FOR UPDATE
 USING (auth.uid() = owner_user_id);
 
+DROP POLICY IF EXISTS "Users can delete own connection share tokens" ON public.connection_share_tokens;
 CREATE POLICY "Users can delete own connection share tokens"
 ON public.connection_share_tokens
 FOR DELETE

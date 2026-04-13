@@ -1,4 +1,4 @@
-CREATE TABLE public.image_blocklist (
+CREATE TABLE IF NOT EXISTS public.image_blocklist (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   path text NOT NULL UNIQUE,
   created_at timestamptz NOT NULL DEFAULT now()
@@ -6,6 +6,9 @@ CREATE TABLE public.image_blocklist (
 
 ALTER TABLE public.image_blocklist ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Authenticated users can view blocklist" ON public.image_blocklist;
 CREATE POLICY "Authenticated users can view blocklist" ON public.image_blocklist FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Authenticated users can insert blocklist" ON public.image_blocklist;
 CREATE POLICY "Authenticated users can insert blocklist" ON public.image_blocklist FOR INSERT TO authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "Authenticated users can delete blocklist" ON public.image_blocklist;
 CREATE POLICY "Authenticated users can delete blocklist" ON public.image_blocklist FOR DELETE TO authenticated USING (true);

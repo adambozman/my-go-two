@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.dev_asset_image_overrides (
 ALTER TABLE public.dev_asset_image_overrides ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users manage own dev asset overrides" ON public.dev_asset_image_overrides;
+DROP POLICY IF EXISTS "Users manage own dev asset overrides" ON public.dev_asset_image_overrides;
 CREATE POLICY "Users manage own dev asset overrides"
 ON public.dev_asset_image_overrides
 FOR ALL

@@ -1,4 +1,4 @@
-CREATE TABLE public.shared_card_entries (
+CREATE TABLE IF NOT EXISTS public.shared_card_entries (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   couple_id uuid NOT NULL REFERENCES public.couples(id) ON DELETE CASCADE,
   owner_user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -10,11 +10,13 @@ CREATE TABLE public.shared_card_entries (
 
 ALTER TABLE public.shared_card_entries ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Owners can view shared card entries" ON public.shared_card_entries;
 CREATE POLICY "Owners can view shared card entries"
 ON public.shared_card_entries
 FOR SELECT
 USING (auth.uid() = owner_user_id OR auth.uid() = connection_user_id);
 
+DROP POLICY IF EXISTS "Owners can insert shared card entries" ON public.shared_card_entries;
 CREATE POLICY "Owners can insert shared card entries"
 ON public.shared_card_entries
 FOR INSERT
@@ -39,6 +41,7 @@ WITH CHECK (
   )
 );
 
+DROP POLICY IF EXISTS "Owners can delete shared card entries" ON public.shared_card_entries;
 CREATE POLICY "Owners can delete shared card entries"
 ON public.shared_card_entries
 FOR DELETE
@@ -46,7 +49,7 @@ USING (auth.uid() = owner_user_id);
 
 ALTER PUBLICATION supabase_realtime ADD TABLE public.shared_card_entries;
 
-CREATE TABLE public.shared_profile_fields (
+CREATE TABLE IF NOT EXISTS public.shared_profile_fields (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   couple_id uuid NOT NULL REFERENCES public.couples(id) ON DELETE CASCADE,
   owner_user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -62,11 +65,13 @@ CREATE TABLE public.shared_profile_fields (
 
 ALTER TABLE public.shared_profile_fields ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Connections can view shared profile fields" ON public.shared_profile_fields;
 CREATE POLICY "Connections can view shared profile fields"
 ON public.shared_profile_fields
 FOR SELECT
 USING (auth.uid() = owner_user_id OR auth.uid() = connection_user_id);
 
+DROP POLICY IF EXISTS "Owners can insert shared profile fields" ON public.shared_profile_fields;
 CREATE POLICY "Owners can insert shared profile fields"
 ON public.shared_profile_fields
 FOR INSERT
@@ -85,11 +90,13 @@ WITH CHECK (
   )
 );
 
+DROP POLICY IF EXISTS "Owners can update shared profile fields" ON public.shared_profile_fields;
 CREATE POLICY "Owners can update shared profile fields"
 ON public.shared_profile_fields
 FOR UPDATE
 USING (auth.uid() = owner_user_id);
 
+DROP POLICY IF EXISTS "Owners can delete shared profile fields" ON public.shared_profile_fields;
 CREATE POLICY "Owners can delete shared profile fields"
 ON public.shared_profile_fields
 FOR DELETE
@@ -102,7 +109,7 @@ CREATE TRIGGER update_shared_profile_fields_updated_at
 
 ALTER PUBLICATION supabase_realtime ADD TABLE public.shared_profile_fields;
 
-CREATE TABLE public.shared_derived_features (
+CREATE TABLE IF NOT EXISTS public.shared_derived_features (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   couple_id uuid NOT NULL REFERENCES public.couples(id) ON DELETE CASCADE,
   owner_user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -118,11 +125,13 @@ CREATE TABLE public.shared_derived_features (
 
 ALTER TABLE public.shared_derived_features ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Connections can view shared derived features" ON public.shared_derived_features;
 CREATE POLICY "Connections can view shared derived features"
 ON public.shared_derived_features
 FOR SELECT
 USING (auth.uid() = owner_user_id OR auth.uid() = connection_user_id);
 
+DROP POLICY IF EXISTS "Owners can insert shared derived features" ON public.shared_derived_features;
 CREATE POLICY "Owners can insert shared derived features"
 ON public.shared_derived_features
 FOR INSERT
@@ -141,11 +150,13 @@ WITH CHECK (
   )
 );
 
+DROP POLICY IF EXISTS "Owners can update shared derived features" ON public.shared_derived_features;
 CREATE POLICY "Owners can update shared derived features"
 ON public.shared_derived_features
 FOR UPDATE
 USING (auth.uid() = owner_user_id);
 
+DROP POLICY IF EXISTS "Owners can delete shared derived features" ON public.shared_derived_features;
 CREATE POLICY "Owners can delete shared derived features"
 ON public.shared_derived_features
 FOR DELETE
