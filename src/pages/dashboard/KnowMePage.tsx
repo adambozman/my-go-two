@@ -1,7 +1,7 @@
 ﻿import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Check, SkipForward, Sparkles, Shuffle, Send, Lock } from "lucide-react";
-import { useKnowledgeCenter } from "@/contexts/knowledge-center-context";
+import { useUserProfile } from "@/contexts/user-profile-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -201,7 +201,7 @@ const buildThisOrThatCategoryState = (
 const KnowMePage = () => {
   const { subscribed, subscriptionLoading } = useAuth();
   const { knowledgeSnapshot, knowledgeDerivations, loading: contextLoading, refreshKnowledge } =
-    useKnowledgeCenter();
+    useUserProfile();
   const { setBackState } = useTopBar();
   const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
   const knowMeResponses = useMemo(

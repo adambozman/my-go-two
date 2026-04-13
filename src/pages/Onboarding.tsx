@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Check, ChevronLeft, ChevronRight, ClipboardList, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
-import { useKnowledgeCenter } from "@/contexts/knowledge-center-context";
+import { useUserProfile } from "@/contexts/user-profile-context";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
@@ -47,7 +47,7 @@ const Onboarding = () => {
   const [searchParams] = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
   const { user } = useAuth();
-  const { knowledgeDerivations, refreshKnowledge } = useKnowledgeCenter();
+  const { knowledgeDerivations, refreshKnowledge } = useUserProfile();
   const { toast } = useToast();
 
   const [phase, setPhase] = useState<Phase>(isEditMode ? "profile" : "intro");

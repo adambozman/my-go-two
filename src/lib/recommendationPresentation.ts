@@ -20,7 +20,7 @@ export const isVerifiedExactRecommendation = (product: RecommendationProduct) =>
 export const getRecommendationMatchLabel = (product: RecommendationProduct) => {
   if (isVerifiedExactRecommendation(product)) return "Exact Match";
   if (product.source_kind === "specific-product") return "Product Match";
-  if (product.source_kind === "catalog-product") return "Catalog Match";
+  if (product.source_kind === "catalog-product") return "Product Match";
   return "Search Match";
 };
 
@@ -35,7 +35,7 @@ export const getRecommendationDestination = (product: RecommendationProduct) =>
 export const getRecommendationActionLabel = (product: RecommendationProduct) => {
   if (isVerifiedExactRecommendation(product) && product.affiliate_url) return "View Product";
   if (product.source_kind === "specific-product" && product.affiliate_url) return "View Product Match";
-  if (product.source_kind === "catalog-product" && product.affiliate_url) return "View Catalog";
+  if (product.source_kind === "catalog-product" && product.affiliate_url) return "View Product";
   if (product.search_url) return "Search Brand";
   return null;
 };

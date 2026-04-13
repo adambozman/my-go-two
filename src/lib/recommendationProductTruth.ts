@@ -69,12 +69,11 @@ export const scoreRecommendationProductImageSemanticFit = (product: Recommendati
 export const hasTrustedRecommendationProductImage = (product: RecommendationProductLike) => {
   const imageUrl = cleanText(product.image_url);
   if (!imageUrl || !/^https?:\/\//i.test(imageUrl)) return false;
-  if (!cleanText(product.affiliate_url)) return false;
   if (product.source_kind === "brand-search") return false;
 
   const bankState = cleanText(product.explanation?.bank_state);
   const imageStatus = cleanText(product.explanation?.image_status);
-  if (bankState && !["exact_verified", "catalog_verified"].includes(bankState)) return false;
+  if (bankState && bankState !== "exact_verified") return false;
   if (imageStatus && imageStatus !== "verified") return false;
   if (product.source_kind === "specific-product" && !product.exact_match_confirmed) return false;
 

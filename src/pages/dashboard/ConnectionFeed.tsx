@@ -4,10 +4,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { resolveStorageUrl } from "@/lib/storageRefs";
 
-interface ConnectionFeedRow {
+interface ConnectionFeedRpcRow {
   feed_item_id: string;
-  user_connection_id: string;
-  couple_id: string;
+  user_connection_id?: string | null;
   connection_label: string | null;
   item_kind: string | null;
   title: string | null;
@@ -18,15 +17,42 @@ interface ConnectionFeedRow {
   event_at: string | null;
 }
 
-type RpcResult<T> = {
-  data: T | null;
-  error: { message?: string } | null;
-};
+interface ConnectionFeedRow {
+  feed_item_id: string;
+  user_connection_id: string;
+  connection_label: string | null;
+  item_kind: string | null;
+  title: string | null;
+  subtitle: string | null;
+  body: string | null;
+  image_url: string | null;
+  section: string | null;
+  event_at: string | null;
+}
 
-const rpc = supabase.rpc as unknown as <T>(
-  fn: string,
-  args?: Record<string, unknown>,
-) => Promise<RpcResult<T>>;
+const normalizeConnectionFeedRow = (row: ConnectionFeedRpcRow): ConnectionFeedRow | null => {
+  const userConnectionId =
+    typeof row.user_connection_id === "string" && row.user_connection_id.trim().length > 0
+      ? row.user_connection_id
+      : null;
+
+  if (!userConnectionId) {
+    return null;
+  }
+
+  return {
+    feed_item_id: row.feed_item_id,
+    user_connection_id: userConnectionId,
+    connection_label: row.connection_label,
+    item_kind: row.item_kind,
+    title: row.title,
+    subtitle: row.subtitle,
+    body: row.body,
+    image_url: row.image_url,
+    section: row.section,
+    event_at: row.event_at,
+  };
+};
 
 function formatRelativeDateLabel(value?: string | null) {
   if (!value) return "Just updated";
@@ -70,12 +96,18 @@ export default function ConnectionFeed() {
 
   const loadFeed = useCallback(async () => {
     setLoading(true);
-    const { data } = await rpc<ConnectionFeedRow[]>("get_connection_feed", {
+    const { data } = await supabase.rpc("get_connection_feed", {
       p_limit: 120,
       p_user_connection_id: selectedUserConnectionId === "all" ? null : selectedUserConnectionId,
     });
 
-    setRows(Array.isArray(data) ? (data as ConnectionFeedRow[]) : []);
+    setRows(
+      Array.isArray(data)
+        ? data
+            .map((row) => normalizeConnectionFeedRow(row))
+            .filter((row): row is ConnectionFeedRow => Boolean(row))
+        : [],
+    );
     setLoading(false);
   }, [selectedUserConnectionId]);
 
@@ -240,7 +272,7 @@ export default function ConnectionFeed() {
 
                 <div className="mt-4">
                   <button
-                    onClick={() => navigate(`/dashboard/connections/${row.couple_id}`)}
+                    onClick={() => navigate(`/dashboard/connections/${row.user_connection_id}`)}
                     className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.12em]"
                     style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(255,255,255,0.76)", border: "1px solid rgba(255,255,255,0.88)" }}
                   >

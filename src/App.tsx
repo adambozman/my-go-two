@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { KnowledgeCenterProvider } from "@/contexts/KnowledgeCenterContext";
+import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { TopBarProvider } from "@/contexts/TopBarContext";
 import { AppRuntimeBoundary } from "@/components/AppRuntimeBoundary";
 import { DevRuntimeDiagnostics } from "@/components/DevRuntimeDiagnostics";
@@ -48,7 +48,7 @@ const App = () => {
       <DevRuntimeDiagnostics />
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <KnowledgeCenterProvider>
+          <UserProfileProvider>
             <TopBarProvider>
               <TooltipProvider>
                 <Toaster />
@@ -85,7 +85,7 @@ const App = () => {
                 </BrowserRouter>
               </TooltipProvider>
             </TopBarProvider>
-          </KnowledgeCenterProvider>
+          </UserProfileProvider>
         </AuthProvider>
       </QueryClientProvider>
     </AppRuntimeBoundary>

@@ -27,6 +27,7 @@ import {
   generateFallbackRecommendationIntents,
 } from "../_shared/recommendationIntentPlanner.ts";
 import {
+  type ProductBankFallbackRow,
   selectPopularFallbackSeeds,
   type PopularFallbackSeed,
   type TrendCandidateFallbackRow,
@@ -48,7 +49,7 @@ const ENGINE_RULESET_VERSION = "2026-04-12-clean-break";
 const GENERATION_VERSION = `${ENGINE_FAMILY}:${ENGINE_RULESET_VERSION}`;
 const BANK_REVERIFY_MAX_AGE_HOURS = 24 * 14;
 
-const ALLOWED_KINDS = new Set(["specific", "generic", "catalog"]);
+const ALLOWED_KINDS = new Set(["specific", "generic"]);
 
 type JsonObject = Record<string, unknown>;
 
@@ -143,7 +144,7 @@ const sanitizeIntents = (rawIntents: unknown): RecommendationIntent[] => {
         hook: cleanText(intent.hook),
         why: cleanText(intent.why),
         recommendation_kind: (
-          ALLOWED_KINDS.has(recommendationKind) ? recommendationKind : "catalog"
+          ALLOWED_KINDS.has(recommendationKind) ? recommendationKind : "generic"
         ) as RecommendationIntent["recommendation_kind"],
         search_query: cleanText(intent.search_query) || null,
         primary_keyword: cleanText(intent.primary_keyword) || null,
@@ -222,17 +223,6 @@ const intentConflictsWithNegatives = (
   const descriptors = mergeDescriptorKeywords(primaryKeyword, intent.keywords ?? [], [intent.brand, intent.name]);
   const haystack = mergeRecommendationKeywords([primaryKeyword, ...descriptors, intent.brand, intent.name]);
   return haystack.some((keyword) => negativeKeywordSet.has(keyword));
-};
-
-const countKeywordOverlap = (left: string[], right: string[]) => {
-  const rightSet = new Set(right);
-  let overlap = 0;
-
-  for (const keyword of left) {
-    if (rightSet.has(keyword)) overlap += 1;
-  }
-
-  return overlap;
 };
 
 const loadThisOrThatAnswers = async (
@@ -331,6 +321,33 @@ const loadTrendCandidateFallbackRows = async (
   }
 
   return Array.isArray(data) ? (data as TrendCandidateFallbackRow[]) : [];
+};
+
+const loadPopularFallbackProductBankRows = async (
+  admin: SupabaseClient,
+  categories: RecommendationIntent["category"][],
+) => {
+  if (categories.length === 0) return [];
+
+  const { data, error } = await admin
+    .from("recommendation_product_bank")
+    .select("id, primary_keyword, descriptor_keywords, category, brand, product_title, product_url, product_image_url, product_price_text, resolver_source, source_version, match_confidence, exact_match_confirmed, usage_count, last_verified_at, bank_state, bank_source, image_status")
+    .in("category", categories)
+    .eq("exact_match_confirmed", true)
+    .eq("bank_state", "exact_verified")
+    .eq("image_status", "verified")
+    .eq("bank_source", "trend-ingested")
+    .limit(200);
+
+  if (error) {
+    if (isMissingRecommendationStorage(error)) {
+      console.warn("[recommendation-engine-v2] Popular product bank storage is unavailable. Falling back to trend candidates.");
+      return [];
+    }
+    throw error;
+  }
+
+  return Array.isArray(data) ? (data as ProductBankFallbackRow[]) : [];
 };
 const toResponseProduct = (
   state: NormalizedRecommendationState,
@@ -498,6 +515,26 @@ const requestAiIntents = async (
   const categoryPlanSnapshot = categoryPlan
     .map((entry) => `${entry.category}: state=${entry.state}, total=${entry.totalTarget}, ai=${entry.aiTarget}`)
     .join("\n");
+  const likeSummary = state.likes
+    .slice(0, 18)
+    .map((row) => [
+      row.category ? `category=${row.category}` : "",
+      row.brand ? `brand=${row.brand}` : "",
+      row.primary_keyword ? `primary=${row.primary_keyword}` : "",
+      row.descriptor_keywords?.length ? `descriptors=${row.descriptor_keywords.join(", ")}` : "",
+    ].filter(Boolean).join(" | "))
+    .filter(Boolean)
+    .join("\n");
+  const dislikeSummary = state.dislikes
+    .slice(0, 18)
+    .map((row) => [
+      row.category ? `category=${row.category}` : "",
+      row.brand ? `brand=${row.brand}` : "",
+      row.primary_keyword ? `avoid=${row.primary_keyword}` : "",
+      row.descriptor_keywords?.length ? `descriptors=${row.descriptor_keywords.join(", ")}` : "",
+    ].filter(Boolean).join(" | "))
+    .filter(Boolean)
+    .join("\n");
   const categoryEnum = [...RECOMMENDATION_CATEGORY_ORDER];
 
   const prompt = `You are the Go Two recommendation planner for the replacement recommendation engine.
@@ -534,6 +571,12 @@ ${state.thisOrThatAnswers
 
 RECOMMENDED BRANDS / STORES:
 ${state.recommendedBrands.slice(0, 24).join(", ") || "None"}
+
+LIKES / POSITIVE SIGNALS:
+${likeSummary || "None"}
+
+DISLIKES / AVOIDS:
+${dislikeSummary || "None"}
 
 LOCATION SIGNALS:
 ${state.locationKeys.join(", ") || "None"}
@@ -591,7 +634,7 @@ Use the provided tool.`;
                       category: { type: "string", enum: categoryEnum },
                       hook: { type: "string" },
                       why: { type: "string" },
-                      recommendation_kind: { type: "string", enum: ["specific", "generic", "catalog"] },
+                      recommendation_kind: { type: "string", enum: ["specific", "generic"] },
                       search_query: { type: "string" },
                       primary_keyword: { type: "string" },
                       keywords: {
@@ -808,6 +851,7 @@ const buildPopularFallbackProducts = async ({
       .filter(Boolean),
   );
   const trendCandidateRows = await loadTrendCandidateFallbackRows(admin, allowedCategories);
+  const popularProductBankRows = await loadPopularFallbackProductBankRows(admin, allowedCategories);
   const products: RecommendationResponseProduct[] = [];
 
   for (const product of currentProducts) {
@@ -826,7 +870,7 @@ const buildPopularFallbackProducts = async ({
   const fallbackSeeds = selectPopularFallbackSeeds({
     categoryTargets,
     negativeKeywords: state.negativeKeywords,
-    productBankRows: [],
+    productBankRows: popularProductBankRows,
     trendCandidateRows,
     targetCount: Math.max(0, targetRecommendationCount - currentProducts.length),
   });

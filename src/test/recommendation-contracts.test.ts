@@ -51,6 +51,23 @@ describe("recommendation contracts", () => {
     expect(() => parseRecommendationEngineResponse({ cached: false })).toThrow(/products array missing/);
   });
 
+  it("drops malformed recommendation products instead of failing the full response", () => {
+    const parsed = parseRecommendationEngineResponse({
+      products: [
+        validProduct,
+        { brand: "Broken Product" },
+      ],
+      cached: false,
+      generated_at: "2026-04-09T10:00:00.000Z",
+      week_start: "2026-04-06",
+      generation_version: "recommendation-engine-v2",
+      input_snapshot_summary: { recommendation_target_count: 4 },
+    });
+
+    expect(parsed.products).toHaveLength(1);
+    expect(parsed.products[0]?.brand).toBe("Mejuri");
+  });
+
   it("drops malformed shared recommendation products instead of trusting them", () => {
     const parsed = parseSharedRecommendationsRecord({
       id: "row-1",

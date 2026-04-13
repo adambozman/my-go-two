@@ -5,7 +5,7 @@ import {
 
 export type CatalogBankKey = "universal";
 export type PriceTier = "budget" | "mid-range" | "premium" | "luxury";
-export type RecommendationKind = "specific" | "generic" | "catalog";
+export type RecommendationKind = "specific" | "generic";
 export type ResolverLinkKind = "product" | "search";
 
 export interface CatalogProduct {

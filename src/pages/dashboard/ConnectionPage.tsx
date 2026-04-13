@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ExternalLink, Lock, Sparkles } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -19,7 +18,10 @@ import {
   getRecommendationDisplayPrice,
   getRecommendationMatchLabel,
 } from "@/lib/recommendationPresentation";
-import { getRecommendationCategoryMeta } from "@/lib/recommendationCategories";
+import {
+  getRecommendationCategoryMeta,
+  normalizeRecommendationCategoryKey,
+} from "@/lib/recommendationCategories";
 import { resolveStorageUrl } from "@/lib/storageRefs";
 
 interface ConnectionRecord {
@@ -229,7 +231,8 @@ function isRpcMissingError(error: { message?: string } | null | undefined) {
 
 function getSharedRecommendationCategoryLabel(product: SharedRecommendationProduct | null | undefined) {
   if (!product?.category) return "Recommendation";
-  return getRecommendationCategoryMeta(product.category as any)?.filterLabel ?? product.category;
+  const category = normalizeRecommendationCategoryKey(product.category);
+  return category ? getRecommendationCategoryMeta(category)?.filterLabel ?? category : product.category;
 }
 
 function buildAiSuggestions(
@@ -363,14 +366,14 @@ export default function ConnectionPage() {
       { data: connectionProfileRow },
     ] = await Promise.all([
       connectionUserId
-        ? (supabase.rpc as any)("get_connection_shared_profile", {
+        ? supabase.rpc("get_connection_shared_profile", {
             p_user_connection_id: userConnection.id,
             p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
           })
         : Promise.resolve({ data: null }),
       connectionUserId
-        ? (supabase as any)
+        ? supabase
             .from("shared_connection_profile_fields")
             .select("id, field_key, is_shared")
             .eq("user_connection_id", userConnection.id)
@@ -378,13 +381,13 @@ export default function ConnectionPage() {
             .eq("connection_user_id", user.id)
         : Promise.resolve({ data: [] }),
       connectionUserId
-        ? (supabase.rpc as any)("get_connection_outgoing_sharing_state", {
+        ? supabase.rpc("get_connection_outgoing_sharing_state", {
             p_user_connection_id: userConnection.id,
             p_connection_user_id: connectionUserId,
           })
         : Promise.resolve({ data: null, error: null }),
       connectionUserId
-        ? (supabase as any)
+        ? supabase
             .from("shared_connection_profile_fields")
             .select("id, field_key, is_shared")
             .eq("user_connection_id", userConnection.id)
@@ -392,7 +395,7 @@ export default function ConnectionPage() {
             .eq("connection_user_id", connectionUserId)
         : Promise.resolve({ data: [] }),
       connectionUserId
-        ? (supabase as any)
+        ? supabase
             .from("shared_connection_derivations")
             .select("id, feature_key, is_shared")
             .eq("user_connection_id", userConnection.id)
@@ -400,29 +403,29 @@ export default function ConnectionPage() {
             .eq("connection_user_id", user.id)
         : Promise.resolve({ data: [] }),
       connectionUserId
-        ? (supabase as any)
+        ? supabase
             .from("shared_connection_derivations")
             .select("id, feature_key, is_shared")
             .eq("user_connection_id", userConnection.id)
             .eq("owner_user_id", user.id)
             .eq("connection_user_id", connectionUserId)
         : Promise.resolve({ data: [] }),
-        connectionUserId
+      connectionUserId
         ? supabase.rpc("get_connection_shared_vibe", {
             p_user_connection_id: userConnection.id,
             p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
-          } as any)
+          })
         : Promise.resolve({ data: [] }),
-        connectionUserId
+      connectionUserId
         ? supabase.rpc("get_connection_shared_recommendations", {
             p_user_connection_id: userConnection.id,
             p_owner_user_id: connectionUserId,
             p_connection_user_id: user.id,
-          } as any)
+          })
         : Promise.resolve({ data: [] }),
       connectionUserId
-        ? (supabase as any)
+        ? supabase
             .from("shared_saved_product_cards")
             .select("id, saved_product_card_id")
             .eq("user_connection_id", userConnection.id)
@@ -436,13 +439,13 @@ export default function ConnectionPage() {
         .order("updated_at", { ascending: false })
         .limit(200),
       connectionUserId
-        ? (supabase.rpc as any)("get_connection_feed", {
+        ? supabase.rpc("get_connection_feed", {
             p_limit: 80,
             p_user_connection_id: userConnection.id,
           })
         : Promise.resolve({ data: [] }),
       connectionUserId
-        ? (supabase as any)
+        ? supabase
             .from("connection_access_settings")
             .select("connection_kind")
             .eq("user_connection_id", userConnection.id)
@@ -451,7 +454,7 @@ export default function ConnectionPage() {
             .maybeSingle()
         : Promise.resolve({ data: null }),
       connectionUserId
-        ? (supabase as any)
+        ? supabase
             .from("profiles")
             .select("display_name, avatar_url")
             .eq("user_id", connectionUserId)
@@ -673,7 +676,7 @@ export default function ConnectionPage() {
 
     setOutgoingProfileFields((current) => ({ ...current, [key]: nextValue }));
 
-    let { error } = await (supabase.rpc as any)("set_connection_profile_field_share", {
+    let { error } = await supabase.rpc("set_connection_profile_field_share", {
       p_user_connection_id: connection.id,
       p_connection_user_id: connection.connectionUserId,
       p_field_key: key,
@@ -681,7 +684,7 @@ export default function ConnectionPage() {
     });
 
     if (error && isRpcMissingError(error)) {
-      ({ error } = await (supabase as any)
+      ({ error } = await supabase
         .from("shared_connection_profile_fields")
         .upsert(
           {
@@ -714,14 +717,14 @@ export default function ConnectionPage() {
     );
 
     if (nextValue) {
-      let { error } = await (supabase.rpc as any)("share_saved_product_card_with_connection", {
+      let { error } = await supabase.rpc("share_saved_product_card_with_connection", {
         p_user_connection_id: connection.id,
         p_connection_user_id: connection.connectionUserId,
         p_saved_product_card_id: savedProductCard.id,
       });
 
       if (error && isRpcMissingError(error)) {
-        ({ error } = await (supabase as any)
+        ({ error } = await supabase
           .from("shared_saved_product_cards")
           .upsert(
             {
@@ -740,14 +743,14 @@ export default function ConnectionPage() {
         return;
       }
     } else {
-      let { error } = await (supabase.rpc as any)("unshare_saved_product_card_with_connection", {
+      let { error } = await supabase.rpc("unshare_saved_product_card_with_connection", {
         p_user_connection_id: connection.id,
         p_connection_user_id: connection.connectionUserId,
         p_saved_product_card_id: savedProductCard.id,
       });
 
       if (error && isRpcMissingError(error)) {
-        ({ error } = await (supabase as any)
+        ({ error } = await supabase
           .from("shared_saved_product_cards")
           .delete()
           .eq("user_connection_id", connection.id)
@@ -774,7 +777,7 @@ export default function ConnectionPage() {
 
     setOutgoingDerivedFeatures((current) => ({ ...current, [key]: nextValue }));
 
-    let { error } = await (supabase.rpc as any)("set_connection_derived_feature_share", {
+    let { error } = await supabase.rpc("set_connection_derived_feature_share", {
       p_user_connection_id: connection.id,
       p_connection_user_id: connection.connectionUserId,
       p_feature_key: key,
@@ -782,7 +785,7 @@ export default function ConnectionPage() {
     });
 
     if (error && isRpcMissingError(error)) {
-      ({ error } = await (supabase as any)
+      ({ error } = await supabase
         .from("shared_connection_derivations")
         .upsert(
           {
@@ -812,12 +815,14 @@ export default function ConnectionPage() {
     if (!user || !connection || !connection.connectionUserId) return;
 
     setSharingBusy(true);
-    const rpcName = mode === "share" ? "share_all_saved_product_cards_with_connection" : "unshare_all_saved_product_cards_with_connection";
-    const { data, error } = await (supabase.rpc as any)(rpcName, {
+    const rpcArgs = {
       p_user_connection_id: connection.id,
       p_owner_user_id: user.id,
       p_connection_user_id: connection.connectionUserId,
-    });
+    };
+    const { data, error } = mode === "share"
+      ? await supabase.rpc("share_all_saved_product_cards_with_connection", rpcArgs)
+      : await supabase.rpc("unshare_all_saved_product_cards_with_connection", rpcArgs);
     setSharingBusy(false);
 
     if (error) {
@@ -853,14 +858,14 @@ export default function ConnectionPage() {
     setConnectionKind(nextKind);
     setSavingConnectionKind(true);
 
-    let { error } = await (supabase.rpc as any)("set_connection_kind_preference", {
+    let { error } = await supabase.rpc("set_connection_kind_preference", {
       p_user_connection_id: connection.id,
       p_connection_user_id: connection.connectionUserId,
       p_connection_kind: nextKind,
     });
 
     if (error && isRpcMissingError(error)) {
-      ({ error } = await (supabase as any)
+      ({ error } = await supabase
         .from("connection_access_settings")
         .upsert(
           {

@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import { useKnowledgeCenter } from "@/contexts/knowledge-center-context";
+import { useUserProfile } from "@/contexts/user-profile-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink } from "lucide-react";
@@ -49,9 +49,10 @@ function getProductImage(product: Product) {
 }
 
 const Recommendations = () => {
-  const { knowledgeDerivations, loading: knowledgeLoading } = useKnowledgeCenter();
+  const { knowledgeDerivations } = useUserProfile();
   const { subscribed, subscriptionLoading, user } = useAuth();
   const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
+  const latestRequestIdRef = useRef(0);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -131,6 +132,7 @@ const Recommendations = () => {
   });
 
   useEffect(() => {
+    latestRequestIdRef.current += 1;
     setProducts([]);
     setGeneratedAt(null);
     setIsCached(false);
@@ -138,6 +140,7 @@ const Recommendations = () => {
     setInputSnapshotSummary(null);
     setLoadErrorMessage(null);
     setHasLoaded(false);
+    setLoading(false);
     setActivePillar("all");
     setSavedItems(new Set());
     setSharingItems(new Set());
@@ -152,6 +155,9 @@ const Recommendations = () => {
         return;
       }
 
+      const requestId = latestRequestIdRef.current + 1;
+      latestRequestIdRef.current = requestId;
+      const activeUserId = user.id;
       setLoading(true);
       setLoadErrorMessage(null);
       try {
@@ -171,17 +177,31 @@ const Recommendations = () => {
 
         if (error) throw error;
         const response = parseRecommendationEngineResponse(data);
-        if (response.products.length === 0) {
-          throw new Error("The recommendation engine returned no usable products.");
+        if (latestRequestIdRef.current !== requestId || user.id !== activeUserId) {
+          return;
         }
-
-        setProducts(response.products);
+        const nextProducts = response.products;
+        if (nextProducts.length > 0) {
+          setProducts(nextProducts);
+        }
         setGeneratedAt(response.generated_at);
         setIsCached(response.cached);
         setGenerationVersion(response.generation_version ?? activeFunction);
         setInputSnapshotSummary(response.input_snapshot_summary);
         setCurrentPage(1);
+
+        if (nextProducts.length === 0) {
+          const emptyMessage = "The recommendation engine returned no usable products.";
+          setLoadErrorMessage(emptyMessage);
+          if (hasLoadedProducts) {
+            toast.error(`${emptyMessage} Keeping the current V2 set on screen.`);
+          }
+          return;
+        }
       } catch (error: unknown) {
+        if (latestRequestIdRef.current !== requestId) {
+          return;
+        }
         console.error("Products error:", error);
         const status = getRpcStatus(error);
         const message =
@@ -195,8 +215,10 @@ const Recommendations = () => {
         setLoadErrorMessage(message);
         toast.error(hasLoadedProducts ? `${message} Keeping the current V2 set on screen.` : message);
       } finally {
-        setLoading(false);
-        setHasLoaded(true);
+        if (latestRequestIdRef.current === requestId) {
+          setLoading(false);
+          setHasLoaded(true);
+        }
       }
     },
     [hasLoadedProducts, setCurrentPage, user],
@@ -276,6 +298,7 @@ const Recommendations = () => {
     ? new Date(generatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })
     : null;
   const isGuestPreview = !subscribed && filtered.length > PAGE_SIZE;
+  const hasEngineEmptyFailure = loadErrorMessage === "The recommendation engine returned no usable products.";
 
   if (subscriptionLoading || (user && loading && !hasLoaded)) {
     return (
@@ -440,10 +463,12 @@ const Recommendations = () => {
         ) : loadErrorMessage && !hasLoadedProducts ? (
           <Card variant="sand" className="p-8 text-center">
             <p className="surface-heading-md mb-2">
-              Recommendations are temporarily unavailable.
+              {hasEngineEmptyFailure ? "V2 returned an empty set." : "Recommendations are temporarily unavailable."}
             </p>
             <p className="surface-body">
-              {loadErrorMessage}
+              {hasEngineEmptyFailure
+                ? "The request succeeded, but the engine returned zero usable products. That means the V2 fallback chain is still broken."
+                : loadErrorMessage}
             </p>
             <div className="mt-4 flex justify-center">
               <Button

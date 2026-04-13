@@ -1,4 +1,7 @@
-import type { Database as GeneratedDatabase, Json } from "./types";
+// Canonical runtime Supabase types.
+// This file patches the legacy generated snapshot with the production names used by the live app.
+
+import type { Database as GeneratedDatabase, Json } from "./generated-legacy-types";
 
 type TableDefinition<Row, Insert = Row, Update = Partial<Insert>> = {
   Row: Row;
@@ -135,6 +138,39 @@ type RuntimeKnowledgeSnapshotRow = {
   updated_at: string;
 };
 
+type RuntimeConnectionSharedProfileRow = {
+  display_name: string | null;
+  avatar_url: string | null;
+  birthday: string | null;
+  anniversary: string | null;
+};
+
+type RuntimeConnectionSharedVibeRow = {
+  persona_summary: string | null;
+};
+
+type RuntimeConnectionSharedRecommendationsRow = {
+  id: string;
+  week_start: string;
+  generated_at: string;
+  products: Json;
+};
+
+type RuntimeConnectionFeedRow = {
+  feed_item_id: string;
+  user_connection_id: string;
+  connection_user_id: string;
+  connection_label: string;
+  item_kind: string | null;
+  title: string | null;
+  subtitle: string | null;
+  body: string | null;
+  image_url: string | null;
+  section: string | null;
+  event_at: string | null;
+  meta: Json | null;
+};
+
 type RuntimePublicTables = {
   connection_access_settings: TableDefinition<
     RuntimeConnectionAccessSettingsRow,
@@ -244,6 +280,44 @@ type RuntimePublicFunctions = {
     };
     Returns: RuntimeSavedProductCardRow[];
   };
+  get_connection_feed: {
+    Args: {
+      p_limit?: number | null;
+      p_user_connection_id?: string | null;
+    };
+    Returns: RuntimeConnectionFeedRow[];
+  };
+  get_connection_outgoing_sharing_state: {
+    Args: {
+      p_connection_user_id: string;
+      p_user_connection_id: string;
+    };
+    Returns: Json;
+  };
+  get_connection_shared_profile: {
+    Args: {
+      p_connection_user_id: string;
+      p_owner_user_id: string;
+      p_user_connection_id: string;
+    };
+    Returns: RuntimeConnectionSharedProfileRow[];
+  };
+  get_connection_shared_recommendations: {
+    Args: {
+      p_connection_user_id: string;
+      p_owner_user_id: string;
+      p_user_connection_id: string;
+    };
+    Returns: RuntimeConnectionSharedRecommendationsRow[];
+  };
+  get_connection_shared_vibe: {
+    Args: {
+      p_connection_user_id: string;
+      p_owner_user_id: string;
+      p_user_connection_id: string;
+    };
+    Returns: RuntimeConnectionSharedVibeRow[];
+  };
   share_all_saved_product_cards_with_connection: {
     Args: {
       p_connection_user_id: string;
@@ -255,8 +329,33 @@ type RuntimePublicFunctions = {
   share_saved_product_card_with_connection: {
     Args: {
       p_connection_user_id: string;
-      p_is_shared: boolean;
       p_saved_product_card_id: string;
+      p_user_connection_id: string;
+    };
+    Returns: undefined;
+  };
+  set_connection_derived_feature_share: {
+    Args: {
+      p_connection_user_id: string;
+      p_feature_key: string;
+      p_is_shared: boolean;
+      p_user_connection_id: string;
+    };
+    Returns: undefined;
+  };
+  set_connection_kind_preference: {
+    Args: {
+      p_connection_kind: string;
+      p_connection_user_id: string;
+      p_user_connection_id: string;
+    };
+    Returns: undefined;
+  };
+  set_connection_profile_field_share: {
+    Args: {
+      p_connection_user_id: string;
+      p_field_key: string;
+      p_is_shared: boolean;
       p_user_connection_id: string;
     };
     Returns: undefined;
@@ -283,7 +382,6 @@ type RuntimePublicFunctions = {
   unshare_saved_product_card_with_connection: {
     Args: {
       p_connection_user_id: string;
-      p_is_shared: boolean;
       p_saved_product_card_id: string;
       p_user_connection_id: string;
     };
@@ -299,7 +397,21 @@ type RuntimePublicSchema = Omit<
   Views: GeneratedDatabase["public"]["Views"] & RuntimePublicViews;
   Functions: Omit<
     GeneratedDatabase["public"]["Functions"],
-    "create_connection_invite_from_token" | "create_connection_request"
+    | "create_connection_invite_from_token"
+    | "create_connection_request"
+    | "get_connection_feed"
+    | "get_connection_outgoing_sharing_state"
+    | "get_connection_shared_profile"
+    | "get_connection_shared_recommendations"
+    | "get_connection_shared_vibe"
+    | "get_connection_visible_saved_product_cards"
+    | "set_connection_derived_feature_share"
+    | "set_connection_kind_preference"
+    | "set_connection_profile_field_share"
+    | "share_all_saved_product_cards_with_connection"
+    | "share_saved_product_card_with_connection"
+    | "unshare_all_saved_product_cards_with_connection"
+    | "unshare_saved_product_card_with_connection"
   > &
     RuntimePublicFunctions;
 };

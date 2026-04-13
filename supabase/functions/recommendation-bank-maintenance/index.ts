@@ -54,7 +54,7 @@ serve(async (req) => {
     let query = admin
       .from("recommendation_product_bank")
       .select("id, primary_keyword, descriptor_keywords, keyword_signature, category, brand, product_title, product_url, product_image_url, product_price_text, bank_state, exact_match_confirmed, image_status, last_verified_at")
-      .in("bank_state", ["exact_verified", "review_required", "catalog_verified"])
+      .in("bank_state", ["exact_verified", "review_required"])
       .order("updated_at", { ascending: true })
       .limit(limit);
 

@@ -1,5 +1,4 @@
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { getBankKnowledgeDerivation } from "./recommendationCatalog.ts";
 
 type ResponseMap = Record<string, unknown>;
 
@@ -38,11 +37,10 @@ const getStyleSummary = (combinedResponses: ResponseMap) => {
 
 const buildFallbackYourVibe = (combinedResponses: ResponseMap): YourVibeDerivation => {
   const styleKeywords = getStyleSummary(combinedResponses);
-  const catalogKnowledgeProfile = getBankKnowledgeDerivation(combinedResponses, {});
 
   return {
-    recommended_brands: catalogKnowledgeProfile.recommended_brands,
-    recommended_stores: catalogKnowledgeProfile.recommended_stores,
+    recommended_brands: [],
+    recommended_stores: [],
     image_themes: ["lifestyle", "modern wardrobe", "elevated essentials"],
     color_palette: ["#2C3E50", "#E8C6AE", "#6B6D62", "#D4A574", "#3A7CA5"],
     gift_categories: ["thoughtful essentials", "experiences", "style upgrades"],
@@ -143,13 +141,11 @@ Rules:
       ? JSON.parse(toolCall.function.arguments)
       : buildFallbackYourVibe(combinedResponses);
 
-  const catalogKnowledgeProfile = getBankKnowledgeDerivation(combinedResponses, parsed);
-
   return {
     ...buildFallbackYourVibe(combinedResponses),
     ...parsed,
-    recommended_brands: catalogKnowledgeProfile.recommended_brands,
-    recommended_stores: catalogKnowledgeProfile.recommended_stores,
+    recommended_brands: toStringArray(parsed.recommended_brands),
+    recommended_stores: toStringArray(parsed.recommended_stores),
   };
 };
 

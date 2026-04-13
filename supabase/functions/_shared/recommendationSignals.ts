@@ -1,5 +1,4 @@
 import {
-  getBankKnowledgeDerivation,
   mergeRecommendationKeywords,
   normalizePrimaryKeyword,
   normalizeRecommendationKeywords,
@@ -8,7 +7,6 @@ import type { KnowledgeDerivationRow, KnowledgeSnapshotRow } from "./knowledgeCe
 import { getCombinedKnowledgeResponses, getKnowledgeDerivationPayload, toRecord, toRecordArray, toStringArray } from "./knowledgeCenter.ts";
 import { extractStructuredThisOrThatAnswerSignals, type StructuredThisOrThatSignal } from "./thisOrThatV2.ts";
 import {
-  getPopularPreferenceProfile,
   getSavedProductCardMetadata,
   normalizeProductCardFieldKey,
 } from "../../../src/data/recommendationPreferenceMetadata.ts";
@@ -1165,37 +1163,6 @@ const toKeywordBankRows = (
     }
   }
 
-  const activeCategoryKeywords = new Map<RecommendationCategory, Set<string>>();
-  const noteCategoryKeyword = (category: RecommendationCategory | null, primaryKeyword: string | null) => {
-    if (!category || !primaryKeyword) return;
-    const existing = activeCategoryKeywords.get(category) ?? new Set<string>();
-    existing.add(primaryKeyword);
-    activeCategoryKeywords.set(category, existing);
-  };
-
-  for (const row of productCardKeywords) {
-    noteCategoryKeyword(normalizeRecommendationCategory(row.category), row.primary_keyword);
-  }
-
-  for (const row of likes) {
-    noteCategoryKeyword(normalizeRecommendationCategory(row.category), row.primary_keyword);
-  }
-
-  for (const [category, primaryKeywords] of activeCategoryKeywords) {
-    const popularProfile = getPopularPreferenceProfile(category);
-    if (!popularProfile) continue;
-
-    for (const primaryKeyword of primaryKeywords) {
-      for (const descriptor of popularProfile.styles) {
-        addRow(primaryKeyword, descriptor, category, "popular_style_bank", 0.35);
-      }
-
-      for (const descriptor of popularProfile.types) {
-        addRow(primaryKeyword, descriptor, category, "popular_type_bank", 0.35);
-      }
-    }
-  }
-
   return Array.from(rows.values());
 };
 
@@ -1259,49 +1226,6 @@ const toBrandBankRows = (
     });
   }
 
-  const activeCategoryKeywords = new Map<RecommendationCategory, Set<string>>();
-  const noteCategoryKeyword = (category: RecommendationCategory | null, primaryKeyword: string | null) => {
-    if (!category || !primaryKeyword) return;
-    const existing = activeCategoryKeywords.get(category) ?? new Set<string>();
-    existing.add(primaryKeyword);
-    activeCategoryKeywords.set(category, existing);
-  };
-
-  for (const row of productCardKeywords) {
-    noteCategoryKeyword(normalizeRecommendationCategory(row.category), row.primary_keyword);
-  }
-
-  for (const row of likes) {
-    noteCategoryKeyword(normalizeRecommendationCategory(row.category), row.primary_keyword);
-  }
-
-  for (const [category, primaryKeywords] of activeCategoryKeywords) {
-    const popularProfile = getPopularPreferenceProfile(category);
-    if (!popularProfile) continue;
-
-    for (const primaryKeyword of primaryKeywords) {
-      for (const brand of popularProfile.brands.slice(0, 4)) {
-        const key = `${brand}::${primaryKeyword}::${category}`;
-        const nextRow: RecommendationBrandBankRow = {
-          brand,
-          primary_keyword: primaryKeyword,
-          descriptor_keywords: mergeRecommendationKeywords([
-            ...popularProfile.styles.slice(0, 2),
-            ...popularProfile.types.slice(0, 2),
-          ]),
-          category,
-          weight: 0.3,
-          source_type: "popular_brand_bank",
-          source_version: SOURCE_VERSION,
-        };
-        const existing = rows.get(key);
-        if (!existing || existing.weight <= nextRow.weight) {
-          rows.set(key, nextRow);
-        }
-      }
-    }
-  }
-
   return Array.from(rows.values());
 };
 
@@ -1343,17 +1267,13 @@ export const buildNormalizedRecommendationState = (
   const snapshotPayload = toRecord(snapshot?.snapshot_payload);
   const profileCore = toRecord(snapshot?.profile_core);
   const yourVibe = getKnowledgeDerivationPayload(derivations, "your_vibe");
-  const bankKnowledge = getBankKnowledgeDerivation(combinedResponses, yourVibe);
   const thisOrThatPreferences = extractThisOrThatPreferences(combinedResponses, thisOrThatAnswers, snapshotPayload);
   const recommendedBrands = mergeRecommendationKeywords([
     ...toStringArray(yourVibe.recommended_brands),
-    ...bankKnowledge.recommended_brands,
-    ...bankKnowledge.recommended_stores,
     ...thisOrThatPreferences.positiveBrands,
   ]);
   const recommendedStores = mergeRecommendationKeywords([
     ...toStringArray(yourVibe.recommended_stores),
-    ...bankKnowledge.recommended_stores,
   ]);
   const locationKeys = extractLocationKeys(profileCore);
   const signals = toSignalRows(userId, snapshot, derivations, combinedResponses, thisOrThatAnswers, snapshotPayload);
