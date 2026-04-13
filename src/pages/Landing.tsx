@@ -220,7 +220,7 @@ const Landing = () => {
               style={{ gap: 14, flexWrap: "wrap", justifyContent: "center" }}
             >
               <Link
-                to="/signup"
+                to="/login"
                 className="surface-button-primary inline-flex items-center justify-center rounded-full"
                 style={{
                   background: "var(--swatch-cedar-grove)",
@@ -573,7 +573,7 @@ const Landing = () => {
                 Join people who never have to guess again.
               </p>
               <Link
-                to="/signup"
+                to="/login"
                 className="surface-button-primary inline-flex items-center justify-center rounded-full"
                 style={{
                   background: "var(--swatch-cedar-grove)",
