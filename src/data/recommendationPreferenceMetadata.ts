@@ -1,4 +1,4 @@
-import { RECOMMENDATION_CATEGORY_ORDER, type RecommendationCategory } from "@/lib/recommendationCategories";
+import { RECOMMENDATION_CATEGORY_ORDER, type RecommendationCategory } from "../lib/recommendationCategories.ts";
 
 export type PopularPreferenceProfile = {
   brands: string[];
