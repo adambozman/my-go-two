@@ -52,7 +52,7 @@ const getRequiredEnv = (name: string): string => {
 // ─── Extract v3 signals from combined responses ───────────────────────────────
 // Reads new onboarding v3 keys. Falls back to legacy keys where needed.
 
-const extractV3Signals = (responses: ResponseMap) => {
+export const extractV3Signals = (responses: ResponseMap) => {
   // Category priority
   const categoryPriority = toStringArray(responses["category_priority"]);
 
@@ -105,7 +105,7 @@ const extractV3Signals = (responses: ResponseMap) => {
 
 // ─── Derive price_tier from spend signals ─────────────────────────────────────
 
-const derivePriceTier = (spendSignals: Record<string, string>): "budget" | "mid-range" | "premium" | "luxury" => {
+export const derivePriceTier = (spendSignals: Record<string, string>): "budget" | "mid-range" | "premium" | "luxury" => {
   // Use clothing items as the primary anchor (tshirt, pants, shoes)
   const clothingRangeValues: Record<string, number> = {
     under_25: 12, "25_75": 50, "75_150": 112, "150_plus": 200,
@@ -133,7 +133,7 @@ const derivePriceTier = (spendSignals: Record<string, string>): "budget" | "mid-
 
 // ─── Fallback derivation ──────────────────────────────────────────────────────
 
-const buildFallbackYourVibe = (responses: ResponseMap): YourVibeDerivation => {
+export const buildFallbackYourVibe = (responses: ResponseMap): YourVibeDerivation => {
   const signals = extractV3Signals(responses);
   const priceTier = derivePriceTier(signals.spendSignals);
   const styleLabel = signals.styleVibe[0] ?? "versatile";
@@ -158,7 +158,7 @@ const buildFallbackYourVibe = (responses: ResponseMap): YourVibeDerivation => {
 
 // ─── Build AI prompt ──────────────────────────────────────────────────────────
 
-const buildAnswersText = (responses: ResponseMap, signals: ReturnType<typeof extractV3Signals>): string => {
+export const buildAnswersText = (responses: ResponseMap, signals: ReturnType<typeof extractV3Signals>): string => {
   const lines: string[] = [];
 
   // Demographics

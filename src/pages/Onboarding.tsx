@@ -512,9 +512,18 @@ const Onboarding = () => {
             });
           } else {
             await refreshKnowledge();
+            // knowledge-center-refresh returns { snapshot, derivations, refreshed_at }
+            const vibeDerivation = Array.isArray(data?.derivations)
+              ? data.derivations.find((d: Record<string, unknown>) => d.derivation_key === "your_vibe")
+              : null;
+            const personaSummary =
+              (vibeDerivation?.derivation_payload as Record<string, unknown>)?.persona_summary;
             toast({
               title: "Profile complete",
-              description: data?.knowledgeDerivation?.persona_summary ?? "Your Go Two profile is ready.",
+              description:
+                (typeof personaSummary === "string" && personaSummary.trim())
+                  ? personaSummary.trim()
+                  : "Your Go Two profile is ready.",
             });
           }
         } catch (err) {
