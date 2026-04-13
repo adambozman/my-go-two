@@ -1,61 +1,258 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Check, ChevronLeft, ChevronRight, ClipboardList, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardList,
+  Loader2,
+  Sparkles,
+} from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useUserProfile } from "@/contexts/user-profile-context";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
-import { profileQuestions } from "@/data/profileQuestions";
+import {
+  profileQuestions,
+  deriveSpendTier,
+  buildVibeCacheKey,
+  buildSpendCacheKey,
+  buildBrandCacheKey,
+  type OnboardingQuestion,
+  type SpendItem,
+  type SpendRange,
+} from "@/data/profileQuestions";
 import { getYourVibeDerivation } from "@/lib/knowledgeCenter";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type Phase = "intro" | "profile" | "personalizing" | "complete";
 
+interface AiScreenState {
+  loading: boolean;
+  error: string | null;
+  // For vibe + brand: injected as options into the question
+  vibeOptions?: Array<{ id: string; label: string; description: string; keywords: string[] }>;
+  brandOptions?: Array<{ id: string; label: string; category: string; tier: string }>;
+  // For spend: injected as spendItems
+  spendItems?: SpendItem[];
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
 const INTRO_CARDS = [
-  { id: "shopping", label: "Shopping", note: "What you buy and how you spend." },
-  { id: "style", label: "Style", note: "The silhouettes and signals that feel like you." },
-  { id: "food", label: "Food", note: "What you order, crave, and return to." },
-  { id: "gifts", label: "Gifting", note: "What lands well when someone shops for you." },
+  { id: "shopping",  label: "Shopping",  note: "What you buy and how you spend." },
+  { id: "style",     label: "Style",     note: "The aesthetics and signals that feel like you." },
+  { id: "food",      label: "Food",      note: "What you order, crave, and return to." },
+  { id: "gifts",     label: "Gifting",   note: "What lands well when someone shops for you." },
   { id: "lifestyle", label: "Lifestyle", note: "How your free time and routines actually feel." },
-  { id: "fit", label: "Fit", note: "The practical details that make recommendations usable." },
-  { id: "taste", label: "Taste", note: "The aesthetic direction underneath all of it." },
+  { id: "taste",     label: "Taste",     note: "The aesthetic direction underneath all of it." },
 ];
 
-const getProfileAccent = () => ({
-  solid: "hsl(196 40% 31%)",
-  ring: "hsl(196 40% 31%)",
-  bg: "rgba(45, 104, 112, 0.16)",
-  bgStrong: "rgba(45, 104, 112, 0.34)",
-});
+const accent = {
+  solid:   "hsl(196 40% 31%)",
+  ring:    "hsl(196 40% 31%)",
+  bg:      "rgba(45, 104, 112, 0.16)",
+  bgStrong:"rgba(45, 104, 112, 0.34)",
+};
 
-const normalizeOptionalDate = (value: string | string[] | undefined) => {
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const normalizeOptionalDate = (value: string | string[] | undefined): string | null => {
   const raw = Array.isArray(value) ? value[0] : value;
   const trimmed = typeof raw === "string" ? raw.trim() : "";
   return /^\d{4}-\d{2}-\d{2}$/.test(trimmed) ? trimmed : null;
 };
 
-const getErrorMessage = (error: unknown) => {
+const getErrorMessage = (error: unknown): string => {
   const message =
     error instanceof Error
       ? error.message
-      : error && typeof error === "object" && "message" in error && typeof error.message === "string"
-        ? error.message
+      : error && typeof error === "object" && "message" in error
+        ? String((error as Record<string, unknown>).message)
         : "Something went wrong";
 
   if (
-    message.includes("onboarding_responses")
-    || message.includes("onboarding_completed_at")
-    || message.includes("user_knowledge_snapshots")
+    message.includes("onboarding_responses") ||
+    message.includes("onboarding_completed_at") ||
+    message.includes("user_knowledge_snapshots")
   ) {
-    return "The live Supabase schema is missing the onboarding Knowledge Center tables or columns this flow writes to.";
+    return "The Supabase schema is missing onboarding tables or columns.";
   }
-
   return message;
 };
+
+// Extract a flat string value from answers (first item if array)
+const flatAnswer = (answers: Record<string, string | string[]>, key: string): string => {
+  const val = answers[key];
+  if (!val) return "";
+  return Array.isArray(val) ? val[0] ?? "" : val;
+};
+
+// Derive spend tier from baseline spend answers for brand cache key
+const buildBaselineSpendRecord = (answers: Record<string, string | string[]>): Record<string, string> => {
+  const result: Record<string, string> = {};
+  for (const [key, val] of Object.entries(answers)) {
+    if (key.startsWith("spend_baseline__")) {
+      result[key] = Array.isArray(val) ? val[0] ?? "" : val;
+    }
+  }
+  return result;
+};
+
+// ─── AI Screen Fetcher ────────────────────────────────────────────────────────
+
+const fetchAiScreen = async (
+  screen: 3 | 5 | 6,
+  params: {
+    age_range?: string;
+    gender?: string;
+    top_categories?: string[];
+    spend_tier?: string;
+  },
+): Promise<{ data: unknown }> => {
+  const { data, error } = await supabase.functions.invoke("onboarding-ai-generator", {
+    body: { screen, ...params },
+  });
+  if (error) throw error;
+  return data as { data: unknown };
+};
+
+// ─── Spend Select Component ───────────────────────────────────────────────────
+
+const SpendSelectRow = ({
+  item,
+  selectedRangeId,
+  onSelect,
+}: {
+  item: SpendItem;
+  selectedRangeId?: string;
+  onSelect: (itemId: string, rangeId: string) => void;
+}) => (
+  <div className="mb-5">
+    <p
+      className="mb-2 text-sm font-semibold"
+      style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
+    >
+      {item.label}
+    </p>
+    <div className="flex flex-wrap gap-2">
+      {item.ranges.map((range: SpendRange) => {
+        const isSelected = selectedRangeId === range.id;
+        return (
+          <button
+            key={range.id}
+            onClick={() => onSelect(item.id, range.id)}
+            className="rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200"
+            style={{
+              background: isSelected
+                ? accent.solid
+                : "linear-gradient(158deg, rgba(232,198,174,0.3), rgba(107,109,98,0.1))",
+              color: isSelected ? "#fff" : "hsl(196 40% 31%)",
+              border: isSelected
+                ? `2px solid ${accent.solid}`
+                : "1px solid rgba(107,109,98,0.35)",
+              boxShadow: isSelected ? "0 4px 14px rgba(45,104,112,0.22)" : undefined,
+            }}
+          >
+            {range.label}
+          </button>
+        );
+      })}
+    </div>
+  </div>
+);
+
+// ─── Rank Select Component ────────────────────────────────────────────────────
+
+const RankSelect = ({
+  question,
+  answers,
+  onToggle,
+}: {
+  question: OnboardingQuestion;
+  answers: Record<string, string | string[]>;
+  onToggle: (questionId: string, optionId: string) => void;
+}) => {
+  const selected = (() => {
+    const val = answers[question.id];
+    if (!val) return [];
+    return Array.isArray(val) ? val : [val];
+  })();
+  const maxRank = question.maxRank ?? 3;
+
+  return (
+    <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-2 overflow-y-auto pb-4">
+      <p className="mb-1 text-center text-xs text-muted-foreground">
+        Pick your top {maxRank} — tap to select, tap again to remove
+      </p>
+      {(question.options ?? []).map((option, index) => {
+        const rank = selected.indexOf(option.id);
+        const isSelected = rank !== -1;
+        const rankLabel = isSelected ? `#${rank + 1}` : null;
+
+        return (
+          <motion.button
+            key={option.id}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.04 }}
+            onClick={() => {
+              if (!isSelected && selected.length >= maxRank) return; // cap at maxRank
+              onToggle(question.id, option.id);
+            }}
+            disabled={!isSelected && selected.length >= maxRank}
+            className={`flex items-center gap-3 rounded-xl px-5 py-3.5 text-left transition-all duration-200 ${
+              isSelected ? "shadow-md" : "hover:shadow-sm"
+            } ${!isSelected && selected.length >= maxRank ? "opacity-40 cursor-not-allowed" : ""}`}
+            style={{
+              background: isSelected
+                ? `linear-gradient(158deg, ${accent.bgStrong}, ${accent.bg})`
+                : "linear-gradient(158deg, rgba(232,198,174,0.2), rgba(107,109,98,0.08))",
+              border: isSelected ? `2px solid ${accent.solid}` : "2px solid transparent",
+            }}
+          >
+            <div
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-all"
+              style={{
+                background: isSelected ? accent.solid : "rgba(107,109,98,0.15)",
+                color: isSelected ? "#fff" : "rgba(107,109,98,0.7)",
+              }}
+            >
+              {rankLabel ?? (option.emoji ?? "")}
+            </div>
+            <span className="text-sm font-semibold text-primary">{option.label}</span>
+          </motion.button>
+        );
+      })}
+    </div>
+  );
+};
+
+// ─── AI Loading Placeholder ───────────────────────────────────────────────────
+
+const AiLoadingCard = ({ label }: { label: string }) => (
+  <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+    <Loader2
+      className="h-8 w-8 animate-spin"
+      style={{ color: accent.solid }}
+    />
+    <p
+      className="text-sm"
+      style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
+    >
+      {label}
+    </p>
+  </div>
+);
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -69,7 +266,18 @@ const Onboarding = () => {
   const [profileIndex, setProfileIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [slideDir, setSlideDir] = useState<1 | -1>(1);
-  const accent = getProfileAccent();
+
+  // AI screen state: keyed by question id (style_vibe, spend_generated, brand_affinity)
+  const [aiScreens, setAiScreens] = useState<Record<string, AiScreenState>>({
+    style_vibe:     { loading: false, error: null },
+    spend_generated:{ loading: false, error: null },
+    brand_affinity: { loading: false, error: null },
+  });
+
+  // Track which AI screens have been fetched to avoid duplicate calls
+  const fetchedAiScreens = useRef<Set<string>>(new Set());
+
+  // ── Popstate ───────────────────────────────────────────────────────────────
 
   useEffect(() => {
     if (phase === "intro") return;
@@ -79,7 +287,7 @@ const Onboarding = () => {
       if (phase === "profile") {
         if (profileIndex > 0) {
           setSlideDir(-1);
-          setProfileIndex((index) => index - 1);
+          setProfileIndex((i) => i - 1);
         } else if (!isEditMode) {
           setPhase("intro");
         }
@@ -93,7 +301,79 @@ const Onboarding = () => {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [phase, profileIndex, isEditMode]);
 
+  // ── AI Screen Prefetch ────────────────────────────────────────────────────
+  // Fires when the user reaches an AI-driven question for the first time.
+
+  const triggerAiScreenFetch = useCallback(
+    async (questionId: string) => {
+      if (fetchedAiScreens.current.has(questionId)) return;
+      fetchedAiScreens.current.add(questionId);
+
+      setAiScreens((prev) => ({
+        ...prev,
+        [questionId]: { ...prev[questionId], loading: true, error: null },
+      }));
+
+      try {
+        const ageRange  = flatAnswer(answers, "age_range") || "25_34";
+        const gender    = flatAnswer(answers, "gender") || "prefer_not";
+        const topCats   = (() => {
+          const val = answers["category_priority"];
+          return Array.isArray(val) ? val : val ? [val] : [];
+        })();
+
+        if (questionId === "style_vibe") {
+          const result = await fetchAiScreen(3, { age_range: ageRange, gender });
+          setAiScreens((prev) => ({
+            ...prev,
+            style_vibe: { loading: false, error: null, vibeOptions: result.data as AiScreenState["vibeOptions"] },
+          }));
+        }
+
+        if (questionId === "spend_generated") {
+          const result = await fetchAiScreen(5, { top_categories: topCats });
+          setAiScreens((prev) => ({
+            ...prev,
+            spend_generated: { loading: false, error: null, spendItems: result.data as SpendItem[] },
+          }));
+        }
+
+        if (questionId === "brand_affinity") {
+          const baselineRecord = buildBaselineSpendRecord(answers);
+          const spendTier = deriveSpendTier(baselineRecord);
+          const result = await fetchAiScreen(6, {
+            age_range: ageRange,
+            gender,
+            top_categories: topCats,
+            spend_tier: spendTier,
+          });
+          setAiScreens((prev) => ({
+            ...prev,
+            brand_affinity: { loading: false, error: null, brandOptions: result.data as AiScreenState["brandOptions"] },
+          }));
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Could not load personalized options";
+        setAiScreens((prev) => ({
+          ...prev,
+          [questionId]: { loading: false, error: msg },
+        }));
+      }
+    },
+    [answers],
+  );
+
   const currentQuestion = profileQuestions[profileIndex];
+
+  // Trigger AI fetch when landing on an AI question
+  useEffect(() => {
+    if (!currentQuestion) return;
+    const aiTypes = ["ai-vibe", "ai-spend-items", "ai-brand-grid"];
+    if (aiTypes.includes(currentQuestion.type)) {
+      triggerAiScreenFetch(currentQuestion.id);
+    }
+  }, [currentQuestion, triggerAiScreenFetch]);
+
   const progress = ((profileIndex + 1) / profileQuestions.length) * 100;
 
   const selectedForQuestion = currentQuestion
@@ -112,12 +392,75 @@ const Onboarding = () => {
   const completionSummary = useMemo(() => {
     const yourVibe = getYourVibeDerivation(knowledgeDerivations);
     if (yourVibe?.persona_summary?.trim()) return yourVibe.persona_summary.trim();
-    return "You now have a saved profile read, and everything that gets more personal from here can build from it instead of living in disconnected onboarding data.";
+    return "Your profile is saved. Everything in Go Two builds from here — recommendations, connections, gift suggestions.";
   }, [knowledgeDerivations]);
+
+  // ── Answer Setters ─────────────────────────────────────────────────────────
+
+  const setSingle = (questionId: string, optionId: string) =>
+    setAnswers((prev) => ({ ...prev, [questionId]: [optionId] }));
+
+  const toggleMulti = (questionId: string, optionId: string) =>
+    setAnswers((prev) => {
+      const current = Array.isArray(prev[questionId]) ? (prev[questionId] as string[]) : [];
+      return current.includes(optionId)
+        ? { ...prev, [questionId]: current.filter((v) => v !== optionId) }
+        : { ...prev, [questionId]: [...current, optionId] };
+    });
+
+  const setFreeText = (questionId: string, value: string) =>
+    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+
+  // For spend items: stored as spend_baseline__itemId or spend_generated__itemId
+  const setSpendItem = (prefix: string, itemId: string, rangeId: string) =>
+    setAnswers((prev) => ({ ...prev, [`${prefix}__${itemId}`]: rangeId }));
+
+  const getSpendItemAnswer = (prefix: string, itemId: string): string | undefined => {
+    const val = answers[`${prefix}__${itemId}`];
+    return typeof val === "string" ? val : undefined;
+  };
+
+  // ── Navigation ─────────────────────────────────────────────────────────────
+
+  const goNext = () => {
+    if (profileIndex < profileQuestions.length - 1) {
+      setSlideDir(1);
+      setProfileIndex((i) => i + 1);
+      return;
+    }
+    runKnowledgeRefresh();
+  };
+
+  const goBack = () => {
+    if (profileIndex > 0) {
+      setSlideDir(-1);
+      setProfileIndex((i) => i - 1);
+      return;
+    }
+    if (!isEditMode) {
+      setPhase("intro");
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
+  const handleSkip = async () => {
+    if (!user) { navigate("/dashboard"); return; }
+    try {
+      await supabase
+        .from("profiles")
+        .update({ onboarding_completed_at: new Date().toISOString() })
+        .eq("user_id", user.id);
+    } catch (err) {
+      console.error("Onboarding skip save failed:", err);
+    }
+    navigate("/dashboard");
+  };
+
+  // ── Persist & Complete ─────────────────────────────────────────────────────
 
   const persistOnboardingResponses = async (profileAnswerData: Record<string, string | string[]>) => {
     if (!user) return;
-
     const updatedAt = new Date().toISOString();
     const payload = Object.entries(profileAnswerData).map(([questionKey, responseValue]) => ({
       user_id: user.id,
@@ -128,101 +471,62 @@ const Onboarding = () => {
           : responseValue,
       updated_at: updatedAt,
     }));
-
     const { error } = await supabase
       .from("onboarding_responses")
       .upsert(payload, { onConflict: "user_id,question_key" });
     if (error) throw error;
   };
 
-  const markOnboardingComplete = async (profileAnswerData: Record<string, string | string[]>) => {
+  const markOnboardingComplete = async () => {
     if (!user) return;
-
-    const birthday = normalizeOptionalDate(profileAnswerData.birthday);
-    const anniversary = normalizeOptionalDate(profileAnswerData.anniversary);
-
     const { error } = await supabase
       .from("profiles")
-      .update({
-        birthday,
-        anniversary,
-        onboarding_completed_at: new Date().toISOString(),
-      })
+      .update({ onboarding_completed_at: new Date().toISOString() })
       .eq("user_id", user.id);
     if (error) throw error;
-  };
-
-  const handleSkip = async () => {
-    if (!user) {
-      navigate("/dashboard");
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          onboarding_completed_at: new Date().toISOString(),
-        })
-        .eq("user_id", user.id);
-      if (error) throw error;
-    } catch (error) {
-      console.error("Onboarding skip save failed:", error);
-    }
-
-    navigate("/dashboard");
   };
 
   const runKnowledgeRefresh = async () => {
     setPhase("personalizing");
 
-    const profileAnswerData: Record<string, string | string[]> = {};
-    for (const question of profileQuestions) {
-      if (answers[question.id] !== undefined) {
-        profileAnswerData[question.id] = answers[question.id];
-      }
-    }
+    // Collect all answers — include spend item sub-keys
+    const profileAnswerData: Record<string, string | string[]> = { ...answers };
 
     try {
       if (user) {
-        await markOnboardingComplete(profileAnswerData);
+        await markOnboardingComplete();
         await persistOnboardingResponses(profileAnswerData);
       }
 
       const timeoutPromise = new Promise<void>((resolve) => setTimeout(resolve, 30000));
-      const knowledgeRefreshPromise = (async () => {
+      const refreshPromise = (async () => {
         try {
           const { data, error } = await supabase.functions.invoke("knowledge-center-refresh", {
-            body: {
-              onboardingResponses: profileAnswerData,
-            },
+            body: { onboardingResponses: profileAnswerData },
           });
-
           if (error) {
             console.error("Knowledge center refresh error:", error);
             toast({
               title: "Profile saved",
-              description: "Your onboarding is safely stored. Knowledge Center derivations will catch up shortly.",
+              description: "Your profile is stored. Personalization will catch up shortly.",
             });
           } else {
             await refreshKnowledge();
             toast({
-              title: "Knowledge Center refreshed",
-              description:
-                data?.knowledgeDerivation?.persona_summary ||
-                "Your first Knowledge Center read is ready.",
+              title: "Profile complete",
+              description: data?.knowledgeDerivation?.persona_summary ?? "Your Go Two profile is ready.",
             });
           }
-        } catch (error) {
-          console.error("Knowledge center refresh failed:", error);
+        } catch (err) {
+          console.error("Knowledge center refresh failed:", err);
           toast({
             title: "Profile saved",
-            description: "Your answers are safely stored. Knowledge Center derivations can catch up in the background.",
+            description: "Your answers are safely stored.",
           });
         }
       })();
 
-      await Promise.race([knowledgeRefreshPromise, timeoutPromise]);
+      await Promise.race([refreshPromise, timeoutPromise]);
       await refreshKnowledge();
       setPhase("complete");
     } catch (error: unknown) {
@@ -232,46 +536,7 @@ const Onboarding = () => {
     }
   };
 
-  const setSingle = (questionId: string, optionId: string) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: [optionId] }));
-  };
-
-  const toggleMulti = (questionId: string, optionId: string) => {
-    setAnswers((prev) => {
-      const current = Array.isArray(prev[questionId]) ? (prev[questionId] as string[]) : [];
-      return current.includes(optionId)
-        ? { ...prev, [questionId]: current.filter((value) => value !== optionId) }
-        : { ...prev, [questionId]: [...current, optionId] };
-    });
-  };
-
-  const setFreeText = (questionId: string, value: string) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: value }));
-  };
-
-  const goNext = () => {
-    if (profileIndex < profileQuestions.length - 1) {
-      setSlideDir(1);
-      setProfileIndex((index) => index + 1);
-      return;
-    }
-
-    runKnowledgeRefresh();
-  };
-
-  const goBack = () => {
-    if (profileIndex > 0) {
-      setSlideDir(-1);
-      setProfileIndex((index) => index - 1);
-      return;
-    }
-
-    if (!isEditMode) {
-      setPhase("intro");
-    } else {
-      navigate("/dashboard");
-    }
-  };
+  // ── INTRO PHASE ────────────────────────────────────────────────────────────
 
   if (phase === "intro") {
     return (
@@ -292,7 +557,8 @@ const Onboarding = () => {
                   className="relative min-h-[180px] overflow-hidden rounded-[24px] border p-5 shadow-xl"
                   style={{
                     borderColor: "rgba(45, 104, 112, 0.18)",
-                    background: "linear-gradient(160deg, rgba(255,255,255,0.88), rgba(232,198,174,0.48), rgba(45,104,112,0.12))",
+                    background:
+                      "linear-gradient(160deg, rgba(255,255,255,0.88), rgba(232,198,174,0.48), rgba(45,104,112,0.12))",
                   }}
                 >
                   <div
@@ -329,11 +595,7 @@ const Onboarding = () => {
               <p className="surface-eyebrow-coral text-center">Go Two / Onboarding</p>
               <h1
                 className="mt-4 text-[34px] leading-[0.96] sm:text-[38px] md:text-[56px]"
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontWeight: 700,
-                  color: "var(--swatch-teal)",
-                }}
+                style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}
               >
                 Built around you,
                 <br />
@@ -348,7 +610,8 @@ const Onboarding = () => {
                   color: "var(--swatch-teal)",
                 }}
               >
-                We prioritize your personal signals taste, spending, and lifestyle to create a foundation that grows with you. Start with a profile that actually knows you.
+                We use your real taste, spend, and habits to build a profile that actually knows you.
+                The AI personalizes every step.
               </p>
 
               <button
@@ -367,7 +630,7 @@ const Onboarding = () => {
               </button>
 
               <div className="mt-3">
-                <Button variant="ghost" className="text-muted-foreground text-sm" onClick={handleSkip}>
+                <Button variant="ghost" className="text-sm text-muted-foreground" onClick={handleSkip}>
                   Skip for now
                 </Button>
               </div>
@@ -377,6 +640,8 @@ const Onboarding = () => {
       </div>
     );
   }
+
+  // ── PERSONALIZING PHASE ────────────────────────────────────────────────────
 
   if (phase === "personalizing") {
     return (
@@ -388,7 +653,6 @@ const Onboarding = () => {
           className="max-w-[560px] text-center"
         >
           <GoTwoText className="mb-10 text-[48px] [&_.two]:text-[60px]" />
-
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: "72%" }}
@@ -396,17 +660,12 @@ const Onboarding = () => {
             className="mx-auto mb-8 h-[2px]"
             style={{ background: "var(--logo-two-color)" }}
           />
-
           <p className="surface-eyebrow-coral">Saving your profile</p>
           <h2
             className="mt-4 text-[34px] leading-[0.96] md:text-[44px]"
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontWeight: 700,
-              color: "var(--swatch-teal)",
-            }}
+            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}
           >
-            Your answers are being written to the profile first.
+            Your answers are being written to your profile.
           </h2>
           <p
             className="mt-5 text-[20px] leading-[1.28]"
@@ -424,6 +683,8 @@ const Onboarding = () => {
     );
   }
 
+  // ── COMPLETE PHASE ─────────────────────────────────────────────────────────
+
   if (phase === "complete") {
     return (
       <div className="landing-page min-h-screen overflow-x-hidden px-4 py-8 sm:px-6">
@@ -434,11 +695,7 @@ const Onboarding = () => {
               <p className="surface-eyebrow-coral mt-8">Profile complete</p>
               <h1
                 className="mt-4 text-[40px] leading-[0.94] md:text-[58px]"
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontWeight: 700,
-                  color: "var(--swatch-teal)",
-                }}
+                style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}
               >
                 You are set up the right way now.
               </h1>
@@ -453,7 +710,6 @@ const Onboarding = () => {
               >
                 {completionSummary}
               </p>
-
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   to="/dashboard"
@@ -473,13 +729,7 @@ const Onboarding = () => {
                   className="surface-button-soft-glow inline-flex items-center gap-2 rounded-full px-6 py-3.5"
                 >
                   <ClipboardList className="h-4 w-4" style={{ color: "var(--logo-two-color)" }} />
-                  <span
-                    style={{
-                      fontFamily: "'Jost', sans-serif",
-                      fontWeight: 600,
-                      color: "var(--logo-two-color)",
-                    }}
-                  >
+                  <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600, color: "var(--logo-two-color)" }}>
                     Keep Going in Know Me
                   </span>
                 </Link>
@@ -488,23 +738,19 @@ const Onboarding = () => {
 
             <div className="grid gap-4">
               <div className="card-inset-white rounded-[26px] px-5 py-5">
-                <p className="surface-eyebrow-teal">Safety</p>
+                <p className="surface-eyebrow-teal">What&apos;s next</p>
                 <p
-                  className="mt-3 text-[24px] leading-[1.02]"
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontWeight: 600,
-                    color: "var(--swatch-teal)",
-                  }}
+                  className="mt-3 text-[22px] leading-[1.08]"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-teal)" }}
                 >
-                  Your onboarding answers now belong to your profile.
+                  Play This or That on the dashboard to keep sharpening your recs.
                 </p>
               </div>
-
               <div className="card-inset-white rounded-[26px] px-5 py-5">
-                <p className="surface-eyebrow-teal">What changed</p>
+                <p className="surface-eyebrow-teal">Your data</p>
                 <p className="surface-body mt-3 text-[13px]">
-                  Onboarding is now the first profile read. Deeper taste-building can happen later in Know Me without splitting your answers across old onboarding-only storage.
+                  Your spend anchors, brand picks, and style signals are saved to your profile.
+                  The recommendation engine uses all of it.
                 </p>
               </div>
             </div>
@@ -514,11 +760,37 @@ const Onboarding = () => {
     );
   }
 
+  // ── NULL GUARD ─────────────────────────────────────────────────────────────
+
   if (!currentQuestion) return null;
+
+  // ── Resolve AI screen data into the current question for rendering ─────────
+
+  const aiState = aiScreens[currentQuestion.id] ?? { loading: false, error: null };
+
+  // For ai-vibe: merge AI options into question shape
+  const resolvedVibeOptions = aiState.vibeOptions?.map((v) => ({
+    id: v.id,
+    label: v.label,
+    description: v.description,
+  }));
+
+  // For ai-brand-grid: merge AI brand options
+  const resolvedBrandOptions = aiState.brandOptions?.map((b) => ({
+    id: b.id,
+    label: b.label,
+  }));
+
+  // For ai-spend-items: use injected spend items
+  const resolvedSpendItems = aiState.spendItems;
+
+  // ── PROFILE PHASE ──────────────────────────────────────────────────────────
 
   return (
     <div className="landing-page min-h-screen overflow-hidden">
       <div className="flex min-h-screen flex-col">
+
+        {/* Header */}
         <div className="flex items-center justify-between px-6 pb-3 pt-5">
           <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
           <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">
@@ -526,11 +798,12 @@ const Onboarding = () => {
           </Button>
         </div>
 
-        <div className="px-6 mb-2">
+        {/* Progress */}
+        <div className="mb-2 px-6">
           <div className="mx-auto max-w-3xl">
             <div className="mb-1.5 flex items-center justify-between text-sm">
-              <span className="font-semibold text-primary text-base">Your Profile</span>
-              <span className="text-muted-foreground text-xs">
+              <span className="text-base font-semibold text-primary">Your Profile</span>
+              <span className="text-xs text-muted-foreground">
                 {profileIndex + 1} of {profileQuestions.length}
               </span>
             </div>
@@ -538,6 +811,7 @@ const Onboarding = () => {
           </div>
         </div>
 
+        {/* Question area */}
         <div className="flex flex-1 flex-col overflow-hidden px-4 py-4">
           <AnimatePresence mode="wait" custom={slideDir}>
             <motion.div
@@ -549,10 +823,11 @@ const Onboarding = () => {
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="mx-auto flex w-full max-w-3xl flex-1 flex-col"
             >
+              {/* Question title */}
               <div className="mb-6 text-center">
                 <p className="surface-eyebrow-coral mb-3">Profile read</p>
                 <h2
-                  className="text-2xl font-bold text-primary mb-1"
+                  className="mb-1 text-2xl font-bold text-primary"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   {currentQuestion.title}
@@ -560,90 +835,11 @@ const Onboarding = () => {
                 <p className="text-sm text-muted-foreground">{currentQuestion.subtitle}</p>
               </div>
 
-              {currentQuestion.type === "image-grid" && currentQuestion.options && (
-                <div className="grid flex-1 content-start gap-4 overflow-y-auto pb-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
-                  {currentQuestion.options.map((option, index) => {
-                    const isSelected = selectedForQuestion.includes(option.id);
-                    return (
-                      <motion.button
-                        key={option.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.03 }}
-                        onClick={() =>
-                          currentQuestion.multiSelect === false
-                            ? setSingle(currentQuestion.id, option.id)
-                            : toggleMulti(currentQuestion.id, option.id)
-                        }
-                        className="group text-left"
-                      >
-                        <div
-                          className={`overflow-hidden transition-all duration-200 ${
-                            isSelected ? "scale-[1.03] shadow-xl ring-2" : "hover:scale-[1.02] hover:shadow-lg"
-                          }`}
-                          style={{
-                            borderRadius: "1.2rem",
-                            ...(isSelected ? { borderColor: accent.solid, ringColor: accent.solid, outlineColor: accent.solid } : {}),
-                            ...(isSelected ? { boxShadow: `0 0 0 2px ${accent.solid}` } : {}),
-                          }}
-                        >
-                          <div className="relative aspect-[4/5] overflow-hidden">
-                            <div
-                              className={`h-full w-full transition-transform duration-300 ${
-                                isSelected ? "scale-105" : "group-hover:scale-105"
-                              }`}
-                              style={{
-                                background: isSelected
-                                  ? "linear-gradient(160deg, rgba(45,104,112,0.92), rgba(232,198,174,0.68))"
-                                  : "linear-gradient(160deg, rgba(255,255,255,0.96), rgba(232,198,174,0.52), rgba(45,104,112,0.14))",
-                              }}
-                            />
-                            <div
-                              className="absolute inset-0 opacity-70"
-                              style={{
-                                backgroundImage:
-                                  "linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)",
-                                backgroundSize: "18px 18px",
-                              }}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#2d6870]/24 via-transparent to-white/14" />
-                            {isSelected && <div className="absolute inset-0 bg-primary/8" />}
-                            {isSelected && (
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full shadow-md"
-                                style={{ background: accent.solid }}
-                              >
-                                <Check className="h-4 w-4 text-white" />
-                              </motion.div>
-                            )}
-                            <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
-                              <p
-                                className="text-lg leading-[1] drop-shadow"
-                                style={{
-                                  fontFamily: "'Cormorant Garamond', serif",
-                                  fontWeight: 700,
-                                  color: isSelected ? "#ffffff" : "var(--swatch-teal)",
-                                }}
-                              >
-                                {option.label}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              )}
-
+              {/* ── single-select ─────────────────────────────────────────── */}
               {currentQuestion.type === "single-select" && currentQuestion.options && (
-                <div className="mx-auto flex max-w-md flex-1 w-full flex-col gap-3 overflow-y-auto pb-4">
+                <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 overflow-y-auto pb-4">
                   {currentQuestion.options.map((option, index) => {
                     const isSelected = selectedForQuestion.includes(option.id);
-                    const optionAccent = accent;
-
                     return (
                       <motion.button
                         key={option.id}
@@ -651,34 +847,96 @@ const Onboarding = () => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
                         onClick={() => setSingle(currentQuestion.id, option.id)}
-                        className={`flex items-center gap-4 rounded-xl px-5 py-4 text-left transition-all duration-200 ${
+                        className={`flex items-start gap-4 rounded-xl px-5 py-4 text-left transition-all duration-200 ${
                           isSelected ? "shadow-md" : "hover:shadow-sm"
                         }`}
                         style={{
                           background: isSelected
-                            ? `linear-gradient(158deg, ${optionAccent.bgStrong}, ${optionAccent.bg})`
+                            ? `linear-gradient(158deg, ${accent.bgStrong}, ${accent.bg})`
                             : "linear-gradient(158deg, rgba(232,198,174,0.2), rgba(107,109,98,0.08))",
-                          border: isSelected ? `2px solid ${optionAccent.solid}` : "2px solid transparent",
+                          border: isSelected ? `2px solid ${accent.solid}` : "2px solid transparent",
                         }}
                       >
                         <div
-                          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all"
+                          className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all"
                           style={{
-                            borderColor: isSelected ? optionAccent.solid : "rgba(107,109,98,0.4)",
-                            background: isSelected ? optionAccent.solid : "transparent",
+                            borderColor: isSelected ? accent.solid : "rgba(107,109,98,0.4)",
+                            background: isSelected ? accent.solid : "transparent",
                           }}
                         >
                           {isSelected && (
-                            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="h-2.5 w-2.5 rounded-full bg-white" />
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="h-2.5 w-2.5 rounded-full bg-white"
+                            />
                           )}
                         </div>
-                        <span className="text-sm font-semibold text-primary">{option.label}</span>
+                        <div>
+                          <p className="text-sm font-semibold text-primary">{option.label}</p>
+                          {option.description && (
+                            <p className="mt-0.5 text-xs text-muted-foreground">{option.description}</p>
+                          )}
+                        </div>
                       </motion.button>
                     );
                   })}
                 </div>
               )}
 
+              {/* ── multi-select ──────────────────────────────────────────── */}
+              {currentQuestion.type === "multi-select" && currentQuestion.options && (
+                <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 overflow-y-auto pb-4">
+                  {currentQuestion.options.map((option, index) => {
+                    const isSelected = selectedForQuestion.includes(option.id);
+                    return (
+                      <motion.button
+                        key={option.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.04 }}
+                        onClick={() => toggleMulti(currentQuestion.id, option.id)}
+                        className={`flex items-start gap-4 rounded-xl px-5 py-4 text-left transition-all duration-200 ${
+                          isSelected ? "shadow-md" : "hover:shadow-sm"
+                        }`}
+                        style={{
+                          background: isSelected
+                            ? `linear-gradient(158deg, ${accent.bgStrong}, ${accent.bg})`
+                            : "linear-gradient(158deg, rgba(232,198,174,0.2), rgba(107,109,98,0.08))",
+                          border: isSelected ? `2px solid ${accent.solid}` : "2px solid transparent",
+                        }}
+                      >
+                        <div
+                          className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] border-2 transition-all"
+                          style={{
+                            borderColor: isSelected ? accent.solid : "rgba(107,109,98,0.4)",
+                            background: isSelected ? accent.solid : "transparent",
+                          }}
+                        >
+                          {isSelected && <Check className="h-3 w-3 text-white" />}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-primary">{option.label}</p>
+                          {option.description && (
+                            <p className="mt-0.5 text-xs text-muted-foreground">{option.description}</p>
+                          )}
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* ── rank-select ───────────────────────────────────────────── */}
+              {currentQuestion.type === "rank-select" && (
+                <RankSelect
+                  question={currentQuestion}
+                  answers={answers}
+                  onToggle={toggleMulti}
+                />
+              )}
+
+              {/* ── pill-select ───────────────────────────────────────────── */}
               {currentQuestion.type === "pill-select" && currentQuestion.options && (
                 <div className="flex flex-1 flex-wrap content-start justify-center gap-3 overflow-y-auto pb-4">
                   {currentQuestion.options.map((option, index) => {
@@ -710,15 +968,159 @@ const Onboarding = () => {
                 </div>
               )}
 
+              {/* ── spend-select (fixed baseline) ─────────────────────────── */}
+              {currentQuestion.type === "spend-select" && currentQuestion.spendItems && (
+                <div className="mx-auto w-full max-w-lg flex-1 overflow-y-auto pb-4">
+                  {currentQuestion.spendItems.map((item) => (
+                    <SpendSelectRow
+                      key={item.id}
+                      item={item}
+                      selectedRangeId={getSpendItemAnswer("spend_baseline", item.id)}
+                      onSelect={(itemId, rangeId) => setSpendItem("spend_baseline", itemId, rangeId)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* ── ai-vibe ───────────────────────────────────────────────── */}
+              {currentQuestion.type === "ai-vibe" && (
+                <>
+                  {aiState.loading && <AiLoadingCard label="Finding your vibe..." />}
+                  {aiState.error && (
+                    <p className="text-center text-sm text-destructive">{aiState.error}</p>
+                  )}
+                  {!aiState.loading && !aiState.error && resolvedVibeOptions && (
+                    <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 overflow-y-auto pb-4">
+                      {resolvedVibeOptions.map((option, index) => {
+                        const isSelected = selectedForQuestion.includes(option.id);
+                        return (
+                          <motion.button
+                            key={option.id}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            onClick={() => setSingle(currentQuestion.id, option.id)}
+                            className={`flex items-start gap-4 rounded-xl px-5 py-4 text-left transition-all duration-200 ${
+                              isSelected ? "shadow-md" : "hover:shadow-sm"
+                            }`}
+                            style={{
+                              background: isSelected
+                                ? `linear-gradient(158deg, ${accent.bgStrong}, ${accent.bg})`
+                                : "linear-gradient(158deg, rgba(232,198,174,0.2), rgba(107,109,98,0.08))",
+                              border: isSelected ? `2px solid ${accent.solid}` : "2px solid transparent",
+                            }}
+                          >
+                            <div
+                              className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all"
+                              style={{
+                                borderColor: isSelected ? accent.solid : "rgba(107,109,98,0.4)",
+                                background: isSelected ? accent.solid : "transparent",
+                              }}
+                            >
+                              {isSelected && (
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="h-2.5 w-2.5 rounded-full bg-white"
+                                />
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-primary">{option.label}</p>
+                              {"description" in option && option.description && (
+                                <p className="mt-0.5 text-xs text-muted-foreground">
+                                  {(option as { description: string }).description}
+                                </p>
+                              )}
+                            </div>
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* ── ai-spend-items (generated) ────────────────────────────── */}
+              {currentQuestion.type === "ai-spend-items" && (
+                <>
+                  {aiState.loading && <AiLoadingCard label="Picking items for your priorities..." />}
+                  {aiState.error && (
+                    <p className="text-center text-sm text-destructive">{aiState.error}</p>
+                  )}
+                  {!aiState.loading && !aiState.error && resolvedSpendItems && (
+                    <div className="mx-auto w-full max-w-lg flex-1 overflow-y-auto pb-4">
+                      {resolvedSpendItems.map((item) => (
+                        <SpendSelectRow
+                          key={item.id}
+                          item={item}
+                          selectedRangeId={getSpendItemAnswer("spend_generated", item.id)}
+                          onSelect={(itemId, rangeId) => setSpendItem("spend_generated", itemId, rangeId)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* ── ai-brand-grid ─────────────────────────────────────────── */}
+              {currentQuestion.type === "ai-brand-grid" && (
+                <>
+                  {aiState.loading && <AiLoadingCard label="Curating brands for you..." />}
+                  {aiState.error && (
+                    <p className="text-center text-sm text-destructive">{aiState.error}</p>
+                  )}
+                  {!aiState.loading && !aiState.error && resolvedBrandOptions && (
+                    <div className="flex flex-1 flex-wrap content-start justify-center gap-2.5 overflow-y-auto pb-4">
+                      {resolvedBrandOptions.map((option, index) => {
+                        const isSelected = selectedForQuestion.includes(option.id);
+                        const maxBrands = 5;
+                        const atMax = !isSelected && selectedForQuestion.length >= maxBrands;
+                        return (
+                          <motion.button
+                            key={option.id}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: index * 0.025 }}
+                            onClick={() => {
+                              if (atMax) return;
+                              toggleMulti(currentQuestion.id, option.id);
+                            }}
+                            disabled={atMax}
+                            className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                              isSelected ? "scale-105 shadow-lg" : atMax ? "opacity-40 cursor-not-allowed" : "hover:scale-105 hover:shadow-md"
+                            }`}
+                            style={{
+                              background: isSelected
+                                ? accent.solid
+                                : "linear-gradient(158deg, rgba(232,198,174,0.38), rgba(107,109,98,0.15))",
+                              color: isSelected ? "#fff" : "hsl(196 40% 31%)",
+                              border: isSelected ? `2px solid ${accent.solid}` : "1px solid rgba(107,109,98,0.35)",
+                            }}
+                          >
+                            {option.label}
+                            {isSelected && <Check className="h-3.5 w-3.5" />}
+                          </motion.button>
+                        );
+                      })}
+                      <p className="w-full text-center text-xs text-muted-foreground pt-1">
+                        {selectedForQuestion.length}/5 selected
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* ── free-input / date-input ───────────────────────────────── */}
               {(currentQuestion.type === "free-input" || currentQuestion.type === "date-input") && (
                 <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-start pt-4">
                   <div className="card-design-neumorph p-6" style={{ borderRadius: "1.2rem" }}>
                     <Input
                       type={currentQuestion.type === "date-input" ? "date" : "text"}
                       value={currentFreeText}
-                      onChange={(event) => setFreeText(currentQuestion.id, event.target.value)}
+                      onChange={(e) => setFreeText(currentQuestion.id, e.target.value)}
                       placeholder={currentQuestion.placeholder}
-                      className="rounded-xl border-0 bg-white/40 text-base h-12 placeholder:text-muted-foreground/60"
+                      className="h-12 rounded-xl border-0 bg-white/40 text-base placeholder:text-muted-foreground/60"
                       maxLength={500}
                     />
                     <p className="mt-3 text-center text-xs text-muted-foreground">
@@ -729,16 +1131,23 @@ const Onboarding = () => {
                   </div>
                 </div>
               )}
+
             </motion.div>
           </AnimatePresence>
         </div>
 
+        {/* Footer nav */}
         <div className="px-6 pb-6 pt-2">
           <div className="mx-auto flex max-w-3xl items-center gap-3">
             <Button variant="outline" size="lg" className="rounded-full px-6" onClick={goBack}>
               <ChevronLeft className="mr-1 h-5 w-5" /> Back
             </Button>
-            <Button size="lg" className="rounded-full flex-1 h-12" onClick={goNext}>
+            <Button
+              size="lg"
+              className="h-12 flex-1 rounded-full"
+              onClick={goNext}
+              disabled={aiState.loading}
+            >
               {profileIndex === profileQuestions.length - 1 ? (
                 <>
                   Build My Profile <Sparkles className="ml-2 h-5 w-5" />
@@ -750,11 +1159,12 @@ const Onboarding = () => {
               )}
             </Button>
           </div>
-          {selectedForQuestion.length > 0 && currentQuestion.type !== "free-input" && currentQuestion.type !== "date-input" && (
-            <p className="mt-2 text-center text-xs text-muted-foreground">
-              {selectedForQuestion.length} selected
-            </p>
-          )}
+          {selectedForQuestion.length > 0 &&
+            !["free-input", "date-input", "spend-select", "ai-spend-items"].includes(currentQuestion.type) && (
+              <p className="mt-2 text-center text-xs text-muted-foreground">
+                {selectedForQuestion.length} selected
+              </p>
+            )}
         </div>
       </div>
     </div>
@@ -762,4 +1172,4 @@ const Onboarding = () => {
 };
 
 export default Onboarding;
-// Codebase classification: runtime onboarding flow writing onboarding responses and profile completion state.
+// Codebase classification: runtime onboarding flow — v3 architecture with AI-personalized screens.
