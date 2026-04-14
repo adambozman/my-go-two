@@ -27,3 +27,4 @@ output/playwright/
 *.njsproj
 *.sln
 *.sw?
+.vercel
