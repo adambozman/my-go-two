@@ -3,11 +3,12 @@ import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContext } from "@/contexts/auth-context";
 import { isDevAuthEmail, isDevAuthUserId } from "@/lib/devAuth";
+import { refreshSessionOnce } from "@/lib/sessionRefreshLock";
 
 const SUBSCRIPTION_CACHE_KEY = "gotwo_subscription_cache_v1";
 const SUBSCRIPTION_CACHE_TTL_MS = 5 * 60 * 1000;
 const SUBSCRIPTION_TIMEOUT_MS = 8000;
-const FOREGROUND_REFRESH_DEBOUNCE_MS = 1500;
+const FOREGROUND_REFRESH_DEBOUNCE_MS = 10_000;
 const AUTH_DIAGNOSTIC_FLAG = "gotwo_debug_auth";
 
 const authDiagnosticsEnabled = () => {
@@ -275,7 +276,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       lastForegroundRefreshAtRef.current = now;
-      void runSubscriptionCheck({ forceRefresh: true, silent: true });
+
+      // Use the single-flight lock so concurrent foreground + subscription
+      // refreshes don't stampede and trigger token-rotation 429s.
+      refreshSessionOnce(supabase)
+        .then(() => void runSubscriptionCheck({ forceRefresh: true, silent: true }))
+        .catch((err) => logAuthDiagnostic("foreground-refresh:failed", { message: String(err) }));
     };
 
     window.addEventListener("focus", refreshOnForeground);

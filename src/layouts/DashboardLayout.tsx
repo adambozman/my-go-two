@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { DashboardTopBar } from "@/components/DashboardTopBar";
 import { useAuth } from "@/contexts/auth-context";
@@ -20,10 +20,50 @@ const logAuthDiagnostic = (event: string, details?: Record<string, unknown>) => 
   console.info(`[auth] ${event}`, details ?? {});
 };
 
+/**
+ * Grace period (ms) before redirecting to login after user becomes null.
+ * During a token refresh cycle the user can flicker to null for a fraction
+ * of a second.  Waiting briefly prevents a false redirect.
+ */
+const AUTH_REDIRECT_GRACE_MS = 2500;
+
 const DashboardLayout = () => {
   const { user, loading } = useAuth();
   const { toast } = useToast();
   const processedInviteSignatureRef = useRef<string | null>(null);
+  const [redirectReady, setRedirectReady] = useState(false);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // When user disappears *after* initial load, wait a grace period before
+  // redirecting so that a concurrent session refresh can finish.
+  useEffect(() => {
+    if (loading) return;
+
+    if (user) {
+      // User is present — clear any pending redirect.
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+        redirectTimerRef.current = null;
+      }
+      setRedirectReady(false);
+      return;
+    }
+
+    // user is null and not loading — start grace timer.
+    if (!redirectTimerRef.current) {
+      redirectTimerRef.current = setTimeout(() => {
+        redirectTimerRef.current = null;
+        setRedirectReady(true);
+      }, AUTH_REDIRECT_GRACE_MS);
+    }
+
+    return () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+        redirectTimerRef.current = null;
+      }
+    };
+  }, [user, loading]);
 
   // Process stored invite/token handoff after auth settles.
   useEffect(() => {
@@ -137,9 +177,20 @@ const DashboardLayout = () => {
     );
   }
 
-  if (!user) {
+  if (!user && redirectReady) {
     logAuthDiagnostic("dashboard-layout:redirect-login", {});
     return <Navigate to="/login" replace />;
+  }
+
+  if (!user) {
+    // Still within the grace period — show a brief loading state instead of
+    // immediately bouncing to login.
+    logAuthDiagnostic("dashboard-layout:grace-period", {});
+    return (
+      <div className="app-page min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
   }
 
   return (

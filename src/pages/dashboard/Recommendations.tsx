@@ -2,6 +2,7 @@
 import { useUserProfile } from "@/contexts/user-profile-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
+import { refreshSessionOnce } from "@/lib/sessionRefreshLock";
 import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -175,18 +176,37 @@ const Recommendations = () => {
       setLoadErrorMessage(null);
       try {
         const activeFunction = RECOMMENDATION_V2_VERSION_PREFIX;
+
+        // Proactively refresh the session if the access token is expired or
+        // about to expire.  This avoids hitting the edge-function JWT gateway
+        // with a stale token (which returns 401 before our code even runs).
+        const { data: sessionSnapshot } = await supabase.auth.getSession();
+        const expiresAt = sessionSnapshot.session?.expires_at; // epoch seconds
+        const bufferSeconds = 60;
+        if (expiresAt && expiresAt - Math.floor(Date.now() / 1000) < bufferSeconds) {
+          try {
+            await refreshSessionOnce(supabase);
+          } catch {
+            // refresh failed — try the call anyway, the retry below will handle it
+          }
+        }
+
         let result = await supabase.functions.invoke(activeFunction, {
           body: forceRefresh ? { force_refresh: true } : {},
         });
 
-        // Retry on auth failure — refresh session and try again
+        // Retry on auth failure — refresh session (single-flight) and try again.
+        // Using the shared lock prevents a cascade of concurrent refreshes that
+        // would trigger Supabase refresh-token rotation 429s.
         const status = getRpcStatus(result.error) ?? (result.response as Response | undefined)?.status;
         if (result.error && (status === 401 || status === 403)) {
-          const { error: refreshError } = await supabase.auth.refreshSession();
-          if (!refreshError) {
+          try {
+            await refreshSessionOnce(supabase);
             result = await supabase.functions.invoke(activeFunction, {
               body: forceRefresh ? { force_refresh: true } : {},
             });
+          } catch {
+            // refresh failed — fall through to the original error
           }
         }
 
