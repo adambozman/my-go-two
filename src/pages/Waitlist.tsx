@@ -107,9 +107,10 @@ const Waitlist = () => {
           opacity: 0.65,
           maxWidth: 440,
         }}>
-          Your favorites. Your orders. Your sizes. Your weird obsessions.<br />
-          Build your vault. Let the right people in.<br />
-          Birthdays handled. Holidays unlocked. No more guessing.
+          Your exact sizes. Your favorite drinks. Your picky food orders. Your actual love languages.<br />
+          All the details that make getting it right effortless.<br />
+          Build your vault once. Lock it in. Share it only with your people.<br />
+          Suddenly thoughtful just… happens.
         </p>
 
         {/* Buttons */}
