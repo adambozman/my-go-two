@@ -83,8 +83,11 @@ html {
     --swatch-teal-mid: #3a7880;
     --swatch-cedar-grove: #d9654f;
     --swatch-cedar-grove-hover: #c85a45;
-    --logo-go-color: var(--swatch-cedar-grove);
-    --logo-two-color: var(--swatch-teal);
+    --logo-go-top: #ef8555;
+    --logo-go-bottom: #eb4b3f;
+    --logo-go-color: #eb4b3f;
+    --logo-go-gradient: linear-gradient(180deg, #ef8555 0%, #eb4b3f 100%);
+    --logo-two-color: #00687a;
     --swatch-antique-coin: #aeb0a1;
     --swatch-text-light: #8a9ea4;
     --swatch-gypsum-rose: #e8c6ae;
@@ -649,7 +652,7 @@ body {
 }
 
 .surface-button-primary {
-  background: var(--logo-go-color);
+  background: var(--logo-go-gradient);
   color: #fff;
   border: 1px solid rgba(var(--swatch-cedar-grove-rgb), 0.18);
   box-shadow:
