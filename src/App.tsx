@@ -9,7 +9,8 @@ import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { TopBarProvider } from "@/contexts/TopBarContext";
 import { AppRuntimeBoundary } from "@/components/AppRuntimeBoundary";
 import { DevRuntimeDiagnostics } from "@/components/DevRuntimeDiagnostics";
-import Landing from "./pages/Landing";
+import Waitlist from "./pages/Waitlist";
+const Landing = lazy(() => import("./pages/Landing"));
 const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -56,7 +57,8 @@ const App = () => {
                 <BrowserRouter>
                   <Suspense fallback={<RouteFallback />}>
                     <Routes>
-                      <Route path="/" element={<Landing />} />
+                      <Route path="/" element={<Waitlist />} />
+                      <Route path="/preview" element={<Landing />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/signup" element={<Signup />} />
                       <Route path="/forgot-password" element={<ForgotPassword />} />
