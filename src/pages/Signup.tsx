@@ -73,25 +73,6 @@ const Signup = () => {
       
 
       <div className="relative z-10 flex min-h-screen flex-col">
-        {/* Nav */}
-        <nav className="flex items-center justify-between px-4 py-5 sm:px-6 md:px-10 lg:px-16">
-          <Link to="/">
-            <GoTwoText
-              style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)" }}
-            />
-          </Link>
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="text-sm font-semibold"
-            style={{ color: "var(--swatch-teal)" }}
-          >
-            <Link to="/login">Log in</Link>
-          </Button>
-        </nav>
-
-        {/* Content */}
         <div className="flex flex-1 items-center justify-center px-4 pb-10 sm:pb-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
