@@ -551,98 +551,129 @@ const Onboarding = () => {
     return (
       <div className="landing-page min-h-screen overflow-x-hidden">
         <div className="relative z-10 flex min-h-screen flex-col">
-          <div className="flex items-center justify-between px-4 pb-2 pt-6 sm:px-6 md:px-8">
-            <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
-            <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">
+          {/* Nav */}
+          <nav className="flex items-center justify-between px-4 py-5 sm:px-6 md:px-10 lg:px-16">
+            <GoTwoText style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)" }} />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSkip}
+              className="text-sm font-semibold"
+              style={{ color: "var(--swatch-teal)" }}
+            >
               Skip
             </Button>
-          </div>
+          </nav>
 
+          {/* Hero */}
           <div className="flex flex-1 flex-col items-center justify-center px-4 pb-10 sm:px-6">
-            <div className="mb-8 grid w-full max-w-5xl grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
-              {INTRO_CARDS.map((card) => (
-                <div
-                  key={card.id}
-                  className="relative min-h-[180px] overflow-hidden rounded-[24px] border p-5 shadow-xl"
-                  style={{
-                    borderColor: "rgba(45, 104, 112, 0.18)",
-                    background:
-                      "linear-gradient(160deg, rgba(255,255,255,0.88), rgba(232,198,174,0.48), rgba(45,104,112,0.12))",
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 opacity-75"
-                    style={{
-                      backgroundImage:
-                        "linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)",
-                      backgroundSize: "20px 20px",
-                    }}
-                  />
-                  <div className="relative flex h-full flex-col justify-between">
-                    <p className="surface-eyebrow-coral">{card.id}</p>
-                    <div>
-                      <p
-                        className="text-[26px] leading-[0.95]"
-                        style={{
-                          fontFamily: "'Cormorant Garamond', serif",
-                          fontWeight: 700,
-                          color: "var(--swatch-teal)",
-                        }}
-                      >
-                        {card.label}
-                      </p>
-                      <p className="mt-3 text-[13px] leading-[1.35] text-[var(--swatch-teal)]/80">
-                        {card.note}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="max-w-[760px] text-center">
-              <p className="surface-eyebrow-coral text-center">Go Two / Onboarding</p>
+            <div className="max-w-[640px] text-center">
+              <p
+                style={{
+                  fontSize: 10.5,
+                  letterSpacing: 3,
+                  textTransform: "uppercase",
+                  color: "#d4543a",
+                  fontWeight: 500,
+                  marginBottom: 16,
+                }}
+              >
+                Let's set up your profile
+              </p>
               <h1
-                className="mt-4 text-[34px] leading-[0.96] sm:text-[38px] md:text-[56px]"
-                style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(32px, 5vw, 52px)",
+                  fontWeight: 700,
+                  color: "var(--swatch-teal)",
+                  lineHeight: 1,
+                }}
               >
                 Built around you,
                 <br />
                 not a template.
               </h1>
               <p
-                className="mx-auto mt-5 max-w-[720px] text-[19px] leading-[1.24] sm:text-[23px] md:text-[28px]"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(16px, 2.2vw, 22px)",
                   fontStyle: "italic",
                   fontWeight: 600,
                   color: "var(--swatch-teal)",
+                  lineHeight: 1.3,
+                  marginTop: 16,
+                  maxWidth: 520,
+                  marginLeft: "auto",
+                  marginRight: "auto",
                 }}
               >
-                We use your real taste, spend, and habits to build a profile that actually knows you.
-                The AI personalizes every step.
+                We use your real taste, spend, and habits to build a profile that
+                actually knows you. The AI personalizes every step.
               </p>
 
               <button
                 onClick={() => setPhase("profile")}
-                className="mt-8 rounded-full px-10 py-3.5"
+                className="mt-8 rounded-full px-10 py-3.5 transition-all hover:scale-[1.02]"
                 style={{
-                  background: "var(--logo-go-color)",
+                  background: "var(--swatch-cedar-grove)",
                   color: "#ffffff",
                   fontFamily: "'Jost', sans-serif",
                   fontWeight: 600,
-                  fontSize: "13.5px",
-                  boxShadow: "0 8px 24px rgba(212, 84, 58, 0.28)",
+                  fontSize: 14,
+                  letterSpacing: "0.3px",
+                  boxShadow: "0 8px 24px rgba(212, 84, 58, 0.22)",
+                  border: "none",
+                  cursor: "pointer",
                 }}
               >
                 Build My Profile <ArrowRight className="ml-2 inline h-4 w-4" />
               </button>
 
               <div className="mt-3">
-                <Button variant="ghost" className="text-sm text-muted-foreground" onClick={handleSkip}>
+                <button
+                  onClick={handleSkip}
+                  className="text-xs hover:underline"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "var(--swatch-antique-coin)",
+                    cursor: "pointer",
+                    fontWeight: 400,
+                  }}
+                >
                   Skip for now
-                </Button>
+                </button>
               </div>
+            </div>
+
+            {/* Category pills */}
+            <div
+              className="mt-10 flex flex-wrap justify-center"
+              style={{ gap: 10, maxWidth: 600 }}
+            >
+              {INTRO_CARDS.map((card) => (
+                <div
+                  key={card.id}
+                  className="rounded-full px-5 py-2.5"
+                  style={{
+                    background: "rgba(255,255,255,0.6)",
+                    border: "1px solid rgba(45,104,112,0.15)",
+                    boxShadow:
+                      "0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: "var(--swatch-teal)",
+                    }}
+                  >
+                    {card.label}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -696,73 +727,179 @@ const Onboarding = () => {
 
   if (phase === "complete") {
     return (
-      <div className="landing-page min-h-screen overflow-x-hidden px-4 py-8 sm:px-6">
-        <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-[1120px] flex-col justify-center">
-          <div className="surface-card-warm-glow grid gap-5 rounded-[36px] p-6 md:p-8 xl:grid-cols-[minmax(0,1.35fr)_320px]">
-            <div>
-              <GoTwoText className="text-[48px] [&_.two]:text-[60px]" />
-              <p className="surface-eyebrow-coral mt-8">Profile complete</p>
-              <h1
-                className="mt-4 text-[40px] leading-[0.94] md:text-[58px]"
-                style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}
+      <div className="landing-page min-h-screen overflow-x-hidden">
+        <div className="relative z-10 flex min-h-screen flex-col">
+          {/* Nav */}
+          <nav className="flex items-center justify-between px-4 py-5 sm:px-6 md:px-10 lg:px-16">
+            <GoTwoText style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)" }} />
+          </nav>
+
+          {/* Content */}
+          <div className="flex flex-1 flex-col items-center justify-center px-4 pb-10 sm:px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="w-full max-w-2xl text-center"
+            >
+              {/* Check icon */}
+              <div
+                className="mx-auto mb-6 flex items-center justify-center"
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: "50%",
+                  background: "var(--swatch-teal)",
+                  boxShadow: "0 8px 28px rgba(45,104,112,0.3)",
+                }}
               >
-                You are set up the right way now.
-              </h1>
+                <Check className="h-7 w-7 text-white" />
+              </div>
+
               <p
-                className="mt-5 max-w-[780px] text-[24px] leading-[1.2] md:text-[30px]"
+                style={{
+                  fontSize: 10.5,
+                  letterSpacing: 3,
+                  textTransform: "uppercase",
+                  color: "#d4543a",
+                  fontWeight: 500,
+                  marginBottom: 16,
+                }}
+              >
+                Profile complete
+              </p>
+              <h1
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(32px, 5vw, 48px)",
+                  fontWeight: 700,
+                  color: "var(--swatch-teal)",
+                  lineHeight: 1,
+                }}
+              >
+                You're all set.
+              </h1>
+              <p
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(16px, 2vw, 20px)",
                   fontStyle: "italic",
                   fontWeight: 600,
                   color: "var(--swatch-teal)",
+                  lineHeight: 1.35,
+                  marginTop: 16,
+                  maxWidth: 480,
+                  marginLeft: "auto",
+                  marginRight: "auto",
                 }}
               >
                 {completionSummary}
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
+
+              {/* Action buttons */}
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
                 <Link
                   to="/dashboard"
-                  className="inline-flex items-center rounded-full px-6 py-3.5"
+                  className="inline-flex items-center rounded-full px-8 py-3.5 transition-all hover:scale-[1.02]"
                   style={{
-                    background: "var(--logo-go-color)",
+                    background: "var(--swatch-cedar-grove)",
                     color: "#fff",
                     fontFamily: "'Jost', sans-serif",
                     fontWeight: 600,
-                    boxShadow: "0 8px 24px rgba(212, 84, 58, 0.28)",
+                    fontSize: 14,
+                    letterSpacing: "0.3px",
+                    boxShadow: "0 8px 24px rgba(212, 84, 58, 0.22)",
+                    textDecoration: "none",
                   }}
                 >
-                  Go to Dashboard
+                  Go to Dashboard <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
                 <Link
                   to="/dashboard/know-me"
-                  className="surface-button-soft-glow inline-flex items-center gap-2 rounded-full px-6 py-3.5"
+                  className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 transition-all hover:scale-[1.02]"
+                  style={{
+                    background: "rgba(255,255,255,0.6)",
+                    border: "1px solid rgba(45,104,112,0.2)",
+                    fontFamily: "'Jost', sans-serif",
+                    fontWeight: 600,
+                    fontSize: 14,
+                    color: "var(--swatch-teal)",
+                    textDecoration: "none",
+                  }}
                 >
-                  <ClipboardList className="h-4 w-4" style={{ color: "var(--logo-two-color)" }} />
-                  <span style={{ fontFamily: "'Jost', sans-serif", fontWeight: 600, color: "var(--logo-two-color)" }}>
-                    Keep Going in Know Me
-                  </span>
+                  <ClipboardList className="h-4 w-4" />
+                  Keep Going in Know Me
                 </Link>
               </div>
-            </div>
 
-            <div className="grid gap-4">
-              <div className="card-inset-white rounded-[26px] px-5 py-5">
-                <p className="surface-eyebrow-teal">What&apos;s next</p>
-                <p
-                  className="mt-3 text-[22px] leading-[1.08]"
-                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-teal)" }}
+              {/* Info cards */}
+              <div className="mt-12 grid gap-4 sm:grid-cols-2">
+                <div
+                  className="rounded-[20px] p-5 text-left"
+                  style={{
+                    background: "rgba(255,255,255,0.6)",
+                    border: "1px solid rgba(45,104,112,0.12)",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                  }}
                 >
-                  Play This or That on the dashboard to keep sharpening your recs.
-                </p>
+                  <p
+                    style={{
+                      fontSize: 10,
+                      letterSpacing: 2.5,
+                      textTransform: "uppercase",
+                      color: "var(--swatch-teal)",
+                      fontWeight: 500,
+                      marginBottom: 8,
+                    }}
+                  >
+                    What's next
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: 18,
+                      fontWeight: 600,
+                      color: "var(--swatch-teal)",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    Play This or That on the dashboard to keep sharpening your recs.
+                  </p>
+                </div>
+                <div
+                  className="rounded-[20px] p-5 text-left"
+                  style={{
+                    background: "rgba(255,255,255,0.6)",
+                    border: "1px solid rgba(45,104,112,0.12)",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: 10,
+                      letterSpacing: 2.5,
+                      textTransform: "uppercase",
+                      color: "var(--swatch-teal)",
+                      fontWeight: 500,
+                      marginBottom: 8,
+                    }}
+                  >
+                    Your data
+                  </p>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: "#4a6068",
+                      lineHeight: 1.6,
+                      fontWeight: 300,
+                    }}
+                  >
+                    Your spend anchors, brand picks, and style signals are saved to your profile.
+                    The recommendation engine uses all of it.
+                  </p>
+                </div>
               </div>
-              <div className="card-inset-white rounded-[26px] px-5 py-5">
-                <p className="surface-eyebrow-teal">Your data</p>
-                <p className="surface-body mt-3 text-[13px]">
-                  Your spend anchors, brand picks, and style signals are saved to your profile.
-                  The recommendation engine uses all of it.
-                </p>
-              </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
