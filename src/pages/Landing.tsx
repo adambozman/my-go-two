@@ -114,7 +114,7 @@ const Landing = () => {
           </Link>
         </nav>
 
-        {/* HERO */
+        {/* HERO */}
         <section
           style={{
             minHeight: "100svh",
