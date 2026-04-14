@@ -182,7 +182,7 @@ const RankSelect = ({
                 color: isSelected ? "#fff" : "rgba(107,109,98,0.7)",
               }}
             >
-              {rankLabel ?? (option.emoji ?? "")}
+              {rankLabel ?? <VibeIcon vibeId={option.id} size={18} />}
             </div>
             <span className="text-sm font-semibold text-primary">{option.label}</span>
           </motion.button>
@@ -892,7 +892,10 @@ const Onboarding = () => {
                           )}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-primary">{option.label}</p>
+                          <p className="text-sm font-semibold text-primary flex items-center gap-2">
+                            <VibeIcon vibeId={option.id} size={18} />
+                            {option.label}
+                          </p>
                           {option.description && (
                             <p className="mt-0.5 text-xs text-muted-foreground">{option.description}</p>
                           )}
@@ -935,7 +938,10 @@ const Onboarding = () => {
                           {isSelected && <Check className="h-3 w-3 text-white" />}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-primary">{option.label}</p>
+                          <p className="text-sm font-semibold text-primary flex items-center gap-2">
+                            <VibeIcon vibeId={option.id} size={18} />
+                            {option.label}
+                          </p>
                           {option.description && (
                             <p className="mt-0.5 text-xs text-muted-foreground">{option.description}</p>
                           )}
@@ -978,7 +984,7 @@ const Onboarding = () => {
                           border: isSelected ? `2px solid ${accent.solid}` : "1px solid rgba(107,109,98,0.4)",
                         }}
                       >
-                        {option.emoji && <span className="text-base">{option.emoji}</span>}
+                        <VibeIcon vibeId={option.id} size={16} />
                         {option.label}
                         {isSelected && <Check className="h-4 w-4" />}
                       </motion.button>

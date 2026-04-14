@@ -1,33 +1,50 @@
-// VibeIcon.tsx — Maps vibe option IDs to Phosphor duotone icons
-// Used by Onboarding.tsx to render proper icons instead of emoji on vibe cards.
+// VibeIcon.tsx — Maps onboarding option IDs to Phosphor duotone icons
+// Used across ALL onboarding screens for consistent iconography.
 
 import type { Icon } from "@phosphor-icons/react";
 import {
-  // Teen neutral
+  // ── Vibe icons ──────────────────────────────────────────────
   Fire, FlowerLotus, Lightning, GameController, Hoodie, Sunglasses,
-  // Young man
   Sneaker, Barbell, SquaresFour, ShirtFolded, Mountains, Laptop,
-  // Young woman
   Sparkle, SneakerMove, Leaf, Dress, PersonSimpleRun, Books,
-  // Young NB
   Rainbow, GridFour, Palette, Armchair, Heart, Plant,
-  // Adult man
   Coffee, Tent, Briefcase, Buildings, PersonSimpleHike,
-  // Adult woman
   Diamond, PersonSimpleTaiChi, Crown, Flower, Airplane,
-  // Adult NB
   PaintBrush, FlowerTulip, MusicNotes, Eyeglasses, Couch,
-  // Mature man
-  Watch, Golf, Wine, Globe, House,
-  // Mature woman
-  Star, Pill, HouseLine, TennisBall, MaskHappy,
-  // Mature NB
+  Watch, Golf, Wine, Globe, House, HouseLine,
+  Star, Pill, TennisBall, MaskHappy,
   BookOpen, Brain, Tree, SuitcaseRolling,
+
+  // ── Category priority icons (Screen 2) ──────────────────────
+  TShirt, HandHeart, Heartbeat, Gift, ForkKnife, CoffeeBean,
+  HouseSimple, MusicNote, MapPin,
+
+  // ── Shopping behavior icons (Screen 7) ──────────────────────
+  ShoppingCart, Storefront, ArrowsLeftRight, MagnifyingGlass,
+  LightningA, Tag,
+
+  // ── Subscription icons (Screen 7) ────────────────────────────
+  Package, Scooter, Basket, CookingPot, FilmStrip, Cube, XCircle,
+
+  // ── Gift personality icons (Screen 7) ────────────────────────
+  Confetti, Wrench, Ticket, HandsPraying, Question,
 } from "@phosphor-icons/react";
 
-// Map vibe IDs → Phosphor icon component
-const VIBE_ICON_MAP: Record<string, Icon> = {
-  // ── Teen Neutral ──────────────────────────────────
+// ── Master icon map: option ID → Phosphor component ───────────────────────────
+
+const ICON_MAP: Record<string, Icon> = {
+  // ── Screen 2: Category Priority ─────────────────────────────
+  clothes:       TShirt,
+  personal:      Sparkle,
+  health:        Heartbeat,
+  gifts:         Gift,
+  dining:        ForkKnife,
+  beverages:     CoffeeBean,
+  household:     HouseSimple,
+  entertainment: MusicNote,
+  travel:        MapPin,
+
+  // ── Screen 3: Vibe — Teen Neutral ───────────────────────────
   trendy_explorer:   Fire,
   chill_aesthetic:    FlowerLotus,
   hype_sports:       Lightning,
@@ -35,7 +52,7 @@ const VIBE_ICON_MAP: Record<string, Icon> = {
   alt_edge:          Hoodie,
   laid_back:         Sunglasses,
 
-  // ── Young Man ─────────────────────────────────────
+  // ── Screen 3: Vibe — Young Man ──────────────────────────────
   streetwear:        Sneaker,
   athletic_hustle:   Barbell,
   clean_minimal:     SquaresFour,
@@ -43,7 +60,7 @@ const VIBE_ICON_MAP: Record<string, Icon> = {
   outdoorsy:         Mountains,
   tech_forward:      Laptop,
 
-  // ── Young Woman ───────────────────────────────────
+  // ── Screen 3: Vibe — Young Woman ────────────────────────────
   clean_girl:        Sparkle,
   streetwear_queen:  SneakerMove,
   cottage_core:      Leaf,
@@ -51,7 +68,7 @@ const VIBE_ICON_MAP: Record<string, Icon> = {
   athleisure:        PersonSimpleRun,
   dark_academia:     Books,
 
-  // ── Young NB ──────────────────────────────────────
+  // ── Screen 3: Vibe — Young NB ──────────────────────────────
   gender_fluid:      Rainbow,
   minimal_cool:      GridFour,
   alt_experimental:  Palette,
@@ -59,7 +76,7 @@ const VIBE_ICON_MAP: Record<string, Icon> = {
   streetwear_edge:   Heart,
   wellness_first:    Plant,
 
-  // ── Adult Man ─────────────────────────────────────
+  // ── Screen 3: Vibe — Adult Man ──────────────────────────────
   smart_casual:      ShirtFolded,
   outdoorsy_dad:     Tent,
   minimalist_pro:    SquaresFour,
@@ -67,7 +84,7 @@ const VIBE_ICON_MAP: Record<string, Icon> = {
   fitness_focused:   Barbell,
   homebody_quality:  Coffee,
 
-  // ── Adult Woman ───────────────────────────────────
+  // ── Screen 3: Vibe — Adult Woman ────────────────────────────
   polished_minimal:  Diamond,
   wellness_ritual:   PersonSimpleTaiChi,
   fashion_forward:   Crown,
@@ -75,7 +92,7 @@ const VIBE_ICON_MAP: Record<string, Icon> = {
   career_driven:     Briefcase,
   adventure_seeker:  Airplane,
 
-  // ── Adult NB ──────────────────────────────────────
+  // ── Screen 3: Vibe — Adult NB ──────────────────────────────
   quiet_luxury_nb:   Diamond,
   creative_class:    PaintBrush,
   wellness_centered: FlowerTulip,
@@ -83,7 +100,7 @@ const VIBE_ICON_MAP: Record<string, Icon> = {
   practical_smart:   Eyeglasses,
   comfort_aesthetic: Couch,
 
-  // ── Mature Man ────────────────────────────────────
+  // ── Screen 3: Vibe — Mature Man ────────────────────────────
   classic_refined:   Watch,
   active_outdoors:   PersonSimpleHike,
   home_entertainer:  Wine,
@@ -91,7 +108,7 @@ const VIBE_ICON_MAP: Record<string, Icon> = {
   traveler_explorer: Globe,
   no_fuss_quality:   House,
 
-  // ── Mature Woman ──────────────────────────────────
+  // ── Screen 3: Vibe — Mature Woman ──────────────────────────
   effortlessly_chic: Star,
   wellness_expert:   Pill,
   home_luxury:       HouseLine,
@@ -99,13 +116,37 @@ const VIBE_ICON_MAP: Record<string, Icon> = {
   experience_seeker: MaskHappy,
   understated_style: Diamond,
 
-  // ── Mature NB ─────────────────────────────────────
+  // ── Screen 3: Vibe — Mature NB ─────────────────────────────
   contemplative:     BookOpen,
   active_wellness:   PersonSimpleTaiChi,
   creative_spirit:   Palette,
   homebody_curator:  Flower,
   seasoned_traveler: SuitcaseRolling,
   invest_in_quality: Diamond,
+
+  // ── Screen 7: Shopping Behavior ─────────────────────────────
+  online_mostly:     ShoppingCart,
+  instore_mostly:    Storefront,
+  mix:               ArrowsLeftRight,
+  research_then_buy: MagnifyingGlass,
+  impulse:           LightningA,
+  deal_hunter:       Tag,
+
+  // ── Screen 7: Subscription Habits ───────────────────────────
+  amazon_prime:      Package,
+  doordash:          Scooter,
+  grocery_del:       Basket,
+  meal_kit:          CookingPot,
+  streaming:         FilmStrip,
+  sub_box:           Cube,
+  none:              XCircle,
+
+  // ── Screen 7: Gift Personality ──────────────────────────────
+  splurge:           Confetti,
+  practical:         Wrench,
+  experience:        Ticket,
+  thoughtful:        HandsPraying,
+  surprise:          Question,
 };
 
 interface VibeIconProps {
@@ -114,9 +155,10 @@ interface VibeIconProps {
   className?: string;
 }
 
-/** Renders a Phosphor duotone icon for a given vibe option ID. Falls back to Sparkle. */
+/** Renders a Phosphor duotone icon for a given option ID. Returns null if no icon mapped. */
 const VibeIcon = ({ vibeId, size = 22, className }: VibeIconProps) => {
-  const IconComponent = VIBE_ICON_MAP[vibeId] ?? Sparkle;
+  const IconComponent = ICON_MAP[vibeId];
+  if (!IconComponent) return null;
   return (
     <IconComponent
       weight="duotone"
