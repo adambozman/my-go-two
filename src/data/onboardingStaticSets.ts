@@ -209,93 +209,93 @@ const LUGGAGE_RANGES = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 const VIBE_teen_neutral: QuestionOption[] = [
-  { id: "trendy_explorer",   label: "Trendy Explorer",     description: "Always on the latest drops, always first to know",    emoji: "🔥" },
-  { id: "chill_aesthetic",   label: "Chill Aesthetic",     description: "Soft tones, cozy fits, and a curated feed",           emoji: "🌸" },
-  { id: "hype_sports",       label: "Hype Sports",         description: "Athlete energy — jerseys, kicks, and game day",       emoji: "⚡" },
-  { id: "gamer_tech",        label: "Gamer / Tech Head",   description: "Setups, peripherals, and digital-first everything",   emoji: "🎮" },
-  { id: "alt_edge",          label: "Alt / Edgy",          description: "Dark fits, vintage finds, standing out on purpose",   emoji: "🖤" },
-  { id: "laid_back",         label: "Laid Back",           description: "Comfort over everything — basics done right",         emoji: "😎" },
+  { id: "trendy_explorer",   label: "Trendy Explorer",     description: "Always on the latest drops, always first to know"},
+  { id: "chill_aesthetic",   label: "Chill Aesthetic",     description: "Soft tones, cozy fits, and a curated feed"},
+  { id: "hype_sports",       label: "Hype Sports",         description: "Athlete energy — jerseys, kicks, and game day"},
+  { id: "gamer_tech",        label: "Gamer / Tech Head",   description: "Setups, peripherals, and digital-first everything"},
+  { id: "alt_edge",          label: "Alt / Edgy",          description: "Dark fits, vintage finds, standing out on purpose"},
+  { id: "laid_back",         label: "Laid Back",           description: "Comfort over everything — basics done right"},
 ];
 
 const VIBE_young_man: QuestionOption[] = [
-  { id: "streetwear",        label: "Streetwear",          description: "Sneakers, hoodies, limited drops, and brand heat",    emoji: "👟" },
-  { id: "athletic_hustle",   label: "Athletic Hustler",    description: "Gym-to-everything fits, driven and performance-first", emoji: "💪" },
-  { id: "clean_minimal",     label: "Clean Minimal",       description: "Neutral palette, quality basics, no loud logos",      emoji: "⬜" },
-  { id: "business_casual",   label: "Business Casual",     description: "Sharp fits, elevated everyday looks, always put together", emoji: "👔" },
-  { id: "outdoorsy",         label: "Outdoorsy",           description: "Trails, gear, and functional style over everything",  emoji: "🏔️" },
-  { id: "tech_forward",      label: "Tech Forward",        description: "Gadget enthusiast, early adopter, utility-first",     emoji: "🤖" },
+  { id: "streetwear",        label: "Streetwear",          description: "Sneakers, hoodies, limited drops, and brand heat"},
+  { id: "athletic_hustle",   label: "Athletic Hustler",    description: "Gym-to-everything fits, driven and performance-first"},
+  { id: "clean_minimal",     label: "Clean Minimal",       description: "Neutral palette, quality basics, no loud logos"},
+  { id: "business_casual",   label: "Business Casual",     description: "Sharp fits, elevated everyday looks, always put together"},
+  { id: "outdoorsy",         label: "Outdoorsy",           description: "Trails, gear, and functional style over everything"},
+  { id: "tech_forward",      label: "Tech Forward",        description: "Gadget enthusiast, early adopter, utility-first"},
 ];
 
 const VIBE_young_woman: QuestionOption[] = [
-  { id: "clean_girl",        label: "Clean Girl",          description: "Minimalist, dewy skin, slicked-back hair energy",     emoji: "✨" },
-  { id: "streetwear_queen",  label: "Streetwear Queen",    description: "Jordans, oversized fits, and vintage finds",          emoji: "👟" },
-  { id: "cottage_core",      label: "Cottage Core",        description: "Floral prints, cozy textures, soft romantic vibes",   emoji: "🌿" },
-  { id: "glam_going_out",    label: "Glam / Going Out",    description: "Mini dresses, heels, full glam — you dress to impress", emoji: "💃" },
-  { id: "athleisure",        label: "Athleisure",          description: "Lululemon energy — functional, sleek, and stylish",   emoji: "🏃‍♀️" },
-  { id: "dark_academia",     label: "Dark Academia",       description: "Blazers, turtlenecks, vintage books, and moody tones", emoji: "📚" },
+  { id: "clean_girl",        label: "Clean Girl",          description: "Minimalist, dewy skin, slicked-back hair energy"},
+  { id: "streetwear_queen",  label: "Streetwear Queen",    description: "Jordans, oversized fits, and vintage finds"},
+  { id: "cottage_core",      label: "Cottage Core",        description: "Floral prints, cozy textures, soft romantic vibes"},
+  { id: "glam_going_out",    label: "Glam / Going Out",    description: "Mini dresses, heels, full glam — you dress to impress"},
+  { id: "athleisure",        label: "Athleisure",          description: "Lululemon energy — functional, sleek, and stylish"},
+  { id: "dark_academia",     label: "Dark Academia",       description: "Blazers, turtlenecks, vintage books, and moody tones"},
 ];
 
 const VIBE_young_nb: QuestionOption[] = [
-  { id: "gender_fluid",      label: "Gender Fluid",        description: "Blends and bends — fashion without borders",          emoji: "🌈" },
-  { id: "minimal_cool",      label: "Minimal Cool",        description: "Monochrome, clean lines, effortlessly unbothered",    emoji: "🩶" },
-  { id: "alt_experimental",  label: "Alt / Experimental",  description: "Thrift-to-runway mashups, expressive and original",   emoji: "🎨" },
-  { id: "cozy_casual",       label: "Cozy Casual",         description: "Comfort is non-negotiable — oversized and at ease",   emoji: "🧸" },
-  { id: "streetwear_edge",   label: "Streetwear Edge",     description: "Drop culture, bold graphics, and layered looks",      emoji: "🖤" },
-  { id: "wellness_first",    label: "Wellness First",      description: "Mindful living, clean products, and healthy routines", emoji: "🌱" },
+  { id: "gender_fluid",      label: "Gender Fluid",        description: "Blends and bends — fashion without borders"},
+  { id: "minimal_cool",      label: "Minimal Cool",        description: "Monochrome, clean lines, effortlessly unbothered"},
+  { id: "alt_experimental",  label: "Alt / Experimental",  description: "Thrift-to-runway mashups, expressive and original"},
+  { id: "cozy_casual",       label: "Cozy Casual",         description: "Comfort is non-negotiable — oversized and at ease"},
+  { id: "streetwear_edge",   label: "Streetwear Edge",     description: "Drop culture, bold graphics, and layered looks"},
+  { id: "wellness_first",    label: "Wellness First",      description: "Mindful living, clean products, and healthy routines"},
 ];
 
 const VIBE_adult_man: QuestionOption[] = [
-  { id: "smart_casual",      label: "Smart Casual",        description: "Always looks intentional — chinos, quality shirts, clean sneakers", emoji: "👔" },
-  { id: "outdoorsy_dad",     label: "Outdoorsy",           description: "Patagonia, trail runners, weekend hikes",             emoji: "🏕️" },
-  { id: "minimalist_pro",    label: "Minimalist Pro",      description: "Capsule wardrobe, investment pieces, zero clutter",   emoji: "⬜" },
-  { id: "urban_explorer",    label: "Urban Explorer",      description: "City-savvy, restaurant tabs, and elevated streetwear", emoji: "🏙️" },
-  { id: "fitness_focused",   label: "Fitness Focused",     description: "Protein shakes, gym gear, and recovery everything",   emoji: "🏋️" },
-  { id: "homebody_quality",  label: "Homebody Quality",    description: "Invests in home comfort — good furniture, better coffee", emoji: "☕" },
+  { id: "smart_casual",      label: "Smart Casual",        description: "Always looks intentional — chinos, quality shirts, clean sneakers"},
+  { id: "outdoorsy_dad",     label: "Outdoorsy",           description: "Patagonia, trail runners, weekend hikes"},
+  { id: "minimalist_pro",    label: "Minimalist Pro",      description: "Capsule wardrobe, investment pieces, zero clutter"},
+  { id: "urban_explorer",    label: "Urban Explorer",      description: "City-savvy, restaurant tabs, and elevated streetwear"},
+  { id: "fitness_focused",   label: "Fitness Focused",     description: "Protein shakes, gym gear, and recovery everything"},
+  { id: "homebody_quality",  label: "Homebody Quality",    description: "Invests in home comfort — good furniture, better coffee"},
 ];
 
 const VIBE_adult_woman: QuestionOption[] = [
-  { id: "polished_minimal",  label: "Polished Minimal",    description: "Quiet luxury — well-made pieces, nothing overdone",   emoji: "🤍" },
-  { id: "wellness_ritual",   label: "Wellness Ritual",     description: "Skin routines, Pilates, and clean everything",        emoji: "🧘‍♀️" },
-  { id: "fashion_forward",   label: "Fashion Forward",     description: "Ahead of trends, loves a statement piece",            emoji: "👠" },
-  { id: "cozy_home_lover",   label: "Cozy Home Lover",     description: "Candles, throw blankets, and hosting energy",         emoji: "🕯️" },
-  { id: "career_driven",     label: "Career Driven",       description: "Sharp dressing, networking nights, always switched on", emoji: "💼" },
-  { id: "adventure_seeker",  label: "Adventure Seeker",    description: "Passport full of stamps, gear over glam",             emoji: "✈️" },
+  { id: "polished_minimal",  label: "Polished Minimal",    description: "Quiet luxury — well-made pieces, nothing overdone"},
+  { id: "wellness_ritual",   label: "Wellness Ritual",     description: "Skin routines, Pilates, and clean everything"},
+  { id: "fashion_forward",   label: "Fashion Forward",     description: "Ahead of trends, loves a statement piece"},
+  { id: "cozy_home_lover",   label: "Cozy Home Lover",     description: "Candles, throw blankets, and hosting energy"},
+  { id: "career_driven",     label: "Career Driven",       description: "Sharp dressing, networking nights, always switched on"},
+  { id: "adventure_seeker",  label: "Adventure Seeker",    description: "Passport full of stamps, gear over glam"},
 ];
 
 const VIBE_adult_nb: QuestionOption[] = [
-  { id: "quiet_luxury_nb",   label: "Quiet Luxury",        description: "Understated quality — no logos, just craft",          emoji: "🤍" },
-  { id: "creative_class",    label: "Creative Class",      description: "Artists, designers, makers — aesthetic is everything", emoji: "🎨" },
-  { id: "wellness_centered", label: "Wellness Centered",   description: "Mindful, intentional, and deeply health-focused",     emoji: "🌿" },
-  { id: "urban_culture",     label: "Urban Culture",       description: "Concert tickets, gallery openings, city living",      emoji: "🎶" },
-  { id: "practical_smart",   label: "Practical & Smart",   description: "Research-driven buys, function over fashion",         emoji: "🔬" },
-  { id: "comfort_aesthetic", label: "Comfort Aesthetic",   description: "Soft fabrics, great lighting, gentle life energy",    emoji: "🛋️" },
+  { id: "quiet_luxury_nb",   label: "Quiet Luxury",        description: "Understated quality — no logos, just craft"},
+  { id: "creative_class",    label: "Creative Class",      description: "Artists, designers, makers — aesthetic is everything"},
+  { id: "wellness_centered", label: "Wellness Centered",   description: "Mindful, intentional, and deeply health-focused"},
+  { id: "urban_culture",     label: "Urban Culture",       description: "Concert tickets, gallery openings, city living"},
+  { id: "practical_smart",   label: "Practical & Smart",   description: "Research-driven buys, function over fashion"},
+  { id: "comfort_aesthetic", label: "Comfort Aesthetic",   description: "Soft fabrics, great lighting, gentle life energy"},
 ];
 
 const VIBE_mature_man: QuestionOption[] = [
-  { id: "classic_refined",   label: "Classic & Refined",   description: "Timeless pieces, good leather, built to last",        emoji: "🎩" },
-  { id: "active_outdoors",   label: "Active Outdoors",     description: "Golf, hiking, biking — stays moving, dresses for it", emoji: "⛳" },
-  { id: "home_entertainer",  label: "Home Entertainer",    description: "Quality kitchen gear, premium wine, hosting well",    emoji: "🍷" },
-  { id: "tech_savvy_pro",    label: "Tech Savvy Pro",      description: "Stays current on gadgets, efficiency is everything",  emoji: "💻" },
-  { id: "traveler_explorer", label: "Traveler / Explorer", description: "Business class upgrades, loyalty programs, well-worn passport", emoji: "✈️" },
-  { id: "no_fuss_quality",   label: "No Fuss Quality",     description: "Fewer, better things — comfort and durability first", emoji: "🏡" },
+  { id: "classic_refined",   label: "Classic & Refined",   description: "Timeless pieces, good leather, built to last"},
+  { id: "active_outdoors",   label: "Active Outdoors",     description: "Golf, hiking, biking — stays moving, dresses for it"},
+  { id: "home_entertainer",  label: "Home Entertainer",    description: "Quality kitchen gear, premium wine, hosting well"},
+  { id: "tech_savvy_pro",    label: "Tech Savvy Pro",      description: "Stays current on gadgets, efficiency is everything"},
+  { id: "traveler_explorer", label: "Traveler / Explorer", description: "Business class upgrades, loyalty programs, well-worn passport"},
+  { id: "no_fuss_quality",   label: "No Fuss Quality",     description: "Fewer, better things — comfort and durability first"},
 ];
 
 const VIBE_mature_woman: QuestionOption[] = [
-  { id: "effortlessly_chic", label: "Effortlessly Chic",   description: "French-girl polish — looks great without trying",     emoji: "👒" },
-  { id: "wellness_expert",   label: "Wellness Expert",     description: "Skin, sleep, supplements — health is an investment",  emoji: "💊" },
-  { id: "home_luxury",       label: "Home Luxury",         description: "Beautiful spaces, fine linens, curated everything",   emoji: "🏡" },
-  { id: "active_living",     label: "Active Living",       description: "Tennis, Pilates, walking groups — always moving",     emoji: "🎾" },
-  { id: "experience_seeker", label: "Experience Seeker",   description: "Theater, travel, fine dining — life is for living",   emoji: "🎭" },
-  { id: "understated_style", label: "Understated Style",   description: "Investment dressing — quality pieces worn for years", emoji: "🤍" },
+  { id: "effortlessly_chic", label: "Effortlessly Chic",   description: "French-girl polish — looks great without trying"},
+  { id: "wellness_expert",   label: "Wellness Expert",     description: "Skin, sleep, supplements — health is an investment"},
+  { id: "home_luxury",       label: "Home Luxury",         description: "Beautiful spaces, fine linens, curated everything"},
+  { id: "active_living",     label: "Active Living",       description: "Tennis, Pilates, walking groups — always moving"},
+  { id: "experience_seeker", label: "Experience Seeker",   description: "Theater, travel, fine dining — life is for living"},
+  { id: "understated_style", label: "Understated Style",   description: "Investment dressing — quality pieces worn for years"},
 ];
 
 const VIBE_mature_nb: QuestionOption[] = [
-  { id: "contemplative",     label: "Contemplative",       description: "Books, ideas, art, and a beautifully curated space",  emoji: "📖" },
-  { id: "active_wellness",   label: "Active Wellness",     description: "Movement, nutrition, and intentional self-care",      emoji: "🧘" },
-  { id: "creative_spirit",   label: "Creative Spirit",     description: "Expressive, curious, and drawn to craft",             emoji: "🎨" },
-  { id: "homebody_curator",  label: "Homebody Curator",    description: "Perfect at-home environment is the goal",             emoji: "🕯️" },
-  { id: "seasoned_traveler", label: "Seasoned Traveler",   description: "Knows where to go and how to pack for it",            emoji: "🧳" },
-  { id: "invest_in_quality", label: "Invest in Quality",   description: "Buys once, buys right — no fast fashion, no waste",   emoji: "⬜" },
+  { id: "contemplative",     label: "Contemplative",       description: "Books, ideas, art, and a beautifully curated space"},
+  { id: "active_wellness",   label: "Active Wellness",     description: "Movement, nutrition, and intentional self-care"},
+  { id: "creative_spirit",   label: "Creative Spirit",     description: "Expressive, curious, and drawn to craft"},
+  { id: "homebody_curator",  label: "Homebody Curator",    description: "Perfect at-home environment is the goal"},
+  { id: "seasoned_traveler", label: "Seasoned Traveler",   description: "Knows where to go and how to pack for it"},
+  { id: "invest_in_quality", label: "Invest in Quality",   description: "Buys once, buys right — no fast fashion, no waste"},
 ];
 
 // Map every age__gender key to a vibe set

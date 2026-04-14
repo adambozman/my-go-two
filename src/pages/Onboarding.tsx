@@ -17,6 +17,7 @@ import { useUserProfile } from "@/contexts/user-profile-context";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import GoTwoText from "@/components/GoTwoText";
+import VibeIcon from "@/components/VibeIcon";
 import {
   profileQuestions,
   deriveSpendTier,
@@ -1038,8 +1039,8 @@ const Onboarding = () => {
                           )}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-primary">
-                            {option.emoji && <span className="mr-1.5">{option.emoji}</span>}
+                          <p className="text-sm font-semibold text-primary flex items-center gap-2">
+                            <VibeIcon vibeId={option.id} size={20} />
                             {option.label}
                           </p>
                           {option.description && (
