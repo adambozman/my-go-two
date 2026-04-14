@@ -72,47 +72,32 @@ const Landing = () => {
   return (
     <div className="landing-page min-h-screen overflow-x-hidden">
       <div className="relative z-10">
-        {/* TOP NAV */}
-        <nav
+        {/* Log In button — top right */}
+        <Link
+          to="/login"
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
+            top: 20,
+            right: "clamp(20px, 4vw, 52px)",
             zIndex: 50,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "16px clamp(20px, 4vw, 52px)",
-            background: "rgba(243,225,209,0.85)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
+            fontFamily: "'Jost', sans-serif",
+            fontSize: 13.5,
+            fontWeight: 500,
+            color: "var(--logo-two-color)",
+            letterSpacing: "0.3px",
+            padding: "8px 24px",
+            borderRadius: 999,
+            border: "1px solid rgba(45,104,112,0.25)",
+            background: "rgba(255,255,255,0.5)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            textDecoration: "none",
           }}
         >
-          <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
-            <span style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600, fontSize: 22, color: "var(--logo-go-color)", lineHeight: 1 }}>Go</span>
-            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: "var(--logo-two-color)", lineHeight: 1 }}>Two</span>
-          </div>
-          <Link
-            to="/login"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              fontSize: 13.5,
-              fontWeight: 500,
-              color: "var(--logo-two-color)",
-              letterSpacing: "0.3px",
-              padding: "8px 24px",
-              borderRadius: 999,
-              border: "1px solid rgba(45,104,112,0.25)",
-              background: "rgba(255,255,255,0.5)",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              textDecoration: "none",
-            }}
-          >
-            Log In
-          </Link>
-        </nav>
+          Log In
+        </Link>
 
         {/* HERO */}
         <section
