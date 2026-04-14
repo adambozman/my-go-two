@@ -107,17 +107,9 @@ const Waitlist = () => {
           opacity: 0.65,
           maxWidth: 440,
         }}>
-          Become their{" "}
-          <img src={logoImg} alt="Go Two" style={{
-            height: "1.1em",
-            width: "auto",
-            display: "inline",
-            verticalAlign: "baseline",
-            position: "relative",
-            top: "0.1em",
-          }} />
-          . Know exactly what they want —<br />
-          every birthday, every holiday, every time.
+          Your favorites. Your orders. Your sizes. Your weird obsessions.<br />
+          Lock it all in one vault. Share it with your people.<br />
+          Birthdays handled. Holidays unlocked. No more guessing.
         </p>
 
         {/* Buttons */}
@@ -282,16 +274,7 @@ const Waitlist = () => {
                 opacity: 0.6,
                 marginTop: 10,
               }}>
-                We'll let you know when{" "}
-                <img src={logoImg} alt="Go Two" style={{
-                  height: "1em",
-                  width: "auto",
-                  display: "inline",
-                  verticalAlign: "baseline",
-                  position: "relative",
-                  top: "0.08em",
-                }} />{" "}
-                is ready.
+                We'll let you know when your vault is ready.
               </p>
             </div>
           )}
