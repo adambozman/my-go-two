@@ -11,11 +11,13 @@ export interface MyGoTwoNavItem {
   url: string;
   label: string;
   end?: boolean;
+  /** When true, the label must render as "My" + <GoTwoInline /> logo (trademark). */
+  hasLogo?: boolean;
 }
 
 export const MYGOTWO_NAV_ITEMS: MyGoTwoNavItem[] = [
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
-  { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
+  { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two", hasLogo: true },
   { icon: Sparkles, url: "/dashboard/recommendations", label: "For You" },
   { icon: ClipboardList, url: "/dashboard/know-me", label: "Know Me" },
   { icon: Bell, url: "/dashboard/notifications", label: "Notifications" },

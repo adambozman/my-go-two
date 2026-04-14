@@ -27,6 +27,7 @@ import {
   RECOMMENDATION_CATEGORY_REGISTRY,
   type RecommendationCategory,
 } from "@/lib/recommendationCategories";
+import GoTwoInline from "@/components/GoTwoInline";
 
 const RECOMMENDATION_V2_VERSION_PREFIX = "recommendation-engine-v2";
 
@@ -342,7 +343,7 @@ const Recommendations = () => {
 
               {/* Left — title + persona */}
               <div className="min-w-0 max-w-[780px]">
-                <p className="surface-eyebrow-coral mb-2">Go Two / Recommendations</p>
+                <p className="surface-eyebrow-coral mb-2"><GoTwoInline height="0.85em" /> / Recommendations</p>
                 <h1 className="surface-heading-lg mb-3">
                   Curated Just For You
                 </h1>

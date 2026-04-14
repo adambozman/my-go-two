@@ -23,6 +23,7 @@ import {
   normalizeRecommendationCategoryKey,
 } from "@/lib/recommendationCategories";
 import { resolveStorageUrl } from "@/lib/storageRefs";
+import GoTwoInline from "@/components/GoTwoInline";
 
 interface ConnectionRecord {
   id: string;
@@ -955,7 +956,7 @@ export default function ConnectionPage() {
 
         <section className="card-design-neumorph relative w-full max-w-[1120px] overflow-visible p-5 pt-12 md:p-6 md:pt-12 xl:h-[236px]">
             <p className="surface-eyebrow-coral absolute left-5 top-5 md:left-6 md:top-6">
-              Go Two / Connection feed
+              <GoTwoInline height="0.85em" /> / Connection feed
             </p>
 
             <div className="grid gap-5 xl:h-full xl:grid-cols-[minmax(0,1fr)_360px]">
@@ -1240,7 +1241,7 @@ export default function ConnectionPage() {
                         ) : null}
                       </div>
                       <p className="surface-body mt-4">
-                        {sharedRecommendations.products[1]?.hook || sharedRecommendations.products[1]?.why || `Go Two already has enough signals from ${connection.name} to keep shaping sharper recommendations here.`}
+                        {sharedRecommendations.products[1]?.hook || sharedRecommendations.products[1]?.why || `We already have enough signals from ${connection.name} to keep shaping sharper recommendations here.`}
                       </p>
                       {sharedRecommendations.products[1] && getRecommendationDestination(sharedRecommendations.products[1]) ? (
                         <button
@@ -1278,7 +1279,7 @@ export default function ConnectionPage() {
                             </p>
                           </div>
                           <p className="surface-body mt-3">
-                            {product.hook || product.why || `Another shared recommendation signal Go Two can use for ${connection.name}.`}
+                            {product.hook || product.why || `Another shared recommendation signal for ${connection.name}.`}
                           </p>
                           {getRecommendationDestination(product) ? (
                             <button
@@ -1308,7 +1309,7 @@ export default function ConnectionPage() {
                         </p>
                       </div>
                       <p className="surface-meta mt-4">
-                        Tell {connection.name} to share more so Go Two can start filling this area with real recommendations.
+                        Tell {connection.name} to share more so we can start filling this area with real recommendations.
                       </p>
                     </div>
 

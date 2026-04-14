@@ -240,11 +240,11 @@ const SettingsPage = () => {
     try {
       const token = await ensureShareToken();
       const nextInviteLink = `${window.location.origin}/connect?token=${token}`;
-      const shareText = `Connect with me on Go Two.\n\n${nextInviteLink}`;
+      const shareText = `Connect with me — let's build better recommendations together.\n\n${nextInviteLink}`;
 
       if (typeof navigator.share === "function") {
         await navigator.share({
-          title: "Connect on Go Two",
+          title: "Connect with me",
           text: shareText,
           url: nextInviteLink,
         });

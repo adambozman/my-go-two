@@ -392,7 +392,7 @@ const Onboarding = () => {
   const completionSummary = useMemo(() => {
     const yourVibe = getYourVibeDerivation(knowledgeDerivations);
     if (yourVibe?.persona_summary?.trim()) return yourVibe.persona_summary.trim();
-    return "Your profile is saved. Everything in Go Two builds from here — recommendations, connections, gift suggestions.";
+    return "Your profile is saved. Everything builds from here — recommendations, connections, gift suggestions.";
   }, [knowledgeDerivations]);
 
   // ── Answer Setters ─────────────────────────────────────────────────────────
@@ -523,7 +523,7 @@ const Onboarding = () => {
               description:
                 (typeof personaSummary === "string" && personaSummary.trim())
                   ? personaSummary.trim()
-                  : "Your Go Two profile is ready.",
+                  : "Your profile is ready.",
             });
           }
         } catch (err) {

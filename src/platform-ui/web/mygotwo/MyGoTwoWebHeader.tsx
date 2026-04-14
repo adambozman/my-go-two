@@ -1,6 +1,7 @@
 import { ChevronDown, LogOut, Settings, Trash2, Upload } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
+import GoTwoInline from "@/components/GoTwoInline";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -83,7 +84,7 @@ export default function MyGoTwoWebHeader() {
                   color: isActive ? "var(--swatch-teal)" : undefined,
                 }}
               >
-                {item.label}
+                {item.hasLogo ? <>My <GoTwoInline height="0.85em" /></> : item.label}
               </span>
             </button>
           )})}

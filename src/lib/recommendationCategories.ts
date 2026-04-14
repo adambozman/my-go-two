@@ -61,11 +61,11 @@ export const RECOMMENDATION_CATEGORY_ALIAS_MAP: Record<string, RecommendationCat
   cuisine: "food",
   "food & dining": "food",
   "taste cues": "food",
-  "your go-to orders": "food",
+  "your favorite orders": "food",
   "food-dining": "food",
   "food-drink": "food",
   "food-orders": "food",
-  "go-to-orders": "food",
+  "favorite-orders": "food",
 
   tech: "tech",
   technology: "tech",

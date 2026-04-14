@@ -271,9 +271,9 @@ export const THIS_OR_THAT_V2_CATEGORY_DEFINITIONS: ThisOrThatV2CategoryDefinitio
   },
   {
     id: "food-orders",
-    title: "Your Go-To Orders",
+    title: "Your Favorite Orders",
     description: "Your exact orders at the places you love so the people in your life always get it right.",
-    eyebrow: "Go-to orders",
+    eyebrow: "Favorite orders",
     status: "coming-soon",
   },
 ];
@@ -391,7 +391,7 @@ export const THIS_OR_THAT_V2_CATEGORY_BLUEPRINTS: ThisOrThatV2CategoryBlueprint[
   },
   {
     source_category_id: "food-orders",
-    source_title: "Your Go-To Orders",
+    source_title: "Your Favorite Orders",
     source_status: "coming-soon",
     source_kind: "authored-v2",
     category_slug: "dining",

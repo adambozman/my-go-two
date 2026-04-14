@@ -35,7 +35,7 @@ const STYLE_FIT: QuizQuestion[] = [
   },
   {
     id: "sf-02", section: "style-fit",
-    title: "What's your go-to color to wear?",
+    title: "What's your favorite color to wear?",
     subtitle: "Pick your favorite.",
     type: "single-select", multiSelect: false,
     options: [opt("black", "Black"), opt("navy", "Navy"), opt("white", "White"), opt("earth-tones", "Earth Tones"), opt("pastels", "Pastels"), opt("bold-colors", "Bold Colors")],
@@ -57,7 +57,7 @@ const STYLE_FIT: QuizQuestion[] = [
   {
     id: "sf-05", section: "style-fit",
     title: "Which fabric feels most 'you'?",
-    subtitle: "Pick your go-to.",
+    subtitle: "Pick your favorite.",
     type: "single-select", multiSelect: false,
     options: [opt("cotton", "Cotton"), opt("linen", "Linen"), opt("denim", "Denim"), opt("cashmere", "Cashmere/Wool"), opt("silk", "Silk/Satin"), opt("athletic", "Athletic/Tech Fabric")],
   },
@@ -224,7 +224,7 @@ const FOOD_DRINK: QuizQuestion[] = [
   {
     id: "fd-08", section: "food-drink",
     title: "If wine, which type?",
-    subtitle: "Pick your go-to.",
+    subtitle: "Pick your favorite.",
     type: "single-select", multiSelect: false,
     options: [opt("red", "Red"), opt("white", "White"), opt("rosé", "Rosé"), opt("sparkling", "Sparkling"), opt("natural", "Natural / Orange"), opt("no-wine", "Don't Drink Wine")],
   },
@@ -612,7 +612,7 @@ const HOME_LIVING: QuizQuestion[] = [
 const ENTERTAINMENT: QuizQuestion[] = [
   {
     id: "en-01", section: "entertainment",
-    title: "What's your go-to way to unwind?",
+    title: "What's your favorite way to unwind?",
     subtitle: "Pick one.",
     type: "single-select", multiSelect: false,
     options: [opt("tv-movies", "TV / Movies"), opt("reading", "Reading"), opt("gaming", "Gaming"), opt("music", "Music"), opt("exercise", "Exercise"), opt("socializing", "Socializing")],

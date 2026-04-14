@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Bell, Settings, Upload, Trash2, ChevronDown, LogOut, Home, Heart, Sparkles, ClipboardList } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
+import GoTwoInline from "@/components/GoTwoInline";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth-context";
 import {
@@ -14,9 +15,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { makeStorageRef, resolveStorageUrl } from "@/lib/storageRefs";
 
-const navItems: { icon: typeof Home; url: string; end?: boolean; label: string }[] = [
+const navItems: { icon: typeof Home; url: string; end?: boolean; label: string; hasLogo?: boolean }[] = [
   { icon: Home, url: "/dashboard", end: true, label: "Home" },
-  { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two" },
+  { icon: Heart, url: "/dashboard/my-go-two", label: "My Go Two", hasLogo: true },
   { icon: Sparkles, url: "/dashboard/recommendations", label: "For You" },
   { icon: ClipboardList, url: "/dashboard/know-me", label: "Know Me" },
   { icon: Bell, url: "/dashboard/notifications", label: "Notifications" },
@@ -218,7 +219,7 @@ export function DashboardTopBar() {
                     color: isActive ? "var(--swatch-teal)" : undefined,
                   }}
                 >
-                  {item.label}
+                  {item.hasLogo ? <>My <GoTwoInline height="0.85em" /></> : item.label}
                 </span>
               </button>
             );

@@ -69,7 +69,7 @@ function toViewItem(row: PublicFeedRow): PublicFeedItem {
     creatorName: row.creator_name || "Creator",
     creatorTag: row.creator_tag || "@creator",
     title: row.title,
-    summary: row.summary || "Published from Go Two.",
+    summary: row.summary || "Published recommendation.",
     category,
     location: "Public",
     coverImage: row.lead_image_url || "",

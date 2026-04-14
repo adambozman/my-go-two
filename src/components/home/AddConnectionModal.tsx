@@ -4,6 +4,7 @@ import { X, Mail, QrCode, Send, Copy, Check, UserPlus, Search, Loader2, AtSign, 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
+import GoTwoInline from "@/components/GoTwoInline";
 
 interface AddConnectionModalProps {
   open: boolean;
@@ -356,7 +357,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
 
       if (typeof navigator.share === "function") {
         await navigator.share({
-          title: "Connect on Go Two",
+          title: "Connect with me",
           text: shareText,
           url: preparedShare.inviteLink,
         });
@@ -466,7 +467,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               {tab === "search" ? (
                 <div className="space-y-3">
                   <p className="text-[12px]" style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}>
-                    Search by email, phone, or username first. If they are already on Go Two, send them a direct connection invite.
+                    Search by email, phone, or username first. If they are already on <GoTwoInline height="1em" />, send them a direct connection invite.
                   </p>
 
                   <button
@@ -523,7 +524,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
                       </div>
                     ) : searchQuery.trim() && searchResults.length === 0 ? (
                       <div className="surface-pill rounded-2xl px-3.5 py-3 text-[12px]" style={{ color: "var(--swatch-antique-coin)" }}>
-                        No user found. Use Add User if they are not on Go Two yet.
+                        No user found. Use Add User if they are not on <GoTwoInline height="1em" /> yet.
                       </div>
                     ) : (
                       searchResults.map((result) => (
@@ -560,7 +561,7 @@ export function AddConnectionModal({ open, onClose, onConnectionCreated }: AddCo
               ) : tab === "invite" ? (
                 <div className="space-y-3">
                   <p className="text-[12px]" style={{ color: "var(--swatch-antique-coin)", fontFamily: "'Jost', sans-serif" }}>
-                    Add their email, phone, or username. If they are not on Go Two yet, we will generate an invite link for you to send.
+                    Add their email, phone, or username. If they are not on <GoTwoInline height="1em" /> yet, we will generate an invite link for you to send.
                   </p>
 
                   <div className="grid gap-3 md:grid-cols-3">

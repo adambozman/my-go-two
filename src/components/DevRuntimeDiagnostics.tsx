@@ -56,7 +56,7 @@ export function DevRuntimeDiagnostics() {
 
       setDiagnostic({
         kind: "notice",
-        title: "My Go Two Fallback",
+        title: "My Favorites Fallback",
         message: `Full strip transforms failed for: ${failedLabels}. The preview stage stayed in place so the page did not blank out.`,
       });
     };
