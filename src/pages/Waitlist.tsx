@@ -63,7 +63,7 @@ const Waitlist = () => {
         alignItems: "center",
         justifyContent: "center",
         padding: "0 24px",
-        maxWidth: 560,
+        maxWidth: 680,
         textAlign: "center",
         marginTop: "clamp(-20px, -2vh, -10px)",
       }}>
