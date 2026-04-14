@@ -10,7 +10,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ClipboardList,
-  Loader2,
   Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
@@ -21,28 +20,20 @@ import GoTwoText from "@/components/GoTwoText";
 import {
   profileQuestions,
   deriveSpendTier,
-  buildVibeCacheKey,
-  buildSpendCacheKey,
-  buildBrandCacheKey,
   type OnboardingQuestion,
   type SpendItem,
   type SpendRange,
 } from "@/data/profileQuestions";
+import {
+  getVibeOptions,
+  getSpendItems,
+  getBrandOptions,
+} from "@/data/onboardingStaticSets";
 import { getYourVibeDerivation } from "@/lib/knowledgeCenter";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Phase = "intro" | "profile" | "personalizing" | "complete";
-
-interface AiScreenState {
-  loading: boolean;
-  error: string | null;
-  // For vibe + brand: injected as options into the question
-  vibeOptions?: Array<{ id: string; label: string; description: string; keywords: string[] }>;
-  brandOptions?: Array<{ id: string; label: string; category: string; tier: string }>;
-  // For spend: injected as spendItems
-  spendItems?: SpendItem[];
-}
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -63,12 +54,6 @@ const accent = {
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const normalizeOptionalDate = (value: string | string[] | undefined): string | null => {
-  const raw = Array.isArray(value) ? value[0] : value;
-  const trimmed = typeof raw === "string" ? raw.trim() : "";
-  return /^\d{4}-\d{2}-\d{2}$/.test(trimmed) ? trimmed : null;
-};
 
 const getErrorMessage = (error: unknown): string => {
   const message =
@@ -93,35 +78,6 @@ const flatAnswer = (answers: Record<string, string | string[]>, key: string): st
   const val = answers[key];
   if (!val) return "";
   return Array.isArray(val) ? val[0] ?? "" : val;
-};
-
-// Derive spend tier from baseline spend answers for brand cache key
-const buildBaselineSpendRecord = (answers: Record<string, string | string[]>): Record<string, string> => {
-  const result: Record<string, string> = {};
-  for (const [key, val] of Object.entries(answers)) {
-    if (key.startsWith("spend_baseline__")) {
-      result[key] = Array.isArray(val) ? val[0] ?? "" : val;
-    }
-  }
-  return result;
-};
-
-// ─── AI Screen Fetcher ────────────────────────────────────────────────────────
-
-const fetchAiScreen = async (
-  screen: 3 | 5 | 6,
-  params: {
-    age_range?: string;
-    gender?: string;
-    top_categories?: string[];
-    spend_tier?: string;
-  },
-): Promise<{ data: unknown }> => {
-  const { data, error } = await supabase.functions.invoke("onboarding-ai-generator", {
-    body: { screen, ...params },
-  });
-  if (error) throw error;
-  return data as { data: unknown };
 };
 
 // ─── Spend Select Component ───────────────────────────────────────────────────
@@ -235,23 +191,6 @@ const RankSelect = ({
   );
 };
 
-// ─── AI Loading Placeholder ───────────────────────────────────────────────────
-
-const AiLoadingCard = ({ label }: { label: string }) => (
-  <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-    <Loader2
-      className="h-8 w-8 animate-spin"
-      style={{ color: accent.solid }}
-    />
-    <p
-      className="text-sm"
-      style={{ color: "var(--swatch-teal)", fontFamily: "'Jost', sans-serif" }}
-    >
-      {label}
-    </p>
-  </div>
-);
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const Onboarding = () => {
@@ -267,15 +206,39 @@ const Onboarding = () => {
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [slideDir, setSlideDir] = useState<1 | -1>(1);
 
-  // AI screen state: keyed by question id (style_vibe, spend_generated, brand_affinity)
-  const [aiScreens, setAiScreens] = useState<Record<string, AiScreenState>>({
-    style_vibe:     { loading: false, error: null },
-    spend_generated:{ loading: false, error: null },
-    brand_affinity: { loading: false, error: null },
-  });
+  // ── Static data resolvers (computed from current answers) ─────────────────
 
-  // Track which AI screens have been fetched to avoid duplicate calls
-  const fetchedAiScreens = useRef<Set<string>>(new Set());
+  const ageRange = flatAnswer(answers, "age_range") || "25_34";
+  const gender = flatAnswer(answers, "gender") || "prefer_not";
+  const topCategories = useMemo(() => {
+    const val = answers["category_priority"];
+    return Array.isArray(val) ? val : val ? [val] : [];
+  }, [answers]);
+  const topCategory = topCategories[0] || "clothes";
+
+  const spendTier = useMemo(() => {
+    const baselineRecord: Record<string, string> = {};
+    for (const [key, val] of Object.entries(answers)) {
+      if (key.startsWith("spend_baseline__")) {
+        baselineRecord[key] = Array.isArray(val) ? val[0] ?? "" : val;
+      }
+    }
+    return deriveSpendTier(baselineRecord);
+  }, [answers]);
+
+  // Resolve static options for screens 3, 5, 6
+  const staticVibeOptions = useMemo(
+    () => getVibeOptions(ageRange, gender),
+    [ageRange, gender],
+  );
+  const staticSpendItems = useMemo(
+    () => getSpendItems(topCategories),
+    [topCategories],
+  );
+  const staticBrandOptions = useMemo(
+    () => getBrandOptions(topCategory, spendTier),
+    [topCategory, spendTier],
+  );
 
   // ── Popstate ───────────────────────────────────────────────────────────────
 
@@ -301,78 +264,7 @@ const Onboarding = () => {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [phase, profileIndex, isEditMode]);
 
-  // ── AI Screen Prefetch ────────────────────────────────────────────────────
-  // Fires when the user reaches an AI-driven question for the first time.
-
-  const triggerAiScreenFetch = useCallback(
-    async (questionId: string) => {
-      if (fetchedAiScreens.current.has(questionId)) return;
-      fetchedAiScreens.current.add(questionId);
-
-      setAiScreens((prev) => ({
-        ...prev,
-        [questionId]: { ...prev[questionId], loading: true, error: null },
-      }));
-
-      try {
-        const ageRange  = flatAnswer(answers, "age_range") || "25_34";
-        const gender    = flatAnswer(answers, "gender") || "prefer_not";
-        const topCats   = (() => {
-          const val = answers["category_priority"];
-          return Array.isArray(val) ? val : val ? [val] : [];
-        })();
-
-        if (questionId === "style_vibe") {
-          const result = await fetchAiScreen(3, { age_range: ageRange, gender });
-          setAiScreens((prev) => ({
-            ...prev,
-            style_vibe: { loading: false, error: null, vibeOptions: result.data as AiScreenState["vibeOptions"] },
-          }));
-        }
-
-        if (questionId === "spend_generated") {
-          const result = await fetchAiScreen(5, { top_categories: topCats });
-          setAiScreens((prev) => ({
-            ...prev,
-            spend_generated: { loading: false, error: null, spendItems: result.data as SpendItem[] },
-          }));
-        }
-
-        if (questionId === "brand_affinity") {
-          const baselineRecord = buildBaselineSpendRecord(answers);
-          const spendTier = deriveSpendTier(baselineRecord);
-          const result = await fetchAiScreen(6, {
-            age_range: ageRange,
-            gender,
-            top_categories: topCats,
-            spend_tier: spendTier,
-          });
-          setAiScreens((prev) => ({
-            ...prev,
-            brand_affinity: { loading: false, error: null, brandOptions: result.data as AiScreenState["brandOptions"] },
-          }));
-        }
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "Could not load personalized options";
-        setAiScreens((prev) => ({
-          ...prev,
-          [questionId]: { loading: false, error: msg },
-        }));
-      }
-    },
-    [answers],
-  );
-
   const currentQuestion = profileQuestions[profileIndex];
-
-  // Trigger AI fetch when landing on an AI question
-  useEffect(() => {
-    if (!currentQuestion) return;
-    const aiTypes = ["ai-vibe", "ai-spend-items", "ai-brand-grid"];
-    if (aiTypes.includes(currentQuestion.type)) {
-      triggerAiScreenFetch(currentQuestion.id);
-    }
-  }, [currentQuestion, triggerAiScreenFetch]);
 
   const progress = ((profileIndex + 1) / profileQuestions.length) * 100;
 
@@ -608,7 +500,7 @@ const Onboarding = () => {
                 }}
               >
                 We use your real taste, spend, and habits to build a profile that
-                actually knows you. The AI personalizes every step.
+                actually knows you. Every question shapes your recommendations.
               </p>
 
               <button
@@ -910,26 +802,6 @@ const Onboarding = () => {
 
   if (!currentQuestion) return null;
 
-  // ── Resolve AI screen data into the current question for rendering ─────────
-
-  const aiState = aiScreens[currentQuestion.id] ?? { loading: false, error: null };
-
-  // For ai-vibe: merge AI options into question shape
-  const resolvedVibeOptions = aiState.vibeOptions?.map((v) => ({
-    id: v.id,
-    label: v.label,
-    description: v.description,
-  }));
-
-  // For ai-brand-grid: merge AI brand options
-  const resolvedBrandOptions = aiState.brandOptions?.map((b) => ({
-    id: b.id,
-    label: b.label,
-  }));
-
-  // For ai-spend-items: use injected spend items
-  const resolvedSpendItems = aiState.spendItems;
-
   // ── PROFILE PHASE ──────────────────────────────────────────────────────────
 
   return (
@@ -1128,133 +1000,112 @@ const Onboarding = () => {
                 </div>
               )}
 
-              {/* ── ai-vibe ───────────────────────────────────────────────── */}
-              {currentQuestion.type === "ai-vibe" && (
-                <>
-                  {aiState.loading && <AiLoadingCard label="Finding your vibe..." />}
-                  {aiState.error && (
-                    <p className="text-center text-sm text-destructive">{aiState.error}</p>
-                  )}
-                  {!aiState.loading && !aiState.error && resolvedVibeOptions && (
-                    <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 overflow-y-auto pb-4">
-                      {resolvedVibeOptions.map((option, index) => {
-                        const isSelected = selectedForQuestion.includes(option.id);
-                        return (
-                          <motion.button
-                            key={option.id}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.05 }}
-                            onClick={() => setSingle(currentQuestion.id, option.id)}
-                            className={`flex items-start gap-4 rounded-xl px-5 py-4 text-left transition-all duration-200 ${
-                              isSelected ? "shadow-md" : "hover:shadow-sm"
-                            }`}
-                            style={{
-                              background: isSelected
-                                ? `linear-gradient(158deg, ${accent.bgStrong}, ${accent.bg})`
-                                : "linear-gradient(158deg, rgba(232,198,174,0.2), rgba(107,109,98,0.08))",
-                              border: isSelected ? `2px solid ${accent.solid}` : "2px solid transparent",
-                            }}
-                          >
-                            <div
-                              className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all"
-                              style={{
-                                borderColor: isSelected ? accent.solid : "rgba(107,109,98,0.4)",
-                                background: isSelected ? accent.solid : "transparent",
-                              }}
-                            >
-                              {isSelected && (
-                                <motion.div
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  className="h-2.5 w-2.5 rounded-full bg-white"
-                                />
-                              )}
-                            </div>
-                            <div>
-                              <p className="text-sm font-semibold text-primary">{option.label}</p>
-                              {"description" in option && option.description && (
-                                <p className="mt-0.5 text-xs text-muted-foreground">
-                                  {(option as { description: string }).description}
-                                </p>
-                              )}
-                            </div>
-                          </motion.button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* ── ai-spend-items (generated) ────────────────────────────── */}
-              {currentQuestion.type === "ai-spend-items" && (
-                <>
-                  {aiState.loading && <AiLoadingCard label="Picking items for your priorities..." />}
-                  {aiState.error && (
-                    <p className="text-center text-sm text-destructive">{aiState.error}</p>
-                  )}
-                  {!aiState.loading && !aiState.error && resolvedSpendItems && (
-                    <div className="mx-auto w-full max-w-lg flex-1 overflow-y-auto pb-4">
-                      {resolvedSpendItems.map((item) => (
-                        <SpendSelectRow
-                          key={item.id}
-                          item={item}
-                          selectedRangeId={getSpendItemAnswer("spend_generated", item.id)}
-                          onSelect={(itemId, rangeId) => setSpendItem("spend_generated", itemId, rangeId)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* ── ai-brand-grid ─────────────────────────────────────────── */}
-              {currentQuestion.type === "ai-brand-grid" && (
-                <>
-                  {aiState.loading && <AiLoadingCard label="Curating brands for you..." />}
-                  {aiState.error && (
-                    <p className="text-center text-sm text-destructive">{aiState.error}</p>
-                  )}
-                  {!aiState.loading && !aiState.error && resolvedBrandOptions && (
-                    <div className="flex flex-1 flex-wrap content-start justify-center gap-2.5 overflow-y-auto pb-4">
-                      {resolvedBrandOptions.map((option, index) => {
-                        const isSelected = selectedForQuestion.includes(option.id);
-                        const maxBrands = 5;
-                        const atMax = !isSelected && selectedForQuestion.length >= maxBrands;
-                        return (
-                          <motion.button
-                            key={option.id}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.025 }}
-                            onClick={() => {
-                              if (atMax) return;
-                              toggleMulti(currentQuestion.id, option.id);
-                            }}
-                            disabled={atMax}
-                            className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
-                              isSelected ? "scale-105 shadow-lg" : atMax ? "opacity-40 cursor-not-allowed" : "hover:scale-105 hover:shadow-md"
-                            }`}
-                            style={{
-                              background: isSelected
-                                ? accent.solid
-                                : "linear-gradient(158deg, rgba(232,198,174,0.38), rgba(107,109,98,0.15))",
-                              color: isSelected ? "#fff" : "hsl(196 40% 31%)",
-                              border: isSelected ? `2px solid ${accent.solid}` : "1px solid rgba(107,109,98,0.35)",
-                            }}
-                          >
+              {/* ── static-vibe (Screen 3) ─────────────────────────────────── */}
+              {currentQuestion.type === "static-vibe" && (
+                <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 overflow-y-auto pb-4">
+                  {staticVibeOptions.map((option, index) => {
+                    const isSelected = selectedForQuestion.includes(option.id);
+                    return (
+                      <motion.button
+                        key={option.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        onClick={() => setSingle(currentQuestion.id, option.id)}
+                        className={`flex items-start gap-4 rounded-xl px-5 py-4 text-left transition-all duration-200 ${
+                          isSelected ? "shadow-md" : "hover:shadow-sm"
+                        }`}
+                        style={{
+                          background: isSelected
+                            ? `linear-gradient(158deg, ${accent.bgStrong}, ${accent.bg})`
+                            : "linear-gradient(158deg, rgba(232,198,174,0.2), rgba(107,109,98,0.08))",
+                          border: isSelected ? `2px solid ${accent.solid}` : "2px solid transparent",
+                        }}
+                      >
+                        <div
+                          className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all"
+                          style={{
+                            borderColor: isSelected ? accent.solid : "rgba(107,109,98,0.4)",
+                            background: isSelected ? accent.solid : "transparent",
+                          }}
+                        >
+                          {isSelected && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="h-2.5 w-2.5 rounded-full bg-white"
+                            />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-primary">
+                            {option.emoji && <span className="mr-1.5">{option.emoji}</span>}
                             {option.label}
-                            {isSelected && <Check className="h-3.5 w-3.5" />}
-                          </motion.button>
-                        );
-                      })}
-                      <p className="w-full text-center text-xs text-muted-foreground pt-1">
-                        {selectedForQuestion.length}/5 selected
-                      </p>
-                    </div>
-                  )}
-                </>
+                          </p>
+                          {option.description && (
+                            <p className="mt-0.5 text-xs text-muted-foreground">
+                              {option.description}
+                            </p>
+                          )}
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* ── static-spend (Screen 5) ─────────────────────────────────── */}
+              {currentQuestion.type === "static-spend" && (
+                <div className="mx-auto w-full max-w-lg flex-1 overflow-y-auto pb-4">
+                  {staticSpendItems.map((item) => (
+                    <SpendSelectRow
+                      key={item.id}
+                      item={item}
+                      selectedRangeId={getSpendItemAnswer("spend_generated", item.id)}
+                      onSelect={(itemId, rangeId) => setSpendItem("spend_generated", itemId, rangeId)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* ── static-brands (Screen 6) ────────────────────────────────── */}
+              {currentQuestion.type === "static-brands" && (
+                <div className="flex flex-1 flex-wrap content-start justify-center gap-2.5 overflow-y-auto pb-4">
+                  {staticBrandOptions.map((option, index) => {
+                    const isSelected = selectedForQuestion.includes(option.id);
+                    const maxBrands = 5;
+                    const atMax = !isSelected && selectedForQuestion.length >= maxBrands;
+                    return (
+                      <motion.button
+                        key={option.id}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.025 }}
+                        onClick={() => {
+                          if (atMax) return;
+                          toggleMulti(currentQuestion.id, option.id);
+                        }}
+                        disabled={atMax}
+                        className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                          isSelected ? "scale-105 shadow-lg" : atMax ? "opacity-40 cursor-not-allowed" : "hover:scale-105 hover:shadow-md"
+                        }`}
+                        style={{
+                          background: isSelected
+                            ? accent.solid
+                            : "linear-gradient(158deg, rgba(232,198,174,0.38), rgba(107,109,98,0.15))",
+                          color: isSelected ? "#fff" : "hsl(196 40% 31%)",
+                          border: isSelected ? `2px solid ${accent.solid}` : "1px solid rgba(107,109,98,0.35)",
+                        }}
+                      >
+                        {option.label}
+                        {isSelected && <Check className="h-3.5 w-3.5" />}
+                      </motion.button>
+                    );
+                  })}
+                  <p className="w-full text-center text-xs text-muted-foreground pt-1">
+                    {selectedForQuestion.length}/5 selected
+                  </p>
+                </div>
               )}
 
               {/* ── free-input / date-input ───────────────────────────────── */}
@@ -1292,7 +1143,6 @@ const Onboarding = () => {
               size="lg"
               className="h-12 flex-1 rounded-full"
               onClick={goNext}
-              disabled={aiState.loading}
             >
               {profileIndex === profileQuestions.length - 1 ? (
                 <>
@@ -1306,7 +1156,7 @@ const Onboarding = () => {
             </Button>
           </div>
           {selectedForQuestion.length > 0 &&
-            !["free-input", "date-input", "spend-select", "ai-spend-items"].includes(currentQuestion.type) && (
+            !["free-input", "date-input", "spend-select", "static-spend"].includes(currentQuestion.type) && (
               <p className="mt-2 text-center text-xs text-muted-foreground">
                 {selectedForQuestion.length} selected
               </p>
@@ -1318,4 +1168,4 @@ const Onboarding = () => {
 };
 
 export default Onboarding;
-// Codebase classification: runtime onboarding flow — v3 architecture with AI-personalized screens.
+// Codebase classification: runtime onboarding flow — v4 fully static architecture, zero AI calls.

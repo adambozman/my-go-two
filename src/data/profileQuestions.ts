@@ -1,8 +1,6 @@
-// profileQuestions.ts — Onboarding v3
-// 7-screen architecture: static baseline questions + AI-driven screens (vibe, generated spend items, brand grid)
-// Screens 1–2 are fully static. Screens 3, 5, 6 are AI-generated and served from cache (onboarding_vibe_cache,
-// onboarding_spend_cache, onboarding_brand_cache). Onboarding.tsx fetches AI screens via the
-// onboarding-ai-generator edge function and merges them into the question array at runtime.
+// profileQuestions.ts — Onboarding v4 (fully static)
+// 7-screen architecture: all questions are pre-written static sets, keyed by demographic.
+// Screens 3, 5, 6 use static resolver functions from onboardingStaticSets.ts — zero AI calls.
 
 export type QuestionType =
   | "image-grid"        // visual card grid, single or multi select
@@ -13,9 +11,9 @@ export type QuestionType =
   | "multi-select"      // checkbox-style list, multi select
   | "free-input"        // text input
   | "date-input"        // date picker
-  | "ai-vibe"           // AI-generated: rendered by Onboarding.tsx using cached vibe options
-  | "ai-spend-items"    // AI-generated: rendered as spend-select rows per item
-  | "ai-brand-grid";    // AI-generated: rendered as pill-select brand chips
+  | "static-vibe"       // static: rendered as single-select from onboardingStaticSets vibes
+  | "static-spend"      // static: rendered as spend-select rows from onboardingStaticSets
+  | "static-brands";    // static: rendered as pill-select brand chips from onboardingStaticSets
 
 export interface QuestionOption {
   id: string;
@@ -48,7 +46,7 @@ export interface OnboardingQuestion {
   required?: boolean;
   placeholder?: string;
   options?: QuestionOption[];
-  spendItems?: SpendItem[];   // for spend-select and ai-spend-items
+  spendItems?: SpendItem[];   // for spend-select and static-spend
   maxRank?: number;           // for rank-select — how many items user picks
 }
 
@@ -144,20 +142,17 @@ export const staticProfileQuestions: OnboardingQuestion[] = [
     ],
   },
 
-  // ── Screen 3: Vibe (AI-generated — placeholder, Onboarding.tsx replaces at runtime) ──
-  // The actual options are fetched from onboarding_vibe_cache keyed on age_range + gender.
-  // If cache miss, onboarding-ai-generator calls Gemini, saves to cache, returns options.
-  // Onboarding.tsx swaps this placeholder's options with the cached AI result.
+  // ── Screen 3: Vibe (static — options resolved from onboardingStaticSets by age+gender) ──
   {
     id: "style_vibe",
     screen: 3,
     category: "taste",
-    type: "ai-vibe",
+    type: "static-vibe",
     title: "What's your vibe?",
     subtitle: "Pick the one that feels most like you right now",
     required: false,
     multiSelect: false,
-    // options injected at runtime by Onboarding.tsx from onboarding_vibe_cache
+    // options resolved at render time via getVibeOptions(ageRange, gender)
   },
 
   // ── Screen 4: Spend Anchors — Fixed Baseline (everyone answers) ──────────────
@@ -198,34 +193,29 @@ export const staticProfileQuestions: OnboardingQuestion[] = [
     ],
   },
 
-  // ── Screen 5: AI-Generated Spend Items (based on top categories from Screen 2) ──
-  // The items shown here are chosen by the AI based on category_priority.
-  // Fetched from onboarding_spend_cache keyed on top_3_categories (sorted, joined).
-  // Rendered as additional spend-select rows alongside or after the fixed baseline.
+  // ── Screen 5: Generated Spend Items (static — resolved from onboardingStaticSets by categories) ──
   {
     id: "spend_generated",
     screen: 5,
     category: "spend",
-    type: "ai-spend-items",
+    type: "static-spend",
     title: "A few more for your priorities",
     subtitle: "Based on what you care about most",
     required: false,
-    // spendItems injected at runtime by Onboarding.tsx from onboarding_spend_cache
+    // spendItems resolved at render time via getSpendItems(topCategories)
   },
 
-  // ── Screen 6: Brand Affinity (AI-curated options, everyone answers) ───────────
-  // Brand options fetched from onboarding_brand_cache keyed on age_range + gender + top_category + spend_tier.
-  // spend_tier is derived from Screen 4 answers: avg of tshirt + shoes ranges → budget/mid/premium/luxury.
+  // ── Screen 6: Brand Affinity (static — resolved from onboardingStaticSets by category + spend tier) ──
   {
     id: "brand_affinity",
     screen: 6,
     category: "taste",
-    type: "ai-brand-grid",
+    type: "static-brands",
     title: "Which of these do you actually buy from?",
     subtitle: "Pick everything that applies — up to 5",
     required: false,
     multiSelect: true,
-    // options injected at runtime by Onboarding.tsx from onboarding_brand_cache
+    // options resolved at render time via getBrandOptions(topCategory, spendTier)
   },
 
   // ── Screen 7: Shopping Behavior + Subscriptions ───────────────────────────────
@@ -285,27 +275,10 @@ export const staticProfileQuestions: OnboardingQuestion[] = [
   },
 ];
 
-// All static questions, exported for Onboarding.tsx.
-// AI-driven questions (type: ai-vibe, ai-spend-items, ai-brand-grid) are included here
-// as structural placeholders; Onboarding.tsx fetches and injects options at runtime.
+// All questions, exported for Onboarding.tsx.
+// Questions with types static-vibe, static-spend, static-brands have their options
+// resolved at render time from onboardingStaticSets.ts — no AI calls.
 export const profileQuestions = staticProfileQuestions;
-
-// ─── CACHE KEY HELPERS ─────────────────────────────────────────────────────────
-// Used by Onboarding.tsx and the onboarding-ai-generator edge function to build
-// deterministic cache keys for each AI-generated screen.
-
-export const buildVibeCacheKey = (ageRange: string, gender: string): string =>
-  `${ageRange}__${gender}`;
-
-export const buildSpendCacheKey = (topCategories: string[]): string =>
-  [...topCategories].slice(0, 3).sort().join("__");
-
-export const buildBrandCacheKey = (
-  ageRange: string,
-  gender: string,
-  topCategory: string,
-  spendTier: "budget" | "mid" | "premium" | "luxury",
-): string => `${ageRange}__${gender}__${topCategory}__${spendTier}`;
 
 // ─── SPEND TIER DERIVATION ─────────────────────────────────────────────────────
 // Derives a spend tier from the baseline spend answers (Screen 4).
