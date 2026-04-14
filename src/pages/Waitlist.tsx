@@ -107,7 +107,7 @@ const Waitlist = () => {
           opacity: 0.65,
           maxWidth: 440,
         }}>
-          Become their go-to. Know exactly what they want —<br />
+          Become their Go Two. Know exactly what they want —<br />
           every birthday, every holiday, every time.
         </p>
 
