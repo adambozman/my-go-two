@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logoImg from "@/assets/GoTwoTransparentNew.png";
+import { Play } from "lucide-react";
 
 const Waitlist = () => {
   const [email, setEmail] = useState("");
@@ -42,7 +43,7 @@ const Waitlist = () => {
       flexDirection: "column",
       alignItems: "center",
     }}>
-      {/* Logo — top center, brand mark with breathing room */}
+      {/* Logo — top center */}
       <div style={{ paddingTop: "clamp(48px, 8vh, 96px)" }}>
         <img
           src={logoImg}
@@ -55,7 +56,7 @@ const Waitlist = () => {
         />
       </div>
 
-      {/* Content — centered in remaining space */}
+      {/* Content */}
       <div style={{
         flex: 1,
         display: "flex",
@@ -94,49 +95,100 @@ const Waitlist = () => {
           Never forget again.
         </p>
 
-        {/* Body */}
+        {/* Tagline */}
         <p style={{
           fontFamily: "'Jost', sans-serif",
           fontSize: "clamp(14px, 1.6vw, 17px)",
           fontWeight: 300,
           color: "var(--logo-two-color)",
-          lineHeight: 1.6,
+          lineHeight: 1.7,
           margin: 0,
           marginTop: "clamp(20px, 3vh, 36px)",
-          opacity: 0.6,
+          opacity: 0.65,
+          maxWidth: 440,
         }}>
-          One place for everything that matters<br />
-          to the people you love.
+          Become their go-to. Know exactly what they want —<br />
+          every birthday, every holiday, every time.
         </p>
 
-        {/* CTA */}
-        <div style={{ marginTop: "clamp(28px, 4vh, 48px)", width: "100%", maxWidth: 340 }}>
+        {/* Buttons */}
+        <div style={{
+          marginTop: "clamp(28px, 4vh, 44px)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 16,
+          width: "100%",
+          maxWidth: 340,
+        }}>
           {step === "idle" && (
-            <button
-              onClick={() => setStep("form")}
-              className="surface-button-primary panel-polish"
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                fontSize: 15,
-                fontWeight: 600,
-                letterSpacing: "0.4px",
-                borderRadius: 999,
-                padding: "16px 44px",
-                cursor: "pointer",
-                transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-1px) scale(1.02)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0) scale(1)";
-              }}
-            >
-              Join the Waitlist
-            </button>
+            <>
+              <button
+                onClick={() => setStep("form")}
+                className="surface-button-primary panel-polish"
+                style={{
+                  fontFamily: "'Jost', sans-serif",
+                  fontSize: 15,
+                  fontWeight: 600,
+                  letterSpacing: "0.4px",
+                  borderRadius: 999,
+                  padding: "16px 44px",
+                  cursor: "pointer",
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-1px) scale(1.02)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0) scale(1)";
+                }}
+              >
+                Join the Waitlist
+              </button>
+
+              {/* Watch video button */}
+              <button
+                onClick={() => {
+                  // TODO: wire to video URL when ready
+                  alert("Video coming soon!");
+                }}
+                style={{
+                  fontFamily: "'Jost', sans-serif",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  letterSpacing: "0.3px",
+                  color: "var(--logo-two-color)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "8px 0",
+                  opacity: 0.55,
+                  transition: "opacity 0.2s ease",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.55"; }}
+              >
+                <span style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: "50%",
+                  border: "1.5px solid currentColor",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}>
+                  <Play size={11} fill="currentColor" style={{ marginLeft: 1.5 }} />
+                </span>
+                See how it works
+              </button>
+            </>
           )}
 
           {(step === "form" || step === "submitting") && (
@@ -144,6 +196,7 @@ const Waitlist = () => {
               display: "flex",
               flexDirection: "column",
               gap: 10,
+              width: "100%",
             }}>
               <input
                 type="text"
