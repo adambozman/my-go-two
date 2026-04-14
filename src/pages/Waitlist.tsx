@@ -39,7 +39,6 @@ const Waitlist = () => {
     <div
       className="landing-page"
       style={{
-        minHeight: "100vh",
         minHeight: "100dvh",
         display: "flex",
         flexDirection: "column",
@@ -60,47 +59,31 @@ const Waitlist = () => {
         }}
       />
 
-      {/* Headline */}
-      <h1
-        style={{
-          fontFamily: "'Cormorant Garamond', serif",
-          fontSize: "clamp(28px, 5vw, 48px)",
-          fontWeight: 700,
-          color: "#3a7880",
-          lineHeight: 1.1,
-          margin: 0,
-        }}
-      >
+      {/* Headline — uses global h1 rule: Cormorant Garamond + logo-two-color */}
+      <h1 className="surface-display-lg" style={{ margin: 0 }}>
         The Shortcut to Thoughtful.
       </h1>
 
-      {/* Subheadline */}
-      <p
-        style={{
-          fontFamily: "'Cormorant Garamond', serif",
-          fontSize: "clamp(20px, 3.5vw, 36px)",
-          fontStyle: "italic",
-          fontWeight: 600,
-          color: "var(--logo-go-color)",
-          lineHeight: 1.2,
-          marginTop: 8,
-        }}
-      >
+      {/* Subheadline — uses logo-go-color via global eyebrow-coral base */}
+      <p className="surface-eyebrow-coral" style={{
+        fontFamily: "'Cormorant Garamond', serif",
+        fontSize: "clamp(20px, 3.5vw, 36px)",
+        fontStyle: "italic",
+        fontWeight: 600,
+        letterSpacing: "normal",
+        textTransform: "none",
+        lineHeight: 1.2,
+        marginTop: 4,
+      }}>
         Never forget again.
       </p>
 
       {/* Body */}
-      <p
-        style={{
-          fontFamily: "'Jost', sans-serif",
-          fontSize: "clamp(13px, 1.8vw, 16px)",
-          fontWeight: 300,
-          color: "#5a5047",
-          lineHeight: 1.55,
-          marginTop: 20,
-          maxWidth: 440,
-        }}
-      >
+      <p className="surface-body" style={{
+        marginTop: 20,
+        maxWidth: 440,
+        fontSize: "clamp(13px, 1.8vw, 16px)",
+      }}>
         One place for everything that matters to the people you love.
       </p>
 
@@ -109,18 +92,15 @@ const Waitlist = () => {
         {step === "idle" && (
           <button
             onClick={() => setStep("form")}
+            className="surface-button-primary panel-polish"
             style={{
               fontFamily: "'Jost', sans-serif",
               fontSize: 14,
               fontWeight: 600,
               letterSpacing: "0.3px",
-              color: "#fff",
-              background: "var(--logo-go-color)",
-              border: "none",
               borderRadius: 999,
               padding: "14px 36px",
               cursor: "pointer",
-              boxShadow: "0 6px 20px rgba(217,101,79,0.25)",
               transition: "transform 0.15s ease",
             }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
@@ -137,13 +117,12 @@ const Waitlist = () => {
               placeholder="Your name (optional)"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="surface-field"
               style={{
                 fontFamily: "'Jost', sans-serif",
                 fontSize: 14,
                 padding: "12px 18px",
                 borderRadius: 12,
-                border: "1px solid rgba(45,104,112,0.2)",
-                background: "rgba(255,255,255,0.6)",
                 outline: "none",
                 color: "var(--swatch-teal)",
               }}
@@ -154,13 +133,12 @@ const Waitlist = () => {
               placeholder="Your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="surface-field"
               style={{
                 fontFamily: "'Jost', sans-serif",
                 fontSize: 14,
                 padding: "12px 18px",
                 borderRadius: 12,
-                border: "1px solid rgba(45,104,112,0.2)",
-                background: "rgba(255,255,255,0.6)",
                 outline: "none",
                 color: "var(--swatch-teal)",
               }}
@@ -171,19 +149,16 @@ const Waitlist = () => {
             <button
               type="submit"
               disabled={step === "submitting"}
+              className="surface-button-primary panel-polish"
               style={{
                 fontFamily: "'Jost', sans-serif",
                 fontSize: 14,
                 fontWeight: 600,
                 letterSpacing: "0.3px",
-                color: "#fff",
-                background: "var(--logo-go-color)",
-                border: "none",
                 borderRadius: 999,
                 padding: "14px 36px",
                 cursor: step === "submitting" ? "wait" : "pointer",
                 opacity: step === "submitting" ? 0.7 : 1,
-                boxShadow: "0 6px 20px rgba(217,101,79,0.25)",
                 transition: "all 0.15s ease",
               }}
             >
@@ -194,25 +169,10 @@ const Waitlist = () => {
 
         {step === "done" && (
           <div>
-            <p
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 22,
-                fontWeight: 600,
-                color: "var(--swatch-teal)",
-              }}
-            >
+            <h2 className="surface-heading-lg" style={{ margin: 0 }}>
               You're on the list.
-            </p>
-            <p
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                fontSize: 14,
-                fontWeight: 300,
-                color: "#5a5047",
-                marginTop: 8,
-              }}
-            >
+            </h2>
+            <p className="surface-body" style={{ marginTop: 8 }}>
               We'll let you know when Go Two is ready.
             </p>
           </div>
@@ -220,25 +180,10 @@ const Waitlist = () => {
 
         {step === "already" && (
           <div>
-            <p
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 22,
-                fontWeight: 600,
-                color: "var(--swatch-teal)",
-              }}
-            >
+            <h2 className="surface-heading-lg" style={{ margin: 0 }}>
               You're already on the list.
-            </p>
-            <p
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                fontSize: 14,
-                fontWeight: 300,
-                color: "#5a5047",
-                marginTop: 8,
-              }}
-            >
+            </h2>
+            <p className="surface-body" style={{ marginTop: 8 }}>
               Hang tight — we'll reach out soon.
             </p>
           </div>
