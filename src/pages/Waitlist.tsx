@@ -66,7 +66,7 @@ const Waitlist = () => {
           fontFamily: "'Cormorant Garamond', serif",
           fontSize: "clamp(28px, 5vw, 48px)",
           fontWeight: 700,
-          color: "var(--swatch-teal)",
+          color: "#3a7880",
           lineHeight: 1.1,
           margin: 0,
         }}
@@ -115,12 +115,12 @@ const Waitlist = () => {
               fontWeight: 600,
               letterSpacing: "0.3px",
               color: "#fff",
-              background: "var(--swatch-cedar-grove)",
+              background: "var(--logo-go-color)",
               border: "none",
               borderRadius: 999,
               padding: "14px 36px",
               cursor: "pointer",
-              boxShadow: "0 6px 20px rgba(0,0,0,0.12)",
+              boxShadow: "0 6px 20px rgba(217,101,79,0.25)",
               transition: "transform 0.15s ease",
             }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
@@ -177,13 +177,13 @@ const Waitlist = () => {
                 fontWeight: 600,
                 letterSpacing: "0.3px",
                 color: "#fff",
-                background: "var(--swatch-cedar-grove)",
+                background: "var(--logo-go-color)",
                 border: "none",
                 borderRadius: 999,
                 padding: "14px 36px",
                 cursor: step === "submitting" ? "wait" : "pointer",
                 opacity: step === "submitting" ? 0.7 : 1,
-                boxShadow: "0 6px 20px rgba(0,0,0,0.12)",
+                boxShadow: "0 6px 20px rgba(217,101,79,0.25)",
                 transition: "all 0.15s ease",
               }}
             >
