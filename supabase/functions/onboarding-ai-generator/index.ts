@@ -271,7 +271,8 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const geminiKey = Deno.env.get("GEMINI_API_KEY") ?? Deno.env.get("LOVABLE_API_KEY")!;
+    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured");
 
     // Use service role for cache writes; user client just for auth verification
     const adminClient = createClient(supabaseUrl, serviceRoleKey);

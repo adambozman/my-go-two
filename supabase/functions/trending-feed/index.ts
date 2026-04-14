@@ -117,8 +117,8 @@ serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
     const identity = knowledgeResponses?.identity?.[0] || "unspecified";
     const styles = knowledgeProfile.style_keywords?.join(", ") || "";
@@ -148,21 +148,14 @@ Each card needs: title (catchy, 6-10 words), description (1-2 sentences), catego
 
 Use the provided tool to return the feed.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${GEMINI_API_KEY}`,
+      {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
-        messages: [
-          { role: "user", content: prompt },
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        tools: [{ functionDeclarations: [{
               name: "generate_feed",
               description: "Generate curated dashboard feed cards",
               parameters: {
@@ -186,12 +179,11 @@ Use the provided tool to return the feed.`;
                 required: ["feed"],
                 additionalProperties: false,
               },
-            },
-          },
-        ],
-        tool_choice: { type: "function", function: { name: "generate_feed" } },
+        }] }],
+        toolConfig: { functionCallingConfig: { mode: "ANY", allowedFunctionNames: ["generate_feed"] } },
       }),
-    });
+    }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -200,10 +192,11 @@ Use the provided tool to return the feed.`;
     }
 
     const aiResult = await response.json();
-    const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) throw new Error("No tool call in AI response");
+    const feedParts = aiResult.candidates?.[0]?.content?.parts ?? [];
+    const feedFuncCall = feedParts.find((p: {functionCall?: {name: string}}) => p.functionCall?.name === "generate_feed");
+    if (!feedFuncCall) throw new Error("No function call in Gemini response");
 
-    const parsed = JSON.parse(toolCall.function.arguments);
+    const parsed = feedFuncCall.functionCall.args;
     const feed = sanitizeFeed(parsed?.feed);
 
     return new Response(JSON.stringify({ feed }), {

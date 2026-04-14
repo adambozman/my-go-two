@@ -224,7 +224,6 @@ export const buildAnswersText = (responses: ResponseMap, signals: ReturnType<typ
 export const generateYourVibeDerivation = async (
   combinedResponses: ResponseMap,
 ): Promise<YourVibeDerivation> => {
-  const LOVABLE_API_KEY = getRequiredEnv("LOVABLE_API_KEY");
   const signals = extractV3Signals(combinedResponses);
   const answersText = buildAnswersText(combinedResponses, signals);
   const priceTierFromSpend = derivePriceTier(signals.spendSignals);
@@ -248,59 +247,39 @@ Rules:
 - price_tier should reflect their OVERALL profile, weighted toward their top categories.
 - For image_themes, use search-friendly phrases matching their aesthetic (e.g. "quiet luxury editorial", "streetwear layering").`;
 
-  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "google/gemini-3-flash-preview",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: `User's Knowledge Center responses:\n\n${answersText}` },
-      ],
-      tools: [
-        {
-          type: "function",
-          function: {
-            name: "generate_your_vibe_derivation",
-            description: "Generate the user's Your Vibe derivation from Knowledge Center responses",
-            parameters: {
-              type: "object",
-              properties: {
-                recommended_brands:  { type: "array", items: { type: "string" }, description: "Real brands from their affinity + inferred from signals" },
-                recommended_stores:  { type: "array", items: { type: "string" }, description: "Retail stores (online or physical) that match their shopping behavior" },
-                image_themes:        { type: "array", items: { type: "string" }, description: "Search-friendly aesthetic phrases for product image filtering" },
-                color_palette:       { type: "array", items: { type: "string" }, description: "5 hex colors matching their aesthetic" },
-                gift_categories:     { type: "array", items: { type: "string" }, description: "Gift category types that match their gift personality" },
-                price_tier:          { type: "string", enum: ["budget", "mid-range", "premium", "luxury"], description: "Overall spend tier weighted by top categories" },
-                style_keywords:      { type: "array", items: { type: "string" }, description: "3–6 keywords describing their style and taste" },
-                persona_summary:     { type: "string", description: "2-sentence specific summary of who this person is as a consumer" },
-              },
-              required: [
-                "recommended_brands", "recommended_stores", "image_themes", "color_palette",
-                "gift_categories", "price_tier", "style_keywords", "persona_summary",
-              ],
-              additionalProperties: false,
-            },
+  let parsed: Record<string, unknown> | null = null;
+  try {
+    const { callGeminiWithTool, MODELS } = await import("./gemini.ts");
+    parsed = await callGeminiWithTool(
+      MODELS.FLASH,
+      [{ role: "user", content: `User's Knowledge Center responses:\n\n${answersText}` }],
+      {
+        name: "generate_your_vibe_derivation",
+        description: "Generate the user's Your Vibe derivation from Knowledge Center responses",
+        parameters: {
+          type: "object",
+          properties: {
+            recommended_brands:  { type: "array", items: { type: "string" }, description: "Real brands from their affinity + inferred from signals" },
+            recommended_stores:  { type: "array", items: { type: "string" }, description: "Retail stores (online or physical) that match their shopping behavior" },
+            image_themes:        { type: "array", items: { type: "string" }, description: "Search-friendly aesthetic phrases for product image filtering" },
+            color_palette:       { type: "array", items: { type: "string" }, description: "5 hex colors matching their aesthetic" },
+            gift_categories:     { type: "array", items: { type: "string" }, description: "Gift category types that match their gift personality" },
+            price_tier:          { type: "string", enum: ["budget", "mid-range", "premium", "luxury"], description: "Overall spend tier weighted by top categories" },
+            style_keywords:      { type: "array", items: { type: "string" }, description: "3–6 keywords describing their style and taste" },
+            persona_summary:     { type: "string", description: "2-sentence specific summary of who this person is as a consumer" },
           },
+          required: [
+            "recommended_brands", "recommended_stores", "image_themes", "color_palette",
+            "gift_categories", "price_tier", "style_keywords", "persona_summary",
+          ],
         },
-      ],
-      tool_choice: { type: "function", function: { name: "generate_your_vibe_derivation" } },
-    }),
-  });
-
-  if (!response.ok) {
-    console.error(`AI gateway error (${response.status}) — using fallback`);
+      },
+      systemPrompt,
+    );
+  } catch (err) {
+    console.error("Gemini call failed — using fallback", err);
     return buildFallbackYourVibe(combinedResponses);
   }
-
-  const aiResult = await response.json();
-  const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
-  const parsed = toolCall?.function?.arguments
-    ? JSON.parse(toolCall.function.arguments)
-    : null;
 
   if (!parsed) return buildFallbackYourVibe(combinedResponses);
 

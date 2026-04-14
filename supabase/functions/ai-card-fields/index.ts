@@ -6,6 +6,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -13,10 +15,10 @@ serve(async (req) => {
     const { title, category } = await req.json();
     if (!title) throw new Error("Title is required");
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
-const prompt = `You are building a PRODUCT-SPECIFIC preferences card for a connection-centered app called GoTwo. The user wants to create a card titled "${title}" in the "${category}" category.
+    const prompt = `You are building a PRODUCT-SPECIFIC preferences card for a connection-centered app called GoTwo. The user wants to create a card titled "${title}" in the "${category}" category.
 
 This card represents ONE specific product or item. Generate 5-8 product-centric fields. Every card MUST include these standard fields:
 - "Brand" (text)
@@ -40,19 +42,15 @@ RULES:
 
 Use the provided tool to return the fields.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [{ role: "user", content: prompt }],
-        tools: [
-          {
-            type: "function",
-            function: {
+    const response = await fetch(
+      `${BASE}/gemini-2.5-flash-preview-04-17:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          tools: [{
+            functionDeclarations: [{
               name: "generate_card_fields",
               description: "Generate fields for a custom preferences card",
               parameters: {
@@ -73,34 +71,35 @@ Use the provided tool to return the fields.`;
                         },
                       },
                       required: ["name", "type"],
-                      additionalProperties: false,
                     },
                   },
                 },
                 required: ["fields"],
-                additionalProperties: false,
               },
-            },
-          },
-        ],
-        tool_choice: { type: "function", function: { name: "generate_card_fields" } },
-      }),
-    });
+            }],
+          }],
+          toolConfig: { functionCallingConfig: { mode: "ANY", allowedFunctionNames: ["generate_card_fields"] } },
+        }),
+      }
+    );
 
     if (!response.ok) {
+      const err = await response.text();
+      console.error("Gemini error:", response.status, err);
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      throw new Error(`AI gateway error: ${response.status}`);
+      throw new Error(`Gemini API error: ${response.status}`);
     }
 
-    const aiResult = await response.json();
-    const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) throw new Error("No tool call in AI response");
+    const result = await response.json();
+    const parts = result.candidates?.[0]?.content?.parts ?? [];
+    const funcCall = parts.find((p: { functionCall?: { name: string } }) => p.functionCall?.name === "generate_card_fields");
+    if (!funcCall) throw new Error("No function call in Gemini response");
 
-    const { fields } = JSON.parse(toolCall.function.arguments);
+    const { fields } = funcCall.functionCall.args;
 
     return new Response(JSON.stringify({ fields }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

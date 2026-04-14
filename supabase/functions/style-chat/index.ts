@@ -35,8 +35,8 @@ serve(async (req) => {
       throw new Error("message is required");
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
     const knowledgeState =
       aiAdapter && typeof aiAdapter === "object"
@@ -72,23 +72,17 @@ Rules:
 - Do not invent facts that are not supported by the profile.
 - Focus on style, shopping preferences, gifting taste, and recommendation logic.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          {
-            role: "user",
-            content: `Saved Knowledge Center responses:\n${answersText}\n\nCurrent Knowledge Center derivations:\n${knowledgeDerivationText}\n\nUser question: ${message}`,
-          },
-        ],
-      }),
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ role: "user", parts: [{ text: `Saved Knowledge Center responses:\n${answersText}\n\nCurrent Knowledge Center derivations:\n${knowledgeDerivationText}\n\nUser question: ${message}` }] }],
+        }),
+      }
+    );
 
     if (!response.ok) {
       if (response.status === 429) {
@@ -111,7 +105,7 @@ Rules:
     }
 
     const result = await response.json();
-    const reply = result.choices?.[0]?.message?.content?.trim();
+    const reply = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
     return new Response(JSON.stringify({ reply: reply || "I have a rough read on your vibe already—answer a few more questions and I can get sharper." }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -492,8 +492,9 @@ const requestAiIntents = async (
     return [];
   }
 
-  const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-  if (!lovableApiKey) {
+  const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+  if (!geminiApiKey) {
+    console.error("GEMINI_API_KEY not set — skipping AI recs");
     return [];
   }
 
@@ -653,19 +654,14 @@ RULES:
 
 Use the provided tool.`;
 
-  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=${geminiApiKey}`,
+    {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${lovableApiKey}`,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "google/gemini-3-flash-preview",
-      messages: [{ role: "user", content: prompt }],
-      tools: [
-        {
-          type: "function",
-          function: {
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      tools: [{ functionDeclarations: [{
             name: "generate_recommendation_intents",
             description: "Return recommendation intents for the Go Two replacement recommendation engine",
             parameters: {
@@ -703,17 +699,19 @@ Use the provided tool.`;
           },
         },
       ],
-      tool_choice: { type: "function", function: { name: "generate_recommendation_intents" } },
+      toolConfig: { functionCallingConfig: { mode: "ANY", allowedFunctionNames: ["generate_recommendation_intents"] } },
     }),
-  });
+  }
+  );
 
   if (!response.ok) {
     return [];
   }
 
   const result = await response.json();
-  const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
-  const parsed = toolCall?.function?.arguments ? JSON.parse(toolCall.function.arguments) : null;
+  const parts = result.candidates?.[0]?.content?.parts ?? [];
+  const funcCall = parts.find((p: {functionCall?: {name: string}}) => p.functionCall?.name === "generate_recommendation_intents");
+  const parsed = funcCall?.functionCall?.args ?? null;
   return sanitizeIntents(parsed?.intents);
 };
 

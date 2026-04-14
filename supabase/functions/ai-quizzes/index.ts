@@ -48,8 +48,8 @@ serve(async (req) => {
     }
 
     // Generate the universal question set.
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
 const prompt = `You are a lifestyle AI for GoTwo, a connection-centered preference-sharing app.
 Generate one UNIVERSAL set of questions for every user. The AI learns about each person from HOW they answer, not from what questions they see.
@@ -107,19 +107,14 @@ RULES:
 
 Use the provided tool.`;
 
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const aiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=${GEMINI_API_KEY}`,
+      {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [{ role: "user", content: prompt }],
-        tools: [
-          {
-            type: "function",
-            function: {
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        tools: [{ functionDeclarations: [{
               name: "generate_quiz_categories",
               description: "Generate categorized quiz questions",
               parameters: {
@@ -171,12 +166,11 @@ Use the provided tool.`;
                 required: ["categories"],
                 additionalProperties: false,
               },
-            },
-          },
-        ],
-        tool_choice: { type: "function", function: { name: "generate_quiz_categories" } },
+        }] }],
+        toolConfig: { functionCallingConfig: { mode: "ANY", allowedFunctionNames: ["generate_quiz_categories"] } },
       }),
-    });
+    }
+    );
 
     if (!aiResponse.ok) {
       const status = aiResponse.status;
@@ -194,10 +188,11 @@ Use the provided tool.`;
     }
 
     const aiResult = await aiResponse.json();
-    const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) throw new Error("No tool call in AI response");
+    const aiParts = aiResult.candidates?.[0]?.content?.parts ?? [];
+    const quizFuncCall = aiParts.find((p: {functionCall?: {name: string}}) => p.functionCall?.name === "generate_quiz_categories");
+    if (!quizFuncCall) throw new Error("No function call in Gemini response");
 
-    const { categories } = JSON.parse(toolCall.function.arguments);
+    const { categories } = quizFuncCall.functionCall.args;
 
     // Store one universal question set, not per-user and not per-gender.
     await admin.from("quiz_question_sets").upsert(

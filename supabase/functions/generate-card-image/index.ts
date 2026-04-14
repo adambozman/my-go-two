@@ -28,27 +28,21 @@ serve(async (req) => {
     const { prompt } = await req.json();
     if (!prompt || typeof prompt !== "string") throw new Error("Prompt is required");
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
     // Generate image using AI
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
-        messages: [
-          {
-            role: "user",
-            content: `Generate a beautiful, high-quality lifestyle photograph for a saved product card titled "${prompt}". Keep it broadly useful, product-forward, and inclusive. Style: warm golden-hour editorial lifestyle photography with soft natural lighting, intimate and inviting. Absolutely no text, labels, or words in the image.`,
-          },
-        ],
-        modalities: ["image", "text"],
-      }),
-    });
+    const aiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `Generate a beautiful, high-quality lifestyle photograph for a saved product card titled "${prompt}". Keep it broadly useful, product-forward, and inclusive. Style: warm golden-hour editorial lifestyle photography with soft natural lighting, intimate and inviting. Absolutely no text, labels, or words in the image.` }] }],
+          generationConfig: { responseModalities: ["IMAGE", "TEXT"] },
+        }),
+      }
+    );
 
     if (!aiResponse.ok) {
       const status = aiResponse.status;
@@ -62,15 +56,12 @@ serve(async (req) => {
     }
 
     const aiResult = await aiResponse.json();
-    const imageData = aiResult.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    if (!imageData) throw new Error("No image generated");
+    const parts = aiResult.candidates?.[0]?.content?.parts ?? [];
+    const imgPart = parts.find((p: {inlineData?: {mimeType: string; data: string}}) => p.inlineData?.mimeType?.startsWith("image/"));
+    if (!imgPart?.inlineData) throw new Error("No image generated");
 
-    // Extract base64 data
-    const base64Match = imageData.match(/^data:image\/(\w+);base64,(.+)$/);
-    if (!base64Match) throw new Error("Invalid image data format");
-
-    const ext = base64Match[1];
-    const base64 = base64Match[2];
+    const ext = imgPart.inlineData.mimeType.split("/")[1] ?? "png";
+    const base64 = imgPart.inlineData.data;
     const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 
     // Upload to storage using service role client
