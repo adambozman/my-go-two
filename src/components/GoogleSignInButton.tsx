@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { lovable } from "@/integrations/lovable/index";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const GoogleSignInButton = () => {
@@ -10,9 +10,11 @@ const GoogleSignInButton = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const redirectUri = `${window.location.origin}${window.location.pathname}${window.location.search}`;
-      const { error } = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: redirectUri,
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });

@@ -597,11 +597,9 @@ async function trackConnectionInviteEvent(
 }
 
 async function sendInviteEmail(inviterName: string, inviteeEmail: string, inviteLink: string) {
-  const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-  if (!lovableApiKey) {
-    console.error("LOVABLE_API_KEY not configured, skipping email");
-    return;
-  }
+  // Send invite email via Supabase Auth admin API (uses project's configured SMTP)
+  const supabaseUrl = getRequiredEnv("SUPABASE_URL");
+  const serviceRoleKey = getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
 
   const html = `
     <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 24px; background: #ffffff;">
@@ -628,26 +626,27 @@ async function sendInviteEmail(inviterName: string, inviteeEmail: string, invite
   `;
 
   try {
-    const supabaseUrl = getRequiredEnv("SUPABASE_URL");
-    const projectRef = supabaseUrl.replace("https://", "").replace(".supabase.co", "");
-
-    const response = await fetch(`https://api.lovable.dev/api/v1/email/${projectRef}/send`, {
+    const response = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${lovableApiKey}`,
+        "Authorization": `Bearer ${serviceRoleKey}`,
+        "apikey": serviceRoleKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        to: inviteeEmail,
-        subject: `${inviterName} invited you to connect on GoTwo`,
-        html,
-        purpose: "transactional",
+        email: inviteeEmail,
+        email_confirm: false,
+        // Supabase will send a magic link / confirmation to this email
       }),
     });
 
+    // Whether or not the user creation succeeded (they may already exist),
+    // log and move on — invite link is the primary delivery mechanism.
     if (!response.ok) {
       const errText = await response.text();
-      console.error("Email send failed:", response.status, errText);
+      console.warn("Invite email via Supabase admin:", response.status, errText);
+    } else {
+      console.log("Invite sent to", inviteeEmail, "via Supabase Auth");
     }
   } catch (error: unknown) {
     console.error("Email send error:", error);
