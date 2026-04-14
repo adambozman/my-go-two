@@ -57,17 +57,9 @@ const Login = () => {
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    if (authLoading || !user) return;
-
-    void resolvePostAuthDestination(user.id).then((destination) => {
-      logAuthDiagnostic("login:redirect-existing-user", {
-        userId: user.id,
-        destination,
-      });
-      navigate(destination, { replace: true });
-    });
-  }, [authLoading, navigate, user]);
+  // NOTE: No auto-redirect for logged-in users.
+  // If someone is already logged in and visits /login, they stay here.
+  // They can manually navigate or submit the form to go to the dashboard.
 
   const navigateAfterLogin = async () => {
     const { data: { user: currentUser } } = await supabase.auth.getUser();

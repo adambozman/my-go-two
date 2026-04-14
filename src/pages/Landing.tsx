@@ -72,7 +72,49 @@ const Landing = () => {
   return (
     <div className="landing-page min-h-screen overflow-x-hidden">
       <div className="relative z-10">
-        {/* HERO */}
+        {/* TOP NAV */}
+        <nav
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 50,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "16px clamp(20px, 4vw, 52px)",
+            background: "rgba(243,225,209,0.85)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
+            <span style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600, fontSize: 22, color: "var(--logo-go-color)", lineHeight: 1 }}>Go</span>
+            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 28, color: "var(--logo-two-color)", lineHeight: 1 }}>Two</span>
+          </div>
+          <Link
+            to="/login"
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              fontSize: 13.5,
+              fontWeight: 500,
+              color: "var(--logo-two-color)",
+              letterSpacing: "0.3px",
+              padding: "8px 24px",
+              borderRadius: 999,
+              border: "1px solid rgba(45,104,112,0.25)",
+              background: "rgba(255,255,255,0.5)",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              textDecoration: "none",
+            }}
+          >
+            Log In
+          </Link>
+        </nav>
+
+        {/* HERO */
         <section
           style={{
             minHeight: "100svh",
@@ -220,7 +262,7 @@ const Landing = () => {
               style={{ gap: 14, flexWrap: "wrap", justifyContent: "center" }}
             >
               <Link
-                to="/login"
+                to="/signup"
                 className="surface-button-primary inline-flex items-center justify-center rounded-full"
                 style={{
                   background: "var(--swatch-cedar-grove)",
@@ -573,7 +615,7 @@ const Landing = () => {
                 Join people who never have to guess again.
               </p>
               <Link
-                to="/login"
+                to="/signup"
                 className="surface-button-primary inline-flex items-center justify-center rounded-full"
                 style={{
                   background: "var(--swatch-cedar-grove)",
@@ -588,7 +630,7 @@ const Landing = () => {
                   letterSpacing: "0.2px",
                 }}
               >
-                Create Your First Card &nbsp;-&gt;
+                Get Started Free &nbsp;-&gt;
               </Link>
             </div>
           </motion.div>

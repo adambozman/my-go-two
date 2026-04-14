@@ -10,7 +10,6 @@ import { ArrowRight } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 import GoTwoText from "@/components/GoTwoText";
-import { resolvePostAuthDestination } from "@/lib/authEntryRedirect";
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Something went wrong";
@@ -19,11 +18,16 @@ const Signup = () => {
   const [searchParams] = useSearchParams();
   const inviteId = searchParams.get("invite");
   const inviteToken = searchParams.get("token");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => {
+    return localStorage.getItem("gotwo_remembered_email") || "";
+  });
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [age, setAge] = useState("");
   const [loading, setLoading] = useState(false);
+  const [rememberEmail, setRememberEmail] = useState(() => {
+    return !!localStorage.getItem("gotwo_remembered_email");
+  });
   const { signUp, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -37,18 +41,20 @@ const Signup = () => {
     }
   }, [inviteId, inviteToken]);
 
-  useEffect(() => {
-    if (authLoading || !user) return;
-
-    void resolvePostAuthDestination(user.id).then((destination) => {
-      navigate(destination, { replace: true });
-    });
-  }, [authLoading, navigate, user]);
+  // NOTE: No auto-redirect for logged-in users.
+  // If someone is already logged in and visits /signup, they stay here.
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
+      // Save or clear remembered email
+      if (rememberEmail) {
+        localStorage.setItem("gotwo_remembered_email", email);
+      } else {
+        localStorage.removeItem("gotwo_remembered_email");
+      }
+
       await signUp(email, password, displayName);
       localStorage.setItem("gotwo_signup_data", JSON.stringify({
         age: parseInt(age) || null,
@@ -216,6 +222,27 @@ const Signup = () => {
                       color: "var(--swatch-antique-coin)",
                     }}
                   />
+                </div>
+
+                {/* Remember email */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="remember-email"
+                    checked={rememberEmail}
+                    onChange={(e) => setRememberEmail(e.target.checked)}
+                    className="h-4 w-4 rounded border"
+                    style={{
+                      accentColor: "var(--swatch-teal)",
+                    }}
+                  />
+                  <label
+                    htmlFor="remember-email"
+                    className="text-xs cursor-pointer select-none"
+                    style={{ color: "var(--swatch-antique-coin)" }}
+                  >
+                    Remember my email
+                  </label>
                 </div>
 
                 <Button
