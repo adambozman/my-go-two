@@ -97,15 +97,16 @@ const Waitlist = () => {
 
         {/* Tagline */}
         <p style={{
-          fontFamily: "'Jost', sans-serif",
-          fontSize: "clamp(14px, 1.6vw, 17px)",
-          fontWeight: 300,
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: "clamp(16px, 1.8vw, 20px)",
+          fontWeight: 400,
+          fontStyle: "italic",
           color: "var(--logo-two-color)",
-          lineHeight: 1.7,
+          lineHeight: 1.8,
           margin: 0,
           marginTop: "clamp(20px, 3vh, 36px)",
-          opacity: 0.65,
-          maxWidth: 440,
+          opacity: 0.55,
+          maxWidth: 460,
         }}>
           Your exact sizes. Your favorite drinks. Your picky food orders. Your actual love languages.<br />
           All the details that make getting it right effortless.<br />
