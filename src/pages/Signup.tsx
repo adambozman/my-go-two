@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
-import AppleSignInButton from "@/components/AppleSignInButton";
+
 import GoTwoText from "@/components/GoTwoText";
 import { resolvePostAuthDestination } from "@/lib/authEntryRedirect";
 
@@ -237,7 +237,7 @@ const Signup = () => {
                 </div>
 
                 <GoogleSignInButton />
-                <AppleSignInButton />
+
               </form>
             </motion.div>
 

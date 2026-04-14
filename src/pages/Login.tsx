@@ -9,7 +9,7 @@ import { supabase, supabaseConfigError } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
-import AppleSignInButton from "@/components/AppleSignInButton";
+
 import GoTwoText from "@/components/GoTwoText";
 import { resolvePostAuthDestination } from "@/lib/authEntryRedirect";
 import { isDevAuthEmail, normalizeAuthEmail } from "@/lib/devAuth";
@@ -277,7 +277,7 @@ const Login = () => {
                 </div>
 
                 <GoogleSignInButton />
-                <AppleSignInButton />
+
               </form>
             </motion.div>
 
