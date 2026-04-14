@@ -1073,8 +1073,361 @@ export const BRAND_SETS: Record<string, QuestionOption[]> = {
   ],
 };
 
-/** Returns 15 brand options for a given category and spend tier. Falls back to clothes__mid. */
-export const getBrandOptions = (topCategory: string, spendTier: string): QuestionOption[] => {
-  const key = `${topCategory}__${spendTier}`;
-  return BRAND_SETS[key] ?? BRAND_SETS["clothes__mid"] ?? [];
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTION 4 — BRAND PRIORITY (age × gender, per category)
+// Keys: "<category>__<gender>_<ageRange>"  (e.g. "personal__woman_18_24")
+// Values: ordered list of brand IDs that should surface FIRST for that demo.
+// All IDs must exist in BRAND_SETS for the same category.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const BRAND_PRIORITY: Record<string, string[]> = {
+  // ── CLOTHES ───────────────────────────────────────────────────────────────
+  // Teen (13–17)
+  "clothes__man_13_17":         ["shein", "hm", "pacsun", "zara", "urban_outfitters", "target", "forever21"],
+  "clothes__woman_13_17":       ["shein", "forever21", "hm", "target", "pacsun", "zara", "urban_outfitters"],
+  "clothes__nonbinary_13_17":   ["shein", "hm", "zara", "urban_outfitters", "thrift", "pacsun", "target"],
+  // 18–24
+  "clothes__man_18_24":         ["nike", "adidas", "urban_outfitters", "pacsun", "levis", "zara", "hm"],
+  "clothes__woman_18_24":       ["zara", "revolve", "urban_outfitters", "asos", "shein", "forever21", "anthropologie"],
+  "clothes__nonbinary_18_24":   ["urban_outfitters", "asos", "thrift", "levis", "zara", "everlane", "cos"],
+  // 25–34
+  "clothes__man_25_34":         ["levis", "nike", "adidas", "abercrombie", "banana_republic", "allbirds", "everlane"],
+  "clothes__woman_25_34":       ["madewell", "anthropologie", "revolve", "free_people", "abercrombie", "jcrew", "everlane"],
+  "clothes__nonbinary_25_34":   ["everlane", "apc", "cos", "allbirds", "madewell", "levis", "thrift"],
+  // 35–44
+  "clothes__man_35_44":         ["ralph_lauren", "banana_republic", "levis", "nike", "jcrew", "theory", "cos"],
+  "clothes__woman_35_44":       ["anthropologie", "madewell", "banana_republic", "jcrew", "free_people", "ralph_lauren", "vince"],
+  "clothes__nonbinary_35_44":   ["cos", "apc", "everlane", "allbirds", "rag_bone", "theory", "madewell"],
+  // 45–54
+  "clothes__man_45_54":         ["ralph_lauren", "banana_republic", "coach", "rag_bone", "theory", "levis", "nike"],
+  "clothes__woman_45_54":       ["ralph_lauren", "banana_republic", "vince", "cos", "frame", "theory", "jcrew"],
+  "clothes__nonbinary_45_54":   ["cos", "theory", "vince", "everlane", "rag_bone", "apc", "allbirds"],
+  // 55+
+  "clothes__man_55_plus":       ["ralph_lauren", "banana_republic", "coach", "rag_bone", "levis", "brooks", "cos"],
+  "clothes__woman_55_plus":     ["ralph_lauren", "vince", "cos", "theory", "frame", "rag_bone", "banana_republic"],
+  "clothes__nonbinary_55_plus": ["cos", "everlane", "vince", "theory", "rag_bone", "apc", "allbirds"],
+  // nonbinary fallback per category
+  "clothes__nonbinary":         ["urban_outfitters", "everlane", "cos", "apc", "thrift", "levis", "allbirds"],
+
+  // ── PERSONAL CARE ─────────────────────────────────────────────────────────
+  // Teen (13–17)
+  "personal__man_13_17":         ["axe", "old_spice", "dove", "gillette", "noxzema", "tree_hut", "elf"],
+  "personal__woman_13_17":       ["elf", "nyx", "wet_n_wild", "cerave", "neutrogena", "dove", "garnier"],
+  "personal__nonbinary_13_17":   ["elf", "cerave", "nyx", "dove", "tree_hut", "axe", "neutrogena"],
+  // 18–24
+  "personal__man_18_24":         ["jack_black", "bulldog", "cerave", "the_ordinary", "native", "axe", "gillette"],
+  "personal__woman_18_24":       ["cerave", "the_ordinary", "drunk_elephant", "olaplex", "paula_choice", "inkey_list", "versed"],
+  "personal__nonbinary_18_24":   ["cerave", "the_ordinary", "inkey_list", "native", "versed", "drunk_elephant", "olaplex"],
+  // 25–34
+  "personal__man_25_34":         ["jack_black", "bulldog", "kiehl", "cerave", "aesop", "native", "the_ordinary"],
+  "personal__woman_25_34":       ["cerave", "tatcha", "drunk_elephant", "the_ordinary", "sunday_riley", "olaplex", "ouai"],
+  "personal__nonbinary_25_34":   ["cerave", "the_ordinary", "aesop", "native", "olaplex", "drunk_elephant", "inkey_list"],
+  // 35–44
+  "personal__man_35_44":         ["kiehl", "jack_black", "aesop", "bulldog", "tatcha", "skinceuticals", "fresh"],
+  "personal__woman_35_44":       ["tatcha", "sunday_riley", "charlotte_tilbury", "skinceuticals", "estee_lauder", "bobbi_brown", "nars"],
+  "personal__nonbinary_35_44":   ["aesop", "tatcha", "kiehl", "the_ordinary", "sunday_riley", "fresh", "cerave"],
+  // 45–54
+  "personal__man_45_54":         ["kiehl", "aesop", "jack_black", "skinceuticals", "fresh", "estee_lauder", "jo_malone"],
+  "personal__woman_45_54":       ["estee_lauder", "charlotte_tilbury", "skinceuticals", "tatcha", "lamer", "bobbi_brown", "jo_malone"],
+  "personal__nonbinary_45_54":   ["aesop", "kiehl", "fresh", "skinceuticals", "tatcha", "estee_lauder", "ouai"],
+  // 55+
+  "personal__man_55_plus":       ["kiehl", "aesop", "fresh", "estee_lauder", "skinceuticals", "jack_black", "jo_malone"],
+  "personal__woman_55_plus":     ["estee_lauder", "lamer", "skinceuticals", "charlotte_tilbury", "bobbi_brown", "fresh", "tatcha"],
+  "personal__nonbinary_55_plus": ["aesop", "kiehl", "fresh", "estee_lauder", "tatcha", "skinceuticals", "la_prairie"],
+  "personal__nonbinary":         ["cerave", "the_ordinary", "aesop", "native", "olaplex", "kiehl", "inkey_list"],
+
+  // ── HEALTH ────────────────────────────────────────────────────────────────
+  // Teen (13–17)
+  "health__man_13_17":           ["gatorade", "powerade", "planet_fitness", "champion", "hanes_sport", "myprotein_value", "spring_valley"],
+  "health__woman_13_17":         ["planet_fitness", "la_fitness", "spring_valley", "nature_made", "champion", "hanes_sport", "cvs_health"],
+  "health__nonbinary_13_17":     ["planet_fitness", "spring_valley", "champion", "gatorade", "nature_made", "cvs_health", "hanes_sport"],
+  // 18–24
+  "health__man_18_24":           ["optimum_nutrition", "ghost_lifestyle", "nutrabolt", "legion_athletics", "planet_fitness", "crunch_fitness", "new_balance"],
+  "health__woman_18_24":         ["ritual", "garden_of_life", "lululemon", "alo_yoga", "ymca", "crunch_fitness", "gainful"],
+  "health__nonbinary_18_24":     ["ritual", "garden_of_life", "crunch_fitness", "new_balance", "asics", "ymca", "gainful"],
+  // 25–34
+  "health__man_25_34":           ["optimum_nutrition", "legion_athletics", "whoop", "lululemon", "on_running", "hoka", "thorne"],
+  "health__woman_25_34":         ["lululemon", "alo_yoga", "ritual", "garden_of_life", "athletic_greens", "seed", "vuori"],
+  "health__nonbinary_25_34":     ["lululemon", "ritual", "alo_yoga", "on_running", "thorne", "garden_of_life", "vuori"],
+  // 35–44
+  "health__man_35_44":           ["whoop", "peloton", "on_running", "hoka", "thorne", "momentous", "lululemon"],
+  "health__woman_35_44":         ["peloton", "lululemon", "alo_yoga", "seed", "thorne", "athletic_greens", "hyperice"],
+  "health__nonbinary_35_44":     ["peloton", "lululemon", "on_running", "thorne", "seed", "athletic_greens", "vuori"],
+  // 45–54
+  "health__man_45_54":           ["peloton", "whoop", "theragun", "hoka", "thorne", "eight_sleep", "on_running"],
+  "health__woman_45_54":         ["peloton", "equinox", "alo_yoga", "lululemon", "thorne", "seed", "eight_sleep"],
+  "health__nonbinary_45_54":     ["peloton", "thorne", "eight_sleep", "lululemon", "on_running", "alo_yoga", "seed"],
+  // 55+
+  "health__man_55_plus":         ["hoka", "thorne", "peloton", "whoop", "eight_sleep", "on_running", "theragun"],
+  "health__woman_55_plus":       ["peloton", "lululemon", "thorne", "seed", "eight_sleep", "hoka", "alo_yoga"],
+  "health__nonbinary_55_plus":   ["thorne", "peloton", "eight_sleep", "hoka", "on_running", "lululemon", "seed"],
+  "health__nonbinary":           ["ritual", "garden_of_life", "lululemon", "on_running", "thorne", "crunch_fitness", "seed"],
+
+  // ── GIFTS ─────────────────────────────────────────────────────────────────
+  // Teen (13–17)
+  "gifts__man_13_17":            ["amazon_gifts", "target_gifts", "five_below", "funko_pop", "cards_against", "walmart_gifts", "etsy_budget"],
+  "gifts__woman_13_17":          ["target_gifts", "bath_body_works", "five_below", "etsy_budget", "sephora_gifts", "amazon_gifts", "hallmark"],
+  "gifts__nonbinary_13_17":      ["target_gifts", "five_below", "etsy_budget", "amazon_gifts", "funko_pop", "bath_body_works", "cards_against"],
+  // 18–24
+  "gifts__man_18_24":            ["amazon_gifts", "etsy_mid", "uncommon_goods", "target_gifts", "goldbelly", "five_below", "walmart_gifts"],
+  "gifts__woman_18_24":          ["sephora_gifts", "lush", "bath_body_works", "etsy_mid", "anthropologie_gifts", "uncommon_goods", "personalization_mall"],
+  "gifts__nonbinary_18_24":      ["etsy_mid", "uncommon_goods", "lush", "sephora_gifts", "amazon_gifts", "target_gifts", "personalization_mall"],
+  // 25–34
+  "gifts__man_25_34":            ["uncommon_goods", "etsy_mid", "goldbelly", "crate_barrel", "williams_sonoma", "amazon_gifts", "wine_com"],
+  "gifts__woman_25_34":          ["anthropologie_gifts", "sephora_gifts", "etsy_mid", "uncommon_goods", "lush", "crate_barrel", "diptyque_gifts"],
+  "gifts__nonbinary_25_34":      ["etsy_mid", "uncommon_goods", "crate_barrel", "sephora_gifts", "lush", "minted", "anthropologie_gifts"],
+  // 35–44
+  "gifts__man_35_44":            ["wine_com", "goldbelly", "williams_sonoma", "crate_barrel", "nordstrom_gifts", "diptyque_gifts", "harry_and_david"],
+  "gifts__woman_35_44":          ["nordstrom_gifts", "diptyque_gifts", "anthropologie_gifts", "williams_sonoma", "voluspa", "sugarfina", "crate_barrel"],
+  "gifts__nonbinary_35_44":      ["etsy_mid", "diptyque_gifts", "uncommon_goods", "crate_barrel", "williams_sonoma", "minted", "wine_com"],
+  // 45–54
+  "gifts__man_45_54":            ["wine_com", "nordstrom_gifts", "harry_and_david", "goldbelly", "williams_sonoma", "fortnum_mason", "diptyque_gifts"],
+  "gifts__woman_45_54":          ["nordstrom_gifts", "tiffany_gifts", "diptyque_gifts", "bloomingdales_gifts", "williams_sonoma", "voluspa", "boll_branch"],
+  "gifts__nonbinary_45_54":      ["diptyque_gifts", "nordstrom_gifts", "williams_sonoma", "crate_barrel", "wine_com", "voluspa", "minted"],
+  // 55+
+  "gifts__man_55_plus":          ["wine_com", "nordstrom_gifts", "harry_and_david", "fortnum_mason", "goldbelly", "williams_sonoma", "tiffany_gifts"],
+  "gifts__woman_55_plus":        ["tiffany_gifts", "nordstrom_gifts", "bloomingdales_gifts", "williams_sonoma", "voluspa", "boll_branch", "fortnum_mason"],
+  "gifts__nonbinary_55_plus":    ["nordstrom_gifts", "tiffany_gifts", "diptyque_gifts", "williams_sonoma", "wine_com", "voluspa", "minted"],
+  "gifts__nonbinary":            ["etsy_mid", "uncommon_goods", "sephora_gifts", "lush", "crate_barrel", "minted", "personalization_mall"],
+
+  // ── DINING ────────────────────────────────────────────────────────────────
+  // Teen (13–17)
+  "dining__man_13_17":           ["mcdonalds", "taco_bell", "chipotle", "five_guys", "wingstop", "popeyes", "dominos"],
+  "dining__woman_13_17":         ["chipotle", "panera", "sweetgreen", "dunkin", "starbucks", "mcdonalds", "taco_bell"],
+  "dining__nonbinary_13_17":     ["chipotle", "taco_bell", "mcdonalds", "panera", "sweetgreen", "five_guys", "dunkin"],
+  // 18–24
+  "dining__man_18_24":           ["chipotle", "wingstop", "five_guys", "shake_shack", "taco_bell", "mcdonalds", "dominos"],
+  "dining__woman_18_24":         ["sweetgreen", "chipotle", "panera", "cava", "shake_shack", "first_watch", "true_food"],
+  "dining__nonbinary_18_24":     ["chipotle", "sweetgreen", "cava", "panera", "shake_shack", "true_food", "kura_sushi"],
+  // 25–34
+  "dining__man_25_34":           ["chipotle", "shake_shack", "sweetgreen", "cheesecake_factory", "cava", "texas_roadhouse", "first_watch"],
+  "dining__woman_25_34":         ["sweetgreen", "cava", "true_food", "first_watch", "anthropologie", "panera", "cheesecake_factory"],
+  "dining__nonbinary_25_34":     ["sweetgreen", "cava", "true_food", "kura_sushi", "chipotle", "first_watch", "shake_shack"],
+  // 35–44
+  "dining__man_35_44":           ["texas_roadhouse", "cheesecake_factory", "ruth_chris", "outback", "bourbon_steak", "ocean_prime", "carbone"],
+  "dining__woman_35_44":         ["cheesecake_factory", "true_food", "sweetgreen", "first_watch", "nobu", "carbone", "girl_the_goat"],
+  "dining__nonbinary_35_44":     ["true_food", "sweetgreen", "cava", "cheesecake_factory", "kura_sushi", "first_watch", "carbone"],
+  // 45–54
+  "dining__man_45_54":           ["ruth_chris", "capital_grille", "flemings", "bourbon_steak", "ocean_prime", "carbone", "spago"],
+  "dining__woman_45_54":         ["nobu", "carbone", "girl_the_goat", "ruth_chris", "capital_grille", "cheesecake_factory", "true_food"],
+  "dining__nonbinary_45_54":     ["carbone", "nobu", "true_food", "capital_grille", "cheesecake_factory", "girl_the_goat", "kura_sushi"],
+  // 55+
+  "dining__man_55_plus":         ["ruth_chris", "capital_grille", "flemings", "bourbon_steak", "carbone", "spago", "ocean_prime"],
+  "dining__woman_55_plus":       ["capital_grille", "nobu", "carbone", "ruth_chris", "true_food", "girl_the_goat", "spago"],
+  "dining__nonbinary_55_plus":   ["carbone", "nobu", "capital_grille", "true_food", "girl_the_goat", "spago", "le_bernardin"],
+  "dining__nonbinary":           ["sweetgreen", "cava", "chipotle", "true_food", "kura_sushi", "shake_shack", "panera"],
+
+  // ── BEVERAGES ─────────────────────────────────────────────────────────────
+  // Teen (13–17)
+  "beverages__man_13_17":        ["monster", "bang", "gatorade", "powerade", "red_bull_budget", "arizona_tea", "soda_stream"],
+  "beverages__woman_13_17":      ["starbucks", "dunkin_bev", "arizona_tea", "snapple", "celsius", "la_croix", "gatorade"],
+  "beverages__nonbinary_13_17":  ["starbucks", "celsius", "monster", "arizona_tea", "la_croix", "gatorade", "dunkin_bev"],
+  // 18–24
+  "beverages__man_18_24":        ["monster", "celsius", "bang", "red_bull_budget", "starbucks", "dunkin_bev", "liquid_iv"],
+  "beverages__woman_18_24":      ["starbucks", "celsius", "dunkin_bev", "la_croix", "poppi", "olipop", "liquid_iv"],
+  "beverages__nonbinary_18_24":  ["starbucks", "celsius", "la_croix", "poppi", "olipop", "dunkin_bev", "liquid_iv"],
+  // 25–34
+  "beverages__man_25_34":        ["starbucks", "blue_bottle", "celsius", "liquid_iv", "chameleon_cold", "death_wish", "topo_chico"],
+  "beverages__woman_25_34":      ["starbucks", "blue_bottle", "la_croix", "poppi", "olipop", "spindrift", "pressed_juicery"],
+  "beverages__nonbinary_25_34":  ["starbucks", "blue_bottle", "la_croix", "poppi", "olipop", "liquid_iv", "spindrift"],
+  // 35–44
+  "beverages__man_35_44":        ["blue_bottle", "starbucks", "death_wish", "olmeca_altos", "topo_chico", "perrier", "verve_coffee"],
+  "beverages__woman_35_44":      ["blue_bottle", "starbucks", "la_croix", "spindrift", "pressed_juicery", "suja_juice", "poppi"],
+  "beverages__nonbinary_35_44":  ["blue_bottle", "la_croix", "starbucks", "spindrift", "poppi", "topo_chico", "perrier"],
+  // 45–54
+  "beverages__man_45_54":        ["blue_bottle", "intelligentsia", "stumptown", "perrier", "olmeca_altos", "macallan", "verve_coffee"],
+  "beverages__woman_45_54":      ["blue_bottle", "starbucks", "la_croix", "spindrift", "pressed_juicery", "verve_coffee", "hint_water"],
+  "beverages__nonbinary_45_54":  ["blue_bottle", "starbucks", "la_croix", "perrier", "spindrift", "intelligentsia", "stumptown"],
+  // 55+
+  "beverages__man_55_plus":      ["intelligentsia", "stumptown", "blue_bottle", "macallan", "perrier", "san_pellegrino", "atlas_coffee"],
+  "beverages__woman_55_plus":    ["blue_bottle", "starbucks", "perrier", "la_croix", "spindrift", "pressed_juicery", "hint_water"],
+  "beverages__nonbinary_55_plus":["blue_bottle", "starbucks", "perrier", "la_croix", "intelligentsia", "spindrift", "san_pellegrino"],
+  "beverages__nonbinary":        ["starbucks", "la_croix", "poppi", "olipop", "blue_bottle", "liquid_iv", "spindrift"],
+
+  // ── HOUSEHOLD ─────────────────────────────────────────────────────────────
+  // Teen (13–17)
+  "household__man_13_17":        ["ikea", "amazon_home", "target_home", "walmart_home", "five_below_home", "mainstays", "room_essentials"],
+  "household__woman_13_17":      ["target_home", "ikea", "amazon_home", "five_below_home", "mainstays", "room_essentials", "bath_body_works"],
+  "household__nonbinary_13_17":  ["target_home", "ikea", "amazon_home", "five_below_home", "room_essentials", "mainstays", "walmart_home"],
+  // 18–24
+  "household__man_18_24":        ["ikea", "amazon_home", "target_home", "walmart_home", "wayfair_budget", "mainstays", "homegoods"],
+  "household__woman_18_24":      ["target_home", "ikea", "amazon_home", "homegoods", "tj_maxx_gifts", "threshold", "room_essentials"],
+  "household__nonbinary_18_24":  ["ikea", "target_home", "amazon_home", "homegoods", "threshold", "wayfair_budget", "room_essentials"],
+  // 25–34
+  "household__man_25_34":        ["ikea", "west_elm", "crate_barrel_home", "amazon_home", "our_place", "great_jones", "threshold"],
+  "household__woman_25_34":      ["west_elm", "pottery_barn", "parachute", "brooklinen", "our_place", "magnolia_home", "crate_barrel_home"],
+  "household__nonbinary_25_34":  ["west_elm", "ikea", "parachute", "our_place", "crate_barrel_home", "brooklinen", "threshold"],
+  // 35–44
+  "household__man_35_44":        ["west_elm", "crate_barrel_home", "le_creuset", "all_clad", "breville", "dyson", "nespresso"],
+  "household__woman_35_44":      ["pottery_barn", "west_elm", "parachute", "boll_branch_home", "diptyque_home", "le_creuset", "nespresso"],
+  "household__nonbinary_35_44":  ["west_elm", "pottery_barn", "parachute", "crate_barrel_home", "le_creuset", "our_place", "nespresso"],
+  // 45–54
+  "household__man_45_54":        ["restoration_hardware", "le_creuset", "all_clad", "breville", "dyson", "nespresso", "thermomix"],
+  "household__woman_45_54":      ["restoration_hardware", "pottery_barn", "parachute", "boll_branch_home", "diptyque_home", "le_creuset", "breville"],
+  "household__nonbinary_45_54":  ["restoration_hardware", "west_elm", "le_creuset", "parachute", "diptyque_home", "breville", "nespresso"],
+  // 55+
+  "household__man_55_plus":      ["restoration_hardware", "le_creuset", "all_clad", "breville", "dyson", "thermomix", "nespresso"],
+  "household__woman_55_plus":    ["restoration_hardware", "pottery_barn", "parachute", "boll_branch_home", "le_creuset", "diptyque_home", "williams_sonoma_home"],
+  "household__nonbinary_55_plus":["restoration_hardware", "le_creuset", "parachute", "breville", "diptyque_home", "west_elm", "nespresso"],
+  "household__nonbinary":        ["ikea", "west_elm", "parachute", "our_place", "crate_barrel_home", "threshold", "brooklinen"],
+
+  // ── ENTERTAINMENT ─────────────────────────────────────────────────────────
+  // Teen (13–17)
+  "entertainment__man_13_17":    ["youtube", "netflix", "spotify", "twitch", "xbox_game_pass", "playstation_plus", "nintendo_switch"],
+  "entertainment__woman_13_17":  ["spotify", "netflix", "youtube", "hulu", "disney_plus", "crunchyroll", "twitch"],
+  "entertainment__nonbinary_13_17":["spotify", "youtube", "netflix", "twitch", "crunchyroll", "disney_plus", "nintendo_switch"],
+  // 18–24
+  "entertainment__man_18_24":    ["spotify", "netflix", "youtube", "twitch", "xbox_game_pass", "playstation_plus", "hbo_max"],
+  "entertainment__woman_18_24":  ["spotify", "netflix", "disney_plus", "hulu", "hbo_max", "youtube", "apple_tv"],
+  "entertainment__nonbinary_18_24":["spotify", "netflix", "youtube", "hbo_max", "disney_plus", "twitch", "crunchyroll"],
+  // 25–34
+  "entertainment__man_25_34":    ["spotify", "netflix", "hbo_max", "amazon_prime", "xbox_game_pass", "espn_plus", "ticketmaster"],
+  "entertainment__woman_25_34":  ["netflix", "spotify", "hulu", "disney_plus", "hbo_max", "apple_tv", "audible"],
+  "entertainment__nonbinary_25_34":["spotify", "netflix", "hbo_max", "amazon_prime", "apple_tv", "audible", "disney_plus"],
+  // 35–44
+  "entertainment__man_35_44":    ["netflix", "spotify", "hbo_max", "amazon_prime", "espn_plus", "ticketmaster", "apple_tv"],
+  "entertainment__woman_35_44":  ["netflix", "hulu", "hbo_max", "spotify", "disney_plus", "audible", "amc_a_list"],
+  "entertainment__nonbinary_35_44":["netflix", "spotify", "hbo_max", "amazon_prime", "apple_tv", "audible", "ticketmaster"],
+  // 45–54
+  "entertainment__man_45_54":    ["netflix", "hbo_max", "amazon_prime", "espn_plus", "spotify", "apple_tv", "paramount_plus"],
+  "entertainment__woman_45_54":  ["netflix", "hulu", "hbo_max", "amazon_prime", "audible", "paramount_plus", "apple_tv"],
+  "entertainment__nonbinary_45_54":["netflix", "hbo_max", "amazon_prime", "spotify", "apple_tv", "audible", "paramount_plus"],
+  // 55+
+  "entertainment__man_55_plus":  ["netflix", "amazon_prime", "hbo_max", "espn_plus", "paramount_plus", "apple_tv", "audible"],
+  "entertainment__woman_55_plus":["netflix", "hulu", "hbo_max", "amazon_prime", "paramount_plus", "audible", "apple_music"],
+  "entertainment__nonbinary_55_plus":["netflix", "amazon_prime", "hbo_max", "audible", "apple_tv", "paramount_plus", "spotify"],
+  "entertainment__nonbinary":    ["spotify", "netflix", "hbo_max", "youtube", "amazon_prime", "apple_tv", "crunchyroll"],
+
+  // ── TRAVEL ────────────────────────────────────────────────────────────────
+  // Teen (13–17)
+  "travel__man_13_17":           ["airbnb_budget", "hostelworld", "spirit", "kayak_deals", "priceline", "motel6", "vrbo_budget"],
+  "travel__woman_13_17":         ["airbnb_budget", "hostelworld", "spirit", "kayak_deals", "priceline", "vrbo_budget", "amazon_luggage"],
+  "travel__nonbinary_13_17":     ["airbnb_budget", "hostelworld", "spirit", "kayak_deals", "priceline", "amazon_luggage", "vrbo_budget"],
+  // 18–24
+  "travel__man_18_24":           ["spirit", "frontier", "hostelworld", "airbnb_budget", "kayak_deals", "priceline", "scott_cheap_flights"],
+  "travel__woman_18_24":         ["airbnb_budget", "spirit", "frontier", "hostelworld", "beis", "kayak_deals", "priceline"],
+  "travel__nonbinary_18_24":     ["airbnb_budget", "spirit", "hostelworld", "beis", "kayak_deals", "scott_cheap_flights", "priceline"],
+  // 25–34
+  "travel__man_25_34":           ["southwest", "jetblue", "airbnb_whole", "hilton", "marriott", "away_luggage", "booking_com"],
+  "travel__woman_25_34":         ["airbnb_whole", "southwest", "jetblue", "beis", "hilton", "marriott", "booking_com"],
+  "travel__nonbinary_25_34":     ["airbnb_whole", "southwest", "beis", "away_luggage", "jetblue", "hilton", "booking_com"],
+  // 35–44
+  "travel__man_35_44":           ["delta", "united", "hilton", "marriott", "hyatt", "tumi", "chase_sapphire"],
+  "travel__woman_35_44":         ["delta", "airbnb_whole", "hilton", "marriott", "hyatt", "beis", "tumi"],
+  "travel__nonbinary_35_44":     ["delta", "airbnb_whole", "hilton", "away_luggage", "beis", "chase_sapphire", "hyatt"],
+  // 45–54
+  "travel__man_45_54":           ["delta", "united", "american", "hyatt", "marriott", "tumi", "rimowa"],
+  "travel__woman_45_54":         ["delta", "united", "hyatt", "marriott", "kimpton", "tumi", "beis"],
+  "travel__nonbinary_45_54":     ["delta", "united", "hyatt", "marriott", "tumi", "kimpton", "away_luggage"],
+  // 55+
+  "travel__man_55_plus":         ["delta", "united", "american", "marriott", "hyatt", "tumi", "rimowa"],
+  "travel__woman_55_plus":       ["delta", "united", "four_seasons", "marriott", "hyatt", "tumi", "rimowa"],
+  "travel__nonbinary_55_plus":   ["delta", "united", "marriott", "hyatt", "tumi", "four_seasons", "rimowa"],
+  "travel__nonbinary":           ["airbnb_whole", "southwest", "beis", "away_luggage", "jetblue", "booking_com", "hilton"],
+};
+
+/** Returns 15 brand options sorted by demographic priority.
+ *  Priority brands appear first (in priority order), remaining base brands follow.
+ *  Falls back to clothes__mid if no base set found. */
+export const getBrandOptions = (topCategory: string, spendTier: string, ageRange: string, gender: string): QuestionOption[] => {
+  const baseKey = `${topCategory}__${spendTier}`;
+  const baseList = BRAND_SETS[baseKey] ?? BRAND_SETS["clothes__mid"] ?? [];
+
+  // Try exact age+gender key first, then gender-only fallback
+  const priorityKey = `${topCategory}__${gender}_${ageRange}`;
+  const priorityFallbackKey = `${topCategory}__${gender}`;
+  const priorityIds: string[] =
+    BRAND_PRIORITY[priorityKey] ??
+    BRAND_PRIORITY[priorityFallbackKey] ??
+    [];
+
+  if (priorityIds.length === 0) return baseList;
+
+  // Build ordered list: priority brands first (in priority order), then the rest
+  const prioritySet = new Set(priorityIds);
+  const priorityBrands = priorityIds
+    .map(id => baseList.find(b => b.id === id))
+    .filter((b): b is QuestionOption => b !== undefined);
+  const remainingBrands = baseList.filter(b => !prioritySet.has(b.id));
+
+  return [...priorityBrands, ...remainingBrands];
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTION 5 — SUBSCRIPTION SETS (age-segmented)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SUBSCRIPTION_SETS: Record<string, QuestionOption[]> = {
+  "13_17": [
+    { id: "spotify",         label: "Spotify / Apple Music" },
+    { id: "gaming_sub",      label: "Xbox Game Pass / PS Plus / Nintendo Online" },
+    { id: "streaming",       label: "Netflix / Disney+ / Hulu" },
+    { id: "youtube_premium", label: "YouTube Premium" },
+    { id: "roblox_premium",  label: "Roblox Premium / Fortnite Crew" },
+    { id: "kindle_unlimited",label: "Kindle Unlimited / Audible" },
+    { id: "none",            label: "None of these" },
+  ],
+  "18_24": [
+    { id: "spotify",         label: "Spotify / Apple Music" },
+    { id: "streaming",       label: "Netflix / Hulu / Max" },
+    { id: "amazon_prime",    label: "Amazon Prime" },
+    { id: "food_delivery",   label: "DoorDash / Uber Eats DashPass" },
+    { id: "gym_membership",  label: "Gym membership (Planet Fitness, etc.)" },
+    { id: "gaming_sub",      label: "Xbox Game Pass / PS Plus" },
+    { id: "youtube_premium", label: "YouTube Premium" },
+    { id: "cloud_storage",   label: "iCloud+ / Google One" },
+    { id: "none",            label: "None of these" },
+  ],
+  "25_34": [
+    { id: "amazon_prime",    label: "Amazon Prime" },
+    { id: "streaming",       label: "Netflix / Hulu / Max / Disney+" },
+    { id: "spotify",         label: "Spotify / Apple Music" },
+    { id: "food_delivery",   label: "DoorDash / Uber Eats" },
+    { id: "grocery_delivery",label: "Instacart / Walmart+" },
+    { id: "gym_membership",  label: "Gym / ClassPass / Peloton" },
+    { id: "meal_kit",        label: "HelloFresh / Blue Apron" },
+    { id: "sub_box",         label: "Subscription box (beauty, clothing, snacks)" },
+    { id: "cloud_storage",   label: "iCloud+ / Google One / Dropbox" },
+    { id: "none",            label: "None of these" },
+  ],
+  "35_44": [
+    { id: "amazon_prime",    label: "Amazon Prime" },
+    { id: "streaming",       label: "Netflix / Disney+ / Max / Hulu" },
+    { id: "grocery_delivery",label: "Instacart / Walmart+ / Shipt" },
+    { id: "spotify",         label: "Spotify / Apple Music / SiriusXM" },
+    { id: "food_delivery",   label: "DoorDash / Uber Eats" },
+    { id: "meal_kit",        label: "HelloFresh / Blue Apron / Home Chef" },
+    { id: "gym_membership",  label: "Gym / Peloton / Barry's" },
+    { id: "wine_club",       label: "Wine club / spirits subscription" },
+    { id: "news_sub",        label: "News (NYT / WSJ / The Athletic)" },
+    { id: "none",            label: "None of these" },
+  ],
+  "45_54": [
+    { id: "amazon_prime",    label: "Amazon Prime" },
+    { id: "streaming",       label: "Netflix / Hulu / Max / Paramount+" },
+    { id: "grocery_delivery",label: "Instacart / Walmart+" },
+    { id: "spotify",         label: "Spotify / Apple Music / SiriusXM" },
+    { id: "news_sub",        label: "News (NYT / WSJ / Washington Post)" },
+    { id: "wine_club",       label: "Wine club / spirits subscription" },
+    { id: "gym_membership",  label: "Gym / Peloton / yoga studio" },
+    { id: "meal_kit",        label: "HelloFresh / Blue Apron" },
+    { id: "food_delivery",   label: "DoorDash / Uber Eats / Grubhub" },
+    { id: "none",            label: "None of these" },
+  ],
+  "55_plus": [
+    { id: "amazon_prime",    label: "Amazon Prime" },
+    { id: "streaming",       label: "Netflix / Hulu / Paramount+ / Peacock" },
+    { id: "news_sub",        label: "News (NYT / WSJ / local paper)" },
+    { id: "spotify",         label: "Spotify / Pandora / SiriusXM" },
+    { id: "grocery_delivery",label: "Instacart / Walmart+ / Shipt" },
+    { id: "wine_club",       label: "Wine club / spirits subscription" },
+    { id: "gym_membership",  label: "Gym / Silver Sneakers / YMCA" },
+    { id: "audible",         label: "Audible / Kindle Unlimited" },
+    { id: "food_delivery",   label: "DoorDash / Uber Eats / Grubhub" },
+    { id: "none",            label: "None of these" },
+  ],
+};
+
+export const getSubscriptionOptions = (ageRange: string): QuestionOption[] => {
+  return SUBSCRIPTION_SETS[ageRange] ?? SUBSCRIPTION_SETS["25_34"];
 };

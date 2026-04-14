@@ -567,7 +567,7 @@ const KnowMePage = () => {
                   className="text-[10px] uppercase tracking-[0.1em] block"
                   style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
                 >
-                  <GoTwoInline height="0.85em" /> / Know Me
+                  <GoTwoInline /> / Know Me
                 </span>
               </div>
             </div>
@@ -1008,7 +1008,7 @@ const KnowMePage = () => {
                 <div className="flex items-start justify-between gap-6 flex-wrap">
                   <div className="max-w-[29rem]">
                     <p className="text-[10px] uppercase tracking-[0.22em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                      <GoTwoInline height="0.85em" /> / Know Me
+                      <GoTwoInline /> / Know Me
                     </p>
                     <h1 className="text-[34px] leading-[0.92] max-w-[9ch] mb-4 sm:text-[44px] md:text-[60px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                       Your Vibe

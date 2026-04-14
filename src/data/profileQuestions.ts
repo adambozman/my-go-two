@@ -11,9 +11,10 @@ export type QuestionType =
   | "multi-select"      // checkbox-style list, multi select
   | "free-input"        // text input
   | "date-input"        // date picker
-  | "static-vibe"       // static: rendered as single-select from onboardingStaticSets vibes
-  | "static-spend"      // static: rendered as spend-select rows from onboardingStaticSets
-  | "static-brands";    // static: rendered as pill-select brand chips from onboardingStaticSets
+  | "static-vibe"          // static: rendered as single-select from onboardingStaticSets vibes
+  | "static-spend"         // static: rendered as spend-select rows from onboardingStaticSets
+  | "static-brands"        // static: rendered as pill-select brand chips from onboardingStaticSets
+  | "static-subscriptions"; // static: rendered as multi-select from onboardingStaticSets subscriptions
 
 export interface QuestionOption {
   id: string;
@@ -241,20 +242,12 @@ export const staticProfileQuestions: OnboardingQuestion[] = [
     id: "subscription_habits",
     screen: 7,
     category: "behavior",
-    type: "multi-select",
+    type: "static-subscriptions",
     title: "What do you pay for regularly?",
     subtitle: "Pick everything you currently use or subscribe to",
     required: false,
     multiSelect: true,
-    options: [
-      { id: "amazon_prime",   label: "Amazon Prime" },
-      { id: "doordash",       label: "DoorDash / Uber Eats / Grubhub" },
-      { id: "grocery_del",    label: "Grocery delivery (Instacart, etc.)" },
-      { id: "meal_kit",       label: "Meal kit (HelloFresh, etc.)" },
-      { id: "streaming",      label: "Streaming services" },
-      { id: "sub_box",        label: "Subscription box (beauty, clothing, food)" },
-      { id: "none",           label: "None of these" },
-    ],
+    // options resolved at render time via getSubscriptionOptions(ageRange)
   },
   {
     id: "gift_personality",

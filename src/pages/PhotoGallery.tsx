@@ -505,7 +505,7 @@ export default function PhotoGallery() {
           <div className="min-w-0">
             <h1 className="text-lg font-semibold">Photo Gallery</h1>
             <p className="text-xs text-muted-foreground">
-              Each upload box shows the source aspect ratio. Strip slots also mark the center slice that shows live in My <GoTwoInline height="0.85em" />.
+              Each upload box shows the source aspect ratio. Strip slots also mark the center slice that shows live in My <GoTwoInline />.
             </p>
           </div>
           <input

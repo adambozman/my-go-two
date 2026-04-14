@@ -31,13 +31,25 @@ import GoTwoInline from "@/components/GoTwoInline";
 
 const RECOMMENDATION_V2_VERSION_PREFIX = "recommendation-engine-v2";
 
-const getRpcStatus = (error: unknown) =>
-  typeof error === "object" && error !== null && "status" in error
-    ? Number((error as { status?: unknown }).status)
-    : undefined;
+const getRpcStatus = (error: unknown): number | undefined => {
+  if (!error || typeof error !== "object") return undefined;
+  // supabase-js FunctionsHttpError puts status on context
+  const e = error as Record<string, unknown>;
+  if (typeof e.status === "number") return e.status;
+  if (e.context && typeof e.context === "object" && "status" in (e.context as Record<string, unknown>)) {
+    return Number((e.context as Record<string, unknown>).status);
+  }
+  return undefined;
+};
 
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : "Failed to load recommendations";
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    // Supabase functions.invoke wraps the raw status text
+    if (error.message.includes("non-2xx")) return "Could not reach the recommendation engine. Please try again.";
+    return error.message;
+  }
+  return "Failed to load recommendations";
+};
 
 const PAGE_SIZE = 4;
 
@@ -163,19 +175,22 @@ const Recommendations = () => {
       setLoadErrorMessage(null);
       try {
         const activeFunction = RECOMMENDATION_V2_VERSION_PREFIX;
-        let { data, error } = await supabase.functions.invoke(activeFunction, {
+        let result = await supabase.functions.invoke(activeFunction, {
           body: forceRefresh ? { force_refresh: true } : {},
         });
 
-        if (error && getRpcStatus(error) === 401) {
-          await supabase.auth.refreshSession();
-          const retry = await supabase.functions.invoke(activeFunction, {
-            body: forceRefresh ? { force_refresh: true } : {},
-          });
-          data = retry.data;
-          error = retry.error;
+        // Retry on auth failure — refresh session and try again
+        const status = getRpcStatus(result.error) ?? (result.response as Response | undefined)?.status;
+        if (result.error && (status === 401 || status === 403)) {
+          const { error: refreshError } = await supabase.auth.refreshSession();
+          if (!refreshError) {
+            result = await supabase.functions.invoke(activeFunction, {
+              body: forceRefresh ? { force_refresh: true } : {},
+            });
+          }
         }
 
+        const { data, error } = result;
         if (error) throw error;
         const response = parseRecommendationEngineResponse(data);
         if (latestRequestIdRef.current !== requestId || user.id !== activeUserId) {
@@ -206,13 +221,15 @@ const Recommendations = () => {
         console.error("Products error:", error);
         const status = getRpcStatus(error);
         const message =
-          status === 429
-            ? "Recommendation refresh is rate-limited right now. Try again shortly."
-            : status === 402
-              ? "Recommendation generation is unavailable right now."
-              : status === 404
-                ? "The rebuilt recommendation engine is not deployed yet."
-                : getErrorMessage(error);
+          status === 401 || status === 403
+            ? "Your session expired. Please sign out and sign back in."
+            : status === 429
+              ? "Recommendation refresh is rate-limited right now. Try again shortly."
+              : status === 402
+                ? "Recommendation generation is unavailable right now."
+                : status === 404
+                  ? "The rebuilt recommendation engine is not deployed yet."
+                  : getErrorMessage(error);
         setLoadErrorMessage(message);
         toast.error(hasLoadedProducts ? `${message} Keeping the current V2 set on screen.` : message);
       } finally {
@@ -343,7 +360,7 @@ const Recommendations = () => {
 
               {/* Left — title + persona */}
               <div className="min-w-0 max-w-[780px]">
-                <p className="surface-eyebrow-coral mb-2"><GoTwoInline height="0.85em" /> / Recommendations</p>
+                <p className="surface-eyebrow-coral mb-2"><GoTwoInline /> / Recommendations</p>
                 <h1 className="surface-heading-lg mb-3">
                   Curated Just For You
                 </h1>

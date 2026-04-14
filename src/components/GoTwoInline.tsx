@@ -1,13 +1,10 @@
 import type { CSSProperties } from "react";
-import gotwoTransparentNew from "@/assets/GoTwoTransparentNew.png";
 
 /**
- * Inline logo mark for embedding "Go Two" inside running text.
+ * Inline styled text for embedding "Go Two" inside running text.
  *
- * Renders the brand PNG at a height that matches the surrounding
- * line height so it reads like a word. Use this EVERYWHERE the
- * phrase "Go Two" would otherwise appear as plain text — this is
- * a trademark / legal requirement.
+ * Renders "Go" in the brand coral gradient and "Two" in the brand teal,
+ * matching the surrounding font size so it reads naturally as a word.
  *
  * Usage:
  *   <p>Welcome to <GoTwoInline />!</p>
@@ -15,31 +12,34 @@ import gotwoTransparentNew from "@/assets/GoTwoTransparentNew.png";
  */
 
 interface GoTwoInlineProps {
-  /** Override height — defaults to 1em (matches surrounding text). */
-  height?: string;
   className?: string;
   style?: CSSProperties;
 }
 
-const GoTwoInline = ({
-  height = "0.9em",
-  className = "",
-  style,
-}: GoTwoInlineProps) => (
-  <img
-    src={gotwoTransparentNew}
-    alt="Go Two"
-    aria-label="Go Two"
+const GoTwoInline = ({ className = "", style }: GoTwoInlineProps) => (
+  <span
     className={className}
     style={{
-      display: "inline",
-      height,
-      width: "auto",
-      verticalAlign: "baseline",
-      objectFit: "contain",
+      fontWeight: 700,
+      letterSpacing: "-0.01em",
+      whiteSpace: "nowrap",
       ...style,
     }}
-  />
+    aria-label="Go Two"
+  >
+    <span
+      style={{
+        background: "linear-gradient(180deg, #ef8555, #eb4b3f)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        backgroundClip: "text",
+      }}
+    >
+      Go
+    </span>
+    {" "}
+    <span style={{ color: "#00687a" }}>Two</span>
+  </span>
 );
 
 export default GoTwoInline;

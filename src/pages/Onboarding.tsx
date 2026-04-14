@@ -29,6 +29,7 @@ import {
   getVibeOptions,
   getSpendItems,
   getBrandOptions,
+  getSubscriptionOptions,
 } from "@/data/onboardingStaticSets";
 import { getYourVibeDerivation } from "@/lib/knowledgeCenter";
 
@@ -237,8 +238,12 @@ const Onboarding = () => {
     [topCategories],
   );
   const staticBrandOptions = useMemo(
-    () => getBrandOptions(topCategory, spendTier),
-    [topCategory, spendTier],
+    () => getBrandOptions(topCategory, spendTier, ageRange, gender),
+    [topCategory, spendTier, ageRange, gender],
+  );
+  const staticSubscriptionOptions = useMemo(
+    () => getSubscriptionOptions(ageRange),
+    [ageRange],
   );
 
   // ── Popstate ───────────────────────────────────────────────────────────────
@@ -910,6 +915,52 @@ const Onboarding = () => {
               {currentQuestion.type === "multi-select" && currentQuestion.options && (
                 <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 overflow-y-auto pb-4">
                   {currentQuestion.options.map((option, index) => {
+                    const isSelected = selectedForQuestion.includes(option.id);
+                    return (
+                      <motion.button
+                        key={option.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.04 }}
+                        onClick={() => toggleMulti(currentQuestion.id, option.id)}
+                        className={`flex items-start gap-4 rounded-xl px-5 py-4 text-left transition-all duration-200 ${
+                          isSelected ? "shadow-md" : "hover:shadow-sm"
+                        }`}
+                        style={{
+                          background: isSelected
+                            ? `linear-gradient(158deg, ${accent.bgStrong}, ${accent.bg})`
+                            : "linear-gradient(158deg, rgba(232,198,174,0.2), rgba(107,109,98,0.08))",
+                          border: isSelected ? `2px solid ${accent.solid}` : "2px solid transparent",
+                        }}
+                      >
+                        <div
+                          className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] border-2 transition-all"
+                          style={{
+                            borderColor: isSelected ? accent.solid : "rgba(107,109,98,0.4)",
+                            background: isSelected ? accent.solid : "transparent",
+                          }}
+                        >
+                          {isSelected && <Check className="h-3 w-3 text-white" />}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-primary flex items-center gap-2">
+                            <VibeIcon vibeId={option.id} size={18} />
+                            {option.label}
+                          </p>
+                          {option.description && (
+                            <p className="mt-0.5 text-xs text-muted-foreground">{option.description}</p>
+                          )}
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* ── static-subscriptions (resolved by age) ────────────────── */}
+              {currentQuestion.type === "static-subscriptions" && (
+                <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 overflow-y-auto pb-4">
+                  {staticSubscriptionOptions.map((option, index) => {
                     const isSelected = selectedForQuestion.includes(option.id);
                     return (
                       <motion.button

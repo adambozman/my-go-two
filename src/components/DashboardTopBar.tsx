@@ -219,7 +219,7 @@ export function DashboardTopBar() {
                     color: isActive ? "var(--swatch-teal)" : undefined,
                   }}
                 >
-                  {item.hasLogo ? <>My <GoTwoInline height="0.85em" /></> : item.label}
+                  {item.hasLogo ? <>My <GoTwoInline /></> : item.label}
                 </span>
               </button>
             );

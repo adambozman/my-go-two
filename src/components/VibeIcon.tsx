@@ -25,6 +25,8 @@ import {
 
   // ── Subscription icons (Screen 7) ────────────────────────────
   Package, Scooter, Basket, CookingPot, FilmStrip, Cube, XCircle,
+  MusicNotesPlus, Headphones, YoutubeLogo, CloudArrowUp,
+  Newspaper, BookBookmark,
 
   // ── Gift personality icons (Screen 7) ────────────────────────
   Confetti, Wrench, Ticket, HandsPraying, Question,
@@ -132,7 +134,7 @@ const ICON_MAP: Record<string, Icon> = {
   impulse:           LightningA,
   deal_hunter:       Tag,
 
-  // ── Screen 7: Subscription Habits ───────────────────────────
+  // ── Screen 7: Subscription Habits (age-segmented) ─────────────
   amazon_prime:      Package,
   doordash:          Scooter,
   grocery_del:       Basket,
@@ -140,6 +142,18 @@ const ICON_MAP: Record<string, Icon> = {
   streaming:         FilmStrip,
   sub_box:           Cube,
   none:              XCircle,
+  spotify:           MusicNotesPlus,
+  gaming_sub:        GameController,
+  youtube_premium:   YoutubeLogo,
+  roblox_premium:    GameController,
+  kindle_unlimited:  BookBookmark,
+  food_delivery:     Scooter,
+  gym_membership:    Barbell,
+  cloud_storage:     CloudArrowUp,
+  grocery_delivery:  Basket,
+  wine_club:         Wine,
+  news_sub:          Newspaper,
+  audible:           Headphones,
 
   // ── Screen 7: Gift Personality ──────────────────────────────
   splurge:           Confetti,

@@ -956,7 +956,7 @@ export default function ConnectionPage() {
 
         <section className="card-design-neumorph relative w-full max-w-[1120px] overflow-visible p-5 pt-12 md:p-6 md:pt-12 xl:h-[236px]">
             <p className="surface-eyebrow-coral absolute left-5 top-5 md:left-6 md:top-6">
-              <GoTwoInline height="0.85em" /> / Connection feed
+              <GoTwoInline /> / Connection feed
             </p>
 
             <div className="grid gap-5 xl:h-full xl:grid-cols-[minmax(0,1fr)_360px]">
