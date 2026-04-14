@@ -108,7 +108,7 @@ const Waitlist = () => {
           maxWidth: 440,
         }}>
           Your favorites. Your orders. Your sizes. Your weird obsessions.<br />
-          Lock it all in one vault. Share it with your people.<br />
+          Build your vault. Let the right people in.<br />
           Birthdays handled. Holidays unlocked. No more guessing.
         </p>
 
