@@ -696,9 +696,7 @@ Use the provided tool.`;
               required: ["intents"],
               additionalProperties: false,
             },
-          },
-        },
-      ],
+          }] }],
       toolConfig: { functionCallingConfig: { mode: "ANY", allowedFunctionNames: ["generate_recommendation_intents"] } },
     }),
   }
