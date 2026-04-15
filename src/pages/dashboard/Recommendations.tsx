@@ -558,18 +558,19 @@ function ProductCard({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.04, type: "spring", stiffness: 260, damping: 24 }}
       className={`group/card relative overflow-hidden cursor-pointer flex flex-col ${layoutClass}`}
-      style={{ borderRadius: 20, background: "#EDE8E0" }}
+      style={{ borderRadius: 20 }}
       onClick={() => {
         if (productDestination) window.open(productDestination, "_blank", "noopener,noreferrer");
       }}
     >
-      {/* Image zone — takes up ~65% of card, product contained */}
-      <div className="relative flex-[3] flex items-center justify-center overflow-hidden" style={{ minHeight: 0 }}>
+      {/* Image zone — white bg matches product photo bg, product fills aggressively */}
+      <div className="relative flex-[3] flex items-center justify-center overflow-hidden" style={{ minHeight: 0, background: "#f5f5f5", borderRadius: "20px 20px 0 0" }}>
         {showProductImage ? (
           <img
             src={productImage}
             alt={product.name}
-            className="w-full h-full object-contain p-3"
+            className="w-full h-full object-contain"
+            style={{ padding: "4%" }}
             loading="lazy"
             referrerPolicy="no-referrer"
             onError={() => setImageFailed(true)}
@@ -600,8 +601,8 @@ function ProductCard({
         </div>
       </div>
 
-      {/* Info footer — sits below image zone */}
-      <div className="flex-[1] px-3 pb-3 pt-1 md:px-4 md:pb-4 flex flex-col justify-center" style={{ background: "rgba(255,255,255,0.6)" }}>
+      {/* Info footer */}
+      <div className="px-3 pb-3 pt-2 md:px-4 md:pb-4 flex flex-col justify-center" style={{ background: "#EDE8E0" }}>
         <p
           className="text-[9px] uppercase tracking-[0.1em]"
           style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
