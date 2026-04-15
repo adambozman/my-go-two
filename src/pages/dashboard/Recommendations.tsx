@@ -553,54 +553,64 @@ function ProductCard({
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.04, type: "spring", stiffness: 260, damping: 24 }}
-      className={`group/card card-design-sand relative overflow-hidden cursor-pointer flex flex-col min-h-[90px] ${layoutClass}`}
+      className={`group/card relative overflow-hidden cursor-pointer min-h-[90px] ${layoutClass}`}
+      style={{ borderRadius: 28 }}
       onClick={() => {
         if (productDestination) window.open(productDestination, "_blank", "noopener,noreferrer");
       }}
     >
-      {/* Product image — fills available space */}
-      <div className="flex-1 relative overflow-hidden flex items-center justify-center p-3" style={{ minHeight: 0 }}>
-        {showProductImage ? (
-          <img
-            src={productImage}
-            alt={product.name}
-            className="max-h-full max-w-full object-contain"
-            loading="lazy"
-            referrerPolicy="no-referrer"
-            onError={() => setImageFailed(true)}
-          />
-        ) : (
+      {/* Full-bleed image or brand fallback */}
+      {showProductImage ? (
+        <img
+          src={productImage}
+          alt={product.name}
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <div className="absolute inset-0 card-design-sand flex items-center justify-center" style={{ borderRadius: 28 }}>
           <p className="text-[28px] leading-[1] text-center" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
             {product.brand}
           </p>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Card info footer */}
-      <div className="px-3 pb-3 md:px-4 md:pb-4">
-        <p
-          className="text-[10px] uppercase tracking-[0.08em] mb-0.5"
-          style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
-        >
-          {product.brand}
-        </p>
-        <h3
-          className="text-[14px] md:text-[16px] leading-[1.15] font-semibold"
-          style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}
-        >
-          {product.name}
-        </h3>
-        {productDisplayPrice && (
+      {/* Gradient scrim + text overlay */}
+      <div
+        className="absolute inset-0 flex flex-col justify-end"
+        style={{
+          background: showProductImage
+            ? "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 35%, transparent 60%)"
+            : "none",
+        }}
+      >
+        <div className="p-3 md:p-4">
           <p
-            className="text-[11px] mt-0.5"
-            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
+            className="text-[10px] uppercase tracking-[0.08em] mb-0.5"
+            style={{ fontFamily: "'Jost', sans-serif", color: showProductImage ? "rgba(255,255,255,0.75)" : "var(--swatch-cedar-grove)" }}
           >
-            {productDisplayPrice}
+            {product.brand}
           </p>
-        )}
+          <h3
+            className="text-[15px] md:text-[17px] leading-[1.1] font-semibold"
+            style={{ fontFamily: "'Cormorant Garamond', serif", color: showProductImage ? "#fff" : "var(--swatch-teal)" }}
+          >
+            {product.name}
+          </h3>
+          {productDisplayPrice && (
+            <p
+              className="text-[11px] mt-0.5"
+              style={{ fontFamily: "'Jost', sans-serif", color: showProductImage ? "rgba(255,255,255,0.85)" : "var(--swatch-antique-coin)" }}
+            >
+              {productDisplayPrice}
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* Hover actions — appear on mouseover */}
+      {/* Hover actions */}
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200">
         <button
           onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
