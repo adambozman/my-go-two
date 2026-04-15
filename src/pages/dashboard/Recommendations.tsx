@@ -331,15 +331,20 @@ const Recommendations = () => {
 
   const displayProducts = subscribed ? paginatedProducts : filtered.slice(0, PAGE_SIZE);
 
+  /* ────────────────────────────────────────────────────────────
+     Category labels for supplementary tiles
+     ──────────────────────────────────────────────────────────── */
+  const categoryLabels = RECOMMENDATION_CATEGORY_REGISTRY.slice(0, 4).map((e) => e.filterLabel);
+
   return (
     <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
-      <div className="mx-auto max-w-[1280px] space-y-4 px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
+      <div className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
         {/* ── Category pills ── */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05, type: "spring", stiffness: 260, damping: 24 }}
-          className="flex gap-2 flex-wrap"
+          className="flex gap-2 flex-wrap mb-3"
         >
           {pillars.map(({ key, label }) => {
             const isActive = activePillar === key;
@@ -351,82 +356,14 @@ const Recommendations = () => {
           })}
         </motion.div>
 
-        {/* ── Hero card ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 260, damping: 24 }}
-          className="relative"
-        >
-          <Card variant="sand" className="relative overflow-hidden p-5 md:p-6">
-            <div className="relative">
-
-              {/* Left — title + persona */}
-              <div className="min-w-0 max-w-[780px]">
-                <p className="surface-eyebrow-coral mb-2"><GoTwoInline /> / Recommendations</p>
-                <h1 className="surface-heading-lg mb-3">
-                  Curated Just For You
-                </h1>
-                {yourVibe?.persona_summary && (
-                  <p className="surface-heading-md max-w-[32ch] leading-[1.4]">
-                    {yourVibe.persona_summary}
-                  </p>
-                )}
-                {generatedLabel && (
-                  <p className="surface-meta mt-3">
-                    {isCached ? `Saved · ${generatedLabel}` : `Fresh · ${generatedLabel}`}
-                  </p>
-                )}
-                {isUsingRebuiltEngine && (
-                  <p className="surface-meta mt-1">
-                    Powered by the rebuilt recommendation engine
-                  </p>
-                )}
-                {isGuestPreview && (
-                  <p className="surface-meta mt-1">
-                    Showing 4 preview picks from this week&apos;s set
-                  </p>
-                )}
-                {isUsingRebuiltEngine && recommendationTargetCount && recommendationTargetCount < 12 && (
-                  <p className="surface-meta mt-1">
-                    Profile still learning · showing {recommendationTargetCount} stronger picks while more taste data builds
-                    {recommendationInputLevel ? ` (${recommendationInputLevel})` : ""}
-                  </p>
-                )}
-              </div>
-
-              {/* Right — compact role rail */}
-              {subscribed && (
-                <Button
-                  onClick={() => fetchProducts(true)}
-                  disabled={loading}
-                  variant="outline"
-                  size="sm"
-                  className="mt-4"
-                >
-                  <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} />
-                  <span>{loading ? "Loading" : "Refresh"}</span>
-                </Button>
-              )}
-            </div>
-          </Card>
-        </motion.div>
-
         {loadErrorMessage && hasLoadedProducts && (
-          <Card variant="sand" className="border border-amber-200/80 bg-amber-50/70 p-4">
+          <Card variant="sand" className="border border-amber-200/80 bg-amber-50/70 p-4 mb-3">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="surface-heading-md">Showing your current recommendations.</p>
-                <p className="surface-body">The current V2 set stayed on screen while refresh failed.</p>
                 <p className="surface-body">{loadErrorMessage}</p>
               </div>
-              <Button
-                onClick={() => fetchProducts(true)}
-                disabled={loading}
-                variant="outline"
-                size="sm"
-                className="gap-1.5 self-start sm:self-auto"
-              >
+              <Button onClick={() => fetchProducts(true)} disabled={loading} variant="outline" size="sm" className="gap-1.5 self-start sm:self-auto">
                 {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
                 Try Again
               </Button>
@@ -434,105 +371,149 @@ const Recommendations = () => {
           </Card>
         )}
 
-        {/* ── Product grid ── */}
+        {/* ── Bento grid — EVERYTHING is a tile ── */}
         {loading && products.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-16">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <p className="surface-body">
-              Curating your picks…
-            </p>
+            <p className="surface-body">Curating your picks…</p>
           </div>
         ) : displayProducts.length > 0 ? (
           <>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`${activePillar}-${currentPage}-${subscribed ? "live" : "guest"}`}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25 }}
-                className="grid gap-2 grid-cols-2 md:grid-cols-12 md:auto-rows-[220px]"
+            {/* 4-col grid, small auto-rows so row-span creates real height variety.
+                grid-auto-flow:dense fills holes.  Gap: 6px (tight like reference). */}
+            <motion.div
+              key={`${activePillar}-${currentPage}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-2 gap-1.5 md:grid-cols-4 md:auto-rows-[100px] md:gap-1.5"
+              style={{ gridAutoFlow: "dense" }}
+            >
+              {/* ── T1: Hero / title tile  (wide + tall) ── */}
+              <div
+                className="col-span-2 md:row-span-2 rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 md:p-6"
+                style={{ background: "linear-gradient(145deg, var(--swatch-sand) 0%, var(--swatch-cream) 100%)" }}
               >
-                {(() => {
-                  /* Build a flat list of grid items: 8 products + 1 quote tile = 9 items.
-                     Quote is inserted at slot 3 (after 3 products).
-                     Layout array maps slot index → col/row span classes.
-                     Row math (12-col):
-                       Row 1: slot0(4,2row) + slot1(4) + slot2(4)         = 12
-                       Row 2: slot0 cont   + slot3(4) + slot4(4)         = 12  (slot3=quote)
-                       Row 3: slot5(5,2row) + slot6(7)                   = 12
-                       Row 4: slot5 cont   + slot7(3) + slot8(4)         = 12
-                  */
-                  const SLOT_LAYOUT = [
-                    "md:col-span-4 md:row-span-2",  // slot 0 — tall left
-                    "md:col-span-4",                 // slot 1
-                    "md:col-span-4",                 // slot 2
-                    "md:col-span-4",                 // slot 3 — QUOTE
-                    "md:col-span-4",                 // slot 4
-                    "md:col-span-5 md:row-span-2",  // slot 5 — tall
-                    "md:col-span-7",                 // slot 6
-                    "md:col-span-3",                 // slot 7
-                    "md:col-span-4",                 // slot 8
-                  ];
-                  const QUOTE_SLOT = 3;
-                  const items: React.ReactNode[] = [];
-                  let productIdx = 0;
+                <p className="text-[10px] uppercase tracking-[0.12em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  <GoTwoInline /> / For You
+                </p>
+                <h2 className="text-[28px] md:text-[34px] leading-[0.95] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                  Curated Just<br />For You
+                </h2>
+                {yourVibe?.persona_summary && (
+                  <p className="text-[12px] leading-snug max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    {yourVibe.persona_summary}
+                  </p>
+                )}
+                {subscribed && (
+                  <button
+                    onClick={() => fetchProducts(true)}
+                    disabled={loading}
+                    className="mt-3 self-start flex items-center gap-1.5 text-[11px] uppercase tracking-[0.1em] px-3 py-1.5 rounded-full"
+                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}
+                  >
+                    <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} />
+                    {loading ? "Loading" : "Refresh"}
+                  </button>
+                )}
+              </div>
 
-                  for (let slot = 0; slot < SLOT_LAYOUT.length; slot++) {
-                    if (slot === QUOTE_SLOT) {
-                      items.push(
-                        <motion.div
-                          key="quote-tile"
-                          initial={{ opacity: 0, y: 14 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: slot * 0.04, type: "spring", stiffness: 260, damping: 24 }}
-                          className={`relative ${SLOT_LAYOUT[slot]}`}
-                        >
-                          <Card variant="sand" className="relative flex h-full flex-col items-center justify-center overflow-hidden p-5 text-center">
-                            <p className="leading-[1.2] max-w-[20ch] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 18, color: "var(--swatch-teal)" }}>
-                              "{activeQuote.text}"
-                            </p>
-                            <div className="surface-meta text-[11px]">
-                              {activeQuote.author === GOTWO_LOGO_SENTINEL ? <GoTwoInline /> : activeQuote.author}
-                            </div>
-                          </Card>
-                        </motion.div>
-                      );
-                      continue;
-                    }
+              {/* ── T2: First product (tall, 1-col, 3 rows) ── */}
+              {displayProducts[0] && (
+                <ProductCard product={displayProducts[0]} index={0} layoutClass="md:row-span-3" isSaved={savedItems.has(getRecommendationStableId(displayProducts[0]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[0]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[0]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[0])} />
+              )}
 
-                    const product = displayProducts[productIdx];
-                    if (!product) break;
-                    const itemId = getRecommendationStableId(product);
-                    const isSaved = savedItems.has(itemId);
-                    const isSharing = sharingItems.has(itemId);
+              {/* ── T3: Quote tile (1-col, 1 row) ── */}
+              <div
+                className="rounded-2xl overflow-hidden flex flex-col items-center justify-center p-4 text-center"
+                style={{ background: "linear-gradient(145deg, var(--swatch-sand) 0%, var(--swatch-cream) 100%)" }}
+              >
+                <p className="leading-[1.15] max-w-[16ch] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 15, color: "var(--swatch-teal)" }}>
+                  "{activeQuote.text}"
+                </p>
+                <div className="text-[10px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  {activeQuote.author === GOTWO_LOGO_SENTINEL ? <GoTwoInline /> : activeQuote.author}
+                </div>
+              </div>
 
-                    items.push(
-                      <ProductCard
-                        key={itemId}
-                        product={product}
-                        index={slot}
-                        layoutClass={SLOT_LAYOUT[slot]}
-                        isSaved={isSaved}
-                        shareLoading={isSharing}
-                        onToggleSave={() => subscribed ? void toggleSave(product) : toast("Upgrade to save picks")}
-                        onShare={() => void handleShare(product)}
-                      />
-                    );
-                    productIdx++;
-                  }
-                  return items;
-                })()}
-              </motion.div>
-            </AnimatePresence>
+              {/* ── T4: Second product (wide, 2-col, 2 rows) ── */}
+              {displayProducts[1] && (
+                <ProductCard product={displayProducts[1]} index={1} layoutClass="col-span-2 md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} />
+              )}
 
-            {subscribed && (
-              <PaginationControls
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                label={`Page ${currentPage} of ${totalPages}`}
-              />
+              {/* ── T5: Stats tile (1-col, 1 row) ── */}
+              <div
+                className="rounded-2xl overflow-hidden flex flex-col items-center justify-center p-4"
+                style={{ background: "var(--swatch-teal)" }}
+              >
+                <p className="text-[32px] font-bold leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                  {displayProducts.length}
+                </p>
+                <p className="text-[10px] uppercase tracking-[0.12em] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                  Picks This Week
+                </p>
+              </div>
+
+              {/* ── T6: Third product (1-col, 2 rows) ── */}
+              {displayProducts[2] && (
+                <ProductCard product={displayProducts[2]} index={2} layoutClass="md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[2]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[2]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[2]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[2])} />
+              )}
+
+              {/* ── T7: Go Two brand tile (1-col, 1 row) ── */}
+              <div
+                className="rounded-2xl overflow-hidden flex items-center justify-center p-4"
+                style={{ background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
+              >
+                <span className="text-[24px]" style={{ fontFamily: "'Dancing Script', cursive", color: "#fff", fontWeight: 700 }}>go</span>
+                <span className="text-[24px] ml-1" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff", fontWeight: 700 }}>Two</span>
+              </div>
+
+              {/* ── T8: Fourth product (wide, 2-col, 1 row) ── */}
+              {displayProducts[3] && (
+                <ProductCard product={displayProducts[3]} index={3} layoutClass="col-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} />
+              )}
+
+              {/* ── T9: Category tile (1-col, 1 row) ── */}
+              <div
+                className="rounded-2xl overflow-hidden flex flex-col justify-center p-4"
+                style={{ background: "linear-gradient(145deg, var(--swatch-cream) 0%, var(--swatch-sand) 100%)" }}
+              >
+                <p className="text-[10px] uppercase tracking-[0.12em] mb-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>Categories</p>
+                <div className="flex flex-wrap gap-1">
+                  {categoryLabels.map((label) => (
+                    <span key={label} className="text-[10px] px-2 py-0.5 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}>{label}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── Remaining products (5+) get alternating sizes ── */}
+              {displayProducts.slice(4).map((product, i) => {
+                const itemId = getRecommendationStableId(product);
+                const altLayouts = ["md:row-span-2", "", "col-span-2", "", "md:row-span-2", "col-span-2"];
+                return (
+                  <ProductCard
+                    key={itemId}
+                    product={product}
+                    index={i + 4}
+                    layoutClass={altLayouts[i % altLayouts.length]}
+                    isSaved={savedItems.has(itemId)}
+                    shareLoading={sharingItems.has(itemId)}
+                    onToggleSave={() => subscribed ? void toggleSave(product) : toast("Upgrade to save picks")}
+                    onShare={() => void handleShare(product)}
+                  />
+                );
+              })}
+            </motion.div>
+
+            {subscribed && totalPages > 1 && (
+              <div className="mt-4">
+                <PaginationControls
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  label={`Page ${currentPage} of ${totalPages}`}
+                />
+              </div>
             )}
           </>
         ) : loadErrorMessage && !hasLoadedProducts ? (
@@ -540,19 +521,9 @@ const Recommendations = () => {
             <p className="surface-heading-md mb-2">
               {hasEngineEmptyFailure ? "V2 returned an empty set." : "Recommendations are temporarily unavailable."}
             </p>
-            <p className="surface-body">
-              {hasEngineEmptyFailure
-                ? "The request succeeded, but the engine returned zero usable products. That means the V2 fallback chain is still broken."
-                : loadErrorMessage}
-            </p>
+            <p className="surface-body">{hasEngineEmptyFailure ? "The engine returned zero usable products." : loadErrorMessage}</p>
             <div className="mt-4 flex justify-center">
-              <Button
-                onClick={() => fetchProducts(true)}
-                disabled={loading}
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-              >
+              <Button onClick={() => fetchProducts(true)} disabled={loading} variant="outline" size="sm" className="gap-1.5">
                 {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
                 Try Again
               </Button>
@@ -560,29 +531,15 @@ const Recommendations = () => {
           </Card>
         ) : !subscribed ? (
           <Card variant="sand" className="p-8 text-center">
-            <p className="surface-heading-md mb-2">
-              Your curated picks load here.
-            </p>
-            <p className="surface-body">
-              Upgrade to unlock the full weekly set and saving.
-            </p>
+            <p className="surface-heading-md mb-2">Your curated picks load here.</p>
+            <p className="surface-body">Upgrade to unlock the full weekly set and saving.</p>
           </Card>
         ) : hasLoaded && user ? (
           <Card variant="sand" className="p-8 text-center">
-            <p className="surface-heading-md mb-2">
-              Recommendations did not resolve correctly.
-            </p>
-            <p className="surface-body">
-              V2 should always return picks or a fallback set. Refresh to retry the engine.
-            </p>
+            <p className="surface-heading-md mb-2">Recommendations did not resolve correctly.</p>
+            <p className="surface-body">V2 should always return picks or a fallback set. Refresh to retry the engine.</p>
             <div className="mt-4 flex justify-center">
-              <Button
-                onClick={() => fetchProducts(true)}
-                disabled={loading}
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-              >
+              <Button onClick={() => fetchProducts(true)} disabled={loading} variant="outline" size="sm" className="gap-1.5">
                 {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
                 Try Again
               </Button>
@@ -614,86 +571,101 @@ function ProductCard({
   const ref = useRef<HTMLDivElement>(null);
   const productImage = getProductImage(product);
   const productDestination = getRecommendationDestination(product);
-  const productMatchLabel = getRecommendationMatchLabel(product);
   const productActionLabel = getRecommendationActionLabel(product);
   const productDisplayPrice = getRecommendationDisplayPrice(product);
   const [imageFailed, setImageFailed] = useState(false);
   const showProductImage = Boolean(productImage) && !imageFailed;
 
+  /* Bento tile: image fills the entire card, text overlays at bottom.
+     No separate footer — everything is inside the tile.  Actions on hover. */
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.04, type: "spring", stiffness: 260, damping: 24 }}
-      className={`relative ${layoutClass}`}
+      className={`group/card relative rounded-2xl overflow-hidden cursor-pointer ${layoutClass}`}
+      onClick={() => {
+        if (productDestination) window.open(productDestination, "_blank", "noopener,noreferrer");
+      }}
     >
-      <Card variant="sand" className="relative flex h-full flex-col overflow-hidden">
-        <div className="relative flex-1 min-h-[140px] overflow-hidden">
-          {showProductImage ? (
-            <img
-              src={productImage}
-              alt={product.name}
-              className="h-full w-full object-cover"
-              loading="lazy"
-              referrerPolicy="no-referrer"
-              onError={() => setImageFailed(true)}
-            />
-          ) : (
-            <div className="flex h-full w-full items-end bg-[linear-gradient(135deg,#f3ecdf_0%,#ece3d1_100%)] p-4">
-              <div className="max-w-[80%] rounded-2xl bg-white/70 px-3 py-2 backdrop-blur-sm">
-                <p className="surface-meta">{product.brand}</p>
-                <p className="surface-heading-md mt-1">{product.name}</p>
-                <p className="surface-meta mt-2">
-                  {productMatchLabel}
-                </p>
-              </div>
-            </div>
+      {/* Full-bleed image or typographic fallback */}
+      {showProductImage ? (
+        <img
+          src={productImage}
+          alt={product.name}
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(145deg, var(--swatch-sand) 0%, var(--swatch-cream) 100%)" }}
+        />
+      )}
+
+      {/* Bottom gradient scrim + text overlay */}
+      <div
+        className="absolute inset-0 flex flex-col justify-end"
+        style={{
+          background: showProductImage
+            ? "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 40%, transparent 65%)"
+            : "none",
+        }}
+      >
+        <div className="p-3 md:p-4">
+          <p
+            className="text-[10px] uppercase tracking-[0.08em] mb-0.5"
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              color: showProductImage ? "rgba(255,255,255,0.75)" : "var(--swatch-cedar-grove)",
+            }}
+          >
+            {product.brand}
+          </p>
+          <h3
+            className="text-[15px] md:text-[17px] leading-[1.1] font-semibold"
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              color: showProductImage ? "#fff" : "var(--swatch-teal)",
+            }}
+          >
+            {product.name}
+          </h3>
+          {productDisplayPrice && (
+            <p
+              className="text-[11px] mt-1"
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                color: showProductImage ? "rgba(255,255,255,0.8)" : "var(--swatch-antique-coin)",
+              }}
+            >
+              {productDisplayPrice}
+            </p>
           )}
         </div>
+      </div>
 
-        <div className="p-4 flex flex-col gap-2 shrink-0">
-          <div className="flex items-baseline justify-between gap-2 min-w-0">
-            <div className="min-w-0">
-              <p className="surface-meta text-[11px]">{product.brand}</p>
-              <h3 className="surface-heading-md mt-0.5 text-[14px] leading-tight">{product.name}</h3>
-            </div>
-            <p className="surface-meta text-[12px] shrink-0">{productDisplayPrice}</p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-1.5">
-            {productDestination && productActionLabel ? (
-              <Button
-                onClick={() => {
-                  window.open(productDestination, "_blank", "noopener,noreferrer");
-                }}
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-              >
-                <ExternalLink className="h-3 w-3" />
-                {productActionLabel}
-              </Button>
-            ) : null}
-
-            <Button onClick={onToggleSave} variant="outline" size="sm" className="gap-1.5">
-              <Bookmark className="h-3 w-3" />
-              {isSaved ? "Saved" : "Save"}
-            </Button>
-
-            <Button
-              onClick={onShare}
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              disabled={shareLoading}
-            >
-              {shareLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Share2 className="h-3 w-3" />}
-              Share
-            </Button>
-          </div>
-        </div>
-      </Card>
+      {/* Hover actions — appear on mouseover */}
+      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200">
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
+          className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
+          style={{ background: "rgba(255,255,255,0.7)" }}
+        >
+          <Bookmark className="h-3.5 w-3.5" style={{ color: isSaved ? "var(--swatch-cedar-grove)" : "var(--swatch-teal)" }} />
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onShare(); }}
+          className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
+          style={{ background: "rgba(255,255,255,0.7)" }}
+          disabled={shareLoading}
+        >
+          {shareLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" style={{ color: "var(--swatch-teal)" }} />}
+        </button>
+      </div>
     </motion.div>
   );
 }
