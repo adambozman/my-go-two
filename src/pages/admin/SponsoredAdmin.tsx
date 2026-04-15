@@ -14,9 +14,10 @@ interface AdStats {
   clicks: number;
 }
 
-const CATEGORIES = ["food", "clothes", "tech", "home"];
-const PLACEMENTS = ["blended", "dedicated", "both"];
+const CATEGORIES = ["clothes", "food", "tech", "home", "personal", "gifts", "entertainment", "travel"];
+const PLACEMENTS = ["blended", "top", "bottom"];
 const GENDERS = ["male", "female", "non-binary"];
+const AGE_RANGES = ["18_24", "25_34", "35_44", "45_54", "55_plus"];
 const PRICE_TIERS = ["budget", "mid-range", "premium", "luxury"];
 
 const emptyProduct: Partial<SponsoredProduct> = {
@@ -33,6 +34,7 @@ const emptyProduct: Partial<SponsoredProduct> = {
   hook: "",
   why: "",
   target_gender: ["male", "female", "non-binary"],
+  target_age_ranges: ["18_24", "25_34", "35_44", "45_54", "55_plus"],
   target_price_tiers: ["budget", "mid-range", "premium", "luxury"],
   target_style_keywords: [],
   placement: "blended",
@@ -449,6 +451,34 @@ export default function SponsoredAdmin() {
                         }}
                       >
                         {g}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium mb-1.5" style={{ color: "var(--swatch-antique-coin)" }}>Age Ranges</p>
+                  <div className="flex gap-2 flex-wrap">
+                    {AGE_RANGES.map((a) => (
+                      <button
+                        key={a}
+                        onClick={() => {
+                          const current = editing.target_age_ranges || [];
+                          setEditing({
+                            ...editing,
+                            target_age_ranges: current.includes(a) ? current.filter((x) => x !== a) : [...current, a],
+                          });
+                        }}
+                        className="px-3 py-1 rounded-full text-[11px] font-medium"
+                        style={{
+                          background: (editing.target_age_ranges || []).includes(a)
+                            ? "var(--swatch-teal)"
+                            : "var(--swatch-sand-mid)",
+                          color: (editing.target_age_ranges || []).includes(a)
+                            ? "var(--swatch-cream-light)"
+                            : "var(--swatch-antique-coin)",
+                        }}
+                      >
+                        {a.replace(/_/g, "-").replace("plus", "+")}
                       </button>
                     ))}
                   </div>

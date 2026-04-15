@@ -46,9 +46,76 @@ const corsHeaders = {
 };
 
 const ENGINE_FAMILY = "recommendation-engine-v2";
-const ENGINE_RULESET_VERSION = "2026-04-12-clean-break";
+const ENGINE_RULESET_VERSION = "2026-04-15-revenue-engine";
 const GENERATION_VERSION = `${ENGINE_FAMILY}:${ENGINE_RULESET_VERSION}`;
 const BANK_REVERIFY_MAX_AGE_HOURS = 24 * 14;
+
+// ── Affiliate link configuration ──────────────────────────────────────────────
+// Placeholder affiliate IDs — Adam will add real ones later
+const AFFILIATE_CONFIG: Record<string, { param: string; id: string; network: string }> = {
+  // Amazon Associates
+  "amazon.com": { param: "tag", id: "gotwo-20", network: "amazon" },
+  "amzn.to": { param: "tag", id: "gotwo-20", network: "amazon" },
+  // Placeholder for other networks — IDs to be added
+  "default": { param: "utm_source", id: "gotwo", network: "direct" },
+};
+
+const transformAffiliateUrl = (rawUrl: string | null | undefined): { url: string; network: string } | null => {
+  if (!rawUrl) return null;
+  try {
+    const parsed = new URL(rawUrl);
+    const hostname = parsed.hostname.replace(/^www\./, "");
+    const config = AFFILIATE_CONFIG[hostname] ?? AFFILIATE_CONFIG["default"];
+    parsed.searchParams.set(config.param, config.id);
+    parsed.searchParams.set("utm_medium", "referral");
+    parsed.searchParams.set("utm_campaign", "gotwo_rec");
+    return { url: parsed.toString(), network: config.network };
+  } catch {
+    return { url: rawUrl, network: "direct" };
+  }
+};
+
+// ── User demographics extraction ──────────────────────────────────────────────
+type UserDemographics = {
+  ageRange: string | null;
+  gender: string | null;
+};
+
+const AGE_RANGE_MAP: Record<string, string> = {
+  "18_24": "18_24",
+  "25_34": "25_34",
+  "35_44": "35_44",
+  "45_54": "45_54",
+  "55_plus": "55_plus",
+  "18-24": "18_24",
+  "25-34": "25_34",
+  "35-44": "35_44",
+  "45-54": "45_54",
+  "55+": "55_plus",
+  "55_64": "55_plus",
+  "65_plus": "55_plus",
+};
+
+const GENDER_MAP: Record<string, string> = {
+  "man": "man",
+  "male": "man",
+  "woman": "woman",
+  "female": "woman",
+  "non-binary": "non-binary",
+  "nonbinary": "non-binary",
+  "non_binary": "non-binary",
+  "prefer_not_to_say": "non-binary",
+};
+
+const extractUserDemographics = (state: NormalizedRecommendationState): UserDemographics => {
+  const responses = state.combinedResponses ?? {};
+  const rawAge = cleanText(responses.age_range ?? responses.age ?? "").toLowerCase();
+  const rawGender = cleanText(responses.gender ?? responses.sex ?? "").toLowerCase();
+  return {
+    ageRange: AGE_RANGE_MAP[rawAge] ?? null,
+    gender: GENDER_MAP[rawGender] ?? null,
+  };
+};
 
 const ALLOWED_KINDS = new Set(["specific", "generic"]);
 
@@ -254,10 +321,11 @@ const findBestProductBankMatch = async (
   descriptorKeywords: string[],
   negativeKeywords: string[],
   requestedBrand: string,
+  demographics?: UserDemographics,
 ) => {
   const { data, error } = await admin
     .from("recommendation_product_bank")
-    .select("id, primary_keyword, descriptor_keywords, keyword_signature, category, brand, product_title, product_url, product_image_url, product_price_text, scraped_description, search_query, resolver_source, source_version, match_confidence, exact_match_confirmed, usage_count, last_verified_at, bank_state, bank_source, image_status, verification_notes, last_verification_error")
+    .select("id, primary_keyword, descriptor_keywords, keyword_signature, category, brand, product_title, product_url, product_image_url, product_price_text, scraped_description, search_query, resolver_source, source_version, match_confidence, exact_match_confirmed, usage_count, last_verified_at, bank_state, bank_source, image_status, verification_notes, last_verification_error, target_age_ranges, target_genders")
     .eq("category", category)
     .eq("primary_keyword", primaryKeyword)
     .eq("exact_match_confirmed", true)
@@ -275,6 +343,18 @@ const findBestProductBankMatch = async (
 
   const rows = Array.isArray(data) ? (data as ProductBankRow[]) : [];
   const ranked = rows
+    .filter((row) => {
+      // Demographic filtering: prefer rows matching user's age/gender
+      if (demographics?.ageRange) {
+        const rowAges = (row as Record<string, unknown>).target_age_ranges as string[] | null;
+        if (rowAges && rowAges.length > 0 && !rowAges.includes(demographics.ageRange)) return false;
+      }
+      if (demographics?.gender) {
+        const rowGenders = (row as Record<string, unknown>).target_genders as string[] | null;
+        if (rowGenders && rowGenders.length > 0 && !rowGenders.includes(demographics.gender)) return false;
+      }
+      return true;
+    })
     .filter((row) => !hasDislikeConflict(descriptorKeywords, negativeKeywords, row))
     .filter((row) => {
       if (!row.last_verified_at) return false;
@@ -373,6 +453,9 @@ const toResponseProduct = (
     cleanText(bankRow.product_url).toLowerCase(),
   ].join("::");
 
+  // Transform affiliate URL with tracking params
+  const affiliateResult = transformAffiliateUrl(bankRow.product_url);
+
   return {
     stable_id: stableId,
     name: bankRow.product_title,
@@ -382,7 +465,8 @@ const toResponseProduct = (
     hook: intent.hook,
     why: intent.why,
     is_connection_pick: false,
-    affiliate_url: bankRow.product_url,
+    affiliate_url: affiliateResult?.url ?? bankRow.product_url,
+    affiliate_network: affiliateResult?.network ?? "direct",
     search_url: null,
     product_query: bankRow.search_query ?? `${bankRow.brand} ${bankRow.product_title}`.trim(),
     sponsored_id: null,
@@ -456,7 +540,8 @@ const toPopularFallbackResponseProduct = ({
     hook: intent.hook,
     why: intent.why,
     is_connection_pick: false,
-    affiliate_url: seed.product_url,
+    affiliate_url: (() => { const r = transformAffiliateUrl(seed.product_url); return r?.url ?? seed.product_url; })(),
+    affiliate_network: (() => { const r = transformAffiliateUrl(seed.product_url); return r?.network ?? "direct"; })(),
     search_url: null,
     product_query: intent.search_query,
     sponsored_id: null,
@@ -955,6 +1040,184 @@ const buildPopularFallbackProducts = async ({
   return products;
 };
 
+// ── Sponsored product loading, mixing, and tracking ────────────────────────────
+type SponsoredProductRow = {
+  id: string;
+  name: string;
+  brand: string;
+  description: string | null;
+  price: string | null;
+  category: string;
+  image_url: string | null;
+  affiliate_url: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  hook: string | null;
+  why: string | null;
+  target_gender: string[] | null;
+  target_age_ranges: string[] | null;
+  target_price_tiers: string[] | null;
+  target_style_keywords: string[] | null;
+  placement: string;
+  priority: number;
+  is_active: boolean;
+  start_date: string | null;
+  end_date: string | null;
+};
+
+const loadSponsoredProducts = async (
+  admin: SupabaseClient,
+  demographics: UserDemographics,
+): Promise<SponsoredProductRow[]> => {
+  const now = new Date().toISOString();
+  const { data, error } = await admin
+    .from("sponsored_products")
+    .select("*")
+    .eq("is_active", true)
+    .or(`start_date.is.null,start_date.lte.${now}`)
+    .or(`end_date.is.null,end_date.gte.${now}`)
+    .order("priority", { ascending: false })
+    .limit(10);
+
+  if (error) {
+    console.warn("[recommendation-engine-v2] Sponsored products unavailable:", error.message);
+    return [];
+  }
+
+  const rows = Array.isArray(data) ? (data as SponsoredProductRow[]) : [];
+
+  // Filter by demographics
+  return rows.filter((row) => {
+    if (demographics.gender && row.target_gender && row.target_gender.length > 0) {
+      // Map gender format: sponsored uses male/female, onboarding uses man/woman
+      const genderAliases: Record<string, string[]> = {
+        man: ["male", "man"],
+        woman: ["female", "woman"],
+        "non-binary": ["non-binary", "nonbinary"],
+      };
+      const matchValues = genderAliases[demographics.gender] ?? [demographics.gender];
+      if (!row.target_gender.some((g) => matchValues.includes(g.toLowerCase()))) return false;
+    }
+    if (demographics.ageRange && row.target_age_ranges && row.target_age_ranges.length > 0) {
+      if (!row.target_age_ranges.includes(demographics.ageRange)) return false;
+    }
+    return true;
+  });
+};
+
+const buildSponsoredResponseProduct = (row: SponsoredProductRow): RecommendationResponseProduct => {
+  // Build affiliate URL with UTM params
+  let finalUrl = row.affiliate_url ?? "";
+  if (finalUrl) {
+    try {
+      const parsed = new URL(finalUrl);
+      if (row.utm_source) parsed.searchParams.set("utm_source", row.utm_source);
+      if (row.utm_medium) parsed.searchParams.set("utm_medium", row.utm_medium);
+      if (row.utm_campaign) parsed.searchParams.set("utm_campaign", row.utm_campaign);
+      finalUrl = parsed.toString();
+    } catch { /* keep raw URL */ }
+  }
+
+  return {
+    stable_id: `sponsored::${row.id}`,
+    name: row.name,
+    brand: row.brand,
+    price: row.price ?? "Price varies",
+    category: row.category,
+    hook: row.hook ?? `Sponsored pick: ${row.name}`,
+    why: row.why ?? `Featured by ${row.brand}`,
+    is_connection_pick: false,
+    affiliate_url: finalUrl || null,
+    affiliate_network: "sponsored",
+    search_url: null,
+    product_query: `${row.brand} ${row.name}`.trim(),
+    sponsored_id: row.id,
+    image_url: row.image_url,
+    source_kind: "specific-product",
+    source_version: GENERATION_VERSION,
+    exact_match_confirmed: true,
+    match_confidence: 100,
+    resolver_source: "sponsored",
+    recommendation_match_confidence: null,
+    recommendation_match_reasons: ["sponsored"],
+    explanation: {
+      decision: "sponsored-placement",
+      placement: row.placement,
+      priority: row.priority,
+      resolver_source: "sponsored",
+      bank_source: "sponsored",
+    },
+  };
+};
+
+const mixSponsoredProducts = (
+  organicProducts: RecommendationResponseProduct[],
+  sponsoredRows: SponsoredProductRow[],
+): RecommendationResponseProduct[] => {
+  if (sponsoredRows.length === 0) return organicProducts;
+
+  const result = [...organicProducts];
+  const usedBrands = new Set(organicProducts.map((p) => cleanText(p.brand).toLowerCase()));
+  let sponsoredInserted = 0;
+
+  for (const row of sponsoredRows) {
+    // Max 1 sponsored per 4 organic products
+    if (sponsoredInserted >= Math.max(1, Math.floor(organicProducts.length / 3))) break;
+
+    // Don't duplicate brands already in organic results
+    const brandKey = cleanText(row.brand).toLowerCase();
+    if (usedBrands.has(brandKey)) continue;
+
+    const sponsored = buildSponsoredResponseProduct(row);
+
+    // Insert at position based on placement
+    if (row.placement === "top") {
+      result.splice(0, 0, sponsored);
+    } else if (row.placement === "bottom") {
+      result.push(sponsored);
+    } else {
+      // "blended" — insert after position 1 or 2
+      const insertPos = Math.min(1 + sponsoredInserted, result.length);
+      result.splice(insertPos, 0, sponsored);
+    }
+
+    usedBrands.add(brandKey);
+    sponsoredInserted++;
+  }
+
+  return result;
+};
+
+const trackAdEvents = async (
+  admin: SupabaseClient,
+  userId: string,
+  sponsoredProducts: RecommendationResponseProduct[],
+) => {
+  const events = sponsoredProducts
+    .filter((p) => p.sponsored_id)
+    .map((p) => ({
+      product_id: p.sponsored_id,
+      user_id: userId,
+      event_type: "impression",
+      placement: (p as Record<string, unknown>).explanation
+        ? ((p as Record<string, unknown>).explanation as Record<string, unknown>).placement ?? "blended"
+        : "blended",
+      metadata: {
+        category: p.category,
+        brand: p.brand,
+        generation_version: GENERATION_VERSION,
+      },
+    }));
+
+  if (events.length === 0) return;
+
+  const { error } = await admin.from("ad_events").insert(events);
+  if (error) {
+    console.warn("[recommendation-engine-v2] Failed to track ad events:", error.message);
+  }
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -1004,6 +1267,7 @@ serve(async (req) => {
       thisOrThatAnswerRows,
     );
     const inputStrength = buildRecommendationInputStrength(state);
+    const demographics = extractUserDemographics(state);
     await persistNormalizedState(admin, user.id, state);
 
     const products: RecommendationResponseProduct[] = [];
@@ -1026,6 +1290,7 @@ serve(async (req) => {
         descriptorKeywords,
         state.negativeKeywords,
         intent.brand,
+        demographics,
       );
 
       if (bankRow) {
@@ -1092,6 +1357,16 @@ serve(async (req) => {
       }
     }
 
+    // ── Sponsored product mixing ──────────────────────────────────────────────
+    const sponsoredProducts = await loadSponsoredProducts(admin, demographics);
+    const mixedProducts = mixSponsoredProducts(products, sponsoredProducts);
+
+    // Track impressions for any sponsored products that made it in
+    const sponsoredInMix = mixedProducts.filter((p) => p.sponsored_id);
+    if (sponsoredInMix.length > 0) {
+      await trackAdEvents(admin, user.id, sponsoredInMix);
+    }
+
     const inputSnapshotSummary = {
       ...buildRecommendationSignalSummary(state),
       recommendation_target_count: inputStrength.targetRecommendationCount,
@@ -1102,7 +1377,9 @@ serve(async (req) => {
       onboarding_answer_count: Object.keys(toObject(knowledgeState.snapshot?.onboarding_responses)).length,
       know_me_answer_count: Object.keys(toObject(knowledgeState.snapshot?.know_me_responses)).length,
       ai_intent_count: acceptedAiIntents.length,
-      populated_product_count: products.length,
+      populated_product_count: mixedProducts.length,
+      sponsored_count: sponsoredInMix.length,
+      demographics: { age_range: demographics.ageRange, gender: demographics.gender },
     };
 
     const generatedAt = new Date().toISOString();
@@ -1110,13 +1387,13 @@ serve(async (req) => {
       admin,
       user.id,
       weekStartKey,
-      products,
+      mixedProducts,
       inputSnapshotSummary,
       generatedAt,
     );
 
     return jsonResponse({
-      products,
+      products: mixedProducts,
       cached: false,
       generated_at: generatedAt,
       week_start: weekStartKey,

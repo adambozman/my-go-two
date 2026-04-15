@@ -36,3 +36,6 @@ verify_jwt = false
 
 [functions.sync-category-registry]
 verify_jwt = false
+
+[functions.trend-ingestion]
+verify_jwt = false
