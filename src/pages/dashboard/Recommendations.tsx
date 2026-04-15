@@ -371,7 +371,7 @@ const Recommendations = () => {
           </Card>
         )}
 
-        {/* ── Bento grid — EVERYTHING is a tile ── */}
+        {/* ── Bento grid ── */}
         {loading && products.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-16">
             <Loader2 className="h-6 w-6 animate-spin" />
@@ -379,24 +379,36 @@ const Recommendations = () => {
           </div>
         ) : displayProducts.length > 0 ? (
           <>
-            {/* 4-col bento: auto-rows-[90px] with dense packing, 4px gap */}
+            {/*
+              6-col explicit grid.  Every row sums to exactly 6.
+              Row heights: auto-rows-[110px] on md.
+              Tiles placed with explicit grid-column / grid-row so there
+              are ZERO empty cells — the grid forms a perfect rectangle.
+
+              GRID MAP (md, 6-col, 7 rows):
+              R1: [Hero 3c×1r]        [Product0 2c×3r] [Stats 1c×1r]
+              R2: [Product1 3c×2r]                      [Quote 1c×2r]
+              R3:                                        
+              R4: [Vibe 1c×1r][Categories 2c×1r][Brand 1c×1r][Product2 2c×2r]
+              R5: [Product3 2c×2r]   [Match 1c×1r][Swatch 1c×1r]
+              R6:                    [Tagline 2c×1r]                     
+            */}
             <motion.div
               key={`${activePillar}-${currentPage}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-2 gap-1 md:grid-cols-4 md:auto-rows-[90px] md:gap-1"
-              style={{ gridAutoFlow: "dense" }}
+              className="grid grid-cols-2 gap-1 md:grid-cols-6 md:auto-rows-[110px] md:gap-1"
             >
-              {/* ── T1: Hero / title tile  (2 cols, 1 row on mobile, 2 rows on md) ── */}
+              {/* R1 C1-3: Hero title */}
               <div
-                className="col-span-2 row-span-1 md:row-span-2 rounded-xl overflow-hidden relative flex flex-col justify-center p-4 md:p-5"
-                style={{ background: "#fff" }}
+                className="col-span-2 md:col-span-3 rounded-xl overflow-hidden flex flex-col justify-center p-4 md:p-5"
+                style={{ background: "#fff", gridRow: "span 1" }}
               >
                 <p className="text-[9px] uppercase tracking-[0.14em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   <GoTwoInline /> / For You
                 </p>
-                <h2 className="text-[22px] md:text-[28px] leading-[0.95]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                <h2 className="text-[22px] md:text-[26px] leading-[0.95]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                   Curated Just For You
                 </h2>
                 {yourVibe?.persona_summary && (
@@ -417,12 +429,12 @@ const Recommendations = () => {
                 )}
               </div>
 
-              {/* ── T2: First product (1 col, 3 rows — tall) ── */}
+              {/* R1-3 C4-5: Product 0 (tall hero — 2c×3r) */}
               {displayProducts[0] && (
-                <ProductCard product={displayProducts[0]} index={0} layoutClass="md:row-span-3" isSaved={savedItems.has(getRecommendationStableId(displayProducts[0]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[0]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[0]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[0])} />
+                <ProductCard product={displayProducts[0]} index={0} layoutClass="md:col-span-2 md:row-span-3" isSaved={savedItems.has(getRecommendationStableId(displayProducts[0]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[0]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[0]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[0])} />
               )}
 
-              {/* ── T3: Stats tile (1 col, 1 row — small square) ── */}
+              {/* R1 C6: Stats */}
               <div
                 className="rounded-xl overflow-hidden flex flex-col items-center justify-center"
                 style={{ background: "var(--swatch-teal)" }}
@@ -435,12 +447,12 @@ const Recommendations = () => {
                 </p>
               </div>
 
-              {/* ── T4: Second product (2 cols, 2 rows — wide landscape) ── */}
+              {/* R2-3 C1-3: Product 1 (wide landscape — 3c×2r) */}
               {displayProducts[1] && (
-                <ProductCard product={displayProducts[1]} index={1} layoutClass="col-span-2 md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} />
+                <ProductCard product={displayProducts[1]} index={1} layoutClass="col-span-2 md:col-span-3 md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} />
               )}
 
-              {/* ── T5: Quote tile (1 col, 2 rows) ── */}
+              {/* R2-3 C6: Quote (1c×2r) */}
               <div
                 className="md:row-span-2 rounded-xl overflow-hidden flex flex-col items-center justify-center p-3 text-center"
                 style={{ background: "#fff" }}
@@ -453,86 +465,90 @@ const Recommendations = () => {
                 </div>
               </div>
 
-              {/* ── T6: Go Two brand tile (1 col, 1 row — accent square) ── */}
+              {/* R4 C1: Vibe (1c×1r) */}
               <div
-                className="rounded-xl overflow-hidden flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
-              >
-                <span className="text-[22px]" style={{ fontFamily: "'Dancing Script', cursive", color: "#fff", fontWeight: 700 }}>go</span>
-                <span className="text-[22px] ml-1" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff", fontWeight: 700 }}>Two</span>
-              </div>
-
-              {/* ── T7: Third product (1 col, 2 rows — portrait) ── */}
-              {displayProducts[2] && (
-                <ProductCard product={displayProducts[2]} index={2} layoutClass="md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[2]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[2]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[2]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[2])} />
-              )}
-
-              {/* ── T8: Vibe tile (1 col, 1 row — persona vibe) ── */}
-              <div
-                className="rounded-xl overflow-hidden flex flex-col items-center justify-center p-3 text-center"
+                className="rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 text-center"
                 style={{ background: "linear-gradient(145deg, var(--swatch-teal) 0%, #00687a 100%)" }}
               >
-                <p className="text-[9px] uppercase tracking-[0.14em] mb-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>Your Vibe</p>
-                <p className="text-[13px] leading-[1.15] font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                <p className="text-[8px] uppercase tracking-[0.14em] mb-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>Your Vibe</p>
+                <p className="text-[12px] leading-[1.15] font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
                   {yourVibe?.persona_label || "Refined Minimalist"}
                 </p>
               </div>
 
-              {/* ── T9: Category tile (2 cols, 1 row — wide) ── */}
+              {/* R4 C2-3: Categories (2c×1r) */}
               <div
-                className="col-span-2 rounded-xl overflow-hidden flex items-center gap-3 px-4 py-3"
+                className="col-span-2 md:col-span-2 rounded-xl overflow-hidden flex items-center gap-2 px-3"
                 style={{ background: "#e8d9c9" }}
               >
-                <p className="text-[9px] uppercase tracking-[0.14em] shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>Categories</p>
+                <p className="text-[8px] uppercase tracking-[0.14em] shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>Categories</p>
                 <div className="flex flex-wrap gap-1">
                   {categoryLabels.map((label) => (
-                    <span key={label} className="text-[9px] px-2 py-0.5 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(47,95,109,0.08)" }}>{label}</span>
+                    <span key={label} className="text-[8px] px-1.5 py-0.5 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(47,95,109,0.1)" }}>{label}</span>
                   ))}
                 </div>
               </div>
 
-              {/* ── T10: Fourth product (1 col, 2 rows) ── */}
-              {displayProducts[3] && (
-                <ProductCard product={displayProducts[3]} index={3} layoutClass="md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} />
+              {/* R4 C4: Brand (1c×1r) */}
+              <div
+                className="rounded-xl overflow-hidden flex items-center justify-center"
+                style={{ background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
+              >
+                <span className="text-[20px]" style={{ fontFamily: "'Dancing Script', cursive", color: "#fff", fontWeight: 700 }}>go</span>
+                <span className="text-[20px] ml-1" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff", fontWeight: 700 }}>Two</span>
+              </div>
+
+              {/* R4-5 C5-6: Product 2 (2c×2r) */}
+              {displayProducts[2] && (
+                <ProductCard product={displayProducts[2]} index={2} layoutClass="md:col-span-2 md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[2]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[2]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[2]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[2])} />
               )}
 
-              {/* ── T11: Match tile (1 col, 1 row) ── */}
+              {/* R5-6 C1-2: Product 3 (2c×2r) */}
+              {displayProducts[3] && (
+                <ProductCard product={displayProducts[3]} index={3} layoutClass="col-span-2 md:col-span-2 md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} />
+              )}
+
+              {/* R5 C3: Match (1c×1r) */}
               <div
                 className="rounded-xl overflow-hidden flex flex-col items-center justify-center p-2"
                 style={{ background: "#fff" }}
               >
-                <p className="text-[18px] font-bold leading-tight text-center" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                <p className="text-[15px] font-bold leading-tight text-center" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                   {displayProducts[0] ? getRecommendationMatchLabel(displayProducts[0]) : "95%"}
                 </p>
-                <p className="text-[9px] uppercase tracking-[0.14em] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                <p className="text-[8px] uppercase tracking-[0.14em] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                   Top Match
                 </p>
               </div>
 
-              {/* ── T12: Tagline / CTA tile (3 cols, 1 row — fills remaining space) ── */}
-              <div
-                className="col-span-2 md:col-span-3 rounded-xl overflow-hidden flex items-center justify-between px-4 py-3"
-                style={{ background: "linear-gradient(135deg, var(--swatch-teal) 0%, #00687a 100%)" }}
-              >
-                <p className="text-[13px] leading-[1.2]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "#fff" }}>
-                  That's my <span style={{ fontFamily: "'Dancing Script', cursive" }}>go</span> Two
-                </p>
-                <p className="text-[9px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>
-                  Personalized picks, powered by you
-                </p>
-              </div>
-
-              {/* ── T13: Color swatch tile (1 col, 1 row — decorative) ── */}
+              {/* R5 C4: Color swatch (1c×1r) */}
               <div className="rounded-xl overflow-hidden flex">
                 <div className="flex-1" style={{ background: "var(--swatch-teal)" }} />
                 <div className="flex-1" style={{ background: "#00687a" }} />
                 <div className="flex-1" style={{ background: "linear-gradient(135deg, #ef8555, #eb4b3f)" }} />
               </div>
 
-              {/* ── Remaining products (5+) get alternating sizes ── */}
+              {/* R6 C3-4: Tagline (2c×1r) */}
+              <div
+                className="col-span-2 md:col-span-2 rounded-xl overflow-hidden flex items-center justify-between px-3"
+                style={{ background: "linear-gradient(135deg, var(--swatch-teal) 0%, #00687a 100%)" }}
+              >
+                <p className="text-[12px] leading-[1.2]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "#fff" }}>
+                  That's my <span style={{ fontFamily: "'Dancing Script', cursive" }}>go</span> Two
+                </p>
+                <p className="text-[8px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>
+                  Personalized picks, powered by you
+                </p>
+              </div>
+
+              {/* Remaining products (5+) — overflow below the fixed grid */}
               {displayProducts.slice(4).map((product, i) => {
                 const itemId = getRecommendationStableId(product);
-                const altLayouts = ["md:row-span-2", "", "col-span-2 md:row-span-2", "", "md:row-span-3", "col-span-2"];
+                const altLayouts = [
+                  "md:col-span-2 md:row-span-2",
+                  "md:col-span-2 md:row-span-2",
+                  "md:col-span-2 md:row-span-2",
+                ];
                 return (
                   <ProductCard
                     key={itemId}
