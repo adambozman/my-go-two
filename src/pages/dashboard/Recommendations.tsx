@@ -449,18 +449,10 @@ const Recommendations = () => {
                 </p>
               </div>
 
-              {/* quote: 1×3 — tall ad strip */}
-              <div
-                className="bento-area-quote rounded-xl overflow-hidden flex flex-col items-center justify-center p-3 text-center cursor-pointer"
-                style={{ background: "var(--swatch-sand)" }}
-              >
-                <p className="text-[18px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                  #TravelTok
-                </p>
-                <p className="text-[9px] uppercase tracking-[0.1em] mt-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Top Destinations
-                </p>
-              </div>
+              {/* quote: 1×3 — 4th product (tall strip) */}
+              {displayProducts[3] ? (
+                <ProductCard product={displayProducts[3]} index={3} layoutClass="bento-area-quote" isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} />
+              ) : <div className="bento-area-quote" />}
 
               {/* prod3: 3×2 — third product (wide) */}
               {displayProducts[2] ? (
