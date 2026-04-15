@@ -398,22 +398,19 @@ const Recommendations = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="bento-mosaic grid grid-cols-2 gap-1 md:gap-1.5"
+              className="bento-mosaic grid grid-cols-2 gap-2 md:gap-3"
             >
               {/* hero: 3×1 — page intro */}
               <div
-                className="bento-area-hero col-span-2 rounded-xl overflow-hidden flex flex-col justify-center p-4 md:p-5 relative"
-                style={{ background: "linear-gradient(135deg, var(--swatch-sand) 0%, var(--swatch-cream) 60%, #fff 100%)" }}
+                className="bento-area-hero col-span-2 card-design-sand overflow-hidden flex flex-col justify-center p-4 md:p-5"
               >
-                {/* Subtle warm glow */}
-                <div className="absolute top-0 right-0 w-2/3 h-full opacity-30 pointer-events-none" style={{ background: "radial-gradient(ellipse at top right, rgba(239,133,85,0.25), transparent 70%)" }} />
-                <p className="text-[9px] uppercase tracking-[0.15em] mb-1.5 relative" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                <p className="text-[9px] uppercase tracking-[0.15em] mb-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   For You
                 </p>
-                <h2 className="text-[20px] md:text-[24px] leading-[1.1] relative" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                <h2 className="text-[20px] md:text-[24px] leading-[1.1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                   Your recommendations
                 </h2>
-                <p className="text-[11px] leading-[1.45] max-w-[38ch] mt-1.5 relative" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                <p className="text-[11px] leading-[1.45] max-w-[38ch] mt-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                   Products chosen by our AI based on your style, preferences, and the things that make you, you.
                 </p>
               </div>
@@ -425,8 +422,7 @@ const Recommendations = () => {
 
               {/* brand: 1×1 — ad tile */}
               <div
-                className="bento-area-brand rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
-                style={{ background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
+                className="bento-area-brand card-design-coral overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
               >
                 <p className="text-[16px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
                   #BookTok
@@ -443,8 +439,7 @@ const Recommendations = () => {
 
               {/* stats: 1×1 — ad tile */}
               <div
-                className="bento-area-stats rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
-                style={{ background: "var(--swatch-teal)" }}
+                className="bento-area-stats card-design-teal overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
               >
                 <p className="text-[14px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
                   #CleanGirl
@@ -466,8 +461,7 @@ const Recommendations = () => {
 
               {/* prod4 area: 6×1 — rotating quote bar */}
               <div
-                className="bento-area-prod4 col-span-2 rounded-xl overflow-hidden flex items-center justify-center px-6 text-center"
-                style={{ background: "#fff" }}
+                className="bento-area-prod4 col-span-2 card-design-sand overflow-hidden flex items-center justify-center px-6 text-center"
               >
                 <p className="text-[14px] md:text-[16px] leading-[1.3]" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontWeight: 600, color: "var(--swatch-teal)" }}>
                   "{INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].text}"
@@ -559,68 +553,51 @@ function ProductCard({
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.04, type: "spring", stiffness: 260, damping: 24 }}
-      className={`group/card relative rounded-xl overflow-hidden cursor-pointer min-h-[90px] ${layoutClass}`}
+      className={`group/card card-design-sand relative overflow-hidden cursor-pointer flex flex-col min-h-[90px] ${layoutClass}`}
       onClick={() => {
         if (productDestination) window.open(productDestination, "_blank", "noopener,noreferrer");
       }}
     >
-      {/* Full-bleed image or typographic fallback */}
-      {showProductImage ? (
-        <img
-          src={productImage}
-          alt={product.name}
-          className="absolute inset-0 h-full w-full object-cover"
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          onError={() => setImageFailed(true)}
-        />
-      ) : (
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(145deg, var(--swatch-sand) 0%, var(--swatch-cream) 100%)" }}
-        />
-      )}
-
-      {/* Bottom gradient scrim + text overlay */}
-      <div
-        className="absolute inset-0 flex flex-col justify-end"
-        style={{
-          background: showProductImage
-            ? "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 40%, transparent 65%)"
-            : "none",
-        }}
-      >
-        <div className="p-3 md:p-4">
-          <p
-            className="text-[10px] uppercase tracking-[0.08em] mb-0.5"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              color: showProductImage ? "rgba(255,255,255,0.75)" : "var(--swatch-cedar-grove)",
-            }}
-          >
+      {/* Product image — fills available space */}
+      <div className="flex-1 relative overflow-hidden flex items-center justify-center p-3" style={{ minHeight: 0 }}>
+        {showProductImage ? (
+          <img
+            src={productImage}
+            alt={product.name}
+            className="max-h-full max-w-full object-contain"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={() => setImageFailed(true)}
+          />
+        ) : (
+          <p className="text-[28px] leading-[1] text-center" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
             {product.brand}
           </p>
-          <h3
-            className="text-[15px] md:text-[17px] leading-[1.1] font-semibold"
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              color: showProductImage ? "#fff" : "var(--swatch-teal)",
-            }}
+        )}
+      </div>
+
+      {/* Card info footer */}
+      <div className="px-3 pb-3 md:px-4 md:pb-4">
+        <p
+          className="text-[10px] uppercase tracking-[0.08em] mb-0.5"
+          style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
+        >
+          {product.brand}
+        </p>
+        <h3
+          className="text-[14px] md:text-[16px] leading-[1.15] font-semibold"
+          style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}
+        >
+          {product.name}
+        </h3>
+        {productDisplayPrice && (
+          <p
+            className="text-[11px] mt-0.5"
+            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}
           >
-            {product.name}
-          </h3>
-          {productDisplayPrice && (
-            <p
-              className="text-[11px] mt-1"
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                color: showProductImage ? "rgba(255,255,255,0.8)" : "var(--swatch-antique-coin)",
-              }}
-            >
-              {productDisplayPrice}
-            </p>
-          )}
-        </div>
+            {productDisplayPrice}
+          </p>
+        )}
       </div>
 
       {/* Hover actions — appear on mouseover */}
