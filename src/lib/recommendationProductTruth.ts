@@ -77,6 +77,12 @@ export const hasTrustedRecommendationProductImage = (product: RecommendationProd
   if (imageStatus && imageStatus !== "verified") return false;
   if (product.source_kind === "specific-product" && !product.exact_match_confirmed) return false;
 
+  // Products from the verified product bank have been manually curated — trust them
+  // without the semantic URL check (many CDN URLs use opaque hashes).
+  if (bankState === "exact_verified" && imageStatus === "verified" && product.exact_match_confirmed) {
+    return true;
+  }
+
   const semantic = scoreRecommendationProductImageSemanticFit(product);
   return semantic.totalMatches >= 2 && (semantic.brandMatches > 0 || semantic.productMatches >= 2);
 };

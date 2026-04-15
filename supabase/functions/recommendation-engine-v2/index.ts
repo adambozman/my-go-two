@@ -581,7 +581,8 @@ const toPopularFallbackResponseProduct = ({
       match_reasons: recommendationMatch.reasons,
       resolver_source: seed.resolver_source ?? seed.source_label ?? "trend-candidate",
       bank_source: seed.source_label ?? "trend-candidate",
-      image_status: "approved-trend-image",
+      bank_state: seed.bank_state ?? undefined,
+      image_status: seed.image_status ?? "approved-trend-image",
     },
   } satisfies RecommendationResponseProduct;
 };
