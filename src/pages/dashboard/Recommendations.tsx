@@ -448,7 +448,7 @@ const Recommendations = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.25 }}
-                className="grid gap-4 lg:grid-cols-2"
+                className="grid gap-3 grid-cols-1 md:grid-cols-12 md:auto-rows-[280px]"
               >
                 {displayProducts.map((product, i) => {
                   const itemId = getRecommendationStableId(product);
@@ -567,10 +567,15 @@ function ProductCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, type: "spring", stiffness: 260, damping: 24 }}
-      className="relative"
+      className={`relative ${
+        index % 4 === 0 ? "md:col-span-7 md:row-span-2" :
+        index % 4 === 1 ? "md:col-span-5" :
+        index % 4 === 2 ? "md:col-span-5" :
+        "md:col-span-7"
+      }`}
     >
       <Card variant="sand" className="relative flex h-full flex-col overflow-hidden">
-        <div className="relative h-[200px] overflow-hidden sm:h-[220px]">
+        <div className="relative flex-1 min-h-[140px] overflow-hidden">
           {showProductImage ? (
             <img
               src={productImage}
@@ -593,32 +598,16 @@ function ProductCard({
           )}
         </div>
 
-        <div className="p-5 pt-4 flex flex-col gap-3">
-          <div className="min-w-0">
-            <p className="surface-meta">
-              {product.brand}
-            </p>
-            <h3 className="surface-heading-md mt-1">
-              {product.name}
-            </h3>
+        <div className="p-4 flex flex-col gap-2 shrink-0">
+          <div className="flex items-baseline justify-between gap-2 min-w-0">
+            <div className="min-w-0">
+              <p className="surface-meta text-[11px]">{product.brand}</p>
+              <h3 className="surface-heading-md mt-0.5 text-[14px] leading-tight">{product.name}</h3>
+            </div>
+            <p className="surface-meta text-[12px] shrink-0">{productDisplayPrice}</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="surface-meta">
-              {productMatchLabel}
-            </p>
-            <p className="surface-meta">{productDisplayPrice}</p>
-          </div>
-
-          <p className="surface-heading-md leading-[1.18]">
-            {product.hook}
-          </p>
-
-          <p className="surface-body leading-relaxed">
-            {product.why}
-          </p>
-
-          <div className="mt-auto pt-1 flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             {productDestination && productActionLabel ? (
               <Button
                 onClick={() => {

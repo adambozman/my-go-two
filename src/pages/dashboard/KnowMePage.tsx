@@ -86,18 +86,18 @@ const AI_FEEDBACK = [
 ];
 
 const THIS_OR_THAT_DASHBOARD_LAYOUT = [
-  "lg:col-span-3",
-  "lg:col-span-3",
-  "lg:col-span-3",
-  "lg:col-span-3",
-  "lg:col-span-3",
-  "lg:col-span-3",
-  "lg:col-span-3",
-  "lg:col-span-3",
-  "lg:col-span-3",
-  "lg:col-span-3",
-  "lg:col-span-3",
-  "lg:col-span-3",
+  "lg:col-span-7",
+  "lg:col-span-5",
+  "lg:col-span-5",
+  "lg:col-span-7",
+  "lg:col-span-4",
+  "lg:col-span-8",
+  "lg:col-span-8",
+  "lg:col-span-4",
+  "lg:col-span-7",
+  "lg:col-span-5",
+  "lg:col-span-5",
+  "lg:col-span-7",
 ] as const;
 
 const STYLE_CHAT_SUGGESTIONS = [
@@ -269,7 +269,7 @@ const KnowMePage = () => {
 
     return [
       ...categories.slice(0, featureIndex),
-      { type: "feature" as const, layoutClass: "lg:col-span-3" },
+      { type: "feature" as const, layoutClass: "lg:col-span-4" },
       ...categories.slice(featureIndex),
     ];
   }, [thisOrThatCategories]);
