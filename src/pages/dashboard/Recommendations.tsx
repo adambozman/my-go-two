@@ -403,16 +403,16 @@ const Recommendations = () => {
               {/* hero: 3×1 — page intro */}
               <div
                 className="bento-area-hero col-span-2 overflow-hidden flex flex-col justify-center p-4 md:p-5"
-                style={{ borderRadius: 20, background: "linear-gradient(140deg, rgba(255,255,255,0.94) 0%, rgba(250,244,236,0.9) 42%, rgba(239,224,207,0.8) 100%)" }}
+                style={{ borderRadius: 20, background: "var(--swatch-teal)" }}
               >
-                <p className="text-[9px] uppercase tracking-[0.15em] mb-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                <p className="text-[9px] uppercase tracking-[0.15em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)" }}>
                   For You
                 </p>
-                <h2 className="text-[20px] md:text-[24px] leading-[1.1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                <h2 className="text-[22px] md:text-[28px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
                   Your recommendations
                 </h2>
-                <p className="text-[11px] leading-[1.45] max-w-[38ch] mt-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Products chosen by our AI based on your style, preferences, and the things that make you, you.
+                <p className="text-[11px] leading-[1.45] mt-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                  Products our AI picked for you based on your style, preferences, and the things that make you, you.
                 </p>
               </div>
 
@@ -524,6 +524,26 @@ const Recommendations = () => {
   );
 };
 
+/*
+  ProductCard — rebuilt from real research:
+  
+  Sources studied:
+  - Apple "Get to know iPhone" bento: text top 40%, image bottom 60% on solid bg
+  - Bella Kitchenware: all product tiles use uniform #F5F0EA warm linen bg
+  - Nike Shop: product on light gray, text below, zero dead space
+  - Dribbble top shots (Giorgi, Syed Ali Abbas): off-white card (#F5F5F5) absorbs
+    white-bg catalog photos naturally — product shown via object-contain
+  - Couplet Coffee: bold colored bg per tile, product centered, price badge
+  - SSENSE / Mr Porter: image-dominant, text strip below, no borders
+  - Framer Lumier template: full-bleed image, dark gradient overlay at bottom
+  
+  Pattern chosen for Go Two:
+  - Uniform warm sand bg on every product tile (brand-consistent, solves white-bg)
+  - Product image centered via object-contain (full product visible, sand fills gaps)
+  - Text strip pinned to bottom with sand-to-transparent gradient (not black)
+  - Minimal: brand label + name + price. No separate footer zone = no dead space.
+  - 20px border-radius matching existing card tokens
+*/
 function ProductCard({
   product,
   index,
@@ -549,80 +569,99 @@ function ProductCard({
   const [imageFailed, setImageFailed] = useState(false);
   const showProductImage = Boolean(productImage) && !imageFailed;
 
-  /* Bento tile: image fills the entire card, text overlays at bottom.
-     No separate footer — everything is inside the tile.  Actions on hover. */
+  // Uniform warm sand bg — matches Bella Kitchenware #F5F0EA / Go Two sand palette
+  const CARD_BG = "#efe0cf";
+
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.04, type: "spring", stiffness: 260, damping: 24 }}
-      className={`group/card relative overflow-hidden cursor-pointer flex flex-col ${layoutClass}`}
-      style={{ borderRadius: 20 }}
+      className={`group/card relative overflow-hidden cursor-pointer ${layoutClass}`}
+      style={{ borderRadius: 20, background: CARD_BG }}
       onClick={() => {
         if (productDestination) window.open(productDestination, "_blank", "noopener,noreferrer");
       }}
     >
-      {/* Image zone — white bg matches product photo bg, product fills aggressively */}
-      <div className="relative flex-[3] flex items-center justify-center overflow-hidden" style={{ minHeight: 0, background: "#f5f5f5", borderRadius: "20px 20px 0 0" }}>
-        {showProductImage ? (
-          <img
-            src={productImage}
-            alt={product.name}
-            className="w-full h-full object-contain"
-            style={{ padding: "4%" }}
-            loading="lazy"
-            referrerPolicy="no-referrer"
-            onError={() => setImageFailed(true)}
-          />
-        ) : (
+      {/* Product image — object-contain on sand bg.
+          White-bg catalog photos blend into the warm sand naturally.
+          Product is always fully visible, never cropped.
+          Sand bg fills any gaps = zero dead space. */}
+      {showProductImage ? (
+        <img
+          src={productImage}
+          alt={product.name}
+          className="absolute inset-0 w-full h-full"
+          style={{
+            objectFit: "contain",
+            objectPosition: "center 40%",
+            padding: "12px 12px 48px 12px",
+          }}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        /* No image fallback — brand name on sand bg */
+        <div className="absolute inset-0 flex items-center justify-center" style={{ paddingBottom: 40 }}>
           <p className="text-[28px] leading-[1] text-center" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
             {product.brand}
           </p>
-        )}
-
-        {/* Hover actions — top corners */}
-        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-10">
-          <button
-            onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
-            className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
-            style={{ background: "rgba(255,255,255,0.85)" }}
-          >
-            <Bookmark className="h-3.5 w-3.5" style={{ color: isSaved ? "var(--swatch-cedar-grove)" : "var(--swatch-teal)" }} />
-          </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); onShare(); }}
-            className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
-            style={{ background: "rgba(255,255,255,0.85)" }}
-            disabled={shareLoading}
-          >
-            {shareLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" style={{ color: "var(--swatch-teal)" }} />}
-          </button>
         </div>
-      </div>
+      )}
 
-      {/* Info footer */}
-      <div className="px-3 pb-3 pt-2 md:px-4 md:pb-4 flex flex-col justify-center" style={{ background: "#EDE8E0" }}>
+      {/* Bottom text strip — gradient from sand, not from black.
+          This keeps text legible without the harsh dark scrim that
+          clashes with white-bg product photos.
+          Matches: Apple product tiles (solid color zone for text),
+          Bella (text below product on warm bg). */}
+      <div
+        className="absolute bottom-0 left-0 right-0 flex flex-col justify-end"
+        style={{
+          background: `linear-gradient(to top, ${CARD_BG} 0%, ${CARD_BG}ee 40%, ${CARD_BG}00 100%)`,
+          padding: "32px 14px 12px 14px",
+        }}
+      >
         <p
-          className="text-[9px] uppercase tracking-[0.1em]"
-          style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
+          className="text-[9px] uppercase tracking-[0.12em]"
+          style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", opacity: 0.7 }}
         >
           {product.brand}
         </p>
         <h3
-          className="text-[14px] md:text-[16px] leading-[1.15] font-semibold mt-0.5"
+          className="text-[15px] md:text-[17px] leading-[1.1] font-semibold"
           style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}
         >
           {product.name}
         </h3>
         {productDisplayPrice && (
           <p
-            className="text-[13px] font-bold mt-0.5"
-            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}
+            className="text-[12px] font-bold mt-0.5"
+            style={{ fontFamily: "'Jost', sans-serif", color: "#2f5f6d" }}
           >
             {productDisplayPrice}
           </p>
         )}
+      </div>
+
+      {/* Hover actions — top-right, subtle glass pills */}
+      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-10">
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
+          className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
+          style={{ background: "rgba(255,255,255,0.85)" }}
+        >
+          <Bookmark className="h-3.5 w-3.5" style={{ color: isSaved ? "var(--swatch-cedar-grove)" : "var(--swatch-teal)" }} />
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onShare(); }}
+          className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
+          style={{ background: "rgba(255,255,255,0.85)" }}
+          disabled={shareLoading}
+        >
+          {shareLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" style={{ color: "var(--swatch-teal)" }} />}
+        </button>
       </div>
     </motion.div>
   );
