@@ -446,16 +446,17 @@ const Recommendations = () => {
                 <ProductCard product={displayProducts[0]} index={0} layoutClass="bento-area-prod1" isSaved={savedItems.has(getRecommendationStableId(displayProducts[0]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[0]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[0]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[0])} />
               ) : <div className="bento-area-prod1" />}
 
-              {/* brand: 1×1 — "That's my go Two" accent */}
+              {/* brand: 1×1 — ad tile */}
               <div
-                className="bento-area-brand rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 text-center"
+                className="bento-area-brand rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
                 style={{ background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
               >
-                <p className="text-[10px] leading-[1.3]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
-                  That's my
+                <p className="text-[16px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                  #BookTok
                 </p>
-                <span className="text-[18px]" style={{ fontFamily: "'Dancing Script', cursive", color: "#fff", fontWeight: 700 }}>go</span>
-                <span className="text-[18px] -mt-1" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff", fontWeight: 700 }}>Two</span>
+                <p className="text-[8px] uppercase tracking-[0.1em] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                  Trending Reads
+                </p>
               </div>
 
               {/* prod2: 2×3 — second product (tall) */}
@@ -463,30 +464,30 @@ const Recommendations = () => {
                 <ProductCard product={displayProducts[1]} index={1} layoutClass="bento-area-prod2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} />
               ) : <div className="bento-area-prod2" />}
 
-              {/* stats: 1×1 — curated this week */}
+              {/* stats: 1×1 — ad tile */}
               <div
-                className="bento-area-stats rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 text-center"
+                className="bento-area-stats rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
                 style={{ background: "var(--swatch-teal)" }}
               >
-                <p className="text-[26px] font-bold leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
-                  {displayProducts.length}
+                <p className="text-[14px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                  #CleanGirl
                 </p>
-                <p className="text-[8px] uppercase tracking-[0.12em] mt-0.5 leading-tight" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
-                  Curated<br />This Week
+                <p className="text-[8px] uppercase tracking-[0.1em] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                  Aesthetic
                 </p>
               </div>
 
-              {/* quote: 1×3 — tall quote strip */}
+              {/* quote: 1×3 — tall ad strip */}
               <div
-                className="bento-area-quote rounded-xl overflow-hidden flex flex-col items-center justify-center p-3 text-center"
-                style={{ background: "#fff" }}
+                className="bento-area-quote rounded-xl overflow-hidden flex flex-col items-center justify-center p-3 text-center cursor-pointer"
+                style={{ background: "var(--swatch-sand)" }}
               >
-                <p className="leading-[1.2] max-w-[18ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 14, color: "var(--swatch-teal)" }}>
-                  "{activeQuote.text}"
+                <p className="text-[18px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                  #TravelTok
                 </p>
-                <div className="text-[9px] mt-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  {activeQuote.author === GOTWO_LOGO_SENTINEL ? <GoTwoInline /> : activeQuote.author}
-                </div>
+                <p className="text-[9px] uppercase tracking-[0.1em] mt-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Top Destinations
+                </p>
               </div>
 
               {/* prod3: 3×2 — third product (wide) */}
@@ -507,22 +508,7 @@ const Recommendations = () => {
                 </p>
               </div>
 
-              {/* Remaining products (4+) — below the main mosaic */}
-              {displayProducts.slice(3).map((product, i) => {
-                const itemId = getRecommendationStableId(product);
-                return (
-                  <ProductCard
-                    key={itemId}
-                    product={product}
-                    index={i + 4}
-                    layoutClass="col-span-2 md:col-span-2"
-                    isSaved={savedItems.has(itemId)}
-                    shareLoading={sharingItems.has(itemId)}
-                    onToggleSave={() => subscribed ? void toggleSave(product) : toast("Upgrade to save picks")}
-                    onShare={() => void handleShare(product)}
-                  />
-                );
-              })}
+              {/* No overflow below the mosaic — the grid ends at prod4 */}
             </motion.div>
 
             {subscribed && totalPages > 1 && (
