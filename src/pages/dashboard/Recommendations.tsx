@@ -388,10 +388,10 @@ const Recommendations = () => {
               className="grid grid-cols-2 gap-1 md:grid-cols-4 md:auto-rows-[90px] md:gap-1"
               style={{ gridAutoFlow: "dense" }}
             >
-              {/* ── T1: Hero / title tile  (2 cols, 2 rows — compact) ── */}
+              {/* ── T1: Hero / title tile  (2 cols, 1 row on mobile, 2 rows on md) ── */}
               <div
                 className="col-span-2 row-span-1 md:row-span-2 rounded-xl overflow-hidden relative flex flex-col justify-center p-4 md:p-5"
-                style={{ background: "linear-gradient(145deg, #f5e9dc 0%, #efe0cf 100%)" }}
+                style={{ background: "#fff" }}
               >
                 <p className="text-[9px] uppercase tracking-[0.14em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   <GoTwoInline /> / For You
@@ -443,7 +443,7 @@ const Recommendations = () => {
               {/* ── T5: Quote tile (1 col, 2 rows) ── */}
               <div
                 className="md:row-span-2 rounded-xl overflow-hidden flex flex-col items-center justify-center p-3 text-center"
-                style={{ background: "linear-gradient(145deg, #f5e9dc 0%, #efe0cf 100%)" }}
+                style={{ background: "#fff" }}
               >
                 <p className="leading-[1.2] max-w-[18ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 14, color: "var(--swatch-teal)" }}>
                   "{activeQuote.text}"
@@ -496,12 +496,12 @@ const Recommendations = () => {
                 <ProductCard product={displayProducts[3]} index={3} layoutClass="md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} />
               )}
 
-              {/* ── T11: Match % tile (1 col, 1 row) ── */}
+              {/* ── T11: Match tile (1 col, 1 row) ── */}
               <div
-                className="rounded-xl overflow-hidden flex flex-col items-center justify-center"
-                style={{ background: "linear-gradient(145deg, #f5e9dc 0%, #efe0cf 100%)" }}
+                className="rounded-xl overflow-hidden flex flex-col items-center justify-center p-2"
+                style={{ background: "#fff" }}
               >
-                <p className="text-[26px] font-bold leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                <p className="text-[18px] font-bold leading-tight text-center" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
                   {displayProducts[0] ? getRecommendationMatchLabel(displayProducts[0]) : "95%"}
                 </p>
                 <p className="text-[9px] uppercase tracking-[0.14em] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
