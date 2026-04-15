@@ -380,30 +380,47 @@ const Recommendations = () => {
         ) : displayProducts.length > 0 ? (
           <>
             {/*
-              6-col explicit grid.  Every row sums to exactly 6.
-              Row heights: auto-rows-[110px] on md.
-              Tiles placed with explicit grid-column / grid-row so there
-              are ZERO empty cells — the grid forms a perfect rectangle.
+              MOSAIC-FIRST: 8 tiles, grid-template-areas, perfect rectangle.
+              6 cols × 5 rows.  Every cell filled.  All tiles unique shape.
 
-              GRID MAP (md, 6-col, 7 rows):
-              R1: [Hero 3c×1r]        [Product0 2c×3r] [Stats 1c×1r]
-              R2: [Product1 3c×2r]                      [Quote 1c×2r]
-              R3:                                        
-              R4: [Vibe 1c×1r][Categories 2c×1r][Brand 1c×1r][Product2 2c×2r]
-              R5: [Product3 2c×2r]   [Match 1c×1r][Swatch 1c×1r]
-              R6:                    [Tagline 2c×1r]                     
+              hero(3×1)  prod1(2×2)  brand(1×1)
+              prod2(2×3) stats(1×1)  quote(1×3)
+              prod3(3×2)             prod4(6×1)
             */}
+            <style dangerouslySetInnerHTML={{ __html: `
+              @media (min-width: 768px) {
+                .bento-mosaic {
+                  grid-template-columns: repeat(6, 1fr) !important;
+                  grid-template-rows: repeat(5, 120px) !important;
+                  grid-template-areas:
+                    "hero  hero  hero  prod1 prod1 brand"
+                    "prod2 prod2 stats prod1 prod1 quote"
+                    "prod2 prod2 prod3 prod3 prod3 quote"
+                    "prod2 prod2 prod3 prod3 prod3 quote"
+                    "prod4 prod4 prod4 prod4 prod4 prod4" !important;
+                }
+                .bento-mosaic [data-area] { grid-area: attr(data-area); }
+                .bento-area-hero  { grid-area: hero !important; }
+                .bento-area-prod1 { grid-area: prod1 !important; }
+                .bento-area-brand { grid-area: brand !important; }
+                .bento-area-prod2 { grid-area: prod2 !important; }
+                .bento-area-stats { grid-area: stats !important; }
+                .bento-area-quote { grid-area: quote !important; }
+                .bento-area-prod3 { grid-area: prod3 !important; }
+                .bento-area-prod4 { grid-area: prod4 !important; }
+              }
+            `}} />
             <motion.div
               key={`${activePillar}-${currentPage}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-2 gap-1 md:grid-cols-6 md:auto-rows-[110px] md:gap-1"
+              className="bento-mosaic grid grid-cols-2 gap-1 md:gap-1.5"
             >
-              {/* R1 C1-3: Hero title */}
+              {/* hero: 3×1 — title card */}
               <div
-                className="col-span-2 md:col-span-3 rounded-xl overflow-hidden flex flex-col justify-center p-4 md:p-5"
-                style={{ background: "#fff", gridRow: "span 1" }}
+                className="bento-area-hero col-span-2 rounded-xl overflow-hidden flex flex-col justify-center p-4 md:p-5"
+                style={{ background: "#fff" }}
               >
                 <p className="text-[9px] uppercase tracking-[0.14em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   <GoTwoInline /> / For You
@@ -429,32 +446,41 @@ const Recommendations = () => {
                 )}
               </div>
 
-              {/* R1-3 C4-5: Product 0 (tall hero — 2c×3r) */}
-              {displayProducts[0] && (
-                <ProductCard product={displayProducts[0]} index={0} layoutClass="md:col-span-2 md:row-span-3" isSaved={savedItems.has(getRecommendationStableId(displayProducts[0]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[0]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[0]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[0])} />
-              )}
+              {/* prod1: 2×2 — first product */}
+              {displayProducts[0] ? (
+                <ProductCard product={displayProducts[0]} index={0} layoutClass="bento-area-prod1" isSaved={savedItems.has(getRecommendationStableId(displayProducts[0]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[0]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[0]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[0])} />
+              ) : <div className="bento-area-prod1" />}
 
-              {/* R1 C6: Stats */}
+              {/* brand: 1×1 — go Two coral accent */}
               <div
-                className="rounded-xl overflow-hidden flex flex-col items-center justify-center"
+                className="bento-area-brand rounded-xl overflow-hidden flex items-center justify-center"
+                style={{ background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
+              >
+                <span className="text-[20px]" style={{ fontFamily: "'Dancing Script', cursive", color: "#fff", fontWeight: 700 }}>go</span>
+                <span className="text-[20px] ml-1" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff", fontWeight: 700 }}>Two</span>
+              </div>
+
+              {/* prod2: 2×3 — second product (tall) */}
+              {displayProducts[1] ? (
+                <ProductCard product={displayProducts[1]} index={1} layoutClass="bento-area-prod2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} />
+              ) : <div className="bento-area-prod2" />}
+
+              {/* stats: 1×1 — picks count */}
+              <div
+                className="bento-area-stats rounded-xl overflow-hidden flex flex-col items-center justify-center"
                 style={{ background: "var(--swatch-teal)" }}
               >
                 <p className="text-[28px] font-bold leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
                   {displayProducts.length}
                 </p>
                 <p className="text-[9px] uppercase tracking-[0.14em] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
-                  Picks This Week
+                  Picks
                 </p>
               </div>
 
-              {/* R2-3 C1-3: Product 1 (wide landscape — 3c×2r) */}
-              {displayProducts[1] && (
-                <ProductCard product={displayProducts[1]} index={1} layoutClass="col-span-2 md:col-span-3 md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} />
-              )}
-
-              {/* R2-3 C6: Quote (1c×2r) */}
+              {/* quote: 1×3 — tall quote strip */}
               <div
-                className="md:row-span-2 rounded-xl overflow-hidden flex flex-col items-center justify-center p-3 text-center"
+                className="bento-area-quote rounded-xl overflow-hidden flex flex-col items-center justify-center p-3 text-center"
                 style={{ background: "#fff" }}
               >
                 <p className="leading-[1.2] max-w-[18ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 14, color: "var(--swatch-teal)" }}>
@@ -465,96 +491,25 @@ const Recommendations = () => {
                 </div>
               </div>
 
-              {/* R4 C1: Vibe (1c×1r) */}
-              <div
-                className="rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 text-center"
-                style={{ background: "linear-gradient(145deg, var(--swatch-teal) 0%, #00687a 100%)" }}
-              >
-                <p className="text-[8px] uppercase tracking-[0.14em] mb-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>Your Vibe</p>
-                <p className="text-[12px] leading-[1.15] font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
-                  {yourVibe?.persona_label || "Refined Minimalist"}
-                </p>
-              </div>
+              {/* prod3: 3×2 — third product (wide) */}
+              {displayProducts[2] ? (
+                <ProductCard product={displayProducts[2]} index={2} layoutClass="col-span-2 bento-area-prod3" isSaved={savedItems.has(getRecommendationStableId(displayProducts[2]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[2]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[2]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[2])} />
+              ) : <div className="bento-area-prod3" />}
 
-              {/* R4 C2-3: Categories (2c×1r) */}
-              <div
-                className="col-span-2 md:col-span-2 rounded-xl overflow-hidden flex items-center gap-2 px-3"
-                style={{ background: "#e8d9c9" }}
-              >
-                <p className="text-[8px] uppercase tracking-[0.14em] shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>Categories</p>
-                <div className="flex flex-wrap gap-1">
-                  {categoryLabels.map((label) => (
-                    <span key={label} className="text-[8px] px-1.5 py-0.5 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(47,95,109,0.1)" }}>{label}</span>
-                  ))}
-                </div>
-              </div>
+              {/* prod4: 6×1 — fourth product (full-width banner) */}
+              {displayProducts[3] ? (
+                <ProductCard product={displayProducts[3]} index={3} layoutClass="col-span-2 bento-area-prod4" isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} />
+              ) : <div className="bento-area-prod4" />}
 
-              {/* R4 C4: Brand (1c×1r) */}
-              <div
-                className="rounded-xl overflow-hidden flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
-              >
-                <span className="text-[20px]" style={{ fontFamily: "'Dancing Script', cursive", color: "#fff", fontWeight: 700 }}>go</span>
-                <span className="text-[20px] ml-1" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff", fontWeight: 700 }}>Two</span>
-              </div>
-
-              {/* R4-5 C5-6: Product 2 (2c×2r) */}
-              {displayProducts[2] && (
-                <ProductCard product={displayProducts[2]} index={2} layoutClass="md:col-span-2 md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[2]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[2]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[2]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[2])} />
-              )}
-
-              {/* R5-6 C1-2: Product 3 (2c×2r) */}
-              {displayProducts[3] && (
-                <ProductCard product={displayProducts[3]} index={3} layoutClass="col-span-2 md:col-span-2 md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} />
-              )}
-
-              {/* R5 C3: Match (1c×1r) */}
-              <div
-                className="rounded-xl overflow-hidden flex flex-col items-center justify-center p-2"
-                style={{ background: "#fff" }}
-              >
-                <p className="text-[15px] font-bold leading-tight text-center" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
-                  {displayProducts[0] ? getRecommendationMatchLabel(displayProducts[0]) : "95%"}
-                </p>
-                <p className="text-[8px] uppercase tracking-[0.14em] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Top Match
-                </p>
-              </div>
-
-              {/* R5 C4: Color swatch (1c×1r) */}
-              <div className="rounded-xl overflow-hidden flex">
-                <div className="flex-1" style={{ background: "var(--swatch-teal)" }} />
-                <div className="flex-1" style={{ background: "#00687a" }} />
-                <div className="flex-1" style={{ background: "linear-gradient(135deg, #ef8555, #eb4b3f)" }} />
-              </div>
-
-              {/* R6 C3-4: Tagline (2c×1r) */}
-              <div
-                className="col-span-2 md:col-span-2 rounded-xl overflow-hidden flex items-center justify-between px-3"
-                style={{ background: "linear-gradient(135deg, var(--swatch-teal) 0%, #00687a 100%)" }}
-              >
-                <p className="text-[12px] leading-[1.2]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "#fff" }}>
-                  That's my <span style={{ fontFamily: "'Dancing Script', cursive" }}>go</span> Two
-                </p>
-                <p className="text-[8px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>
-                  Personalized picks, powered by you
-                </p>
-              </div>
-
-              {/* Remaining products (5+) — overflow below the fixed grid */}
+              {/* Remaining products (5+) — 2×2 tiles below the main mosaic */}
               {displayProducts.slice(4).map((product, i) => {
                 const itemId = getRecommendationStableId(product);
-                const altLayouts = [
-                  "md:col-span-2 md:row-span-2",
-                  "md:col-span-2 md:row-span-2",
-                  "md:col-span-2 md:row-span-2",
-                ];
                 return (
                   <ProductCard
                     key={itemId}
                     product={product}
                     index={i + 4}
-                    layoutClass={altLayouts[i % altLayouts.length]}
+                    layoutClass="col-span-2 md:col-span-2"
                     isSaved={savedItems.has(itemId)}
                     shareLoading={sharingItems.has(itemId)}
                     onToggleSave={() => subscribed ? void toggleSave(product) : toast("Upgrade to save picks")}
