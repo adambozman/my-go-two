@@ -623,20 +623,6 @@ function ProductCard({
               {productDisplayPrice}
             </p>
           )}
-          {productDestination && productActionLabel && (
-            <span
-              className="inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.1em] mt-1.5 px-2 py-0.5 rounded-full"
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                color: showProductImage ? "#fff" : "var(--swatch-teal)",
-                background: showProductImage ? "rgba(255,255,255,0.15)" : "rgba(47,95,109,0.1)",
-                backdropFilter: "blur(4px)",
-              }}
-            >
-              {productActionLabel}
-              <ExternalLink className="w-2.5 h-2.5" />
-            </span>
-          )}
         </div>
       </div>
 
