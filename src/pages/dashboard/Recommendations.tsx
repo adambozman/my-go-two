@@ -29,7 +29,7 @@ import {
 } from "@/lib/recommendationCategories";
 import GoTwoInline from "@/components/GoTwoInline";
 import { useRotatingQuote } from "@/hooks/useRotatingQuote";
-import { GOTWO_LOGO_SENTINEL } from "@/lib/quotes";
+import { GOTWO_LOGO_SENTINEL, INSPIRATIONAL_QUOTES } from "@/lib/quotes";
 
 const RECOMMENDATION_V2_VERSION_PREFIX = "recommendation-engine-v2";
 
@@ -67,7 +67,7 @@ const Recommendations = () => {
   const { knowledgeDerivations } = useUserProfile();
   const { subscribed, subscriptionLoading, user, session } = useAuth();
   const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
-  const { quote: activeQuote } = useRotatingQuote();
+  const { index: quoteIndex, quote: activeQuote } = useRotatingQuote();
   const latestRequestIdRef = useRef(0);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -339,23 +339,6 @@ const Recommendations = () => {
   return (
     <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
       <div className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
-        {/* ── Category pills ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05, type: "spring", stiffness: 260, damping: 24 }}
-          className="flex gap-2 flex-wrap mb-3"
-        >
-          {pillars.map(({ key, label }) => {
-            const isActive = activePillar === key;
-            return (
-              <button key={key} onClick={() => setActivePillar(key)} type="button">
-                <Pill variant={isActive ? "active" : "default"}>{label}</Pill>
-              </button>
-            );
-          })}
-        </motion.div>
-
         {loadErrorMessage && hasLoadedProducts && (
           <Card variant="sand" className="border border-amber-200/80 bg-amber-50/70 p-4 mb-3">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -417,28 +400,17 @@ const Recommendations = () => {
               transition={{ duration: 0.3 }}
               className="bento-mosaic grid grid-cols-2 gap-1 md:gap-1.5"
             >
-              {/* hero: 3×1 — page explanation */}
+              {/* hero: 3×1 — curated intro with personality */}
               <div
                 className="bento-area-hero col-span-2 rounded-xl overflow-hidden flex flex-col justify-center p-4 md:p-5"
-                style={{ background: "#fff" }}
+                style={{ background: "linear-gradient(135deg, var(--swatch-teal) 0%, #00687a 100%)" }}
               >
-                <h2 className="text-[20px] md:text-[24px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                  Your Recommendations
-                </h2>
-                <p className="text-[11px] leading-snug max-w-[42ch] mt-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Your personal recommendation page. Our specially designed AI has curated these picks based on everything it knows about you.
+                <p className="text-[9px] uppercase tracking-[0.15em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>
+                  Curated for you
                 </p>
-                {subscribed && (
-                  <button
-                    onClick={() => fetchProducts(true)}
-                    disabled={loading}
-                    className="mt-2 self-start flex items-center gap-1 text-[10px] uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
-                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(47,95,109,0.08)" }}
-                  >
-                    <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} />
-                    {loading ? "Loading" : "Refresh"}
-                  </button>
-                )}
+                <h2 className="text-[22px] md:text-[28px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                  Picked by AI.<br />Made for you.
+                </h2>
               </div>
 
               {/* prod1: 2×2 — first product */}
@@ -495,16 +467,16 @@ const Recommendations = () => {
                 <ProductCard product={displayProducts[2]} index={2} layoutClass="col-span-2 bento-area-prod3" isSaved={savedItems.has(getRecommendationStableId(displayProducts[2]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[2]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[2]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[2])} />
               ) : <div className="bento-area-prod3" />}
 
-              {/* prod4 area: 6×1 — quote bar (not a product) */}
+              {/* prod4 area: 6×1 — rotating quote bar */}
               <div
                 className="bento-area-prod4 col-span-2 rounded-xl overflow-hidden flex items-center justify-center px-6 text-center"
                 style={{ background: "#fff" }}
               >
                 <p className="text-[14px] md:text-[16px] leading-[1.3]" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontWeight: 600, color: "var(--swatch-teal)" }}>
-                  "The best things in life are the people who know you and love you anyway."
+                  "{INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].text}"
                 </p>
                 <p className="text-[10px] ml-4 shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  — Elisabeth Kübler-Ross
+                  — {INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].author}
                 </p>
               </div>
 
@@ -650,6 +622,20 @@ function ProductCard({
             >
               {productDisplayPrice}
             </p>
+          )}
+          {productDestination && productActionLabel && (
+            <span
+              className="inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.1em] mt-1.5 px-2 py-0.5 rounded-full"
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                color: showProductImage ? "#fff" : "var(--swatch-teal)",
+                background: showProductImage ? "rgba(255,255,255,0.15)" : "rgba(47,95,109,0.1)",
+                backdropFilter: "blur(4px)",
+              }}
+            >
+              {productActionLabel}
+              <ExternalLink className="w-2.5 h-2.5" />
+            </span>
           )}
         </div>
       </div>
