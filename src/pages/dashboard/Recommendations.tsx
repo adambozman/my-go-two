@@ -417,22 +417,17 @@ const Recommendations = () => {
               transition={{ duration: 0.3 }}
               className="bento-mosaic grid grid-cols-2 gap-1 md:gap-1.5"
             >
-              {/* hero: 3×1 — title card */}
+              {/* hero: 3×1 — page explanation */}
               <div
                 className="bento-area-hero col-span-2 rounded-xl overflow-hidden flex flex-col justify-center p-4 md:p-5"
                 style={{ background: "#fff" }}
               >
-                <p className="text-[9px] uppercase tracking-[0.14em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  <GoTwoInline /> / For You
-                </p>
-                <h2 className="text-[22px] md:text-[26px] leading-[0.95]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                  Curated Just For You
+                <h2 className="text-[20px] md:text-[24px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                  Your Recommendations
                 </h2>
-                {yourVibe?.persona_summary && (
-                  <p className="text-[11px] leading-snug max-w-[32ch] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    {yourVibe.persona_summary}
-                  </p>
-                )}
+                <p className="text-[11px] leading-snug max-w-[42ch] mt-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Your personal recommendation page. Our specially designed AI has curated these picks based on everything it knows about you.
+                </p>
                 {subscribed && (
                   <button
                     onClick={() => fetchProducts(true)}
@@ -451,13 +446,16 @@ const Recommendations = () => {
                 <ProductCard product={displayProducts[0]} index={0} layoutClass="bento-area-prod1" isSaved={savedItems.has(getRecommendationStableId(displayProducts[0]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[0]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[0]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[0])} />
               ) : <div className="bento-area-prod1" />}
 
-              {/* brand: 1×1 — go Two coral accent */}
+              {/* brand: 1×1 — "That's my go Two" accent */}
               <div
-                className="bento-area-brand rounded-xl overflow-hidden flex items-center justify-center"
+                className="bento-area-brand rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 text-center"
                 style={{ background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
               >
-                <span className="text-[20px]" style={{ fontFamily: "'Dancing Script', cursive", color: "#fff", fontWeight: 700 }}>go</span>
-                <span className="text-[20px] ml-1" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff", fontWeight: 700 }}>Two</span>
+                <p className="text-[10px] leading-[1.3]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
+                  That's my
+                </p>
+                <span className="text-[18px]" style={{ fontFamily: "'Dancing Script', cursive", color: "#fff", fontWeight: 700 }}>go</span>
+                <span className="text-[18px] -mt-1" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff", fontWeight: 700 }}>Two</span>
               </div>
 
               {/* prod2: 2×3 — second product (tall) */}
@@ -465,16 +463,16 @@ const Recommendations = () => {
                 <ProductCard product={displayProducts[1]} index={1} layoutClass="bento-area-prod2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} />
               ) : <div className="bento-area-prod2" />}
 
-              {/* stats: 1×1 — picks count */}
+              {/* stats: 1×1 — curated this week */}
               <div
-                className="bento-area-stats rounded-xl overflow-hidden flex flex-col items-center justify-center"
+                className="bento-area-stats rounded-xl overflow-hidden flex flex-col items-center justify-center p-2 text-center"
                 style={{ background: "var(--swatch-teal)" }}
               >
-                <p className="text-[28px] font-bold leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                <p className="text-[26px] font-bold leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
                   {displayProducts.length}
                 </p>
-                <p className="text-[9px] uppercase tracking-[0.14em] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
-                  Picks
+                <p className="text-[8px] uppercase tracking-[0.12em] mt-0.5 leading-tight" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                  Curated<br />This Week
                 </p>
               </div>
 
@@ -496,13 +494,21 @@ const Recommendations = () => {
                 <ProductCard product={displayProducts[2]} index={2} layoutClass="col-span-2 bento-area-prod3" isSaved={savedItems.has(getRecommendationStableId(displayProducts[2]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[2]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[2]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[2])} />
               ) : <div className="bento-area-prod3" />}
 
-              {/* prod4: 6×1 — fourth product (full-width banner) */}
-              {displayProducts[3] ? (
-                <ProductCard product={displayProducts[3]} index={3} layoutClass="col-span-2 bento-area-prod4" isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} />
-              ) : <div className="bento-area-prod4" />}
+              {/* prod4 area: 6×1 — quote bar (not a product) */}
+              <div
+                className="bento-area-prod4 col-span-2 rounded-xl overflow-hidden flex items-center justify-center px-6 text-center"
+                style={{ background: "#fff" }}
+              >
+                <p className="text-[14px] md:text-[16px] leading-[1.3]" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontWeight: 600, color: "var(--swatch-teal)" }}>
+                  "The best things in life are the people who know you and love you anyway."
+                </p>
+                <p className="text-[10px] ml-4 shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  — Elisabeth Kübler-Ross
+                </p>
+              </div>
 
-              {/* Remaining products (5+) — 2×2 tiles below the main mosaic */}
-              {displayProducts.slice(4).map((product, i) => {
+              {/* Remaining products (4+) — below the main mosaic */}
+              {displayProducts.slice(3).map((product, i) => {
                 const itemId = getRecommendationStableId(product);
                 return (
                   <ProductCard
