@@ -383,12 +383,13 @@ const findBestProductBankMatch = async (
 const loadTrendCandidateFallbackRows = async (
   admin: SupabaseClient,
   categories: RecommendationIntent["category"][],
+  demographics?: UserDemographics,
 ) => {
   if (categories.length === 0) return [];
 
   const { data, error } = await admin
     .from("recommendation_trend_candidates")
-    .select("id, source_platform, brand, product_title, primary_keyword, descriptor_keywords, category, product_url, image_url, price_text, trend_score, candidate_state, observed_at")
+    .select("id, source_platform, brand, product_title, primary_keyword, descriptor_keywords, category, product_url, image_url, price_text, trend_score, candidate_state, observed_at, target_age_ranges, target_genders")
     .in("category", categories)
     .in("candidate_state", ["approved", "approved_exact", "promoted"])
     .limit(200);
@@ -401,23 +402,33 @@ const loadTrendCandidateFallbackRows = async (
     throw error;
   }
 
-  return Array.isArray(data) ? (data as TrendCandidateFallbackRow[]) : [];
+  const rows = Array.isArray(data) ? (data as TrendCandidateFallbackRow[]) : [];
+
+  // Filter by demographics if available
+  if (!demographics?.ageRange && !demographics?.gender) return rows;
+  return rows.filter((row) => {
+    const rowAges = (row as Record<string, unknown>).target_age_ranges as string[] | null;
+    const rowGenders = (row as Record<string, unknown>).target_genders as string[] | null;
+    if (demographics.ageRange && rowAges && rowAges.length > 0 && !rowAges.includes(demographics.ageRange)) return false;
+    if (demographics.gender && rowGenders && rowGenders.length > 0 && !rowGenders.includes(demographics.gender)) return false;
+    return true;
+  });
 };
 
 const loadPopularFallbackProductBankRows = async (
   admin: SupabaseClient,
   categories: RecommendationIntent["category"][],
+  demographics?: UserDemographics,
 ) => {
   if (categories.length === 0) return [];
 
+  // Pull ALL verified products — seed-curated, trend-ingested, firecrawl, any source
   const { data, error } = await admin
     .from("recommendation_product_bank")
-    .select("id, primary_keyword, descriptor_keywords, category, brand, product_title, product_url, product_image_url, product_price_text, resolver_source, source_version, match_confidence, exact_match_confirmed, usage_count, last_verified_at, bank_state, bank_source, image_status")
+    .select("id, primary_keyword, descriptor_keywords, category, brand, product_title, product_url, product_image_url, product_price_text, resolver_source, source_version, match_confidence, exact_match_confirmed, usage_count, last_verified_at, bank_state, bank_source, image_status, target_age_ranges, target_genders")
     .in("category", categories)
     .eq("exact_match_confirmed", true)
     .eq("bank_state", "exact_verified")
-    .eq("image_status", "verified")
-    .eq("bank_source", "trend-ingested")
     .limit(200);
 
   if (error) {
@@ -428,7 +439,17 @@ const loadPopularFallbackProductBankRows = async (
     throw error;
   }
 
-  return Array.isArray(data) ? (data as ProductBankFallbackRow[]) : [];
+  const rows = Array.isArray(data) ? (data as ProductBankFallbackRow[]) : [];
+
+  // Filter by demographics if available
+  if (!demographics?.ageRange && !demographics?.gender) return rows;
+  return rows.filter((row) => {
+    const rowAges = (row as Record<string, unknown>).target_age_ranges as string[] | null;
+    const rowGenders = (row as Record<string, unknown>).target_genders as string[] | null;
+    if (demographics.ageRange && rowAges && rowAges.length > 0 && !rowAges.includes(demographics.ageRange)) return false;
+    if (demographics.gender && rowGenders && rowGenders.length > 0 && !rowGenders.includes(demographics.gender)) return false;
+    return true;
+  });
 };
 const toResponseProduct = (
   state: NormalizedRecommendationState,
@@ -960,12 +981,14 @@ const buildPopularFallbackProducts = async ({
   signalDrivenRecommendationsEnabled,
   targetRecommendationCount,
   currentProducts,
+  demographics,
 }: {
   admin: SupabaseClient;
   state: NormalizedRecommendationState;
   signalDrivenRecommendationsEnabled: boolean;
   targetRecommendationCount: number;
   currentProducts: RecommendationResponseProduct[];
+  demographics?: UserDemographics;
 }) => {
   const popularOnly = !signalDrivenRecommendationsEnabled;
   const categoryPlan = buildRecommendationCategoryPlan(state, targetRecommendationCount, { popularOnly });
@@ -979,8 +1002,8 @@ const buildPopularFallbackProducts = async ({
       .map((product) => cleanText(product.affiliate_url))
       .filter(Boolean),
   );
-  const trendCandidateRows = await loadTrendCandidateFallbackRows(admin, allowedCategories);
-  const popularProductBankRows = await loadPopularFallbackProductBankRows(admin, allowedCategories);
+  const trendCandidateRows = await loadTrendCandidateFallbackRows(admin, allowedCategories, demographics);
+  const popularProductBankRows = await loadPopularFallbackProductBankRows(admin, allowedCategories, demographics);
   const products: RecommendationResponseProduct[] = [];
 
   for (const product of currentProducts) {
@@ -1349,6 +1372,7 @@ serve(async (req) => {
         signalDrivenRecommendationsEnabled: inputStrength.signalDrivenRecommendationsEnabled,
         targetRecommendationCount: inputStrength.targetRecommendationCount,
         currentProducts: products,
+        demographics,
       });
 
       for (const product of fallbackProducts) {
