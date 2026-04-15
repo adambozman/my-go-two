@@ -28,6 +28,8 @@ import {
   type RecommendationCategory,
 } from "@/lib/recommendationCategories";
 import GoTwoInline from "@/components/GoTwoInline";
+import { useRotatingQuote } from "@/hooks/useRotatingQuote";
+import { GOTWO_LOGO_SENTINEL } from "@/lib/quotes";
 
 const RECOMMENDATION_V2_VERSION_PREFIX = "recommendation-engine-v2";
 
@@ -51,7 +53,7 @@ const getErrorMessage = (error: unknown): string => {
   return "Failed to load recommendations";
 };
 
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 8;
 
 function hasResolvedProductImage(product: Product) {
   return hasTrustedRecommendationProductImage(product);
@@ -65,6 +67,7 @@ const Recommendations = () => {
   const { knowledgeDerivations } = useUserProfile();
   const { subscribed, subscriptionLoading, user, session } = useAuth();
   const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
+  const { quote: activeQuote } = useRotatingQuote();
   const latestRequestIdRef = useRef(0);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -448,24 +451,78 @@ const Recommendations = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.25 }}
-                className="grid gap-3 grid-cols-1 md:grid-cols-12 md:auto-rows-[280px]"
+                className="grid gap-2 grid-cols-2 md:grid-cols-12 md:auto-rows-[220px]"
               >
-                {displayProducts.map((product, i) => {
-                  const itemId = getRecommendationStableId(product);
-                  const isSaved = savedItems.has(itemId);
-                  const isSharing = sharingItems.has(itemId);
-                  return (
-                    <ProductCard
-                      key={itemId}
-                      product={product}
-                      index={i}
-                      isSaved={isSaved}
-                      shareLoading={isSharing}
-                      onToggleSave={() => subscribed ? void toggleSave(product) : toast("Upgrade to save picks")}
-                      onShare={() => void handleShare(product)}
-                    />
-                  );
-                })}
+                {(() => {
+                  /* Build a flat list of grid items: 8 products + 1 quote tile = 9 items.
+                     Quote is inserted at slot 3 (after 3 products).
+                     Layout array maps slot index → col/row span classes.
+                     Row math (12-col):
+                       Row 1: slot0(4,2row) + slot1(4) + slot2(4)         = 12
+                       Row 2: slot0 cont   + slot3(4) + slot4(4)         = 12  (slot3=quote)
+                       Row 3: slot5(5,2row) + slot6(7)                   = 12
+                       Row 4: slot5 cont   + slot7(3) + slot8(4)         = 12
+                  */
+                  const SLOT_LAYOUT = [
+                    "md:col-span-4 md:row-span-2",  // slot 0 — tall left
+                    "md:col-span-4",                 // slot 1
+                    "md:col-span-4",                 // slot 2
+                    "md:col-span-4",                 // slot 3 — QUOTE
+                    "md:col-span-4",                 // slot 4
+                    "md:col-span-5 md:row-span-2",  // slot 5 — tall
+                    "md:col-span-7",                 // slot 6
+                    "md:col-span-3",                 // slot 7
+                    "md:col-span-4",                 // slot 8
+                  ];
+                  const QUOTE_SLOT = 3;
+                  const items: React.ReactNode[] = [];
+                  let productIdx = 0;
+
+                  for (let slot = 0; slot < SLOT_LAYOUT.length; slot++) {
+                    if (slot === QUOTE_SLOT) {
+                      items.push(
+                        <motion.div
+                          key="quote-tile"
+                          initial={{ opacity: 0, y: 14 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: slot * 0.04, type: "spring", stiffness: 260, damping: 24 }}
+                          className={`relative ${SLOT_LAYOUT[slot]}`}
+                        >
+                          <Card variant="sand" className="relative flex h-full flex-col items-center justify-center overflow-hidden p-5 text-center">
+                            <p className="leading-[1.2] max-w-[20ch] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 18, color: "var(--swatch-teal)" }}>
+                              "{activeQuote.text}"
+                            </p>
+                            <div className="surface-meta text-[11px]">
+                              {activeQuote.author === GOTWO_LOGO_SENTINEL ? <GoTwoInline /> : activeQuote.author}
+                            </div>
+                          </Card>
+                        </motion.div>
+                      );
+                      continue;
+                    }
+
+                    const product = displayProducts[productIdx];
+                    if (!product) break;
+                    const itemId = getRecommendationStableId(product);
+                    const isSaved = savedItems.has(itemId);
+                    const isSharing = sharingItems.has(itemId);
+
+                    items.push(
+                      <ProductCard
+                        key={itemId}
+                        product={product}
+                        index={slot}
+                        layoutClass={SLOT_LAYOUT[slot]}
+                        isSaved={isSaved}
+                        shareLoading={isSharing}
+                        onToggleSave={() => subscribed ? void toggleSave(product) : toast("Upgrade to save picks")}
+                        onShare={() => void handleShare(product)}
+                      />
+                    );
+                    productIdx++;
+                  }
+                  return items;
+                })()}
               </motion.div>
             </AnimatePresence>
 
@@ -540,6 +597,7 @@ const Recommendations = () => {
 function ProductCard({
   product,
   index,
+  layoutClass,
   isSaved,
   shareLoading,
   onToggleSave,
@@ -547,6 +605,7 @@ function ProductCard({
 }: {
   product: Product;
   index: number;
+  layoutClass: string;
   isSaved: boolean;
   shareLoading: boolean;
   onToggleSave: () => void;
@@ -566,13 +625,8 @@ function ProductCard({
       ref={ref}
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, type: "spring", stiffness: 260, damping: 24 }}
-      className={`relative ${
-        index % 4 === 0 ? "md:col-span-7 md:row-span-2" :
-        index % 4 === 1 ? "md:col-span-5" :
-        index % 4 === 2 ? "md:col-span-5" :
-        "md:col-span-7"
-      }`}
+      transition={{ delay: index * 0.04, type: "spring", stiffness: 260, damping: 24 }}
+      className={`relative ${layoutClass}`}
     >
       <Card variant="sand" className="relative flex h-full flex-col overflow-hidden">
         <div className="relative flex-1 min-h-[140px] overflow-hidden">
