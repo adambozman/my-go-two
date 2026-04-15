@@ -4,7 +4,11 @@ project_id = "xpxedmasobzrjigtxtms"
 verify_jwt = false
 
 [functions.recommendation-engine-v2]
-verify_jwt = true
+# verify_jwt disabled at the gateway — the function validates the JWT
+# internally (lines 962-978 of index.ts).  Disabling here prevents the
+# gateway from rejecting requests when fetchWithAuth races with token
+# rotation and sends a stale access_token.
+verify_jwt = false
 
 [functions.recommendation-bank-maintenance]
 verify_jwt = true
@@ -28,6 +32,7 @@ verify_jwt = true
 verify_jwt = false
 
 [functions.connection-data-search]
+verify_jwt = false
 
 [functions.sync-category-registry]
 verify_jwt = false

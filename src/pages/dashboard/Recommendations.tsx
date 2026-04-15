@@ -2,7 +2,6 @@
 import { useUserProfile } from "@/contexts/user-profile-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
-import { refreshSessionOnce } from "@/lib/sessionRefreshLock";
 import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -64,7 +63,7 @@ function getProductImage(product: Product) {
 
 const Recommendations = () => {
   const { knowledgeDerivations } = useUserProfile();
-  const { subscribed, subscriptionLoading, user } = useAuth();
+  const { subscribed, subscriptionLoading, user, session } = useAuth();
   const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
   const latestRequestIdRef = useRef(0);
   const [products, setProducts] = useState<Product[]>([]);
@@ -177,38 +176,19 @@ const Recommendations = () => {
       try {
         const activeFunction = RECOMMENDATION_V2_VERSION_PREFIX;
 
-        // Proactively refresh the session if the access token is expired or
-        // about to expire.  This avoids hitting the edge-function JWT gateway
-        // with a stale token (which returns 401 before our code even runs).
-        const { data: sessionSnapshot } = await supabase.auth.getSession();
-        const expiresAt = sessionSnapshot.session?.expires_at; // epoch seconds
-        const bufferSeconds = 60;
-        if (expiresAt && expiresAt - Math.floor(Date.now() / 1000) < bufferSeconds) {
-          try {
-            await refreshSessionOnce(supabase);
-          } catch {
-            // refresh failed — try the call anyway, the retry below will handle it
-          }
+        // Use the access token from React context (already kept in sync by
+        // onAuthStateChange).  This avoids calling getSession() which can
+        // internally trigger _callRefreshToken → token rotation → session
+        // destruction if a concurrent refresh is in flight.
+        const accessToken = session?.access_token;
+        if (!accessToken) {
+          throw new Error("No active session — please sign in again.");
         }
 
-        let result = await supabase.functions.invoke(activeFunction, {
+        const result = await supabase.functions.invoke(activeFunction, {
           body: forceRefresh ? { force_refresh: true } : {},
+          headers: { Authorization: `Bearer ${accessToken}` },
         });
-
-        // Retry on auth failure — refresh session (single-flight) and try again.
-        // Using the shared lock prevents a cascade of concurrent refreshes that
-        // would trigger Supabase refresh-token rotation 429s.
-        const status = getRpcStatus(result.error) ?? (result.response as Response | undefined)?.status;
-        if (result.error && (status === 401 || status === 403)) {
-          try {
-            await refreshSessionOnce(supabase);
-            result = await supabase.functions.invoke(activeFunction, {
-              body: forceRefresh ? { force_refresh: true } : {},
-            });
-          } catch {
-            // refresh failed — fall through to the original error
-          }
-        }
 
         const { data, error } = result;
         if (error) throw error;

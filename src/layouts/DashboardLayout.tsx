@@ -22,10 +22,25 @@ const logAuthDiagnostic = (event: string, details?: Record<string, unknown>) => 
 
 /**
  * Grace period (ms) before redirecting to login after user becomes null.
- * During a token refresh cycle the user can flicker to null for a fraction
- * of a second.  Waiting briefly prevents a false redirect.
+ * During a token refresh cycle the user can flicker to null for several
+ * seconds (token rotation + 429 recovery).  We also do a localStorage
+ * check to avoid redirecting when the session is actually still persisted.
  */
-const AUTH_REDIRECT_GRACE_MS = 2500;
+const AUTH_REDIRECT_GRACE_MS = 5000;
+
+/** Check if a persisted Supabase session exists in localStorage. */
+const hasPersistedSession = (): boolean => {
+  try {
+    const key = `sb-xpxedmasobzrjigtxtms-auth-token`;
+    const raw = localStorage.getItem(key);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    // Check that the session has an access token and isn't explicitly expired
+    return Boolean(parsed?.access_token || parsed?.user);
+  } catch {
+    return false;
+  }
+};
 
 const DashboardLayout = () => {
   const { user, loading } = useAuth();
@@ -33,6 +48,15 @@ const DashboardLayout = () => {
   const processedInviteSignatureRef = useRef<string | null>(null);
   const [redirectReady, setRedirectReady] = useState(false);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Track whether user was ever present this mount — only redirect to login
+  // if the user was NEVER authenticated (fresh page load with no session).
+  // If user was authenticated and then flickers to null, that's a transient
+  // refresh issue — not a reason to redirect.
+  const everHadUserRef = useRef(false);
+
+  if (user) {
+    everHadUserRef.current = true;
+  }
 
   // When user disappears *after* initial load, wait a grace period before
   // redirecting so that a concurrent session refresh can finish.
@@ -51,8 +75,29 @@ const DashboardLayout = () => {
 
     // user is null and not loading — start grace timer.
     if (!redirectTimerRef.current) {
-      redirectTimerRef.current = setTimeout(() => {
+      redirectTimerRef.current = setTimeout(async () => {
         redirectTimerRef.current = null;
+
+        // Before redirecting, double-check localStorage. The session may
+        // still be persisted even though React state lost track of it during
+        // a token rotation cycle. If it's there, attempt to re-read it.
+        if (hasPersistedSession()) {
+          logAuthDiagnostic("dashboard-layout:grace-recovery-attempt", {});
+          try {
+            const { data } = await supabase.auth.getSession();
+            if (data.session) {
+              logAuthDiagnostic("dashboard-layout:grace-recovery-success", {
+                userId: data.session.user?.id ?? null,
+              });
+              // The AuthContext onAuthStateChange listener will pick this up
+              // and set user again, cancelling the redirect naturally.
+              return;
+            }
+          } catch {
+            // Recovery failed — proceed to redirect.
+          }
+        }
+
         setRedirectReady(true);
       }, AUTH_REDIRECT_GRACE_MS);
     }

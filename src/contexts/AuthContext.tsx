@@ -3,7 +3,6 @@ import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContext } from "@/contexts/auth-context";
 import { isDevAuthEmail, isDevAuthUserId } from "@/lib/devAuth";
-import { refreshSessionOnce } from "@/lib/sessionRefreshLock";
 
 const SUBSCRIPTION_CACHE_KEY = "gotwo_subscription_cache_v1";
 const SUBSCRIPTION_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -264,32 +263,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [session?.access_token, runSubscriptionCheck]);
 
+  // Foreground resume: rely on Supabase's built-in autoRefreshToken rather
+  // than manually calling refreshSession().  Manual refreshes during token
+  // rotation cause 429 rate-limits that destroy the session.  Instead, just
+  // re-check the subscription (silently) when the tab regains focus — the
+  // auto-refresh will have already renewed the token if needed.
   useEffect(() => {
     if (!session?.access_token) return;
 
-    const refreshOnForeground = () => {
+    const onForeground = () => {
       if (document.visibilityState === "hidden") return;
 
       const now = Date.now();
       if (now - lastForegroundRefreshAtRef.current < FOREGROUND_REFRESH_DEBOUNCE_MS) {
         return;
       }
-
       lastForegroundRefreshAtRef.current = now;
 
-      // Use the single-flight lock so concurrent foreground + subscription
-      // refreshes don't stampede and trigger token-rotation 429s.
-      refreshSessionOnce(supabase)
-        .then(() => void runSubscriptionCheck({ forceRefresh: true, silent: true }))
-        .catch((err) => logAuthDiagnostic("foreground-refresh:failed", { message: String(err) }));
+      logAuthDiagnostic("foreground-resume", {});
+      void runSubscriptionCheck({ forceRefresh: true, silent: true });
     };
 
-    window.addEventListener("focus", refreshOnForeground);
-    document.addEventListener("visibilitychange", refreshOnForeground);
+    window.addEventListener("focus", onForeground);
+    document.addEventListener("visibilitychange", onForeground);
 
     return () => {
-      window.removeEventListener("focus", refreshOnForeground);
-      document.removeEventListener("visibilitychange", refreshOnForeground);
+      window.removeEventListener("focus", onForeground);
+      document.removeEventListener("visibilitychange", onForeground);
     };
   }, [session?.access_token, runSubscriptionCheck]);
 
