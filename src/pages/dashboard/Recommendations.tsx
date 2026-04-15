@@ -400,17 +400,22 @@ const Recommendations = () => {
               transition={{ duration: 0.3 }}
               className="bento-mosaic grid grid-cols-2 gap-1 md:gap-1.5"
             >
-              {/* hero: 3×1 — curated intro with personality */}
+              {/* hero: 3×1 — page intro */}
               <div
-                className="bento-area-hero col-span-2 rounded-xl overflow-hidden flex flex-col justify-center p-4 md:p-5"
-                style={{ background: "linear-gradient(135deg, var(--swatch-teal) 0%, #00687a 100%)" }}
+                className="bento-area-hero col-span-2 rounded-xl overflow-hidden flex flex-col justify-center p-4 md:p-5 relative"
+                style={{ background: "linear-gradient(135deg, var(--swatch-sand) 0%, var(--swatch-cream) 60%, #fff 100%)" }}
               >
-                <p className="text-[9px] uppercase tracking-[0.15em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>
-                  Curated for you
+                {/* Subtle warm glow */}
+                <div className="absolute top-0 right-0 w-2/3 h-full opacity-30 pointer-events-none" style={{ background: "radial-gradient(ellipse at top right, rgba(239,133,85,0.25), transparent 70%)" }} />
+                <p className="text-[9px] uppercase tracking-[0.15em] mb-1.5 relative" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                  For You
                 </p>
-                <h2 className="text-[22px] md:text-[28px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                  Picked by AI.<br />Made for you.
+                <h2 className="text-[20px] md:text-[24px] leading-[1.1] relative" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                  Your recommendations
                 </h2>
+                <p className="text-[11px] leading-[1.45] max-w-[38ch] mt-1.5 relative" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Products chosen by our AI based on your style, preferences, and the things that make you, you.
+                </p>
               </div>
 
               {/* prod1: 2×2 — first product */}
