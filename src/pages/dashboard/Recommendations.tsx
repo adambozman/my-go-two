@@ -379,29 +379,28 @@ const Recommendations = () => {
           </div>
         ) : displayProducts.length > 0 ? (
           <>
-            {/* 4-col grid, small auto-rows so row-span creates real height variety.
-                grid-auto-flow:dense fills holes.  Gap: 6px (tight like reference). */}
+            {/* 4-col bento: auto-rows-[90px] with dense packing, 4px gap */}
             <motion.div
               key={`${activePillar}-${currentPage}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-2 gap-1.5 md:grid-cols-4 md:auto-rows-[100px] md:gap-1.5"
+              className="grid grid-cols-2 gap-1 md:grid-cols-4 md:auto-rows-[90px] md:gap-1"
               style={{ gridAutoFlow: "dense" }}
             >
-              {/* ── T1: Hero / title tile  (wide + tall) ── */}
+              {/* ── T1: Hero / title tile  (2 cols, 2 rows — compact) ── */}
               <div
-                className="col-span-2 md:row-span-2 rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 md:p-6"
-                style={{ background: "linear-gradient(145deg, var(--swatch-sand) 0%, var(--swatch-cream) 100%)" }}
+                className="col-span-2 row-span-1 md:row-span-2 rounded-xl overflow-hidden relative flex flex-col justify-center p-4 md:p-5"
+                style={{ background: "linear-gradient(145deg, #f5e9dc 0%, #efe0cf 100%)" }}
               >
-                <p className="text-[10px] uppercase tracking-[0.12em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
+                <p className="text-[9px] uppercase tracking-[0.14em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   <GoTwoInline /> / For You
                 </p>
-                <h2 className="text-[28px] md:text-[34px] leading-[0.95] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                  Curated Just<br />For You
+                <h2 className="text-[22px] md:text-[28px] leading-[0.95]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                  Curated Just For You
                 </h2>
                 {yourVibe?.persona_summary && (
-                  <p className="text-[12px] leading-snug max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  <p className="text-[11px] leading-snug max-w-[32ch] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                     {yourVibe.persona_summary}
                   </p>
                 )}
@@ -409,8 +408,8 @@ const Recommendations = () => {
                   <button
                     onClick={() => fetchProducts(true)}
                     disabled={loading}
-                    className="mt-3 self-start flex items-center gap-1.5 text-[11px] uppercase tracking-[0.1em] px-3 py-1.5 rounded-full"
-                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}
+                    className="mt-2 self-start flex items-center gap-1 text-[10px] uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
+                    style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(47,95,109,0.08)" }}
                   >
                     <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} />
                     {loading ? "Loading" : "Refresh"}
@@ -418,78 +417,122 @@ const Recommendations = () => {
                 )}
               </div>
 
-              {/* ── T2: First product (tall, 1-col, 3 rows) ── */}
+              {/* ── T2: First product (1 col, 3 rows — tall) ── */}
               {displayProducts[0] && (
                 <ProductCard product={displayProducts[0]} index={0} layoutClass="md:row-span-3" isSaved={savedItems.has(getRecommendationStableId(displayProducts[0]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[0]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[0]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[0])} />
               )}
 
-              {/* ── T3: Quote tile (1-col, 1 row) ── */}
+              {/* ── T3: Stats tile (1 col, 1 row — small square) ── */}
               <div
-                className="rounded-2xl overflow-hidden flex flex-col items-center justify-center p-4 text-center"
-                style={{ background: "linear-gradient(145deg, var(--swatch-sand) 0%, var(--swatch-cream) 100%)" }}
-              >
-                <p className="leading-[1.15] max-w-[16ch] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 15, color: "var(--swatch-teal)" }}>
-                  "{activeQuote.text}"
-                </p>
-                <div className="text-[10px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  {activeQuote.author === GOTWO_LOGO_SENTINEL ? <GoTwoInline /> : activeQuote.author}
-                </div>
-              </div>
-
-              {/* ── T4: Second product (wide, 2-col, 2 rows) ── */}
-              {displayProducts[1] && (
-                <ProductCard product={displayProducts[1]} index={1} layoutClass="col-span-2 md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} />
-              )}
-
-              {/* ── T5: Stats tile (1-col, 1 row) ── */}
-              <div
-                className="rounded-2xl overflow-hidden flex flex-col items-center justify-center p-4"
+                className="rounded-xl overflow-hidden flex flex-col items-center justify-center"
                 style={{ background: "var(--swatch-teal)" }}
               >
-                <p className="text-[32px] font-bold leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                <p className="text-[28px] font-bold leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
                   {displayProducts.length}
                 </p>
-                <p className="text-[10px] uppercase tracking-[0.12em] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                <p className="text-[9px] uppercase tracking-[0.14em] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
                   Picks This Week
                 </p>
               </div>
 
-              {/* ── T6: Third product (1-col, 2 rows) ── */}
+              {/* ── T4: Second product (2 cols, 2 rows — wide landscape) ── */}
+              {displayProducts[1] && (
+                <ProductCard product={displayProducts[1]} index={1} layoutClass="col-span-2 md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} />
+              )}
+
+              {/* ── T5: Quote tile (1 col, 2 rows) ── */}
+              <div
+                className="md:row-span-2 rounded-xl overflow-hidden flex flex-col items-center justify-center p-3 text-center"
+                style={{ background: "linear-gradient(145deg, #f5e9dc 0%, #efe0cf 100%)" }}
+              >
+                <p className="leading-[1.2] max-w-[18ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 14, color: "var(--swatch-teal)" }}>
+                  "{activeQuote.text}"
+                </p>
+                <div className="text-[9px] mt-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  {activeQuote.author === GOTWO_LOGO_SENTINEL ? <GoTwoInline /> : activeQuote.author}
+                </div>
+              </div>
+
+              {/* ── T6: Go Two brand tile (1 col, 1 row — accent square) ── */}
+              <div
+                className="rounded-xl overflow-hidden flex items-center justify-center"
+                style={{ background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
+              >
+                <span className="text-[22px]" style={{ fontFamily: "'Dancing Script', cursive", color: "#fff", fontWeight: 700 }}>go</span>
+                <span className="text-[22px] ml-1" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff", fontWeight: 700 }}>Two</span>
+              </div>
+
+              {/* ── T7: Third product (1 col, 2 rows — portrait) ── */}
               {displayProducts[2] && (
                 <ProductCard product={displayProducts[2]} index={2} layoutClass="md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[2]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[2]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[2]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[2])} />
               )}
 
-              {/* ── T7: Go Two brand tile (1-col, 1 row) ── */}
+              {/* ── T8: Vibe tile (1 col, 1 row — persona vibe) ── */}
               <div
-                className="rounded-2xl overflow-hidden flex items-center justify-center p-4"
-                style={{ background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
+                className="rounded-xl overflow-hidden flex flex-col items-center justify-center p-3 text-center"
+                style={{ background: "linear-gradient(145deg, var(--swatch-teal) 0%, #00687a 100%)" }}
               >
-                <span className="text-[24px]" style={{ fontFamily: "'Dancing Script', cursive", color: "#fff", fontWeight: 700 }}>go</span>
-                <span className="text-[24px] ml-1" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff", fontWeight: 700 }}>Two</span>
+                <p className="text-[9px] uppercase tracking-[0.14em] mb-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>Your Vibe</p>
+                <p className="text-[13px] leading-[1.15] font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                  {yourVibe?.persona_label || "Refined Minimalist"}
+                </p>
               </div>
 
-              {/* ── T8: Fourth product (wide, 2-col, 1 row) ── */}
-              {displayProducts[3] && (
-                <ProductCard product={displayProducts[3]} index={3} layoutClass="col-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} />
-              )}
-
-              {/* ── T9: Category tile (1-col, 1 row) ── */}
+              {/* ── T9: Category tile (2 cols, 1 row — wide) ── */}
               <div
-                className="rounded-2xl overflow-hidden flex flex-col justify-center p-4"
-                style={{ background: "linear-gradient(145deg, var(--swatch-cream) 0%, var(--swatch-sand) 100%)" }}
+                className="col-span-2 rounded-xl overflow-hidden flex items-center gap-3 px-4 py-3"
+                style={{ background: "linear-gradient(145deg, #f5e9dc 0%, #efe0cf 100%)" }}
               >
-                <p className="text-[10px] uppercase tracking-[0.12em] mb-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>Categories</p>
+                <p className="text-[9px] uppercase tracking-[0.14em] shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>Categories</p>
                 <div className="flex flex-wrap gap-1">
                   {categoryLabels.map((label) => (
-                    <span key={label} className="text-[10px] px-2 py-0.5 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}>{label}</span>
+                    <span key={label} className="text-[9px] px-2 py-0.5 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(47,95,109,0.08)" }}>{label}</span>
                   ))}
                 </div>
+              </div>
+
+              {/* ── T10: Fourth product (1 col, 2 rows) ── */}
+              {displayProducts[3] && (
+                <ProductCard product={displayProducts[3]} index={3} layoutClass="md:row-span-2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} />
+              )}
+
+              {/* ── T11: Match % tile (1 col, 1 row) ── */}
+              <div
+                className="rounded-xl overflow-hidden flex flex-col items-center justify-center"
+                style={{ background: "linear-gradient(145deg, #f5e9dc 0%, #efe0cf 100%)" }}
+              >
+                <p className="text-[26px] font-bold leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}>
+                  {displayProducts[0] ? getRecommendationMatchLabel(displayProducts[0]) : "95%"}
+                </p>
+                <p className="text-[9px] uppercase tracking-[0.14em] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Top Match
+                </p>
+              </div>
+
+              {/* ── T12: Tagline / CTA tile (2 cols, 1 row) ── */}
+              <div
+                className="col-span-2 rounded-xl overflow-hidden flex items-center justify-between px-4 py-3"
+                style={{ background: "linear-gradient(135deg, var(--swatch-teal) 0%, #00687a 100%)" }}
+              >
+                <p className="text-[13px] leading-[1.2]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "#fff" }}>
+                  That's my <span style={{ fontFamily: "'Dancing Script', cursive" }}>go</span> Two
+                </p>
+                <p className="text-[9px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>
+                  Personalized picks, powered by you
+                </p>
+              </div>
+
+              {/* ── T13: Color swatch tile (1 col, 1 row — decorative) ── */}
+              <div className="rounded-xl overflow-hidden flex">
+                <div className="flex-1" style={{ background: "var(--swatch-teal)" }} />
+                <div className="flex-1" style={{ background: "#00687a" }} />
+                <div className="flex-1" style={{ background: "linear-gradient(135deg, #ef8555, #eb4b3f)" }} />
               </div>
 
               {/* ── Remaining products (5+) get alternating sizes ── */}
               {displayProducts.slice(4).map((product, i) => {
                 const itemId = getRecommendationStableId(product);
-                const altLayouts = ["md:row-span-2", "", "col-span-2", "", "md:row-span-2", "col-span-2"];
+                const altLayouts = ["md:row-span-2", "", "col-span-2 md:row-span-2", "", "md:row-span-3", "col-span-2"];
                 return (
                   <ProductCard
                     key={itemId}
@@ -584,7 +627,7 @@ function ProductCard({
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.04, type: "spring", stiffness: 260, damping: 24 }}
-      className={`group/card relative rounded-2xl overflow-hidden cursor-pointer ${layoutClass}`}
+      className={`group/card relative rounded-xl overflow-hidden cursor-pointer min-h-[90px] ${layoutClass}`}
       onClick={() => {
         if (productDestination) window.open(productDestination, "_blank", "noopener,noreferrer");
       }}
