@@ -398,11 +398,12 @@ const Recommendations = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="bento-mosaic grid grid-cols-2 gap-2 md:gap-3"
+              className="bento-mosaic grid grid-cols-2 gap-1.5 md:gap-2"
             >
               {/* hero: 3×1 — page intro */}
               <div
-                className="bento-area-hero col-span-2 card-design-sand overflow-hidden flex flex-col justify-center p-4 md:p-5"
+                className="bento-area-hero col-span-2 overflow-hidden flex flex-col justify-center p-4 md:p-5"
+                style={{ borderRadius: 20, background: "linear-gradient(140deg, rgba(255,255,255,0.94) 0%, rgba(250,244,236,0.9) 42%, rgba(239,224,207,0.8) 100%)" }}
               >
                 <p className="text-[9px] uppercase tracking-[0.15em] mb-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
                   For You
@@ -422,7 +423,8 @@ const Recommendations = () => {
 
               {/* brand: 1×1 — ad tile */}
               <div
-                className="bento-area-brand card-design-coral overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
+                className="bento-area-brand overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
+                style={{ borderRadius: 20, background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
               >
                 <p className="text-[16px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
                   #BookTok
@@ -439,7 +441,8 @@ const Recommendations = () => {
 
               {/* stats: 1×1 — ad tile */}
               <div
-                className="bento-area-stats card-design-teal overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
+                className="bento-area-stats overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
+                style={{ borderRadius: 20, background: "var(--swatch-teal)" }}
               >
                 <p className="text-[14px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
                   #CleanGirl
@@ -461,7 +464,8 @@ const Recommendations = () => {
 
               {/* prod4 area: 6×1 — rotating quote bar */}
               <div
-                className="bento-area-prod4 col-span-2 card-design-sand overflow-hidden flex items-center justify-center px-6 text-center"
+                className="bento-area-prod4 col-span-2 overflow-hidden flex items-center justify-center px-6 text-center"
+                style={{ borderRadius: 20, background: "rgba(255,255,255,0.7)" }}
               >
                 <p className="text-[14px] md:text-[16px] leading-[1.3]" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontWeight: 600, color: "var(--swatch-teal)" }}>
                   "{INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].text}"
@@ -553,80 +557,71 @@ function ProductCard({
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.04, type: "spring", stiffness: 260, damping: 24 }}
-      className={`group/card relative overflow-hidden cursor-pointer min-h-[90px] ${layoutClass}`}
-      style={{ borderRadius: 28 }}
+      className={`group/card relative overflow-hidden cursor-pointer flex flex-col ${layoutClass}`}
+      style={{ borderRadius: 20, background: "#EDE8E0" }}
       onClick={() => {
         if (productDestination) window.open(productDestination, "_blank", "noopener,noreferrer");
       }}
     >
-      {/* Full-bleed image or brand fallback */}
-      {showProductImage ? (
-        <img
-          src={productImage}
-          alt={product.name}
-          className="absolute inset-0 h-full w-full object-cover"
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          onError={() => setImageFailed(true)}
-        />
-      ) : (
-        <div className="absolute inset-0 card-design-sand flex items-center justify-center" style={{ borderRadius: 28 }}>
+      {/* Image zone — takes up ~65% of card, product contained */}
+      <div className="relative flex-[3] flex items-center justify-center overflow-hidden" style={{ minHeight: 0 }}>
+        {showProductImage ? (
+          <img
+            src={productImage}
+            alt={product.name}
+            className="w-full h-full object-contain p-3"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={() => setImageFailed(true)}
+          />
+        ) : (
           <p className="text-[28px] leading-[1] text-center" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
             {product.brand}
           </p>
-        </div>
-      )}
+        )}
 
-      {/* Gradient scrim + text overlay */}
-      <div
-        className="absolute inset-0 flex flex-col justify-end"
-        style={{
-          background: showProductImage
-            ? "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 35%, transparent 60%)"
-            : "none",
-        }}
-      >
-        <div className="p-3 md:p-4">
-          <p
-            className="text-[10px] uppercase tracking-[0.08em] mb-0.5"
-            style={{ fontFamily: "'Jost', sans-serif", color: showProductImage ? "rgba(255,255,255,0.75)" : "var(--swatch-cedar-grove)" }}
+        {/* Hover actions — top corners */}
+        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-10">
+          <button
+            onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
+            className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
+            style={{ background: "rgba(255,255,255,0.85)" }}
           >
-            {product.brand}
-          </p>
-          <h3
-            className="text-[15px] md:text-[17px] leading-[1.1] font-semibold"
-            style={{ fontFamily: "'Cormorant Garamond', serif", color: showProductImage ? "#fff" : "var(--swatch-teal)" }}
+            <Bookmark className="h-3.5 w-3.5" style={{ color: isSaved ? "var(--swatch-cedar-grove)" : "var(--swatch-teal)" }} />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onShare(); }}
+            className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
+            style={{ background: "rgba(255,255,255,0.85)" }}
+            disabled={shareLoading}
           >
-            {product.name}
-          </h3>
-          {productDisplayPrice && (
-            <p
-              className="text-[11px] mt-0.5"
-              style={{ fontFamily: "'Jost', sans-serif", color: showProductImage ? "rgba(255,255,255,0.85)" : "var(--swatch-antique-coin)" }}
-            >
-              {productDisplayPrice}
-            </p>
-          )}
+            {shareLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" style={{ color: "var(--swatch-teal)" }} />}
+          </button>
         </div>
       </div>
 
-      {/* Hover actions */}
-      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200">
-        <button
-          onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
-          className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
-          style={{ background: "rgba(255,255,255,0.7)" }}
+      {/* Info footer — sits below image zone */}
+      <div className="flex-[1] px-3 pb-3 pt-1 md:px-4 md:pb-4 flex flex-col justify-center" style={{ background: "rgba(255,255,255,0.6)" }}>
+        <p
+          className="text-[9px] uppercase tracking-[0.1em]"
+          style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
         >
-          <Bookmark className="h-3.5 w-3.5" style={{ color: isSaved ? "var(--swatch-cedar-grove)" : "var(--swatch-teal)" }} />
-        </button>
-        <button
-          onClick={(e) => { e.stopPropagation(); onShare(); }}
-          className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
-          style={{ background: "rgba(255,255,255,0.7)" }}
-          disabled={shareLoading}
+          {product.brand}
+        </p>
+        <h3
+          className="text-[14px] md:text-[16px] leading-[1.15] font-semibold mt-0.5"
+          style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}
         >
-          {shareLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" style={{ color: "var(--swatch-teal)" }} />}
-        </button>
+          {product.name}
+        </h3>
+        {productDisplayPrice && (
+          <p
+            className="text-[13px] font-bold mt-0.5"
+            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}
+          >
+            {productDisplayPrice}
+          </p>
+        )}
       </div>
     </motion.div>
   );
