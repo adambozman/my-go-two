@@ -1004,64 +1004,56 @@ const KnowMePage = () => {
               className="lg:col-span-8 card-design-sand rounded-[28px] p-5 md:rounded-[34px] md:p-7 relative overflow-hidden min-h-[280px] md:min-h-[320px] lg:min-h-[340px]"
             >
               <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
-              <div className="relative flex h-full flex-col justify-between gap-8">
-                <div className="flex items-start justify-between gap-6 flex-wrap">
-                  <div className="max-w-[29rem]">
-                    <p className="text-[10px] uppercase tracking-[0.22em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                      <GoTwoInline /> / Know Me
-                    </p>
-                    <h1 className="text-[34px] leading-[0.92] max-w-[9ch] mb-4 sm:text-[44px] md:text-[60px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+              <div className="relative flex h-full flex-col justify-between gap-6">
+                {/* Top: headline left, floating stat badge right */}
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="surface-eyebrow-coral mb-3"><GoTwoInline /> / Know Me</p>
+                    <h1 className="text-[38px] leading-[0.88] max-w-[9ch] sm:text-[48px] md:text-[60px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                       Your Vibe
                     </h1>
-                    <p className="text-[14px] leading-relaxed max-w-[44ch] sm:text-[15px] md:text-[16px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                      Your Vibe is the AI's live read of your taste so far. It watches for patterns across what you answer, what you skip, what you value, and how you react to quick instinct prompts.
-                    </p>
                   </div>
-
-                  <div className="rounded-[22px] px-4 py-3 min-w-[148px] sm:min-w-[172px] backdrop-blur-md md:rounded-[26px] md:px-5 md:py-4" style={{ background: "rgba(255,255,255,0.24)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.22)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.42)" }}>
-                    <p className="text-[34px] leading-none sm:text-[38px] md:text-[42px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-teal)" }}>
-                      {vibeProgressPercent}%
+                  <div className="rounded-[20px] px-5 py-4 text-center backdrop-blur-md" style={{ background: "rgba(var(--swatch-teal-rgb), 0.08)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}>
+                    <p className="text-[42px] leading-none md:text-[52px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                      {vibeProgressPercent}<span className="text-[22px] md:text-[26px]">%</span>
                     </p>
-                    <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                      profile read
-                    </p>
+                    <p className="text-[10px] uppercase tracking-[0.18em] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>Profile read</p>
                   </div>
                 </div>
 
-                <div className="grid gap-4 items-end md:grid-cols-[minmax(0,1fr)_240px] lg:grid-cols-[minmax(0,1fr)_260px]">
-                  <div>
-                    <p className="text-[16px] leading-snug mb-3 sm:text-[18px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                      {yourVibe?.persona_summary || "You're still early, but the AI is already building a point of view on whether your style leans cleaner, louder, softer, practical, elevated, or more trend-driven."}
-                    </p>
-                    {subscribed && (
-                      <p className="text-[13px] leading-relaxed max-w-[62ch] mb-4 sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                        {allDone
-                          ? "You've given the system a full profile, so your vibe summary and downstream recommendations can now get much more specific."
-                          : `${totalAnswered} of ${totalQuestions} questions answered so far. Every answer sharpens how the AI describes your style and what it recommends next.`}
-                      </p>
-                    )}
+                {/* Middle: persona summary in a glass inset sub-card */}
+                <div className="surface-inset-panel rounded-[18px] px-4 py-3" style={{ maxWidth: "80%" }}>
+                  <p className="text-[14px] leading-snug sm:text-[15px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-teal)" }}>
+                    {yourVibe?.persona_summary || "Building a read on whether your style leans cleaner, louder, softer, practical, or elevated."}
+                  </p>
+                </div>
 
-                    <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }}>
-                      <motion.div
-                        className="h-full rounded-full"
-                        style={{ background: "linear-gradient(90deg, rgba(var(--swatch-teal-rgb), 0.92), rgba(var(--swatch-cedar-grove-rgb), 0.72))" }}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${vibeProgressPercent}%` }}
-                        transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                      />
-                    </div>
+                {/* Bottom: progress bar + inline stat chips */}
+                <div>
+                  <div className="h-[5px] rounded-full overflow-hidden mb-3" style={{ background: "rgba(var(--swatch-teal-rgb), 0.12)" }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))" }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${vibeProgressPercent}%` }}
+                      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                    />
                   </div>
-
-                  {!subscribed && (
-                    <div className="rounded-[28px] p-4 backdrop-blur-md" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                      <p className="text-[10px] uppercase tracking-[0.18em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                        Free access
-                      </p>
-                      <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                        You can answer {FREE_CATEGORY_LIMIT} questions in each category for free before Premium opens the full profile map.
-                      </p>
+                  <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full" style={{ background: "var(--swatch-teal)" }} />
+                      <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>{totalAnswered} answered</span>
                     </div>
-                  )}
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
+                      <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>{totalQuestions} total</span>
+                    </div>
+                    {!subscribed && (
+                      <span className="ml-auto rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", background: "rgba(var(--swatch-cedar-grove-rgb), 0.1)", color: "var(--swatch-cedar-grove)" }}>
+                        {FREE_CATEGORY_LIMIT} free / category
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.section>
@@ -1072,24 +1064,34 @@ const KnowMePage = () => {
               transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
               whileTap={{ scale: 0.985 }}
               onClick={openThisOrThat}
-              className="lg:col-span-4 card-design-sand rounded-[28px] p-5 md:rounded-[34px] md:p-6 relative overflow-hidden text-left flex flex-col min-h-[240px] sm:min-h-[260px] lg:min-h-0"
+              className="lg:col-span-4 card-design-sand rounded-[28px] p-5 md:rounded-[34px] md:p-6 relative overflow-hidden text-left flex flex-col min-h-[240px] sm:min-h-[260px] lg:min-h-0 group"
             >
               <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
               <div className="relative flex flex-col flex-1">
-                <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                  Instinct deck
-                </p>
-                <p className="text-[28px] leading-[0.96] mb-4 sm:text-[34px] md:text-[40px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                {/* Top: eyebrow left, pill badge right */}
+                <div className="flex items-center justify-between mb-4">
+                  <p className="surface-eyebrow-coral">Instinct deck</p>
+                  <span className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", background: "rgba(var(--swatch-teal-rgb), 0.08)", color: "var(--swatch-teal)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
+                    {visibleThisOrThatCount} prompts
+                  </span>
+                </div>
+
+                <p className="text-[28px] leading-[0.96] mb-3 sm:text-[34px] md:text-[40px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                   This or That
                 </p>
-                <p className="text-[13px] leading-relaxed max-w-[30ch] mb-6 sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Two options. One instinct. No overthinking. Pick fast across style, taste, romance, travel, gifting, and more — and let your pattern build itself over time.
+                <p className="text-[13px] leading-relaxed max-w-[26ch] sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  Two options. One instinct. Your pattern builds over time.
                 </p>
-                <div className="mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                  <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                    Browse categories
-                  </p>
-                  <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
+
+                {/* Bottom: stat dot + circular CTA */}
+                <div className="mt-auto flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
+                    <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>{visibleThisOrThatAnswered} done</span>
+                  </div>
+                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}>
+                    <ChevronRight className="w-4 h-4" style={{ color: "var(--swatch-teal)" }} />
+                  </div>
                 </div>
               </div>
             </motion.button>
@@ -1100,25 +1102,33 @@ const KnowMePage = () => {
               transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
               whileTap={{ scale: 0.99 }}
               onClick={openStyleChat}
-              className="lg:col-span-5 card-design-sand rounded-[26px] p-5 relative overflow-hidden min-h-[220px] sm:min-h-[240px] lg:min-h-[260px] text-left"
-              style={{ borderRadius: 30 }}
+              className="lg:col-span-5 card-design-sand rounded-[28px] p-5 md:p-6 relative overflow-hidden min-h-[220px] sm:min-h-[240px] lg:min-h-[260px] text-left group"
             >
-              <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
-              <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                Style chat with AI
-              </p>
-              <p className="text-[28px] leading-[0.98] mb-4 max-w-[12ch] sm:text-[34px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                Ask the AI what it thinks your style is.
-              </p>
-              <p className="text-[13px] leading-relaxed max-w-[34ch] mb-5 sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                Open a live style chat to ask how the AI sees your vibe so far, why it is asking certain questions, how it picks what comes next, and what kinds of recommendations it is building toward from your answers.
-              </p>
-              <div className="rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                  Open style chat
-                </p>
-                  <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
+              <div className="relative flex flex-col h-full">
+                {/* Top: eyebrow left, icon spot right */}
+                <div className="flex items-center justify-between mb-4">
+                  <p className="surface-eyebrow-coral">Style chat with AI</p>
+                  <div className="surface-icon-spot w-9 h-9 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
                 </div>
+
+                <h2 className="surface-heading-lg mb-2" style={{ maxWidth: "14ch" }}>Ask the AI about your style.</h2>
+
+                {/* Inset sub-card for description */}
+                <div className="surface-inset-panel rounded-[14px] px-3.5 py-2.5 mt-3" style={{ maxWidth: "90%" }}>
+                  <p className="text-[12px] leading-relaxed sm:text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    Hear how the AI reads your vibe, why it asks certain questions, and what it's building toward.
+                  </p>
+                </div>
+
+                {/* Bottom: circular CTA */}
+                <div className="mt-auto flex items-center justify-end pt-3">
+                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}>
+                    <ChevronRight className="w-4 h-4" style={{ color: "var(--swatch-teal)" }} />
+                  </div>
+                </div>
+              </div>
             </motion.button>
 
             <motion.button
@@ -1127,24 +1137,53 @@ const KnowMePage = () => {
               transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
               whileTap={{ scale: 0.99 }}
               onClick={openCategoriesDashboard}
-              className="lg:col-span-7 card-design-sand rounded-[26px] p-5 md:p-6 text-left relative overflow-hidden min-h-[220px] sm:min-h-[240px] lg:min-h-[260px] flex flex-col"
-              style={{ borderRadius: 30 }}
+              className="lg:col-span-7 card-design-sand rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden min-h-[220px] sm:min-h-[240px] lg:min-h-[260px] flex flex-col group"
             >
-              <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
-              <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                Get to know you
-              </p>
-              <p className="text-[28px] leading-[0.98] mb-4 max-w-[16ch] sm:text-[34px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                Questions by category
-              </p>
-              <p className="text-[13px] leading-relaxed max-w-[44ch] mb-5 sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                Five categories — Clothes & Style, Food & Drink, Gifts, Home, and Everything Else. Each one builds a deeper read on your taste. Answer at your own pace and pick up right where you left off.
-              </p>
-              <div className="mt-auto rounded-[20px] px-4 py-3 backdrop-blur-md inline-flex items-center gap-2 self-start" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                <p className="text-[11px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                  Browse categories
-                </p>
-                <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--swatch-teal)" }} />
+              <div className="relative flex flex-col h-full">
+                {/* Top: eyebrow left, count badge right */}
+                <div className="flex items-center justify-between mb-4">
+                  <p className="surface-eyebrow-coral">Get to know you</p>
+                  <span className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", background: "rgba(var(--swatch-teal-rgb), 0.08)", color: "var(--swatch-teal)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
+                    {categories.length} categories
+                  </span>
+                </div>
+
+                <h2 className="surface-heading-lg mb-3" style={{ maxWidth: "16ch" }}>Questions by Category</h2>
+
+                {/* Category pill chips */}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {categories.map((cat) => (
+                    <span
+                      key={cat.id}
+                      className="rounded-full px-3 py-1.5 text-[11px]"
+                      style={{
+                        fontFamily: "'Jost', sans-serif",
+                        background: cat.complete ? "rgba(var(--swatch-teal-rgb), 0.1)" : "rgba(255,255,255,0.55)",
+                        color: cat.complete ? "var(--swatch-teal)" : "var(--swatch-antique-coin)",
+                        border: cat.complete ? "1px solid rgba(var(--swatch-teal-rgb), 0.2)" : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.15)",
+                      }}
+                    >
+                      {cat.title}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Bottom: stat dots + circular CTA */}
+                <div className="mt-auto flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full" style={{ background: "var(--swatch-teal)" }} />
+                      <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>{totalAnswered} answered</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
+                      <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>{totalQuestions} total</span>
+                    </div>
+                  </div>
+                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}>
+                    <ChevronRight className="w-4 h-4" style={{ color: "var(--swatch-teal)" }} />
+                  </div>
+                </div>
               </div>
             </motion.button>
 
@@ -1152,27 +1191,28 @@ const KnowMePage = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18, type: "spring", stiffness: 250, damping: 24 }}
-              className="lg:col-span-12 card-design-sand rounded-[24px] px-4 py-4 sm:px-5 sm:py-5 md:rounded-[28px]"
-              style={{ borderRadius: 28 }}
+              className="lg:col-span-12 card-design-sand rounded-[28px] px-5 py-5 sm:px-6 sm:py-6"
             >
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
-                <div className="max-w-[58rem]">
-                  <p className="text-[10px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                    How the AI gets to know you
-                  </p>
-                  <p className="text-[24px] leading-none mb-3 sm:text-[28px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                    It learns from patterns, not one answer.
-                  </p>
-                  <p className="text-[13px] leading-relaxed sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    The AI combines your onboarding and Know Me answers with your future fixed This or That category answers to read patterns across your style, gifting, lifestyle, and preferences. It does not invent those category questions — it interprets what your answers reveal.
-                  </p>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                {/* Left: icon spot + text */}
+                <div className="flex items-start gap-4 max-w-[42rem]">
+                  <div className="surface-icon-spot w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="surface-eyebrow-coral mb-1.5">How the AI learns</p>
+                    <p className="surface-heading-md mb-1.5">It reads patterns, not one answer.</p>
+                    <p className="text-[13px] leading-relaxed sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                      The AI combines your Know Me answers with This or That instinct picks to read patterns across style, gifting, lifestyle, and preferences.
+                    </p>
+                  </div>
                 </div>
-                <div className="rounded-[20px] p-4 backdrop-blur-md md:min-w-[280px] lg:min-w-[320px]" style={{ background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                  <p className="text-[11px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                    Recommendation logic
-                  </p>
+
+                {/* Right: inset sub-panel */}
+                <div className="surface-inset-panel rounded-[18px] p-4 md:min-w-[260px] lg:min-w-[300px] flex-shrink-0">
+                  <p className="text-[10px] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>Recommendation logic</p>
                   <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    More clarity in your answers means fewer generic suggestions and a sharper read on style, gifts, brands, and experiences once each fixed bank is filled in.
+                    More clarity means fewer generic suggestions and a sharper read on what you actually want.
                   </p>
                 </div>
               </div>
