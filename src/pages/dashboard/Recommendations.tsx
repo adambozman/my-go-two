@@ -2,7 +2,7 @@
 import { useUserProfile } from "@/contexts/user-profile-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
-import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink } from "lucide-react";
+import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PaginationControls } from "@/components/ui/pagination-controls";
@@ -402,18 +402,44 @@ const Recommendations = () => {
             >
               {/* hero: 3×1 — page intro */}
               <div
-                className="bento-area-hero col-span-2 overflow-hidden flex flex-col justify-center p-4 md:p-5"
+                className="bento-area-hero col-span-2 overflow-hidden relative p-4 md:p-5"
                 style={{ borderRadius: 20, background: "var(--swatch-teal)" }}
               >
-                <p className="text-[9px] uppercase tracking-[0.15em] mb-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)" }}>
-                  For You
-                </p>
-                <h2 className="text-[22px] md:text-[28px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                  Your recommendations
-                </h2>
-                <p className="text-[11px] leading-[1.45] mt-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
-                  Products our AI picked for you based on your style, preferences, and the things that make you, you.
-                </p>
+                {/* Decorative orb */}
+                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%)" }} />
+
+                {/* Floating pill badge top-right */}
+                <div className="absolute top-3 right-3 md:top-4 md:right-4">
+                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.85)", background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.18)", backdropFilter: "blur(8px)" }}>
+                    <Sparkles className="w-2.5 h-2.5" style={{ color: "var(--swatch-sonoma-chardonnay)" }} />
+                    Curated
+                  </span>
+                </div>
+
+                <div className="flex h-full items-center gap-4 md:gap-6">
+                  {/* Left: text content */}
+                  <div className="flex flex-col justify-center flex-1 min-w-0">
+                    <p className="text-[9px] uppercase tracking-[0.18em] mb-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)" }}>
+                      For You
+                    </p>
+                    <h2 className="text-[22px] md:text-[28px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                      Your recommendations
+                    </h2>
+                    <p className="text-[11px] leading-[1.45] mt-1.5 max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>
+                      Based on your style, preferences, and vibe.
+                    </p>
+                  </div>
+
+                  {/* Right: glass inset sub-card */}
+                  <div className="hidden md:flex flex-col items-center justify-center rounded-2xl px-4 py-3" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", backdropFilter: "blur(10px)", minWidth: 100 }}>
+                    <p className="text-[28px] leading-[1] font-bold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                      {displayProducts.length}
+                    </p>
+                    <p className="text-[8px] uppercase tracking-[0.14em] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)" }}>
+                      Picks
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* prod1: 2×2 — first product */}
@@ -423,15 +449,29 @@ const Recommendations = () => {
 
               {/* brand: 1×1 — ad tile */}
               <div
-                className="bento-area-brand overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
+                className="bento-area-brand overflow-hidden relative p-3 cursor-pointer"
                 style={{ borderRadius: 20, background: "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
               >
-                <p className="text-[16px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
-                  #BookTok
-                </p>
-                <p className="text-[8px] uppercase tracking-[0.1em] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
-                  Trending Reads
-                </p>
+                {/* Floating pill top-right */}
+                <span className="absolute top-2.5 right-2.5 inline-flex items-center rounded-full px-2 py-0.5 text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.22)" }}>
+                  Trending
+                </span>
+
+                <div className="flex flex-col items-center justify-center h-full gap-1.5">
+                  {/* Icon spot */}
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)" }}>
+                    <Bookmark className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.9)" }} />
+                  </div>
+                  <p className="text-[15px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                    #BookTok
+                  </p>
+                  {/* Inset sub-panel */}
+                  <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.16)" }}>
+                    <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
+                      Trending Reads
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* prod2: 2×3 — second product (tall) */}
@@ -441,15 +481,32 @@ const Recommendations = () => {
 
               {/* stats: 1×1 — ad tile */}
               <div
-                className="bento-area-stats overflow-hidden flex flex-col items-center justify-center p-2 text-center cursor-pointer"
+                className="bento-area-stats overflow-hidden relative p-3 cursor-pointer"
                 style={{ borderRadius: 20, background: "var(--swatch-teal)" }}
               >
-                <p className="text-[14px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
-                  #CleanGirl
-                </p>
-                <p className="text-[8px] uppercase tracking-[0.1em] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                {/* Decorative orb */}
+                <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%)" }} />
+
+                {/* Floating pill top-right */}
+                <span className="absolute top-2.5 right-2.5 inline-flex items-center rounded-full px-2 py-0.5 text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.18)" }}>
                   Aesthetic
-                </p>
+                </span>
+
+                <div className="flex flex-col items-center justify-center h-full gap-1.5">
+                  {/* Icon spot */}
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.14)" }}>
+                    <Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.85)" }} />
+                  </div>
+                  <p className="text-[14px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                    #CleanGirl
+                  </p>
+                  {/* Inset sub-panel */}
+                  <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}>
+                    <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                      Curated Picks
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* quote: 1×3 — 4th product (tall strip) */}
@@ -464,15 +521,26 @@ const Recommendations = () => {
 
               {/* prod4 area: 6×1 — rotating quote bar */}
               <div
-                className="bento-area-prod4 col-span-2 overflow-hidden flex items-center justify-center px-6 text-center"
-                style={{ borderRadius: 20, background: "rgba(255,255,255,0.7)" }}
+                className="bento-area-prod4 col-span-2 overflow-hidden relative flex items-center px-4 md:px-6"
+                style={{ borderRadius: 20, background: "linear-gradient(140deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.85) 42%, rgba(239,224,207,0.7) 100%)", border: "1px solid rgba(255,255,255,0.9)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.96), 0 8px 24px rgba(var(--swatch-cedar-grove-rgb), 0.06)" }}
               >
-                <p className="text-[14px] md:text-[16px] leading-[1.3]" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontWeight: 600, color: "var(--swatch-teal)" }}>
-                  "{INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].text}"
-                </p>
-                <p className="text-[10px] ml-4 shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  — {INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].author}
-                </p>
+                {/* Icon spot left */}
+                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mr-3 md:mr-4" style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)" }}>
+                  <span className="text-[14px] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)", fontStyle: "italic" }}>“</span>
+                </div>
+
+                {/* Quote inset panel */}
+                <div className="flex-1 flex items-center gap-3 rounded-xl px-3 py-2 md:px-4 md:py-2.5" style={{ background: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.75)" }}>
+                  <div className="w-0.5 h-6 rounded-full shrink-0" style={{ background: "var(--swatch-teal)", opacity: 0.35 }} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] md:text-[15px] leading-[1.3] truncate" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontWeight: 600, color: "var(--swatch-teal)" }}>
+                      "{INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].text}"
+                    </p>
+                  </div>
+                  <p className="text-[9px] shrink-0 uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    — {INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].author}
+                  </p>
+                </div>
               </div>
 
               {/* No overflow below the mosaic — the grid ends at prod4 */}
@@ -566,10 +634,10 @@ function ProductCard({
   const productDestination = getRecommendationDestination(product);
   const productActionLabel = getRecommendationActionLabel(product);
   const productDisplayPrice = getRecommendationDisplayPrice(product);
+  const matchLabel = getRecommendationMatchLabel(product);
   const [imageFailed, setImageFailed] = useState(false);
   const showProductImage = Boolean(productImage) && !imageFailed;
 
-  // Uniform warm sand bg — matches Bella Kitchenware #F5F0EA / Go Two sand palette
   const CARD_BG = "#efe0cf";
 
   return (
@@ -584,10 +652,30 @@ function ProductCard({
         if (productDestination) window.open(productDestination, "_blank", "noopener,noreferrer");
       }}
     >
-      {/* Product image — object-contain on sand bg.
-          White-bg catalog photos blend into the warm sand naturally.
-          Product is always fully visible, never cropped.
-          Sand bg fills any gaps = zero dead space. */}
+      {/* Decorative radial gradient overlay */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.06), transparent 50%)" }} />
+
+      {/* Floating match pill badge — top-left */}
+      {matchLabel && (
+        <div className="absolute top-2.5 left-2.5 z-10">
+          <span
+            className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[8px] uppercase tracking-[0.1em]"
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              color: "var(--swatch-teal)",
+              background: "rgba(255,255,255,0.82)",
+              border: "1px solid rgba(255,255,255,0.95)",
+              backdropFilter: "blur(8px)",
+              boxShadow: "0 2px 8px rgba(var(--swatch-teal-rgb), 0.1)",
+            }}
+          >
+            <Sparkles className="w-2.5 h-2.5" style={{ color: "var(--swatch-cedar-grove)" }} />
+            {matchLabel}
+          </span>
+        </div>
+      )}
+
+      {/* Product image */}
       {showProductImage ? (
         <img
           src={productImage}
@@ -595,54 +683,83 @@ function ProductCard({
           className="absolute inset-0 w-full h-full"
           style={{
             objectFit: "contain",
-            objectPosition: "center 40%",
-            padding: "12px 12px 48px 12px",
+            objectPosition: "center 38%",
+            padding: "36px 14px 72px 14px",
           }}
           loading="lazy"
           referrerPolicy="no-referrer"
           onError={() => setImageFailed(true)}
         />
       ) : (
-        /* No image fallback — brand name on sand bg */
-        <div className="absolute inset-0 flex items-center justify-center" style={{ paddingBottom: 40 }}>
-          <p className="text-[28px] leading-[1] text-center" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+        <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ paddingBottom: 60 }}>
+          {/* Icon spot for no-image fallback */}
+          <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3" style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)" }}>
+            <span className="text-[18px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+              {product.brand.charAt(0)}
+            </span>
+          </div>
+          <p className="text-[22px] leading-[1] text-center" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
             {product.brand}
           </p>
         </div>
       )}
 
-      {/* Bottom text strip — gradient from sand, not from black.
-          This keeps text legible without the harsh dark scrim that
-          clashes with white-bg product photos.
-          Matches: Apple product tiles (solid color zone for text),
-          Bella (text below product on warm bg). */}
+      {/* Bottom inset panel — glass card with product details */}
       <div
         className="absolute bottom-0 left-0 right-0 flex flex-col justify-end"
-        style={{
-          background: `linear-gradient(to top, ${CARD_BG} 0%, ${CARD_BG}ee 40%, ${CARD_BG}00 100%)`,
-          padding: "32px 14px 12px 14px",
-        }}
+        style={{ padding: "28px 10px 10px 10px" }}
       >
-        <p
-          className="text-[9px] uppercase tracking-[0.12em]"
-          style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", opacity: 0.7 }}
+        {/* Gradient fade from sand */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `linear-gradient(to top, ${CARD_BG} 0%, ${CARD_BG}ee 50%, ${CARD_BG}00 100%)` }} />
+
+        <div
+          className="relative rounded-2xl px-3.5 py-3"
+          style={{
+            background: "rgba(255,255,255,0.6)",
+            border: "1px solid rgba(255,255,255,0.85)",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 2px 12px rgba(var(--swatch-teal-rgb), 0.06)",
+          }}
         >
-          {product.brand}
-        </p>
-        <h3
-          className="text-[15px] md:text-[17px] leading-[1.1] font-semibold"
-          style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}
-        >
-          {product.name}
-        </h3>
-        {productDisplayPrice && (
+          {/* Category eyebrow */}
           <p
-            className="text-[12px] font-bold mt-0.5"
-            style={{ fontFamily: "'Jost', sans-serif", color: "#2f5f6d" }}
+            className="text-[8px] uppercase tracking-[0.14em] mb-0.5"
+            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
           >
-            {productDisplayPrice}
+            {product.brand}
           </p>
-        )}
+          <h3
+            className="text-[14px] md:text-[16px] leading-[1.1] font-semibold"
+            style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}
+          >
+            {product.name}
+          </h3>
+
+          {/* Bottom row: price + shop pill */}
+          <div className="flex items-center justify-between mt-1.5">
+            {productDisplayPrice ? (
+              <p
+                className="text-[12px] font-bold"
+                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}
+              >
+                {productDisplayPrice}
+              </p>
+            ) : <span />}
+            {productDestination && (
+              <span
+                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[8px] uppercase tracking-[0.1em]"
+                style={{
+                  fontFamily: "'Jost', sans-serif",
+                  color: "#fff",
+                  background: "var(--swatch-teal)",
+                }}
+              >
+                {productActionLabel || "Shop"}
+                <ExternalLink className="w-2.5 h-2.5" />
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Hover actions — top-right, subtle glass pills */}
@@ -650,14 +767,14 @@ function ProductCard({
         <button
           onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
           className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
-          style={{ background: "rgba(255,255,255,0.85)" }}
+          style={{ background: "rgba(255,255,255,0.85)", boxShadow: "0 2px 6px rgba(0,0,0,0.08)" }}
         >
           <Bookmark className="h-3.5 w-3.5" style={{ color: isSaved ? "var(--swatch-cedar-grove)" : "var(--swatch-teal)" }} />
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onShare(); }}
           className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
-          style={{ background: "rgba(255,255,255,0.85)" }}
+          style={{ background: "rgba(255,255,255,0.85)", boxShadow: "0 2px 6px rgba(0,0,0,0.08)" }}
           disabled={shareLoading}
         >
           {shareLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" style={{ color: "var(--swatch-teal)" }} />}
