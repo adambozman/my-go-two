@@ -481,7 +481,7 @@ const Recommendations = () => {
               {/* ── T9: Category tile (2 cols, 1 row — wide) ── */}
               <div
                 className="col-span-2 rounded-xl overflow-hidden flex items-center gap-3 px-4 py-3"
-                style={{ background: "linear-gradient(145deg, #f5e9dc 0%, #efe0cf 100%)" }}
+                style={{ background: "#e8d9c9" }}
               >
                 <p className="text-[9px] uppercase tracking-[0.14em] shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>Categories</p>
                 <div className="flex flex-wrap gap-1">
@@ -509,9 +509,9 @@ const Recommendations = () => {
                 </p>
               </div>
 
-              {/* ── T12: Tagline / CTA tile (2 cols, 1 row) ── */}
+              {/* ── T12: Tagline / CTA tile (3 cols, 1 row — fills remaining space) ── */}
               <div
-                className="col-span-2 rounded-xl overflow-hidden flex items-center justify-between px-4 py-3"
+                className="col-span-2 md:col-span-3 rounded-xl overflow-hidden flex items-center justify-between px-4 py-3"
                 style={{ background: "linear-gradient(135deg, var(--swatch-teal) 0%, #00687a 100%)" }}
               >
                 <p className="text-[13px] leading-[1.2]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "#fff" }}>
