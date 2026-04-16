@@ -146,15 +146,13 @@ function CategoryDetailView({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: OVERLAY_TRANSITION_MS / 1000 }}
-      className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6"
+      className="absolute inset-x-0 top-0 z-30 px-3 pt-4 sm:px-4 md:px-6 md:pt-6"
+      style={{ margin: "0 auto", maxWidth: 1280 }}
     >
-      {/* ONE box — blurred image bg, title left, product card on top right */}
+      {/* ONE rounded box — blurred image bg, title left, product card on top right */}
       <div
         className="relative overflow-hidden"
-        style={{
-          borderRadius: 20,
-          minHeight: "calc(100vh - 120px)",
-        }}
+        style={{ borderRadius: 20 }}
       >
         {/* background: blurred category image fills the entire box */}
         {imageUrl ? (
@@ -190,7 +188,7 @@ function CategoryDetailView({
         </div>
 
         {/* content layer: title left, product card right — both inside the one box */}
-        <div className="relative z-10 flex min-h-[calc(100vh-120px)]">
+        <div className="relative z-10 flex" style={{ minHeight: "calc(100vh - 200px)" }}>
           {/* left: title + description */}
           <div className="flex-1 flex items-center justify-center px-8">
             <div className="text-center max-w-[480px]">
@@ -219,15 +217,14 @@ function CategoryDetailView({
             </div>
           </div>
 
-          {/* right: product card ON TOP of the box bg */}
-          <div className="w-[min(38%,460px)] min-w-[360px] flex items-start pt-6 pr-6 pb-6">
+          {/* right: product card ON TOP of the box bg, top-aligned */}
+          <div className="w-[min(38%,460px)] min-w-[360px] pt-6 pr-6">
             <div
-              className="w-full overflow-y-auto"
+              className="overflow-y-auto"
               style={{
                 borderRadius: 16,
                 background: "var(--swatch-cream-light)",
                 boxShadow: "0 4px 24px rgba(0,0,0,0.1)",
-                maxHeight: "calc(100vh - 160px)",
               }}
             >
               <MyProductCardBeverages
@@ -279,99 +276,94 @@ export default function MyGoTwoStripGalleryAsset() {
   return (
     <section
       aria-label="My Go Two categories"
-      className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6"
+      className="relative h-full overflow-x-hidden overflow-y-auto px-1 pb-6"
     >
-      <AnimatePresence mode="wait">
-        {activeCategory ? (
+      {/* grid is always rendered — detail overlays on top */}
+      <div className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
+        <div
+          className="relative w-full"
+          style={{
+            paddingBottom: "85%",
+            filter: isRevealed ? "none" : "blur(20px)",
+            opacity: isRevealed ? 1 : 0,
+            transform: isRevealed ? "scale(1)" : "scale(1.02)",
+            transition: "filter 0.5s ease-out, opacity 0.5s ease-out, transform 0.5s ease-out",
+          }}
+        >
+          {CATEGORY_CARDS.map((card) => {
+            const cardId = `mgt-${card.target.slug}`;
+            const ovr = overrides[cardId];
+            const hasOvrImage = Boolean(ovr?.image_url);
+
+            return (
+              <motion.button
+                key={card.target.slug}
+                whileTap={{ scale: 0.985 }}
+                onClick={() => handleCardClick(card)}
+                className="absolute overflow-hidden text-left group"
+                style={{
+                  borderRadius: 20,
+                  background: hasOvrImage ? "transparent" : card.defaultBg,
+                  left: `${card.left}%`,
+                  top: `${card.top}%`,
+                  width: `${card.width}%`,
+                  height: `${card.height}%`,
+                }}
+              >
+                <CardEditTrigger
+                  cardId={cardId}
+                  override={ovr}
+                  onSaved={refreshOverrides}
+                  fields={["image_url", "heading", "subheading"]}
+                />
+
+                {hasOvrImage && (
+                  <>
+                    <img
+                      src={ovr!.image_url!}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0"
+                      style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%)" }} />
+                  </>
+                )}
+
+                <div className="relative z-[1] flex flex-col justify-end h-full p-5 md:p-6">
+                  <p className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.16em]"
+                    style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.65)" }}>
+                    My Go Two
+                  </p>
+                  <h2 className="text-[22px] leading-[0.96] sm:text-[26px] md:text-[30px]"
+                    style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", maxWidth: "14ch" }}>
+                    {ovr?.heading || card.target.label}
+                  </h2>
+                  <p className="text-[11px] leading-relaxed mt-1.5 max-w-[28ch] sm:text-[12px]"
+                    style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
+                    {ovr?.subheading || card.subtitle}
+                  </p>
+                  <div className="flex items-center justify-end pt-2">
+                    <div className="rounded-full w-8 h-8 flex items-center justify-center transition-transform group-hover:translate-x-0.5"
+                      style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)" }}>
+                      <ChevronRight className="w-3.5 h-3.5 text-white" />
+                    </div>
+                  </div>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* detail overlay — sits on top of the grid, grid peeks out at bottom */}
+      <AnimatePresence>
+        {activeCategory && (
           <CategoryDetailView
             key={activeCategory.target.slug}
             category={activeCategory}
             imageUrl={activeImageUrl}
             onBack={handleOverlayBack}
           />
-        ) : (
-          <motion.div
-            key="grid"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6"
-          >
-            <div
-              className="relative w-full"
-              style={{
-                paddingBottom: "85%",
-                filter: isRevealed ? "none" : "blur(20px)",
-                opacity: isRevealed ? 1 : 0,
-                transform: isRevealed ? "scale(1)" : "scale(1.02)",
-                transition: "filter 0.5s ease-out, opacity 0.5s ease-out, transform 0.5s ease-out",
-              }}
-            >
-              {CATEGORY_CARDS.map((card) => {
-                const cardId = `mgt-${card.target.slug}`;
-                const ovr = overrides[cardId];
-                const hasOvrImage = Boolean(ovr?.image_url);
-
-                return (
-                  <motion.button
-                    key={card.target.slug}
-                    whileTap={{ scale: 0.985 }}
-                    onClick={() => handleCardClick(card)}
-                    className="absolute overflow-hidden text-left group"
-                    style={{
-                      borderRadius: 20,
-                      background: hasOvrImage ? "transparent" : card.defaultBg,
-                      left: `${card.left}%`,
-                      top: `${card.top}%`,
-                      width: `${card.width}%`,
-                      height: `${card.height}%`,
-                    }}
-                  >
-                    <CardEditTrigger
-                      cardId={cardId}
-                      override={ovr}
-                      onSaved={refreshOverrides}
-                      fields={["image_url", "heading", "subheading"]}
-                    />
-
-                    {hasOvrImage && (
-                      <>
-                        <img
-                          src={ovr!.image_url!}
-                          alt=""
-                          className="absolute inset-0 w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0"
-                          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%)" }} />
-                      </>
-                    )}
-
-                    <div className="relative z-[1] flex flex-col justify-end h-full p-5 md:p-6">
-                      <p className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.16em]"
-                        style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.65)" }}>
-                        My Go Two
-                      </p>
-                      <h2 className="text-[22px] leading-[0.96] sm:text-[26px] md:text-[30px]"
-                        style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", maxWidth: "14ch" }}>
-                        {ovr?.heading || card.target.label}
-                      </h2>
-                      <p className="text-[11px] leading-relaxed mt-1.5 max-w-[28ch] sm:text-[12px]"
-                        style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
-                        {ovr?.subheading || card.subtitle}
-                      </p>
-                      <div className="flex items-center justify-end pt-2">
-                        <div className="rounded-full w-8 h-8 flex items-center justify-center transition-transform group-hover:translate-x-0.5"
-                          style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)" }}>
-                          <ChevronRight className="w-3.5 h-3.5 text-white" />
-                        </div>
-                      </div>
-                    </div>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </motion.div>
         )}
       </AnimatePresence>
     </section>
