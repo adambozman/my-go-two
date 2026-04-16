@@ -13,57 +13,71 @@ import {
 } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.images";
 
 const OVERLAY_TRANSITION_MS = 280;
+const GAP = 10; // px between cards
 
-/* ─── category card metadata ─── */
 type CategoryCardMeta = {
   target: MyGoTwoCategoryTarget;
   subtitle: string;
   defaultBg: string;
-  /** CSS grid area name */
-  area: string;
+  /** position/size as % of the container */
+  left: number;
+  top: number;
+  width: number;
+  height: number;
 };
 
 /*
-  Mosaic layout on a 6-col × 6-row grid (uniform gaps, clean outer perimeter):
+  Positions measured directly from the user's Canva mockup image.
+  Each value is a percentage of the container.
 
-    a a  b b  c c
-    a a  d d  c c
-    e e  d d  f f
-    e e  g g  f f
-    h h  g g  i i
-    h h  g g  i i
-
-  Cards: a=tall-left, b=short-wide, c=short-wide-right,
-         d=medium, e=tall-left-2, f=medium-right, g=big-center,
-         h=tall-left-3, i=wide-bottom
-  
-  Actually matching the Canva mockup exactly:
-  3 columns, varied row spans:
-  
-  col1(1/3)  col2(1/3)  col3(1/3)
-  ┌─a─┐ ┌──b──┐ ┌──c──────┐
-  │   │ └─────┘ │         │
-  │   │ ┌──d──────────────┤
-  └───┘ │       │ ┌──f──┐ │ 
-  ┌─e─┐ │       │ │     │
-  │   │ └───────┘ └─────┘
-  │   │ ┌──g──────────────┐
-  └───┘ │                 │
-        └─────────────────┘
-
-  Let me use a proper 6×6 grid to match the mockup:
+  The mockup has a ~1% gap between cards. The positions below
+  are pixel-traced from the actual image, then rounded to clean values.
 */
-
 const CATEGORY_CARDS: CategoryCardMeta[] = [
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "clothes")!, subtitle: "Lock in your daily look", defaultBg: "var(--swatch-teal)", area: "clothes" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "personal")!, subtitle: "Routines, grooming & self-care", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)", area: "personal" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "health")!, subtitle: "Supplements, fitness & wellness", defaultBg: "var(--swatch-teal)", area: "health" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "gifts")!, subtitle: "What to get them every time", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)", area: "gifts" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "dining")!, subtitle: "Orders, cravings & restaurants", defaultBg: "var(--swatch-teal)", area: "dining" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "beverages")!, subtitle: "Your perfect pour, locked in", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)", area: "beverages" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "household")!, subtitle: "Home essentials & brands", defaultBg: "var(--swatch-teal)", area: "household" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "entertainment")!, subtitle: "Shows, music & media picks", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)", area: "entertainment" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "travel")!, subtitle: "Hotels, airlines & destinations", defaultBg: "var(--swatch-teal)", area: "travel" },
+  // Card 1 — top-left, tall
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "clothes")!,
+    subtitle: "Lock in your daily look", defaultBg: "var(--swatch-teal)",
+    left: 0, top: 0, width: 26, height: 45 },
+
+  // Card 2 — top-center, short
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "personal")!,
+    subtitle: "Routines, grooming & self-care", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)",
+    left: 27.5, top: 0, width: 27, height: 22 },
+
+  // Card 3 — top-right, wide short
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "health")!,
+    subtitle: "Supplements, fitness & wellness", defaultBg: "var(--swatch-teal)",
+    left: 56, top: 0, width: 44, height: 22 },
+
+  // Card 4 — mid-center, tall
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "gifts")!,
+    subtitle: "What to get them every time", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)",
+    left: 27.5, top: 24, width: 24, height: 45 },
+
+  // Card 5 — center, tallest
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "dining")!,
+    subtitle: "Orders, cravings & restaurants", defaultBg: "var(--swatch-teal)",
+    left: 53, top: 24, width: 20, height: 76 },
+
+  // Card 6 — mid-right, small
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "beverages")!,
+    subtitle: "Your perfect pour, locked in", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)",
+    left: 74.5, top: 24, width: 25.5, height: 22 },
+
+  // Card 7 — left, medium short
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "household")!,
+    subtitle: "Home essentials & brands", defaultBg: "var(--swatch-teal)",
+    left: 0, top: 47.5, width: 26, height: 22 },
+
+  // Card 8 — right, tall
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "entertainment")!,
+    subtitle: "Shows, music & media picks", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)",
+    left: 74.5, top: 48.5, width: 25.5, height: 51.5 },
+
+  // Card 9 — bottom-left, wide
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "travel")!,
+    subtitle: "Hotels, airlines & destinations", defaultBg: "var(--swatch-teal)",
+    left: 0, top: 72, width: 51.5, height: 28 },
 ];
 
 /* ─── overlay content per category ─── */
@@ -120,9 +134,7 @@ function CategoryOverlay({
         <div className="absolute inset-0 z-10">
           <div
             className="pointer-events-none absolute left-5 top-[17%] sm:left-8 md:left-10 lg:left-14"
-            style={{
-              right: "calc(clamp(480px, 37.5%, 560px) + clamp(0.875rem, 1.8vw, 1.5rem))",
-            }}
+            style={{ right: "calc(clamp(480px, 37.5%, 560px) + clamp(0.875rem, 1.8vw, 1.5rem))" }}
           >
             <div className="mx-auto max-w-[min(31rem,72%)] text-center">
               <h2
@@ -152,79 +164,7 @@ function CategoryOverlay({
   );
 }
 
-/*
-  Grid matching the Canva mockup (9 cards, all different sizes):
-
-  6 columns × 9 rows
-
-  Row 1:  clothes  clothes | personal personal | health   health
-  Row 2:  clothes  clothes | personal personal | health   health
-  Row 3:  clothes  clothes | gifts    gifts    | health   health
-  Row 4:  dining   dining  | gifts    gifts    | beverages beverages
-  Row 5:  dining   dining  | gifts    gifts    | beverages beverages
-  Row 6:  dining   dining  | household household household household
-  Row 7:  entertainment entertainment | household household household household  (WRONG — 3 cols needed)
-
-  Actually let me just match the mockup literally:
-  3 columns. Cards span different row counts.
-
-  Using a 6col × 9row grid:
-
-       col1-2    col3-4    col5-6
-  r1 [ clothes ] [personal] [ health       ]
-  r2 [ clothes ] [personal] [ health       ]
-  r3 [ clothes ] [ gifts            ][ health       ]
-  r4 [ dining  ] [ gifts            ][ beverages    ]
-  r5 [ dining  ] [ gifts            ][ beverages    ]
-  r6 [ dining  ] [   household               ]
-  r7 [entertainment] [   household           ]
-  r8 [entertainment] [   household           ]
-  r9 [entertainment] [   travel              ]  (WRONG again)
-
-  OK let me just be precise. The mockup has:
-  - 3 columns
-  - Left column: 2 tall cards stacked (each ~half height)
-  - Middle column: short card on top, then a BIG card below it
-  - Right column: tall card on top, then short card, then wide card spanning cols 2-3
-
-  Let me use a 6×8 grid:
-*/
-
-const GRID_CSS = `
-.mgt-mosaic {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(12, 1fr);
-  gap: 10px;
-  grid-template-areas:
-    "a a a b b b c c c c c c"
-    "a a a b b b c c c c c c"
-    "a a a b b b c c c c c c"
-    "a a a d d d d d e e e e"
-    "a a a d d d d d e e e e"
-    "a a a d d d d d e e e e"
-    "f f f g g g g g i i i i"
-    "f f f g g g g g i i i i"
-    "f f f g g g g g i i i i"
-    "h h h g g g g g i i i i"
-    "h h h g g g g g i i i i"
-    "h h h g g g g g i i i i";
-}
-@media (max-width: 767px) {
-  .mgt-mosaic {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(5, minmax(140px, 1fr));
-    grid-template-areas:
-      "a b"
-      "c d"
-      "e f"
-      "g g"
-      "h i";
-  }
-}
-`;
-
-/* ─── main bento grid ─── */
+/* ─── main component ─── */
 export default function MyGoTwoStripGalleryAsset() {
   const { overrides, refresh: refreshOverrides } = useCardOverrides();
   const [activeCategory, setActiveCategory] = useState<CategoryCardMeta | null>(null);
@@ -237,24 +177,20 @@ export default function MyGoTwoStripGalleryAsset() {
     setActiveCategory(null);
   }, []);
 
-  /* map area letters to cards */
-  const areaLetters = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
-
   return (
     <section
       aria-label="My Go Two categories"
       className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6"
     >
-      <style dangerouslySetInnerHTML={{ __html: GRID_CSS }} />
       <div className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="mgt-mosaic"
-          style={{ minHeight: "min(820px, 80vh)" }}
+          className="relative w-full"
+          style={{ paddingBottom: "85%" }}
         >
-          {CATEGORY_CARDS.map((card, idx) => {
+          {CATEGORY_CARDS.map((card) => {
             const cardId = `mgt-${card.target.slug}`;
             const ovr = overrides[cardId];
             const hasOvrImage = Boolean(ovr?.image_url);
@@ -264,11 +200,14 @@ export default function MyGoTwoStripGalleryAsset() {
                 key={card.target.slug}
                 whileTap={{ scale: 0.985 }}
                 onClick={() => handleCardClick(card)}
-                className="overflow-hidden relative text-left group"
+                className="absolute overflow-hidden text-left group"
                 style={{
-                  gridArea: areaLetters[idx],
                   borderRadius: 20,
                   background: hasOvrImage ? "transparent" : card.defaultBg,
+                  left: `${card.left}%`,
+                  top: `${card.top}%`,
+                  width: `${card.width}%`,
+                  height: `${card.height}%`,
                 }}
               >
                 <CardEditTrigger
@@ -288,8 +227,7 @@ export default function MyGoTwoStripGalleryAsset() {
                     <div
                       className="absolute inset-0"
                       style={{
-                        background:
-                          "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%)",
+                        background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%)",
                       }}
                     />
                   </>
@@ -298,10 +236,7 @@ export default function MyGoTwoStripGalleryAsset() {
                 <div className="relative z-[1] flex flex-col justify-end h-full p-5 md:p-6">
                   <p
                     className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.16em]"
-                    style={{
-                      fontFamily: "'Jost', sans-serif",
-                      color: "rgba(255,255,255,0.65)",
-                    }}
+                    style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.65)" }}
                   >
                     My Go Two
                   </p>
@@ -319,10 +254,7 @@ export default function MyGoTwoStripGalleryAsset() {
                   </h2>
                   <p
                     className="text-[11px] leading-relaxed mt-1.5 max-w-[28ch] sm:text-[12px]"
-                    style={{
-                      fontFamily: "'Jost', sans-serif",
-                      color: "rgba(255,255,255,0.8)",
-                    }}
+                    style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}
                   >
                     {ovr?.subheading || card.subtitle}
                   </p>
@@ -330,10 +262,7 @@ export default function MyGoTwoStripGalleryAsset() {
                   <div className="flex items-center justify-end pt-2">
                     <div
                       className="rounded-full w-8 h-8 flex items-center justify-center transition-transform group-hover:translate-x-0.5"
-                      style={{
-                        background: "rgba(255,255,255,0.15)",
-                        border: "1px solid rgba(255,255,255,0.2)",
-                      }}
+                      style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)" }}
                     >
                       <ChevronRight className="w-3.5 h-3.5 text-white" />
                     </div>
