@@ -65,7 +65,7 @@ function getProductImage(product: Product) {
   return hasResolvedProductImage(product) ? product.image_url! : null;
 }
 
-const Recommendations = () => {
+const ForYou = () => {
   const { knowledgeDerivations } = useUserProfile();
   const { subscribed, subscriptionLoading, user, session } = useAuth();
   const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
@@ -362,7 +362,7 @@ const Recommendations = () => {
           </Card>
         )}
 
-        {/* ── Bento grid ── */}
+        {/* ── Bento — absolute positioned, same layout as My Go Two ── */}
         {loading && products.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-16">
             <Loader2 className="h-6 w-6 animate-spin" />
@@ -370,72 +370,30 @@ const Recommendations = () => {
           </div>
         ) : displayProducts.length > 0 ? (
           <>
-            {/*
-              MOSAIC-FIRST: 8 tiles, grid-template-areas, perfect rectangle.
-              6 cols × 5 rows.  Every cell filled.  All tiles unique shape.
-
-              hero(3×1)  prod1(2×2)  brand(1×1)
-              prod2(2×3) stats(1×1)  quote(1×3)
-              prod3(3×2)             prod4(6×1)
-            */}
-            <style dangerouslySetInnerHTML={{ __html: `
-              @media (min-width: 768px) {
-                .bento-mosaic {
-                  grid-template-columns: repeat(6, 1fr) !important;
-                  grid-template-rows: repeat(5, 120px) !important;
-                  grid-template-areas:
-                    "hero  hero  hero  prod1 prod1 brand"
-                    "prod2 prod2 stats prod1 prod1 quote"
-                    "prod2 prod2 prod3 prod3 prod3 quote"
-                    "prod2 prod2 prod3 prod3 prod3 quote"
-                    "prod4 prod4 prod4 prod4 prod4 prod4" !important;
-                }
-                .bento-mosaic [data-area] { grid-area: attr(data-area); }
-                .bento-area-hero  { grid-area: hero !important; }
-                .bento-area-prod1 { grid-area: prod1 !important; }
-                .bento-area-brand { grid-area: brand !important; }
-                .bento-area-prod2 { grid-area: prod2 !important; }
-                .bento-area-stats { grid-area: stats !important; }
-                .bento-area-quote { grid-area: quote !important; }
-                .bento-area-prod3 { grid-area: prod3 !important; }
-                .bento-area-prod4 { grid-area: prod4 !important; }
-              }
-            `}} />
             <motion.div
               key={`${activePillar}-${currentPage}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="bento-mosaic grid grid-cols-2 gap-1.5 md:gap-2"
+              className="relative w-full"
+              style={{ paddingBottom: "85%" }}
             >
-              {/* hero: 3×1 — page intro */}
+              {/* Slot 1 — RECOMMENDATION: hero (left:0 top:0 w:26 h:45) */}
               <div
-                className="bento-area-hero col-span-2 overflow-hidden relative"
-                style={{ borderRadius: 20, background: "var(--swatch-teal)" }}
+                className="absolute overflow-hidden"
+                style={{ borderRadius: 20, background: "var(--swatch-teal)", left: "0%", top: "0%", width: "26%", height: "45%" }}
               >
                 <CardEditTrigger cardId="hero" override={heroOverride} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
-                {/* Background image from user's photo gallery — fills entire card */}
                 {heroImageUrl && (
-                  <img
-                    src={heroImageUrl}
-                    alt=""
-                    className="absolute inset-0 w-full h-full object-cover"
-                    style={{ objectPosition: "center 30%" }}
-                  />
+                  <img src={heroImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: "center 30%" }} />
                 )}
-
-                {/* Gradient scrim for text legibility */}
                 <div className="absolute inset-0" style={{ background: heroImageUrl ? "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.1) 100%)" : "none" }} />
-
-                {/* Floating pill badge top-right */}
                 <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
                   <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)", backdropFilter: "blur(8px)" }}>
                     <Sparkles className="w-2.5 h-2.5" style={{ color: "var(--swatch-sonoma-chardonnay)" }} />
                     Curated
                   </span>
                 </div>
-
-                {/* Text overlay — centered, spread across the whole box */}
                 <div className="relative z-10 flex flex-col items-center justify-center text-center h-full px-5 py-5 md:px-8">
                   <h2 className="text-[24px] md:text-[32px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
                     {heroOverride?.heading || "Handpicked for you"}
@@ -446,37 +404,28 @@ const Recommendations = () => {
                 </div>
               </div>
 
-              {/* prod1: 2×2 — first product */}
-              {displayProducts[0] ? (
-                <ProductCard product={displayProducts[0]} index={0} layoutClass="bento-area-prod1" isSaved={savedItems.has(getRecommendationStableId(displayProducts[0]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[0]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[0]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[0])} cardOverride={overrides[`product-${getRecommendationStableId(displayProducts[0])}`]} onOverrideSaved={refreshOverrides} />
-              ) : <div className="bento-area-prod1" />}
-
-              {/* brand: 1×1 — ad tile */}
+              {/* Slot 2 — AD: brand (left:27.5 top:0 w:27 h:22) */}
               {(() => {
                 const brandOverride = overrides["brand"];
                 return (
                   <div
-                    className="bento-area-brand overflow-hidden relative p-3 cursor-pointer"
-                    style={{ borderRadius: 20, background: brandOverride?.image_url ? "transparent" : "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
+                    className="absolute overflow-hidden p-3 cursor-pointer"
+                    style={{ borderRadius: 20, background: brandOverride?.image_url ? "transparent" : "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)", left: "27.5%", top: "0%", width: "27%", height: "22%" }}
                   >
                     <CardEditTrigger cardId="brand" override={brandOverride} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
                     {brandOverride?.image_url && (
                       <img src={brandOverride.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
                     )}
-                    {/* Floating pill top-right */}
                     <span className="absolute top-2.5 right-2.5 inline-flex items-center rounded-full px-2 py-0.5 text-[7px] uppercase tracking-[0.1em] z-10" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.22)" }}>
                       Trending
                     </span>
-
                     <div className="flex flex-col items-center justify-center h-full gap-1.5 relative z-[1]">
-                      {/* Icon spot */}
                       <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)" }}>
                         <Bookmark className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.9)" }} />
                       </div>
                       <p className="text-[15px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
                         {brandOverride?.heading || "#BookTok"}
                       </p>
-                      {/* Inset sub-panel */}
                       <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.16)" }}>
                         <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
                           {brandOverride?.subheading || "Trending Reads"}
@@ -487,40 +436,39 @@ const Recommendations = () => {
                 );
               })()}
 
-              {/* prod2: 2×3 — second product (tall) */}
-              {displayProducts[1] ? (
-                <ProductCard product={displayProducts[1]} index={1} layoutClass="bento-area-prod2" isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} cardOverride={overrides[`product-${getRecommendationStableId(displayProducts[1])}`]} onOverrideSaved={refreshOverrides} />
-              ) : <div className="bento-area-prod2" />}
+              {/* Slot 3 — RECOMMENDATION: prod1 (left:56 top:0 w:44 h:22) */}
+              {displayProducts[0] ? (
+                <ProductCard product={displayProducts[0]} index={0} layoutStyle={{ left: "56%", top: "0%", width: "44%", height: "22%" }} isSaved={savedItems.has(getRecommendationStableId(displayProducts[0]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[0]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[0]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[0])} cardOverride={overrides[`product-${getRecommendationStableId(displayProducts[0])}`]} onOverrideSaved={refreshOverrides} />
+              ) : <div className="absolute" style={{ left: "56%", top: "0%", width: "44%", height: "22%" }} />}
 
-              {/* stats: 1×1 — ad tile */}
+              {/* Slot 4 — RECOMMENDATION: prod2 (left:27.5 top:24 w:24 h:45) */}
+              {displayProducts[1] ? (
+                <ProductCard product={displayProducts[1]} index={1} layoutStyle={{ left: "27.5%", top: "24%", width: "24%", height: "45%" }} isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} cardOverride={overrides[`product-${getRecommendationStableId(displayProducts[1])}`]} onOverrideSaved={refreshOverrides} />
+              ) : <div className="absolute" style={{ left: "27.5%", top: "24%", width: "24%", height: "45%" }} />}
+
+              {/* Slot 5 — AD: stats tall (left:53 top:24 w:20 h:76) */}
               {(() => {
                 const statsOverride = overrides["stats"];
                 return (
                   <div
-                    className="bento-area-stats overflow-hidden relative p-3 cursor-pointer"
-                    style={{ borderRadius: 20, background: statsOverride?.image_url ? "transparent" : "var(--swatch-teal)" }}
+                    className="absolute overflow-hidden p-3 cursor-pointer"
+                    style={{ borderRadius: 20, background: statsOverride?.image_url ? "transparent" : "var(--swatch-teal)", left: "53%", top: "24%", width: "20%", height: "76%" }}
                   >
                     <CardEditTrigger cardId="stats" override={statsOverride} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
                     {statsOverride?.image_url && (
                       <img src={statsOverride.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
                     )}
-                    {/* Decorative orb */}
                     <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%)" }} />
-
-                    {/* Floating pill top-right */}
                     <span className="absolute top-2.5 right-2.5 inline-flex items-center rounded-full px-2 py-0.5 text-[7px] uppercase tracking-[0.1em] z-10" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.18)" }}>
                       Aesthetic
                     </span>
-
                     <div className="flex flex-col items-center justify-center h-full gap-1.5 relative z-[1]">
-                      {/* Icon spot */}
                       <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.14)" }}>
                         <Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.85)" }} />
                       </div>
                       <p className="text-[14px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
                         {statsOverride?.heading || "#CleanGirl"}
                       </p>
-                      {/* Inset sub-panel */}
                       <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}>
                         <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
                           {statsOverride?.subheading || "Curated Picks"}
@@ -531,25 +479,78 @@ const Recommendations = () => {
                 );
               })()}
 
-              {/* quote: 1×3 — 4th product (tall strip) */}
-              {displayProducts[3] ? (
-                <ProductCard product={displayProducts[3]} index={3} layoutClass="bento-area-quote" isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} cardOverride={overrides[`product-${getRecommendationStableId(displayProducts[3])}`]} onOverrideSaved={refreshOverrides} />
-              ) : <div className="bento-area-quote" />}
+              {/* Slot 6 — AD: ad3 (left:74.5 top:24 w:25.5 h:22) */}
+              {(() => {
+                const ad3Override = overrides["ad3"];
+                return (
+                  <div
+                    className="absolute overflow-hidden p-3 cursor-pointer"
+                    style={{ borderRadius: 20, background: ad3Override?.image_url ? "transparent" : "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)", left: "74.5%", top: "24%", width: "25.5%", height: "22%" }}
+                  >
+                    <CardEditTrigger cardId="ad3" override={ad3Override} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+                    {ad3Override?.image_url && (
+                      <img src={ad3Override.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    )}
+                    <div className="flex flex-col items-center justify-center h-full gap-1.5 relative z-[1]">
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)" }}>
+                        <Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.9)" }} />
+                      </div>
+                      <p className="text-[15px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                        {ad3Override?.heading || "Ad Space"}
+                      </p>
+                      <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.16)" }}>
+                        <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
+                          {ad3Override?.subheading || "Sponsored"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
 
-              {/* prod3: 3×2 — third product (wide) */}
+              {/* Slot 7 — AD: ad4 (left:0 top:47.5 w:26 h:22) */}
+              {(() => {
+                const ad4Override = overrides["ad4"];
+                return (
+                  <div
+                    className="absolute overflow-hidden p-3 cursor-pointer"
+                    style={{ borderRadius: 20, background: ad4Override?.image_url ? "transparent" : "var(--swatch-teal)", left: "0%", top: "47.5%", width: "26%", height: "22%" }}
+                  >
+                    <CardEditTrigger cardId="ad4" override={ad4Override} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+                    {ad4Override?.image_url && (
+                      <img src={ad4Override.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    )}
+                    <div className="flex flex-col items-center justify-center h-full gap-1.5 relative z-[1]">
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.14)" }}>
+                        <Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.85)" }} />
+                      </div>
+                      <p className="text-[15px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                        {ad4Override?.heading || "Ad Space"}
+                      </p>
+                      <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}>
+                        <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                          {ad4Override?.subheading || "Sponsored"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Slot 8 — RECOMMENDATION: prod3 (left:74.5 top:48.5 w:25.5 h:51.5) */}
               {displayProducts[2] ? (
-                <ProductCard product={displayProducts[2]} index={2} layoutClass="col-span-2 bento-area-prod3" isSaved={savedItems.has(getRecommendationStableId(displayProducts[2]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[2]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[2]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[2])} cardOverride={overrides[`product-${getRecommendationStableId(displayProducts[2])}`]} onOverrideSaved={refreshOverrides} />
-              ) : <div className="bento-area-prod3" />}
+                <ProductCard product={displayProducts[2]} index={2} layoutStyle={{ left: "74.5%", top: "48.5%", width: "25.5%", height: "51.5%" }} isSaved={savedItems.has(getRecommendationStableId(displayProducts[2]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[2]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[2]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[2])} cardOverride={overrides[`product-${getRecommendationStableId(displayProducts[2])}`]} onOverrideSaved={refreshOverrides} />
+              ) : <div className="absolute" style={{ left: "74.5%", top: "48.5%", width: "25.5%", height: "51.5%" }} />}
 
-              {/* prod4 area: 6×1 — quote bar */}
+              {/* Slot 9 — QUOTES (left:0 top:72 w:51.5 h:28) */}
               {(() => {
                 const quoteOverride = overrides["quote"];
                 const quoteText = quoteOverride?.heading || INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].text;
                 const quoteAuthor = quoteOverride?.subheading || INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].author;
                 return (
                   <div
-                    className="bento-area-prod4 col-span-2 overflow-hidden relative flex items-center justify-center px-6 md:px-10"
-                    style={{ borderRadius: 20, background: quoteOverride?.image_url ? "transparent" : "var(--swatch-teal)" }}
+                    className="absolute overflow-hidden flex items-center justify-center px-6 md:px-10"
+                    style={{ borderRadius: 20, background: quoteOverride?.image_url ? "transparent" : "var(--swatch-teal)", left: "0%", top: "72%", width: "51.5%", height: "28%" }}
                   >
                     <CardEditTrigger cardId="quote" override={quoteOverride} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
                     {quoteOverride?.image_url && (
@@ -560,7 +561,7 @@ const Recommendations = () => {
                     )}
                     <div className="relative z-[1] flex items-center gap-4 md:gap-6 w-full">
                       <p className="text-[18px] md:text-[22px] leading-[1.2] flex-1" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontWeight: 600, color: "#fff" }}>
-                        “{quoteText}”
+                        \u201c{quoteText}\u201d
                       </p>
                       <p className="text-[10px] md:text-[11px] shrink-0 uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
                         — {quoteAuthor}
@@ -570,7 +571,6 @@ const Recommendations = () => {
                 );
               })()}
 
-              {/* No overflow below the mosaic — the grid ends at prod4 */}
             </motion.div>
 
             {subscribed && totalPages > 1 && (
@@ -642,7 +642,7 @@ const Recommendations = () => {
 function ProductCard({
   product,
   index,
-  layoutClass,
+  layoutStyle,
   isSaved,
   shareLoading,
   onToggleSave,
@@ -652,7 +652,7 @@ function ProductCard({
 }: {
   product: Product;
   index: number;
-  layoutClass: string;
+  layoutStyle: { left: string; top: string; width: string; height: string };
   isSaved: boolean;
   shareLoading: boolean;
   onToggleSave: () => void;
@@ -678,8 +678,8 @@ function ProductCard({
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.04, type: "spring", stiffness: 260, damping: 24 }}
-      className={`group/card relative overflow-hidden cursor-pointer ${layoutClass}`}
-      style={{ borderRadius: 20, background: "var(--swatch-cream-light)" }}
+      className="group/card absolute overflow-hidden cursor-pointer"
+      style={{ borderRadius: 20, background: "var(--swatch-cream-light)", ...layoutStyle }}
       onClick={() => {
         if (productDestination) window.open(productDestination, "_blank", "noopener,noreferrer");
       }}
@@ -795,8 +795,6 @@ function ProductCard({
   );
 }
 
-export default Recommendations;
+export default ForYou;
 
-// Codebase classification: runtime dashboard recommendations viewer.
-
-// Codebase classification: runtime recommendations page.
+// Codebase classification: runtime For You page.
