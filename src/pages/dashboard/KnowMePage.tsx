@@ -951,8 +951,7 @@ const KnowMePage = () => {
     const progress = questionNumber / visibleCategoryTotal;
 
     return (
-      <div className="h-full flex items-center justify-center" style={{ background: "var(--swatch-cream-light)", padding: 16 }}>
-       <div className="relative overflow-hidden w-full h-full" style={{ borderRadius: 24 }}>
+      <div className="h-full relative overflow-hidden">
         {/* Teal side — diagonal clip */}
         <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, var(--swatch-teal) 0%, #245049 100%)", clipPath: "polygon(0 0, 58% 0, 42% 100%, 0 100%)" }} />
         {/* Coral side — diagonal clip */}
@@ -962,7 +961,7 @@ const KnowMePage = () => {
         <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
 
         {/* Progress bar — top, inside rounded container */}
-        <div className="absolute top-0 left-0 right-0 h-[3px] z-20" style={{ background: "rgba(255,255,255,0.1)" }}>
+        <div className="absolute top-0 left-0 right-0 h-[3px] z-20">
           <motion.div
             className="absolute inset-y-0 left-0"
             initial={false}
@@ -1073,7 +1072,6 @@ const KnowMePage = () => {
             </motion.div>
           </AnimatePresence>
         </div>
-       </div>
       </div>
     );
   }
