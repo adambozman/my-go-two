@@ -24,6 +24,8 @@ import {
 } from "@/lib/knowledgeCenter";
 import GoTwoInline from "@/components/GoTwoInline";
 import { CardEditTrigger, useCardOverrides } from "@/components/CardEditor";
+import { useRotatingQuote } from "@/hooks/useRotatingQuote";
+import { INSPIRATIONAL_QUOTES } from "@/lib/quotes";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -209,6 +211,7 @@ const KnowMe = () => {
   const { setBackState } = useTopBar();
   const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
   const { overrides, refresh: refreshOverrides } = useCardOverrides();
+  const { index: quoteIndex } = useRotatingQuote();
   const knowMeResponses = useMemo(
     () => toKnowledgeResponseRecord(knowledgeSnapshot?.know_me_responses),
     [knowledgeSnapshot],
@@ -1273,7 +1276,7 @@ const KnowMe = () => {
                   </span>
                 </div>
                 <h2 className="text-[20px] leading-[0.96] sm:text-[24px] md:text-[28px] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }}>
-                  {kmCatOvr?.heading || "Categories\nby Question"}
+                  {kmCatOvr?.heading || "Questions\nby Category"}
                 </h2>
                 {/* Stacked category list */}
                 <div className="flex-1 flex flex-col justify-center gap-2">
@@ -1295,31 +1298,33 @@ const KnowMe = () => {
             </motion.button>
 
             {/* Slot 9 — QUOTES (left:0 top:72 w:51.5 h:28) */}
-            <div
-              className="absolute overflow-hidden flex items-center justify-center px-6 md:px-10"
-              style={{ borderRadius: 20, background: kmInfoOvr?.image_url ? "transparent" : "var(--swatch-cream-light)", left: "0%", top: "72%", width: "51.5%", height: "28%" }}
-            >
-              <CardEditTrigger cardId="km-info" override={kmInfoOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
-              {kmInfoOvr?.image_url && (
-                <>
-                  <img src={kmInfoOvr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.4)" }} />
-                </>
-              )}
-              <div className="relative z-[1] flex items-center gap-4 md:gap-6 w-full">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: kmInfoOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)" }}>
-                  <Sparkles className="w-4 h-4" style={{ color: kmInfoOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
+            {(() => {
+              const quoteOverride = overrides["km-quote"];
+              const quoteText = quoteOverride?.heading || INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].text;
+              const quoteAuthor = quoteOverride?.subheading || INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].author;
+              return (
+                <div
+                  className="absolute overflow-hidden flex items-center justify-center px-6 md:px-10"
+                  style={{ borderRadius: 20, background: quoteOverride?.image_url ? "transparent" : "var(--swatch-teal)", left: "0%", top: "72%", width: "51.5%", height: "28%" }}
+                >
+                  <CardEditTrigger cardId="km-quote" override={quoteOverride} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+                  {quoteOverride?.image_url && (
+                    <>
+                      <img src={quoteOverride.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                      <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.4)" }} />
+                    </>
+                  )}
+                  <div className="relative z-[1] flex items-center gap-4 md:gap-6 w-full">
+                    <p className="text-[18px] md:text-[22px] leading-[1.2] flex-1" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontWeight: 600, color: "#fff" }}>
+                      \u201c{quoteText}\u201d
+                    </p>
+                    <p className="text-[10px] md:text-[11px] shrink-0 uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                      — {quoteAuthor}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="text-[16px] md:text-[18px] leading-[1.2] font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: kmInfoOvr?.image_url ? "#fff" : "var(--swatch-teal)" }}>
-                    {kmInfoOvr?.heading || "Quotes"}
-                  </p>
-                  <p className="text-[11px] md:text-[12px] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: kmInfoOvr?.image_url ? "rgba(255,255,255,0.7)" : "var(--swatch-antique-coin)" }}>
-                    {kmInfoOvr?.subheading || "The AI combines your Know Me answers with This or That instinct picks to read patterns across style, gifting, lifestyle, and preferences."}
-                  </p>
-                </div>
-              </div>
-            </div>
+              );
+            })()}
 
           </motion.div>
         </div>
