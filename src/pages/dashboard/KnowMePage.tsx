@@ -23,6 +23,7 @@ import {
   getYourVibeDerivation,
 } from "@/lib/knowledgeCenter";
 import GoTwoInline from "@/components/GoTwoInline";
+import { CardEditTrigger, useCardOverrides } from "@/components/CardEditor";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -205,6 +206,7 @@ const KnowMePage = () => {
     useUserProfile();
   const { setBackState } = useTopBar();
   const yourVibe = useMemo(() => getYourVibeDerivation(knowledgeDerivations), [knowledgeDerivations]);
+  const { overrides, refresh: refreshOverrides } = useCardOverrides();
   const knowMeResponses = useMemo(
     () => toKnowledgeResponseRecord(knowledgeSnapshot?.know_me_responses),
     [knowledgeSnapshot],
@@ -992,232 +994,331 @@ const KnowMePage = () => {
     );
   }
 
+  const kmVibeOvr = overrides["km-vibe"];
+  const kmTotOvr = overrides["km-thisorthat"];
+  const kmChatOvr = overrides["km-chat"];
+  const kmCatOvr = overrides["km-categories"];
+  const kmInfoOvr = overrides["km-info"];
+  const kmAd1Ovr = overrides["km-ad1"];
+  const kmAd2Ovr = overrides["km-ad2"];
+
   return (
     <>
-      <div className="h-full overflow-y-auto px-1 pb-6">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
-          <div className="grid grid-cols-1 gap-4 auto-rows-auto lg:grid-cols-12">
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", stiffness: 260, damping: 24 }}
-              className="lg:col-span-8 card-design-sand rounded-[28px] p-5 md:rounded-[34px] md:p-7 relative overflow-hidden min-h-[280px] md:min-h-[320px] lg:min-h-[340px]"
+      <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
+        <div className="max-w-[1280px] mx-auto px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
+          {/*
+            Bento mosaic — 7 tiles, same pattern as For You
+            6 cols × 6 rows on desktop
+            vibe(4×2)  tot(2×2)
+            chat(2×2)  ad1(1×1)  cats(3×2)
+                       ad2(1×1)
+            info(6×1)
+          */}
+          <style dangerouslySetInnerHTML={{ __html: `
+            @media (min-width: 768px) {
+              .km-bento {
+                grid-template-columns: repeat(6, 1fr) !important;
+                grid-template-rows: repeat(5, 120px) !important;
+                grid-template-areas:
+                  "vibe vibe vibe vibe tot  tot"
+                  "vibe vibe vibe vibe tot  tot"
+                  "chat chat ad1  cats cats cats"
+                  "chat chat ad2  cats cats cats"
+                  "info info info info info info" !important;
+              }
+              .km-area-vibe { grid-area: vibe !important; }
+              .km-area-tot  { grid-area: tot  !important; }
+              .km-area-chat { grid-area: chat !important; }
+              .km-area-ad1  { grid-area: ad1  !important; }
+              .km-area-ad2  { grid-area: ad2  !important; }
+              .km-area-cats { grid-area: cats !important; }
+              .km-area-info { grid-area: info !important; }
+            }
+          `}} />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="km-bento grid grid-cols-2 gap-1.5 md:gap-2"
+          >
+
+            {/* ── VIBE: 4×2 hero ── */}
+            <div
+              className="km-area-vibe col-span-2 md:col-span-1 overflow-hidden relative"
+              style={{ borderRadius: 20, background: kmVibeOvr?.image_url ? "transparent" : "var(--swatch-teal)" }}
             >
-              <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.14), transparent 30%), linear-gradient(130deg, rgba(255,255,255,0.05), transparent 55%)" }} />
-              <div className="relative flex h-full flex-col justify-between gap-6">
-                {/* Top: headline left, floating stat badge right */}
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="surface-eyebrow-coral mb-3"><GoTwoInline /> / Know Me</p>
-                    <h1 className="text-[38px] leading-[0.88] max-w-[9ch] sm:text-[48px] md:text-[60px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                      Your Vibe
-                    </h1>
-                  </div>
-                  <div className="rounded-[20px] px-5 py-4 text-center backdrop-blur-md" style={{ background: "rgba(var(--swatch-teal-rgb), 0.08)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}>
-                    <p className="text-[42px] leading-none md:text-[52px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                      {vibeProgressPercent}<span className="text-[22px] md:text-[26px]">%</span>
-                    </p>
-                    <p className="text-[10px] uppercase tracking-[0.18em] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>Profile read</p>
-                  </div>
-                </div>
+              <CardEditTrigger cardId="km-vibe" override={kmVibeOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+              {kmVibeOvr?.image_url && (
+                <>
+                  <img src={kmVibeOvr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%)" }} />
+                </>
+              )}
 
-                {/* Middle: persona summary in a glass inset sub-card */}
-                <div className="surface-inset-panel rounded-[18px] px-4 py-3" style={{ maxWidth: "80%" }}>
-                  <p className="text-[14px] leading-snug sm:text-[15px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: "var(--swatch-teal)" }}>
-                    {yourVibe?.persona_summary || "Building a read on whether your style leans cleaner, louder, softer, practical, or elevated."}
-                  </p>
-                </div>
+              {/* Floating stat badge top-right */}
+              <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10 rounded-[16px] px-4 py-3 text-center backdrop-blur-md" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)" }}>
+                <p className="text-[36px] leading-none md:text-[44px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                  {vibeProgressPercent}<span className="text-[18px] md:text-[22px]">%</span>
+                </p>
+                <p className="text-[9px] uppercase tracking-[0.16em] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>Profile read</p>
+              </div>
 
-                {/* Bottom: progress bar + inline stat chips */}
+              {/* Content */}
+              <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-7">
                 <div>
-                  <div className="h-[5px] rounded-full overflow-hidden mb-3" style={{ background: "rgba(var(--swatch-teal-rgb), 0.12)" }}>
+                  <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                    <GoTwoInline /> / Know Me
+                  </p>
+                  <h1 className="text-[36px] leading-[0.88] max-w-[9ch] sm:text-[46px] md:text-[56px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                    {kmVibeOvr?.heading || "Your Vibe"}
+                  </h1>
+                </div>
+
+                <p className="text-[13px] leading-snug sm:text-[14px] max-w-[36ch] mt-4" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.85)" }}>
+                  {kmVibeOvr?.subheading || yourVibe?.persona_summary || "Building a read on whether your style leans cleaner, louder, softer, practical, or elevated."}
+                </p>
+
+                {/* Progress bar */}
+                <div className="mt-auto pt-4">
+                  <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.2)" }}>
                     <motion.div
                       className="h-full rounded-full"
-                      style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))" }}
+                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.9), var(--swatch-cedar-grove))" }}
                       initial={{ width: 0 }}
                       animate={{ width: `${vibeProgressPercent}%` }}
                       transition={{ type: "spring", stiffness: 100, damping: 20 }}
                     />
                   </div>
-                  <div className="flex items-center gap-5">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full" style={{ background: "var(--swatch-teal)" }} />
-                      <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>{totalAnswered} answered</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
-                      <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>{totalQuestions} total</span>
-                    </div>
-                    {!subscribed && (
-                      <span className="ml-auto rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", background: "rgba(var(--swatch-cedar-grove-rgb), 0.1)", color: "var(--swatch-cedar-grove)" }}>
-                        {FREE_CATEGORY_LIMIT} free / category
-                      </span>
-                    )}
+                  <div className="flex items-center gap-5 mt-2">
+                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.65)" }}>{totalAnswered} answered</span>
+                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.45)" }}>{totalQuestions} total</span>
                   </div>
                 </div>
               </div>
-            </motion.section>
+            </div>
 
+            {/* ── THIS OR THAT: 2×2 ── */}
             <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 24 }}
               whileTap={{ scale: 0.985 }}
               onClick={openThisOrThat}
-              className="lg:col-span-4 card-design-sand rounded-[28px] p-5 md:rounded-[34px] md:p-6 relative overflow-hidden text-left flex flex-col min-h-[240px] sm:min-h-[260px] lg:min-h-0 group"
+              className="km-area-tot overflow-hidden relative text-left group"
+              style={{ borderRadius: 20, background: kmTotOvr?.image_url ? "transparent" : "linear-gradient(135deg, #d4543a 0%, #c44430 100%)" }}
             >
-              <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full" style={{ background: "rgba(var(--swatch-teal-rgb), 0.14)" }} />
-              <div className="relative flex flex-col flex-1">
-                {/* Top: eyebrow left, pill badge right */}
-                <div className="flex items-center justify-between mb-4">
-                  <p className="surface-eyebrow-coral">Instinct deck</p>
-                  <span className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", background: "rgba(var(--swatch-teal-rgb), 0.08)", color: "var(--swatch-teal)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
-                    {visibleThisOrThatCount} prompts
-                  </span>
-                </div>
+              <CardEditTrigger cardId="km-thisorthat" override={kmTotOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+              {kmTotOvr?.image_url && (
+                <>
+                  <img src={kmTotOvr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.35)" }} />
+                </>
+              )}
 
-                <p className="text-[28px] leading-[0.96] mb-3 sm:text-[34px] md:text-[40px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                  This or That
-                </p>
-                <p className="text-[13px] leading-relaxed max-w-[26ch] sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                  Two options. One instinct. Your pattern builds over time.
-                </p>
+              {/* Pill badge top-right */}
+              <span className="absolute top-3 right-3 z-10 inline-flex items-center rounded-full px-2.5 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)", backdropFilter: "blur(8px)" }}>
+                {visibleThisOrThatCount} prompts
+              </span>
 
-                {/* Bottom: stat dot + circular CTA */}
-                <div className="mt-auto flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
-                    <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>{visibleThisOrThatAnswered} done</span>
-                  </div>
-                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}>
-                    <ChevronRight className="w-4 h-4" style={{ color: "var(--swatch-teal)" }} />
-                  </div>
-                </div>
-              </div>
-            </motion.button>
+              <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-6">
+                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.65)" }}>Instinct deck</p>
 
-            <motion.button
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, type: "spring", stiffness: 250, damping: 24 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={openStyleChat}
-              className="lg:col-span-5 card-design-sand rounded-[28px] p-5 md:p-6 relative overflow-hidden min-h-[220px] sm:min-h-[240px] lg:min-h-[260px] text-left group"
-            >
-              <div className="relative flex flex-col h-full">
-                {/* Top: eyebrow left, icon spot right */}
-                <div className="flex items-center justify-between mb-4">
-                  <p className="surface-eyebrow-coral">Style chat with AI</p>
-                  <div className="surface-icon-spot w-9 h-9 rounded-full flex items-center justify-center">
-                    <Sparkles className="w-4 h-4" />
-                  </div>
-                </div>
-
-                <h2 className="surface-heading-lg mb-2" style={{ maxWidth: "14ch" }}>Ask the AI about your style.</h2>
-
-                {/* Inset sub-card for description */}
-                <div className="surface-inset-panel rounded-[14px] px-3.5 py-2.5 mt-3" style={{ maxWidth: "90%" }}>
-                  <p className="text-[12px] leading-relaxed sm:text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    Hear how the AI reads your vibe, why it asks certain questions, and what it's building toward.
+                <div>
+                  <p className="text-[28px] leading-[0.94] sm:text-[34px] md:text-[40px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                    {kmTotOvr?.heading || "This or That"}
+                  </p>
+                  <p className="text-[12px] leading-relaxed mt-2 max-w-[22ch] sm:text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
+                    {kmTotOvr?.subheading || "Two options. One instinct. Your pattern builds over time."}
                   </p>
                 </div>
 
-                {/* Bottom: circular CTA */}
-                <div className="mt-auto flex items-center justify-end pt-3">
-                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}>
-                    <ChevronRight className="w-4 h-4" style={{ color: "var(--swatch-teal)" }} />
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>{visibleThisOrThatAnswered} done</span>
+                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)" }}>
+                    <ChevronRight className="w-4 h-4 text-white" />
                   </div>
                 </div>
               </div>
             </motion.button>
 
+            {/* ── STYLE CHAT: 2×2 ── */}
             <motion.button
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.14, type: "spring", stiffness: 250, damping: 24 }}
+              whileTap={{ scale: 0.99 }}
+              onClick={openStyleChat}
+              className="km-area-chat overflow-hidden relative text-left group"
+              style={{ borderRadius: 20, background: kmChatOvr?.image_url ? "transparent" : "var(--swatch-sand)" }}
+            >
+              <CardEditTrigger cardId="km-chat" override={kmChatOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+              {kmChatOvr?.image_url && (
+                <>
+                  <img src={kmChatOvr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.05) 100%)" }} />
+                </>
+              )}
+
+              <div className={`relative z-[1] flex flex-col justify-between h-full p-5 md:p-6 ${kmChatOvr?.image_url ? "" : ""}`}>
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: kmChatOvr?.image_url ? "rgba(255,255,255,0.7)" : "var(--swatch-cedar-grove)" }}>Style chat with AI</p>
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: kmChatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)" }}>
+                    <Sparkles className="w-4 h-4" style={{ color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
+                  </div>
+                </div>
+
+                <div>
+                  <h2 className="text-[24px] leading-[0.96] sm:text-[28px] md:text-[32px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)", maxWidth: "14ch" }}>
+                    {kmChatOvr?.heading || "Ask the AI about your style."}
+                  </h2>
+                  <p className="text-[12px] leading-relaxed mt-2 max-w-[28ch] sm:text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: kmChatOvr?.image_url ? "rgba(255,255,255,0.8)" : "var(--swatch-antique-coin)" }}>
+                    {kmChatOvr?.subheading || "Hear how the AI reads your vibe and what it's building toward."}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-end">
+                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: kmChatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)", border: `1px solid ${kmChatOvr?.image_url ? "rgba(255,255,255,0.2)" : "rgba(var(--swatch-teal-rgb), 0.18)"}` }}>
+                    <ChevronRight className="w-4 h-4" style={{ color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
+                  </div>
+                </div>
+              </div>
+            </motion.button>
+
+            {/* ── AD TILE 1: 1×1 ── */}
+            <div
+              className="km-area-ad1 overflow-hidden relative"
+              style={{ borderRadius: 20, background: kmAd1Ovr?.image_url ? "transparent" : "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)" }}
+            >
+              <CardEditTrigger cardId="km-ad1" override={kmAd1Ovr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+              {kmAd1Ovr?.image_url && (
+                <img src={kmAd1Ovr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              )}
+              <div className="relative z-[1] flex flex-col items-center justify-center h-full gap-1 p-3">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)" }}>
+                  <Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.9)" }} />
+                </div>
+                <p className="text-[15px] font-bold leading-tight text-center" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                  {kmAd1Ovr?.heading || "Ad Space"}
+                </p>
+                <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                  {kmAd1Ovr?.subheading || "Sponsored"}
+                </p>
+              </div>
+            </div>
+
+            {/* ── AD TILE 2: 1×1 ── */}
+            <div
+              className="km-area-ad2 overflow-hidden relative"
+              style={{ borderRadius: 20, background: kmAd2Ovr?.image_url ? "transparent" : "var(--swatch-teal)" }}
+            >
+              <CardEditTrigger cardId="km-ad2" override={kmAd2Ovr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+              {kmAd2Ovr?.image_url && (
+                <img src={kmAd2Ovr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              )}
+              <div className="relative z-[1] flex flex-col items-center justify-center h-full gap-1 p-3">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.14)" }}>
+                  <Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.85)" }} />
+                </div>
+                <p className="text-[15px] font-bold leading-tight text-center" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                  {kmAd2Ovr?.heading || "Ad Space"}
+                </p>
+                <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                  {kmAd2Ovr?.subheading || "Sponsored"}
+                </p>
+              </div>
+            </div>
+
+            {/* ── CATEGORIES: 3×2 ── */}
+            <motion.button
               whileTap={{ scale: 0.99 }}
               onClick={openCategoriesDashboard}
-              className="lg:col-span-7 card-design-sand rounded-[28px] p-5 md:p-6 text-left relative overflow-hidden min-h-[220px] sm:min-h-[240px] lg:min-h-[260px] flex flex-col group"
+              className="km-area-cats col-span-2 md:col-span-1 overflow-hidden relative text-left group"
+              style={{ borderRadius: 20, background: kmCatOvr?.image_url ? "transparent" : "var(--swatch-sand)" }}
             >
-              <div className="relative flex flex-col h-full">
-                {/* Top: eyebrow left, count badge right */}
-                <div className="flex items-center justify-between mb-4">
-                  <p className="surface-eyebrow-coral">Get to know you</p>
-                  <span className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", background: "rgba(var(--swatch-teal-rgb), 0.08)", color: "var(--swatch-teal)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.14)" }}>
+              <CardEditTrigger cardId="km-categories" override={kmCatOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+              {kmCatOvr?.image_url && (
+                <>
+                  <img src={kmCatOvr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.05) 100%)" }} />
+                </>
+              )}
+
+              <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-6">
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.7)" : "var(--swatch-cedar-grove)" }}>Get to know you</p>
+                  <span className="rounded-full px-3 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", background: kmCatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.08)", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.9)" : "var(--swatch-teal)", border: `1px solid ${kmCatOvr?.image_url ? "rgba(255,255,255,0.2)" : "rgba(var(--swatch-teal-rgb), 0.14)"}`, backdropFilter: "blur(8px)" }}>
                     {categories.length} categories
                   </span>
                 </div>
 
-                <h2 className="surface-heading-lg mb-3" style={{ maxWidth: "16ch" }}>Questions by Category</h2>
+                <div>
+                  <h2 className="text-[24px] leading-[0.96] sm:text-[28px] md:text-[34px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)", maxWidth: "16ch" }}>
+                    {kmCatOvr?.heading || "Questions by Category"}
+                  </h2>
 
-                {/* Category pill chips */}
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {categories.map((cat) => (
-                    <span
-                      key={cat.id}
-                      className="rounded-full px-3 py-1.5 text-[11px]"
-                      style={{
-                        fontFamily: "'Jost', sans-serif",
-                        background: cat.complete ? "rgba(var(--swatch-teal-rgb), 0.1)" : "rgba(255,255,255,0.55)",
-                        color: cat.complete ? "var(--swatch-teal)" : "var(--swatch-antique-coin)",
-                        border: cat.complete ? "1px solid rgba(var(--swatch-teal-rgb), 0.2)" : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.15)",
-                      }}
-                    >
-                      {cat.title}
-                    </span>
-                  ))}
+                  {/* Category pill chips */}
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {categories.map((cat) => (
+                      <span
+                        key={cat.id}
+                        className="rounded-full px-2.5 py-1 text-[10px]"
+                        style={{
+                          fontFamily: "'Jost', sans-serif",
+                          background: kmCatOvr?.image_url
+                            ? (cat.complete ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)")
+                            : (cat.complete ? "rgba(var(--swatch-teal-rgb), 0.1)" : "rgba(255,255,255,0.55)"),
+                          color: kmCatOvr?.image_url
+                            ? "rgba(255,255,255,0.9)"
+                            : (cat.complete ? "var(--swatch-teal)" : "var(--swatch-antique-coin)"),
+                          border: kmCatOvr?.image_url
+                            ? "1px solid rgba(255,255,255,0.15)"
+                            : (cat.complete ? "1px solid rgba(var(--swatch-teal-rgb), 0.2)" : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.15)"),
+                        }}
+                      >
+                        {cat.title}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Bottom: stat dots + circular CTA */}
-                <div className="mt-auto flex items-center justify-between">
+                <div className="mt-auto flex items-center justify-between pt-2">
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full" style={{ background: "var(--swatch-teal)" }} />
-                      <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>{totalAnswered} answered</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full" style={{ background: "var(--swatch-cedar-grove)" }} />
-                      <span className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>{totalQuestions} total</span>
-                    </div>
+                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.6)" : "var(--swatch-antique-coin)" }}>{totalAnswered} answered</span>
+                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.4)" : "var(--swatch-antique-coin)" }}>{totalQuestions} total</span>
                   </div>
-                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.18)" }}>
-                    <ChevronRight className="w-4 h-4" style={{ color: "var(--swatch-teal)" }} />
+                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: kmCatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)", border: `1px solid ${kmCatOvr?.image_url ? "rgba(255,255,255,0.2)" : "rgba(var(--swatch-teal-rgb), 0.18)"}` }}>
+                    <ChevronRight className="w-4 h-4" style={{ color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
                   </div>
                 </div>
               </div>
             </motion.button>
 
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.18, type: "spring", stiffness: 250, damping: 24 }}
-              className="lg:col-span-12 card-design-sand rounded-[28px] px-5 py-5 sm:px-6 sm:py-6"
-            >
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-                {/* Left: icon spot + text */}
-                <div className="flex items-start gap-4 max-w-[42rem]">
-                  <div className="surface-icon-spot w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Sparkles className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="surface-eyebrow-coral mb-1.5">How the AI learns</p>
-                    <p className="surface-heading-md mb-1.5">It reads patterns, not one answer.</p>
-                    <p className="text-[13px] leading-relaxed sm:text-[14px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                      The AI combines your Know Me answers with This or That instinct picks to read patterns across style, gifting, lifestyle, and preferences.
-                    </p>
+            {/* ── INFO BAR: 6×1 ── */}
+            {(() => {
+              return (
+                <div
+                  className="km-area-info col-span-2 overflow-hidden relative flex items-center justify-center px-6 md:px-10"
+                  style={{ borderRadius: 20, background: kmInfoOvr?.image_url ? "transparent" : "var(--swatch-sand)" }}
+                >
+                  <CardEditTrigger cardId="km-info" override={kmInfoOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+                  {kmInfoOvr?.image_url && (
+                    <>
+                      <img src={kmInfoOvr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                      <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.4)" }} />
+                    </>
+                  )}
+                  <div className="relative z-[1] flex items-center gap-4 md:gap-6 w-full">
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: kmInfoOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)" }}>
+                      <Sparkles className="w-4 h-4" style={{ color: kmInfoOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[16px] md:text-[18px] leading-[1.2] font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: kmInfoOvr?.image_url ? "#fff" : "var(--swatch-teal)" }}>
+                        {kmInfoOvr?.heading || "It reads patterns, not one answer."}
+                      </p>
+                      <p className="text-[11px] md:text-[12px] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: kmInfoOvr?.image_url ? "rgba(255,255,255,0.7)" : "var(--swatch-antique-coin)" }}>
+                        {kmInfoOvr?.subheading || "The AI combines your Know Me answers with This or That instinct picks to read patterns across style, gifting, lifestyle, and preferences."}
+                      </p>
+                    </div>
                   </div>
                 </div>
+              );
+            })()}
 
-                {/* Right: inset sub-panel */}
-                <div className="surface-inset-panel rounded-[18px] p-4 md:min-w-[260px] lg:min-w-[300px] flex-shrink-0">
-                  <p className="text-[10px] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>Recommendation logic</p>
-                  <p className="text-[13px] leading-relaxed" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                    More clarity means fewer generic suggestions and a sharper read on what you actually want.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
