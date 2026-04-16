@@ -26,11 +26,13 @@ const IMAGE_REJECT_WORDS = [
 const IMAGE_BOOST_PATTERNS = [
   /product/i, /pdp/i, /hero/i, /main/i, /primary/i,
   /zoom/i, /full/i, /large/i, /1200/i, /2048/i, /1024/i,
+  /lifestyle/i, /editorial/i, /campaign/i, /lookbook/i, /model/i,
+  /on-?model/i, /worn/i, /styled/i, /outfit/i,
 ];
 
 const IMAGE_PENALTY_WORDS = [
   "detail", "close", "closeup", "close-up", "texture", "fabric", "swatch",
-  "editorial", "campaign", "lifestyle", "lookbook", "thumbnail",
+  "thumbnail", "flat-lay", "flatlay", "packshot", "cutout",
 ];
 
 const TITLE_STOP_WORDS = new Set([
