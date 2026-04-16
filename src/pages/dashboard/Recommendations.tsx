@@ -541,33 +541,29 @@ const Recommendations = () => {
                 <ProductCard product={displayProducts[2]} index={2} layoutClass="col-span-2 bento-area-prod3" isSaved={savedItems.has(getRecommendationStableId(displayProducts[2]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[2]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[2]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[2])} cardOverride={overrides[`product-${getRecommendationStableId(displayProducts[2])}`]} onOverrideSaved={refreshOverrides} />
               ) : <div className="bento-area-prod3" />}
 
-              {/* prod4 area: 6×1 — rotating quote bar */}
+              {/* prod4 area: 6×1 — quote bar */}
               {(() => {
                 const quoteOverride = overrides["quote"];
+                const quoteText = quoteOverride?.heading || INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].text;
+                const quoteAuthor = quoteOverride?.subheading || INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].author;
                 return (
                   <div
-                    className="bento-area-prod4 col-span-2 overflow-hidden relative flex items-center px-4 md:px-6"
-                    style={{ borderRadius: 20, background: quoteOverride?.image_url ? "transparent" : "linear-gradient(140deg, rgba(255,255,255,0.92) 0%, rgba(250,244,236,0.85) 42%, rgba(239,224,207,0.7) 100%)", border: "1px solid rgba(255,255,255,0.9)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.96), 0 8px 24px rgba(var(--swatch-cedar-grove-rgb), 0.06)" }}
+                    className="bento-area-prod4 col-span-2 overflow-hidden relative flex items-center justify-center px-6 md:px-10"
+                    style={{ borderRadius: 20, background: quoteOverride?.image_url ? "transparent" : "var(--swatch-teal)" }}
                   >
                     <CardEditTrigger cardId="quote" override={quoteOverride} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
                     {quoteOverride?.image_url && (
-                      <img src={quoteOverride.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                      <>
+                        <img src={quoteOverride.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                        <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.4)" }} />
+                      </>
                     )}
-                    {/* Icon spot left */}
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mr-3 md:mr-4 relative z-[1]" style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)" }}>
-                      <span className="text-[14px] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)", fontStyle: "italic" }}>“</span>
-                    </div>
-
-                    {/* Quote inset panel */}
-                    <div className="flex-1 flex items-center gap-3 rounded-xl px-3 py-2 md:px-4 md:py-2.5 relative z-[1]" style={{ background: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.75)" }}>
-                      <div className="w-0.5 h-6 rounded-full shrink-0" style={{ background: "var(--swatch-teal)", opacity: 0.35 }} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[13px] md:text-[15px] leading-[1.3] truncate" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontWeight: 600, color: "var(--swatch-teal)" }}>
-                          "{quoteOverride?.heading || INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].text}"
-                        </p>
-                      </div>
-                      <p className="text-[9px] shrink-0 uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                        — {quoteOverride?.subheading || INSPIRATIONAL_QUOTES[quoteIndex % INSPIRATIONAL_QUOTES.length].author}
+                    <div className="relative z-[1] flex items-center gap-4 md:gap-6 w-full">
+                      <p className="text-[18px] md:text-[22px] leading-[1.2] flex-1" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontWeight: 600, color: "#fff" }}>
+                        “{quoteText}”
+                      </p>
+                      <p className="text-[10px] md:text-[11px] shrink-0 uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
+                        — {quoteAuthor}
                       </p>
                     </div>
                   </div>
