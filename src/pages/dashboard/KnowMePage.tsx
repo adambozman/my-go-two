@@ -989,19 +989,19 @@ const KnowMePage = () => {
                   style={{ width: "50%" }}
                 >
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-10 text-center">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pr-[30%] pl-4 md:pl-8 text-center">
                     <motion.p
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.08, type: "spring", stiffness: 300, damping: 26 }}
-                      className="text-[9px] uppercase tracking-[0.24em] mb-3"
+                      className="text-[9px] uppercase tracking-[0.24em] mb-2"
                       style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
                     >This</motion.p>
                     <motion.p
                       initial={{ opacity: 0, y: 18 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.14, type: "spring", stiffness: 280, damping: 24 }}
-                      className="text-[28px] md:text-[40px] leading-[1.05] max-w-[14ch]"
+                      className="text-[22px] md:text-[32px] leading-[1.1]"
                       style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)" }}
                     >{activeTotQuestion.categoryA}</motion.p>
                   </div>
@@ -1014,19 +1014,19 @@ const KnowMePage = () => {
                   style={{ width: "50%" }}
                 >
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-10 text-center">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pl-[30%] pr-4 md:pr-8 text-center">
                     <motion.p
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.08, type: "spring", stiffness: 300, damping: 26 }}
-                      className="text-[9px] uppercase tracking-[0.24em] mb-3"
+                      className="text-[9px] uppercase tracking-[0.24em] mb-2"
                       style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
                     >That</motion.p>
                     <motion.p
                       initial={{ opacity: 0, y: 18 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.14, type: "spring", stiffness: 280, damping: 24 }}
-                      className="text-[28px] md:text-[40px] leading-[1.05] max-w-[14ch]"
+                      className="text-[22px] md:text-[32px] leading-[1.1]"
                       style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)" }}
                     >{activeTotQuestion.categoryB}</motion.p>
                   </div>
