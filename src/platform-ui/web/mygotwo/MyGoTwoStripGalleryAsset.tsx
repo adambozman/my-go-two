@@ -1,8 +1,5 @@
 import {
   useCallback,
-  useEffect,
-  useMemo,
-  useRef,
   useState,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,14 +7,6 @@ import { ChevronRight } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { CardEditTrigger, useCardOverrides } from "@/components/CardEditor";
 import MyProductCardBeverages from "@/platform-ui/web/mygotwo/MyProductCardBeverages";
-import {
-  createEmptyMyGoTwoGalleryAssets,
-  getCachedMyGoTwoGalleryAssets,
-  loadMyGoTwoGalleryAssets,
-  preloadImageUrls,
-  getVisibleStageStripUrls,
-  type MyGoTwoGalleryAssets,
-} from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.data";
 import {
   MYGOTWO_CATEGORY_TARGETS,
   type MyGoTwoCategoryTarget,
@@ -30,27 +19,55 @@ type CategoryCardMeta = {
   target: MyGoTwoCategoryTarget;
   subtitle: string;
   defaultBg: string;
+  /** CSS grid area name */
+  area: string;
 };
 
+/*
+  Mosaic layout on a 6-col × 6-row grid (uniform gaps, clean outer perimeter):
+
+    a a  b b  c c
+    a a  d d  c c
+    e e  d d  f f
+    e e  g g  f f
+    h h  g g  i i
+    h h  g g  i i
+
+  Cards: a=tall-left, b=short-wide, c=short-wide-right,
+         d=medium, e=tall-left-2, f=medium-right, g=big-center,
+         h=tall-left-3, i=wide-bottom
+  
+  Actually matching the Canva mockup exactly:
+  3 columns, varied row spans:
+  
+  col1(1/3)  col2(1/3)  col3(1/3)
+  ┌─a─┐ ┌──b──┐ ┌──c──────┐
+  │   │ └─────┘ │         │
+  │   │ ┌──d──────────────┤
+  └───┘ │       │ ┌──f──┐ │ 
+  ┌─e─┐ │       │ │     │
+  │   │ └───────┘ └─────┘
+  │   │ ┌──g──────────────┐
+  └───┘ │                 │
+        └─────────────────┘
+
+  Let me use a proper 6×6 grid to match the mockup:
+*/
+
 const CATEGORY_CARDS: CategoryCardMeta[] = [
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "clothes")!, subtitle: "Lock in your daily look", defaultBg: "var(--swatch-teal)" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "personal")!, subtitle: "Routines, grooming & self-care", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "health")!, subtitle: "Supplements, fitness & wellness", defaultBg: "var(--swatch-teal)" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "gifts")!, subtitle: "What to get them every time", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "dining")!, subtitle: "Orders, cravings & restaurants", defaultBg: "var(--swatch-teal)" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "beverages")!, subtitle: "Your perfect pour, locked in", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "household")!, subtitle: "Home essentials & brands", defaultBg: "var(--swatch-teal)" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "entertainment")!, subtitle: "Shows, music & media picks", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)" },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "travel")!, subtitle: "Hotels, airlines & destinations", defaultBg: "var(--swatch-teal)" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "clothes")!, subtitle: "Lock in your daily look", defaultBg: "var(--swatch-teal)", area: "clothes" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "personal")!, subtitle: "Routines, grooming & self-care", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)", area: "personal" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "health")!, subtitle: "Supplements, fitness & wellness", defaultBg: "var(--swatch-teal)", area: "health" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "gifts")!, subtitle: "What to get them every time", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)", area: "gifts" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "dining")!, subtitle: "Orders, cravings & restaurants", defaultBg: "var(--swatch-teal)", area: "dining" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "beverages")!, subtitle: "Your perfect pour, locked in", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)", area: "beverages" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "household")!, subtitle: "Home essentials & brands", defaultBg: "var(--swatch-teal)", area: "household" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "entertainment")!, subtitle: "Shows, music & media picks", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)", area: "entertainment" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "travel")!, subtitle: "Hotels, airlines & destinations", defaultBg: "var(--swatch-teal)", area: "travel" },
 ];
 
 /* ─── overlay content per category ─── */
-type CategoryOverlayContent = {
-  title: string;
-  description: string;
-};
-
-const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
+const CATEGORY_OVERLAY_CONTENT: Record<string, { title: string; description: string }> = {
   Beverages: {
     title: "Lock In Your Perfect Pour",
     description:
@@ -58,15 +75,13 @@ const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
   },
 };
 
-/* ─── full-screen category overlay (preserved from original) ─── */
+/* ─── full-screen category overlay ─── */
 function CategoryOverlay({
   category,
-  imageUrl,
   isVisible,
   onBack,
 }: {
   category: CategoryCardMeta;
-  imageUrl: string;
   isVisible: boolean;
   onBack: () => void;
 }) {
@@ -78,18 +93,11 @@ function CategoryOverlay({
       className="fixed inset-0 z-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: isVisible ? 1 : 0 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: OVERLAY_TRANSITION_MS / 1000 }}
       style={{ pointerEvents: isVisible ? "auto" : "none" }}
     >
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt={category.target.label}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      ) : (
-        <div className="absolute inset-0" style={{ background: category.defaultBg }} />
-      )}
+      <div className="absolute inset-0" style={{ background: category.defaultBg }} />
       <div
         aria-hidden="true"
         className="absolute inset-0"
@@ -119,10 +127,7 @@ function CategoryOverlay({
             <div className="mx-auto max-w-[min(31rem,72%)] text-center">
               <h2
                 className="mx-auto max-w-[8ch] text-[clamp(3rem,5.2vw,4.85rem)] leading-[0.9] tracking-[-0.045em] text-white drop-shadow-[0_16px_34px_rgba(0,0,0,0.48)]"
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontWeight: 700,
-                }}
+                style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}
               >
                 {overlayContent.title}
               </h2>
@@ -147,46 +152,78 @@ function CategoryOverlay({
   );
 }
 
-/* ─── main bento grid export ─── */
+/*
+  Grid matching the Canva mockup (9 cards, all different sizes):
+
+  6 columns × 9 rows
+
+  Row 1:  clothes  clothes | personal personal | health   health
+  Row 2:  clothes  clothes | personal personal | health   health
+  Row 3:  clothes  clothes | gifts    gifts    | health   health
+  Row 4:  dining   dining  | gifts    gifts    | beverages beverages
+  Row 5:  dining   dining  | gifts    gifts    | beverages beverages
+  Row 6:  dining   dining  | household household household household
+  Row 7:  entertainment entertainment | household household household household  (WRONG — 3 cols needed)
+
+  Actually let me just match the mockup literally:
+  3 columns. Cards span different row counts.
+
+  Using a 6col × 9row grid:
+
+       col1-2    col3-4    col5-6
+  r1 [ clothes ] [personal] [ health       ]
+  r2 [ clothes ] [personal] [ health       ]
+  r3 [ clothes ] [ gifts            ][ health       ]
+  r4 [ dining  ] [ gifts            ][ beverages    ]
+  r5 [ dining  ] [ gifts            ][ beverages    ]
+  r6 [ dining  ] [   household               ]
+  r7 [entertainment] [   household           ]
+  r8 [entertainment] [   household           ]
+  r9 [entertainment] [   travel              ]  (WRONG again)
+
+  OK let me just be precise. The mockup has:
+  - 3 columns
+  - Left column: 2 tall cards stacked (each ~half height)
+  - Middle column: short card on top, then a BIG card below it
+  - Right column: tall card on top, then short card, then wide card spanning cols 2-3
+
+  Let me use a 6×8 grid:
+*/
+
+const GRID_CSS = `
+.mgt-mosaic {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  gap: 8px;
+  grid-template-areas:
+    "a a b b c c"
+    "a a b b c c"
+    "a a d d c c"
+    "e e d d f f"
+    "e e d d f f"
+    "e e g g g g"
+    "h h h i i i"
+    "h h h i i i";
+}
+@media (max-width: 767px) {
+  .mgt-mosaic {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "a b"
+      "c d"
+      "e f"
+      "g g"
+      "h i";
+  }
+}
+`;
+
+/* ─── main bento grid ─── */
 export default function MyGoTwoStripGalleryAsset() {
-  const { user } = useAuth();
   const { overrides, refresh: refreshOverrides } = useCardOverrides();
   const [activeCategory, setActiveCategory] = useState<CategoryCardMeta | null>(null);
-  const [galleryAssets, setGalleryAssets] = useState<MyGoTwoGalleryAssets>(
-    () => getCachedMyGoTwoGalleryAssets() ?? createEmptyMyGoTwoGalleryAssets()
-  );
-  const bootRef = useRef(false);
-
-  /* load images from the existing data layer */
-  useEffect(() => {
-    if (bootRef.current) return;
-    bootRef.current = true;
-    (async () => {
-      try {
-        const assets = await loadMyGoTwoGalleryAssets({ force: true, quality: "full" });
-        const urls = getVisibleStageStripUrls(assets);
-        await preloadImageUrls(urls);
-        setGalleryAssets(assets);
-      } catch (err) {
-        console.error("Failed to load My Go Two gallery:", err);
-      }
-    })();
-  }, []);
-
-  /* build a slug→image map from the loaded assets */
-  const imageBySlug = useMemo(() => {
-    const map = new Map<string, { strip: string; detail: string }>();
-    for (const target of MYGOTWO_CATEGORY_TARGETS) {
-      const strip = galleryAssets.stripImages.find((s) => s.id === target.id);
-      if (strip) {
-        map.set(target.slug, {
-          strip: strip.image || "",
-          detail: strip.detailImage || strip.image || "",
-        });
-      }
-    }
-    return map;
-  }, [galleryAssets]);
 
   const handleCardClick = useCallback((card: CategoryCardMeta) => {
     setActiveCategory(card);
@@ -196,65 +233,38 @@ export default function MyGoTwoStripGalleryAsset() {
     setActiveCategory(null);
   }, []);
 
+  /* map area letters to cards */
+  const areaLetters = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+
   return (
     <section
       aria-label="My Go Two categories"
       className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6"
     >
+      <style dangerouslySetInnerHTML={{ __html: GRID_CSS }} />
       <div className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
-        {/* bento grid css */}
-        <style dangerouslySetInnerHTML={{ __html: `
-          @media (min-width: 768px) {
-            .mgt-bento {
-              grid-template-columns: repeat(6, 1fr) !important;
-              grid-template-rows: repeat(8, 100px) !important;
-              grid-template-areas:
-                "c1 c1 c1 c1 c2 c2"
-                "c1 c1 c1 c1 c2 c2"
-                "c3 c3 c4 c4 c5 c5"
-                "c3 c3 c4 c4 c5 c5"
-                "c6 c6 c6 c7 c7 c7"
-                "c6 c6 c6 c7 c7 c7"
-                "c8 c8 c8 c9 c9 c9"
-                "c8 c8 c8 c9 c9 c9" !important;
-            }
-            .mgt-c1 { grid-area: c1 !important; }
-            .mgt-c2 { grid-area: c2 !important; }
-            .mgt-c3 { grid-area: c3 !important; }
-            .mgt-c4 { grid-area: c4 !important; }
-            .mgt-c5 { grid-area: c5 !important; }
-            .mgt-c6 { grid-area: c6 !important; }
-            .mgt-c7 { grid-area: c7 !important; }
-            .mgt-c8 { grid-area: c8 !important; }
-            .mgt-c9 { grid-area: c9 !important; }
-          }
-        `}} />
-
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="mgt-bento grid grid-cols-2 gap-1.5 md:gap-2"
+          className="mgt-mosaic"
+          style={{ minHeight: "min(820px, 80vh)" }}
         >
           {CATEGORY_CARDS.map((card, idx) => {
             const cardId = `mgt-${card.target.slug}`;
             const ovr = overrides[cardId];
-            const imgs = imageBySlug.get(card.target.slug);
             const hasOvrImage = Boolean(ovr?.image_url);
-            const hasStripImage = Boolean(imgs?.strip);
-            const showImage = hasOvrImage || hasStripImage;
-            const imageSrc = ovr?.image_url || imgs?.strip || "";
 
             return (
               <motion.button
                 key={card.target.slug}
                 whileTap={{ scale: 0.985 }}
                 onClick={() => handleCardClick(card)}
-                className={`mgt-c${idx + 1} col-span-1 overflow-hidden relative text-left group`}
+                className="overflow-hidden relative text-left group"
                 style={{
+                  gridArea: areaLetters[idx],
                   borderRadius: 20,
-                  background: showImage ? "transparent" : card.defaultBg,
-                  minHeight: idx < 2 ? 180 : 140,
+                  background: hasOvrImage ? "transparent" : card.defaultBg,
                 }}
               >
                 <CardEditTrigger
@@ -264,10 +274,10 @@ export default function MyGoTwoStripGalleryAsset() {
                   fields={["image_url", "heading", "subheading"]}
                 />
 
-                {showImage && (
+                {hasOvrImage && (
                   <>
                     <img
-                      src={imageSrc}
+                      src={ovr!.image_url!}
                       alt=""
                       className="absolute inset-0 w-full h-full object-cover"
                     />
@@ -292,38 +302,36 @@ export default function MyGoTwoStripGalleryAsset() {
                     My Go Two
                   </p>
 
-                  <div>
-                    <h2
-                      className="text-[24px] leading-[0.96] sm:text-[28px] md:text-[32px]"
-                      style={{
-                        fontFamily: "'Cormorant Garamond', serif",
-                        fontWeight: 700,
-                        color: "#fff",
-                        maxWidth: "14ch",
-                      }}
-                    >
-                      {ovr?.heading || card.target.label}
-                    </h2>
-                    <p
-                      className="text-[12px] leading-relaxed mt-2 max-w-[28ch] sm:text-[13px]"
-                      style={{
-                        fontFamily: "'Jost', sans-serif",
-                        color: "rgba(255,255,255,0.8)",
-                      }}
-                    >
-                      {ovr?.subheading || card.subtitle}
-                    </p>
-                  </div>
+                  <h2
+                    className="text-[22px] leading-[0.96] sm:text-[26px] md:text-[30px]"
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontWeight: 700,
+                      color: "#fff",
+                      maxWidth: "14ch",
+                    }}
+                  >
+                    {ovr?.heading || card.target.label}
+                  </h2>
+                  <p
+                    className="text-[11px] leading-relaxed mt-1.5 max-w-[28ch] sm:text-[12px]"
+                    style={{
+                      fontFamily: "'Jost', sans-serif",
+                      color: "rgba(255,255,255,0.8)",
+                    }}
+                  >
+                    {ovr?.subheading || card.subtitle}
+                  </p>
 
-                  <div className="flex items-center justify-end pt-3">
+                  <div className="flex items-center justify-end pt-2">
                     <div
-                      className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5"
+                      className="rounded-full w-8 h-8 flex items-center justify-center transition-transform group-hover:translate-x-0.5"
                       style={{
                         background: "rgba(255,255,255,0.15)",
                         border: "1px solid rgba(255,255,255,0.2)",
                       }}
                     >
-                      <ChevronRight className="w-4 h-4 text-white" />
+                      <ChevronRight className="w-3.5 h-3.5 text-white" />
                     </div>
                   </div>
                 </div>
@@ -333,17 +341,11 @@ export default function MyGoTwoStripGalleryAsset() {
         </motion.div>
       </div>
 
-      {/* full-screen category overlay */}
       <AnimatePresence>
         {activeCategory && (
           <CategoryOverlay
             key={activeCategory.target.slug}
             category={activeCategory}
-            imageUrl={
-              overrides[`mgt-${activeCategory.target.slug}`]?.image_url ||
-              imageBySlug.get(activeCategory.target.slug)?.detail ||
-              ""
-            }
             isVisible={true}
             onBack={handleOverlayBack}
           />
