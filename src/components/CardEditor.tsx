@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, Check, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useImageBank, type ImageBankItem } from "@/hooks/useImageBank";
@@ -60,14 +61,15 @@ export function CardEditTrigger({
       >
         <Pencil className="w-3.5 h-3.5 text-white" />
       </button>
-      {open && (
+      {open && createPortal(
         <CardEditorModal
           cardId={cardId}
           initial={override}
           fields={fields}
           onClose={() => setOpen(false)}
           onSaved={() => { onSaved(); setOpen(false); }}
-        />
+        />,
+        document.body
       )}
     </>
   );
@@ -119,7 +121,7 @@ function CardEditorModal({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
       style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
-      onClick={onClose}
+      onClick={(e: React.MouseEvent) => { e.stopPropagation(); onClose(); }}
     >
       <div
         className="relative w-[90vw] max-w-lg max-h-[85vh] overflow-y-auto rounded-2xl p-5"
