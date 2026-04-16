@@ -316,6 +316,33 @@ export type Database = {
         }
         Relationships: []
       }
+      card_overrides: {
+        Row: {
+          card_id: string
+          image_url: string | null
+          heading: string | null
+          subheading: string | null
+          description: string | null
+          updated_at: string
+        }
+        Insert: {
+          card_id: string
+          image_url?: string | null
+          heading?: string | null
+          subheading?: string | null
+          description?: string | null
+          updated_at?: string
+        }
+        Update: {
+          card_id?: string
+          image_url?: string | null
+          heading?: string | null
+          subheading?: string | null
+          description?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       image_bank: {
         Row: {
           id: string

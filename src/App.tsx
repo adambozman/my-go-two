@@ -9,6 +9,7 @@ import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { TopBarProvider } from "@/contexts/TopBarContext";
 import { AppRuntimeBoundary } from "@/components/AppRuntimeBoundary";
 import { DevRuntimeDiagnostics } from "@/components/DevRuntimeDiagnostics";
+import { DevModeProvider } from "@/contexts/dev-mode-context";
 import Waitlist from "./pages/Waitlist";
 const Landing = lazy(() => import("./pages/Landing"));
 const Login = lazy(() => import("./pages/Login"));
@@ -50,6 +51,7 @@ const App = () => {
       <DevRuntimeDiagnostics />
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
+          <DevModeProvider>
           <UserProfileProvider>
             <TopBarProvider>
               <TooltipProvider>
@@ -90,6 +92,7 @@ const App = () => {
               </TooltipProvider>
             </TopBarProvider>
           </UserProfileProvider>
+          </DevModeProvider>
         </AuthProvider>
       </QueryClientProvider>
     </AppRuntimeBoundary>
