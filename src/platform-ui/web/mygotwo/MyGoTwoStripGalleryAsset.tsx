@@ -33,17 +33,17 @@ const CATEGORY_CARDS: CategoryCardMeta[] = [
   { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "personal")!,
     subtitle: "Routines, grooming & self-care", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)",
     left: 27.5, top: 0, width: 27, height: 22 },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "health")!,
-    subtitle: "Supplements, fitness & wellness", defaultBg: "var(--swatch-teal)",
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "vault")!,
+    subtitle: "Your most important info, locked in", defaultBg: "var(--swatch-teal)",
     left: 56, top: 0, width: 44, height: 22 },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "gifts")!,
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "wishlist")!,
     subtitle: "What to get them every time", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)",
     left: 27.5, top: 24, width: 24, height: 45 },
   { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "dining")!,
-    subtitle: "Orders, cravings & restaurants", defaultBg: "var(--swatch-teal)",
+    subtitle: "Orders, cravings, drinks & restaurants", defaultBg: "var(--swatch-teal)",
     left: 53, top: 24, width: 20, height: 76 },
-  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "beverages")!,
-    subtitle: "Your perfect pour, locked in", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)",
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "health")!,
+    subtitle: "Supplements, fitness & wellness", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)",
     left: 74.5, top: 24, width: 25.5, height: 22 },
   { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "household")!,
     subtitle: "Home essentials & brands", defaultBg: "var(--swatch-teal)",
@@ -94,21 +94,21 @@ const CATEGORY_OVERLAY_CONTENT: Record<string, { title: string; description: str
     title: "Your\nEveryday\nRoutine",
     description: "Grooming, skincare, the products you swear by.\n\nLock in your daily lineup so nobody has to guess what you actually use.",
   },
-  Health: {
-    title: "Feel\nYour\nBest",
-    description: "Supplements, workouts, and wellness picks.\n\nTrack what keeps you at your peak. Lock it in the vault.",
+  "My Vault": {
+    title: "Your\nVault",
+    description: "Your most important info, stored and protected.\n\nLock it in the vault. Share it with your person.",
   },
-  Gifts: {
+  Wishlist: {
     title: "Always\nKnow\nWhat\nTo Get",
     description: "Wishlists, price ranges, and the things that actually matter.\n\nNever guess again. Lock it in the vault. Share it with your person.",
   },
-  Dining: {
-    title: "Your\nGo-To\nOrders",
-    description: "The restaurants, the cravings, the guilty pleasures.\n\nThe exact order, the exact place. Tagged and searchable so nothing gets lost.",
+  "Dining & Beverages": {
+    title: "Your\nGo-To\nOrders\n& Drinks",
+    description: "The restaurants, the cravings, the guilty pleasures — and the drinks.\n\nThe exact order, the exact place, the perfect pour. Tagged and searchable so nothing gets lost.",
   },
-  Beverages: {
-    title: "Lock In\nYour\nPerfect\nPour",
-    description: "Cold brew kings, oat milk queens, and everyone in between.\n\nMega ice. Four shots of vanilla (three is for quitters). ...\n\nBuild your drink list once. Lock it in the vault. Share it with your person.",
+  Health: {
+    title: "Feel\nYour\nBest",
+    description: "Supplements, workouts, and wellness picks.\n\nTrack what keeps you at your peak. Lock it in the vault.",
   },
   Household: {
     title: "Home\nEssentials\nLocked In",
