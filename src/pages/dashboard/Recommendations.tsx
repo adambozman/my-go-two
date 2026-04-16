@@ -3,7 +3,7 @@ import { useUserProfile } from "@/contexts/user-profile-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink, Sparkles } from "lucide-react";
-import heroBgImage from "@/assets/templates/brand-preferences.jpg";
+import { resolveStorageUrls } from "@/lib/storageRefs";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PaginationControls } from "@/components/ui/pagination-controls";
@@ -81,6 +81,7 @@ const Recommendations = () => {
   const [generationVersion, setGenerationVersion] = useState<string | null>(null);
   const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
   const [inputSnapshotSummary, setInputSnapshotSummary] = useState<Record<string, unknown> | null>(null);
+  const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
   const isUsingRebuiltEngine = Boolean(
     generationVersion && generationVersion.startsWith(RECOMMENDATION_V2_VERSION_PREFIX),
   );
@@ -136,6 +137,25 @@ const Recommendations = () => {
       setActivePillar("all");
     }
   }, [activePillar, pillars]);
+
+  // Fetch a hero background image from the user's photo gallery
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("category_images")
+          .select("image_url")
+          .like("category_key", "mygotwo-strip-%")
+          .limit(1)
+          .maybeSingle();
+        if (cancelled || !data?.image_url) return;
+        const [resolved] = await resolveStorageUrls([data.image_url]);
+        if (!cancelled && resolved) setHeroImageUrl(resolved);
+      } catch { /* fallback to teal bg */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const filtered = useMemo(() => {
     if (activePillar === "all") return products;
@@ -404,18 +424,20 @@ const Recommendations = () => {
               {/* hero: 3×1 — page intro */}
               <div
                 className="bento-area-hero col-span-2 overflow-hidden relative"
-                style={{ borderRadius: 20 }}
+                style={{ borderRadius: 20, background: "var(--swatch-teal)" }}
               >
-                {/* Background image — fills entire card */}
-                <img
-                  src={heroBgImage}
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{ objectPosition: "center 30%" }}
-                />
+                {/* Background image from user's photo gallery — fills entire card */}
+                {heroImageUrl && (
+                  <img
+                    src={heroImageUrl}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{ objectPosition: "center 30%" }}
+                  />
+                )}
 
-                {/* Dark gradient scrim for text legibility */}
-                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.15) 100%)" }} />
+                {/* Gradient scrim for text legibility */}
+                <div className="absolute inset-0" style={{ background: heroImageUrl ? "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.1) 100%)" : "none" }} />
 
                 {/* Floating pill badge top-right */}
                 <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
