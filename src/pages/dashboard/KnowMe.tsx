@@ -519,38 +519,14 @@ const KnowMe = () => {
 
   const getSectionForQuestion = (q: QuizQuestion) => SECTIONS.find((section) => section.id === q.section);
 
-  const pickThisOrThat = async (question: ThisOrThatV2QuestionLike | AiGeneratedQuestion, choice: "A" | "B") => {
+  const pickThisOrThat = (question: ThisOrThatV2QuestionLike | AiGeneratedQuestion, choice: "A" | "B") => {
     if (!question) return;
 
-    const dir = choice === "A" ? "right" : "left";
-    setTotSwipeDir(dir);
     const chosenLabel = choice === "A" ? question.categoryA : question.categoryB;
     const rejectedLabel = choice === "A" ? question.categoryB : question.categoryA;
     const isAi = "isAiGenerated" in question && question.isAiGenerated;
 
-    try {
-      // Always persist to know_me_responses
-      await persistKnowMeResponses({ [question.id]: chosenLabel });
-
-      // Only persist the detailed answer record for static questions
-      // (AI-generated questions don't have scaffolds and would throw)
-      if (!isAi && activeTotCategory) {
-        try {
-          await persistThisOrThatAnswerRecord(activeTotCategory.id, question as ThisOrThatV2QuestionLike, choice);
-        } catch {
-          // Non-fatal — the know_me_response was already saved
-          console.warn("Could not persist detailed answer record for:", question.id);
-        }
-      }
-
-      await runKnowledgeRefresh({ [question.id]: chosenLabel });
-    } catch {
-      toast.error("Failed to save answer");
-      setTotSwipeDir(null);
-      return;
-    }
-
-    // Track answer in history for AI context
+    // ── Advance UI immediately (optimistic) ──
     const category = isAi ? (question as AiGeneratedQuestion).category : undefined;
     setTotAnswerHistory((prev) => [
       ...prev,
@@ -558,34 +534,39 @@ const KnowMe = () => {
     ]);
     setTotalTotAnswered((prev) => prev + 1);
 
-    setTimeout(() => {
-      setTotSwipeDir(null);
-      const nextIndex = totQueueIndex + 1;
+    const nextIndex = totQueueIndex + 1;
 
-      // Pre-fetch AI questions when we're getting close to running out
-      if (nextIndex >= totQueue.length - 2 && !aiQuestionsLoading) {
-        void fetchAiQuestions();
-      }
+    // Pre-fetch AI questions when we're getting close to running out
+    if (nextIndex >= totQueue.length - 2 && !aiQuestionsLoading) {
+      void fetchAiQuestions();
+    }
 
-      // If we've reached the end and AI questions are loading, stay put briefly
-      if (nextIndex >= totQueue.length) {
-        if (aiQuestionsLoading) {
-          // Wait — the queue will grow when AI questions arrive
-          return;
-        }
-        // Truly out of questions and no AI loading — trigger a fetch
-        void fetchAiQuestions();
-        return;
-      }
-
-      // Update category context for the next question if it's a static question
+    if (nextIndex < totQueue.length) {
       const nextQ = totQueue[nextIndex];
       if (nextQ && "_categoryId" in nextQ && (nextQ as ThisOrThatV2QuestionLike & { _categoryId?: string })._categoryId) {
         setActiveTotCategoryId((nextQ as ThisOrThatV2QuestionLike & { _categoryId?: string })._categoryId!);
       }
-
       setTotQueueIndex(nextIndex);
-    }, 400);
+    } else if (!aiQuestionsLoading) {
+      void fetchAiQuestions();
+    }
+
+    // ── Persist in background (fire-and-forget) ──
+    void (async () => {
+      try {
+        await persistKnowMeResponses({ [question.id]: chosenLabel });
+        if (!isAi && activeTotCategory) {
+          try {
+            await persistThisOrThatAnswerRecord(activeTotCategory.id, question as ThisOrThatV2QuestionLike, choice);
+          } catch {
+            console.warn("Could not persist detailed answer record for:", question.id);
+          }
+        }
+        void runKnowledgeRefresh({ [question.id]: chosenLabel });
+      } catch {
+        console.error("Background persist failed for:", question.id);
+      }
+    })();
   };
 
   useEffect(() => {
@@ -1151,8 +1132,15 @@ const KnowMe = () => {
               whileTap={{ scale: 0.985 }}
               onClick={openThisOrThat}
               className="absolute overflow-hidden text-left group"
-              style={{ borderRadius: 20, background: kmTotOvr?.image_url ? "transparent" : "linear-gradient(135deg, #d4543a 0%, #c44430 100%)", left: "56%", top: "0%", width: "44%", height: "22%" }}
+              style={{ borderRadius: 20, background: kmTotOvr?.image_url ? "transparent" : "transparent", left: "56%", top: "0%", width: "44%", height: "22%" }}
             >
+              {/* Diagonal split — Go (coral/orange) left, Two (teal) right */}
+              {!kmTotOvr?.image_url && (
+                <>
+                  <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, #ef8555 0%, #eb4b3f 100%)", clipPath: "polygon(0 0, 62% 0, 38% 100%, 0 100%)" }} />
+                  <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, #00687a 0%, var(--swatch-teal) 100%)", clipPath: "polygon(62% 0, 100% 0, 100% 100%, 38% 100%)" }} />
+                </>
+              )}
               <CardEditTrigger cardId="km-thisorthat" override={kmTotOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
               {kmTotOvr?.image_url && (
                 <>
