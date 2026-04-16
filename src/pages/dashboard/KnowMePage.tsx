@@ -979,70 +979,97 @@ const KnowMePage = () => {
           </span>
         </div>
 
+        {/* Tap zones — left = option A, right = option B */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTotQuestion.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="absolute inset-0 z-[5]"
+          >
+            {/* Left: teal side — option A */}
+            <button
+              onClick={() => void pickThisOrThat(activeTotQuestion, "A")}
+              className="absolute top-0 left-0 bottom-0 cursor-pointer group"
+              style={{ width: "50%" }}
+            >
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-10 text-center">
+                <motion.p
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.08, type: "spring", stiffness: 300, damping: 26 }}
+                  className="text-[9px] uppercase tracking-[0.24em] mb-3"
+                  style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
+                >This</motion.p>
+                <motion.p
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.14, type: "spring", stiffness: 280, damping: 24 }}
+                  className="text-[28px] md:text-[40px] leading-[1.05] max-w-[14ch]"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)" }}
+                >{activeTotQuestion.categoryA}</motion.p>
+              </div>
+            </button>
+
+            {/* Right: coral side — option B */}
+            <button
+              onClick={() => void pickThisOrThat(activeTotQuestion, "B")}
+              className="absolute top-0 right-0 bottom-0 cursor-pointer group"
+              style={{ width: "50%" }}
+            >
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-10 text-center">
+                <motion.p
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.08, type: "spring", stiffness: 300, damping: 26 }}
+                  className="text-[9px] uppercase tracking-[0.24em] mb-3"
+                  style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
+                >That</motion.p>
+                <motion.p
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.14, type: "spring", stiffness: 280, damping: 24 }}
+                  className="text-[28px] md:text-[40px] leading-[1.05] max-w-[14ch]"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)" }}
+                >{activeTotQuestion.categoryB}</motion.p>
+              </div>
+            </button>
+          </motion.div>
+        </AnimatePresence>
+
         {/* Soft glow behind center card */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] md:w-[420px] md:h-[420px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%)", filter: "blur(40px)" }} />
 
-        {/* Centered card — same style as splash */}
-        <div className="absolute inset-0 flex items-center justify-center z-10">
+        {/* Centered frosted card — same as splash, just shows question */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
           <AnimatePresence mode="wait">
             <motion.div
-              key={activeTotQuestion.id}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              key={activeTotQuestion.id + "-card"}
+              initial={{ opacity: 0, y: 20, scale: 0.92 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 240, damping: 24 }}
-              className="text-center mx-4 w-full max-w-[420px]"
+              exit={{ opacity: 0, y: -20, scale: 0.92 }}
+              transition={{ type: "spring", stiffness: 220, damping: 22 }}
+              className="pointer-events-auto text-center mx-4 max-w-[380px]"
               style={{
                 background: "rgba(255,255,255,0.88)",
                 backdropFilter: "blur(32px)",
                 WebkitBackdropFilter: "blur(32px)",
                 borderRadius: 28,
-                padding: "36px 32px",
+                padding: "40px 36px",
                 boxShadow: "0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.5) inset",
               }}
             >
               {/* Decorative line */}
-              <div className="mx-auto mb-4 h-[2px] w-12" style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))" }} />
+              <div className="mx-auto mb-5 h-[2px] w-12" style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))" }} />
 
               {/* Question prompt */}
-              <p className="text-[13.5px] md:text-[15px] leading-[1.55] mb-7" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              <p className="text-[15px] md:text-[17px] leading-[1.55]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
                 {activeTotQuestion.prompt}
               </p>
-
-              {/* Two choice buttons side by side */}
-              <div className="flex gap-3">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => void pickThisOrThat(activeTotQuestion, "A")}
-                  className="flex-1 rounded-[16px] py-4 px-3 cursor-pointer text-center"
-                  style={{
-                    background: "linear-gradient(135deg, var(--swatch-teal), #3a7a8a)",
-                    boxShadow: "0 6px 20px rgba(47,95,109,0.3)",
-                  }}
-                >
-                  <span className="block text-[9px] uppercase tracking-[0.2em] mb-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.55)", fontWeight: 500 }}>This</span>
-                  <span className="block text-[18px] md:text-[22px] leading-[1.1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                    {activeTotQuestion.categoryA}
-                  </span>
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => void pickThisOrThat(activeTotQuestion, "B")}
-                  className="flex-1 rounded-[16px] py-4 px-3 cursor-pointer text-center"
-                  style={{
-                    background: "linear-gradient(135deg, var(--swatch-cedar-grove), #b5503d)",
-                    boxShadow: "0 6px 20px rgba(217,101,79,0.3)",
-                  }}
-                >
-                  <span className="block text-[9px] uppercase tracking-[0.2em] mb-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.55)", fontWeight: 500 }}>That</span>
-                  <span className="block text-[18px] md:text-[22px] leading-[1.1]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                    {activeTotQuestion.categoryB}
-                  </span>
-                </motion.button>
-              </div>
             </motion.div>
           </AnimatePresence>
         </div>
