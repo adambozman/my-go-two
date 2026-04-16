@@ -865,25 +865,25 @@ const KnowMePage = () => {
         {/* Subtle grain overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
 
-        {/* "Go" — positioned on teal side */}
+        {/* "This" watermark — teal side */}
         <motion.p
           initial={{ opacity: 0, x: -40 }}
-          animate={{ opacity: 0.12, x: 0 }}
+          animate={{ opacity: 0.10, x: 0 }}
           transition={{ delay: 0.5, duration: 0.8 }}
-          className="absolute left-[12%] top-1/2 -translate-y-1/2 text-[120px] md:text-[180px] leading-[0.8] select-none"
+          className="absolute left-[8%] top-1/2 -translate-y-1/2 text-[100px] md:text-[160px] leading-[0.8] select-none pointer-events-none"
           style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}
         >
-          Go
+          This
         </motion.p>
-        {/* "Two" — positioned on coral side */}
+        {/* "That" watermark — coral side */}
         <motion.p
           initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 0.12, x: 0 }}
+          animate={{ opacity: 0.10, x: 0 }}
           transition={{ delay: 0.55, duration: 0.8 }}
-          className="absolute right-[8%] top-1/2 -translate-y-1/2 text-[120px] md:text-[180px] leading-[0.8] select-none text-right"
+          className="absolute right-[6%] top-1/2 -translate-y-1/2 text-[100px] md:text-[160px] leading-[0.8] select-none pointer-events-none text-right"
           style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}
         >
-          Two
+          That
         </motion.p>
 
         {/* Floating soft glow behind center card */}
