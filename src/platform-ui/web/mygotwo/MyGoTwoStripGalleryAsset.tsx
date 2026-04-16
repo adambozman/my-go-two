@@ -272,7 +272,6 @@ export default function MyGoTwoStripGalleryAsset() {
     <section
       aria-label="My Go Two categories"
       className="relative h-full overflow-x-hidden overflow-y-auto px-1 pb-6"
-      style={activeCategory ? { overflow: "hidden" } : undefined}
     >
       <AnimatePresence mode="wait">
         {activeCategory ? (
