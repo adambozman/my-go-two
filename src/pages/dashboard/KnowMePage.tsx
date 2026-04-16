@@ -1143,7 +1143,7 @@ const KnowMePage = () => {
               whileTap={{ scale: 0.99 }}
               onClick={openStyleChat}
               className="km-area-chat overflow-hidden relative text-left group"
-              style={{ borderRadius: 20, background: kmChatOvr?.image_url ? "transparent" : "var(--swatch-sand)" }}
+              style={{ borderRadius: 20, background: kmChatOvr?.image_url ? "transparent" : "var(--swatch-cream-light)" }}
             >
               <CardEditTrigger cardId="km-chat" override={kmChatOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
               {kmChatOvr?.image_url && (
@@ -1227,7 +1227,7 @@ const KnowMePage = () => {
               whileTap={{ scale: 0.99 }}
               onClick={openCategoriesDashboard}
               className="km-area-cats col-span-2 md:col-span-1 overflow-hidden relative text-left group"
-              style={{ borderRadius: 20, background: kmCatOvr?.image_url ? "transparent" : "var(--swatch-sand)" }}
+              style={{ borderRadius: 20, background: kmCatOvr?.image_url ? "transparent" : "var(--swatch-cream-light)" }}
             >
               <CardEditTrigger cardId="km-categories" override={kmCatOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
               {kmCatOvr?.image_url && (
@@ -1292,7 +1292,7 @@ const KnowMePage = () => {
               return (
                 <div
                   className="km-area-info col-span-2 overflow-hidden relative flex items-center justify-center px-6 md:px-10"
-                  style={{ borderRadius: 20, background: kmInfoOvr?.image_url ? "transparent" : "var(--swatch-sand)" }}
+                  style={{ borderRadius: 20, background: kmInfoOvr?.image_url ? "transparent" : "var(--swatch-cream-light)" }}
                 >
                   <CardEditTrigger cardId="km-info" override={kmInfoOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
                   {kmInfoOvr?.image_url && (

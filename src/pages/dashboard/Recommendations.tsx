@@ -670,7 +670,7 @@ function ProductCard({
   const showProductImage = Boolean(productImage) && !imageFailed;
   const cardId = `product-${getRecommendationStableId(product)}`;
 
-  const CARD_BG = "var(--swatch-sand)";
+  const CARD_BG = "var(--swatch-cream-light)";
 
   return (
     <motion.div
@@ -679,7 +679,7 @@ function ProductCard({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.04, type: "spring", stiffness: 260, damping: 24 }}
       className={`group/card relative overflow-hidden cursor-pointer ${layoutClass}`}
-      style={{ borderRadius: 20, background: "var(--swatch-sand)" }}
+      style={{ borderRadius: 20, background: "var(--swatch-cream-light)" }}
       onClick={() => {
         if (productDestination) window.open(productDestination, "_blank", "noopener,noreferrer");
       }}
