@@ -207,13 +207,15 @@ export default function MyGoTwoStripGalleryAsset() {
           @media (min-width: 768px) {
             .mgt-bento {
               grid-template-columns: repeat(6, 1fr) !important;
-              grid-template-rows: repeat(6, 100px) !important;
+              grid-template-rows: repeat(8, 100px) !important;
               grid-template-areas:
                 "c1 c1 c1 c1 c2 c2"
                 "c1 c1 c1 c1 c2 c2"
                 "c3 c3 c4 c4 c5 c5"
                 "c3 c3 c4 c4 c5 c5"
                 "c6 c6 c6 c7 c7 c7"
+                "c6 c6 c6 c7 c7 c7"
+                "c8 c8 c8 c9 c9 c9"
                 "c8 c8 c8 c9 c9 c9" !important;
             }
             .mgt-c1 { grid-area: c1 !important; }
@@ -279,18 +281,16 @@ export default function MyGoTwoStripGalleryAsset() {
                   </>
                 )}
 
-                <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-6">
-                  <div className="flex items-center justify-between">
-                    <p
-                      className="text-[10px] uppercase tracking-[0.16em]"
-                      style={{
-                        fontFamily: "'Jost', sans-serif",
-                        color: showImage ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.65)",
-                      }}
-                    >
-                      My Go Two
-                    </p>
-                  </div>
+                <div className="relative z-[1] flex flex-col justify-end h-full p-5 md:p-6">
+                  <p
+                    className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.16em]"
+                    style={{
+                      fontFamily: "'Jost', sans-serif",
+                      color: "rgba(255,255,255,0.65)",
+                    }}
+                  >
+                    My Go Two
+                  </p>
 
                   <div>
                     <h2
@@ -315,7 +315,7 @@ export default function MyGoTwoStripGalleryAsset() {
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-end mt-auto pt-2">
+                  <div className="flex items-center justify-end pt-3">
                     <div
                       className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5"
                       style={{
