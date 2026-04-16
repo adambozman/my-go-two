@@ -837,7 +837,8 @@ const KnowMePage = () => {
   /* ── THIS OR THAT: SPLASH ── */
   if (view === "thisorthat_splash") {
     return (
-      <div className="h-full relative overflow-hidden" style={{ background: "var(--swatch-cream-light)" }}>
+      <div className="h-full flex items-center justify-center" style={{ background: "var(--swatch-cream-light)", padding: 16 }}>
+       <div className="relative overflow-hidden w-full h-full" style={{ borderRadius: 24 }}>
         {/* Teal side — fills left with diagonal clip */}
         <motion.div
           initial={{ x: "-100%" }}
@@ -938,6 +939,7 @@ const KnowMePage = () => {
             </motion.button>
           </motion.div>
         </div>
+       </div>
       </div>
     );
   }
