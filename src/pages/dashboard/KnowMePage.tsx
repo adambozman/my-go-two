@@ -837,37 +837,104 @@ const KnowMePage = () => {
   /* ── THIS OR THAT: SPLASH ── */
   if (view === "thisorthat_splash") {
     return (
-      <div className="h-full flex">
-        {/* Full-screen split */}
-        <div className="flex-1 flex flex-col items-center justify-center relative" style={{ background: "var(--swatch-teal)" }}>
-          <p className="text-[48px] md:text-[72px] leading-[0.9]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>Go</p>
-        </div>
-        <div className="flex-1 flex flex-col items-center justify-center relative" style={{ background: "var(--swatch-cedar-grove)" }}>
-          <p className="text-[48px] md:text-[72px] leading-[0.9]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>Two</p>
-        </div>
+      <div className="h-full relative overflow-hidden" style={{ background: "var(--swatch-cream-light)" }}>
+        {/* Teal side — fills left with diagonal clip */}
+        <motion.div
+          initial={{ x: "-100%" }}
+          animate={{ x: 0 }}
+          transition={{ type: "spring", stiffness: 80, damping: 22, delay: 0.1 }}
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(160deg, var(--swatch-teal) 0%, #245049 100%)",
+            clipPath: "polygon(0 0, 58% 0, 42% 100%, 0 100%)",
+          }}
+        />
+        {/* Coral side — fills right with diagonal clip */}
+        <motion.div
+          initial={{ x: "100%" }}
+          animate={{ x: 0 }}
+          transition={{ type: "spring", stiffness: 80, damping: 22, delay: 0.15 }}
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(200deg, var(--swatch-cedar-grove) 0%, #b5503d 100%)",
+            clipPath: "polygon(58% 0, 100% 0, 100% 100%, 42% 100%)",
+          }}
+        />
+
+        {/* Subtle grain overlay */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
+
+        {/* "Go" — positioned on teal side */}
+        <motion.p
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 0.12, x: 0 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+          className="absolute left-[12%] top-1/2 -translate-y-1/2 text-[120px] md:text-[180px] leading-[0.8] select-none"
+          style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}
+        >
+          Go
+        </motion.p>
+        {/* "Two" — positioned on coral side */}
+        <motion.p
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 0.12, x: 0 }}
+          transition={{ delay: 0.55, duration: 0.8 }}
+          className="absolute right-[8%] top-1/2 -translate-y-1/2 text-[120px] md:text-[180px] leading-[0.8] select-none text-right"
+          style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}
+        >
+          Two
+        </motion.p>
+
+        {/* Floating soft glow behind center card */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] md:w-[420px] md:h-[420px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%)", filter: "blur(40px)" }} />
 
         {/* Centered overlay card */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
           <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring", stiffness: 260, damping: 24 }}
-            className="pointer-events-auto rounded-[24px] px-8 py-8 md:px-12 md:py-10 text-center max-w-[400px] mx-4"
-            style={{ background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", boxShadow: "0 24px 64px rgba(0,0,0,0.2)" }}
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.35 }}
+            className="pointer-events-auto text-center mx-4 max-w-[380px]"
+            style={{
+              background: "rgba(255,255,255,0.88)",
+              backdropFilter: "blur(32px)",
+              WebkitBackdropFilter: "blur(32px)",
+              borderRadius: 28,
+              padding: "40px 36px",
+              boxShadow: "0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.5) inset",
+            }}
           >
-            <h2 className="text-[32px] md:text-[40px] leading-[0.92] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+            {/* Decorative line */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.7, duration: 0.6 }}
+              className="mx-auto mb-5 h-[2px] w-12"
+              style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))" }}
+            />
+            <h2 className="text-[36px] md:text-[44px] leading-[0.92] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
               This or That
             </h2>
-            <p className="text-[13px] md:text-[14px] leading-relaxed mb-6" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-              Two options. One instinct. Tap the side you lean toward — there's no wrong answer. Your pattern builds over time.
+            <p className="text-[11px] uppercase tracking-[0.2em] mb-5" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", fontWeight: 500 }}>
+              Quick-fire instincts
+            </p>
+            <p className="text-[13.5px] md:text-[14.5px] leading-[1.65] mb-7" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              Two options appear. Tap the side you lean toward — no wrong answers. Your pattern reveals itself over time.
             </p>
             <motion.button
+              whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               onClick={() => { setTotSplashSeen(true); setView("thisorthat"); }}
-              className="rounded-full px-8 py-3 text-[12px] uppercase tracking-[0.14em]"
-              style={{ fontFamily: "'Jost', sans-serif", background: "var(--swatch-teal)", color: "#fff" }}
+              className="relative overflow-hidden rounded-full px-10 py-3.5 text-[11px] uppercase tracking-[0.16em]"
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                fontWeight: 500,
+                background: "linear-gradient(135deg, var(--swatch-teal), #3a7a8a)",
+                color: "#fff",
+                boxShadow: "0 8px 24px rgba(47,95,109,0.35)",
+              }}
             >
-              Start
+              Let's Go
             </motion.button>
           </motion.div>
         </div>
@@ -879,84 +946,136 @@ const KnowMePage = () => {
   if (view === "thisorthat" && activeTotCategory && activeTotQuestion) {
     const questionNumber = quizQuestionIdx + 1;
     const visibleCategoryTotal = subscribed ? activeTotCategory.questions.length : Math.min(activeTotCategory.questions.length, FREE_THIS_OR_THAT_LIMIT);
+    const progress = questionNumber / visibleCategoryTotal;
 
     return (
-      <div className="h-full flex flex-col overflow-hidden">
-        {/* Progress bar at very top */}
-        <div className="flex items-center gap-1 px-4 pt-3 pb-2">
-          {Array.from({ length: Math.min(visibleCategoryTotal, 12) }).map((_, i) => (
-            <div
-              key={i}
-              className="rounded-full transition-all duration-300"
-              style={{
-                height: i < questionNumber ? 4 : 3,
-                flex: 1,
-                background: i < questionNumber
-                  ? "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))"
-                  : "rgba(var(--swatch-antique-coin-rgb), 0.15)",
-              }}
-            />
-          ))}
-          <span className="text-[10px] tabular-nums ml-2 shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-            {questionNumber}/{visibleCategoryTotal}
+      <div className="h-full flex flex-col overflow-hidden relative" style={{ background: "var(--swatch-cream-light)" }}>
+        {/* Continuous progress bar — thin gradient line */}
+        <div className="relative h-[3px] shrink-0" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.1)" }}>
+          <motion.div
+            className="absolute inset-y-0 left-0"
+            initial={false}
+            animate={{ width: `${progress * 100}%` }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))", borderRadius: "0 2px 2px 0" }}
+          />
+        </div>
+
+        {/* Counter badge — top right */}
+        <div className="absolute top-3 right-4 z-20">
+          <span className="text-[10px] tabular-nums px-2.5 py-1 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)" }}>
+            {questionNumber} of {visibleCategoryTotal}
           </span>
         </div>
 
         {/* Split panels */}
-        <div className="flex-1 flex relative">
+        <div className="flex-1 flex flex-col md:flex-row relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTotQuestion.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -30 }}
-              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
               className="absolute inset-0 flex flex-col md:flex-row"
             >
               {/* Left: teal — option A */}
               <motion.button
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ flex: 1.15 }}
+                whileTap={{ scale: 0.985 }}
                 onClick={() => void pickThisOrThat(activeTotQuestion, "A")}
-                className="flex-1 relative flex flex-col items-center justify-center p-6 md:p-10 text-center cursor-pointer group"
-                style={{ background: "var(--swatch-teal)" }}
+                className="flex-1 relative flex flex-col items-center justify-center p-6 md:p-12 text-center cursor-pointer group overflow-hidden"
+                style={{ background: "linear-gradient(160deg, var(--swatch-teal) 0%, #245049 100%)", transition: "flex 0.4s cubic-bezier(0.22,1,0.36,1)" }}
               >
-                <p className="text-[9px] uppercase tracking-[0.2em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)" }}>This</p>
-                <p className="text-[28px] md:text-[38px] leading-[1.0] max-w-[16ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                {/* Subtle radial glow on hover */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.08) 0%, transparent 60%)" }} />
+                <motion.p
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 26 }}
+                  className="text-[9px] uppercase tracking-[0.24em] mb-3"
+                  style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.45)", fontWeight: 500 }}
+                >
+                  This
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15, type: "spring", stiffness: 280, damping: 24 }}
+                  className="text-[30px] md:text-[42px] leading-[1.0] max-w-[14ch]"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.15)" }}
+                >
                   {activeTotQuestion.categoryA}
-                </p>
-                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="rounded-full w-10 h-10 flex items-center justify-center" style={{ background: "rgba(255,255,255,0.2)" }}>
-                    <Check className="w-5 h-5 text-white" />
+                </motion.p>
+                {/* Tap hint */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+                  <div className="rounded-full w-9 h-9 flex items-center justify-center" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>
+                    <Check className="w-4 h-4 text-white" />
                   </div>
                 </div>
               </motion.button>
 
-              {/* Center divider with prompt */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 md:left-1/2 md:top-1/2">
-                <div
-                  className="rounded-full px-5 py-3 md:px-6 md:py-4 text-center"
-                  style={{ background: "rgba(255,255,255,0.95)", backdropFilter: "blur(16px)", boxShadow: "0 8px 32px rgba(0,0,0,0.15)" }}
+              {/* SVG wave divider — vertical on desktop, horizontal on mobile */}
+              {/* Desktop: vertical wave */}
+              <svg className="hidden md:block absolute left-1/2 top-0 -translate-x-1/2 h-full z-[5] pointer-events-none" width="60" viewBox="0 0 60 800" preserveAspectRatio="none" fill="none">
+                <path d="M30 0 C10 100, 50 200, 30 300 C10 400, 50 500, 30 600 C10 700, 50 750, 30 800" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" fill="none" />
+              </svg>
+              {/* Mobile: horizontal wave */}
+              <svg className="md:hidden absolute left-0 top-1/2 -translate-y-1/2 w-full z-[5] pointer-events-none" height="40" viewBox="0 0 800 40" preserveAspectRatio="none" fill="none">
+                <path d="M0 20 C100 5, 200 35, 300 20 C400 5, 500 35, 600 20 C700 5, 750 35, 800 20" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" fill="none" />
+              </svg>
+
+              {/* Center prompt pill */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 260, damping: 22 }}
+                  className="text-center px-5 py-3 md:px-7 md:py-4"
+                  style={{
+                    background: "rgba(255,255,255,0.92)",
+                    backdropFilter: "blur(24px)",
+                    WebkitBackdropFilter: "blur(24px)",
+                    borderRadius: 20,
+                    boxShadow: "0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.5) inset",
+                  }}
                 >
-                  <p className="text-[11px] md:text-[12px] leading-[1.3] max-w-[20ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", fontWeight: 500 }}>
+                  <p className="text-[12px] md:text-[13px] leading-[1.4] max-w-[22ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", fontWeight: 500 }}>
                     {activeTotQuestion.prompt}
                   </p>
-                </div>
+                </motion.div>
               </div>
 
               {/* Right: coral — option B */}
               <motion.button
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ flex: 1.15 }}
+                whileTap={{ scale: 0.985 }}
                 onClick={() => void pickThisOrThat(activeTotQuestion, "B")}
-                className="flex-1 relative flex flex-col items-center justify-center p-6 md:p-10 text-center cursor-pointer group"
-                style={{ background: "var(--swatch-cedar-grove)" }}
+                className="flex-1 relative flex flex-col items-center justify-center p-6 md:p-12 text-center cursor-pointer group overflow-hidden"
+                style={{ background: "linear-gradient(200deg, var(--swatch-cedar-grove) 0%, #b5503d 100%)", transition: "flex 0.4s cubic-bezier(0.22,1,0.36,1)" }}
               >
-                <p className="text-[9px] uppercase tracking-[0.2em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)" }}>That</p>
-                <p className="text-[28px] md:text-[38px] leading-[1.0] max-w-[16ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.08) 0%, transparent 60%)" }} />
+                <motion.p
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 26 }}
+                  className="text-[9px] uppercase tracking-[0.24em] mb-3"
+                  style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.45)", fontWeight: 500 }}
+                >
+                  That
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15, type: "spring", stiffness: 280, damping: 24 }}
+                  className="text-[30px] md:text-[42px] leading-[1.0] max-w-[14ch]"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.15)" }}
+                >
                   {activeTotQuestion.categoryB}
-                </p>
-                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="rounded-full w-10 h-10 flex items-center justify-center" style={{ background: "rgba(255,255,255,0.2)" }}>
-                    <Check className="w-5 h-5 text-white" />
+                </motion.p>
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+                  <div className="rounded-full w-9 h-9 flex items-center justify-center" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>
+                    <Check className="w-4 h-4 text-white" />
                   </div>
                 </div>
               </motion.button>
