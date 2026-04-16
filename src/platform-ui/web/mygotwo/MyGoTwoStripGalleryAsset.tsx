@@ -124,7 +124,7 @@ const CATEGORY_OVERLAY_CONTENT: Record<string, { title: string; description: str
   },
 };
 
-/* ─── category detail view (on-page, not fullscreen) ─── */
+/* ─── category detail view: single box, image bg, card on top ─── */
 function CategoryDetailView({
   category,
   imageUrl,
@@ -146,88 +146,97 @@ function CategoryDetailView({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: OVERLAY_TRANSITION_MS / 1000 }}
-      className="relative w-full min-h-[calc(100vh-80px)]"
+      className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6"
     >
-      {/* back button */}
-      <div className="absolute top-4 left-4 z-20 sm:top-5 sm:left-5">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-medium uppercase tracking-[0.16em] backdrop-blur-sm transition-colors duration-200"
-          style={{
-            fontFamily: "'Jost', sans-serif",
-            color: "#fff",
-            borderColor: "rgba(255,255,255,0.5)",
-            background: "rgba(23,18,14,0.3)",
-          }}
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-          Back
-        </button>
-      </div>
+      {/* ONE box — blurred image bg, title left, product card on top right */}
+      <div
+        className="relative overflow-hidden"
+        style={{
+          borderRadius: 20,
+          minHeight: "calc(100vh - 120px)",
+        }}
+      >
+        {/* background: blurred category image fills the entire box */}
+        {imageUrl ? (
+          <>
+            <img
+              src={imageUrl}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ filter: "blur(6px) brightness(0.7)", transform: "scale(1.05)" }}
+            />
+            <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.08)" }} />
+          </>
+        ) : (
+          <div className="absolute inset-0" style={{ background: category.defaultBg, opacity: 0.85 }} />
+        )}
 
-      {/* two-column layout */}
-      <div className="flex min-h-[calc(100vh-80px)]">
-        {/* ─── left: image bg + title ─── */}
-        <div className="relative flex-1 flex items-center justify-center overflow-hidden">
-          {/* background image, blurred and faded */}
-          {imageUrl ? (
-            <>
-              <img
-                src={imageUrl}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ filter: "blur(6px) brightness(0.7)", transform: "scale(1.05)" }}
-              />
-              {/* fade edges into the page background */}
-              <div className="absolute inset-0" style={{
-                background: "linear-gradient(to right, transparent 60%, var(--swatch-cream-light) 100%)",
-              }} />
-              <div className="absolute inset-0" style={{
-                background: "linear-gradient(to bottom, transparent 70%, var(--swatch-cream-light) 100%)",
-              }} />
-              <div className="absolute inset-0" style={{
-                background: "linear-gradient(to top, transparent 85%, var(--swatch-cream-light) 100%)",
-              }} />
-            </>
-          ) : (
-            <div className="absolute inset-0" style={{ background: category.defaultBg, opacity: 0.15 }} />
-          )}
-
-          {/* title + description */}
-          <div className="relative z-10 text-center px-8 max-w-[520px]">
-            <h2
-              className="text-[clamp(2.5rem,5vw,4.8rem)] leading-[0.92] tracking-[-0.04em] whitespace-pre-line"
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontWeight: 700,
-                fontStyle: "italic",
-                color: "#fff",
-                textShadow: imageUrl ? "0 8px 32px rgba(0,0,0,0.3)" : "none",
-              }}
-            >
-              {content.title}
-            </h2>
-            <p
-              className="mt-8 text-[0.95rem] leading-[1.85] whitespace-pre-line"
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                color: imageUrl ? "rgba(255,255,255,0.88)" : "var(--swatch-teal)",
-                textShadow: imageUrl ? "0 4px 16px rgba(0,0,0,0.25)" : "none",
-              }}
-            >
-              {content.description}
-            </p>
-          </div>
+        {/* back button — top left inside the box */}
+        <div className="absolute top-5 left-5 z-20">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-medium uppercase tracking-[0.16em] backdrop-blur-sm transition-colors duration-200"
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              color: "#fff",
+              borderColor: "rgba(255,255,255,0.5)",
+              background: "rgba(23,18,14,0.3)",
+            }}
+          >
+            <ChevronLeft className="w-3.5 h-3.5" />
+            Back
+          </button>
         </div>
 
-        {/* ─── right: product card ─── */}
-        <div className="relative w-[min(42%,560px)] min-w-[420px] flex items-start pt-14 pr-4">
-          <MyProductCardBeverages
-            userId={user?.id ?? ""}
-            activeSavedProductCard={null}
-            onSaved={() => undefined}
-          />
+        {/* content layer: title left, product card right — both inside the one box */}
+        <div className="relative z-10 flex min-h-[calc(100vh-120px)]">
+          {/* left: title + description */}
+          <div className="flex-1 flex items-center justify-center px-8">
+            <div className="text-center max-w-[480px]">
+              <h2
+                className="text-[clamp(2.5rem,5vw,4.8rem)] leading-[0.92] tracking-[-0.04em] whitespace-pre-line"
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontWeight: 700,
+                  fontStyle: "italic",
+                  color: "#fff",
+                  textShadow: "0 8px 32px rgba(0,0,0,0.3)",
+                }}
+              >
+                {content.title}
+              </h2>
+              <p
+                className="mt-8 text-[0.95rem] leading-[1.85] whitespace-pre-line"
+                style={{
+                  fontFamily: "'Jost', sans-serif",
+                  color: "rgba(255,255,255,0.88)",
+                  textShadow: "0 4px 16px rgba(0,0,0,0.25)",
+                }}
+              >
+                {content.description}
+              </p>
+            </div>
+          </div>
+
+          {/* right: product card ON TOP of the box bg */}
+          <div className="w-[min(38%,460px)] min-w-[360px] flex items-start pt-6 pr-6 pb-6">
+            <div
+              className="w-full overflow-y-auto"
+              style={{
+                borderRadius: 16,
+                background: "var(--swatch-cream-light)",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.1)",
+                maxHeight: "calc(100vh - 160px)",
+              }}
+            >
+              <MyProductCardBeverages
+                userId={user?.id ?? ""}
+                activeSavedProductCard={null}
+                onSaved={() => undefined}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </motion.div>
