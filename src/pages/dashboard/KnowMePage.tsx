@@ -925,8 +925,6 @@ const KnowMePage = () => {
 
   /* ── THIS OR THAT: GAME (tinder-style infinite) ── */
   if (view === "thisorthat" && activeTotQuestion) {
-    const isAiQ = "isAiGenerated" in activeTotQuestion && activeTotQuestion.isAiGenerated;
-
     return (
       <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
@@ -940,17 +938,7 @@ const KnowMePage = () => {
             {/* Grain overlay */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
 
-            {/* Counter badge — top right (running count, no total) */}
-            <div className="absolute top-4 right-5 z-20 flex items-center gap-2">
-              {isAiQ && (
-                <span className="text-[9px] uppercase tracking-[0.14em] px-2 py-0.5 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)", background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}>
-                  <Sparkles className="w-3 h-3 inline mr-1" style={{ verticalAlign: "-2px" }} />AI
-                </span>
-              )}
-              <span className="text-[10px] tabular-nums px-2.5 py-1 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "#fff", background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>
-                {totalTotAnswered + 1}
-              </span>
-            </div>
+
 
             {/* Tap zones — left = option A, right = option B */}
             <AnimatePresence mode="wait">
