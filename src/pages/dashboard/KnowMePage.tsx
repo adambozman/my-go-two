@@ -1046,22 +1046,25 @@ const KnowMePage = () => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -20, scale: 0.92 }}
                   transition={{ type: "spring", stiffness: 220, damping: 22 }}
-                  className="pointer-events-auto text-center mx-4 max-w-[380px]"
+                  className="pointer-events-auto text-center mx-4 w-full max-w-[380px]"
                   style={{
                     background: "rgba(255,255,255,0.88)",
                     backdropFilter: "blur(32px)",
                     WebkitBackdropFilter: "blur(32px)",
                     borderRadius: 28,
-                    padding: "40px 36px",
+                    padding: "48px 36px",
                     boxShadow: "0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.5) inset",
                   }}
                 >
                   {/* Decorative line */}
                   <div className="mx-auto mb-5 h-[2px] w-12" style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))" }} />
 
-                  {/* Question prompt */}
-                  <p className="text-[15px] md:text-[17px] leading-[1.55]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                  {/* Question prompt — same size as splash title */}
+                  <h2 className="text-[28px] md:text-[36px] leading-[1.1] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                     {activeTotQuestion.prompt}
+                  </h2>
+                  <p className="text-[11px] uppercase tracking-[0.2em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", fontWeight: 500 }}>
+                    Tap a side to choose
                   </p>
                 </motion.div>
               </AnimatePresence>
