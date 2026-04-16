@@ -340,10 +340,7 @@ export default function MyGoTwoStripGalleryAsset() {
                     )}
 
                     <div className="relative z-[1] flex flex-col justify-end h-full p-5 md:p-6">
-                      <p className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.16em]"
-                        style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.65)" }}>
-                        My Go Two
-                      </p>
+
                       <h2 className="text-[22px] leading-[0.96] sm:text-[26px] md:text-[30px]"
                         style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", maxWidth: "14ch" }}>
                         {ovr?.heading || card.target.label}
