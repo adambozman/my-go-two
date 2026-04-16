@@ -820,25 +820,25 @@ const KnowMe = () => {
       <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
           <div className="relative overflow-hidden" style={{ borderRadius: 20, minHeight: "min(calc(100dvh - 180px), 600px)" }}>
-        {/* Teal side — fills left with diagonal clip */}
+        {/* Left side — Go color (coral/orange gradient) */}
         <motion.div
           initial={{ x: "-100%" }}
           animate={{ x: 0 }}
           transition={{ type: "spring", stiffness: 80, damping: 22, delay: 0.1 }}
           className="absolute inset-0"
           style={{
-            background: "linear-gradient(160deg, var(--swatch-teal) 0%, #245049 100%)",
+            background: "linear-gradient(160deg, #ef8555 0%, #eb4b3f 100%)",
             clipPath: "polygon(0 0, 58% 0, 42% 100%, 0 100%)",
           }}
         />
-        {/* Coral side — fills right with diagonal clip */}
+        {/* Right side — Two color (teal) */}
         <motion.div
           initial={{ x: "100%" }}
           animate={{ x: 0 }}
           transition={{ type: "spring", stiffness: 80, damping: 22, delay: 0.15 }}
           className="absolute inset-0"
           style={{
-            background: "linear-gradient(200deg, var(--swatch-cedar-grove) 0%, #b5503d 100%)",
+            background: "linear-gradient(200deg, #00687a 0%, var(--swatch-teal) 100%)",
             clipPath: "polygon(58% 0, 100% 0, 100% 100%, 42% 100%)",
           }}
         />
@@ -933,10 +933,10 @@ const KnowMe = () => {
         <div className="max-w-[1280px] mx-auto px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
           {/* Game card — sits on page like every other card */}
           <div className="relative overflow-hidden" style={{ borderRadius: 20, minHeight: "min(calc(100dvh - 180px), 600px)" }}>
-            {/* Teal side — diagonal clip */}
-            <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, var(--swatch-teal) 0%, #245049 100%)", clipPath: "polygon(0 0, 58% 0, 42% 100%, 0 100%)" }} />
-            {/* Coral side — diagonal clip */}
-            <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, var(--swatch-cedar-grove) 0%, #b5503d 100%)", clipPath: "polygon(58% 0, 100% 0, 100% 100%, 42% 100%)" }} />
+            {/* Left side — Go color (coral/orange gradient) */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, #ef8555 0%, #eb4b3f 100%)", clipPath: "polygon(0 0, 58% 0, 42% 100%, 0 100%)" }} />
+            {/* Right side — Two color (teal) */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, #00687a 0%, var(--swatch-teal) 100%)", clipPath: "polygon(58% 0, 100% 0, 100% 100%, 42% 100%)" }} />
 
             {/* Grain overlay */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
@@ -944,13 +944,13 @@ const KnowMe = () => {
 
 
             {/* Tap zones — left = option A, right = option B */}
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="popLayout">
               <motion.div
                 key={activeTotQuestion.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.15 }}
                 className="absolute inset-0 z-[5]"
               >
                 {/* Left: teal side — option A */}
@@ -960,7 +960,7 @@ const KnowMe = () => {
                   style={{ width: "50%" }}
                 >
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pr-[30%] pl-4 md:pl-8 text-center">
+                  <div className="absolute top-0 left-0 right-0 flex flex-col items-center justify-center pr-[30%] pl-4 md:pl-8 text-center" style={{ height: "50%", paddingTop: "8%" }}>
                     <motion.p
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -985,7 +985,7 @@ const KnowMe = () => {
                   style={{ width: "50%" }}
                 >
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pl-[30%] pr-4 md:pr-8 text-center">
+                  <div className="absolute top-0 left-0 right-0 flex flex-col items-center justify-center pl-[30%] pr-4 md:pr-8 text-center" style={{ height: "50%", paddingTop: "8%" }}>
                     <motion.p
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -1010,13 +1010,13 @@ const KnowMe = () => {
 
             {/* Centered frosted card — question prompt */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="popLayout">
                 <motion.div
                   key={activeTotQuestion.id + "-card"}
-                  initial={{ opacity: 0, y: 20, scale: 0.92 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -20, scale: 0.92 }}
-                  transition={{ type: "spring", stiffness: 220, damping: 22 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
                   className="pointer-events-auto text-center mx-4 w-full max-w-[380px]"
                   style={{
                     background: "rgba(255,255,255,0.88)",
@@ -1052,10 +1052,10 @@ const KnowMe = () => {
       <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
         <div className="max-w-[1280px] mx-auto px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
           <div className="relative overflow-hidden flex items-center justify-center" style={{ borderRadius: 20, minHeight: "min(calc(100dvh - 180px), 600px)" }}>
-            {/* Teal side */}
-            <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, var(--swatch-teal) 0%, #245049 100%)", clipPath: "polygon(0 0, 58% 0, 42% 100%, 0 100%)" }} />
-            {/* Coral side */}
-            <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, var(--swatch-cedar-grove) 0%, #b5503d 100%)", clipPath: "polygon(58% 0, 100% 0, 100% 100%, 42% 100%)" }} />
+            {/* Left side — Go color */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, #ef8555 0%, #eb4b3f 100%)", clipPath: "polygon(0 0, 58% 0, 42% 100%, 0 100%)" }} />
+            {/* Right side — Two color */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, #00687a 0%, var(--swatch-teal) 100%)", clipPath: "polygon(58% 0, 100% 0, 100% 100%, 42% 100%)" }} />
             <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] md:w-[420px] md:h-[420px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%)", filter: "blur(40px)" }} />
             <div className="relative z-10 text-center mx-4 w-full max-w-[380px]" style={{ background: "rgba(255,255,255,0.88)", backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)", borderRadius: 28, padding: "48px 36px", boxShadow: "0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.5) inset" }}>
