@@ -18,21 +18,27 @@ export type CardOverride = {
 /* ─── hook: fetch all overrides once ─── */
 export function useCardOverrides() {
   const [overrides, setOverrides] = useState<Record<string, CardOverride>>({});
+  const [loading, setLoading] = useState(true);
   const [version, setVersion] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
     (async () => {
       const { data } = await supabase.from("card_overrides").select("*");
+      if (cancelled) return;
       if (data) {
         const map: Record<string, CardOverride> = {};
         for (const row of data) map[row.card_id] = row as CardOverride;
         setOverrides(map);
       }
+      setLoading(false);
     })();
+    return () => { cancelled = true; };
   }, [version]);
 
   const refresh = () => setVersion((v) => v + 1);
-  return { overrides, refresh };
+  return { overrides, loading, refresh };
 }
 
 /* ─── edit button: shows on cards when dev mode is on ─── */
