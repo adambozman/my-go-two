@@ -402,37 +402,31 @@ const ForYou = () => {
                 </div>
               )}
 
-              {/* Slot 2 — AD: brand (left:27.5 top:0 w:27 h:22) */}
-              {(() => {
-                const brandOverride = overrides["brand"];
-                return (
-                  <div
-                    className="absolute overflow-hidden p-3 cursor-pointer"
-                    style={{ borderRadius: 20, background: brandOverride?.image_url ? "transparent" : "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)", left: "27.5%", top: "0%", width: "27%", height: "22%" }}
-                  >
-                    <CardEditTrigger cardId="brand" override={brandOverride} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
-                    {brandOverride?.image_url && (
-                      <img src={brandOverride.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                    )}
-                    <span className="absolute top-2.5 right-2.5 inline-flex items-center rounded-full px-2 py-0.5 text-[7px] uppercase tracking-[0.1em] z-10" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.22)" }}>
-                      Trending
-                    </span>
-                    <div className="flex flex-col items-center justify-center h-full gap-1.5 relative z-[1]">
-                      <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)" }}>
-                        <Bookmark className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.9)" }} />
-                      </div>
-                      <p className="text-[15px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
-                        {brandOverride?.heading || "#BookTok"}
-                      </p>
-                      <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.16)" }}>
-                        <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
-                          {brandOverride?.subheading || "Trending Reads"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
+              {/* Slot 2 — HERO (left:27.5 top:0 w:27 h:22) */}
+              <div
+                className="absolute overflow-hidden"
+                style={{ borderRadius: 20, background: "var(--swatch-teal)", left: "27.5%", top: "0%", width: "27%", height: "22%" }}
+              >
+                <CardEditTrigger cardId="hero" override={heroOverride} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+                {heroImageUrl && (
+                  <img src={heroImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: "center 30%" }} />
+                )}
+                <div className="absolute inset-0" style={{ background: heroImageUrl ? "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.1) 100%)" : "none" }} />
+                <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
+                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)", backdropFilter: "blur(8px)" }}>
+                    <Sparkles className="w-2.5 h-2.5" style={{ color: "var(--swatch-sonoma-chardonnay)" }} />
+                    Curated
+                  </span>
+                </div>
+                <div className="relative z-10 flex flex-col items-center justify-center text-center h-full px-5 py-5 md:px-8">
+                  <h2 className="text-[24px] md:text-[32px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                    {heroOverride?.heading || "Handpicked for you"}
+                  </h2>
+                  <p className="text-[11px] md:text-[12px] leading-[1.5] mt-2 max-w-[44ch]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.85)" }}>
+                    {heroOverride?.subheading || "Our AI learns what you love \u2014 your style, your taste, the details that make you, you \u2014 and finds products you\u2019ll actually want."}
+                  </p>
+                </div>
+              </div>
 
               {/* Slot 3 — RECOMMENDATION: prod1 (left:56 top:0 w:44 h:22) */}
               {displayProducts[0] ? (
@@ -444,32 +438,28 @@ const ForYou = () => {
                 <ProductCard product={displayProducts[1]} index={1} layoutStyle={{ left: "27.5%", top: "24%", width: "24%", height: "45%" }} isSaved={savedItems.has(getRecommendationStableId(displayProducts[1]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[1]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[1]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[1])} cardOverride={overrides[`product-${getRecommendationStableId(displayProducts[1])}`]} onOverrideSaved={refreshOverrides} />
               ) : <div className="absolute" style={{ left: "27.5%", top: "24%", width: "24%", height: "45%" }} />}
 
-              {/* Slot 5 — AD: stats tall (left:53 top:24 w:20 h:76) */}
+              {/* Slot 5 — AD: ad1 tall (left:53 top:24 w:20 h:76) */}
               {(() => {
-                const statsOverride = overrides["stats"];
+                const ad1Override = overrides["ad1"];
                 return (
                   <div
                     className="absolute overflow-hidden p-3 cursor-pointer"
-                    style={{ borderRadius: 20, background: statsOverride?.image_url ? "transparent" : "var(--swatch-teal)", left: "53%", top: "24%", width: "20%", height: "76%" }}
+                    style={{ borderRadius: 20, background: ad1Override?.image_url ? "transparent" : "var(--swatch-teal)", left: "53%", top: "24%", width: "20%", height: "76%" }}
                   >
-                    <CardEditTrigger cardId="stats" override={statsOverride} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
-                    {statsOverride?.image_url && (
-                      <img src={statsOverride.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    <CardEditTrigger cardId="ad1" override={ad1Override} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+                    {ad1Override?.image_url && (
+                      <img src={ad1Override.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
                     )}
-                    <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%)" }} />
-                    <span className="absolute top-2.5 right-2.5 inline-flex items-center rounded-full px-2 py-0.5 text-[7px] uppercase tracking-[0.1em] z-10" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.18)" }}>
-                      Aesthetic
-                    </span>
                     <div className="flex flex-col items-center justify-center h-full gap-1.5 relative z-[1]">
                       <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.14)" }}>
                         <Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.85)" }} />
                       </div>
-                      <p className="text-[14px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
-                        {statsOverride?.heading || "#CleanGirl"}
+                      <p className="text-[15px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
+                        {ad1Override?.heading || "Ad Space"}
                       </p>
                       <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}>
                         <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
-                          {statsOverride?.subheading || "Curated Picks"}
+                          {ad1Override?.subheading || "Sponsored"}
                         </p>
                       </div>
                     </div>
@@ -477,28 +467,28 @@ const ForYou = () => {
                 );
               })()}
 
-              {/* Slot 6 — AD: ad3 (left:74.5 top:24 w:25.5 h:22) */}
+              {/* Slot 6 — AD: ad2 (left:74.5 top:24 w:25.5 h:22) */}
               {(() => {
-                const ad3Override = overrides["ad3"];
+                const ad2Override = overrides["ad2"];
                 return (
                   <div
                     className="absolute overflow-hidden p-3 cursor-pointer"
-                    style={{ borderRadius: 20, background: ad3Override?.image_url ? "transparent" : "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)", left: "74.5%", top: "24%", width: "25.5%", height: "22%" }}
+                    style={{ borderRadius: 20, background: ad2Override?.image_url ? "transparent" : "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)", left: "74.5%", top: "24%", width: "25.5%", height: "22%" }}
                   >
-                    <CardEditTrigger cardId="ad3" override={ad3Override} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
-                    {ad3Override?.image_url && (
-                      <img src={ad3Override.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    <CardEditTrigger cardId="ad2" override={ad2Override} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+                    {ad2Override?.image_url && (
+                      <img src={ad2Override.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
                     )}
                     <div className="flex flex-col items-center justify-center h-full gap-1.5 relative z-[1]">
                       <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)" }}>
                         <Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.9)" }} />
                       </div>
                       <p className="text-[15px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
-                        {ad3Override?.heading || "Ad Space"}
+                        {ad2Override?.heading || "Ad Space"}
                       </p>
                       <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.16)" }}>
                         <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
-                          {ad3Override?.subheading || "Sponsored"}
+                          {ad2Override?.subheading || "Sponsored"}
                         </p>
                       </div>
                     </div>
@@ -506,28 +496,28 @@ const ForYou = () => {
                 );
               })()}
 
-              {/* Slot 7 — AD: ad4 (left:0 top:47.5 w:26 h:22) */}
+              {/* Slot 7 — AD: ad3 (left:0 top:47.5 w:26 h:22) */}
               {(() => {
-                const ad4Override = overrides["ad4"];
+                const ad3Override = overrides["ad3"];
                 return (
                   <div
                     className="absolute overflow-hidden p-3 cursor-pointer"
-                    style={{ borderRadius: 20, background: ad4Override?.image_url ? "transparent" : "var(--swatch-teal)", left: "0%", top: "47.5%", width: "26%", height: "22%" }}
+                    style={{ borderRadius: 20, background: ad3Override?.image_url ? "transparent" : "var(--swatch-teal)", left: "0%", top: "47.5%", width: "26%", height: "22%" }}
                   >
-                    <CardEditTrigger cardId="ad4" override={ad4Override} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
-                    {ad4Override?.image_url && (
-                      <img src={ad4Override.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    <CardEditTrigger cardId="ad3" override={ad3Override} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+                    {ad3Override?.image_url && (
+                      <img src={ad3Override.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
                     )}
                     <div className="flex flex-col items-center justify-center h-full gap-1.5 relative z-[1]">
                       <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.14)" }}>
                         <Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.85)" }} />
                       </div>
                       <p className="text-[15px] font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
-                        {ad4Override?.heading || "Ad Space"}
+                        {ad3Override?.heading || "Ad Space"}
                       </p>
                       <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}>
                         <p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
-                          {ad4Override?.subheading || "Sponsored"}
+                          {ad3Override?.subheading || "Sponsored"}
                         </p>
                       </div>
                     </div>
