@@ -195,25 +195,25 @@ const GRID_CSS = `
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: repeat(12, 1fr);
-  gap: 8px;
+  gap: 10px;
   grid-template-areas:
-    "a a a a b b b c c c c c"
-    "a a a a b b b c c c c c"
-    "a a a a b b b c c c c c"
-    "a a a a d d d d d f f f"
-    "a a a a d d d d d f f f"
-    "e e e e d d d d d f f f"
-    "e e e e d d d d d f f f"
-    "e e e e d d d d d f f f"
-    "e e e e g g g g g g g g"
-    "e e e e g g g g g g g g"
-    "e e e e h h h h h h i i"
-    "e e e e h h h h h h i i";
+    "a a a b b b c c c c c c"
+    "a a a b b b c c c c c c"
+    "a a a b b b c c c c c c"
+    "a a a d d d d d e e e e"
+    "a a a d d d d d e e e e"
+    "a a a d d d d d e e e e"
+    "f f f g g g g g i i i i"
+    "f f f g g g g g i i i i"
+    "f f f g g g g g i i i i"
+    "h h h g g g g g i i i i"
+    "h h h g g g g g i i i i"
+    "h h h g g g g g i i i i";
 }
 @media (max-width: 767px) {
   .mgt-mosaic {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
+    grid-template-rows: repeat(5, minmax(140px, 1fr));
     grid-template-areas:
       "a b"
       "c d"
