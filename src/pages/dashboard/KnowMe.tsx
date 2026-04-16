@@ -1095,240 +1095,162 @@ const KnowMe = () => {
             className="relative w-full"
             style={{ paddingBottom: "85%" }}
           >
-            {/* Slot 1 — VIBE (left:0 top:0 w:26 h:45) */}
-            <div
+            {/* Slot 1 — YOUR VIBE (left:0 top:0 w:26 h:45) */}
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setActiveView("vibe")}
               className="absolute overflow-hidden"
-              style={{ borderRadius: 20, background: kmVibeOvr?.image_url ? "transparent" : "var(--swatch-teal)", left: "0%", top: "0%", width: "26%", height: "45%" }}
+              style={{ borderRadius: 20, background: kmVibeOvr?.image_url ? "transparent" : "#b09a6e", left: "0%", top: "0%", width: "26%", height: "45%" }}
             >
               <CardEditTrigger cardId="km-vibe" override={kmVibeOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
               {kmVibeOvr?.image_url && (
                 <>
                   <img src={kmVibeOvr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%)" }} />
+                  <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.25)" }} />
                 </>
               )}
-              <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10 rounded-[16px] px-4 py-3 text-center backdrop-blur-md" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)" }}>
-                <p className="text-[36px] leading-none md:text-[44px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                  {vibeProgressPercent}<span className="text-[18px] md:text-[22px]">%</span>
+              <div className="relative z-[1] flex items-center justify-center h-full">
+                <p className="text-[13px] sm:text-[15px] uppercase tracking-[0.18em] text-center" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: kmVibeOvr?.image_url ? "#fff" : "#3d3424" }}>
+                  {kmVibeOvr?.heading || "Your Vibe"}
                 </p>
-                <p className="text-[9px] uppercase tracking-[0.16em] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>Profile read</p>
               </div>
-              <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-7">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
-                    <GoTwoInline /> / Know Me
-                  </p>
-                  <h1 className="text-[36px] leading-[0.88] max-w-[9ch] sm:text-[46px] md:text-[56px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                    {kmVibeOvr?.heading || "Your Vibe"}
-                  </h1>
-                </div>
-                <p className="text-[13px] leading-snug sm:text-[14px] max-w-[36ch] mt-4" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.85)" }}>
-                  {kmVibeOvr?.subheading || yourVibe?.persona_summary || "Building a read on whether your style leans cleaner, louder, softer, practical, or elevated."}
+            </motion.button>
+
+            {/* Slot 2 — AD (left:27.5 top:0 w:27 h:22) */}
+            <div
+              className="absolute overflow-hidden cursor-pointer"
+              style={{ borderRadius: 20, background: kmAd1Ovr?.image_url ? "transparent" : "#b09a6e", left: "27.5%", top: "0%", width: "27%", height: "22%" }}
+            >
+              <CardEditTrigger cardId="km-ad1" override={kmAd1Ovr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+              {kmAd1Ovr?.image_url && (<img src={kmAd1Ovr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />)}
+              <div className="relative z-[1] flex items-center justify-center h-full">
+                <p className="text-[13px] sm:text-[15px] uppercase tracking-[0.18em] text-center" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: kmAd1Ovr?.image_url ? "#fff" : "#3d3424" }}>
+                  {kmAd1Ovr?.heading || "Ad"}
                 </p>
-                <div className="mt-auto pt-4">
-                  <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.2)" }}>
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.9), var(--swatch-cedar-grove))" }}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${vibeProgressPercent}%` }}
-                      transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                    />
-                  </div>
-                  <div className="flex items-center gap-5 mt-2">
-                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.65)" }}>{totalAnswered} answered</span>
-                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.45)" }}>{totalQuestions} total</span>
-                  </div>
-                </div>
               </div>
             </div>
 
-            {/* Slot 2 — THIS OR THAT (left:27.5 top:0 w:27 h:22) */}
+            {/* Slot 3 — THIS OR THAT (left:56 top:0 w:44 h:22) */}
             <motion.button
               whileTap={{ scale: 0.985 }}
               onClick={openThisOrThat}
-              className="absolute overflow-hidden text-left group"
-              style={{ borderRadius: 20, background: kmTotOvr?.image_url ? "transparent" : "linear-gradient(135deg, #d4543a 0%, #c44430 100%)", left: "27.5%", top: "0%", width: "27%", height: "22%" }}
+              className="absolute overflow-hidden"
+              style={{ borderRadius: 20, background: kmTotOvr?.image_url ? "transparent" : "#b09a6e", left: "56%", top: "0%", width: "44%", height: "22%" }}
             >
               <CardEditTrigger cardId="km-thisorthat" override={kmTotOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
               {kmTotOvr?.image_url && (
                 <>
                   <img src={kmTotOvr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.35)" }} />
+                  <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.25)" }} />
                 </>
               )}
-              <span className="absolute top-3 right-3 z-10 inline-flex items-center rounded-full px-2.5 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)", backdropFilter: "blur(8px)" }}>
-                {visibleThisOrThatCount} prompts
-              </span>
-              <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-6">
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.65)" }}>Instinct deck</p>
-                <div>
-                  <p className="text-[28px] leading-[0.94] sm:text-[34px] md:text-[40px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                    {kmTotOvr?.heading || "This or That"}
-                  </p>
-                  <p className="text-[12px] leading-relaxed mt-2 max-w-[22ch] sm:text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
-                    {kmTotOvr?.subheading || "Two options. One instinct. Your pattern builds over time."}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>{visibleThisOrThatAnswered} done</span>
-                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)" }}>
-                    <ChevronRight className="w-4 h-4 text-white" />
-                  </div>
-                </div>
+              <div className="relative z-[1] flex items-center justify-center h-full">
+                <p className="text-[13px] sm:text-[15px] uppercase tracking-[0.18em] text-center" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: kmTotOvr?.image_url ? "#fff" : "#3d3424" }}>
+                  {kmTotOvr?.heading || "This or That"}
+                </p>
               </div>
             </motion.button>
 
-            {/* Slot 3 — STYLE CHAT (left:56 top:0 w:44 h:22) */}
+            {/* Slot 4 — ASK THE AI (left:27.5 top:24 w:24 h:45) */}
             <motion.button
-              whileTap={{ scale: 0.99 }}
+              whileTap={{ scale: 0.98 }}
               onClick={openStyleChat}
-              className="absolute overflow-hidden text-left group"
-              style={{ borderRadius: 20, background: kmChatOvr?.image_url ? "transparent" : "var(--swatch-cream-light)", left: "56%", top: "0%", width: "44%", height: "22%" }}
+              className="absolute overflow-hidden"
+              style={{ borderRadius: 20, background: kmChatOvr?.image_url ? "transparent" : "#b09a6e", left: "27.5%", top: "24%", width: "24%", height: "45%" }}
             >
               <CardEditTrigger cardId="km-chat" override={kmChatOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
               {kmChatOvr?.image_url && (
                 <>
                   <img src={kmChatOvr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.05) 100%)" }} />
+                  <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.25)" }} />
                 </>
               )}
-              <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-6">
-                <div className="flex items-center justify-between">
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: kmChatOvr?.image_url ? "rgba(255,255,255,0.7)" : "var(--swatch-cedar-grove)" }}>Style chat with AI</p>
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: kmChatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)" }}>
-                    <Sparkles className="w-4 h-4" style={{ color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
-                  </div>
-                </div>
-                <div>
-                  <h2 className="text-[24px] leading-[0.96] sm:text-[28px] md:text-[32px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)", maxWidth: "14ch" }}>
-                    {kmChatOvr?.heading || "Ask the AI about your style."}
-                  </h2>
-                  <p className="text-[12px] leading-relaxed mt-2 max-w-[28ch] sm:text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: kmChatOvr?.image_url ? "rgba(255,255,255,0.8)" : "var(--swatch-antique-coin)" }}>
-                    {kmChatOvr?.subheading || "Hear how the AI reads your vibe and what it's building toward."}
-                  </p>
-                </div>
-                <div className="flex items-center justify-end">
-                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: kmChatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)", border: `1px solid ${kmChatOvr?.image_url ? "rgba(255,255,255,0.2)" : "rgba(var(--swatch-teal-rgb), 0.18)"}` }}>
-                    <ChevronRight className="w-4 h-4" style={{ color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
-                  </div>
-                </div>
+              <div className="relative z-[1] flex items-center justify-center h-full">
+                <p className="text-[13px] sm:text-[15px] uppercase tracking-[0.18em] text-center" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: kmChatOvr?.image_url ? "#fff" : "#3d3424" }}>
+                  {kmChatOvr?.heading || "Ask the AI"}
+                </p>
               </div>
             </motion.button>
 
-            {/* Slot 4 — CATEGORIES (left:27.5 top:24 w:24 h:45) */}
+            {/* Slot 5 — AD tall (left:53 top:24 w:20 h:76) */}
+            <div
+              className="absolute overflow-hidden cursor-pointer"
+              style={{ borderRadius: 20, background: kmAd2Ovr?.image_url ? "transparent" : "#b09a6e", left: "53%", top: "24%", width: "20%", height: "76%" }}
+            >
+              <CardEditTrigger cardId="km-ad2" override={kmAd2Ovr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+              {kmAd2Ovr?.image_url && (<img src={kmAd2Ovr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />)}
+              <div className="relative z-[1] flex items-center justify-center h-full">
+                <p className="text-[13px] sm:text-[15px] uppercase tracking-[0.18em] text-center" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: kmAd2Ovr?.image_url ? "#fff" : "#3d3424" }}>
+                  {kmAd2Ovr?.heading || "Ad"}
+                </p>
+              </div>
+            </div>
+
+            {/* Slot 6 — AD (left:74.5 top:24 w:25.5 h:22) */}
+            <div
+              className="absolute overflow-hidden cursor-pointer"
+              style={{ borderRadius: 20, background: kmAd3Ovr?.image_url ? "transparent" : "#b09a6e", left: "74.5%", top: "24%", width: "25.5%", height: "22%" }}
+            >
+              <CardEditTrigger cardId="km-ad3" override={kmAd3Ovr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+              {kmAd3Ovr?.image_url && (<img src={kmAd3Ovr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />)}
+              <div className="relative z-[1] flex items-center justify-center h-full">
+                <p className="text-[13px] sm:text-[15px] uppercase tracking-[0.18em] text-center" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: kmAd3Ovr?.image_url ? "#fff" : "#3d3424" }}>
+                  {kmAd3Ovr?.heading || "Ad"}
+                </p>
+              </div>
+            </div>
+
+            {/* Slot 7 — AD (left:0 top:47.5 w:26 h:22) */}
+            <div
+              className="absolute overflow-hidden cursor-pointer"
+              style={{ borderRadius: 20, background: kmAd4Ovr?.image_url ? "transparent" : "#b09a6e", left: "0%", top: "47.5%", width: "26%", height: "22%" }}
+            >
+              <CardEditTrigger cardId="km-ad4" override={kmAd4Ovr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+              {kmAd4Ovr?.image_url && (<img src={kmAd4Ovr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />)}
+              <div className="relative z-[1] flex items-center justify-center h-full">
+                <p className="text-[13px] sm:text-[15px] uppercase tracking-[0.18em] text-center" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: kmAd4Ovr?.image_url ? "#fff" : "#3d3424" }}>
+                  {kmAd4Ovr?.heading || "Ad"}
+                </p>
+              </div>
+            </div>
+
+            {/* Slot 8 — CATEGORIES BY QUESTION (left:74.5 top:48.5 w:25.5 h:51.5) */}
             <motion.button
-              whileTap={{ scale: 0.99 }}
+              whileTap={{ scale: 0.98 }}
               onClick={openCategoriesDashboard}
-              className="absolute overflow-hidden text-left group"
-              style={{ borderRadius: 20, background: kmCatOvr?.image_url ? "transparent" : "var(--swatch-cream-light)", left: "27.5%", top: "24%", width: "24%", height: "45%" }}
+              className="absolute overflow-hidden"
+              style={{ borderRadius: 20, background: kmCatOvr?.image_url ? "transparent" : "#b09a6e", left: "74.5%", top: "48.5%", width: "25.5%", height: "51.5%" }}
             >
               <CardEditTrigger cardId="km-categories" override={kmCatOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
               {kmCatOvr?.image_url && (
                 <>
                   <img src={kmCatOvr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.05) 100%)" }} />
+                  <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.25)" }} />
                 </>
               )}
-              <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-6">
-                <div className="flex items-center justify-between">
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.7)" : "var(--swatch-cedar-grove)" }}>Get to know you</p>
-                  <span className="rounded-full px-3 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", background: kmCatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.08)", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.9)" : "var(--swatch-teal)", border: `1px solid ${kmCatOvr?.image_url ? "rgba(255,255,255,0.2)" : "rgba(var(--swatch-teal-rgb), 0.14)"}`, backdropFilter: "blur(8px)" }}>
-                    {categories.length} categories
-                  </span>
-                </div>
-                <div>
-                  <h2 className="text-[24px] leading-[0.96] sm:text-[28px] md:text-[34px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)", maxWidth: "16ch" }}>
-                    {kmCatOvr?.heading || "Questions by Category"}
-                  </h2>
-                  <div className="flex flex-wrap gap-1.5 mt-3">
-                    {categories.map((cat) => (
-                      <span key={cat.id} className="rounded-full px-2.5 py-1 text-[10px]" style={{ fontFamily: "'Jost', sans-serif", background: kmCatOvr?.image_url ? (cat.complete ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)") : (cat.complete ? "rgba(var(--swatch-teal-rgb), 0.1)" : "rgba(255,255,255,0.55)"), color: kmCatOvr?.image_url ? "rgba(255,255,255,0.9)" : (cat.complete ? "var(--swatch-teal)" : "var(--swatch-antique-coin)"), border: kmCatOvr?.image_url ? "1px solid rgba(255,255,255,0.15)" : (cat.complete ? "1px solid rgba(var(--swatch-teal-rgb), 0.2)" : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.15)") }}>
-                        {cat.title}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="mt-auto flex items-center justify-between pt-2">
-                  <div className="flex items-center gap-4">
-                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.6)" : "var(--swatch-antique-coin)" }}>{totalAnswered} answered</span>
-                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.4)" : "var(--swatch-antique-coin)" }}>{totalQuestions} total</span>
-                  </div>
-                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: kmCatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)", border: `1px solid ${kmCatOvr?.image_url ? "rgba(255,255,255,0.2)" : "rgba(var(--swatch-teal-rgb), 0.18)"}` }}>
-                    <ChevronRight className="w-4 h-4" style={{ color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
-                  </div>
-                </div>
+              <div className="relative z-[1] flex items-center justify-center h-full px-3">
+                <p className="text-[13px] sm:text-[15px] uppercase tracking-[0.18em] text-center leading-[1.6]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: kmCatOvr?.image_url ? "#fff" : "#3d3424" }}>
+                  {kmCatOvr?.heading || "Categories by Question"}
+                </p>
               </div>
             </motion.button>
 
-            {/* Slot 5 — AD 1 tall (left:53 top:24 w:20 h:76) */}
-            <div className="absolute overflow-hidden p-3 cursor-pointer" style={{ borderRadius: 20, background: kmAd1Ovr?.image_url ? "transparent" : "var(--swatch-teal)", left: "53%", top: "24%", width: "20%", height: "76%" }}>
-              <CardEditTrigger cardId="km-ad1" override={kmAd1Ovr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
-              {kmAd1Ovr?.image_url && (<img src={kmAd1Ovr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />)}
-              <div className="relative z-[1] flex flex-col items-center justify-center h-full gap-1.5">
-                <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.14)" }}><Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.85)" }} /></div>
-                <p className="text-[15px] font-bold leading-tight text-center" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>{kmAd1Ovr?.heading || "Ad Space"}</p>
-                <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}><p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>{kmAd1Ovr?.subheading || "Sponsored"}</p></div>
-              </div>
-            </div>
-
-            {/* Slot 6 — AD 2 (left:74.5 top:24 w:25.5 h:22) */}
-            <div className="absolute overflow-hidden p-3 cursor-pointer" style={{ borderRadius: 20, background: kmAd2Ovr?.image_url ? "transparent" : "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)", left: "74.5%", top: "24%", width: "25.5%", height: "22%" }}>
-              <CardEditTrigger cardId="km-ad2" override={kmAd2Ovr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
-              {kmAd2Ovr?.image_url && (<img src={kmAd2Ovr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />)}
-              <div className="relative z-[1] flex flex-col items-center justify-center h-full gap-1.5">
-                <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)" }}><Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.9)" }} /></div>
-                <p className="text-[15px] font-bold leading-tight text-center" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>{kmAd2Ovr?.heading || "Ad Space"}</p>
-                <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.16)" }}><p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>{kmAd2Ovr?.subheading || "Sponsored"}</p></div>
-              </div>
-            </div>
-
-            {/* Slot 7 — AD 3 (left:0 top:47.5 w:26 h:22) */}
-            <div className="absolute overflow-hidden p-3 cursor-pointer" style={{ borderRadius: 20, background: kmAd3Ovr?.image_url ? "transparent" : "linear-gradient(135deg, #ef8555 0%, #eb4b3f 100%)", left: "0%", top: "47.5%", width: "26%", height: "22%" }}>
-              <CardEditTrigger cardId="km-ad3" override={kmAd3Ovr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
-              {kmAd3Ovr?.image_url && (<img src={kmAd3Ovr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />)}
-              <div className="relative z-[1] flex flex-col items-center justify-center h-full gap-1.5">
-                <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)" }}><Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.9)" }} /></div>
-                <p className="text-[15px] font-bold leading-tight text-center" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>{kmAd3Ovr?.heading || "Ad Space"}</p>
-                <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.16)" }}><p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>{kmAd3Ovr?.subheading || "Sponsored"}</p></div>
-              </div>
-            </div>
-
-            {/* Slot 8 — AD 4 (left:74.5 top:48.5 w:25.5 h:51.5) */}
-            <div className="absolute overflow-hidden p-3 cursor-pointer" style={{ borderRadius: 20, background: kmAd4Ovr?.image_url ? "transparent" : "var(--swatch-teal)", left: "74.5%", top: "48.5%", width: "25.5%", height: "51.5%" }}>
-              <CardEditTrigger cardId="km-ad4" override={kmAd4Ovr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
-              {kmAd4Ovr?.image_url && (<img src={kmAd4Ovr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />)}
-              <div className="relative z-[1] flex flex-col items-center justify-center h-full gap-1.5">
-                <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.14)" }}><Sparkles className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.85)" }} /></div>
-                <p className="text-[15px] font-bold leading-tight text-center" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>{kmAd4Ovr?.heading || "Ad Space"}</p>
-                <div className="rounded-lg px-2.5 py-1" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}><p className="text-[7px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>{kmAd4Ovr?.subheading || "Sponsored"}</p></div>
-              </div>
-            </div>
-
-            {/* Slot 9 — INFO BAR (left:0 top:72 w:51.5 h:28) */}
+            {/* Slot 9 — QUOTES (left:0 top:72 w:51.5 h:28) */}
             <div
-              className="absolute overflow-hidden flex items-center justify-center px-6 md:px-10"
-              style={{ borderRadius: 20, background: kmInfoOvr?.image_url ? "transparent" : "var(--swatch-cream-light)", left: "0%", top: "72%", width: "51.5%", height: "28%" }}
+              className="absolute overflow-hidden"
+              style={{ borderRadius: 20, background: kmInfoOvr?.image_url ? "transparent" : "#b09a6e", left: "0%", top: "72%", width: "51.5%", height: "28%" }}
             >
               <CardEditTrigger cardId="km-info" override={kmInfoOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
               {kmInfoOvr?.image_url && (
                 <>
                   <img src={kmInfoOvr.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.4)" }} />
+                  <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.25)" }} />
                 </>
               )}
-              <div className="relative z-[1] flex items-center gap-4 md:gap-6 w-full">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: kmInfoOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)" }}>
-                  <Sparkles className="w-4 h-4" style={{ color: kmInfoOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-[16px] md:text-[18px] leading-[1.2] font-semibold" style={{ fontFamily: "'Cormorant Garamond', serif", color: kmInfoOvr?.image_url ? "#fff" : "var(--swatch-teal)" }}>
-                    {kmInfoOvr?.heading || "It reads patterns, not one answer."}
-                  </p>
-                  <p className="text-[11px] md:text-[12px] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: kmInfoOvr?.image_url ? "rgba(255,255,255,0.7)" : "var(--swatch-antique-coin)" }}>
-                    {kmInfoOvr?.subheading || "The AI combines your Know Me answers with This or That instinct picks to read patterns across style, gifting, lifestyle, and preferences."}
-                  </p>
-                </div>
+              <div className="relative z-[1] flex items-center justify-center h-full">
+                <p className="text-[13px] sm:text-[15px] uppercase tracking-[0.18em] text-center" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: kmInfoOvr?.image_url ? "#fff" : "#3d3424" }}>
+                  {kmInfoOvr?.heading || "Quotes"}
+                </p>
               </div>
             </div>
 
