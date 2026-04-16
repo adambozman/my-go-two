@@ -153,7 +153,7 @@ function CategoryDetailView({
         className="relative overflow-hidden"
         style={{
           borderRadius: 20,
-          minHeight: "calc(100vh - 120px)",
+          height: "calc(100vh - 120px)",
         }}
       >
         {/* background: sharp category image (not blurred), slightly darkened */}
@@ -193,7 +193,7 @@ function CategoryDetailView({
         <div
           className="relative z-10 flex items-center justify-center"
           style={{
-            minHeight: "calc(100vh - 120px)",
+            height: "100%",
             maxWidth: "55%",
             padding: "80px 48px",
           }}
@@ -272,6 +272,7 @@ export default function MyGoTwoStripGalleryAsset() {
     <section
       aria-label="My Go Two categories"
       className="relative h-full overflow-x-hidden overflow-y-auto px-1 pb-6"
+      style={activeCategory ? { overflow: "hidden" } : undefined}
     >
       <AnimatePresence mode="wait">
         {activeCategory ? (
