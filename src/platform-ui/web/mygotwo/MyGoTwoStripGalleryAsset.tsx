@@ -1,73 +1,53 @@
 import {
-  memo,
-  startTransition,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronRight } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
-import {
-  MYGOTWO_STAGE_DIAGNOSTIC_EVENT,
-  type MyGoTwoStageDiagnosticDetail,
-} from "@/lib/devRuntimeEvents";
-import { OVERRIDE_CHANGED_EVENT } from "@/lib/imageOverrides";
+import { CardEditTrigger, useCardOverrides } from "@/components/CardEditor";
 import MyProductCardBeverages from "@/platform-ui/web/mygotwo/MyProductCardBeverages";
 import {
-  applyLoadedUrlFilter,
   createEmptyMyGoTwoGalleryAssets,
   getCachedMyGoTwoGalleryAssets,
-  getVisibleStageStripUrls,
   loadMyGoTwoGalleryAssets,
   preloadImageUrls,
+  getVisibleStageStripUrls,
   type MyGoTwoGalleryAssets,
 } from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.data";
+import {
+  MYGOTWO_CATEGORY_TARGETS,
+  type MyGoTwoCategoryTarget,
+} from "@/platform-ui/web/mygotwo/myGoTwoStripGallery.images";
 
-const PREVIEW_COLLAPSE_DELAY_MS = 5000;
-const COLLAPSE_ROTATE_INTERVAL_MS = 10000;
-const PANORAMA_TRANSITION_MS = 700;
-const STRIP_TRANSITION_MS = 180;
-const HOVER_DELAY_MS = 0;
-const OVERLAY_TRANSITION_MS = 220;
-const LOADER_EXIT_MS = 220;
-const RETURN_SETTLE_MS = 700;
-const STRIP_TIMING_FUNCTION = "cubic-bezier(0.22,1,0.36,1)";
+const OVERLAY_TRANSITION_MS = 280;
 
-const STRIP_WEIGHT_EXPANDED = {
-  labeled: 0.76,
-  panorama: 1.12,
+/* ─── category card metadata ─── */
+type CategoryCardMeta = {
+  target: MyGoTwoCategoryTarget;
+  subtitle: string;
+  defaultBg: string;
 };
 
-const STRIP_WEIGHT_HOVER = {
-  target: 2.1,
-  otherLabeled: 0.54,
-  panorama: 0.92,
-};
+const CATEGORY_CARDS: CategoryCardMeta[] = [
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "clothes")!, subtitle: "Lock in your daily look", defaultBg: "var(--swatch-teal)" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "personal")!, subtitle: "Routines, grooming & self-care", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "health")!, subtitle: "Supplements, fitness & wellness", defaultBg: "var(--swatch-teal)" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "gifts")!, subtitle: "What to get them every time", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "dining")!, subtitle: "Orders, cravings & restaurants", defaultBg: "var(--swatch-teal)" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "beverages")!, subtitle: "Your perfect pour, locked in", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "household")!, subtitle: "Home essentials & brands", defaultBg: "var(--swatch-teal)" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "entertainment")!, subtitle: "Shows, music & media picks", defaultBg: "linear-gradient(135deg, #d4543a 0%, #c44430 100%)" },
+  { target: MYGOTWO_CATEGORY_TARGETS.find((t) => t.slug === "travel")!, subtitle: "Hotels, airlines & destinations", defaultBg: "var(--swatch-teal)" },
+];
 
-const STRIP_WEIGHT_COLLAPSED = {
-  labeled: 0.0001,
-  panorama: 1.7,
-};
-
-type StripPresentation = {
-  id: string;
-  image: string;
-  detailImage?: string;
-  align?: string;
-  label?: string;
-  isPanoramaStrip: boolean;
-  panoramaIndex: number;
-};
-
+/* ─── overlay content per category ─── */
 type CategoryOverlayContent = {
   title: string;
   description: string;
-};
-
-type OverrideChangedDetail = {
-  imageKey?: string;
-  url?: string | null;
 };
 
 const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
@@ -78,70 +58,38 @@ const CATEGORY_OVERLAY_CONTENT: Record<string, CategoryOverlayContent> = {
   },
 };
 
-function nowMs() {
-  return typeof performance !== "undefined" ? performance.now() : Date.now();
-}
-
-function getStripFlexGrow(
-  strip: StripPresentation,
-  previewCollapsed: boolean,
-  hoveredId: string | null,
-  hoveredCategoryId: string | null,
-) {
-  if (previewCollapsed && !hoveredId) {
-    return strip.label
-      ? STRIP_WEIGHT_COLLAPSED.labeled
-      : STRIP_WEIGHT_COLLAPSED.panorama;
-  }
-
-  if (hoveredCategoryId) {
-    if (strip.id === hoveredCategoryId) {
-      return STRIP_WEIGHT_HOVER.target;
-    }
-
-    return strip.label
-      ? STRIP_WEIGHT_HOVER.otherLabeled
-      : STRIP_WEIGHT_HOVER.panorama;
-  }
-
-  return strip.label
-    ? STRIP_WEIGHT_EXPANDED.labeled
-    : STRIP_WEIGHT_EXPANDED.panorama;
-}
-
+/* ─── full-screen category overlay (preserved from original) ─── */
 function CategoryOverlay({
   category,
+  imageUrl,
   isVisible,
   onBack,
 }: {
-  category: StripPresentation;
+  category: CategoryCardMeta;
+  imageUrl: string;
   isVisible: boolean;
   onBack: () => void;
 }) {
   const { user } = useAuth();
-  const overlayContent = category.label ? CATEGORY_OVERLAY_CONTENT[category.label] : null;
+  const overlayContent = CATEGORY_OVERLAY_CONTENT[category.target.label] ?? null;
 
   return (
-    <div
-      className="absolute inset-0 z-20 transition-[opacity,transform] ease-out"
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? "translateX(0)" : "translateX(18px)",
-        transitionDuration: `${OVERLAY_TRANSITION_MS}ms`,
-        pointerEvents: isVisible ? "auto" : "none",
-      }}
+    <motion.div
+      className="fixed inset-0 z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: isVisible ? 1 : 0 }}
+      transition={{ duration: OVERLAY_TRANSITION_MS / 1000 }}
+      style={{ pointerEvents: isVisible ? "auto" : "none" }}
     >
-      {(category.detailImage || category.image) ? (
+      {imageUrl ? (
         <img
-          src={category.detailImage || category.image}
-          alt={category.label}
-          className="absolute inset-0 h-full w-full"
-          style={{
-            objectFit: "cover",
-            objectPosition: `${category.align ?? "50%"} center`,
-          }}
+          src={imageUrl}
+          alt={category.target.label}
+          className="absolute inset-0 h-full w-full object-cover"
         />
-      ) : null}
+      ) : (
+        <div className="absolute inset-0" style={{ background: category.defaultBg }} />
+      )}
       <div
         aria-hidden="true"
         className="absolute inset-0"
@@ -195,793 +143,212 @@ function CategoryOverlay({
           </div>
         </div>
       ) : null}
-    </div>
+    </motion.div>
   );
 }
 
-type StripCellProps = {
-  strip: StripPresentation;
-  hoveredId: string | null;
-  hoveredCategoryId: string | null;
-  previewCollapsed: boolean;
-  panoramaBaseUrl: string;
-  panoramaNextUrl: string;
-  isPanoramaTransitioning: boolean;
-  panoramaStripCount: number;
-  showLeftDivider: boolean;
-  showRightDivider: boolean;
-  onHover: (id: string | null) => void;
-  onClick: (strip: StripPresentation) => void;
-};
-
-const StripCell = memo(function StripCell({
-  strip,
-  hoveredId,
-  hoveredCategoryId,
-  previewCollapsed,
-  panoramaBaseUrl,
-  panoramaNextUrl,
-  isPanoramaTransitioning,
-  panoramaStripCount,
-  showLeftDivider,
-  showRightDivider,
-  onHover,
-  onClick,
-}: StripCellProps) {
-  const isHoveredCategory = strip.id === hoveredCategoryId;
-  const collapseCategoryStrip = Boolean(previewCollapsed && strip.label && !hoveredId);
-  const flexGrow = getStripFlexGrow(strip, previewCollapsed, hoveredId, hoveredCategoryId);
-
-  return (
-    <div
-      aria-label={`Strip ${strip.id}`}
-      onMouseEnter={() => onHover(strip.id)}
-      onClick={() => onClick(strip)}
-      className="relative h-full shrink-0 overflow-hidden transition-[flex-grow,opacity,transform]"
-      style={{
-        flexBasis: 0,
-        flexGrow,
-        minWidth: collapseCategoryStrip ? "0px" : "10px",
-        opacity: collapseCategoryStrip ? 0 : 1,
-        transform: isHoveredCategory ? "translateY(-1px)" : "translateY(0)",
-        transitionDuration: `${STRIP_TRANSITION_MS}ms`,
-        transitionTimingFunction: STRIP_TIMING_FUNCTION,
-        pointerEvents: collapseCategoryStrip ? "none" : "auto",
-        cursor: strip.label ? "pointer" : "default",
-        willChange: "flex-grow, opacity, transform",
-        contain: "paint",
-      }}
-    >
-      {strip.isPanoramaStrip ? (
-        <>
-          <div
-            aria-hidden="true"
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url("${panoramaBaseUrl}")`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: `${panoramaStripCount * 100}% 100%`,
-              backgroundPosition:
-                strip.panoramaIndex >= 0 && panoramaStripCount > 1
-                  ? `${(strip.panoramaIndex / (panoramaStripCount - 1)) * 100}% center`
-                  : "50% center",
-            }}
-          />
-          {panoramaNextUrl ? (
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 transition-opacity"
-              style={{
-                backgroundImage: `url("${panoramaNextUrl}")`,
-                backgroundRepeat: "no-repeat",
-                backgroundSize: `${panoramaStripCount * 100}% 100%`,
-                backgroundPosition:
-                  strip.panoramaIndex >= 0 && panoramaStripCount > 1
-                    ? `${(strip.panoramaIndex / (panoramaStripCount - 1)) * 100}% center`
-                    : "50% center",
-                opacity: isPanoramaTransitioning ? 1 : 0,
-                transitionDuration: `${PANORAMA_TRANSITION_MS}ms`,
-                transitionTimingFunction: STRIP_TIMING_FUNCTION,
-              }}
-            />
-          ) : null}
-        </>
-      ) : strip.image ? (
-        <img
-          aria-hidden="true"
-          alt=""
-          src={strip.image}
-          decoding="async"
-          loading="eager"
-          className="absolute inset-0 h-full w-full transition-transform"
-          style={{
-            objectFit: "cover",
-            objectPosition: `${strip.align ?? "50%"} center`,
-            transform: "scale(1)",
-            transitionDuration: `${STRIP_TRANSITION_MS}ms`,
-            transitionTimingFunction: STRIP_TIMING_FUNCTION,
-            willChange: "transform",
-          }}
-        />
-      ) : null}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 transition-opacity"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(23,18,14,0.18) 0%, rgba(23,18,14,0.08) 34%, rgba(23,18,14,0.24) 100%)",
-          opacity: isHoveredCategory ? 0.48 : 0.68,
-          transitionDuration: `${STRIP_TRANSITION_MS}ms`,
-          transitionTimingFunction: STRIP_TIMING_FUNCTION,
-        }}
-      />
-      {strip.label ? (
-        <span
-          className="pointer-events-none absolute bottom-2 left-1/2 z-10 text-[11px] font-medium uppercase tracking-[0.16em] text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.42)] sm:bottom-3 sm:text-[12px] md:bottom-4 md:text-[14px] md:tracking-[0.2em]"
-          style={{
-            opacity: collapseCategoryStrip ? 0 : 1,
-            transition: `opacity ${STRIP_TRANSITION_MS}ms ease`,
-            writingMode: "vertical-rl",
-            transform: "translateX(-50%) rotate(180deg)",
-          }}
-        >
-          {strip.label}
-        </span>
-      ) : null}
-      <span
-        aria-hidden="true"
-        className="absolute inset-y-0 left-0 w-[1px] bg-white/85"
-        style={{
-          opacity: collapseCategoryStrip || !showLeftDivider ? 0 : 1,
-          transition: `opacity ${STRIP_TRANSITION_MS}ms ease`,
-        }}
-      />
-      <span
-        aria-hidden="true"
-        className="absolute inset-y-0 right-0 w-[1px] bg-white/85"
-        style={{
-          opacity: collapseCategoryStrip || !showRightDivider ? 0 : 1,
-          transition: `opacity ${STRIP_TRANSITION_MS}ms ease`,
-        }}
-      />
-    </div>
-  );
-});
-
+/* ─── main bento grid export ─── */
 export default function MyGoTwoStripGalleryAsset() {
-  const cachedAssets = getCachedMyGoTwoGalleryAssets() ?? createEmptyMyGoTwoGalleryAssets();
-  const hasCachedStage = cachedAssets.stripImages.some((strip) => Boolean(strip.image));
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [previewCollapsed, setPreviewCollapsed] = useState(false);
-  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
-  const [closingCategoryId, setClosingCategoryId] = useState<string | null>(null);
-  const [collapseImageIndex, setCollapseImageIndex] = useState(0);
-  const [panoramaBaseUrl, setPanoramaBaseUrl] = useState(cachedAssets.collapseImages[0]?.image || "");
-  const [panoramaNextUrl, setPanoramaNextUrl] = useState("");
-  const [isPanoramaTransitioning, setIsPanoramaTransitioning] = useState(false);
-  const [isInitialLoadPending, setIsInitialLoadPending] = useState(!hasCachedStage);
-  const [isLoaderExiting, setIsLoaderExiting] = useState(false);
-  const [stripImages, setStripImages] = useState(() => cachedAssets.stripImages);
-  const [collapseImages, setCollapseImages] = useState(() => cachedAssets.collapseImages);
-  const [returnHoldVersion, setReturnHoldVersion] = useState(0);
-  const currentAssetsRef = useRef<MyGoTwoGalleryAssets>(cachedAssets);
-  const hoverTimerRef = useRef<number | null>(null);
-  const collapseTimerRef = useRef<number | null>(null);
-  const rotateTimerRef = useRef<number | null>(null);
-  const panoramaTransitionTimerRef = useRef<number | null>(null);
-  const overlayTimerRef = useRef<number | null>(null);
-  const returnHoverTimerRef = useRef<number | null>(null);
-  const loaderExitTimerRef = useRef<number | null>(null);
-  const loadRunIdRef = useRef(0);
-  const returnHoldUntilRef = useRef(0);
-  const bootHydratedRef = useRef(false);
-
-  const commitAssets = useCallback((nextAssets: MyGoTwoGalleryAssets, nonUrgent = false) => {
-    currentAssetsRef.current = nextAssets;
-
-    const apply = () => {
-      setStripImages(nextAssets.stripImages);
-      setCollapseImages(nextAssets.collapseImages);
-    };
-
-    if (nonUrgent) {
-      startTransition(apply);
-      return;
-    }
-
-    apply();
-  }, []);
-
-  const clearLoader = useCallback(() => {
-    if (!isInitialLoadPending) {
-      return;
-    }
-
-    if (loaderExitTimerRef.current !== null) {
-      window.clearTimeout(loaderExitTimerRef.current);
-    }
-
-    setIsLoaderExiting(true);
-    loaderExitTimerRef.current = window.setTimeout(() => {
-      setIsInitialLoadPending(false);
-      setIsLoaderExiting(false);
-      loaderExitTimerRef.current = null;
-    }, LOADER_EXIT_MS);
-  }, [isInitialLoadPending]);
-
-  const warmCollapseAssets = useCallback(
-    async (runId: number, assets: MyGoTwoGalleryAssets, alreadyLoadedUrls: Set<string>) => {
-      const collapseLoadedUrls = await preloadImageUrls(assets.collapseImages.map((image) => image.image));
-      if (runId !== loadRunIdRef.current) {
-        return;
-      }
-
-      const loadedUrls = new Set([...alreadyLoadedUrls, ...collapseLoadedUrls]);
-      const nextAssets = applyLoadedUrlFilter(assets, loadedUrls);
-      commitAssets(nextAssets, true);
-      setCollapseImageIndex((current) => (
-        nextAssets.collapseImages.length > 0 ? current % nextAssets.collapseImages.length : 0
-      ));
-      setPanoramaBaseUrl((current) => current || nextAssets.collapseImages[0]?.image || "");
-    },
-    [commitAssets],
+  const { user } = useAuth();
+  const { overrides, refresh: refreshOverrides } = useCardOverrides();
+  const [activeCategory, setActiveCategory] = useState<CategoryCardMeta | null>(null);
+  const [galleryAssets, setGalleryAssets] = useState<MyGoTwoGalleryAssets>(
+    () => getCachedMyGoTwoGalleryAssets() ?? createEmptyMyGoTwoGalleryAssets()
   );
+  const bootRef = useRef(false);
 
-  const hydrateGalleryAssets = useCallback(
-    async ({
-      force = false,
-      showLoader = false,
-    }: {
-      force?: boolean;
-      showLoader?: boolean;
-    }) => {
-      const runId = ++loadRunIdRef.current;
-
-      if (showLoader) {
-        setIsInitialLoadPending(true);
-        setIsLoaderExiting(false);
-      }
-
+  /* load images from the existing data layer */
+  useEffect(() => {
+    if (bootRef.current) return;
+    bootRef.current = true;
+    (async () => {
       try {
-        if (showLoader) {
-          const previewAssets = await loadMyGoTwoGalleryAssets({
-            force,
-            quality: "preview",
-          });
-          if (runId !== loadRunIdRef.current) {
-            return;
-          }
-
-          commitAssets(
-            {
-              stripImages: previewAssets.stripImages,
-              collapseImages: currentAssetsRef.current.collapseImages,
-            },
-            false,
-          );
-        }
-
-        const assets = await loadMyGoTwoGalleryAssets({ force, quality: "full" });
-        const loadedVisibleUrls = await preloadImageUrls(getVisibleStageStripUrls(assets));
-        if (runId !== loadRunIdRef.current) {
-          return;
-        }
-
-        const previousStripImageById = new Map(
-          currentAssetsRef.current.stripImages.map((strip) => [strip.id, strip.image]),
-        );
-        const failedVisibleStrips = assets.stripImages.filter(
-          (strip) => strip.image && !loadedVisibleUrls.has(strip.image),
-        );
-        const nextStripImages = assets.stripImages.map((strip) => {
-          if (!strip.image || loadedVisibleUrls.has(strip.image)) {
-            return strip;
-          }
-
-          return {
-            ...strip,
-            image: previousStripImageById.get(strip.id) || "",
-          };
-        });
-
-        if (failedVisibleStrips.length > 0) {
-          const diagnosticDetail: MyGoTwoStageDiagnosticDetail = {
-            kind: "mygotwo-stage-fallback",
-            failedStrips: failedVisibleStrips.map((strip) => ({
-              id: strip.id,
-              label: strip.label ?? null,
-              image: strip.image,
-            })),
-          };
-
-          console.warn("My Go Two full strip image load fallback engaged:", diagnosticDetail.failedStrips);
-
-          if (import.meta.env.DEV) {
-            window.dispatchEvent(new CustomEvent<MyGoTwoStageDiagnosticDetail>(
-              MYGOTWO_STAGE_DIAGNOSTIC_EVENT,
-              { detail: diagnosticDetail },
-            ));
-          }
-        }
-
-        commitAssets(
-          {
-            stripImages: nextStripImages,
-            collapseImages: currentAssetsRef.current.collapseImages,
-          },
-          !showLoader,
-        );
-
-        if (showLoader) {
-          clearLoader();
-        }
-
-        void warmCollapseAssets(runId, assets, loadedVisibleUrls);
-      } catch (error) {
-        console.error("Failed to load My Go Two strip images:", error);
-        if (showLoader) {
-          clearLoader();
-        }
+        const assets = await loadMyGoTwoGalleryAssets({ force: true, quality: "full" });
+        const urls = getVisibleStageStripUrls(assets);
+        await preloadImageUrls(urls);
+        setGalleryAssets(assets);
+      } catch (err) {
+        console.error("Failed to load My Go Two gallery:", err);
       }
-    },
-    [clearLoader, commitAssets, warmCollapseAssets],
-  );
-
-  const strips = useMemo<StripPresentation[]>(() => {
-    const panoramaIds = stripImages.filter((strip) => !strip.label).map((strip) => strip.id);
-    const panoramaIdSet = new Set(panoramaIds);
-
-    return stripImages.map((strip) => ({
-      ...strip,
-      isPanoramaStrip: panoramaIdSet.has(strip.id),
-      panoramaIndex: panoramaIds.indexOf(strip.id),
-    }));
-  }, [stripImages]);
-
-  const hoveredStrip = useMemo(
-    () => strips.find((strip) => strip.id === hoveredId) ?? null,
-    [hoveredId, strips],
-  );
-  const hoveredCategoryId = hoveredStrip?.label ? hoveredStrip.id : null;
-  const panoramaStripCount = useMemo(
-    () => strips.filter((strip) => strip.isPanoramaStrip).length,
-    [strips],
-  );
-  const activeCategory = useMemo(
-    () => strips.find((strip) => strip.id === activeCategoryId && strip.label) ?? null,
-    [activeCategoryId, strips],
-  );
-  const closingCategory = useMemo(
-    () => strips.find((strip) => strip.id === closingCategoryId && strip.label) ?? null,
-    [closingCategoryId, strips],
-  );
-  const overlayCategory = activeCategory ?? closingCategory;
-  const activePanoramaUrl =
-    collapseImages.length > 0
-      ? collapseImages[collapseImageIndex % collapseImages.length]?.image || ""
-      : "";
-  const showLoaderOverlay = isInitialLoadPending || isLoaderExiting;
-
-  useEffect(() => {
-    if (bootHydratedRef.current) {
-      return;
-    }
-
-    bootHydratedRef.current = true;
-
-    void hydrateGalleryAssets({
-      force: !hasCachedStage,
-      showLoader: !hasCachedStage,
-    });
-  }, [hasCachedStage, hydrateGalleryAssets]);
-
-  useEffect(() => {
-    const handler = (event: Event) => {
-      const detail = (event as CustomEvent<OverrideChangedDetail>).detail;
-      const imageKey = detail?.imageKey ?? "";
-
-      if (!imageKey) {
-        void hydrateGalleryAssets({ force: true, showLoader: false });
-        return;
-      }
-
-      void hydrateGalleryAssets({ force: true, showLoader: false });
-    };
-
-    window.addEventListener(OVERRIDE_CHANGED_EVENT, handler);
-    return () => window.removeEventListener(OVERRIDE_CHANGED_EVENT, handler);
-  }, [hydrateGalleryAssets]);
-
-  useEffect(() => {
-    return () => {
-      if (hoverTimerRef.current !== null) window.clearTimeout(hoverTimerRef.current);
-      if (collapseTimerRef.current !== null) window.clearTimeout(collapseTimerRef.current);
-      if (rotateTimerRef.current !== null) window.clearInterval(rotateTimerRef.current);
-      if (panoramaTransitionTimerRef.current !== null) {
-        window.clearTimeout(panoramaTransitionTimerRef.current);
-      }
-      if (overlayTimerRef.current !== null) window.clearTimeout(overlayTimerRef.current);
-      if (returnHoverTimerRef.current !== null) window.clearTimeout(returnHoverTimerRef.current);
-      if (loaderExitTimerRef.current !== null) window.clearTimeout(loaderExitTimerRef.current);
-    };
+    })();
   }, []);
 
-  useEffect(() => {
-    if (collapseTimerRef.current !== null) {
-      window.clearTimeout(collapseTimerRef.current);
-      collapseTimerRef.current = null;
-    }
-
-    if (
-      isInitialLoadPending ||
-      activeCategoryId ||
-      closingCategoryId ||
-      hoveredCategoryId ||
-      collapseImages.length === 0
-    ) {
-      setPreviewCollapsed(false);
-      return;
-    }
-
-    const holdRemaining = returnHoldUntilRef.current - nowMs();
-    if (holdRemaining > 0) {
-      setPreviewCollapsed(false);
-      collapseTimerRef.current = window.setTimeout(() => {
-        setReturnHoldVersion((current) => current + 1);
-        collapseTimerRef.current = null;
-      }, holdRemaining);
-      return;
-    }
-
-    collapseTimerRef.current = window.setTimeout(() => {
-      setPreviewCollapsed(true);
-      collapseTimerRef.current = null;
-    }, PREVIEW_COLLAPSE_DELAY_MS);
-
-    return () => {
-      if (collapseTimerRef.current !== null) {
-        window.clearTimeout(collapseTimerRef.current);
-        collapseTimerRef.current = null;
+  /* build a slug→image map from the loaded assets */
+  const imageBySlug = useMemo(() => {
+    const map = new Map<string, { strip: string; detail: string }>();
+    for (const target of MYGOTWO_CATEGORY_TARGETS) {
+      const strip = galleryAssets.stripImages.find((s) => s.id === target.id);
+      if (strip) {
+        map.set(target.slug, {
+          strip: strip.image || "",
+          detail: strip.detailImage || strip.image || "",
+        });
       }
-    };
-  }, [
-    activeCategoryId,
-    closingCategoryId,
-    collapseImages.length,
-    hoveredCategoryId,
-    isInitialLoadPending,
-    returnHoldVersion,
-  ]);
-
-  useEffect(() => {
-    if (collapseImages.length === 0) {
-      setCollapseImageIndex(0);
-      return;
     }
+    return map;
+  }, [galleryAssets]);
 
-    setCollapseImageIndex((current) => current % collapseImages.length);
-  }, [collapseImages.length]);
-
-  useEffect(() => {
-    if (!activePanoramaUrl) {
-      if (panoramaTransitionTimerRef.current !== null) {
-        window.clearTimeout(panoramaTransitionTimerRef.current);
-        panoramaTransitionTimerRef.current = null;
-      }
-      setPanoramaBaseUrl("");
-      setPanoramaNextUrl("");
-      setIsPanoramaTransitioning(false);
-      return;
-    }
-
-    if (!panoramaBaseUrl) {
-      setPanoramaBaseUrl(activePanoramaUrl);
-      setPanoramaNextUrl("");
-      setIsPanoramaTransitioning(false);
-      return;
-    }
-
-    if (activePanoramaUrl === panoramaBaseUrl) {
-      return;
-    }
-
-    if (panoramaTransitionTimerRef.current !== null) {
-      window.clearTimeout(panoramaTransitionTimerRef.current);
-      panoramaTransitionTimerRef.current = null;
-    }
-
-    setPanoramaNextUrl(activePanoramaUrl);
-    setIsPanoramaTransitioning(true);
-
-    panoramaTransitionTimerRef.current = window.setTimeout(() => {
-      setPanoramaBaseUrl(activePanoramaUrl);
-      setPanoramaNextUrl("");
-      setIsPanoramaTransitioning(false);
-      panoramaTransitionTimerRef.current = null;
-    }, PANORAMA_TRANSITION_MS);
-  }, [activePanoramaUrl, panoramaBaseUrl]);
-
-  useEffect(() => {
-    if (
-      isInitialLoadPending ||
-      !previewCollapsed ||
-      collapseImages.length <= 1 ||
-      activeCategoryId ||
-      closingCategoryId
-    ) {
-      if (rotateTimerRef.current !== null) {
-        window.clearInterval(rotateTimerRef.current);
-        rotateTimerRef.current = null;
-      }
-      return;
-    }
-
-    rotateTimerRef.current = window.setInterval(() => {
-      setCollapseImageIndex((current) => (current + 1) % collapseImages.length);
-    }, COLLAPSE_ROTATE_INTERVAL_MS);
-
-    return () => {
-      if (rotateTimerRef.current !== null) {
-        window.clearInterval(rotateTimerRef.current);
-        rotateTimerRef.current = null;
-      }
-    };
-  }, [activeCategoryId, closingCategoryId, collapseImages.length, isInitialLoadPending, previewCollapsed]);
-
-  useEffect(() => {
-    if (isInitialLoadPending || !previewCollapsed || collapseImages.length <= 1) {
-      return;
-    }
-
-    const nextImage = collapseImages[(collapseImageIndex + 1) % collapseImages.length]?.image;
-    if (!nextImage) {
-      return;
-    }
-
-    const preloader = new window.Image();
-    preloader.decoding = "async";
-    preloader.src = nextImage;
-  }, [collapseImageIndex, collapseImages, isInitialLoadPending, previewCollapsed]);
-
-  const queueHoveredId = useCallback((nextId: string | null) => {
-    if (isInitialLoadPending || activeCategoryId || closingCategoryId) {
-      return;
-    }
-
-    if (hoverTimerRef.current !== null) {
-      window.clearTimeout(hoverTimerRef.current);
-    }
-
-    if (HOVER_DELAY_MS <= 0) {
-      setHoveredId(nextId);
-      return;
-    }
-
-    hoverTimerRef.current = window.setTimeout(() => {
-      setHoveredId(nextId);
-      hoverTimerRef.current = null;
-    }, HOVER_DELAY_MS);
-  }, [activeCategoryId, closingCategoryId, isInitialLoadPending]);
-
-  const handleStripClick = useCallback((strip: StripPresentation) => {
-    if (isInitialLoadPending || !strip.label) {
-      return;
-    }
-
-    if (overlayTimerRef.current !== null) {
-      window.clearTimeout(overlayTimerRef.current);
-      overlayTimerRef.current = null;
-    }
-
-    setPreviewCollapsed(false);
-    setHoveredId(strip.id);
-    setClosingCategoryId(null);
-    setActiveCategoryId(strip.id);
-  }, [isInitialLoadPending]);
+  const handleCardClick = useCallback((card: CategoryCardMeta) => {
+    setActiveCategory(card);
+  }, []);
 
   const handleOverlayBack = useCallback(() => {
-    if (!activeCategoryId) {
-      return;
-    }
-
-    if (overlayTimerRef.current !== null) {
-      window.clearTimeout(overlayTimerRef.current);
-      overlayTimerRef.current = null;
-    }
-    if (returnHoverTimerRef.current !== null) {
-      window.clearTimeout(returnHoverTimerRef.current);
-      returnHoverTimerRef.current = null;
-    }
-
-    const returningCategoryId = activeCategoryId;
-    setActiveCategoryId(null);
-    setClosingCategoryId(returningCategoryId);
-    setHoveredId(returningCategoryId);
-    setPreviewCollapsed(false);
-    returnHoldUntilRef.current = nowMs() + RETURN_SETTLE_MS;
-    setReturnHoldVersion((current) => current + 1);
-
-    overlayTimerRef.current = window.setTimeout(() => {
-      setClosingCategoryId(null);
-      overlayTimerRef.current = null;
-      returnHoverTimerRef.current = window.setTimeout(() => {
-        setHoveredId(null);
-        returnHoverTimerRef.current = null;
-      }, STRIP_TRANSITION_MS + 80);
-    }, OVERLAY_TRANSITION_MS);
-  }, [activeCategoryId]);
+    setActiveCategory(null);
+  }, []);
 
   return (
     <section
-      aria-label="Strip gallery asset"
-      className="flex min-h-0 flex-1 items-stretch justify-center overflow-hidden py-3 sm:py-4 md:py-6"
+      aria-label="My Go Two categories"
+      className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6"
     >
-      <div
-        className="relative h-full w-full overflow-hidden border border-[rgba(255,255,255,0.58)] shadow-[0_18px_44px_rgba(41,32,24,0.16)]"
-        style={{
-          maxWidth: "1480px",
-          maxHeight: "min(900px, 100%)",
-          minHeight: "clamp(360px, 56vh, 900px)",
-          borderRadius: "44px",
-        }}
-      >
-        <div
-          className="relative h-full w-full overflow-hidden transition-[transform,filter] duration-500 ease-out"
-          style={{
-            transform: showLoaderOverlay ? "scale(1.001)" : "scale(1)",
-            filter: showLoaderOverlay ? "saturate(0.98)" : "saturate(1)",
-          }}
-        >
-          <div
-            className="absolute inset-0 z-0 transition-opacity duration-300 ease-out"
-            style={{
-              opacity: activeCategory || closingCategory ? 0.34 : 1,
-              pointerEvents: activeCategory || closingCategory ? "none" : "auto",
-            }}
-          >
-            <div
-              className="relative flex h-full w-full items-stretch gap-[3px] overflow-hidden sm:gap-[4px] md:gap-[6px]"
-              onMouseLeave={() => queueHoveredId(null)}
-            >
-              {strips.map((strip, index) => (
-                <StripCell
-                  key={strip.id}
-                  strip={strip}
-                  hoveredId={hoveredId}
-                  hoveredCategoryId={hoveredCategoryId}
-                  previewCollapsed={previewCollapsed}
-                  panoramaBaseUrl={panoramaBaseUrl}
-                  panoramaNextUrl={panoramaNextUrl}
-                  isPanoramaTransitioning={isPanoramaTransitioning}
-                  panoramaStripCount={panoramaStripCount}
-                  showLeftDivider={index > 0}
-                  showRightDivider={index < strips.length - 1}
-                  onHover={queueHoveredId}
-                  onClick={handleStripClick}
-                />
-              ))}
-            </div>
-          </div>
+      <div className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
+        {/* bento grid css */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media (min-width: 768px) {
+            .mgt-bento {
+              grid-template-columns: repeat(6, 1fr) !important;
+              grid-template-rows: repeat(6, 100px) !important;
+              grid-template-areas:
+                "c1 c1 c1 c1 c2 c2"
+                "c1 c1 c1 c1 c2 c2"
+                "c3 c3 c4 c4 c5 c5"
+                "c3 c3 c4 c4 c5 c5"
+                "c6 c6 c6 c7 c7 c7"
+                "c8 c8 c8 c9 c9 c9" !important;
+            }
+            .mgt-c1 { grid-area: c1 !important; }
+            .mgt-c2 { grid-area: c2 !important; }
+            .mgt-c3 { grid-area: c3 !important; }
+            .mgt-c4 { grid-area: c4 !important; }
+            .mgt-c5 { grid-area: c5 !important; }
+            .mgt-c6 { grid-area: c6 !important; }
+            .mgt-c7 { grid-area: c7 !important; }
+            .mgt-c8 { grid-area: c8 !important; }
+            .mgt-c9 { grid-area: c9 !important; }
+          }
+        `}} />
 
-          {overlayCategory ? (
-            <CategoryOverlay
-              category={overlayCategory}
-              isVisible={Boolean(activeCategory)}
-              onBack={handleOverlayBack}
-            />
-          ) : null}
-        </div>
-
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 transition-opacity ease-out"
-          style={{
-            opacity: isInitialLoadPending ? 1 : isLoaderExiting ? 0 : 0,
-            transitionDuration: `${LOADER_EXIT_MS}ms`,
-            background:
-              "linear-gradient(180deg, rgba(18,15,12,0.18) 0%, rgba(18,15,12,0.1) 100%)",
-          }}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="mgt-bento grid grid-cols-2 gap-1.5 md:gap-2"
         >
-          <div
-            className="absolute inset-0 backdrop-blur-[2px]"
-            style={{
-              background:
-                "radial-gradient(circle at 50% 46%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.06) 24%, rgba(255,255,255,0) 48%)",
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.03) 28%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 72%, rgba(255,255,255,0) 100%)",
-              transform: "translateX(-18%)",
-              animation: "mygotwo-loader-sheen 2.6s ease-in-out infinite",
-            }}
-          />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="flex flex-col items-center gap-4 text-center">
-              <div
-                className="relative h-16 w-16 rounded-full"
+          {CATEGORY_CARDS.map((card, idx) => {
+            const cardId = `mgt-${card.target.slug}`;
+            const ovr = overrides[cardId];
+            const imgs = imageBySlug.get(card.target.slug);
+            const hasOvrImage = Boolean(ovr?.image_url);
+            const hasStripImage = Boolean(imgs?.strip);
+            const showImage = hasOvrImage || hasStripImage;
+            const imageSrc = ovr?.image_url || imgs?.strip || "";
+
+            return (
+              <motion.button
+                key={card.target.slug}
+                whileTap={{ scale: 0.985 }}
+                onClick={() => handleCardClick(card)}
+                className={`mgt-c${idx + 1} col-span-1 overflow-hidden relative text-left group`}
                 style={{
-                  background: "rgba(255,255,255,0.46)",
-                  border: "1px solid rgba(var(--swatch-teal-rgb), 0.12)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.72)",
+                  borderRadius: 20,
+                  background: showImage ? "transparent" : card.defaultBg,
+                  minHeight: idx < 2 ? 180 : 140,
                 }}
               >
-                <div
-                  className="absolute inset-[9px] rounded-full border-t-2 border-r-2 animate-spin"
-                  style={{
-                    borderColor: "rgba(255,255,255,0.92)",
-                    borderBottomColor: "transparent",
-                    borderLeftColor: "transparent",
-                  }}
+                <CardEditTrigger
+                  cardId={cardId}
+                  override={ovr}
+                  onSaved={refreshOverrides}
+                  fields={["image_url", "heading", "subheading"]}
                 />
-              </div>
-              <div className="max-w-[22rem]">
-                <p
-                  className="text-[11px] uppercase tracking-[0.2em]"
-                  style={{
-                    fontFamily: "'Jost', sans-serif",
-                    color: "rgba(255,255,255,0.82)",
-                  }}
-                >
-                  My Go Two
-                </p>
-                <p
-                  className="mt-3 text-[36px] leading-[0.92]"
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontWeight: 700,
-                    color: "#ffffff",
-                    textShadow: "0 14px 34px rgba(0,0,0,0.22)",
-                  }}
-                >
-                  Opening your vault
-                </p>
-                <p
-                  className="mt-3 text-[14px] leading-[1.65]"
-                  style={{
-                    fontFamily: "'Jost', sans-serif",
-                    color: "rgba(255,255,255,0.86)",
-                    textShadow: "0 8px 18px rgba(0,0,0,0.22)",
-                  }}
-                >
-                  Pulling your saved categories, staged strip images, and your locked-in preference deck.
-                </p>
-                <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-                  {["Clothes", "Personal", "Health", "Gifts", "Dining", "Beverages", "Travel"].map(
-                    (label, index) => (
-                      <span
-                        key={label}
-                        className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] animate-pulse"
-                        style={{
-                          animationDelay: `${index * 0.12}s`,
-                          animationDuration: "1.8s",
-                          fontFamily: "'Jost', sans-serif",
-                          color: "rgba(var(--swatch-teal-rgb), 0.7)",
-                          background: "rgba(255,255,255,0.56)",
-                          border: "1px solid rgba(255,255,255,0.74)",
-                          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
-                        }}
-                      >
-                        {label}
-                      </span>
-                    ),
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <style>{`
-          @keyframes mygotwo-loader-sheen {
-            0% { transform: translateX(-32%); opacity: 0.18; }
-            50% { transform: translateX(0%); opacity: 0.34; }
-            100% { transform: translateX(32%); opacity: 0.18; }
-          }
-        `}</style>
+                {showImage && (
+                  <>
+                    <img
+                      src={imageSrc}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%)",
+                      }}
+                    />
+                  </>
+                )}
+
+                <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <p
+                      className="text-[10px] uppercase tracking-[0.16em]"
+                      style={{
+                        fontFamily: "'Jost', sans-serif",
+                        color: showImage ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.65)",
+                      }}
+                    >
+                      My Go Two
+                    </p>
+                  </div>
+
+                  <div>
+                    <h2
+                      className="text-[24px] leading-[0.96] sm:text-[28px] md:text-[32px]"
+                      style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontWeight: 700,
+                        color: "#fff",
+                        maxWidth: "14ch",
+                      }}
+                    >
+                      {ovr?.heading || card.target.label}
+                    </h2>
+                    <p
+                      className="text-[12px] leading-relaxed mt-2 max-w-[28ch] sm:text-[13px]"
+                      style={{
+                        fontFamily: "'Jost', sans-serif",
+                        color: "rgba(255,255,255,0.8)",
+                      }}
+                    >
+                      {ovr?.subheading || card.subtitle}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-end mt-auto pt-2">
+                    <div
+                      className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5"
+                      style={{
+                        background: "rgba(255,255,255,0.15)",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                      }}
+                    >
+                      <ChevronRight className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                </div>
+              </motion.button>
+            );
+          })}
+        </motion.div>
       </div>
+
+      {/* full-screen category overlay */}
+      <AnimatePresence>
+        {activeCategory && (
+          <CategoryOverlay
+            key={activeCategory.target.slug}
+            category={activeCategory}
+            imageUrl={
+              overrides[`mgt-${activeCategory.target.slug}`]?.image_url ||
+              imageBySlug.get(activeCategory.target.slug)?.detail ||
+              ""
+            }
+            isVisible={true}
+            onBack={handleOverlayBack}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }
