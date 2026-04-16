@@ -3,6 +3,7 @@ import { useUserProfile } from "@/contexts/user-profile-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink, Sparkles } from "lucide-react";
+import heroBgImage from "@/assets/templates/brand-preferences.jpg";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PaginationControls } from "@/components/ui/pagination-controls";
@@ -402,43 +403,36 @@ const Recommendations = () => {
             >
               {/* hero: 3×1 — page intro */}
               <div
-                className="bento-area-hero col-span-2 overflow-hidden relative p-4 md:p-5"
-                style={{ borderRadius: 20, background: "var(--swatch-teal)" }}
+                className="bento-area-hero col-span-2 overflow-hidden relative"
+                style={{ borderRadius: 20 }}
               >
-                {/* Decorative orb */}
-                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%)" }} />
+                {/* Background image — fills entire card */}
+                <img
+                  src={heroBgImage}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{ objectPosition: "center 30%" }}
+                />
+
+                {/* Dark gradient scrim for text legibility */}
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.15) 100%)" }} />
 
                 {/* Floating pill badge top-right */}
-                <div className="absolute top-3 right-3 md:top-4 md:right-4">
-                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.85)", background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.18)", backdropFilter: "blur(8px)" }}>
+                <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
+                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)", backdropFilter: "blur(8px)" }}>
                     <Sparkles className="w-2.5 h-2.5" style={{ color: "var(--swatch-sonoma-chardonnay)" }} />
                     Curated
                   </span>
                 </div>
 
-                <div className="flex h-full items-center gap-4 md:gap-6">
-                  {/* Left: text content */}
-                  <div className="flex flex-col justify-center flex-1 min-w-0">
-                    <p className="text-[9px] uppercase tracking-[0.18em] mb-1.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)" }}>
-                      For You
-                    </p>
-                    <h2 className="text-[22px] md:text-[28px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                      Your recommendations
-                    </h2>
-                    <p className="text-[11px] leading-[1.45] mt-1.5 max-w-[28ch]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>
-                      Based on your style, preferences, and vibe.
-                    </p>
-                  </div>
-
-                  {/* Right: glass inset sub-card */}
-                  <div className="hidden md:flex flex-col items-center justify-center rounded-2xl px-4 py-3" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", backdropFilter: "blur(10px)", minWidth: 100 }}>
-                    <p className="text-[28px] leading-[1] font-bold" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}>
-                      {displayProducts.length}
-                    </p>
-                    <p className="text-[8px] uppercase tracking-[0.14em] mt-1" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)" }}>
-                      Picks
-                    </p>
-                  </div>
+                {/* Text overlay — centered, spread across the whole box */}
+                <div className="relative z-10 flex flex-col items-center justify-center text-center h-full px-5 py-5 md:px-8">
+                  <h2 className="text-[24px] md:text-[32px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                    Handpicked for you
+                  </h2>
+                  <p className="text-[11px] md:text-[12px] leading-[1.5] mt-2 max-w-[44ch]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.85)" }}>
+                    Our AI learns what you love — your style, your taste, the details that make you, you — and finds products you'll actually want.
+                  </p>
                 </div>
               </div>
 
