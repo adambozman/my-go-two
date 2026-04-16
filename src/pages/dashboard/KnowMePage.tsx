@@ -228,7 +228,7 @@ const KnowMePage = () => {
   );
   const allDone = totalAnswered >= totalQuestions;
 
-  const [view, setView] = useState<"dashboard" | "categories" | "quiz" | "thisorthat_dashboard" | "thisorthat">("dashboard");
+  const [view, setView] = useState<"dashboard" | "categories" | "quiz" | "thisorthat_dashboard" | "thisorthat_splash" | "thisorthat">("dashboard");
   const [activeCategoryId, setActiveCategoryId] = useState<string>(SECTIONS[0].id);
   const [quizQuestionIdx, setQuizQuestionIdx] = useState(0);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
@@ -236,6 +236,7 @@ const KnowMePage = () => {
   const [savingAnswer, setSavingAnswer] = useState(false);
   const [activeTotCategoryId, setActiveTotCategoryId] = useState<string | null>(null);
   const [totSwipeDir, setTotSwipeDir] = useState<"left" | "right" | null>(null);
+  const [totSplashSeen, setTotSplashSeen] = useState(false);
 
   const [styleChatOpen, setStyleChatOpen] = useState(false);
   const [stylePrompt, setStylePrompt] = useState("");
@@ -461,7 +462,21 @@ const KnowMePage = () => {
   };
 
   const openThisOrThat = () => {
-    setView("thisorthat_dashboard");
+    // Go straight into the game — pick the first live category that isn't complete
+    const nextCategory = thisOrThatCategories.find((c) => c.isLive && !c.complete && c.questions.length > 0)
+      ?? thisOrThatCategories.find((c) => c.isLive && c.questions.length > 0);
+    if (!nextCategory) {
+      toast("No categories available yet");
+      return;
+    }
+    setActiveTotCategoryId(nextCategory.id);
+    setQuizQuestionIdx(Math.min(nextCategory.nextQuestionIndex, subscribed ? nextCategory.questions.length - 1 : FREE_THIS_OR_THAT_LIMIT - 1));
+    setTotSwipeDir(null);
+    if (!totSplashSeen) {
+      setView("thisorthat_splash");
+    } else {
+      setView("thisorthat");
+    }
   };
 
   const startThisOrThatCategory = (categoryId: string) => {
@@ -517,8 +532,8 @@ const KnowMePage = () => {
       return;
     }
 
-    if (view === "thisorthat") {
-      setBackState({ label: "", onBack: () => setView("thisorthat_dashboard") });
+    if (view === "thisorthat" || view === "thisorthat_splash") {
+      setBackState({ label: "", onBack: () => setView("dashboard") });
       return;
     }
 
@@ -819,177 +834,135 @@ const KnowMePage = () => {
     );
   }
 
+  /* ── THIS OR THAT: SPLASH ── */
+  if (view === "thisorthat_splash") {
+    return (
+      <div className="h-full flex">
+        {/* Full-screen split */}
+        <div className="flex-1 flex flex-col items-center justify-center relative" style={{ background: "var(--swatch-teal)" }}>
+          <p className="text-[48px] md:text-[72px] leading-[0.9]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>Go</p>
+        </div>
+        <div className="flex-1 flex flex-col items-center justify-center relative" style={{ background: "var(--swatch-cedar-grove)" }}>
+          <p className="text-[48px] md:text-[72px] leading-[0.9]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>Two</p>
+        </div>
+
+        {/* Centered overlay card */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 24 }}
+            className="pointer-events-auto rounded-[24px] px-8 py-8 md:px-12 md:py-10 text-center max-w-[400px] mx-4"
+            style={{ background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", boxShadow: "0 24px 64px rgba(0,0,0,0.2)" }}
+          >
+            <h2 className="text-[32px] md:text-[40px] leading-[0.92] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+              This or That
+            </h2>
+            <p className="text-[13px] md:text-[14px] leading-relaxed mb-6" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+              Two options. One instinct. Tap the side you lean toward — there's no wrong answer. Your pattern builds over time.
+            </p>
+            <motion.button
+              whileTap={{ scale: 0.96 }}
+              onClick={() => { setTotSplashSeen(true); setView("thisorthat"); }}
+              className="rounded-full px-8 py-3 text-[12px] uppercase tracking-[0.14em]"
+              style={{ fontFamily: "'Jost', sans-serif", background: "var(--swatch-teal)", color: "#fff" }}
+            >
+              Start
+            </motion.button>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── THIS OR THAT: GAME (tinder-style split) ── */
   if (view === "thisorthat" && activeTotCategory && activeTotQuestion) {
     const questionNumber = quizQuestionIdx + 1;
     const visibleCategoryTotal = subscribed ? activeTotCategory.questions.length : Math.min(activeTotCategory.questions.length, FREE_THIS_OR_THAT_LIMIT);
-    const savedValue = knowMeResponses?.[activeTotQuestion.id];
-    const selectedSide = savedValue === activeTotQuestion.categoryA ? "A" : savedValue === activeTotQuestion.categoryB ? "B" : null;
 
     return (
-      <div className="flex h-full flex-col items-center justify-start overflow-x-hidden overflow-y-auto px-3 py-3">
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ type: "spring", stiffness: 280, damping: 24 }}
-          className="card-design-sand w-full max-w-[480px] rounded-[28px] overflow-hidden relative flex flex-col"
-          style={{
-            maxHeight: "min(calc(100dvh - 128px), 760px)",
-          }}
-        >
-          {/* Decorative teal orb */}
-          <div
-            className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(var(--swatch-teal-rgb), 0.12), transparent 70%)" }}
-          />
+      <div className="h-full flex flex-col overflow-hidden">
+        {/* Progress bar at very top */}
+        <div className="flex items-center gap-1 px-4 pt-3 pb-2">
+          {Array.from({ length: Math.min(visibleCategoryTotal, 12) }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-full transition-all duration-300"
+              style={{
+                height: i < questionNumber ? 4 : 3,
+                flex: 1,
+                background: i < questionNumber
+                  ? "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))"
+                  : "rgba(var(--swatch-antique-coin-rgb), 0.15)",
+              }}
+            />
+          ))}
+          <span className="text-[10px] tabular-nums ml-2 shrink-0" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+            {questionNumber}/{visibleCategoryTotal}
+          </span>
+        </div>
 
-          {/* Header */}
-          <div className="px-5 pt-5 pb-3 relative">
-            <div className="flex items-center justify-between mb-3">
-              <span
-                className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-full"
-                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", background: "rgba(var(--swatch-cedar-grove-rgb), 0.08)", border: "1px solid rgba(var(--swatch-cedar-grove-rgb), 0.14)" }}
+        {/* Split panels */}
+        <div className="flex-1 flex relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTotQuestion.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              className="absolute inset-0 flex flex-col md:flex-row"
+            >
+              {/* Left: teal — option A */}
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => void pickThisOrThat(activeTotQuestion, "A")}
+                className="flex-1 relative flex flex-col items-center justify-center p-6 md:p-10 text-center cursor-pointer group"
+                style={{ background: "var(--swatch-teal)" }}
               >
-                {activeTotCategory.eyebrow}
-              </span>
-              <span
-                className="text-[11px] tabular-nums px-2.5 py-1 rounded-full"
-                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", background: "rgba(var(--swatch-teal-rgb), 0.08)" }}
-              >
-                {Math.min(questionNumber, visibleCategoryTotal)} / {visibleCategoryTotal}
-              </span>
-            </div>
+                <p className="text-[9px] uppercase tracking-[0.2em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)" }}>This</p>
+                <p className="text-[28px] md:text-[38px] leading-[1.0] max-w-[16ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                  {activeTotQuestion.categoryA}
+                </p>
+                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="rounded-full w-10 h-10 flex items-center justify-center" style={{ background: "rgba(255,255,255,0.2)" }}>
+                    <Check className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+              </motion.button>
 
-            {/* Progress dots */}
-            <div className="flex items-center gap-1 mb-1">
-              {Array.from({ length: Math.min(visibleCategoryTotal, 10) }).map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="rounded-full transition-all duration-300"
-                  style={{
-                    height: i < questionNumber ? 4 : 3,
-                    flex: 1,
-                    background: i < questionNumber
-                      ? "linear-gradient(90deg, var(--swatch-teal), var(--swatch-teal))"
-                      : "rgba(var(--swatch-antique-coin-rgb), 0.15)",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Question area */}
-          <div className="px-5 pt-2 pb-4 flex-1 flex flex-col">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTotQuestion.id}
-                initial={{ opacity: 0, x: totSwipeDir === "left" ? -28 : 28 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: totSwipeDir === "left" ? 28 : -28 }}
-                transition={{ type: "spring", stiffness: 280, damping: 28 }}
-                className="flex flex-col flex-1"
-              >
-                {/* Big question */}
-                <h3
-                  className="text-[32px] leading-[1.05] mb-8 mt-2"
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontWeight: 700,
-                    color: "var(--swatch-teal)",
-                    letterSpacing: "-0.01em",
-                  }}
+              {/* Center divider with prompt */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 md:left-1/2 md:top-1/2">
+                <div
+                  className="rounded-full px-5 py-3 md:px-6 md:py-4 text-center"
+                  style={{ background: "rgba(255,255,255,0.95)", backdropFilter: "blur(16px)", boxShadow: "0 8px 32px rgba(0,0,0,0.15)" }}
                 >
-                  {activeTotQuestion.prompt}
-                </h3>
-
-                {/* Split choice cards */}
-                <div className="grid grid-cols-2 gap-2.5 mt-auto">
-                  {([
-                    { key: "A" as const, label: activeTotQuestion.categoryA, side: "Left" },
-                    { key: "B" as const, label: activeTotQuestion.categoryB, side: "Right" },
-                  ]).map((option, i) => {
-                    const isSelected = selectedSide === option.key;
-                    return (
-                      <motion.button
-                        key={option.key}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 26 }}
-                        whileTap={{ scale: 0.96 }}
-                        onClick={() => void pickThisOrThat(activeTotQuestion, option.key)}
-                        className="relative rounded-[20px] overflow-hidden text-left transition-all duration-200"
-                        style={{
-                          minHeight: 110,
-                          background: isSelected
-                            ? "linear-gradient(145deg, rgba(var(--swatch-teal-rgb), 0.22), rgba(var(--swatch-teal-rgb), 0.10))"
-                            : "rgba(255,255,255,0.28)",
-                          border: isSelected
-                            ? "1.5px solid var(--swatch-teal)"
-                            : "1.5px solid rgba(255,255,255,0.42)",
-                          boxShadow: isSelected
-                            ? "0 4px 20px rgba(45,104,112,0.18), inset 0 1px 0 rgba(255,255,255,0.5)"
-                            : "0 2px 8px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.4)",
-                        }}
-                      >
-                        {/* Corner accent */}
-                        <div
-                          className="absolute top-0 right-0 w-16 h-16 pointer-events-none"
-                          style={{
-                            background: isSelected
-                              ? "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.2), transparent 70%)"
-                              : "radial-gradient(circle at top right, rgba(var(--swatch-antique-coin-rgb), 0.06), transparent 70%)",
-                          }}
-                        />
-
-                        <div className="relative p-4">
-                          <span
-                            className="block text-[9px] uppercase tracking-[0.18em] mb-2.5"
-                            style={{
-                              fontFamily: "'Jost', sans-serif",
-                              color: isSelected ? "var(--swatch-teal)" : "rgba(var(--swatch-antique-coin-rgb), 0.55)",
-                            }}
-                          >
-                            {option.side}
-                          </span>
-                          <span
-                            className="block text-[20px] leading-[1.1]"
-                            style={{
-                              fontFamily: "'Cormorant Garamond', serif",
-                              fontWeight: isSelected ? 700 : 600,
-                              color: isSelected ? "var(--swatch-teal)" : "var(--swatch-antique-coin)",
-                            }}
-                          >
-                            {option.label}
-                          </span>
-                        </div>
-
-                        {isSelected && (
-                          <motion.div
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                            className="absolute bottom-3 right-3 w-5 h-5 rounded-full flex items-center justify-center"
-                            style={{ background: "var(--swatch-teal)" }}
-                          >
-                            <Check className="w-3 h-3 text-white" />
-                          </motion.div>
-                        )}
-                      </motion.button>
-                    );
-                  })}
+                  <p className="text-[11px] md:text-[12px] leading-[1.3] max-w-[20ch]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)", fontWeight: 500 }}>
+                    {activeTotQuestion.prompt}
+                  </p>
                 </div>
+              </div>
 
-                {/* OR divider hint */}
-                <div className="flex items-center gap-3 mt-3 mb-1">
-                  <div className="flex-1 h-px" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.12)" }} />
-                  <span className="text-[10px] uppercase tracking-[0.2em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(var(--swatch-antique-coin-rgb), 0.4)" }}>
-                    or
-                  </span>
-                  <div className="flex-1 h-px" style={{ background: "rgba(var(--swatch-antique-coin-rgb), 0.12)" }} />
+              {/* Right: coral — option B */}
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => void pickThisOrThat(activeTotQuestion, "B")}
+                className="flex-1 relative flex flex-col items-center justify-center p-6 md:p-10 text-center cursor-pointer group"
+                style={{ background: "var(--swatch-cedar-grove)" }}
+              >
+                <p className="text-[9px] uppercase tracking-[0.2em] mb-4" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)" }}>That</p>
+                <p className="text-[28px] md:text-[38px] leading-[1.0] max-w-[16ch]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                  {activeTotQuestion.categoryB}
+                </p>
+                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="rounded-full w-10 h-10 flex items-center justify-center" style={{ background: "rgba(255,255,255,0.2)" }}>
+                    <Check className="w-5 h-5 text-white" />
+                  </div>
                 </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </motion.div>
+              </motion.button>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     );
   }
