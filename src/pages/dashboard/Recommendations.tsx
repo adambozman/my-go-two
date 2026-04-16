@@ -378,31 +378,29 @@ const ForYou = () => {
               className="relative w-full"
               style={{ paddingBottom: "85%" }}
             >
-              {/* Slot 1 — RECOMMENDATION: hero (left:0 top:0 w:26 h:45) */}
-              <div
-                className="absolute overflow-hidden"
-                style={{ borderRadius: 20, background: "var(--swatch-teal)", left: "0%", top: "0%", width: "26%", height: "45%" }}
-              >
-                <CardEditTrigger cardId="hero" override={heroOverride} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
-                {heroImageUrl && (
-                  <img src={heroImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: "center 30%" }} />
-                )}
-                <div className="absolute inset-0" style={{ background: heroImageUrl ? "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.1) 100%)" : "none" }} />
-                <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
-                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)", backdropFilter: "blur(8px)" }}>
-                    <Sparkles className="w-2.5 h-2.5" style={{ color: "var(--swatch-sonoma-chardonnay)" }} />
-                    Curated
-                  </span>
+              {/* Slot 1 — RECOMMENDATION: prod4 (left:0 top:0 w:26 h:45) */}
+              {displayProducts[3] ? (
+                <ProductCard product={displayProducts[3]} index={3} layoutStyle={{ left: "0%", top: "0%", width: "26%", height: "45%" }} isSaved={savedItems.has(getRecommendationStableId(displayProducts[3]))} shareLoading={sharingItems.has(getRecommendationStableId(displayProducts[3]))} onToggleSave={() => subscribed ? void toggleSave(displayProducts[3]) : toast("Upgrade to save picks")} onShare={() => void handleShare(displayProducts[3])} cardOverride={overrides[`product-${getRecommendationStableId(displayProducts[3])}`]} onOverrideSaved={refreshOverrides} />
+              ) : (
+                <div
+                  className="absolute overflow-hidden"
+                  style={{ borderRadius: 20, background: "var(--swatch-teal)", left: "0%", top: "0%", width: "26%", height: "45%" }}
+                >
+                  <CardEditTrigger cardId="hero" override={heroOverride} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
+                  {heroImageUrl && (
+                    <img src={heroImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: "center 30%" }} />
+                  )}
+                  <div className="absolute inset-0" style={{ background: heroImageUrl ? "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.1) 100%)" : "none" }} />
+                  <div className="relative z-10 flex flex-col items-center justify-center text-center h-full px-5 py-5 md:px-8">
+                    <h2 className="text-[24px] md:text-[32px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                      {heroOverride?.heading || "Handpicked for you"}
+                    </h2>
+                    <p className="text-[11px] md:text-[12px] leading-[1.5] mt-2 max-w-[44ch]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.85)" }}>
+                      {heroOverride?.subheading || "Our AI learns what you love \u2014 your style, your taste, the details that make you, you \u2014 and finds products you\u2019ll actually want."}
+                    </p>
+                  </div>
                 </div>
-                <div className="relative z-10 flex flex-col items-center justify-center text-center h-full px-5 py-5 md:px-8">
-                  <h2 className="text-[24px] md:text-[32px] leading-[1.05]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                    {heroOverride?.heading || "Handpicked for you"}
-                  </h2>
-                  <p className="text-[11px] md:text-[12px] leading-[1.5] mt-2 max-w-[44ch]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.85)" }}>
-                    {heroOverride?.subheading || "Our AI learns what you love \u2014 your style, your taste, the details that make you, you \u2014 and finds products you\u2019ll actually want."}
-                  </p>
-                </div>
-              </div>
+              )}
 
               {/* Slot 2 — AD: brand (left:27.5 top:0 w:27 h:22) */}
               {(() => {
