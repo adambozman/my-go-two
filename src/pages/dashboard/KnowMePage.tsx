@@ -1,6 +1,6 @@
 ﻿import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Check, SkipForward, Sparkles, Shuffle, Send, Lock } from "lucide-react";
+import { ChevronRight, Check, SkipForward, Sparkles, Send, Lock } from "lucide-react";
 import { useUserProfile } from "@/contexts/user-profile-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,9 +56,16 @@ type ThisOrThatCategoryState = ThisOrThatV2CategoryDefinition & {
   isLive: boolean;
 };
 
-type ThisOrThatDashboardItem =
-  | { type: "category"; category: ThisOrThatCategoryState; layoutClass: string }
-  | { type: "feature"; layoutClass: string };
+type AiGeneratedQuestion = {
+  id: string;
+  prompt: string;
+  categoryA: string;
+  categoryB: string;
+  category: string;
+  tagsForA: string[];
+  tagsForB: string[];
+  isAiGenerated: true;
+};
 
 type ThisOrThatAnswerPayload = ReturnType<typeof buildThisOrThatAnswerUpsertPayload>;
 type ThisOrThatAnswerWriter = {
@@ -86,20 +93,15 @@ const AI_FEEDBACK = [
   "Understood. On to the next one!",
 ];
 
-const THIS_OR_THAT_DASHBOARD_LAYOUT = [
-  "lg:col-span-7",
-  "lg:col-span-5",
-  "lg:col-span-5",
-  "lg:col-span-7",
-  "lg:col-span-4",
-  "lg:col-span-8",
-  "lg:col-span-8",
-  "lg:col-span-4",
-  "lg:col-span-7",
-  "lg:col-span-5",
-  "lg:col-span-5",
-  "lg:col-span-7",
-] as const;
+/** Shuffle an array in-place using Fisher–Yates. */
+const shuffleArray = <T,>(arr: T[]): T[] => {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+};
 
 const STYLE_CHAT_SUGGESTIONS = [
   "What vibe do you think I have so far?",
@@ -228,7 +230,7 @@ const KnowMePage = () => {
   );
   const allDone = totalAnswered >= totalQuestions;
 
-  const [view, setView] = useState<"dashboard" | "categories" | "quiz" | "thisorthat_dashboard" | "thisorthat_splash" | "thisorthat">("dashboard");
+  const [view, setView] = useState<"dashboard" | "categories" | "quiz" | "thisorthat_splash" | "thisorthat">("dashboard");
   const [activeCategoryId, setActiveCategoryId] = useState<string>(SECTIONS[0].id);
   const [quizQuestionIdx, setQuizQuestionIdx] = useState(0);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
@@ -237,6 +239,13 @@ const KnowMePage = () => {
   const [activeTotCategoryId, setActiveTotCategoryId] = useState<string | null>(null);
   const [totSwipeDir, setTotSwipeDir] = useState<"left" | "right" | null>(null);
   const [totSplashSeen, setTotSplashSeen] = useState(false);
+
+  // Infinite This or That queue — shuffled static questions, then AI questions
+  const [totQueue, setTotQueue] = useState<(ThisOrThatV2QuestionLike | AiGeneratedQuestion)[]>([]);
+  const [totQueueIndex, setTotQueueIndex] = useState(0);
+  const [totAnswerHistory, setTotAnswerHistory] = useState<{ prompt: string; chosen: string; rejected: string; category?: string }[]>([]);
+  const [aiQuestionsLoading, setAiQuestionsLoading] = useState(false);
+  const [totalTotAnswered, setTotalTotAnswered] = useState(0);
 
   const [styleChatOpen, setStyleChatOpen] = useState(false);
   const [stylePrompt, setStylePrompt] = useState("");
@@ -260,25 +269,8 @@ const KnowMePage = () => {
       buildThisOrThatCategoryState(category, questionBank[category.id] ?? [], knowMeResponses, subscribed),
     );
   }, [knowMeResponses, subscribed]);
-  const thisOrThatDashboardItems = useMemo<ThisOrThatDashboardItem[]>(() => {
-    const categories = thisOrThatCategories.map((category, index) => ({
-      type: "category" as const,
-      category,
-      layoutClass:
-        THIS_OR_THAT_DASHBOARD_LAYOUT[index] ??
-        THIS_OR_THAT_DASHBOARD_LAYOUT[THIS_OR_THAT_DASHBOARD_LAYOUT.length - 1],
-    }));
-    const featureIndex = Math.min(6, categories.length);
-
-    return [
-      ...categories.slice(0, featureIndex),
-      { type: "feature" as const, layoutClass: "lg:col-span-4" },
-      ...categories.slice(featureIndex),
-    ];
-  }, [thisOrThatCategories]);
-
   const activeTotCategory = thisOrThatCategories.find((category) => category.id === activeTotCategoryId) ?? null;
-  const activeTotQuestion = activeTotCategory?.questions[quizQuestionIdx] ?? null;
+  const activeTotQuestion: (ThisOrThatV2QuestionLike | AiGeneratedQuestion) | null = totQueue[totQueueIndex] ?? null;
   const totalThisOrThatQuestions = thisOrThatCategories.reduce((sum, category) => sum + category.questions.length, 0);
   const totalThisOrThatAnswered = thisOrThatCategories.reduce((sum, category) => sum + category.answered, 0);
   const visibleThisOrThatCount = subscribed ? totalThisOrThatQuestions : Math.min(totalThisOrThatQuestions, FREE_THIS_OR_THAT_LIMIT * thisOrThatCategories.filter((category) => category.isLive).length);
@@ -461,16 +453,57 @@ const KnowMePage = () => {
     setView("quiz");
   };
 
+  const buildShuffledQueue = useCallback(() => {
+    // Collect ALL questions from ALL live categories, filter out already-answered ones
+    const allQuestions: (ThisOrThatV2QuestionLike & { _categoryId?: string })[] = [];
+    for (const cat of thisOrThatCategories) {
+      if (!cat.isLive || cat.questions.length === 0) continue;
+      for (const q of cat.questions) {
+        const isAnswered = getAnswerValues(knowMeResponses?.[q.id]).length > 0;
+        if (!isAnswered) {
+          allQuestions.push({ ...q, _categoryId: cat.id });
+        }
+      }
+    }
+    return shuffleArray(allQuestions);
+  }, [thisOrThatCategories, knowMeResponses]);
+
+  const fetchAiQuestions = useCallback(async () => {
+    if (aiQuestionsLoading) return;
+    setAiQuestionsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("this-or-that-ai", {
+        body: {
+          previousAnswers: totAnswerHistory,
+          count: 5,
+        },
+      });
+      if (error) throw error;
+      if (data?.questions && Array.isArray(data.questions)) {
+        setTotQueue((prev) => [...prev, ...data.questions]);
+      }
+    } catch (err) {
+      console.error("AI question generation failed:", err);
+      // Silently fail — user will just see a "generating..." state briefly
+    } finally {
+      setAiQuestionsLoading(false);
+    }
+  }, [aiQuestionsLoading, totAnswerHistory]);
+
   const openThisOrThat = () => {
-    // Go straight into the game — pick the first live category that isn't complete
-    const nextCategory = thisOrThatCategories.find((c) => c.isLive && !c.complete && c.questions.length > 0)
-      ?? thisOrThatCategories.find((c) => c.isLive && c.questions.length > 0);
-    if (!nextCategory) {
+    // Build a shuffled queue of ALL unanswered static questions
+    const queue = buildShuffledQueue();
+    if (queue.length === 0 && thisOrThatCategories.every((c) => !c.isLive || c.questions.length === 0)) {
       toast("No categories available yet");
       return;
     }
-    setActiveTotCategoryId(nextCategory.id);
-    setQuizQuestionIdx(Math.min(nextCategory.nextQuestionIndex, subscribed ? nextCategory.questions.length - 1 : FREE_THIS_OR_THAT_LIMIT - 1));
+    // Set the first category for persistence context
+    const firstCat = thisOrThatCategories.find((c) => c.isLive && c.questions.length > 0);
+    setActiveTotCategoryId(firstCat?.id ?? null);
+    setTotQueue(queue);
+    setTotQueueIndex(0);
+    setTotAnswerHistory([]);
+    setTotalTotAnswered(0);
     setTotSwipeDir(null);
     if (!totSplashSeen) {
       setView("thisorthat_splash");
@@ -479,50 +512,76 @@ const KnowMePage = () => {
     }
   };
 
-  const startThisOrThatCategory = (categoryId: string) => {
-    const category = thisOrThatCategories.find((item) => item.id === categoryId);
-    if (!category || !category.isLive) return;
-    if (category.isLocked) {
-      toast("Premium unlocks more than 8 instinct questions in each category");
-      return;
-    }
 
-    setActiveTotCategoryId(categoryId);
-    setQuizQuestionIdx(Math.min(category.nextQuestionIndex, subscribed ? category.questions.length - 1 : FREE_THIS_OR_THAT_LIMIT - 1));
-    setTotSwipeDir(null);
-    setView("thisorthat");
-  };
 
   const getSectionForQuestion = (q: QuizQuestion) => SECTIONS.find((section) => section.id === q.section);
 
-  const pickThisOrThat = async (question: ThisOrThatV2QuestionLike, choice: "A" | "B") => {
-    if (!question || !activeTotCategory) return;
+  const pickThisOrThat = async (question: ThisOrThatV2QuestionLike | AiGeneratedQuestion, choice: "A" | "B") => {
+    if (!question) return;
 
     const dir = choice === "A" ? "right" : "left";
     setTotSwipeDir(dir);
-    const value = choice === "A" ? question.categoryA : question.categoryB;
+    const chosenLabel = choice === "A" ? question.categoryA : question.categoryB;
+    const rejectedLabel = choice === "A" ? question.categoryB : question.categoryA;
+    const isAi = "isAiGenerated" in question && question.isAiGenerated;
 
     try {
-      await persistKnowMeResponses({ [question.id]: value });
-      await persistThisOrThatAnswerRecord(activeTotCategory.id, question, choice);
-      await runKnowledgeRefresh({ [question.id]: value });
+      // Always persist to know_me_responses
+      await persistKnowMeResponses({ [question.id]: chosenLabel });
+
+      // Only persist the detailed answer record for static questions
+      // (AI-generated questions don't have scaffolds and would throw)
+      if (!isAi && activeTotCategory) {
+        try {
+          await persistThisOrThatAnswerRecord(activeTotCategory.id, question as ThisOrThatV2QuestionLike, choice);
+        } catch {
+          // Non-fatal — the know_me_response was already saved
+          console.warn("Could not persist detailed answer record for:", question.id);
+        }
+      }
+
+      await runKnowledgeRefresh({ [question.id]: chosenLabel });
     } catch {
       toast.error("Failed to save answer");
       setTotSwipeDir(null);
       return;
     }
 
+    // Track answer in history for AI context
+    const category = isAi ? (question as AiGeneratedQuestion).category : undefined;
+    setTotAnswerHistory((prev) => [
+      ...prev,
+      { prompt: question.prompt, chosen: chosenLabel, rejected: rejectedLabel, category },
+    ]);
+    setTotalTotAnswered((prev) => prev + 1);
+
     setTimeout(() => {
       setTotSwipeDir(null);
-      const nextIndex = quizQuestionIdx + 1;
-      const freeLockReached = !subscribed && nextIndex >= FREE_THIS_OR_THAT_LIMIT;
-      if (freeLockReached || nextIndex >= activeTotCategory.questions.length) {
-        toast.success("Category saved");
-        setView("thisorthat_dashboard");
+      const nextIndex = totQueueIndex + 1;
+
+      // Pre-fetch AI questions when we're getting close to running out
+      if (nextIndex >= totQueue.length - 2 && !aiQuestionsLoading) {
+        void fetchAiQuestions();
+      }
+
+      // If we've reached the end and AI questions are loading, stay put briefly
+      if (nextIndex >= totQueue.length) {
+        if (aiQuestionsLoading) {
+          // Wait — the queue will grow when AI questions arrive
+          return;
+        }
+        // Truly out of questions and no AI loading — trigger a fetch
+        void fetchAiQuestions();
         return;
       }
 
-      setQuizQuestionIdx(nextIndex);
+      // Update category context for the next question if it's a static question
+      const nextQ = totQueue[nextIndex];
+      if (nextQ && "_categoryId" in nextQ && (nextQ as ThisOrThatV2QuestionLike & { _categoryId?: string })._categoryId) {
+        setActiveTotCategoryId((nextQ as ThisOrThatV2QuestionLike & { _categoryId?: string })._categoryId!);
+      }
+
+      setTotQueueIndex(nextIndex);
     }, 400);
   };
 
@@ -537,13 +596,18 @@ const KnowMePage = () => {
       return;
     }
 
-    if (view === "thisorthat_dashboard") {
-      setBackState({ label: "", onBack: () => setView("dashboard") });
-      return;
-    }
-
     setBackState(null);
   }, [setBackState, view]);
+
+  // When AI questions arrive and we're stuck at the end of the queue, auto-advance
+  useEffect(() => {
+    if (view === "thisorthat" && totQueueIndex >= totQueue.length - 1 && totQueue.length > 0 && !aiQuestionsLoading) {
+      // If queue grew past our index, the new questions are ready
+      if (totQueueIndex < totQueue.length - 1) {
+        setTotQueueIndex((prev) => prev + 1);
+      }
+    }
+  }, [view, totQueue.length, totQueueIndex, aiQuestionsLoading]);
 
   if (contextLoading || subscriptionLoading) {
     return (
@@ -747,93 +811,6 @@ const KnowMePage = () => {
     );
   }
 
-  if (view === "thisorthat_dashboard") {
-    return (
-      <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
-        <div className="mx-auto max-w-[1280px] px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
-
-        <div className="grid grid-cols-1 gap-3 auto-rows-[minmax(180px,auto)] sm:gap-4 sm:auto-rows-[minmax(190px,auto)] md:grid-cols-2 lg:grid-cols-12 lg:auto-rows-[minmax(210px,auto)] xl:auto-rows-[minmax(230px,auto)]">
-            {thisOrThatDashboardItems.map((item, index) => {
-              if (item.type === "feature") {
-                return (
-                  <motion.div
-                    key="this-or-that-feature-tile"
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
-                    className={`rounded-[24px] p-5 sm:p-6 md:rounded-[28px] md:p-7 text-left relative overflow-hidden min-h-[180px] md:min-h-[200px] ${item.layoutClass}`}
-                    style={{ background: "#d4543a", boxShadow: "0 18px 44px rgba(212,84,58,0.3)" }}
-                  >
-                    <div className="flex h-full flex-col items-center justify-center gap-2 px-1 text-center sm:gap-3 sm:px-3">
-                      <p className="text-[30px] leading-[0.94] sm:text-[34px] md:text-[38px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", margin: 0 }}>This or That</p>
-                      <p className="text-[13px] sm:text-[14px] md:text-[15px]" style={{ color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Two Options. One Choice.</p>
-                      <p className="text-[13px] sm:text-[14px] md:text-[15px]" style={{ color: "rgba(255,255,255,0.85)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Your Pattern Builds Over Time.</p>
-                      <p className="text-[11px] sm:text-[12px] md:text-[13px]" style={{ color: "rgba(255,255,255,0.6)", fontFamily: "'Jost', sans-serif", margin: 0 }}>Help the AI learn your vibe.</p>
-                    </div>
-                  </motion.div>
-                );
-              }
-
-              const category = item.category;
-              const isTall = [0, 2, 7, 9, 10].includes(index);
-              const isDisabled = !category?.isLive || category?.questions.length === 0;
-              const statusLabel = isDisabled ? "Coming soon" : category.complete ? "Complete" : category.isLocked ? "Locked" : "Ready";
-
-              return (
-                <motion.button
-                  key={category.id}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.03, type: "spring", stiffness: 250, damping: 24 }}
-                  disabled={isDisabled}
-                  onClick={() => startThisOrThatCategory(category.id)}
-                  className={`card-design-sand rounded-[24px] p-4 sm:p-5 md:rounded-[28px] md:p-6 text-left relative overflow-hidden min-h-[180px] sm:min-h-[190px] lg:min-h-0 ${item.layoutClass}`}
-                  style={{ opacity: isDisabled ? 0.8 : 1 }}
-                >
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: isTall
-                        ? "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.16), transparent 34%), linear-gradient(145deg, rgba(255,255,255,0.16), transparent 58%)"
-                        : "radial-gradient(circle at bottom left, rgba(var(--swatch-cedar-grove-rgb), 0.08), transparent 30%), linear-gradient(145deg, rgba(255,255,255,0.14), transparent 60%)",
-                    }}
-                  />
-
-                  <div className="relative flex h-full flex-col justify-between gap-4 sm:gap-5">
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}>
-                        {category.eyebrow}
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)", background: "rgba(255,255,255,0.22)", border: "1px solid rgba(var(--swatch-teal-rgb), 0.2)" }}>
-                        {isDisabled && <Lock className="w-3 h-3" />}
-                        {statusLabel}
-                      </span>
-                    </div>
-
-                    <div className="relative max-w-[24ch] sm:max-w-[26ch]">
-                      <h3 className="text-[21px] leading-[0.98] mb-2 sm:text-[24px] sm:mb-3 md:text-[28px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-                        {category.title}
-                      </h3>
-                      <p className="text-[12px] leading-relaxed sm:text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                        {category.description}
-                      </p>
-                    </div>
-
-                    <div className="relative flex items-end justify-end gap-4">
-                      <span className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}>
-                        {isDisabled ? "Unavailable" : "Open"}
-                      </span>
-                    </div>
-                  </div>
-                </motion.button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   /* ── THIS OR THAT: SPLASH ── */
   if (view === "thisorthat_splash") {
     return (
@@ -946,11 +923,9 @@ const KnowMePage = () => {
     );
   }
 
-  /* ── THIS OR THAT: GAME (tinder-style split) ── */
-  if (view === "thisorthat" && activeTotCategory && activeTotQuestion) {
-    const questionNumber = quizQuestionIdx + 1;
-    const visibleCategoryTotal = subscribed ? activeTotCategory.questions.length : Math.min(activeTotCategory.questions.length, FREE_THIS_OR_THAT_LIMIT);
-    const progress = questionNumber / visibleCategoryTotal;
+  /* ── THIS OR THAT: GAME (tinder-style infinite) ── */
+  if (view === "thisorthat" && activeTotQuestion) {
+    const isAiQ = "isAiGenerated" in activeTotQuestion && activeTotQuestion.isAiGenerated;
 
     return (
       <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
@@ -965,10 +940,15 @@ const KnowMePage = () => {
             {/* Grain overlay */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
 
-            {/* Counter badge — top right */}
-            <div className="absolute top-4 right-5 z-20">
+            {/* Counter badge — top right (running count, no total) */}
+            <div className="absolute top-4 right-5 z-20 flex items-center gap-2">
+              {isAiQ && (
+                <span className="text-[9px] uppercase tracking-[0.14em] px-2 py-0.5 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)", background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}>
+                  <Sparkles className="w-3 h-3 inline mr-1" style={{ verticalAlign: "-2px" }} />AI
+                </span>
+              )}
               <span className="text-[10px] tabular-nums px-2.5 py-1 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "#fff", background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>
-                {questionNumber} of {visibleCategoryTotal}
+                {totalTotAnswered + 1}
               </span>
             </div>
 
@@ -1068,6 +1048,36 @@ const KnowMePage = () => {
                   </p>
                 </motion.div>
               </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── THIS OR THAT: LOADING AI QUESTIONS ── */
+  if (view === "thisorthat" && !activeTotQuestion) {
+    return (
+      <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
+        <div className="max-w-[1280px] mx-auto px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
+          <div className="relative overflow-hidden flex items-center justify-center" style={{ borderRadius: 20, minHeight: "min(calc(100dvh - 180px), 600px)" }}>
+            {/* Teal side */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, var(--swatch-teal) 0%, #245049 100%)", clipPath: "polygon(0 0, 58% 0, 42% 100%, 0 100%)" }} />
+            {/* Coral side */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, var(--swatch-cedar-grove) 0%, #b5503d 100%)", clipPath: "polygon(58% 0, 100% 0, 100% 100%, 42% 100%)" }} />
+            <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] md:w-[420px] md:h-[420px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%)", filter: "blur(40px)" }} />
+            <div className="relative z-10 text-center mx-4 w-full max-w-[380px]" style={{ background: "rgba(255,255,255,0.88)", backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)", borderRadius: 28, padding: "48px 36px", boxShadow: "0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.5) inset" }}>
+              <div className="mx-auto mb-5 h-[2px] w-12" style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))" }} />
+              <div className="flex justify-center mb-4">
+                <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--swatch-teal)", borderTopColor: "transparent" }} />
+              </div>
+              <h2 className="text-[24px] md:text-[28px] leading-[1.1] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                The AI is thinking...
+              </h2>
+              <p className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                Generating questions based on your answers
+              </p>
             </div>
           </div>
         </div>
