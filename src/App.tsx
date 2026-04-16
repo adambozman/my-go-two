@@ -19,8 +19,8 @@ const Connect = lazy(() => import("./pages/Connect"));
 const DashboardLayout = lazy(() => import("./layouts/DashboardLayout"));
 const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
 const MyGoTwo = lazy(() => import("./pages/dashboard/MyGoTwo"));
-const ForYou = lazy(() => import("./pages/dashboard/Recommendations"));
-const KnowMePage = lazy(() => import("./pages/dashboard/KnowMePage"));
+const ForYou = lazy(() => import("./pages/dashboard/ForYou"));
+const KnowMe = lazy(() => import("./pages/dashboard/KnowMe"));
 const Notifications = lazy(() => import("./pages/dashboard/Notifications"));
 const SettingsPage = lazy(() => import("./pages/dashboard/SettingsPage"));
 const PublicFeed = lazy(() => import("./pages/dashboard/PublicFeed"));
@@ -75,7 +75,7 @@ const App = () => {
                         <Route index element={<DashboardHome />} />
                         <Route path="my-go-two" element={<MyGoTwo />} />
                         <Route path="recommendations" element={<ForYou />} />
-                        <Route path="know-me" element={<KnowMePage />} />
+                        <Route path="know-me" element={<KnowMe />} />
                         <Route path="settings" element={<SettingsPage />} />
                         <Route path="notifications" element={<Notifications />} />
                         <Route path="search" element={<Search />} />
