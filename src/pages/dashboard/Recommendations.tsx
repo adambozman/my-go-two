@@ -638,7 +638,7 @@ function ProductCard({
   const [imageFailed, setImageFailed] = useState(false);
   const showProductImage = Boolean(productImage) && !imageFailed;
 
-  const CARD_BG = "#efe0cf";
+  const CARD_BG = "var(--swatch-sand)";
 
   return (
     <motion.div
@@ -647,26 +647,40 @@ function ProductCard({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.04, type: "spring", stiffness: 260, damping: 24 }}
       className={`group/card relative overflow-hidden cursor-pointer ${layoutClass}`}
-      style={{ borderRadius: 20, background: CARD_BG }}
+      style={{ borderRadius: 20, background: "var(--swatch-sand)" }}
       onClick={() => {
         if (productDestination) window.open(productDestination, "_blank", "noopener,noreferrer");
       }}
     >
-      {/* Decorative radial gradient overlay */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(var(--swatch-teal-rgb), 0.06), transparent 50%)" }} />
+      {/* Product image — fills entire card, edge to edge */}
+      {showProductImage ? (
+        <img
+          src={productImage}
+          alt={product.name}
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <p className="text-[28px] leading-[1] text-center" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+            {product.brand}
+          </p>
+        </div>
+      )}
 
-      {/* Floating match pill badge — top-left */}
+      {/* Match pill badge — top-left, floats on image */}
       {matchLabel && (
-        <div className="absolute top-2.5 left-2.5 z-10">
+        <div className="absolute top-3 left-3 z-10">
           <span
             className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[8px] uppercase tracking-[0.1em]"
             style={{
               fontFamily: "'Jost', sans-serif",
               color: "var(--swatch-teal)",
-              background: "rgba(255,255,255,0.82)",
-              border: "1px solid rgba(255,255,255,0.95)",
+              background: "rgba(255,255,255,0.88)",
               backdropFilter: "blur(8px)",
-              boxShadow: "0 2px 8px rgba(var(--swatch-teal-rgb), 0.1)",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
             }}
           >
             <Sparkles className="w-2.5 h-2.5" style={{ color: "var(--swatch-cedar-grove)" }} />
@@ -675,110 +689,70 @@ function ProductCard({
         </div>
       )}
 
-      {/* Product image */}
-      {showProductImage ? (
-        <img
-          src={productImage}
-          alt={product.name}
-          className="absolute inset-0 w-full h-full"
-          style={{
-            objectFit: "contain",
-            objectPosition: "center 38%",
-            padding: "36px 14px 72px 14px",
-          }}
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          onError={() => setImageFailed(true)}
-        />
-      ) : (
-        <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ paddingBottom: 60 }}>
-          {/* Icon spot for no-image fallback */}
-          <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3" style={{ background: "rgba(var(--swatch-teal-rgb), 0.1)" }}>
-            <span className="text-[18px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-              {product.brand.charAt(0)}
-            </span>
-          </div>
-          <p className="text-[22px] leading-[1] text-center" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
-            {product.brand}
-          </p>
-        </div>
-      )}
-
-      {/* Bottom inset panel — glass card with product details */}
-      <div
-        className="absolute bottom-0 left-0 right-0 flex flex-col justify-end"
-        style={{ padding: "28px 10px 10px 10px" }}
-      >
-        {/* Gradient fade from sand */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background: `linear-gradient(to top, ${CARD_BG} 0%, ${CARD_BG}ee 50%, ${CARD_BG}00 100%)` }} />
-
-        <div
-          className="relative rounded-2xl px-3.5 py-3"
-          style={{
-            background: "rgba(255,255,255,0.6)",
-            border: "1px solid rgba(255,255,255,0.85)",
-            backdropFilter: "blur(10px)",
-            boxShadow: "0 2px 12px rgba(var(--swatch-teal-rgb), 0.06)",
-          }}
-        >
-          {/* Category eyebrow */}
-          <p
-            className="text-[8px] uppercase tracking-[0.14em] mb-0.5"
-            style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)" }}
-          >
-            {product.brand}
-          </p>
-          <h3
-            className="text-[14px] md:text-[16px] leading-[1.1] font-semibold"
-            style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--swatch-teal)" }}
-          >
-            {product.name}
-          </h3>
-
-          {/* Bottom row: price + shop pill */}
-          <div className="flex items-center justify-between mt-1.5">
-            {productDisplayPrice ? (
-              <p
-                className="text-[12px] font-bold"
-                style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-teal)" }}
-              >
-                {productDisplayPrice}
-              </p>
-            ) : <span />}
-            {productDestination && (
-              <span
-                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[8px] uppercase tracking-[0.1em]"
-                style={{
-                  fontFamily: "'Jost', sans-serif",
-                  color: "#fff",
-                  background: "var(--swatch-teal)",
-                }}
-              >
-                {productActionLabel || "Shop"}
-                <ExternalLink className="w-2.5 h-2.5" />
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Hover actions — top-right, subtle glass pills */}
-      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-10">
+      {/* Save + Share buttons — top-right, float on image */}
+      <div className="absolute top-3 right-3 flex gap-1.5 z-10">
         <button
           onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
-          className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
-          style={{ background: "rgba(255,255,255,0.85)", boxShadow: "0 2px 6px rgba(0,0,0,0.08)" }}
+          className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md"
+          style={{ background: "rgba(255,255,255,0.88)", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}
         >
           <Bookmark className="h-3.5 w-3.5" style={{ color: isSaved ? "var(--swatch-cedar-grove)" : "var(--swatch-teal)" }} />
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onShare(); }}
-          className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm"
-          style={{ background: "rgba(255,255,255,0.85)", boxShadow: "0 2px 6px rgba(0,0,0,0.08)" }}
+          className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md"
+          style={{ background: "rgba(255,255,255,0.88)", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}
           disabled={shareLoading}
         >
           {shareLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" style={{ color: "var(--swatch-teal)" }} />}
         </button>
+      </div>
+
+      {/* Bottom overlay — text directly on image with gradient scrim */}
+      <div
+        className="absolute bottom-0 left-0 right-0 px-3.5 pb-3.5 pt-12"
+        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 50%, transparent 100%)" }}
+      >
+        {/* Brand eyebrow */}
+        <p
+          className="text-[8px] uppercase tracking-[0.14em] mb-0.5"
+          style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.75)" }}
+        >
+          {product.brand}
+        </p>
+
+        {/* Product name */}
+        <h3
+          className="text-[15px] md:text-[17px] leading-[1.1] font-semibold"
+          style={{ fontFamily: "'Cormorant Garamond', serif", color: "#fff" }}
+        >
+          {product.name}
+        </h3>
+
+        {/* Price + View Product button */}
+        <div className="flex items-center justify-between mt-2">
+          {productDisplayPrice ? (
+            <p
+              className="text-[14px] font-bold"
+              style={{ fontFamily: "'Jost', sans-serif", color: "#fff" }}
+            >
+              {productDisplayPrice}
+            </p>
+          ) : <span />}
+          {productDestination && (
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[8px] uppercase tracking-[0.1em]"
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                color: "#fff",
+                background: "var(--swatch-teal)",
+              }}
+            >
+              {productActionLabel || "View Product"}
+              <ExternalLink className="w-2.5 h-2.5" />
+            </span>
+          )}
+        </div>
       </div>
     </motion.div>
   );
