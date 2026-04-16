@@ -193,18 +193,22 @@ function CategoryOverlay({
 const GRID_CSS = `
 .mgt-mosaic {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(8, 1fr);
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
   gap: 8px;
   grid-template-areas:
-    "a a b b c c"
-    "a a b b c c"
-    "a a d d c c"
-    "e e d d f f"
-    "e e d d f f"
-    "e e g g g g"
-    "h h h i i i"
-    "h h h i i i";
+    "a a a a b b b c c c c c"
+    "a a a a b b b c c c c c"
+    "a a a a b b b c c c c c"
+    "a a a a d d d d d f f f"
+    "a a a a d d d d d f f f"
+    "e e e e d d d d d f f f"
+    "e e e e d d d d d f f f"
+    "e e e e d d d d d f f f"
+    "e e e e g g g g g g g g"
+    "e e e e g g g g g g g g"
+    "e e e e h h h h h h i i"
+    "e e e e h h h h h h i i";
 }
 @media (max-width: 767px) {
   .mgt-mosaic {
